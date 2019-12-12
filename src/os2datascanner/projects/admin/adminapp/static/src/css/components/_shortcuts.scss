@@ -1,0 +1,26 @@
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+
+  @supports (display: grid) {
+    display: grid;
+    grid-gap: calc(var(--size-ds-unit) * 2);
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--size-ds-unit) * 40), 1fr));
+  }
+}
+
+.card {
+  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  // border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: var(--transition-default);
+
+  &__header,
+  &__body {
+    padding: calc(var(--size-ds-unit) * 2);
+  }
+
+  &:hover {
+    box-shadow: var(--box-shadow);
+  }
+}

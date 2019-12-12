@@ -1,0 +1,24 @@
+.user-info {
+  cursor: pointer;
+  display: grid;
+  grid-gap: var(--size-ds-unit);
+  grid-template-areas: "avatar name";
+  grid-template-columns: calc(var(--size-ds-unit) * 4) 1fr;
+
+  > * {
+    align-self: center;
+  }
+
+  &__avatar {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: var(--size-ds-unit);
+    display: inline-block;
+    grid-area: avatar;
+    height: calc(var(--size-ds-unit) * 4);
+    width: calc(var(--size-ds-unit) * 4);
+  }
+
+  &__name {
+    grid-area: name;
+  }
+}

@@ -1,0 +1,28 @@
+.menu {
+  font-size: 1.25rem;
+  font-weight: bold;
+  line-height: 1;
+
+  &__item {
+    &--subitem {
+      font-size: 1rem;
+      font-weight: normal;
+
+      .menu__link {
+        padding-left: calc(var(--size-ds-unit) * 4);
+      }
+    }
+  }
+
+  &__link {
+    color: initial;
+    display: block;
+    padding: calc(var(--size-ds-unit) * 2) var(--size-ds-unit);
+    text-decoration: none;
+    transition: var(--transition-default);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+}

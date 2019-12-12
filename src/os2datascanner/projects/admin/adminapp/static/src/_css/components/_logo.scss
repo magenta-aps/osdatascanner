@@ -1,0 +1,20 @@
+.logo {
+  align-items: center;
+  background-color: var(--color-main);
+  color: #fff;
+  display: flex;
+  font-size: 1.25rem;
+  font-weight: bold;
+  height: calc(var(--size-ds-unit) * 10);
+  padding: calc(var(--size-ds-unit) * 1);
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition-default);
+  width: 100%;
+
+  &:hover {
+    background-color: var(--color-main-dark);
+    color: #fff;
+    text-decoration: none;
+  }
+}

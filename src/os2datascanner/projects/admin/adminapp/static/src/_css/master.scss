@@ -1,0 +1,22 @@
+/* Generic styling */
+@import 'variables';
+@import 'os2dsbootstrap';
+@import 'os2dsbootstrap-overrides';
+// @import 'base';
+@import 'layout';
+// @import '../fonts/inter/inter.css';
+// @import 'typography';
+
+/* Areas */
+// @import 'components/banner';
+// @import 'components/footer';
+// @import 'components/login';
+@import 'components/navigation';
+@import 'components/user-info';
+
+/* Single components */
+// @import 'components/buttons';
+// @import 'components/datatable';
+// @import 'components/forms';
+// @import 'components/icons';
+@import 'components/logo';

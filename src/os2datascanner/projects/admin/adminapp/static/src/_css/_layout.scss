@@ -1,0 +1,37 @@
+.os2ds {
+  display: grid;
+  grid-template-columns: calc(var(--size-ds-unit) * 40) 1fr;
+  grid-template-rows: calc(var(--size-ds-unit) * 10) 1fr;
+  grid-template-areas:  "sidebar banner"
+                        "sidebar main";
+  min-height: 100vh;
+}
+
+.sidebar {
+  background-color: rgba(0, 0, 0, 0.1);
+  grid-area: sidebar;
+}
+
+.banner {
+  align-items: center;
+  background-color: #ccc;
+  display: flex;
+  grid-area: banner;
+  padding: calc(var(--size-ds-unit) * 2);
+}
+
+.main {
+  grid-area: main;
+  padding: calc(var(--size-ds-unit) * 2);
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+
+  @supports (display: grid) {
+    display: grid;
+    grid-gap: var(--size-ds-unit);
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--size-ds-unit) * 40), 1fr));
+  }
+}

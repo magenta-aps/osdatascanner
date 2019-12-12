@@ -1,67 +1,76 @@
-{% extends 'os2datascanner/base.html' %}
-{%  block title %}
-OS2datascanner
-{% endblock %}
+{% load staticfiles %}
+{% load i18n %}
 
-{% block body %}
+<!DOCTYPE html>
+{% language 'da' %}
+<html lang="da">
 
-<div class="container">
-  <ul class="row cards">
-    <li class="col-xs-12 col-sm-6 col-md-4">
-      {% if settings.ENABLE_WEBSCAN %}
-        <a href="/webscanners/" class="panel panel-default">
-      {% elif settings.ENABLE_FILESCAN %}
-        <a href="/filescanners/" class="panel panel-default">
-      {% elif settings.ENABLE_EXCHANGESCAN %}
-        <a href="/exchangescanners/" class="panel panel-default">
-      {% endif %}
-        <div class="panel-body">
-          <span class="h2">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{% block title %}{% endblock %} | OS2datascanner</title>
+
+  <link href="{% static "dist/bundle.css" %}" rel="stylesheet" />
+
+  {% block extra_head_html %}{% endblock %}
+
+</head>
+
+<body class="page">
+  <div class="os2ds">
+
+    {% include "components/banner.html" %}
+
+    <div class="wrapper">
+      <section class="shortcuts">
+
+        <article class="card">
+          <header class="card__header">Scannerjob</header>
+          <div class="card__body">
+            {% if settings.ENABLE_WEBSCAN %}
+            <a href="/webscanners/">
+            {% elif settings.ENABLE_FILESCAN %}
+            <a href="/filescanners/">
+            {% elif settings.ENABLE_EXCHANGESCAN %}
+            <a href="/exchangescanners/">
+            {% endif %}
             Scannerjob
-          </span>
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-        </div>
-      </a>
-    </li>
-    <li class="col-xs-12 col-sm-6 col-md-4">
-      <a href="/rules/" class="panel panel-default">
-        <div class="panel-body">
-          <span class="h2">
-            Regler
-          </span>
-          <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-        </div>
-      </a>
-    </li>
-    <li class="col-xs-12 col-sm-6 col-md-4">
-      <a href="/reports/" class="panel panel-default">
-        <div class="panel-body">
-          <span class="h2">
-            Rapporter
-          </span>
-          <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
-        </div>
-      </a>
-    </li>
-    {% if user.is_superuser or user.is_staff %}
-    <li class="col-xs-12 col-sm-6 col-md-4">
-      <a href="/admin/" class="panel panel-default">
-        <div class="panel-body">
-          <span class="h2">
-            Admin
-          </span>
-          <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-        </div>
-      </a>
-    </li>
-    {% endif %}
-  </ul>
-</div>
+            </a>
+          </div>
+        </article>
 
-{% endblock %}
+        <article class="card">
+          <header class="card__header">Regler</header>
+          <div class="card__body">
+            <a href="/rules/">Regler</a>
+          </div>
+        </article>
 
-{% block heading %} 
-OS2datascanner
-{% endblock %}
+        <article class="card">
+          <header class="card__header">Rapporter</header>
+          <div class="card__body">
+            <a href="/reports/">Rapporter</a>
+          </div>
+        </article>
 
-{% block index_active %}active{% endblock %}
+        {% if user.is_superuser or user.is_staff %}
+        <article class="card">
+          <header class="card__header">Admin</header>
+          <div class="card__body">
+            <a href="/admin/" class="panel panel-default">Admin</a>
+          </div>
+        </article>
+        {% endif %}
+
+      </section>
+    </div>
+  </div>
+
+  <script src="{% static "3rdparty/jquery-3.4.1.slim.min.js" %}"></script>
+  <script src="{% static "3rdparty/bootstrap.bundle.min.js" %}"></script>
+  <script src="{% static "dist/bundle.js" %}"></script>
+</body>
+
+</html>
+{% endlanguage %}
