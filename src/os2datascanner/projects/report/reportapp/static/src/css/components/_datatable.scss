@@ -42,7 +42,8 @@
 }
 
 .datatable tr:focus, 
-.datatable tr:hover {
+.datatable tr:hover,
+.datatable tr:focus-within {
   td {
     background-color: rgba(0, 0, 0, 0.05);
   }
