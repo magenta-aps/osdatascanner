@@ -112,18 +112,7 @@
     {% endblock %}
     <!-- End modal dialog -->
   </div>
-  <!-- Bootstrap core JavaScript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  {% if not settings.DEBUG %}
-  <script src="{% static "js/jquery-1.12.4.min.js" %} "></script>
-  <script src="{% static "js/bootstrap.min.js" %}"></script>
-  {% else %}
-  <script src="{% static "js/jquery-1.12.4.js" %} "></script>
-  <script src="{% static "js/bootstrap.js" %}"></script>
-  {% endif %}
-  <script src="{% static "js/main.js" %}"></script>
-  {% block jquery_script %}{% endblock %}
 </body>
 </html>
 {% endlanguage %}
+
