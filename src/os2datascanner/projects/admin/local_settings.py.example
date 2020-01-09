@@ -4,6 +4,9 @@ MEDIA_ROOT = '/srv/os2datascanner/src/os2datascanner/projects/admin/adminapp/upl
 DEFAULT_FROM_EMAIL = 'your@email'
 ADMIN_EMAIL = 'your@email'
 
+# Disable in production!
+DEBUG = True
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
