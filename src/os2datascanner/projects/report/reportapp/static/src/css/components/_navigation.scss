@@ -26,6 +26,7 @@
 }
 
 .navigation a.active::after,
+.navigation a:focus::after,
 .navigation a:hover::after {
   transform: scale(1);
 }

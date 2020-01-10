@@ -1,6 +1,31 @@
 <nav class="navigation">
-  <a href="/"            class="{% if active_tab == 'home' %}active{% endif %}">Home</a>
-  <a href="/webscanners" class="{% if active_tab == 'home' %}scannerjobs{% endif %}">Scannerjobs</a>
-  <a href="/rules"       class="{% if active_tab == 'home' %}rules{% endif %}">Regler</a>
-  <a href="/admin"       class="{% if active_tab == 'home' %}system{% endif %}">System</a>
+  <a href="/" class="{% if active_tab == 'home' %}active{% endif %}">Home</a>
+
+  {% if user.is_authenticated %}
+    {% if not user.profile.is_upload_only %}
+      {% if settings.ENABLE_WEBSCAN %}
+        <a href="/webscanners" class="{% if active_tab == 'webscanners' %}active{% endif %}">Scannerjob</a>
+      {% elif settings.ENABLE_FILESCAN %}
+        <a href="/filescanners" class="{% if active_tab == 'filescanners' %}active{% endif %}">Scannerjob</a>
+      {% elif settings.ENABLE_EXCHANGESCAN %}
+        <a href="/exchangescanners" class="{% if active_tab == 'exchangescanners' %}active{% endif %}">Scannerjob</a>
+      {% endif %}
+
+      {% if user.profile.is_groups_enabled %}
+        {% if user.is_superuser or user.profile.is_group_admin %}
+          <a href="/groups" class="{% if active_tab == 'groups' %}active{% endif %}">Grupper</a>
+        {% endif %}
+      {% endif %}
+
+      <a href="/rules" class="{% if active_tab == 'rules' %}active{% endif %}">Regler</a>
+      <a href="/reports" class="{% if active_tab == 'reports' %}active{% endif %}">Rapporter</a>
+
+      {% if user.is_superuser or user.is_staff %}
+        {% if user.is_superuser %}
+          <a href="/system/orgs_and_domains" class="{% if active_tab == 'orgs_and_domains' %}active{% endif %}">Domæneoversigt</a>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+
 </nav>
