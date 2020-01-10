@@ -33,7 +33,7 @@
       --size-logo-width: calc(var(--size-ds-unit) * 30);
       --size-base-font-size: calc(var(--size-ds-unit) * 2);
 
-      --color-main: #42b983;
+      --color-main: #3a69b4;
       --color-text-main: #222;
       --color-body-bg: #eee;
 
@@ -68,8 +68,8 @@
     <strong>We're sorry but <em>OS2datascanner</em> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
   </noscript>
 
-  {% include "components/banner.html" %}
   {% if request.user.is_authenticated %}
+  {% include "components/banner.html" %}
   {% else %}
   {% endif %}
 

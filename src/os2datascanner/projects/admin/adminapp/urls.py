@@ -128,7 +128,7 @@ urlpatterns = [
         name='login'),
     url(r'^accounts/logout/',
         django.contrib.auth.views.LogoutView.as_view(
-            template_name='logout.html',
+            template_name='login.html',
         ),
         name='logout'),
     url(r'^accounts/password_change/',

@@ -1,0 +1,21 @@
+<h1 class="page-title">Quicklinks:</h1>
+
+<div class="quicklinks">
+  {% if settings.ENABLE_WEBSCAN %}
+  <a href="/webscanners" class="quicklinks__link">
+  {% elif settings.ENABLE_FILESCAN %}
+  <a href="/filescanners" class="quicklinks__link">
+  {% elif settings.ENABLE_EXCHANGESCAN %}
+  <a href="/exchangescanners" class="quicklinks__link">
+  {% endif %}
+    Scannerjobs
+  </a>
+
+  <a href="/rules" class="quicklinks__link">Regler</a>
+
+  <a href="/reports" class="quicklinks__link">Rapporter</a>
+
+  {% if user.is_superuser or user.is_staff %}
+  <a href="/admin" class="quicklinks__link">Admin</a>
+  {% endif %}
+</div>

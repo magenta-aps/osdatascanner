@@ -1,0 +1,21 @@
+.quicklinks {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  max-width: 80rem;
+  width: calc(100% - 2rem);
+
+  a {
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    color: inherit;
+    display: block;
+    line-height: 1;
+    padding: 1rem;
+    padding: var(--datatable-cell-padding) calc(var(--datatable-cell-padding) / 2);
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+
+    &:focus,
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+}
