@@ -73,7 +73,13 @@ class Handle(TypePropertyEquality, JSONSerialisable):
         Handle's path to the URL representation of its Source. (For example,
         this function might, for a Handle identifying an email, return a URL
         that points at that email in an appropriate webmail system.)"""
-        return None
+        if self.source.handle:
+            # If this Handle belongs to a derived Source (and if this stock
+            # implementation hasn't been overridden), then keep following the
+            # chain upwards looking for a presentation URL
+            return self.source.handle.presentation_url
+        else:
+            return None
 
     @abstractmethod
     def censor(self):
