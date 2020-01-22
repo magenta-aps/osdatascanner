@@ -1,5 +1,6 @@
 import email
 import email.policy
+from urllib.parse import quote
 import chardet
 from datetime import datetime
 from exchangelib import Account, Credentials, IMPERSONATION, Configuration
@@ -177,6 +178,18 @@ class EWSMailHandle(Handle):
         return "\"{0}\" (in folder {1} of account {2})".format(
                 self._mail_subject,
                 self._folder_name or "(unknown folder)", self.source.address)
+
+    @property
+    def presentation_url(self):
+        # We only know this works with Office 365, so err on the side of
+        # caution for now
+        if self.source._server == OFFICE_365_ENDPOINT:
+            _, mail_id = self.relative_path.split(".", maxsplit=1)
+            return ("https://outlook.office365.com/"
+                    "mail/deeplink/read/{0}").format(
+                            quote(mail_id, safe=''))
+        else:
+            return super().presentation_url
 
     def censor(self):
         return EWSMailHandle(
