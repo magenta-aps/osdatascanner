@@ -11,17 +11,25 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import pathlib
 import os
-
 import structlog
-
 from django.utils.translation import gettext_lazy as _
 
-
-BASE_DIR = str(pathlib.Path(__file__).resolve().parent.parent.parent.parent.absolute())
+BASE_DIR = str(pathlib.Path(__file__).resolve(
+).parent.parent.parent.parent.absolute())
 PROJECT_DIR = os.path.dirname(BASE_DIR)
 BUILD_DIR = os.path.join(PROJECT_DIR, 'build')
 VAR_DIR = os.path.join(PROJECT_DIR, 'var')
 LOGS_DIR = os.path.join(VAR_DIR, 'logs')
+
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'os2datascanner/projects/shared_frontend/components')
+
+print(TEMPLATE_DIR)
+
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
 
 os.makedirs(BUILD_DIR, exist_ok=True)
 
@@ -31,7 +39,8 @@ DEBUG = False
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'APP_DIRS': True,
+        'DIRS': str(TEMPLATE_DIR),
+        'APP_DIRS': False,
         'OPTIONS': {
             'debug': DEBUG,
             'context_processors': [
@@ -39,9 +48,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django_settings_export.settings_export',
-             ],
-         },
+            ],
+            'loaders': (
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ),
+        },
     },
 ]
 
