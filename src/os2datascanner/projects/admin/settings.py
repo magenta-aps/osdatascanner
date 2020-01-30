@@ -101,6 +101,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'os2datascanner.projects.admin.adminapp.apps.AdminappConfig',
+    'os2datascanner.projects.mysite.polls.apps.PollsConfig',
     'recurrence',
     'django_xmlrpc',
 )
