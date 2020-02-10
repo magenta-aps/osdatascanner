@@ -52,8 +52,13 @@ mark {
 }
 
 a {
-  color: blue;
+  color: var(--color-main);
   text-decoration-skip-ink: auto;
+
+  &:focus,
+  &:hover {
+    color: var(--color-main-dark);
+  }
 }
 
 .page-title {
