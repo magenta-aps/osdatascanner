@@ -80,6 +80,11 @@
   transition: background-color 0.2s ease-in-out;
 }
 
+.datatable tfoot {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 0.75em;
+}
+
 /* .datatable--click-rows, start */
 .datatable--click-rows td {
   padding: 0;

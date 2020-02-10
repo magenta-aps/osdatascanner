@@ -34,16 +34,18 @@
           <td class="datatable__column--context">{{ match.context }}</td>
         </tr>
         {% endfor %}
+      </tbody>
 
-        {% if rule.matches|length > 3 %}
-        <tr class="match-link-row">
+      {% if rule.matches|length > 3 %}
+      <tfoot>
+        <tr>
           <td colspan="2">
-            <a href="/matches/xyz" class="match-link">Se alle {{ rule.matches|length }} matches for denne fil</a>
+            <a href="/matches/xyz">Se alle {{ rule.matches|length }} matches for denne fil</a>
           </td>
         </tr>
-        {% endif %}
-      </tbody>
-    </table>
+      </tfoot>
+      {% endif %}
+  </table>
   </td>
 </tr>
 {% endfor %}
