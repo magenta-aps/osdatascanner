@@ -1,12 +1,19 @@
-import django.contrib.auth.views
+import django.contrib.auth.views 
 from django.conf.urls import url
 
-from .views.views import (MainPageView, RulePageView, ApprovalPageView,
-                          StatsPageView, SettingsPageView, AboutPageView)
+from .views.views import (
+    MainPageView, 
+    RulePageView, 
+    MatchPageView, 
+    ApprovalPageView, 
+    StatsPageView, 
+    SettingsPageView, 
+    AboutPageView)
 
 urlpatterns = [
     url(r'^$',      MainPageView.as_view(),     name="index"),
-    url('rule/$',     RulePageView.as_view(),     name="rule"),
+    url('rule/$',   RulePageView.as_view(),     name="rule"),
+    url('match/$',  MatchPageView.as_view(),    name="match"),
     url('approval', ApprovalPageView.as_view(), name="about"),
     url('stats',    StatsPageView.as_view(),    name="about"),
     url('settings', SettingsPageView.as_view(), name="settings"),

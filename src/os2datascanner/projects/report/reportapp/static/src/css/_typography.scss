@@ -1,6 +1,6 @@
 html {
   color: var(--color-text-main);
-  font: normal normal 400 var(--size-base-font-size) / 1.3 "Inter", "Avenir", Helvetica, Arial, sans-serif;
+  font: normal normal 400 var(--size-base-font-size) / 1.5 "Inter", "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -81,6 +81,14 @@ a {
     box-shadow: inset 0 -1.5em 0 var(--color-main);
     color: #fff;
   }
+}
+
+.match-link-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.match-link {
+  font-size: 0.75em;
 }
 
 .screen-reader-only {

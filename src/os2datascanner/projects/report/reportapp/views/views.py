@@ -88,6 +88,8 @@ class RulePageView(MainPageView):
 
         return context
 
+class MatchPageView(TemplateView):
+    template_name = 'match.html'
 
 class ApprovalPageView(TemplateView):
     template_name = 'approval.html'
