@@ -7,6 +7,7 @@ from django.conf import settings
 from .views.views import (
     MainPageView, 
     RulePageView, 
+    MatchPageView, 
     ApprovalPageView, 
     StatsPageView, 
     SettingsPageView, 
