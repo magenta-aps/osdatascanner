@@ -29,16 +29,40 @@
       width: 5rem;
     }
 
-    &--item {
-      // 
-    }
-
     &--match {
       width: 10rem;
     }
 
-    &--context {
-      // 
+    &--description {
+      width: auto;
+    }
+
+    &--url {
+      width: 18rem;
+    }
+
+    &--drive {
+      width: auto;
+    }
+
+    &--organization {
+      width: auto;
+    }
+
+    &--exclusion-rules {
+      width: auto;
+    }
+
+    &--validation {
+      width: 6rem;
+    }
+
+    &--scanner-runtime {
+      width: 8rem;
+    }
+
+    &--buttons {
+      width: auto;
     }
   }
 }
