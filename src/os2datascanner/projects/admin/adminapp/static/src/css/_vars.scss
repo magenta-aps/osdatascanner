@@ -11,6 +11,7 @@
   --size-base-font-size: calc(var(--size-ds-unit) * 2);
 
   --color-main: #3a69b4;
+  --color-main-dark: #1c417d;
   --color-text-main: #222;
   --color-body-bg: #eee;
 
@@ -33,4 +34,7 @@
   --border-radius-small: 0.125rem;
   --box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
   --box-shadow-large: 0 0 2rem rgba(0, 0, 0, 0.2);
+
+  --z-index-navigation: 10;
+  --z-index-modal: 20;
 }

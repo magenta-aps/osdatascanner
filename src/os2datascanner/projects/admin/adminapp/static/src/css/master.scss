@@ -2,8 +2,9 @@
 @import 'vars';
 @import 'base';
 @import 'layout';
-// @import '../fonts/inter/inter.css';
+@import '../fonts/inter/inter.css';
 @import 'typography';
+@import 'icons';
 
 /* Areas */
 @import 'components/banner';
@@ -17,7 +18,8 @@
 @import 'components/datatable';
 // @import 'components/filter-options';
 // @import 'components/icons';
-// @import 'components/forms';
-// @import 'components/buttons';
+@import 'components/forms';
+@import 'components/buttons';
 // @import 'components/hit-links';
 @import 'components/dashboard-widgets';
+@import 'components/modal';

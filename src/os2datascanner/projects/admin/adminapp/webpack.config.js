@@ -1,13 +1,19 @@
 // Webpack uses this to work with directories
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 // This is main configuration object.
 // Here you write different options and tell Webpack what to do
 module.exports = {
 
   // Path to your entry point. From this file Webpack will begin his work
-  entry: './static/src/js/index.js',
+  // entry: './static/src/js/index.js',
+  entry: {
+    app: [
+      './static/src/js/index.js'
+    ]
+  },
 
   // Path and filename of your result bundle.
   // Webpack will bundle all JavaScript into this file
@@ -87,13 +93,18 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
       }
     ]
   },
   plugins: [
     new MiniCssExtractPlugin({
       filename: "bundle.css"
-    })
+    }),
+    new VueLoaderPlugin()
   ],
 
   watch: true,
