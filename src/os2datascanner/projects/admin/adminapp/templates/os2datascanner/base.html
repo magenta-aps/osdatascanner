@@ -10,18 +10,24 @@
   <meta name="author" content="" />
   <title>{% block title %}{% endblock %} | OS2datascanner</title>
   <!-- Bootstrap core CSS -->
+  {% block styling %}
   {% if not settings.DEBUG %}
   <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" />
   {% else %}
   <link href="{% static "css/bootstrap.css" %}" rel="stylesheet" />
   {% endif %}
   <link href="{% static "css/webscanner.css" %}" rel="stylesheet" />
+  {% endblock %}
+
   {% block extra_head_html %}{% endblock %}
-  <link href="{% static "dist/bundle.css" %}" rel="stylesheet" />
+
 </head>
 <body class="{{ body_class|default:'page' }}">
 
+  {% block topnav %}
   {% include "components/banner.html" with active_tab="home" %}
+  {% endblock %}
+
   {% block body %}
   {% endblock %}
 
@@ -31,6 +37,7 @@
     {% endblock %}
     <!-- End modal dialog -->
   </div>
+
   <!-- Bootstrap core JavaScript
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
