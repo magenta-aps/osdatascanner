@@ -7,6 +7,11 @@
   width: calc(100% - 2rem);
   z-index: var(--z-index-modal);
 
+  &__small {
+    height: 20rem;
+    max-width: 40rem;
+  }
+
   &__backdrop {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.8);
