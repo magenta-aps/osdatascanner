@@ -1,7 +1,5 @@
 import '../css/master.scss';
 
-console.log('Datascanner sees all');
-
 $(document).ready(function(){
   $("a[data-modal='modal:open']").click(function(e){
       e.preventDefault()
