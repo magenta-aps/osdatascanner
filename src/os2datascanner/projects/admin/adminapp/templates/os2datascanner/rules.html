@@ -74,7 +74,9 @@
           </a>
 
           <a 
-            href="/rules/regex/{{rule.pk}}/delete/" 
+            href="#delete-rule-modal"
+            data-modal="modal:open"
+            data-src="/rules/regex/{{rule.pk}}/delete/"
             class="button button--small button--rounded"
             title="Slet">
             <svg class="icon">
@@ -144,8 +146,10 @@
               <use xlink:href="/static/src/svg/symbol-defs.svg#icon-pencil"></use>
             </svg>
           </a>
-          <a 
-            href="/rules/cpr/{{rule.pk}}/delete/" 
+          <a
+            href="#delete-rule-modal"
+            data-modal="modal:open"
+            data-src="/rules/cpr/{{rule.pk}}/delete/"
             class="button button--small button--rounded"
             title="Slet">
             <svg class="icon">
@@ -168,6 +172,11 @@
 
 <div class="modal" id="edit-rule-modal" tabindex="-1" role="dialog" aria-labelledby="edit-rule-modal-title" aria-hidden="true" hidden>
   <h4 class="modal__heading" id="edit-rule-modal-title">Redigér ad hoc-regel</h4>
+  <iframe src="about:blank" frameborder="0"></iframe>
+</div>
+
+<div class="modal" id="delete-rule-modal" tabindex="-1" role="dialog" aria-labelledby="delete-rule-modal-title" aria-hidden="true" hidden>
+  <h4 class="modal__heading" id="delete-rule-modal-title">Slet ad hoc-regel</h4>
   <iframe src="about:blank" frameborder="0"></iframe>
 </div>
 {% endblock %}

@@ -1,14 +1,17 @@
-{% extends "os2datascanner/base.html" %}
+{% extends 'os2datascanner/base.html' %}
+{% load staticfiles %}
+{% block topnav %}{% endblock %}
+{% block rendertype %}iframe-modal{% endblock %}
 
-{% block rendertype %}regular{% endblock %}
-{% block heading %}
-Slet {{ object }}?
+{% block styling %}
+<link rel="stylesheet" href="{% static "dist/bundle.css" %}">
 {% endblock %}
 
 {% block body %}
   <div class="container">
+    <fieldset class="form__fieldset">
     <p>
-      Ønsker du virkelig at slette denne regel? Handlingen kan ikke
+      Ønsker du virkelig at slette {{ object }}? Handlingen kan ikke
       fortrydes.
     </p>
     <p>
@@ -16,10 +19,14 @@ Slet {{ object }}?
       {{ object.scanners.all.count }} scannerjob og
       {{ object.scans.all.count }} rapporter.
     </p>
-    <form action="" method="post">{% csrf_token %}
-      {{ form.as_p }}
-      <input class="btn btn-primary" type="submit" value="Ja" />
-      <a class="btn btn-default" href="javascript:history.go(-1)">Nej</a>
-    </form>
+    </fieldset>
+    <div class="form__group col-sm-offset-2">
+      <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button button--cta button--small btn btn-default" type="submit">Ja</button>
+        <a href="/rules/#close" rel="modal:close" class="close button button--cta button--small btn btn-default">Nej</a>
+      </form>
+    </div>
   </div>
 {% endblock %}
