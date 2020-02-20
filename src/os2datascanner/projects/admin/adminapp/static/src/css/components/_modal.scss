@@ -7,7 +7,7 @@
   width: calc(100% - 2rem);
   z-index: var(--z-index-modal);
 
-  &__small {
+  &--small {
     height: 20rem;
     max-width: 40rem;
   }
