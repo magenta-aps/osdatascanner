@@ -29,6 +29,10 @@
     margin: 0;
   }
 
+  &__content {
+    padding: 2rem;
+  }
+
   & > iframe {
     height: calc(100% - 3rem);
     width: 100%;
