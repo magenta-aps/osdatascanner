@@ -62,6 +62,10 @@ class PDFPageSource(DerivedSource):
             run(["pdftohtml",
                     "-q", "-nodrm", "-noframes",
                     "-f", page, "-l", page,
+                    # Explicitly scaling up output images makes tesseract(1) do
+                    # a better job. (Presumably this is because less detail is
+                    # lost?)
+                    "-s", "-c", "-zoom", "3.0",
                     path,
                     # Trick pdftohtml into writing to our temporary directory
                     # (groan...)
