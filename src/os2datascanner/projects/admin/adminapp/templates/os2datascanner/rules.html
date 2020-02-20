@@ -90,16 +90,6 @@
   </table>
 
   <h2 style="display: inline-block;">CPR-regler</h2>
-  <a 
-    class="button button--add button--cta button--small button--round"
-    data-modal="modal:open"
-    data-src="/rules/cpr/add/"
-    href="#create-rule-modal"
-    title="Tilføj ny">
-    <svg class="icon">
-      <use xlink:href="/static/src/svg/symbol-defs.svg#icon-plus"></use>
-    </svg>
-  </a>
 
   <table class="datatable">
     <thead>
@@ -109,10 +99,8 @@
         <th>Organisation</th>
         {% endif %}
         <th>Beskrivelse</th>
-        <th>Modulo-11</th>
-        <th>Fødselsdagsdato tjek</th>
+        <th>Sandsynlighed</th>
         <th>Følsomhed</th>
-        <th>Handling</th>
       </tr>
     </thead>
 
@@ -124,39 +112,8 @@
         <td>{{ rule.organization }}</td>
         {% endif %}
         <td>{{ rule.description }}</td>
-        <td>
-          {% if rule.cprrule.do_modulus11 %}
-          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-          {% endif %}
-        </td>
-        <td>
-          {% if rule.cprrule.ignore_irrelevant %}
-          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-          {% endif %}
-        </td>
+        <td></td>
         <td>{{ rule.get_sensitivity_display }}</td>
-        <td>
-          <a 
-            href="#edit-rule-modal" 
-            data-modal="modal:open" 
-            data-src="/rules/cpr/{{rule.pk}}"
-            class="button button--small button--rounded"
-            title="Redigér">
-            <svg class="icon">
-              <use xlink:href="/static/src/svg/symbol-defs.svg#icon-pencil"></use>
-            </svg>
-          </a>
-          <a
-            href="#delete-rule-modal"
-            data-modal="modal:open"
-            data-src="/rules/cpr/{{rule.pk}}/delete/"
-            class="button button--small button--rounded"
-            title="Slet">
-            <svg class="icon">
-              <use xlink:href="/static/src/svg/symbol-defs.svg#icon-cross"></use>
-            </svg>
-          </a>
-        </td>
       </tr>
       {% endfor %}
     </tbody>
