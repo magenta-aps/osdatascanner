@@ -60,7 +60,15 @@
           </div>
           {% endif %}
         </td>
-        <td>{{ rule.get_sensitivity_display }}</td>
+        <td>
+          {% if rule.get_sensitivity_display == sensitivity.choices.0.1 %}
+          <span class="level-label level-label--3">{{ rule.get_sensitivity_display }}</span>
+          {% elif rule.get_sensitivity_display == sensitivity.choices.1.1 %}
+          <span class="level-label level-label--2">{{ rule.get_sensitivity_display }}</span>
+          {% else %}
+          <span class="level-label level-label--1">{{ rule.get_sensitivity_display }}</span>
+          {% endif %}
+        </td>
         <td>
           <a 
             href="#edit-rule-modal" 
@@ -113,7 +121,15 @@
         {% endif %}
         <td>{{ rule.description }}</td>
         <td></td>
-        <td>{{ rule.get_sensitivity_display }}</td>
+        <td>
+          {% if rule.get_sensitivity_display == sensitivity.choices.0.1 %}
+          <span class="level-label level-label--3">{{ rule.get_sensitivity_display }}</span>
+          {% elif rule.get_sensitivity_display == sensitivity.choices.1.1 %}
+          <span class="level-label level-label--2">{{ rule.get_sensitivity_display }}</span>
+          {% else %}
+          <span class="level-label level-label--1">{{ rule.get_sensitivity_display }}</span>
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
