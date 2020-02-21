@@ -84,7 +84,6 @@
           <a 
             href="#delete-rule-modal"
             data-modal="modal:open"
-            data-src="/rules/regex/{{rule.pk}}/delete/"
             class="button button--small button--rounded"
             title="Slet">
             <svg class="icon">
@@ -151,6 +150,25 @@
 <div class="modal modal--small" id="delete-rule-modal" tabindex="-1" role="dialog" aria-labelledby="delete-rule-modal-title" aria-hidden="true" hidden>
   <h4 class="modal__heading" id="delete-rule-modal-title">Slet regel</h4>
   <iframe src="about:blank" frameborder="0"></iframe>
+</div>
+
+<div class="modal modal--small" id="delete-rule-modal" tabindex="-1" role="dialog" aria-labelledby="delete-rule-modal-title" aria-hidden="true" hidden>
+  <h4 class="modal__heading" id="delete-rule-modal-title">Slet regel</h4>
+
+  <div class="modal__content">
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+  
+      <p>Ønsker du at slette <em>{{ object }}</em>? Handlingen kan ikke fortrydes.</p>
+      <p>Bemærk venligst at denne regel i øjeblikket indgår i <em>{{ object.scanners.all.count }}</em> scannerjob og <em>{{ object.scans.all.count }}</em> rapporter.</p>
+  
+      <div class="form__group">
+        <button class="button button--cta button--small btn btn-default" type="submit">Ja</button>
+        <button class="button button--cta button--small btn btn-default" type="button" data-modal="modal:close">Næh!</button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}
 
