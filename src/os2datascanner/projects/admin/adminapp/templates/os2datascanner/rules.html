@@ -48,15 +48,7 @@
 
         <td>
           {% if rule.regexrule.patterns.all|length > 0 %}
-          <input type="checkbox" class="show-patterns" id="show-patterns-{{ forloop.counter }}"
-            name="show-patterns-{{ forloop.counter }}">
-          <label for="show-patterns-{{ forloop.counter }}">
-            Vis udtryk?
-          </label>
-          <div class="pattern-container clearfix">
-            {% for pattern in rule.regexrule.patterns.all %}
-            <code>{{ pattern.pattern_string }}</code>
-            {% endfor %}
+          <button type="button" class="button button--ghost button--small button--rounded" data-toggle="#show-patterns-{{ forloop.counter }}">Vis udtryk?</button>
           </div>
           {% endif %}
         </td>
@@ -83,7 +75,16 @@
             </svg>
           </a>
         </td>
-      </tr tabindex="0">
+      </tr>
+      <tr class="expandable-row" id="show-patterns-{{ forloop.counter }}" hidden>
+        <td colspan="6">
+          {% if rule.regexrule.patterns.all|length > 0 %}
+          {% for pattern in rule.regexrule.patterns.all %}
+          <code>{{ pattern.pattern_string }}</code>
+          {% endfor %}
+          {% endif %}
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
