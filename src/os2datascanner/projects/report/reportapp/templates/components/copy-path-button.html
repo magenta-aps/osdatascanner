@@ -1,0 +1,8 @@
+{% load handle_extras %}
+
+<button 
+  class="button button--small button--cta" 
+  data-clipboard-text="{{ match.matches.handle|find_parent:"smbc"|present }}">
+  {% include "components/svg-icons/icon-copy.html" %}
+  Copy location
+</button>
