@@ -48,7 +48,7 @@
     background-color: rgba(0, 0, 0, 0.05);
   }
     
-  .hit-link {
+  .scan__actions {
     opacity: 1;
   }
 }
@@ -61,8 +61,8 @@
     td {
       background-color: rgba(0, 0, 0, 0.05);
     }
-      
-    .hit-link {
+
+    .scan__actions {
       opacity: 1;
     }
   }
@@ -149,5 +149,10 @@
       margin-right: 0.5rem;
       opacity: 0.75;
     }
+  }
+
+  &__actions {
+    margin-top: 0.5rem;
+    opacity: 0;
   }
 }

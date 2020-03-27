@@ -1,10 +1,12 @@
 .button {
   background-color: #fff;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  color: inherit;
   font-size: 1rem;
+  font-size: 0.75rem;
   line-height: 1;
   outline: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   text-decoration: none;
   transition: var(--transition-default);
 
@@ -16,5 +18,42 @@
   &:active {
     background-color: var(--color-main);
     border-color: var(--color-main-dark);
+  }
+
+  &--copy {
+    background-color: #fff;
+    border: none;
+  }
+
+  &--icon {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 1rem 1fr;
+
+    svg {
+      fill: #000;
+      height: 0.75rem;
+      width: 0.75rem;
+    }
+  }
+}
+
+.button-group {
+  display: inline-block;
+
+  .button {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    float: left;
+
+    &:first-child {
+      border-top-left-radius: var(--border-radius-small);
+      border-bottom-left-radius: var(--border-radius-small);
+      border-right: none;
+    }
+
+    &:last-child {
+      border-top-right-radius: var(--border-radius-small);
+      border-bottom-right-radius: var(--border-radius-small);
+    }
   }
 }
