@@ -127,8 +127,8 @@ def main():
             stage_type="processor"):
         with SourceManager(width=args.width) as source_manager:
             with ProcessorRunner(
-                    read=[args.representations],
-                    write=[args.sources, args.conversions],
+                    read=[args.representations, args.conversions],
+                    write=[args.sources],
                     heartbeat=6000) as runner:
                 try:
                     print("Start")
