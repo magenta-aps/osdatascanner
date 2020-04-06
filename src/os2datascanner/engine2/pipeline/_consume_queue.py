@@ -1,9 +1,10 @@
+from sys import argv
 import traceback
 
 from .utilities import make_common_argument_parser, PikaConnectionHolder
 
 
-def main():
+def main(*arguments):
     parser = make_common_argument_parser()
     parser.description = "Consume all of the objeccs in a queue."
 
@@ -19,7 +20,7 @@ def main():
                     " discarded",
             default=["os2ds_scan_specs"])
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
 
     with PikaConnectionHolder(host=args.host, heartbeat=6000) as ch:
         for q in args.queue:
@@ -34,4 +35,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(*argv)

@@ -1,4 +1,5 @@
 from os import getpid
+from sys import argv
 
 from ...utils.metadata import guess_responsible_party
 from ...utils.prometheus import prometheus_session
@@ -21,7 +22,7 @@ def message_received_raw(body, channel, source_manager, metadata_q):
         pass
 
 
-def main():
+def main(*arguments):
     parser = make_common_argument_parser()
     parser.description = "Consume handles and generate metadata."
 
@@ -43,7 +44,7 @@ def main():
                     + " written",
             default="os2ds_metadata")
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
 
     class TaggerRunner(PikaPipelineRunner):
         @prometheus_summary(
@@ -73,4 +74,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(*argv)

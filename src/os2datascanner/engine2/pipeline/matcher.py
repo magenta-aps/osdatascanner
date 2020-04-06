@@ -1,4 +1,5 @@
 from os import getpid
+from sys import argv
 
 from ...utils.prometheus import prometheus_session
 from ..rules.rule import Rule
@@ -62,7 +63,7 @@ def message_received_raw(body, channel, matches_q, handles_q, conversions_q):
         })
 
 
-def main():
+def main(*arguments):
     parser = make_common_argument_parser()
     parser.description = ("Consume representations and generate matches"
             + " and fresh conversions.")
@@ -95,7 +96,7 @@ def main():
                     + " extraction) should be written",
             default="os2ds_handles")
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
 
     class MatcherRunner(PikaPipelineRunner):
         @prometheus_summary(
@@ -124,4 +125,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(*argv)

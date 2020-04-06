@@ -1,4 +1,5 @@
 from os import getpid
+from sys import argv
 import json
 import argparse
 
@@ -51,7 +52,7 @@ def message_received_raw(body, channel, dump, results_q):
     yield (results_q, body)
 
 
-def main():
+def main(*arguments):
     parser = make_common_argument_parser()
     parser.description = ("Consume problems, metadata and matches, and convert"
                           + " them into forms suitable for the outside world.")
@@ -91,7 +92,7 @@ def main():
             type=argparse.FileType(mode="at"),
             default=None)
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
 
     class ExporterRunner(PikaPipelineRunner):
         @prometheus_summary(
@@ -119,4 +120,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(*argv)

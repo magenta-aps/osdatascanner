@@ -1,4 +1,5 @@
 from os import getpid
+from sys import argv
 
 from ...utils.prometheus import prometheus_session
 from ..rules.rule import Rule
@@ -81,7 +82,7 @@ def message_received_raw(
         pass
 
 
-def main():
+def main(*arguments):
     parser = make_common_argument_parser()
     parser.description = ("Consume conversions and generate " +
             "representations and fresh sources.")
@@ -110,7 +111,7 @@ def main():
                     + " should be written",
             default="os2ds_scan_specs")
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
 
     class ProcessorRunner(PikaPipelineRunner):
         @prometheus_summary("os2datascanner_pipeline_processor",
@@ -139,4 +140,4 @@ def main():
                     notify_stopping()
 
 if __name__ == "__main__":
-    main()
+    main(*argv)

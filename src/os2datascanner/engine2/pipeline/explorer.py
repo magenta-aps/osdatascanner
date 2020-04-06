@@ -1,4 +1,5 @@
 from os import getpid
+from sys import argv
 
 from ...utils.prometheus import prometheus_session
 from ..model.core import (Source, SourceManager, UnknownSchemeError,
@@ -72,7 +73,7 @@ def message_received_raw(
     # automatic restart in this case, use a service manager like systemd
 
 
-def main():
+def main(*arguments):
     parser = make_common_argument_parser()
     parser.description = "Consume sources and generate conversions."
 
@@ -100,7 +101,7 @@ def main():
                     + " written",
             default="os2ds_problems")
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
 
     class ExplorerRunner(PikaPipelineRunner):
         @prometheus_summary(
@@ -131,4 +132,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(*argv)
