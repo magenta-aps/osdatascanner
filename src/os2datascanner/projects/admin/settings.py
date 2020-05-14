@@ -22,7 +22,7 @@ os.makedirs(BUILD_DIR, exist_ok=True)
 # Local settings file shall be used for debugging.
 DEBUG = False
 
-SECRET_KEY = 'ld0_g)jhp3v27&od88-_v83ldb!0i^bac=jh+je!!=jbvra7@j'
+SECRET_KEY = ''
 
 # Add settings here to make them accessible from templates
 SETTINGS_EXPORT = [
