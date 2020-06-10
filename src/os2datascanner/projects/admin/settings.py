@@ -22,7 +22,8 @@ os.makedirs(BUILD_DIR, exist_ok=True)
 # Local settings file shall be used for debugging.
 DEBUG = False
 
-SECRET_KEY = ''
+# (Allow SECRET_KEY to be overridden by a CI environment variable)
+SECRET_KEY = os.getenv("SECRET_KEY", "")
 
 # Add settings here to make them accessible from templates
 SETTINGS_EXPORT = [

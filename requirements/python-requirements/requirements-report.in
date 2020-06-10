@@ -1,0 +1,5 @@
+-r requirements-django.in
+-c requirements-engine.txt
+
+git+https://github.com/magenta-aps/django-saml2-auth.git#egg=django-saml2-auth-2.2.1
+python3-saml
