@@ -42,7 +42,7 @@ tests:
   services:
     - postgres:alpine
     - rabbitmq:alpine
-    - name: dperson/samba:amd64
+    - name: magentaaf/samba
       alias: samba
   image: python:3.6
   variables:
