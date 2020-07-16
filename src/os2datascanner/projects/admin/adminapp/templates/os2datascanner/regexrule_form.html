@@ -219,22 +219,6 @@
         </div>
       </div>
 
-      <div id="{{ form.description.auto_id }}_container" class="form__group col-sm-12{% if form.description.errors %} has-error{% endif %}">
-        <div class="form-group">
-          <label class="control-label col-sm-2" for="id_{{ form.description.name }}">{{ form.description.label }}</label>
-          <div class="col-sm-10">
-            <textarea class="form-control" name="{{ form.description.name }}" id="id_{{ form.description.name }}" rows="3"
-              {% if form.description.field.required %}required{% endif %}>{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
-            {% if form.description.help_text %}
-            <p>
-              <small>{{ form.description.help_text }}</small>
-            </p>
-            {% endif %}
-            {% if form.description.errors %}{{ form.description.errors }}{% endif %}
-          </div>
-        </div>
-      </div>
-
       <div id="{{ form.sensitivity.auto_id }}_container" class="form__group col-sm-12{% if form.sensitivity.errors %} has-error{% endif %}">
         <div class="form-group">
           <label class="control-label col-sm-2" for="id_{{ form.sensitivity.name }}">{{ form.sensitivity.label }}</label>
@@ -253,6 +237,22 @@
             <span class="form__help-text">{{ form.sensitivity.help_text }}</span>
             {% endif %}
             {% if form.sensitivity.errors %}{{ form.sensitivity.errors }}{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div id="{{ form.description.auto_id }}_container" class="form__group col-sm-12{% if form.description.errors %} has-error{% endif %}">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="id_{{ form.description.name }}">{{ form.description.label }}</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" name="{{ form.description.name }}" id="id_{{ form.description.name }}" rows="3"
+              {% if form.description.field.required %}required{% endif %}>{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+            {% if form.description.help_text %}
+            <p>
+              <small>{{ form.description.help_text }}</small>
+            </p>
+            {% endif %}
+            {% if form.description.errors %}{{ form.description.errors }}{% endif %}
           </div>
         </div>
       </div>
