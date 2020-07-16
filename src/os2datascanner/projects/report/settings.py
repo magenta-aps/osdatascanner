@@ -26,7 +26,8 @@ LOGS_DIR = os.path.join(VAR_DIR, 'logs')
 
 DEBUG = False
 
-SECRET_KEY = 'ld0_g)jhp3v27&od88-_v83ldb!0i^bac=jh+je!!=jbvra7@j'
+# (Allow SECRET_KEY to be overridden by a CI environment variable)
+SECRET_KEY = os.getenv("SECRET_KEY", "")
 
 # Application definition
 INSTALLED_APPS = [
