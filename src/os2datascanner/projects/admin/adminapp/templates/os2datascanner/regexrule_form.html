@@ -22,7 +22,7 @@
         inputClone.after($("<span/>", { // ... add the button to remove expression
           class: "input-group-btn",
           html: $("<button/>", {
-            class: "btn btn-default button-remove-expression",
+            class: "btn-xs btn-danger button button--danger button-remove-expression",
             type: "button",
             text: "Fjern udtryk"
           })
@@ -196,7 +196,7 @@
 
               {% if forloop.counter > 1 %}
               <span class="input-group-btn">
-                <button class="btn btn-default button-remove-expression" type="button">Fjern udtryk</button>
+                <button class="class="btn-xs btn-danger button button--danger button-remove-expression" type="button">Fjern udtryk</button>
               </span>
               {% endif %}
 
