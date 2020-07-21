@@ -138,12 +138,7 @@ Build documentation:
   services:
     - postgres:12
     - rabbitmq:3-alpine
-    - name: dperson/samba:amd64
-      alias: samba
-      # XXX: this should be replaced with a fork under our control (see #37182)
   variables:
-    USER: os2;12345_rosebud_password_admin
-    SHARE: general;${CI_PROJECT_DIR}/src/os2datascanner/tests/data/engine2;no;yes
     POSTGRES_HOST: postgres
     AMQP_HOST: rabbitmq
     AMQP_USER: guest
@@ -179,8 +174,15 @@ Test Admin Application:
 
 Test Engine:
   extends: .test-default
+  services:
+    - name: dperson/samba:amd64
+      alias: samba
+      # XXX: this should be replaced with a fork under our control (see #37182)
   image:
     name: ${ENGINE_IMAGE}
+  variables:
+    USER: os2;12345_rosebud_password_admin
+    SHARE: general;${CI_PROJECT_DIR}/src/os2datascanner/tests/data/engine2;no;yes
   needs:
     - Build Engine
   script:
