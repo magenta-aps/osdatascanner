@@ -27,7 +27,6 @@
             text: "Fjern udtryk"
           })
         }));
-        inputClone.next(".input-group-btn").addBack().wrapAll("<div class=\"input-group\"></div>"); // wrap it in the input-group wrapper for proper Bootstrap styling
       }
       inputContainer.after(containerClone);
       // recalcIframeHeight();
@@ -61,6 +60,74 @@
     // function to clean up pattern numbers, as we need to have them numbered sequentially without gaps
     function cleanupPatternNumbers() {
       $("#{{ form.pattern_0.auto_id }}_container").find(".form-group").each(function (idx) {
+        var $this = $(this);
+        var input = $this.find("input[type=\"text\"]");
+        var label = $this.find("label");
+        var oldInputName = input.attr("name").split(/(.+_)/);
+        input.attr("name", oldInputName[1] + idx).attr("id", "id_" + oldInputName[1] + idx);
+        label.attr("for", "id_" + oldInputName[1] + idx).text("{{ form.pattern_0.label }} " + (idx + 1)); // we want 1-indexed label texts
+      });
+      // recalcIframeHeight();
+    }
+  })(jQuery);
+
+  (function ($) {
+    // adding a new existing rule
+    $("#button-add-rule").click(function () {
+      var inputContainer = $("#{{ form.pattern_0.auto_id }}_container").find(".form-group-rule").last(); // Take the last item instead of just number _1, as we may have added more items
+      var inputNameParts = inputContainer.find("input[type=\"text\"]").first().attr("name").split(/(.+_)/); // define .+_ as capturing group so we can get at the delimiter inside nameParts[1]
+      var baseName = inputNameParts[1];
+      var numInput = parseInt(inputNameParts[2]) + 1;
+      var newInputName = baseName + (numInput);
+      var containerClone = inputContainer.clone();
+      var inputClone = containerClone.find("input[type=\"text\"]").first().prop("required", false);
+      var labelClone = containerClone.find("label").first();
+
+      labelClone.attr("for", "id_" + newInputName);
+      labelClone.text("{{ form.pattern_0.label }}" + " " + (numInput + 1)); // plus one because the numInput is 0-indexed, and label should be 1-indexed
+      inputClone.attr("name", newInputName).attr("id", "id_" + newInputName).val("").attr("value", "");
+      if (!containerClone.find(".button-remove-rule").length) { // if we haven't already cloned a button for removal...
+        inputClone.after($("<span/>", { // ... add the button to existing rule
+          class: "input-group-btn",
+          html: $("<button/>", {
+            class: "btn-xs btn-danger button button--danger button-remove-rule",
+            type: "button",
+            text: "Fjern regel"
+          })
+        }));
+      }
+      inputContainer.after(containerClone);
+      // recalcIframeHeight();
+    });
+
+    // removing an existing rule. We need to bind dynamically as fields do not necessarily exist on page load
+    $("body").on("click", ".button-remove-rule", function () {
+      var btn = $(this);
+      var inputValue = btn.closest(".input-group-btn").prev("input").val();
+      if (inputValue) {
+        var confirmation = confirm("Feltet indeholder en værdi. Tryk OK hvis du stadig vil slette feltet.");
+        if (confirmation) {
+          btn.closest(".form-group-rule").remove();
+        }
+      } else {
+        btn.closest(".form-group-rule").remove();
+      }
+      cleanupPatternNumbers();
+    });
+
+    $("form").submit(function () {
+      // delete any empty existing rule fields, BUT not the first one
+      $("#{{ form.pattern_0.auto_id }}_container").find("input[type=\"text\"]").filter(function (idx) {
+        return !this.value && idx > 0;
+      }).closest(".form-group-rule").remove();
+
+      // clean up the pattern numbers on form submit, just to be safe (even though we already did it when adding a new existing rule field).
+      cleanupPatternNumbers();
+    });
+
+    // function to clean up pattern numbers, as we need to have them numbered sequentially without gaps
+    function cleanupPatternNumbers() {
+      $("#{{ form.pattern_0.auto_id }}_container").find(".form-group-rule").each(function (idx) {
         var $this = $(this);
         var input = $this.find("input[type=\"text\"]");
         var label = $this.find("label");
@@ -185,20 +252,29 @@
             {% if forloop.counter > 1 %}
             <div class="input-group">
               {% endif %}
-              <input 
-                type="text" 
-                class="form-control" 
-                name="{{ pattern_name }}" 
-                id="id_{{ pattern_name }}"
-                {% if pattern_value %}value="{{ pattern_value }}" {% endif %}
-                {% if forloop.counter == 1 and form.pattern_0.field.required %}required{% endif %}>
-              {# required state of pattern_0 is variable #}
 
-              {% if forloop.counter > 1 %}
-              <span class="input-group-btn">
-                <button class="class="btn-xs btn-danger button button--danger button-remove-expression" type="button">Fjern udtryk</button>
-              </span>
-              {% endif %}
+              <div class="flex">
+                <select name="regex-rule" id="regex-rule" class="form-control form-control--regex-rule">
+                  <option value="1" selected="selected">---------</option>
+                  <option value="2">OG</option>
+                  <option value="3">OG IKKE</option>
+                </select>
+
+                <input 
+                  type="text" 
+                  class="form-control form-control--user-rule" 
+                  name="{{ pattern_name }}" 
+                  id="id_{{ pattern_name }}"
+                  {% if pattern_value %}value="{{ pattern_value }}" {% endif %}
+                  {% if forloop.counter == 1 and form.pattern_0.field.required %}required{% endif %}>
+                  {# required state of pattern_0 is variable #}
+              </div>
+                  <!-- {% if forloop.counter > 1 %}
+                  <span class="input-group-btn">
+                    <button class="btn-xs btn-danger button button--danger button-remove-expression" type="button">Fjern udtryk</button>
+                    <button id="button-add-rule" type="button" class="button button--cta button--small btn btn-default">Tilføj eksisterende regel</button>
+                  </span>
+                  {% endif %} -->
 
               {% if form.pattern_0.help_text %}
               <span class="form__help-text">{{ form.pattern_0.help_text }}</span>
@@ -212,27 +288,63 @@
         </div>
         {% endfor %}
 
+        {% for pattern_name, pattern_value in view.get_pattern_fields %}
+        <div class="form__group form-group-rule">
+          <label class="control-label col-sm-2" for="id_{{ pattern_name }}">{{ form.pattern_0.label }} {{ forloop.counter }}</label>
+          <div class="col-sm-10">
+            {% if forloop.counter > 1 %}
+            <div class="input-group">
+              {% endif %}
+
+              <div class="flex">
+                <select name="regex-rule" id="regex-rule" class="form-control form-control--regex-rule">
+                  <option value="1" selected="selected">---------</option>
+                  <option value="2">OG</option>
+                  <option value="3">OG IKKE</option>
+                </select>
+
+                <input 
+                  type="text" 
+                  class="form-control form-control--user-rule" 
+                  name="{{ pattern_name }}" 
+                  id="id_{{ pattern_name }}"
+                  {% if pattern_value %}value="{{ pattern_value }}" {% endif %}
+                  {% if forloop.counter == 1 and form.pattern_0.field.required %}required{% endif %}>
+                  {# required state of pattern_0 is variable #}
+              </div>
+
+              {% if form.pattern_0.help_text %}
+              <span class="form__help-text">{{ form.pattern_0.help_text }}</span>
+              {% endif %}
+
+              {% if form.pattern_0.errors %}{{ form.pattern_0.errors }}{% endif %}
+              {% if forloop.counter > 0 %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+
         <div class="row form__group">
           <div class="col-sm-offset-2 col-sm-10">
             <button id="button-add-expression" type="button" class="button button--cta button--small btn btn-default">Tilføj udtryk</button>
+            <button id="button-add-rule" type="button" class="button button--cta button--small btn btn-default add-rule">Tilføj eksisterende regel</button>
           </div>
         </div>
-      </div>
-
-      <div id="{{ form.sensitivity.auto_id }}_container" class="form__group col-sm-12{% if form.sensitivity.errors %} has-error{% endif %}">
-        <div class="form-group">
-          <label class="control-label col-sm-2" for="id_{{ form.sensitivity.name }}">{{ form.sensitivity.label }}</label>
-          <div class="col-sm-10">
-            <select name="{{ form.sensitivity.name }}" id="id_{{ form.sensitivity.name }}" class="form-control"
+        
+        <div id="{{ form.sensitivity.auto_id }}_container" class="form__group col-sm-12{% if form.sensitivity.errors %} has-error{% endif %}">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="id_{{ form.sensitivity.name }}">{{ form.sensitivity.label }}</label>
+            <div class="col-sm-10">
+              <select name="{{ form.sensitivity.name }}" id="id_{{ form.sensitivity.name }}" class="form-control"
               {% if form.sensitivity.field.required %}required{% endif %}>
-
               {% for value, tag in form.sensitivity.field.choices %}
               <option value="{{ value }}" {% if form.sensitivity.value|add:"0" == value|add:"0" %} selected="selected" {% endif %}>
                 {{ tag }}
               </option>
               {% endfor %}
-
             </select>
+            
             {% if form.sensitivity.help_text %}
             <span class="form__help-text">{{ form.sensitivity.help_text }}</span>
             {% endif %}
@@ -240,13 +352,13 @@
           </div>
         </div>
       </div>
-
+      
       <div id="{{ form.description.auto_id }}_container" class="form__group col-sm-12{% if form.description.errors %} has-error{% endif %}">
         <div class="form-group">
           <label class="control-label col-sm-2" for="id_{{ form.description.name }}">{{ form.description.label }}</label>
           <div class="col-sm-10">
             <textarea class="form-control" name="{{ form.description.name }}" id="id_{{ form.description.name }}" rows="3"
-              {% if form.description.field.required %}required{% endif %}>{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+            {% if form.description.field.required %}required{% endif %}>{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
             {% if form.description.help_text %}
             <p>
               <small>{{ form.description.help_text }}</small>
@@ -256,15 +368,17 @@
           </div>
         </div>
       </div>
-    
+      
+      
+      <div class="form__group col-sm-offset-2">
+        {% for rule in rules %}
+                {{ rule }}
+                {% endfor %}
+        <button type="submit" class="btn btn-primary button button--cta button--rounded" name="save">Gem ændringer</button>
+      </div>
     </fieldset>
-
-    <div class="form__group col-sm-offset-2">
-      <button type="submit" class="btn btn-primary button button--cta button--rounded" name="save">Gem ændringer</button>
-    </div>
-
+      
     {#{ form.as_p }#}
   </form>
-
 </div>
 {% endblock %}
