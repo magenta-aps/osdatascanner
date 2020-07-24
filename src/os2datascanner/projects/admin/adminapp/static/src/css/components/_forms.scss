@@ -65,6 +65,17 @@
     &:focus {
       box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.2);
     }
+
+    &--regex-rule {
+      border-top-right-radius: unset;
+      border-bottom-right-radius: unset;
+      width: 10%;
+    }
+    &--user-rule {
+      border-top-left-radius: unset;
+      border-bottom-left-radius: unset;
+      width: 90%;
+    }
   }
 
   textarea.form-control {
