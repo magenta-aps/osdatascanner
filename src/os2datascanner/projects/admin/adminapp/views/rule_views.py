@@ -57,6 +57,13 @@ class RuleCreate(RestrictedCreateView):
 class RegexRuleCreate(RuleCreate):
     model = RegexRule
 
+    def get_context_data(self):
+        context = super().get_context_data()
+
+        context["regexrule_list"] = RegexRule.objects.all()
+
+        return context
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
 
