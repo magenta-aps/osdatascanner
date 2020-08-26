@@ -44,8 +44,11 @@ SETTINGS_EXPORT = [
     'ENABLE_DROPBOXSCAN',
     'ENABLE_MSGRAPH_MAILSCAN',
     'ENABLE_MSGRAPH_FILESCAN',
-    'ICON_SPRITE_URL'
+    'ICON_SPRITE_URL',
+    'VERSION'
 ]
+
+VERSION = open(os.path.join(PROJECT_DIR, 'VERSION'), 'r').readlines()
 
 TEMPLATES = [
     {

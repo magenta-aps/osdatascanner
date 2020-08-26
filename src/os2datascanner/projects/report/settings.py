@@ -54,6 +54,13 @@ ROOT_URLCONF = 'os2datascanner.projects.report.urls'
 
 WSGI_APPLICATION = 'os2datascanner.projects.report.wsgi.application'
 
+# Add settings here to make them accessible from templates
+SETTINGS_EXPORT = [
+    'VERSION'
+]
+
+VERSION = open(os.path.join(PROJECT_DIR, 'VERSION'), 'r').readlines()
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -66,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export'
             ],
         },
     },

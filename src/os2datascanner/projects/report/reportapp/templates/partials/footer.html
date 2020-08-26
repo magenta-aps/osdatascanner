@@ -3,7 +3,11 @@
 
 {% if request.user.is_authenticated %}
 <footer class="footer">
-  <span>OS2datascanner</span>
+  {% if settings.VERSION %}
+    {% for version in settings.VERSION %}
+      <span>OS2datascanner release version {{ version }}</span>
+    {% endfor %}
+  {% endif %}
 </footer>
 {% else %}
 {% endif %}

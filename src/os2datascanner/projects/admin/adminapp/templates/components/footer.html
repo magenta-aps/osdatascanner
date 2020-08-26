@@ -1,0 +1,9 @@
+{% load staticfiles %}
+
+<footer class="footer">
+  {% if settings.VERSION %}
+    {% for version in settings.VERSION %}
+      <span>OS2datascanner release version {{ version }}</span>
+    {% endfor %}
+  {% endif %}
+</footer>
