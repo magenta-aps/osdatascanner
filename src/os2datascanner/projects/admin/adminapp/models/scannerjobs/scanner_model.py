@@ -92,7 +92,9 @@ class Scanner(models.Model):
     rules = models.ManyToManyField(Rule,
                                    blank=True,
                                    verbose_name='Regler',
-                                   related_name='scanners')
+                                   related_name='scanners',
+                                   through='OrderedRule',
+                                   )
 
     recipients = models.ManyToManyField(UserProfile, blank=True,
                                         verbose_name='Modtagere')
@@ -174,12 +176,12 @@ class Scanner(models.Model):
 
     # Run error messages
     HAS_NO_RULES = (
-        "Scannerjobbet kunne ikke startes," +
-        " fordi den ingen tilknyttede regler har."
+            "Scannerjobbet kunne ikke startes," +
+            " fordi den ingen tilknyttede regler har."
     )
     NOT_VALIDATED = (
-        "Scannerjobbet kunne ikke startes," +
-        " fordi det ikke er blevet valideret."
+            "Scannerjobbet kunne ikke startes," +
+            " fordi det ikke er blevet valideret."
     )
 
     process_urls = JSONField(null=True, blank=True)
@@ -237,8 +239,8 @@ class Scanner(models.Model):
 
         # Create a new engine2 scan specification
         rule = OrRule.make(
-                *[r.make_engine2_rule()
-                        for r in self.rules.all().select_subclasses()])
+            *[r.make_engine2_rule()
+              for r in self.rules.all().order_by('position').select_subclasses()])
 
         configuration = {}
 
@@ -252,12 +254,12 @@ class Scanner(models.Model):
             # If we are doing OCR, then filter out any images smaller than
             # 128x32 (or 32x128)...
             cr = make_if(
-                    HasConversionRule(OutputType.ImageDimensions),
-                    DimensionsRule(
-                            width_range=range(32, 16385),
-                            height_range=range(32, 16385),
-                            min_dim=128),
-                    True)
+                HasConversionRule(OutputType.ImageDimensions),
+                DimensionsRule(
+                    width_range=range(32, 16385),
+                    height_range=range(32, 16385),
+                    min_dim=128),
+                True)
             prerules.append(cr)
         else:
             # ... and, if we're not, then skip all of the image files
@@ -282,7 +284,7 @@ class Scanner(models.Model):
         # Check that all of our Sources are runnable, and build
         # ScanSpecMessages for them
         message_template = ScanSpecMessage(scan_tag=scan_tag, rule=rule,
-                configuration=configuration, source=None, progress=None)
+                                           configuration=configuration, source=None, progress=None)
         messages = []
         for source in self.generate_sources():
             with SourceManager() as sm, closing(source.handles(sm)) as handles:
@@ -297,7 +299,7 @@ class Scanner(models.Model):
         amqp_connection_manager.start_amqp(queue_name)
         for message in messages:
             amqp_connection_manager.send_message(
-                    queue_name, json.dumps(message.to_json_object()))
+                queue_name, json.dumps(message.to_json_object()))
         amqp_connection_manager.close_connection()
 
         return scan_tag
