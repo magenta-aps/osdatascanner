@@ -13,9 +13,9 @@ class Migration(migrations.Migration):
             for pos, rule in enumerate(rules):
                 ordered_rules.append(
                     OrderedRule(
-                        position=pos,
                         rule=rule,
                         scanner_job=s,
+                        position=pos,
                     )
                 )
         OrderedRule.objects.bulk_create(ordered_rules)

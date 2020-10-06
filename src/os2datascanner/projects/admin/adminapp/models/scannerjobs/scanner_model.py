@@ -240,7 +240,7 @@ class Scanner(models.Model):
         # Create a new engine2 scan specification
         rule = OrRule.make(
             *[r.make_engine2_rule()
-              for r in self.rules.all().order_by('position').select_subclasses()])
+              for r in self.rules.all().order_by('orderedrule__position').select_subclasses()])
 
         configuration = {}
 

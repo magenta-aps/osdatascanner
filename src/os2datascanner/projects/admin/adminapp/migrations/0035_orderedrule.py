@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'unique_together': {('scanner_job', 'position')},
-                'order_with_respect_to': 'scanner_job',
             },
         ),
     ]
