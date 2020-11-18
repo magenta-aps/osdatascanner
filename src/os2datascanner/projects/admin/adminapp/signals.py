@@ -20,7 +20,7 @@ class Event():
         return {
             "type": self.event_type,
             "model_class": self.instance.__class__.__name__,
-            "instance": self.instance.to_json_object_bah() 
+            "instance": self.instance.to_json_object() 
                             if hasattr(self.instance, "to_json_object") and 
                                ismethod(getattr(self.instance, "to_json_object"))
                             else "missing to_json_object() method"
