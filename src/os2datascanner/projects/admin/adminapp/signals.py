@@ -23,7 +23,7 @@ class Event():
             "instance": self.instance.to_json_object() 
                             if hasattr(self.instance, "to_json_object") and 
                                ismethod(getattr(self.instance, "to_json_object"))
-                            else "missing to_json_object() method"
+                            else {"error": "missing to_json_object() method"}
         }
 
 def publish_events(events):
