@@ -1,4 +1,5 @@
 from os import getpid
+import signal
 
 from prometheus_client import start_http_server
 
@@ -7,7 +8,7 @@ from ..model.core import (Source, SourceManager, UnknownSchemeError,
 from . import messages
 from .utilities.args import (make_common_argument_parser,
         make_sourcemanager_configuration_block)
-from .utilities.pika import PikaPipelineRunner
+from .utilities.pika import PikaPipelineRunner, GracefulStop
 from .utilities.systemd import notify_ready, notify_stopping
 from .utilities.prometheus import prometheus_summary
 
@@ -68,7 +69,19 @@ def message_received_raw(
                     scan_tag=scan_tag, total_objects=count).to_json_object())
 
 
+running = True
+
+
+def on_termination(signum, frame):
+    global running
+    running = False
+    print("Received signal %d. Setting running flag to False" % signum)
+
+
 def main():
+    global running
+    signal.signal(signal.SIGTERM, on_termination)
+    signal.signal(signal.SIGINT, on_termination)
     parser = make_common_argument_parser()
     parser.description = "Consume sources and generate conversions."
 
@@ -109,6 +122,10 @@ def main():
 
 
     class ExplorerRunner(PikaPipelineRunner):
+
+        def running(self):
+            return running
+
         @prometheus_summary(
                 "os2datascanner_pipeline_explorer", "Sources explored")
         def handle_message(self, body, *, channel=None):

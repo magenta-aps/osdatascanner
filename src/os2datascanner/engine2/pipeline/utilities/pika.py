@@ -73,6 +73,10 @@ class PikaConnectionHolder(ABC):
         self.clear()
 
 
+class GracefulStop(Exception):
+    pass
+
+
 RECOVERABLE_PIKA_ERRORS = (
         pika.exceptions.StreamLostError,
         pika.exceptions.ChannelWrongStateError,
@@ -105,6 +109,9 @@ class PikaPipelineRunner(PikaConnectionHolder):
     def handle_message(self, message_body, *, channel=None):
         """Responds to the given message by yielding zero or more (queue name,
         JSON-serialisable object) pairs to be sent as new messages."""
+
+    def running(self):
+        return True
 
     def dispatch_pending(self, *, expected: int):
         """Sends all pending messages.
@@ -143,6 +150,10 @@ class PikaPipelineRunner(PikaConnectionHolder):
             connection is closed), then this function will continue to collect
             yielded messages and will schedule them to be sent when the
             connection is reopened."""
+            if not self.running():
+                print("not running - stop here")
+                raise GracefulStop
+
             channel.basic_ack(method.delivery_tag)
             self.dispatch_pending(expected=0)
             decoded_body = json_utf8_decode(body)
@@ -159,7 +170,7 @@ class PikaPipelineRunner(PikaConnectionHolder):
                         except RECOVERABLE_PIKA_ERRORS:
                             failed = True
 
-        while True:
+        while self.running():
             consumer_tags = []
             try:
                 for queue in self._read:
@@ -172,6 +183,12 @@ class PikaPipelineRunner(PikaConnectionHolder):
                 self._channel = None
                 self._connection = None
                 pass
+            except GracefulStop:
+                print("Stopping gracefully")
+                for tag in consumer_tags:
+                    self.channel.basic_cancel(tag)
+                self.channel.stop_consuming()
+                return
             except:
                 for tag in consumer_tags:
                     self.channel.basic_cancel(tag)
