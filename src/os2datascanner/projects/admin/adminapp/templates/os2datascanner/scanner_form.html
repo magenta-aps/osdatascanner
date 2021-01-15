@@ -135,6 +135,7 @@
           class="form-control" 
           name="{{ form.name.name }}" 
           id="id_{{ form.name.name }}"
+          placeholder="Navn på scannerjob"
           {% if form.name.value %}
           value="{{ form.name.value }}"
           {% endif %}
@@ -156,7 +157,8 @@
           type="text" 
           class="form-control" 
           name="{{ form.url.name }}" 
-          id="id_{{ form.url.name }}" 
+          id="id_{{ form.url.name }}"
+          placeholder="f.eks. https://www.mitdomæne.dk/"
           {% if form.url.value %}value="{{ form.url.value }}"{% endif %}>
         {% if form.url.help_text %}
         <span class="form__help-text">{{ form.url.help_text }}</span>
@@ -176,6 +178,7 @@
           class="form-control" 
           name="{{ form.alias.name }}" 
           id="id_{{ form.alias.name }}"
+          placeholder="f.eks. C:"
           {% if form.alias.value %}
           value="{{ form.alias.value }}"
           {% endif %}>
@@ -270,6 +273,7 @@
           class="form-control"
           name="{{ form.domain.name }}"
           id="id_{{ form.domain.name }}"
+          placeholder="f.eks. @organisation.microsoft.com"
           {% if form.domain.value %}
           value="{{ form.domain.value }}"
           {% endif %}>
@@ -569,7 +573,7 @@
           class="form-control"
           name="{{ form.sitemap_url.name }}"
           id="id_{{ form.sitemap_url.name }}"
-          placeholder="/sitemap.xml"
+          placeholder="f.eks. /sitemap.xml"
           {% if form.sitemap_url.value %}
           value="{{ form.sitemap_url.value }}"
           {% endif %}>
