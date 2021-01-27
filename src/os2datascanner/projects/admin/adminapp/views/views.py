@@ -120,6 +120,9 @@ class MainPageView(TemplateView, LoginRequiredMixin):
 
     template_name = 'os2datascanner/scanners.html'
 
+class OrganizationForm(TemplateView):
+    template_name = "os2datascanner/organization_form.html"
+
 class DesignGuide(TemplateView):
     template_name = 'designguide.html'
 

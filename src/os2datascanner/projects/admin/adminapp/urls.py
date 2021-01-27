@@ -56,7 +56,7 @@ from .views.webscanner_views import (WebScannerCreate, WebScannerUpdate,
                                      WebScannerDelete, WebScannerRun,
                                      WebScannerAskRun, WebScannerList,
                                      WebScannerValidate)
-from .views.views import DesignGuide
+from .views.views import (DesignGuide, OrganizationForm)
 from .views.msgraph_views import (
         MSGraphMailList, MSGraphMailDelete, MSGraphMailCreate,
         MSGraphMailUpdate, MSGraphMailRun, MSGraphMailAskRun,
@@ -73,6 +73,9 @@ urlpatterns = [
 
     # App URLs
     url(r'^status/$', StatusOverview.as_view(), name='status'),
+
+    # App URLs
+    url(r'^organization/$', OrganizationForm.as_view(), name='organization'),
 
     #Exchangescanner URL's
     url(r'^exchangescanners/$', ExchangeScannerList.as_view(), name='exchangescanners'),

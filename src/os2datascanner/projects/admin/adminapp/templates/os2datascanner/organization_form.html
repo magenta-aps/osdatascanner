@@ -1,0 +1,43 @@
+{% extends 'os2datascanner/base.html' %}
+{% load l10n %}
+{% load staticfiles %}
+
+{% block body %}
+<div class="wrapper">
+    <h1 class="page-title">LDAP Integration</h1>
+
+    <form class="form" role="form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <fieldset class="form__fieldset">
+        <legend>Importér Organisation</legend>
+
+        {% include "os2datascanner/scanner_form_input_field.html" with field=org.name required="True" autofocus="True" %}
+
+        {% include "os2datascanner/scanner_form_input_field.html" with field=org.user_domain required="True" %}
+
+        {% include "os2datascanner/scanner_form_input_field.html" with field=org.username required="True" %}
+
+        {% include "os2datascanner/scanner_form_input_field.html" with field=org.email required="True" %}
+  
+        {% include "os2datascanner/scanner_form_input_field.html" with field=org.url required="True" %}
+
+        {% include "os2datascanner/scanner_form_select_option_field.html" with field=org.valid required="True" %}
+
+        {% include "os2datascanner/scanner_form_select_option_field.html" with field=org.organization required="True" %}
+
+        {% include "os2datascanner/scanner_form_select_option_field.html" with field=org.department required="True" %}
+
+        <div class="form__group col-sm-offset-2">
+          <button type="submit" class="button button--cta button--small btn btn-default" name="import">Importér</button>
+        </div>
+  
+      </fieldset>
+
+      <div class="form__group col-sm-offset-2">
+        <button type="submit" class="btn btn-primary button button--cta button--rounded" name="save">Gem ændringer</button>
+      </div>
+
+    </form>
+</div>
+{% endblock %}
