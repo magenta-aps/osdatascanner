@@ -67,19 +67,6 @@ class MainPageView(ListView, LoginRequiredMixin):
         user = self.request.user
         self.roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
 
-        # Just for testing
-        role_list = []
-        for role in roles:
-            if isinstance(role, Remediator):
-                role_list.append('remediator')
-            
-            if isinstance(role, DataProtectionOfficer):
-                role_list.append('dpo')
-            if isinstance(role, Leader):
-                role_list.append('leader')
-
-        self.roles = role_list
-
         # Filter by organization
         try:
             user_organization = user.profile.organization
@@ -112,8 +99,7 @@ class MainPageView(ListView, LoginRequiredMixin):
             )
 
         # matches are always ordered by sensitivity desc. and probability desc.
-        return self.matches, self.roles
-
+        return self.matches
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
