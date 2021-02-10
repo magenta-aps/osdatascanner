@@ -26,6 +26,9 @@ from ..models.documentreport_model import DocumentReport
 from ..models.roles.defaultrole_model import DefaultRole
 from ..models.userprofile_model import UserProfile
 from ..models.organization_model import Organization
+from ..models.roles.remediator_model import Remediator
+from ..models.roles.dpo_model import DataProtectionOfficer
+from ..models.roles.leader_model import Leader
 
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules.regex import RegexRule
@@ -58,10 +61,11 @@ class MainPageView(ListView, LoginRequiredMixin):
         data__matches__matched=True).filter(
         resolution_status__isnull=True)
     scannerjob_filters = None
+    roles = None
 
     def get_queryset(self):
         user = self.request.user
-        roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
+        self.roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
 
         # Filter by organization
         try:
@@ -75,7 +79,7 @@ class MainPageView(ListView, LoginRequiredMixin):
             if Organization.objects.count() > 1:
                 self.matches = self.matches.filter(organization=None)
 
-        for role in roles:
+        for role in self.roles:
             # Filter matches by role.
             self.matches = role.filter(self.matches)
 
@@ -100,6 +104,7 @@ class MainPageView(ListView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["renderable_rules"] = RENDERABLE_RULES
+        context["roles"] = [role.__class__.__name__ for role in self.roles]
 
         if self.scannerjob_filters is None:
             # Create select options
@@ -131,24 +136,21 @@ class MainPageView(ListView, LoginRequiredMixin):
         return context
 
 
-class StatisticsPageView(ListView):
+class StatisticsPageView(TemplateView, LoginRequiredMixin):
     template_name = 'statistics.html'
-    model = UserProfile
-    context_object_name = 'user_role' # Default: object_list
+    context_object_name = "matches"  # object_list renamed to something more relevant
+    model = DocumentReport
     matches = DocumentReport.objects.filter(
         data__matches__matched=True)
     handled_matches = matches.filter(
         resolution_status__isnull=False)
 
-    # Not used at the moment
-    def get_queryset(self):
-        user = self.request.user
-        roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
-
-        return roles
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+        roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
+        context["roles"] = [role.__class__.__name__ for role in roles]
+        context["renderable_rules"] = RENDERABLE_RULES
 
         # Counts the distribution of matches by sensitivity
         sensitivities = self.matches.order_by(
@@ -190,7 +192,6 @@ class StatisticsPageView(ListView):
 
         context['handled_matches'] = [(hm[0].presentation,
                                       hm[1]) for hm in handled_matches_gen]
-
         context['data_sources'] = [(ds['data__matches__handle__type'],
                                     ds['total']) for ds in data_sources]
 

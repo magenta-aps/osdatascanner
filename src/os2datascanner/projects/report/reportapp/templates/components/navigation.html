@@ -6,18 +6,23 @@
         <span class="width">Forside</span>
       </a>
     </li>
-    <!-- <li>
-      <a href="/statistics" class="{% if active_tab == 'statistics' %}active{% endif %}">
-        {% include "components/svg-icons/bar_chart.svg" %}
-        <span class="width">Afdelingsstatistik</span>
-      </a>
-    </li>
-    <li>
-      <a href="/statistics">
-        {% include "components/svg-icons/bar_chart.svg" %}
-        <span class="width">DPO overblik</span>
-      </a>
-    </li> -->
+
+    {% for r in roles %}
+      {% if r == "DataProtectionOfficer" or r == 'Leader' %}
+      <li>
+        <a href="/statistics">
+          {% include "components/svg-icons/bar_chart.svg" %}
+          <span class="width">
+            {% if r == "DataProtectionOfficer" %}
+              DPO overblik
+            {% else %}
+              Leder overblik
+            {% endif %}
+          </span>
+        </a>
+      </li>
+      {% endif %}
+    {% endfor %}
   </ul>
 
   <ul class="logout">
