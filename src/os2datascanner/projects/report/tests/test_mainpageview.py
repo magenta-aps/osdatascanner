@@ -189,12 +189,6 @@ class MainPageViewTest(TestCase):
         qs = self.mainpage_get_queryset()
         self.assertEqual(len(qs), 0)
 
-    def test_mainpage_view_as_remediator_role_with_matches(self):
-        remediator = Remediator.objects.create(user=self.user)
-        qs = self.mainpage_get_queryset()
-        self.assertEqual(len(qs), 3)
-        remediator.delete()
-
     def test_mainpage_view_with_emailalias_egon(self):
         emailalias = EmailAlias.objects.create(user=self.user, address='egon@olsen.com')
         qs = self.mainpage_get_queryset()
@@ -217,31 +211,39 @@ class MainPageViewTest(TestCase):
 
     def test_mainpage_view_filter_by_scannerjob(self):
         params = '?scannerjob=14&sensitivities=all'
-        remediator = Remediator.objects.create(user=self.user)
+        emailalias = EmailAlias.objects.create(user=self.user, address='kjeld@jensen.com')
+        emailalias1 = EmailAlias.objects.create(user=self.user, address='egon@olsen.com')
         qs = self.mainpage_get_queryset(params)
         self.assertEqual(len(qs), 2)
-        remediator.delete()
+        emailalias.delete()
+        emailalias1.delete()
 
     def test_mainpage_view_filter_by_sensitivities(self):
         params = '?scannerjob=all&sensitivities=1000'
-        remediator = Remediator.objects.create(user=self.user)
+        emailalias = EmailAlias.objects.create(user=self.user, address='kjeld@jensen.com')
+        emailalias1 = EmailAlias.objects.create(user=self.user, address='egon@olsen.com')
         qs = self.mainpage_get_queryset(params)
         self.assertEqual(len(qs), 2)
-        remediator.delete()
+        emailalias.delete()
+        emailalias1.delete()
 
     def test_mainpage_view_filter_by_all(self):
         params = '?scannerjob=all&sensitivities=all'
-        remediator = Remediator.objects.create(user=self.user)
+        emailalias = EmailAlias.objects.create(user=self.user, address='kjeld@jensen.com')
+        emailalias1 = EmailAlias.objects.create(user=self.user, address='egon@olsen.com')
         qs = self.mainpage_get_queryset(params)
         self.assertEqual(len(qs), 3)
-        remediator.delete()
+        emailalias.delete()
+        emailalias1.delete()
 
     def test_mainpage_view_filter_by_scannerjob_and_sensitivities(self):
         params = '?scannerjob=14&sensitivities=1000'
-        remediator = Remediator.objects.create(user=self.user)
+        emailalias = EmailAlias.objects.create(user=self.user, address='kjeld@jensen.com')
+        emailalias1 = EmailAlias.objects.create(user=self.user, address='egon@olsen.com')
         qs = self.mainpage_get_queryset(params)
         self.assertEqual(len(qs), 1)
-        remediator.delete()
+        emailalias.delete()
+        emailalias1.delete()
 
     def mainpage_get_queryset(self, params=''):
         request = self.factory.get('/' + params)
