@@ -21,6 +21,7 @@ from django.db.models import Count
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.views.generic import View, TemplateView, ListView
 from django.db.models import Q
 
@@ -235,33 +236,39 @@ class StatisticsPageView(TemplateView, LoginRequiredMixin):
                 ds['total']) for ds in data_sources]
         
     def count_unhandled_matches(self):
-        # TODO: Fiks så brugerne har deres egen værdi - Bug
         # Counts the amount of unhandled matches
         unhandled_matches_list = []
-        for org_user in self.users:
-            org_roles = org_user.roles.select_subclasses() or [DefaultRole(user=org_user)]
-            role_count = 0
-            unhandled_matches_count = 0
-            for org_role in org_roles:
-                # Filter matches by role.
-                unhandled_matches_count += org_role.filter(self.unhandled_matches).count()            
-                role_count += 1
-            tup = (org_user.first_name, unhandled_matches_count / role_count)
-            unhandled_matches_list.append(tup)
-        return unhandled_matches_list
+
+        unhandled_matches = self.unhandled_matches.order_by(
+            'data__metadata__metadata').values(
+            'data__metadata__metadata').annotate(
+            total=Count('data__metadata__metadata')
+        ).values(
+            'data__metadata__metadata', 'total',
+        )
+
+        employee_unhandled_list = []
+        for um in unhandled_matches:
+            dict_values = list(um['data__metadata__metadata'].values())
+            first_value = dict_values[0]
+            employee_unhandled_list.append((first_value, um['total']))
+
+        return employee_unhandled_list
 
     def get_oldest_matches(self):
         # TODO: Fiks så brugerne har deres egen værdi - Bug
+
         # Needs to be rewritten if a better 'time' is added(#41326)
         # Gets days since oldest unhandled matche for each user
         oldest_matches = []
+        
         for org_user in self.users:
             org_roles = org_user.roles.select_subclasses() or [DefaultRole(user=org_user)]
             earliest_date = timezone.now()
             for match in self.unhandled_matches:
                 if match.scan_time < earliest_date:
                     earliest_date = match.scan_time
-            days_ago = timezone.now() - earliest_date
+                days_ago = timezone.now() - earliest_date
             tup = (org_user.first_name, days_ago.days)
             oldest_matches.append(tup)
 
