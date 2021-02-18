@@ -1,7 +1,7 @@
 <nav class="navigation">
   <ul>
     <li>
-      <a href="/" class="{% if active_tab == 'home' %}active{% endif %}">
+      <a href="/" class="{% if request.path == '/' %}active{% endif %}">
         {% include "components/svg-icons/home.svg" %}
         <span class="width">Forside</span>
       </a>
@@ -10,16 +10,21 @@
     {% for r in nav_items %}
       {% if r == "DataProtectionOfficer" or r == 'Leader' %}
       <li>
-        <a href="/statistics">
+        {% if r == "DataProtectionOfficer" %}
+        <a href="/statistics/leader" class="{% if request.path == '/statistics/leader/' %}active{% endif %}">
           {% include "components/svg-icons/bar_chart.svg" %}
           <span class="width">
-            {% if r == "DataProtectionOfficer" %}
-              DPO overblik
-            {% else %}
               Leder overblik
-            {% endif %}
           </span>
         </a>
+        {% else %}
+        <a href="/statistics/dpo" class="{% if request.path == '/statistics/dpo/' %}active{% endif %}">
+        {% include "components/svg-icons/bar_chart.svg" %}
+          <span class="width">
+              DPO overblik
+          </span>
+        </a>
+        {% endif %}
       </li>
       {% endif %}
     {% endfor %}

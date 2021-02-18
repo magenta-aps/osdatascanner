@@ -138,7 +138,6 @@ class MainPageView(ListView, LoginRequiredMixin):
 
 
 class StatisticsPageView(TemplateView, LoginRequiredMixin):
-    template_name = 'statistics.html'
     context_object_name = "matches"  # object_list renamed to something more relevant
     model = DocumentReport
     users = UserProfile.objects.all()
@@ -157,11 +156,6 @@ class StatisticsPageView(TemplateView, LoginRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        user = self.request.user
-        roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
-        context["roles"] = [role.__class__.__name__ for role in roles]
-        context["renderable_rules"] = RENDERABLE_RULES
 
         # matches = DocumentReport.objects.filter(
         #     data__matches__matched=True)
@@ -273,6 +267,14 @@ class StatisticsPageView(TemplateView, LoginRequiredMixin):
             oldest_matches.append(tup)
 
         return oldest_matches
+
+
+class LeaderStatisticsPageView(StatisticsPageView):
+    template_name = 'statistics.html'
+
+
+class DPOStatisticsPageView(StatisticsPageView):
+    template_name = 'statistics.html'
 
 
 class ApprovalPageView(TemplateView):
