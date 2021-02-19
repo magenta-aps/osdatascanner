@@ -1,5 +1,5 @@
-import datetime
-import dateutil.parser
+from datetime import datetime
+from dateutil.parser import parse
 
 from django.test import RequestFactory, TestCase
 from django.contrib.auth.models import User
@@ -17,12 +17,14 @@ from ..reportapp.models.roles.remediator_model import Remediator
 from ..reportapp.models.roles.leader_model import Leader
 from ..reportapp.models.roles.dpo_model import DataProtectionOfficer
 from ..reportapp.views.views import StatisticsPageView
+from ..reportapp.views.views import LeaderStatisticsPageView
+from ..reportapp.views.views import DPOStatisticsPageView
 
 
 """Shared data"""
-time0 = "2020-11-11T11:11:59+02:00"
-time1 = "2020-10-28T14:21:27+01:00"
-time2 = "2020-9-22T4:07:12+03:00"
+time0 = '2020-11-11T11:11:59+02:00'
+time1 = '2020-07-28T14:21:27+01:00'
+time2 = '2020-02-22T4:07:12+03:00'
 
 scan_tag0 = {
     "time": time0,
@@ -439,9 +441,29 @@ class StatisticsPageViewTest(TestCase):
         self.assertEquals(total, 0)
         dpo.delete()
 
+    # get_oldest_matches
+    def test_statisticspage_get_oldest_matches_as_leader(self):
+        leader = Leader.objects.create(user=self.kjeld)
+        view = self.get_leaderstatisticspage_object()
+        low = timezone.now() - parse(time0)
+        medium = timezone.now() - parse(time1)
+        high = timezone.now() - parse(time2)
+        self.assertEquals(view.get_oldest_matches(),
+                            [('kjeld@jensen.com', high.days),
+                            ('benny@jensen.com', medium.days),
+                            ('egon@olsen.com', medium.days),
+                            ('yvonne@jensen.com', low.days)])
+
     # StatisticsPageView()
     def get_statisticspage_object(self):
         request = self.factory.get('/statistics')
         request.user = self.kjeld
         view = StatisticsPageView()
+        return view
+
+    # LeaderStatisticsPageView()
+    def get_leaderstatisticspage_object(self):
+        request = self.factory.get('/statistics/leader')
+        request.user = self.kjeld
+        view = LeaderStatisticsPageView()
         return view

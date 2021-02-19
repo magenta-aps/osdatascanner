@@ -15,7 +15,6 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 import structlog
-import datetime
 
 from django.db.models import Count
 from django.utils.decorators import method_decorator
@@ -255,32 +254,74 @@ class StatisticsPageView(TemplateView, LoginRequiredMixin):
 
         return employee_unhandled_list
 
-    def get_oldest_matches(self):
-        # TODO: Fiks så brugerne har deres egen værdi - Bug
-
-        # Needs to be rewritten if a better 'time' is added(#41326)
-        # Gets days since oldest unhandled matche for each user
-        oldest_matches = []
-        
-        for org_user in self.users:
-            org_roles = org_user.roles.select_subclasses() or [DefaultRole(user=org_user)]
-            earliest_date = timezone.now()
-            for match in self.unhandled_matches:
-                if match.scan_time < earliest_date:
-                    earliest_date = match.scan_time
-                days_ago = timezone.now() - earliest_date
-            tup = (org_user.first_name, days_ago.days)
-            oldest_matches.append(tup)
-
-        return oldest_matches
-
 
 class LeaderStatisticsPageView(StatisticsPageView):
     template_name = 'statistics.html'
 
+    def get_oldest_matches(self):
+        """Gets days since the oldest unhandled match for each user
+        Returns a a list of tuples: [('name', 123)]
+        Needs to be updated if a better "time" is added(#41326)"""
+
+        # Gets one of each type of metadata
+        unhandled_matches = self.unhandled_matches.order_by(
+            'data__metadata__metadata').values(
+            'data__metadata__metadata').annotate(
+            total=Count('data__metadata__metadata')
+        ).values(
+            'data__metadata__metadata', 'total',
+        )
+
+        # From dict to dict_value to list element
+        employees = []
+        for um in unhandled_matches:
+            dict_values = list(um['data__metadata__metadata'].values())
+            first_value = dict_values[0]
+            employees.append(first_value)
+
+        # Get all dates ascending
+        unhandled_matches_by_date = self.unhandled_matches.order_by(
+            'scan_time').values(
+            'scan_time').annotate(
+            total=Count('data')
+        ).values(
+            'data__metadata__metadata', 'scan_time',
+        )
+
+        # Formatted to a workable format
+        matches_by_date = []
+        for um in unhandled_matches_by_date:
+            dict_values = list(um['data__metadata__metadata'].values())
+            first_value = dict_values[0]
+            matches_by_date.append((first_value, um['scan_time']))
+    
+        # If employee is in old match -> append user+time and break 
+        employee_oldest_match = []
+        for employee in employees:
+            for match in matches_by_date:
+                if employee == match[0]:
+                    employee_oldest_match.append((employee, match[1]))
+                    break
+
+        # Calculating the amount of days from now to the oldest match
+        oldest_matches_days = []
+        for employee in employee_oldest_match:
+            days_ago = timezone.now() - employee[1]
+            oldest_matches_days.append((employee[0], days_ago.days))
+
+        return sorted(oldest_matches_days, key=lambda x: x[1], reverse=True)
+
 
 class DPOStatisticsPageView(StatisticsPageView):
     template_name = 'statistics.html'
+
+    def get_oldest_matches(self):
+        """We don't have the data for this yet"""
+
+        oldest_matches_days = [('no data', 0), ('no data', 0), 
+                              ('no data', 0), ('no data', 0), ('no data', 0), ]
+
+        return oldest_matches_days
 
 
 class ApprovalPageView(TemplateView):
