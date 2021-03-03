@@ -89,17 +89,6 @@ class DocumentReport(models.Model):
         super().__init__(*args, **kwargs)
         self.__resolution_status = self.resolution_status
 
-    def save(self, *args, **kwargs):
-        # If Resolution status goes from not handled to handled - change resolution_time to now 
-        if self.__resolution_status == None and (self.resolution_status or self.resolution_status == 0):
-            self.resolution_time = datetime.datetime.now()
-
-        # Adds a timestamp if it's a new match:
-        if not self.pk:
-            self.created_timestamp = datetime.datetime.now()
-
-        super().save(*args, **kwargs)
-
 
     class Meta:
         verbose_name_plural = "Document reports"
@@ -108,7 +97,15 @@ class DocumentReport(models.Model):
     def save(self, *args, **kwargs):
         from .aliasmatchrelation_model import AliasMatchRelation
         from .aliases.adsidalias_model import Alias
-        from .aliases.webdomainalias_model import WebDomainAlias
+
+
+        # If Resolution status goes from not handled to handled - change resolution_time to now 
+        if self.__resolution_status == None and (self.resolution_status or self.resolution_status == 0):
+            self.resolution_time = datetime.datetime.now()
+
+        # Adds a timestamp if it's a new match:
+        if not self.pk:
+            self.created_timestamp = datetime.datetime.now()
 
         super().save(*args, **kwargs)
 
@@ -122,4 +119,4 @@ class DocumentReport(models.Model):
                 if alias.value == value:
                     AliasMatchRelation.create_relation(alias, self)
         except KeyError:
-            pass
+            print(f'{self.pk} missing metadata')

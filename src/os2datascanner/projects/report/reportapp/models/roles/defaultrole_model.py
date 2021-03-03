@@ -35,7 +35,7 @@ class DefaultRole(Role):
         for alias in aliases:
             result = document_reports.filter(
                 data__metadata__metadata__contains={
-                    str(alias.key): str(alias)
+                    str(alias.key): str(alias.value)
                 })
             # Merges django querysets together
             results = results | result

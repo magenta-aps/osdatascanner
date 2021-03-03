@@ -48,7 +48,7 @@ class Alias(models.Model):
 
         reports = DocumentReport.objects.filter(
             data__metadata__metadata__contains = {
-                str(alias.key):str(alias)
+                str(alias.key):str(alias.value)
             })
 
         # Create AliasMatchRelation for each found report.

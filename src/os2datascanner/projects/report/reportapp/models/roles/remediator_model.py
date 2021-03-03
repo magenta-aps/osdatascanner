@@ -35,7 +35,7 @@ class Remediator(Role):
         for alias in all_aliases:
             document_reports = document_reports.exclude(
                 data__metadata__metadata__contains={
-                    str(alias.key): str(alias)
+                    str(alias.key): str(alias.value)
                 })
         return document_reports
 

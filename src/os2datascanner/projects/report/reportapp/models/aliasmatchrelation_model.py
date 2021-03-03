@@ -1,5 +1,4 @@
 from django.db import models
-from .aliases import alias_model
 from .aliases.alias_model import Alias
 from .documentreport_model import DocumentReport
 

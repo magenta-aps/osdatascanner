@@ -20,15 +20,13 @@ from .alias_model import Alias
 
 
 class WebDomainAlias(Alias):
-
-    domain = models.TextField(verbose_name="Web-domænenavn")
     
     # Temporary solution until LDAP is rolled out
-    value = models.TextField(verbose_name="Web-domænenavn", null=True)
+    value = models.TextField(verbose_name="Web-domænenavn")
 
     key = "web-domain"
     def __str__(self):
-        return self.domain
+        return self.value
 
     class Meta:
         verbose_name_plural = "Web domain aliases"

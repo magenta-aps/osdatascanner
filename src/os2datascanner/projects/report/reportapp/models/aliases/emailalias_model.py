@@ -21,14 +21,15 @@ from .alias_model import Alias
 
 class EmailAlias(Alias):
 
-    address = models.EmailField(verbose_name="Mailadresse")
+    # Temporary solution until LDAP is rolled out
+    value = models.EmailField(verbose_name="Mailadresse")
 
     # Temporary solution until LDAP is rolled out
     value = models.EmailField(verbose_name="Mailadresse", null=True)
 
     key = "email-account"
     def __str__(self):
-        return self.address
+        return self.value
 
     class Meta:
         verbose_name_plural = "Email aliases"

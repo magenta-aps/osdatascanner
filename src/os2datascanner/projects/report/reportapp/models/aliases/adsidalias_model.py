@@ -34,7 +34,8 @@ def validate_sid(value):
 
 class ADSIDAlias(Alias):
 
-    sid = models.CharField(max_length=192, verbose_name="SID",
+    # Temporary solution until LDAP is rolled out
+    value = models.CharField(max_length=192, verbose_name="SID",
                            validators=[validate_sid])
 
     key = "filesystem-owner-sid"
@@ -44,7 +45,7 @@ class ADSIDAlias(Alias):
                            validators=[validate_sid], null=True)
 
     def __str__(self):
-        return self.sid
+        return self.value
 
     class Meta:
         verbose_name = "ADSID alias"

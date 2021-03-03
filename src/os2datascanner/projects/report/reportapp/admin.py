@@ -21,22 +21,17 @@ admin.site.register(DocumentReport)
 
 @admin.register(ADSIDAlias)
 class ADSIDAliasAdmin(admin.ModelAdmin):
-    list_display = ('sid', 'user', )
-
-
-@admin.register(AliasMatchRelation)
-class AliasMatchRelationAdmin(admin.ModelAdmin):
-    list_display = ('alias', 'match', )
+    list_display = ('value', 'user', )
 
 
 @admin.register(EmailAlias)
 class EmailAliasAdmin(admin.ModelAdmin):
-    list_display = ('address', 'user', )
+    list_display = ('value', 'user', )
 
 
 @admin.register(WebDomainAlias)
 class WebDomainAliasAdmin(admin.ModelAdmin):
-    list_display = ('domain', 'user', )
+    list_display = ('value', 'user', )
 
 
 @admin.register(DefaultRole)
