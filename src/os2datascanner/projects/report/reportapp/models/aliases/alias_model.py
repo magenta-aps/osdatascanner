@@ -17,6 +17,9 @@ from abc import abstractmethod
 from django.db import models
 from django.contrib.auth.models import User
 from model_utils.managers import InheritanceManager
+from ..documentreport_model import DocumentReport
+
+
 
 class Alias(models.Model):
     objects = InheritanceManager()
@@ -29,3 +32,24 @@ class Alias(models.Model):
     def key(self):
 
         """Returns the metadata property name associated with this alias."""
+
+    # Temporary solution until LDAP is rolled out
+    @abstractmethod
+    def value(self):
+
+        """Returns the metadata value associated with this alias."""
+     
+    def save(self, *args, **kwargs):
+        from ..aliasmatchrelation_model import AliasMatchRelation
+        
+        super().save(*args, **kwargs)
+        # After save, find the saved subclass and check for key:value in DocumentReports
+        alias = Alias.objects.get_subclass(pk=self.pk)
+
+        reports = DocumentReport.objects.filter(
+            data__metadata__metadata__contains = {
+                str(alias.key):str(alias)
+            })
+
+        # Create AliasMatchRelation for each found report.
+        [AliasMatchRelation.create_relation(self, report) for report in reports]

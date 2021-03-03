@@ -22,6 +22,9 @@ from .alias_model import Alias
 class WebDomainAlias(Alias):
 
     domain = models.TextField(verbose_name="Web-domænenavn")
+    
+    # Temporary solution until LDAP is rolled out
+    value = models.TextField(verbose_name="Web-domænenavn", null=True)
 
     key = "web-domain"
     def __str__(self):

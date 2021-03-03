@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.postgres.fields import JSONField
 from .organization_model import Organization
 
+
 from os2datascanner.engine2.pipeline.messages import MatchesMessage
 
 
@@ -104,3 +105,21 @@ class DocumentReport(models.Model):
         verbose_name_plural = "Document reports"
         ordering = ['-sensitivity', '-probability']
 
+    def save(self, *args, **kwargs):
+        from .aliasmatchrelation_model import AliasMatchRelation
+        from .aliases.adsidalias_model import Alias
+        from .aliases.webdomainalias_model import WebDomainAlias
+
+        super().save(*args, **kwargs)
+
+        try:
+            metadata = self.data['metadata']['metadata'].values()
+            value = list(metadata)[0]
+    
+            aliases = Alias.objects.select_subclasses()
+            
+            for alias in aliases:
+                if alias.value == value:
+                    AliasMatchRelation.create_relation(alias, self)
+        except KeyError:
+            pass

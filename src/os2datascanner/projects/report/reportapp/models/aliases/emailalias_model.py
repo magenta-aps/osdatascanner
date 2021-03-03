@@ -23,6 +23,9 @@ class EmailAlias(Alias):
 
     address = models.EmailField(verbose_name="Mailadresse")
 
+    # Temporary solution until LDAP is rolled out
+    value = models.EmailField(verbose_name="Mailadresse", null=True)
+
     key = "email-account"
     def __str__(self):
         return self.address

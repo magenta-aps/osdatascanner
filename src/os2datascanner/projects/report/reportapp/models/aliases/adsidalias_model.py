@@ -39,6 +39,10 @@ class ADSIDAlias(Alias):
 
     key = "filesystem-owner-sid"
 
+    # Temporary solution until LDAP is rolled out
+    value = models.CharField(max_length=192, verbose_name="SID",
+                           validators=[validate_sid], null=True)
+
     def __str__(self):
         return self.sid
 

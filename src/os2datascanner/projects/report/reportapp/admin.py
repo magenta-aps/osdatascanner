@@ -8,6 +8,7 @@ from .models.roles.dpo_model import DataProtectionOfficer
 from .models.roles.defaultrole_model import DefaultRole
 from .models.aliases.adsidalias_model import ADSIDAlias
 from .models.aliases.emailalias_model import EmailAlias
+from .models.aliasmatchrelation_model import AliasMatchRelation
 from .models.aliases.webdomainalias_model import WebDomainAlias
 from .models.documentreport_model import DocumentReport
 from .models.organization_model import Organization
@@ -21,6 +22,11 @@ admin.site.register(DocumentReport)
 @admin.register(ADSIDAlias)
 class ADSIDAliasAdmin(admin.ModelAdmin):
     list_display = ('sid', 'user', )
+
+
+@admin.register(AliasMatchRelation)
+class AliasMatchRelationAdmin(admin.ModelAdmin):
+    list_display = ('alias', 'match', )
 
 
 @admin.register(EmailAlias)

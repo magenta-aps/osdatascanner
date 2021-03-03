@@ -9,8 +9,11 @@ from os2datascanner.engine2.pipeline import messages
 from ..reportapp.management.commands import pipeline_collector
 from ..reportapp.models.aliases.emailalias_model import EmailAlias
 from ..reportapp.models.roles.remediator_model import Remediator
+from ..reportapp.models.aliases.alias_model import Alias
 from ..reportapp.models.documentreport_model import DocumentReport
+from ..reportapp.models.aliasmatchrelation_model import AliasMatchRelation
 from ..reportapp.views.views import MainPageView
+
 
 
 """Shared data"""
@@ -245,6 +248,26 @@ class MainPageViewTest(TestCase):
         self.assertEqual(len(qs), 1)
         emailalias.delete()
         emailalias1.delete()
+
+    def test_create_alias_match_relation_on_kjeld_alias_save_and_delete(self):
+        self.assertFalse(AliasMatchRelation.objects.all())
+        emailalias = EmailAlias.objects.create(user=self.user, address='kjeld@jensen.com', value='kjeld@jensen.com')
+        self.assertTrue(AliasMatchRelation.objects.all())
+        emailalias.delete()
+        self.assertFalse(AliasMatchRelation.objects.all())
+
+
+    def test_create_alias_match_relation_on_kjeld_documentreport_save_and_delete(self):
+        emailalias = EmailAlias.objects.create(user=self.user, address='kjeld@jensen.com', value='kjeld@jensen.com')
+        self.assertTrue(AliasMatchRelation.objects.all())
+        AliasMatchRelation.objects.all().delete()
+        self.assertFalse(AliasMatchRelation.objects.all())
+        report = DocumentReport.objects.get(pk=1)
+        report.save()
+        self.assertTrue(AliasMatchRelation.objects.all())
+        report.delete()
+        self.assertFalse(AliasMatchRelation.objects.all())
+        emailalias.delete()
 
     def mainpage_get_queryset(self, params=''):
         request = self.factory.get('/' + params)
