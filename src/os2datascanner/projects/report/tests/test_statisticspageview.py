@@ -363,24 +363,16 @@ class StatisticsPageViewTest(TestCase):
             email='benny@frandsen.com', password='top_secret') 
 
     # Tests are done as Kjeld
-    # count_handled_matches()
-    def test_statisticspage_count_unhandled_matches_no_role(self):
+    # count_unhandled_matches()
+    def test_statisticspage_count_unhandled_matches_as_dpo(self):
+        dpo = DataProtectionOfficer.objects.create(user=self.kjeld)
         view = self.get_statisticspage_object()
         self.assertListEqual(view.count_unhandled_matches(), 
-                            [('benny@jensen.com', 2),
-                            ('egon@olsen.com', 2),
-                            ('kjeld@jensen.com', 2),
-                            ('yvonne@jensen.com', 1)])
-
-    def test_statisticspage_count_unhandled_matches_as_leader(self):
-        leader = Leader.objects.create(user=self.kjeld)
-        view = self.get_statisticspage_object()
-        self.assertListEqual(view.count_unhandled_matches(), 
-                            [('benny@jensen.com', 2),
-                            ('egon@olsen.com', 2),
-                            ('kjeld@jensen.com', 2),
-                            ('yvonne@jensen.com', 1)])
-        leader.delete()
+                             [('benny@jensen.com', 2),
+                              ('egon@olsen.com', 2),
+                              ('kjeld@jensen.com', 2),
+                              ('yvonne@jensen.com', 1)])
+        dpo.delete()
 
     # count_all_matches_grouped_by_sensitivity()
     def test_statisticspage_count_all_matches_grouped_by_sensitivity_as_leader(self):

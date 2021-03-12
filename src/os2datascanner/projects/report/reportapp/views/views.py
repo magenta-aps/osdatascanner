@@ -273,7 +273,7 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
             first_value = dict_values[0]
             employee_unhandled_list.append((first_value, um['total']))
 
-        return employee_unhandled_list
+        return sorted(employee_unhandled_list, key=lambda x: x[1], reverse=True)
 
     def get_oldest_matches(self):
         # TODO: Needs to be rewritten if a better 'time' is added(#41326)
