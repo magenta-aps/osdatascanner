@@ -132,7 +132,11 @@ Build documentation:
   <<: *build-default
   image: keimlink/sphinx-doc:latex
   script:
+    - pwd
     - make -C doc PAPER=a4 html latexpdf
+    - pwd
+    - ls -la .
+    - ls -la doc
     - mv doc/_build .
   artifacts:
     name: "$CI_JOB_STAGE-$CI_COMMIT_REF_NAME"
