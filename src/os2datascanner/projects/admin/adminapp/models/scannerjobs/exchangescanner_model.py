@@ -46,7 +46,7 @@ class ExchangeScanner(Scanner):
         """Get the absolute URL for scanners."""
         return '/exchangescanners/'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         user_list = [u.decode("utf-8").strip()
                 for u in self.userlist if u.strip()]
         for u in user_list:

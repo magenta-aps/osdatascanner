@@ -46,7 +46,7 @@ class GmailScanner(Scanner):
         """Get the absolute URL for scanners."""
         return '/gmailscanners'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file_gmail.name)) as saf:
             temp = json.load(saf)
         with open(os.path.join(settings.MEDIA_ROOT, self.user_emails_gmail.name), 'r') as usrem:

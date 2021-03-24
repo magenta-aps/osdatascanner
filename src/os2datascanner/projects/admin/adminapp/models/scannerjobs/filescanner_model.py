@@ -65,7 +65,7 @@ class FileScanner(Scanner):
         """Get the absolute URL for scanners."""
         return '/filescanners/'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         yield SMBCSource(
                 self.url,
                 user=self.authentication.username,

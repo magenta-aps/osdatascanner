@@ -12,7 +12,7 @@ class SbsysScanner(Scanner):
     def get_absolute_url(self):
         return '/sbsysscanners'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         yield SbsysSource(
             client_id=settings.SBSYS_CLIENT_ID,
             client_secret=settings.SBSYS_CLIENT_SECRET,

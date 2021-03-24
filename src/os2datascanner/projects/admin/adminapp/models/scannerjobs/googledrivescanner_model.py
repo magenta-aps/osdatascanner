@@ -46,7 +46,7 @@ class GoogleDriveScanner(Scanner):
         """Get the absolute URL for scanners."""
         return '/googledrivescanners'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file.name)) as saf:
             temp = json.load(saf)
         with open(os.path.join(settings.MEDIA_ROOT, self.user_emails.name), 'r') as usrem:

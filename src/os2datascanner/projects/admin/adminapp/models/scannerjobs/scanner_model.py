@@ -251,6 +251,7 @@ class Scanner(models.Model):
         configuration = {}
 
         prerules = []
+        last = None
         if self.do_last_modified_check:
             last = self.e2_last_run_at
             if last:
@@ -289,7 +290,7 @@ class Scanner(models.Model):
                 progress=None)
         outbox = []
         source_count = 0
-        for source in self.generate_sources():
+        for source in self.generate_sources(after_hint=last):
             outbox.append((settings.AMQP_PIPELINE_TARGET,
                     message_template._replace(source=source)))
             source_count += 1
@@ -333,9 +334,14 @@ class Scanner(models.Model):
     def path_for(self, uri):
         return uri
 
-    def generate_sources(self) -> Iterator[Source]:
+    def generate_sources(self,
+            after_hint: datetime.datetime = None) -> Iterator[Source]:
         """Yields one or more engine2 Sources corresponding to the target of
-        this Scanner."""
+        this Scanner.
+
+        The optional after_hint parameter can be used to suggest that objects
+        not updated after a given point in time are of no interest. (Sources
+        are not required to do anything with this parameter.)"""
         # (this can't use the @abstractmethod decorator because of metaclass
         # conflicts with Django, but subclasses should override this method!)
         raise NotImplementedError("Scanner.generate_sources")

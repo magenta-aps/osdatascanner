@@ -39,7 +39,7 @@ class MSGraphMailScanner(MSGraphScanner):
         """Get the absolute URL for scanners."""
         return '/msgraph-mailscanners/'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         yield MSGraphMailSource(
                 client_id=settings.MSGRAPH_APP_ID,
                 tenant_id=self.tenant_id,
@@ -60,7 +60,7 @@ class MSGraphFileScanner(MSGraphScanner):
         """Get the absolute URL for scanners."""
         return '/msgraph-filescanners/'
 
-    def generate_sources(self):
+    def generate_sources(self, after_hint=None):
         yield MSGraphFilesSource(
                 client_id=settings.MSGRAPH_APP_ID,
                 tenant_id=self.tenant_id,
