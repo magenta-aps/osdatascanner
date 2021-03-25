@@ -35,7 +35,11 @@
 
   <tbody>
     {% for match in matches %}
-      {% include "components/hit.html" %}
+        {% if match.problems and match.source_type == 'web' %}
+            {% include "components/problem.html" %}
+        {% else %}
+            {% include "components/hit.html" %}
+        {% endif %}
     {% endfor %}
     
   </tbody>

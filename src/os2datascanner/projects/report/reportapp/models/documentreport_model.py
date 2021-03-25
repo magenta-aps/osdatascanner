@@ -9,7 +9,7 @@ from .organization_model import Organization
 
 from os2datascanner.utils.model_helpers import ModelFactory
 from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.engine2.pipeline.messages import MatchesMessage
+from os2datascanner.engine2.pipeline.messages import MatchesMessage, ProblemMessage
 
 
 class DocumentReport(models.Model):
@@ -49,6 +49,11 @@ class DocumentReport(models.Model):
     def matches(self):
         matches = self.data.get("matches")
         return MatchesMessage.from_json_object(matches) if matches else None
+
+    @property
+    def problems(self):
+        problems = self.data.get("problem")
+        return ProblemMessage.from_json_object(problems) if problems else None
 
     @enum.unique
     class ResolutionChoices(enum.Enum):

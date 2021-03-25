@@ -23,8 +23,8 @@ from urllib.parse import urlencode
 from django.conf import settings
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
+from django.db.models import Count, IntegerField, Q, Value, When, Case
 from django.http import HttpResponseForbidden
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -65,9 +65,29 @@ class MainPageView(LoginRequiredMixin, ListView):
     paginate_by = 10  # Determines how many objects pr. page.
     context_object_name = "matches"  # object_list renamed to something more relevant
     model = DocumentReport
-    matches = DocumentReport.objects.filter(
-        data__matches__matched=True).filter(
-        resolution_status__isnull=True)
+
+    # joining `|` queryset does not preserve order. Here each queryset is
+    # annoted with an integer and sorted accordingly.
+    # matches and problems are lumped together in 1 queryset, to get filtering
+    # etc. working.
+    # XXX ideally the filtering would be refactored to allow filtering of
+    # individual queryset and then merge?
+    q_matches = Q(data__matches__matched=True) & Q(resolution_status__isnull=True)
+    q_problems = (Q(data__problem__missing=True) & Q(resolution_status__isnull=True)
+          & Q(source_type="web"))
+    matches = (DocumentReport.objects
+            .filter(q_matches | q_problems)
+            .annotate(
+                search_type_ordering=Case(
+                    When(q_matches, then=Value(1)),
+                    When(q_problems, then=Value(2)),
+                    default=Value(-1),
+                    output_field=IntegerField()
+                )
+                )
+            .order_by('search_type_ordering')
+            )
+
     scannerjob_filters = None
 
     def get_queryset(self):
@@ -75,6 +95,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         roles = Role.get_user_roles_or_default(user)
         # Handles filtering by role + org and sets datasource_last_modified if non existing
         self.matches = filter_inapplicable_matches(user, self.matches, roles)
+
 
         # Filters by datasource_last_modified.
         # lte mean less than or equal to.
@@ -106,6 +127,9 @@ class MainPageView(LoginRequiredMixin, ListView):
             )
 
         # matches are always ordered by sensitivity desc. and probability desc.
+        # matches = self.matches.annotate(qs_order=Value(1, IntegerField()))
+        # problems = self.problems.annotate(qs_order=Value(2, IntegerField()))
+        # return matches.union(problems).order_by('qs_order')
         return self.matches
 
     def get_context_data(self, **kwargs):

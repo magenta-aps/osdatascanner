@@ -1,0 +1,61 @@
+
+{% load handle_extras %}
+{% load i18n %}
+{% load l10n %}
+<!-- At the moment, type is always `web` -->
+{% with type=match.problems.handle|find_type_label %}
+    <tr tabindex="0" data-type="{{ type }}">
+
+        <td class="datatable__column--handle">
+            <div class="datatable__column--filetype-icon">
+                <input type="checkbox" value="" id="match-checkbox" name="match-checkbox" class="datatable-checkbox" data-report-pk="{{ match.pk|unlocalize }}">
+                <span class="icon-filetype icon-filetype--{{ type }}">
+                    {% include "components/svg-icons/icon-office365.svg" %}
+                </span>
+            </div>
+        </td>
+
+
+        <td class="datatable__column--item">
+            <span class="scan__item-title">
+                {% for ref in match.problems.handle.referrer_urls %}
+                    <a href="{{ ref }}"> {{ ref  }} </a>
+
+                    <div class="hit-link">
+                        <div class="button-group">
+                                <a href="{{ ref }}" class="button" target="_blank" rel="noopener">
+                                    {% trans "Open" %}
+                                </a>
+                            {% if type != 'ews' %}
+                                <button class="button" data-clipboard-text="{{ ref }}">
+                                    {% trans "Copy" %}
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </span>
+        </td>
+        <td colspan="3">
+            <table class="datatable datatable--nested">
+                <tbody>
+                    <tr>
+                        <td class="datatable__column--match">
+                            <span class="more">
+                                <strong>{{ match.problems.handle|present }}</strong>
+                            </span>
+                        </td>
+                        <td class="datatable__column--context">
+                            {% if match.problems.message %}
+                                {{ match.problems.message }}
+                            {% endif %}
+                        </td>
+                        <td class="datatable__column--probability">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+{% endwith %}

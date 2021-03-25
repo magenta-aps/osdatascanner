@@ -22,6 +22,7 @@ from django.db.models.deletion import ProtectedError
 from os2datascanner.utils.system_utilities import (
         time_now, parse_isoformat_timestamp)
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineRunner
 from os2datascanner.projects.report.reportapp.utils import hash_handle
@@ -203,6 +204,7 @@ def handle_problem_message(previous_report, new_report, body):
         while source.handle:
             source = source.handle.source
         new_report.source_type = source.type_label
+        new_report.sensitivity = Sensitivity.INFORMATION.value
 
         new_report.data["problem"] = body
         new_report.save()
