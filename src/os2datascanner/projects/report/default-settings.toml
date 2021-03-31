@@ -7,6 +7,7 @@
 # /dev-environment/dev-settings.toml
 
 SECRET_KEY = ""
+ASGI_APPLICATION = "os2datascanner.projects.report.asgi.application"
 
 # [mode]
 DEBUG = false
@@ -39,6 +40,7 @@ OIDC_OP_LOGOUT_URL_METHOD = "os2datascanner.projects.report.reportapp.views.view
 
 # [installation]
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

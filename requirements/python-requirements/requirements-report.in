@@ -1,5 +1,6 @@
 -r requirements-django.in
 -c requirements-engine.txt
+channels
 mozilla-django-oidc
 git+https://github.com/magenta-aps/django-saml2-auth.git@2.2.2
 pysaml2>=5.3.0,<6.0.0
