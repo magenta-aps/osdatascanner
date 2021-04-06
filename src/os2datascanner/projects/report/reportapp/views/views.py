@@ -318,6 +318,7 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return employee_unhandled_list
 
+<<<<<<< HEAD
     def count_unhandled_matches_by_month(self, current_date):
         """Counts new matches and resolved matches by month for the last year,
         rotates the current month to the end of the list, inserts and subtracts using the counts
@@ -364,6 +365,8 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return list(full_year_of_months)
 
+=======
+>>>>>>> [#41650] Add the five oldest matches method
     def count_new_matches_by_month(self, current_date):
         """Counts matches by months for the last year
         and rotates them by the current month"""
@@ -396,29 +399,55 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
 
 
 class LeaderStatisticsPageView(StatisticsPageView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
 
-        context['most_unhandled_employees'] = self.five_most_unhandled_employees()
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     today = timezone.now()
 
-        return context
+    #     context['five_oldest_matches'] = self.five_oldest_unhandled_matches_by_employee(today)
 
-    def five_most_unhandled_employees(self):
-        counted_unhandled_matches_alias = self.unhandled_matches.values(
-            'alias_relation__user__id').annotate(
-            total=Count('data')).values(
-                'alias_relation__user__first_name', 'total'
-            ).order_by('-total')
+    #     return context
 
-        top_five = [[c['alias_relation__user__first_name'], c['total'], True]
-                    for c in counted_unhandled_matches_alias][:5]
+    # def five_oldest_unhandled_matches_by_employee(self, current_date):
+    #     """Gets the five oldest matches with unique users"""
+    #     oldest_matches_by_time = self.unhandled_matches.order_by(
+    #         'created_timestamp')
 
-        for t in top_five:  # Finds and replaces 'None' with translated 'Not assigned'
-            if t[0] is None:
-                t[0], t[2] = _('Not assigned'), False
+    #     oldest_list_of_tuples = ((o.alias_relation, o.created_timestamp)
+    #                              for o in oldest_matches_by_time)
 
-        # Sorted by counts, then alphabetically to make tests stable
-        return sorted(top_five, key=lambda x: (-x[1], x[0]))
+    #     alias_rel = [(o[0].all(), o[1]) for o in oldest_list_of_tuples]
+
+    #     # Takes the oldest match with an empty alias_relation
+    #     try:
+    #         oldest_unassigned = [(_('Not assigned'), (current_date - a[1]).days, False)
+    #                              for a in alias_rel if not a[0]][0]
+    #     except IndexError:
+    #         oldest_unassigned = None
+    #         print('No unassigned matches')
+
+    #     # Takes the oldest matches with alias_relation
+    #     try:
+    #         oldest_assigned = [[a[0], (current_date - a[1]).days] for a in alias_rel if a[0]]
+    #     except IndexError:
+    #         oldest_assigned = None
+    #         print('No assigned matches')
+
+    #     oldest_unique_users = []
+    #     # Picks each unique users oldest match
+    #     if oldest_assigned:
+    #         existing_users = []
+    #         for alias_rel in oldest_assigned:
+    #             for alias in alias_rel[0]:
+    #                 if alias.user.pk not in existing_users:
+    #                     existing_users.append(alias.user.pk)
+    #                     oldest_unique_users.append((alias.user.first_name, alias_rel[1], True))
+
+    #     if oldest_unassigned:
+    #         oldest_unique_users.append(oldest_unassigned)
+
+    #     # Sorted by days, then alphabetically to make tests stable
+    #     return sorted(oldest_unique_users, key=lambda x: (-x[1], x[0]))[:5]
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:

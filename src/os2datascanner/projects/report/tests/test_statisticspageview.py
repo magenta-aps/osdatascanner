@@ -21,7 +21,6 @@ from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.views import StatisticsPageView, LeaderStatisticsPageView
 from ..reportapp.utils import iterate_queryset_in_batches
 
-
 """Shared data"""
 time0 = "2020-11-11T11:11:59+02:00"
 time1 = "2020-10-28T14:21:27+01:00"
@@ -357,6 +356,25 @@ class StatisticsPageViewTest(TestCase):
             email='benny@frandsen.com', password='top_secret') 
 
     # Tests are done as Kjeld
+    # count_handled_matches()
+    def test_statisticspage_count_unhandled_matches_no_role(self):
+        view = self.get_statisticspage_object()
+        self.assertListEqual(view.count_unhandled_matches(), 
+                            [('benny@frandsen.com', 2),
+                            ('egon@olsen.com', 2),
+                            ('kjeld@jensen.com', 2),
+                            ('yvonne@jensen.com', 1)])
+
+    def test_statisticspage_count_unhandled_matches_as_leader(self):
+        leader = Leader.objects.create(user=self.kjeld)
+        view = self.get_statisticspage_object()
+        self.assertListEqual(view.count_unhandled_matches(), 
+                            [('benny@frandsen.com', 2),
+                            ('egon@olsen.com', 2),
+                            ('kjeld@jensen.com', 2),
+                            ('yvonne@jensen.com', 1)])
+        leader.delete()
+
     # count_all_matches_grouped_by_sensitivity()
     def test_statisticspage_count_all_matches_grouped_by_sensitivity_as_leader(self):
         leader = Leader.objects.create(user=self.kjeld)
@@ -453,6 +471,7 @@ class StatisticsPageViewTest(TestCase):
         reset_timestamps(original_timestamps)
         dpo.delete()
 
+
     def test_statisticspage_five_most_unhandled_employees(self):
         dpo = DataProtectionOfficer.objects.create(user=self.kjeld)
         view = self.get_leader_statisticspage_object()
@@ -475,6 +494,38 @@ class StatisticsPageViewTest(TestCase):
         egon_emailalias.delete()
         benny_emailalias.delete()
 
+
+    # five_oldest_matches_by_users
+    def test_statisticspage_five_oldest_unhandled_matches_by_employee_as_leader(self):
+        leader = Leader.objects.create(user=self.kjeld)
+        view = self.get_leader_statisticspage_object()
+        kjeld_emailalias, created = EmailAlias.objects.get_or_create(user=self.kjeld, address='kjeld@jensen.com')
+        yvonne_emailalias, created = EmailAlias.objects.get_or_create(user=self.yvonne, address='yvonne@jensen.com')
+        egon_emailalias, created = EmailAlias.objects.get_or_create(user=self.egon, address='egon@olsen.com')
+        benny_emailalias, created = EmailAlias.objects.get_or_create(user=self.benny, address='benny@frandsen.com')
+        create_alias_and_match_relations(kjeld_emailalias)
+        create_alias_and_match_relations(yvonne_emailalias)
+        create_alias_and_match_relations(egon_emailalias)
+        create_alias_and_match_relations(benny_emailalias)
+
+        # Overrides timestamps static dates and saves the old ones
+        original_timestamps = static_timestamps()
+
+        test_date = dateutil.parser.parse("2020-11-28T14:21:59+05:00")
+        self.assertListEqual(view.five_oldest_unhandled_matches_by_employee(test_date),
+                             [('Kjeld', 67, True), ('Benny', 30, True),
+                              ('Egon', 30, True), ('Yvonne', 17, True)])
+
+        # Resets timestamps to the old values
+        reset_timestamps(original_timestamps)
+
+        leader.delete()
+        kjeld_emailalias.delete()
+        yvonne_emailalias.delete()
+        egon_emailalias.delete()
+        benny_emailalias.delete()
+
+
     def test_statisticspage_count_unhandled_matches_by_month(self):
         dpo = DataProtectionOfficer.objects.create(user=self.kjeld)
         view = self.get_statisticspage_object()
@@ -496,6 +547,7 @@ class StatisticsPageViewTest(TestCase):
 
         dpo.delete()
 
+
     # StatisticsPageView()
     def get_statisticspage_object(self):
         request = self.factory.get('/statistics')
@@ -509,7 +561,6 @@ class StatisticsPageViewTest(TestCase):
         request.user = self.kjeld
         view = LeaderStatisticsPageView()
         return view
-
 
 
 # Helper functions
