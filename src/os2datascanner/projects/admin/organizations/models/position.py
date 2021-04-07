@@ -20,6 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from mptt.models import TreeForeignKey
 
 from .broadcasted_mixin import Broadcasted
+from .synchronized_mixin import Synchronized
 
 
 class Role(Enum):
@@ -50,7 +51,7 @@ class Role(Enum):
         return [(e.value, e.label.capitalize()) for e in cls]
 
 
-class Position(Broadcasted, models.Model):
+class Position(Synchronized, Broadcasted, models.Model):
     # TODO: should we add help-texts?
     account = models.ForeignKey(
         'Account',
