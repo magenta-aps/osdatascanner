@@ -1,0 +1,36 @@
+{% extends 'organizations/base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block title %}{% trans "organizations"|capfirst %}{% endblock %}
+
+{% block content %}
+    {%  regroup organization_list by client as client_list%}
+
+    {%  for client in client_list %}
+    <h1>{% trans 'organizations for'|capfirst %} {{ client.grouper }}</h1>
+    <table>
+      <tr>
+      <th>{% trans "name"|capfirst %}</th>
+      <th>{% trans "phone number"|capfirst %}</th>
+      <th>{% trans "email"|capfirst %}</th>
+      <th>{% trans "top organizational unit"|capfirst %}</th>
+      </tr>
+      {% for organization in client.list %}
+      <tr>
+      <!-- TODO: make org name link to detail page -->
+      <!-- TODO: consider if detail and edit should be the same? -->
+      <td>{{ organization.name }}</td>
+      <td>{{ organization.contact_phone }}</td>
+      <td>{{ organization.contact_email }}</td>
+      </tr>
+      {% endfor %}
+      </table>
+
+    <button>
+        <a href="{% url 'add-organization-for' client_id=client.grouper.pk%}">
+            {% trans "add organization"|capfirst %}
+        </a>
+    </button>
+    {% endfor %}
+{% endblock %}

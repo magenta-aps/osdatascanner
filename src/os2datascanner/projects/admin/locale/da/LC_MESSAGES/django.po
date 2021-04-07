@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 06:51-0500\n"
+"POT-Creation-Date: 2021-04-15 04:16-0500\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,8 +28,6 @@ msgid "Brugernavn"
 msgstr "Username"
 
 #: adminapp/models/authentication_model.py:18
-#, fuzzy
-#| msgid "Initialization vector"
 msgid "Initialization Vector"
 msgstr "Initaliserings vektor"
 
@@ -151,7 +149,14 @@ msgstr "Scannerjob"
 msgid "Rules"
 msgstr "Regler"
 
-#: adminapp/templates/components/navigation.html:37
+#: adminapp/templates/components/navigation.html:36 organizations/apps.py:8
+#: organizations/models/organization.py:84
+#: organizations/templates/organizations/org_list.html:5
+#: organizations/templates/organizations/org_list.html:8
+msgid "organizations"
+msgstr "organisationer"
+
+#: adminapp/templates/components/navigation.html:45
 msgid "Administration"
 msgstr "Administration"
 
@@ -1021,6 +1026,7 @@ msgstr "kunde-ID"
 
 #: core/models/client.py:117 organizations/models/organization.py:47
 #: organizations/models/organizational_unit.py:42
+#: organizations/templates/organizations/org_list.html:11
 msgid "name"
 msgstr "navn"
 
@@ -1029,16 +1035,13 @@ msgid "e-mail"
 msgstr "e-mail"
 
 #: core/models/client.py:125 organizations/models/organization.py:79
+#: organizations/templates/organizations/org_list.html:12
 msgid "phone number"
 msgstr "telefonnummer"
 
 #: core/models/client.py:158
 msgid "clients"
 msgstr "kunder"
-
-#: organizations/apps.py:8 organizations/models/organization.py:84
-msgid "organizations"
-msgstr "organisationer"
 
 #: organizations/models/account.py:38 organizations/models/organization.py:43
 #: organizations/models/organizational_unit.py:37
@@ -1071,16 +1074,16 @@ msgid "accounts"
 msgstr "konti"
 
 #: organizations/models/aliases.py:33
-#, fuzzy, python-format
-#| msgid "%(value)s is not a valid SID"
+#, python-format
 msgid "%(value)s is not a valid SID"
-msgstr "{value} er ikke et gyldigt SID"
+msgstr "%(value)s er ikke et gyldigt SID"
 
 #: organizations/models/aliases.py:43
 msgid "SID"
 msgstr "SID"
 
 #: organizations/models/aliases.py:44 organizations/models/organization.py:73
+#: organizations/templates/organizations/org_list.html:13
 msgid "email"
 msgstr "e-mail"
 
@@ -1118,6 +1121,7 @@ msgstr "Alias ({type}) for {account_user}: {value}"
 msgid "slug"
 msgstr "slug"
 
+# TODO: what is the danish term for this???
 #: organizations/models/organization.py:61
 msgid "top unit"
 msgstr "øverste enhed"
@@ -1161,3 +1165,25 @@ msgstr "stillinger"
 #, python-brace-format
 msgid "Position: {account} ({role}) at {unit}"
 msgstr "Stilling: {account} ({role}) ved {unit}"
+
+#: organizations/templates/organizations/org_add.html:5
+#: organizations/templates/organizations/org_add.html:8
+#: organizations/templates/organizations/org_list.html:29
+msgid "add organization"
+msgstr "tilføj organisation"
+
+#: organizations/templates/organizations/org_add.html:11
+msgid "create new organization"
+msgstr "opret ny organisation"
+
+#: organizations/templates/organizations/org_list.html:14
+msgid "top organizational unit"
+msgstr "øverste organisatoriske enhed"
+
+#: organizations/templates/organizations/orgunit_list.html:6
+msgid "organizational hierarchy"
+msgstr "organisatonsstruktur"
+
+#: organizations/templates/organizations/orgunit_list.html:10
+msgid "organizational hierarchy for"
+msgstr "organisatorissttruktur for"

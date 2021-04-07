@@ -1,0 +1,13 @@
+{% extends 'organizations/base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block title %}{% trans "add organization"|capfirst %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans 'add organization'|capfirst %}</h1>
+    <form method="post">{% csrf_token %}
+        <table>{{ form.as_table }}</table>
+    <input type="submit" value="{% trans "create new organization"|capfirst %}">
+    </form>
+{% endblock %}
