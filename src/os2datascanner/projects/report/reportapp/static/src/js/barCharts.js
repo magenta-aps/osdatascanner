@@ -420,7 +420,9 @@ for(var i = 0; i<oldestMatches.length && i<5;i++) {
 }
 
 // this function works for arrays with only values
-var oldestMatchesAverage = oldestBarChartValues.reduce((a,b) => (a + b)) / oldestBarChartValues.length;
+var oldestMatchesAverage = oldestBarChartValues.reduce(function (a, b) {
+	return a + b;
+}) / oldestBarChartValues.length;
 
 new Chart(oldestBarChartCtx, {
   type: 'bar',
