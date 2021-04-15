@@ -7,6 +7,7 @@ import logging
 from requests.sessions import Session
 from requests.exceptions import ConnectionError
 from contextlib import contextmanager
+from typing import Set, TypeVar, Type, Generator, Iterator
 
 from ..conversions.types import OutputType
 from ..conversions.utilities.results import SingleResult, MultipleResults
@@ -19,8 +20,11 @@ from .utilities.datetime import parse_datetime
 MAX_REQUESTS_PER_SECOND = 10
 SLEEP_TIME = 1 / MAX_REQUESTS_PER_SECOND
 
+# Create a generic variable that can be 'Parent', or any subclass.
+T = TypeVar('T', bound='Parent')
+# WH = TypeVar('WH', bound='WebHandle')
 
-def simplify_mime_type(mime):
+def simplify_mime_type(mime: str) -> str:
     r = mime.split(';', maxsplit=1)
     return r[0]
 
@@ -28,7 +32,7 @@ def simplify_mime_type(mime):
 class WebSource(Source):
     type_label = "web"
 
-    def __init__(self, url, sitemap=None):
+    def __init__(self, url:str, sitemap: str=None):
         assert url.startswith("http:") or url.startswith("https:")
         self._url = url
         self._sitemap = sitemap
@@ -37,12 +41,12 @@ class WebSource(Source):
         with Session() as session:
             yield session
 
-    def censor(self):
+    def censor(self: T) -> T:
         # XXX: we should actually decompose the URL and remove authentication
         # details from netloc
         return self
 
-    def handles(self, sm):
+    def handles(self, sm) -> Iterator["WebHandle"]:
         session = sm.open(self)
         to_visit = [WebHandle(self, "")]
         known_addresses = set(to_visit)
@@ -89,12 +93,12 @@ class WebSource(Source):
 
             yield here
 
-    def to_url(self):
+    def to_url(self) -> str:
         return self._url
 
     @staticmethod
     @Source.url_handler("http", "https")
-    def from_url(url):
+    def from_url(url: str):
         return WebSource(url)
 
     def to_json_object(self):
@@ -105,7 +109,7 @@ class WebSource(Source):
 
     @staticmethod
     @Source.json_handler(type_label)
-    def from_json_object(obj):
+    def from_json_object(obj: dict):
         return WebSource(
                 url=obj["url"],
                 sitemap=obj.get("sitemap"))
@@ -132,7 +136,7 @@ class WebResource(FileResource):
         response = self._get_head_raw()
         return response.status_code not in (404, 410,)
 
-    def _make_url(self):
+    def _make_url(self) -> str:
         handle = self.handle
         base = handle.source.to_url()
         return base + str(handle.relative_path)
@@ -141,7 +145,7 @@ class WebResource(FileResource):
         self.unpack_header()
         return self._response.status_code
 
-    def unpack_header(self, check=False):
+    def unpack_header(self, check: bool=False):
         if not self._response:
             self._response = self._get_head_raw()
             header = self._response.headers
@@ -157,7 +161,7 @@ class WebResource(FileResource):
             self._response.raise_for_status()
         return self._mr
 
-    def get_size(self):
+    def get_size(self):  # -> int
         return self.unpack_header(check=True).get("content-length", 0).map(int)
 
     def get_last_modified(self):
@@ -168,7 +172,7 @@ class WebResource(FileResource):
         else:
             return SingleResult(None, OutputType.LastModified, lm_hint)
 
-    def compute_type(self):
+    def compute_type(self) -> str:
         # At least for now, strip off any extra parameters the media type might
         # specify
         return self.unpack_header(check=True).get("content-type",
@@ -196,15 +200,19 @@ class WebHandle(Handle):
 
     eq_properties = Handle.BASE_PROPERTIES
 
+<<<<<<< Updated upstream
     def __init__(self, source, path):
+=======
+    def __init__(self, source: Source, path: str, referrer_urls: set=set()):
+>>>>>>> Stashed changes
         super().__init__(source, path)
         self._referrer_urls = set()
         self._lm_hint = None
 
-    def set_referrer_urls(self, referrer_urls):
+    def set_referrer_urls(self, referrer_urls: set):
         self._referrer_urls = referrer_urls
 
-    def get_referrer_urls(self):
+    def get_referrer_urls(self) -> set:
         return self._referrer_urls
 
     def set_last_modified_hint(self, lm_hint):
@@ -214,11 +222,11 @@ class WebHandle(Handle):
         return self._lm_hint
 
     @property
-    def presentation(self):
+    def presentation(self) -> str:
         return self.presentation_url
 
     @property
-    def presentation_url(self):
+    def presentation_url(self) -> str:
         p = self.source.to_url()
         if p[-1] != "/":
             p += "/"
@@ -235,7 +243,7 @@ class WebHandle(Handle):
 
     @staticmethod
     @Handle.json_handler(type_label)
-    def from_json_object(obj):
+    def from_json_object(obj: dict):
         handle = WebHandle(Source.from_json_object(obj["source"]), obj["path"])
         lm_hint = obj.get("last_modified")
         if lm_hint:
@@ -244,7 +252,7 @@ class WebHandle(Handle):
         return handle
 
 
-def make_outlinks(content, where):
+def make_outlinks(content: str, where: str):
     try:
         doc = document_fromstring(content)
         doc.make_links_absolute(where, resolve_base_href=True)
