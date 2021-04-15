@@ -1,3 +1,5 @@
+from typing import Dict
+
 from ..model.core import (Source, SourceManager, UnknownSchemeError,
         DeserialisationError)
 from . import messages
@@ -8,7 +10,8 @@ WRITES_QUEUES = ("os2ds_conversions", "os2ds_problems", "os2ds_status",)
 PROMETHEUS_DESCRIPTION = "Sources explored"
 
 
-def message_received_raw(body, channel, source_manager):
+def message_received_raw(body:Dict[str, str], channel:str, source_manager:
+                         "SourceManager"):
     try:
         scan_tag = messages.ScanTagFragment.from_json_object(body["scan_tag"])
     except KeyError:

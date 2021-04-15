@@ -1,9 +1,11 @@
 from abc import abstractmethod
+from typing import Iterator
 
 from ...utilities.json import JSONSerialisable
 from ...utilities.equality import TypePropertyEquality
 from .errors import UnknownSchemeError, DeserialisationError
-
+from .utilities import SourceManager
+from . import handle as mhandle
 
 class Source(TypePropertyEquality, JSONSerialisable):
     """A Source represents the root of a hierarchy to be explored. It
@@ -44,7 +46,7 @@ class Source(TypePropertyEquality, JSONSerialisable):
         object, and so will not necessarily compare equal to this one."""
 
     @abstractmethod
-    def handles(self, sm):
+    def handles(self, sm: "SourceManager") -> Iterator["mhandle.Handle"]:
         """Yields Handles corresponding to every identifiable leaf node in this
         Source's hierarchy. These Handles are generated in an undefined order.
 
