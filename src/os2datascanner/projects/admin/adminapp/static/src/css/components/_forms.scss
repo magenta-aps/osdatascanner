@@ -30,6 +30,10 @@
     margin-top: 0.25rem;
   }
 
+  input + label {
+    margin-top: 1rem;
+  }
+
   .form__group + .form__group {
     margin-top: 1rem;
   }

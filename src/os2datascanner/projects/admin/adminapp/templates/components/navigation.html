@@ -31,7 +31,7 @@
       </li>
       <li>
         <a href="/organizations" class="{% if active_tab == 'organizations' %}active{% endif %}">
-        {# TODO: add icon #}
+          {% include "components/svg-icons/org.svg" %}
           <span class="width">
             {% trans 'organizations'|capfirst %}
           </span>

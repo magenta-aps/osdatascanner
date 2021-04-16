@@ -7,7 +7,6 @@ from os2datascanner.projects.admin.organizations import views
 urlpatterns = [
     path('', views.OrganizationListView.as_view(), name='organization-list'),
     path('add', views.AddOrganizationView.as_view(), name='add-organization'),
-    path('add_for', views.AddOrganizationView.as_view(), name='add-organization-for-empty'),
     path('add_for/<uuid:client_id>', views.AddOrganizationView.as_view(), name='add-organization-for'),
     # path('<slug:org_slug>/edit', views.UpdateOrganizationView.as_view(), name='edit-organization'),
     path('<slug:org_slug>/units', views.OrganizationalUnitListView.as_view(), name='orgunit-list'),

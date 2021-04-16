@@ -36,7 +36,16 @@
     &--actions {
       width: 11rem;
     }
+  }
 
+  a {
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--color-primary);
+
+    &:hover {
+      color: var(--color-primary-dark);
+    }
   }
 }
 
@@ -157,6 +166,12 @@
   svg {
     height: 100%;
     width: auto;
+  }
+
+  .text {
+    color: var(--color-text-secondary);
+    font-size: .75rem;
+    line-height: 1rem;
   }
 }
 

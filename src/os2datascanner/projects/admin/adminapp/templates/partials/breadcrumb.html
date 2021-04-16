@@ -61,4 +61,14 @@
         <span class="text-grey">{% trans "Create new rule" %}</span>
         {% endif %}
     {% endif %}
+
+    {% if page == 'organization' %}
+        <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
+
+        <i id="chevron_right" class="material-icons">chevron_right</i>
+  
+        {% if not view.edit %}
+        <span class="text-grey">{% trans "add organization"|capfirst %}</span>
+        {% endif %}
+    {% endif %}
 </div>

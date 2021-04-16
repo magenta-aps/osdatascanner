@@ -91,6 +91,41 @@
     }
   }
 
+  &--transparent {
+    background-color: transparent;
+    border: 1px solid var(--color-primary-dark);
+    border-radius: var(--border-radius-button);
+    padding: .15rem .25rem;
+    margin-right: 1rem;
+    
+    &:hover,
+    &:focus {
+      background-color: transparent;
+      padding: .08rem .2rem;
+      border: 2px solid var(--color-primary-dark);
+    }
+
+    .material-icons {
+      margin-top: 0.2rem;
+      color: var(--color-primary-dark);
+      font-weight: 600;
+
+      &:hover {
+        margin-top: 0.2rem;
+      }
+    }
+
+    &--text {
+      padding: 0.55rem;
+
+      &:hover,
+      &:focus {
+        padding: 0.49rem;
+        border: 2px solid var(--color-primary-dark);
+      }
+    }
+  }
+
   &--small {
     border-radius: var(--border-radius-button);
     padding: .5rem;
