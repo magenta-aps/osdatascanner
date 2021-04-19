@@ -11,126 +11,19 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-import json
-import requests
-from uuid import uuid4
-
-from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from model_utils.managers import InheritanceManager
-
-from ...adminapp.aescipher import encrypt, decrypt  # TODO: should aescipher be moved to core?
-
-
-# class KeycloakServer(models.Model):
-#     """TODO:"""
-#     class Meta:
-#         verbose_name = _('keycloak server')
-#         verbose_name_plural = _('keycloak servers')
-#
-#     uuid = models.UUIDField(
-#         primary_key=True,
-#         default=uuid4,
-#         editable=False,
-#         verbose_name=_('UUID'),
-#     )
-#     url = models.URLField(
-#         verbose_name=_('server URL'),
-#     )
-#
-#     # Initialization vector for decryption
-#     _iv = models.BinaryField(
-#         db_column='iv',
-#         max_length=32,
-#         blank=True,
-#         null=False,
-#         verbose_name='initialization vector',
-#     )
-#
-#     # Encrypted secret
-#     _ciphertext = models.BinaryField(
-#         db_column='ciphertext',
-#         max_length=1024,
-#         blank=True,
-#         null=False,
-#         verbose_name='cipher text',
-#     )
-#
-#     @property
-#     def secret(self):
-#         return decrypt(self._iv, bytes(self._ciphertext))
-#
-#     @secret.setter
-#     def secret(self, value):
-#         self._iv, self._ciphertext = encrypt(value)
-# TODO: Consider need for specific clients?
-#       - if so: add requests for client settings AND retrieval of secret
-#       - if not: re-consider need for distinct realms
+from .import_service import ImportService
+from ...adminapp.aescipher import encrypt, decrypt  # Suggestion: move to core?
 
 
-# TODO: consider renaming this to Realm
-class DirectoryService(models.Model):
-    """TODO:"""
-
-    class Meta:
-        verbose_name = _('directory service')
-        verbose_name_plural = _('directory services')
-
-    objects = InheritanceManager()
-
-    organization = models.OneToOneField(
-        'organizations.Organization',
-        primary_key=True,
-        # editable=False,  # TODO: elegantly solve that this can be set on creation, but otherwise not edited
-        on_delete=models.CASCADE,
-        verbose_name=_('organization UUID'),
-    )
-    # TODO: should realm be added to this model? Multi-realm could easily use the slug for Organization
-    # Initialization vector for decryption
-    _iv_secret = models.BinaryField(
-        db_column='iv_secret',
-        max_length=32,
-        blank=True,
-        null=False,
-        verbose_name='initialization vector for secret',
-    )
-    # Encrypted secret
-    _cipher_secret = models.BinaryField(
-        db_column='cipher_secret',
-        max_length=1024,
-        blank=True,
-        null=False,
-        verbose_name='cipher text for secret',
-    )
-
-    @property
-    def secret(self):
-        return decrypt(self._iv_secret, bytes(self._cipher_secret))
-
-    @secret.setter
-    def secret(self, value):
-        self._iv_secret, self._cipher_secret = encrypt(value)
-
-
-class LDAPConfig(DirectoryService):
+class LDAPConfig(ImportService):
     """TODO:"""
     import_users = models.BooleanField(
         default=True,
         help_text=_(""),  # TODO: fill
         verbose_name=_('import users'),
-    )
-    edit_mode = models.CharField(
-        max_length=16,
-        choices=[
-            ('READ_ONLY', _('read only').capitalize()),
-            # TODO: do we even want to support other options than READ_ONLY?
-            ('WRITABLE', _('writable').capitalize()),
-            ('UNSYNCED', _('unsynchronized').capitalize()),
-        ],
-        help_text=_(""),  # TODO: if we keep several options, add help text from keycloak
-        verbose_name=_('edit mode'),
     )
     # TODO: should we support sync registration?
     vendor = models.CharField(
@@ -142,7 +35,7 @@ class LDAPConfig(DirectoryService):
         verbose_name=_('vendor'),
     )
     username_attribute = models.CharField(
-        max_length=32,  # TODO: should this be 64 instead?
+        max_length=64,
         help_text=_(
             "Name of LDAP attribute, which is mapped as username. "
             "For many LDAP server vendors it can be 'uid'. "
@@ -252,6 +145,10 @@ class LDAPConfig(DirectoryService):
     def ldap_credential(self, value):
         self._iv_ldap_credential, self._cipher_ldap_credential = encrypt(value)
 
+    class Meta:
+        verbose_name = _('LDAP configuration')
+        verbose_name_plural = _('LDAP configurations')
+
     def get_payload_dict(self, realm=None):
         # TODO: should we have a default value for realm?
         # TODO: verify that all hardcoded values are correct
@@ -273,7 +170,7 @@ class LDAPConfig(DirectoryService):
                 "evictionMinute": [],
                 "maxLifespan": [],
                 "batchSizeForSync": ["1000"],
-                "editMode": [self.edit_mode],
+                "editMode": ['READ_ONLY'],
                 "importEnabled": [self.import_users],
                 "syncRegistrations": ["false"],  # TODO: make sure it complies w/ field support or lack thereof
                 "vendor": [self.vendor],

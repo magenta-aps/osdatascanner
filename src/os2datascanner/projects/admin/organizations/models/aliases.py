@@ -21,6 +21,8 @@ from django.core.validators import validate_email
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from os2datascanner.projects.admin.import_services.models import Imported
+
 from .broadcasted_mixin import Broadcasted
 
 # Kept here to ensure it compiles only once
@@ -45,10 +47,12 @@ class AliasType(Enum):
     GENERIC = 'generic', _('generic'), validate_generic  # TODO: naming? Maybe 'unvalidated' instead?
 
     def __new__(cls, value, label, validator):
+        print(f"\nValue: {value}\nLabel: {label}\nValidator: {validator}")
         obj = object.__new__(cls)
         obj._value_ = value
         obj.label = label
         obj.validator = validator
+        return obj
 
     @classmethod
     def choices(cls):
@@ -58,7 +62,7 @@ class AliasType(Enum):
         self.validator(value)
 
 
-class Alias(Broadcasted, models.Model):
+class Alias(Imported, Broadcasted, models.Model):
     """Represent an alias of a given type for a given Account.
 
     An Alias is a connection between a labelled item of identifying information

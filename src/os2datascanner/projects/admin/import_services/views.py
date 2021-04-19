@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 
-from os2datascanner.projects.admin.directory_services.services import add_or_update_ldap_conf
+from os2datascanner.projects.admin.import_services.keycloak_services import add_or_update_ldap_conf
 from os2datascanner.projects.admin.organizations.models import Organization
 
 from .models import LDAPConfig
@@ -38,7 +38,7 @@ class LDAPEditForm(forms.ModelForm):
 
 class LDAPEditView(LoginRequiredMixin, CreateView):
     model = LDAPConfig
-    template_name = 'directory_services/ldap_add.html'
+    template_name = 'import_services/ldap_add.html'
     success_url = reverse_lazy('organization-list')
     form_class = LDAPEditForm
 

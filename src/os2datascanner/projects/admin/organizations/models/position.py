@@ -19,8 +19,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from mptt.models import TreeForeignKey
 
+from os2datascanner.projects.admin.import_services.models import Imported
+
 from .broadcasted_mixin import Broadcasted
-from .synchronized_mixin import Synchronized
 
 
 class Role(Enum):
@@ -51,7 +52,7 @@ class Role(Enum):
         return [(e.value, e.label.capitalize()) for e in cls]
 
 
-class Position(Synchronized, Broadcasted, models.Model):
+class Position(Imported, Broadcasted, models.Model):
     # TODO: should we add help-texts?
     account = models.ForeignKey(
         'Account',
