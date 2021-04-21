@@ -1204,14 +1204,9 @@ msgstr "der er ikke tilføjet nogen organisationer"
 
 #: organizations/templates/organizations/orgunit_list.html:6
 msgid "organizational hierarchy"
-msgstr "organisatonsstruktur"
+msgstr "organisationsstruktur"
 
 #: organizations/templates/organizations/orgunit_list.html:10
 msgid "organizational hierarchy for"
-msgstr "organisatorissttruktur for"
+msgstr "organisationssttruktur for"
 
-#~ msgid "top organizational unit"
-#~ msgstr "top organisatorisk enhed"
-
-#~ msgid "Login Method"
-#~ msgstr "Login Metode"

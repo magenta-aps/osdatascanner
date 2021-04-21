@@ -12,11 +12,18 @@
 # sector open source network <https://os2.eu/>.
 
 from django.db import models
+from django.db.models import F
 from django.utils.translation import ugettext_lazy as _
 
 
 class Imported(models.Model):
-    """Abstract base class for data models that may be imported."""
+    """
+    Abstract base class for models that may be imported from external services.
+
+    Instances marked as imported should only be added, modified or
+    deleted as instructed by the relevant external service; instances without
+    this marking may be modified freely locally.
+    """
 
     imported = models.BooleanField(
         default=False,
@@ -24,17 +31,20 @@ class Imported(models.Model):
         verbose_name=_('has been imported'),
     )
 
+    # Store unique ID from external service
     imported_id = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         verbose_name=_('imported unique ID'),
     )
+    # Store when last request for import was made
     last_import_requested = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_('last time an update was requested'),
     )
+    # Store when last successful import was made
     last_import = models.DateTimeField(
         null=True,
         blank=True,
@@ -43,3 +53,7 @@ class Imported(models.Model):
 
     class Meta:
         abstract = True
+
+    @classmethod
+    def get_all_awaiting(cls):
+        return cls.objects.filter(last_import__lt=F('last_import_requested'))

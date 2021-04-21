@@ -46,7 +46,7 @@ class LDAPConfig(ImportService):
         verbose_name=_('username LDAP attribute'),
     )
     rdn_attribute = models.CharField(
-        max_length=32,  # TODO: should be the same as above
+        max_length=64,
         help_text=_(
             "Name of LDAP attribute, which is used as RDN (top attribute) "
             "of typical user DN. "
@@ -58,7 +58,7 @@ class LDAPConfig(ImportService):
         verbose_name=_('RDN LDAP attribute'),
     )
     uuid_attribute = models.CharField(
-        max_length=16,  # TODO: too restrictive?
+        max_length=64,
         help_text=_(
             "Name of LDAP attribute, which is used as unique object identifier "
             "(UUID) for objects in LDAP. For many LDAP server vendors, "
@@ -70,8 +70,7 @@ class LDAPConfig(ImportService):
         ),
         verbose_name=_('UUID LDAP attribute'),
     )
-    user_obj_classes = models.CharField(
-        max_length=256,  # TODO: proper length?
+    user_obj_classes = models.TextField(
         help_text=_(
             "All values of LDAP objectClass attribute for users in LDAP "
             "divided by comma. For example: "
@@ -88,7 +87,7 @@ class LDAPConfig(ImportService):
         null=False,
         help_text=_(
             "Connection URL to the LDAP server."
-            "Should include protocol ('ldap://')."  # TODO: will this always be the case???
+            "If no protocol is given, 'ldaps://' is used by default."  # TODO: make sure it is!
         ),
         verbose_name=_('connection URL'),
     )
@@ -101,7 +100,7 @@ class LDAPConfig(ImportService):
     )
     search_scope = models.PositiveSmallIntegerField(
         choices=(
-            (1, _('one level').capitalize()),  # TODO: verify int value
+            (1, _('one level').capitalize()),
             (2, _('subtree').capitalize()),
         ),
         help_text=_(
