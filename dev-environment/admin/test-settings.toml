@@ -1,6 +1,13 @@
 SECRET_KEY = "DUMMYKEY(for testing)DUMMYKEY(for testing)"
 DECRYPTION_HEX = "09b40bd0633d09e77da00a2397869da69e53850abf72c29aaa11c622c2525729"
 
+OS2DATASCANNER_APPS = [
+    'os2datascanner.projects.admin.adminapp',
+    'os2datascanner.projects.admin.core',
+    'os2datascanner.projects.admin.organizations',
+    'os2datascanner.projects.admin.import_services',
+]
+
 [DATABASES]
 
     [DATABASES.default]
