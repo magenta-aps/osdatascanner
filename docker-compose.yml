@@ -93,8 +93,7 @@ services:
       context: .
       dockerfile: docker/report/Dockerfile
       target: application
-    command: daphne -b 0.0.0.0 -p 5000 os2datascanner.projects.report.asgi:reportapp
-    
+    command: daphne -b 0.0.0.0 -p 5000 os2datascanner.projects.report.asgi:application
     volumes:
       - frontend-bundles-report:/code/src/os2datascanner/projects/report/reportapp/static/dist/
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
