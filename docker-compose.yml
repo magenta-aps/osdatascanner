@@ -93,14 +93,8 @@ services:
       context: .
       dockerfile: docker/report/Dockerfile
       target: application
-    command: [
-      "gunicorn",
-      "--config", "/code/docker/gunicorn-settings.py",
-      "--reload", # restart workers when code changes
-      "wsgi"
-    ]
-    environment:
-      - GUNICORN_WORKERS=2
+    command: daphne -b 0.0.0.0 -p 5000 os2datascanner.projects.report.asgi:reportapp
+    
     volumes:
       - frontend-bundles-report:/code/src/os2datascanner/projects/report/reportapp/static/dist/
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml

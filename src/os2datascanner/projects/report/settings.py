@@ -31,7 +31,6 @@ process_toml_conf_for_django(
     user_var='OS2DS_REPORT_USER_CONFIG_PATH',
 )
 
-
 # Our (third-party) SAML module expects only file or url to be configured. In
 # our current setting implementation we only allow changing already set values
 # to catch typos early and to not have deprecated settings in layer 2 and 3. To

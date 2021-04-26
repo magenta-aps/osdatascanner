@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 def socketindex(request):
     return render(request, 'socket_template/socketindex.html')
+    
 
 
 def socketroom(request, room_name):

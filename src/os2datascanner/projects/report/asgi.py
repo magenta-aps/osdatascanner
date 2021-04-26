@@ -1,10 +1,9 @@
 import os
 
-import django
 from channels.auth import AuthMiddlewareStack
 from channels.http import AsgiHandler
 from channels.routing import ProtocolTypeRouter, URLRouter
-from .reportapp.views import routing
+from .reportapp import routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'os2datascanner.projects.report.settings"')
 django.setup()
