@@ -187,6 +187,18 @@ def sort_matches_by_probability(body):
 
 def handle_problem_message(previous_report, new_report, body):
     problem = messages.ProblemMessage.from_json_object(body)
+
+    # prevent problems arising from "dead-links" from being removed.
+    try:
+        if (previous_report.problems.missing and problem.missing and
+            previous_report.resolution_status is None and
+            previous_report.source_type == "web"):
+            print(problem.handle.presentation if problem.handle else "(source)",
+                "Problem, dead link still exists, do nothing")
+            return
+    except:
+        pass
+
     if (previous_report and previous_report.resolution_status is None
             and problem.missing):
         # The file previously had matches, but has been removed. Resolve them
