@@ -85,7 +85,9 @@ def process_sitemap_url(url: str, *, context=requests,
 
 
 class SitemapError(Exception):
-    pass
+    # print the Error type
+    def __str__(self):
+      return repr(self)
 
 
 class SitemapMissingError(SitemapError):

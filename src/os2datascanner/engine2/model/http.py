@@ -67,9 +67,15 @@ class WebSource(Source):
                     to_visit.append(new_handle)
 
         if self._sitemap:
-            for address, last_modified in process_sitemap_url(
-                    self._sitemap):
-                handle_url(None, address, last_modified)
+            try:
+                for address, last_modified in process_sitemap_url(
+                        self._sitemap):
+                    handle_url(None, address, last_modified)
+            # except (SitemapMissingError, SitemapMalformedError) as e:
+            except SitemapError as e:
+                # would be nicer to log this! Nudge, nudge.. :)
+                print("Error during parsing of sitemap: {0}".format(e))
+                print("The scan is continued without this sitemap")
 
         while to_visit:
             here, to_visit = to_visit[0], to_visit[1:]
