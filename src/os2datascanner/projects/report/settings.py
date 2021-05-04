@@ -41,6 +41,8 @@ if not SAML2_AUTH['METADATA_AUTO_CONF_URL']:
 if not SAML2_AUTH['METADATA_LOCAL_FILE_PATH']:
     del SAML2_AUTH['METADATA_LOCAL_FILE_PATH']
 
+# ASGI_APPLICATION = 'channelproj.asgi.application'
+ASGI_APPLICATION = "os2datascanner.projects.report.asgi.application"
 
 TEMPLATES = [
     {

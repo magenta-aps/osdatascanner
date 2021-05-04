@@ -30,6 +30,44 @@
     </main>
 
     {% include "partials/scripts.html" %}
+    <script>
+
+        var formData = document.querySelector("#filter_form")
+        
+        var wsStart = window.location.protocol == 'https:' ? 'wss://' : 'ws://'
+        var endpoint = wsStart + window.location.host + window.location.pathname
+        
+        var socket = new WebSocket(endpoint)
+
+        // socket.onmessage = function(e) {
+        //   console.log("Received a message from the socket:", e.data);
+        
+        // };
+
+        // socket.onopen = function(e) {
+        //   console.log("Socket connected; sending a ping");
+        //   socket.send("echo");
+            
+        // };
+
+        // socket.onclose = function(e) {
+        //     console.error("close", e);
+        // };
+
+        socket.onmessage = function(e){
+            console.log("message", e);
+        };
+        socket.onopen = function(e){
+            console.log("open", e);
+        };
+        socket.onerror = function(e){
+            console.log("error", e)
+        };
+        socket.onclose = function(e){
+            console.log("close", e)
+        };
+
+    </script>
 
 </body>
 </html>

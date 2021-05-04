@@ -51,7 +51,7 @@ for (i = 0; i < l; i++) {
           }
         }
         h.click();
-        document.getElementById("filter_form", c).submit();
+        document.getElementById("filter_form", c)
     });
     b.appendChild(c);
   }

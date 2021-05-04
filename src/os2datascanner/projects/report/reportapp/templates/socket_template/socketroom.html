@@ -21,11 +21,17 @@
         );
 
         chatSocket.onmessage = function(e) {
+            console.log("Message", e);
             const data = JSON.parse(e.data);
             document.querySelector('#chat-log').value += (data.message + '\n');
         };
 
+        chatSocket.onopen = function(e) {
+            console.log("Open", e);
+        };
+
         chatSocket.onclose = function(e) {
+            console.log("close", e);
             console.error('Chat socket closed unexpectedly');
         };
 

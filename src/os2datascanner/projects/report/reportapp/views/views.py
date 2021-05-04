@@ -60,88 +60,81 @@ class LogoutPageView(TemplateView, View):
     template_name = 'logout.html'
 
 
-class MainPageView(LoginRequiredMixin, ListView):
+class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'index.html'
-    paginate_by = 10  # Determines how many objects pr. page.
-    context_object_name = "matches"  # object_list renamed to something more relevant
-    model = DocumentReport
-    matches = DocumentReport.objects.filter(
-        data__matches__matched=True).filter(
-        resolution_status__isnull=True)
-    scannerjob_filters = None
 
-    def get_queryset(self):
-        user = self.request.user
-        roles = Role.get_user_roles_or_default(user)
-        # Handles filtering by role + org and sets datasource_last_modified if non existing
-        self.matches = filter_inapplicable_matches(user, self.matches, roles)
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     roles = Role.get_user_roles_or_default(user)
+    #     # Handles filtering by role + org and sets datasource_last_modified if non existing
+    #     self.matches = filter_inapplicable_matches(user, self.matches, roles)
 
-        # Filters by datasource_last_modified.
-        # lte mean less than or equal to.
-        # A check whether something is more recent than a month
-        # is done by subtracting 30 days from now and then comparing if the saved time is "bigger" than that
-        # and vice versa/smaller for older than.
-        # By default we only show matches older than 30 days, if filter enabled we show everything.
-        if not self.request.GET.get('30-days') or self.request.GET.get('30-days') == 'false':
-            # Exactly 30 days is deemed to be "older than 30 days"
-            # and will therefore be shown.
-            time_threshold = time_now() - timedelta(days=30)
-            older_than_30_days = self.matches.filter(
-                datasource_last_modified__lte=time_threshold)
-            self.matches = older_than_30_days
+    #     # Filters by datasource_last_modified.
+    #     # lte mean less than or equal to.
+    #     # A check whether something is more recent than a month
+    #     # is done by subtracting 30 days from now and then comparing if the saved time is "bigger" than that
+    #     # and vice versa/smaller for older than.
+    #     # By default we only show matches older than 30 days, if filter enabled we show everything.
+    #     if not self.request.GET.get('30-days') or self.request.GET.get('30-days') == 'false':
+    #         # Exactly 30 days is deemed to be "older than 30 days"
+    #         # and will therefore be shown.
+    #         time_threshold = time_now() - timedelta(days=30)
+    #         older_than_30_days = self.matches.filter(
+    #             datasource_last_modified__lte=time_threshold)
+    #         self.matches = older_than_30_days
 
-        if self.request.GET.get('scannerjob') \
-                and self.request.GET.get('scannerjob') != 'all':
-            # Filter by scannerjob
-            self.matches = self.matches.filter(
-                data__scan_tag__scanner__pk=int(
-                    self.request.GET.get('scannerjob'))
-            )
-        if self.request.GET.get('sensitivities') \
-                and self.request.GET.get('sensitivities') != 'all':
-            # Filter by sensitivities
-            self.matches = self.matches.filter(
-                sensitivity=int(
-                    self.request.GET.get('sensitivities'))
-            )
+    #     if self.request.GET.get('scannerjob') \
+    #             and self.request.GET.get('scannerjob') != 'all':
+    #         # Filter by scannerjob
+    #         self.matches = self.matches.filter(
+    #             data__scan_tag__scanner__pk=int(
+    #                 self.request.GET.get('scannerjob'))
+    #         )
+    #     if self.request.GET.get('sensitivities') \
+    #             and self.request.GET.get('sensitivities') != 'all':
+    #         # Filter by sensitivities
+    #         self.matches = self.matches.filter(
+    #             sensitivity=int(
+    #                 self.request.GET.get('sensitivities'))
+    #         )
 
-        # matches are always ordered by sensitivity desc. and probability desc.
-        return self.matches
+    #     # matches are always ordered by sensitivity desc. and probability desc.
+    #     return self.matches
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["renderable_rules"] = RENDERABLE_RULES
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["renderable_rules"] = RENDERABLE_RULES
 
-        if self.scannerjob_filters is None:
-            # Create select options
-            self.scannerjob_filters = self.matches.order_by(
-                'data__scan_tag__scanner__pk').values(
-                'data__scan_tag__scanner__pk').annotate(
-                total=Count('data__scan_tag__scanner__pk')
-            ).values(
-                'data__scan_tag__scanner__name',
-                'total',
-                'data__scan_tag__scanner__pk'
-            )
+    #     if self.scannerjob_filters is None:
+    #         # Create select options
+    #         self.scannerjob_filters = self.matches.order_by(
+    #             'data__scan_tag__scanner__pk').values(
+    #             'data__scan_tag__scanner__pk').annotate(
+    #             total=Count('data__scan_tag__scanner__pk')
+    #         ).values(
+    #             'data__scan_tag__scanner__name',
+    #             'total',
+    #             'data__scan_tag__scanner__pk'
+    #         )
 
-        context['scannerjobs'] = (self.scannerjob_filters,
-                                  self.request.GET.get('scannerjob', 'all'))
+    #     context['scannerjobs'] = (self.scannerjob_filters,
+    #                               self.request.GET.get('scannerjob', 'all'))
 
-        context['30_days'] = self.request.GET.get('30-days', 'false')
+    #     context['30_days'] = self.request.GET.get('30-days', 'false')
 
-        sensitivities = self.matches.order_by(
-            '-sensitivity').values(
-            'sensitivity').annotate(
-            total=Count('sensitivity')
-        ).values(
-            'sensitivity', 'total'
-        )
+    #     sensitivities = self.matches.order_by(
+    #         '-sensitivity').values(
+    #         'sensitivity').annotate(
+    #         total=Count('sensitivity')
+    #     ).values(
+    #         'sensitivity', 'total'
+    #     )
 
-        context['sensitivities'] = (((Sensitivity(s["sensitivity"]),
-                                      s["total"]) for s in sensitivities),
-                                    self.request.GET.get('sensitivities', 'all'))
+    #     context['sensitivities'] = (((Sensitivity(s["sensitivity"]),
+    #                                   s["total"]) for s in sensitivities),
+    #                                 self.request.GET.get('sensitivities', 'all'))
 
-        return context
+    #     return context
 
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):

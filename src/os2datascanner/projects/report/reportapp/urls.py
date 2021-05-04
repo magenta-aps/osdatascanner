@@ -12,7 +12,7 @@ from .views.views import (MainPageView, LeaderStatisticsPageView, DPOStatisticsP
                           StatsPageView, SettingsPageView, AboutPageView, LogoutPageView)
 
 urlpatterns = [
-    #url(r'^$',      MainPageView.as_view(),     name="index"),
+    url(r'^$',      MainPageView.as_view(),     name="index"),
     url('api$',     JSONAPIView.as_view(),     name="json-api"),
     url(r'^statistics/leader/$', LeaderStatisticsPageView.as_view(), name='statistics'),
     url(r'^statistics/dpo/$', DPOStatisticsPageView.as_view(), name='statistics'),
@@ -21,8 +21,8 @@ urlpatterns = [
     url('settings', SettingsPageView.as_view(), name="settings"),
     url('about',    AboutPageView.as_view(),    name="about"),
     url(r'^health/', lambda r: HttpResponse()),
-    path('', socketview.socketindex, name='index'),
-    path('<str:room_name>/', socketview.socketroom, name='room'),
+    # path('', socketview.socketindex, name='index'),
+    # path('<str:room_name>/', socketview.socketroom, name='room'),
 ]
 
 if settings.SAML2_ENABLED:
