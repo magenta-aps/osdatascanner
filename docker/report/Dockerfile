@@ -130,4 +130,4 @@ RUN find . -name 'LC_MESSAGES' -print0 | xargs -0 chown -R os2ds_report:os2ds_re
 USER os2ds_report:os2ds_report
 EXPOSE 5000
 ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
-CMD "daphne -b 0.0.0.0 -p 5000 os2datascanner.projects.report.asgi:reportapp"
+CMD "daphne -b 0.0.0.0 -p 5000 os2datascanner.projects.report.asgi:application"

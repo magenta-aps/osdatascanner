@@ -1,5 +1,6 @@
 -r requirements-django.in
 -c requirements-engine.txt
+#Maybe remove channels?
 channels
 channels_redis
 mozilla-django-oidc
