@@ -12,7 +12,7 @@
         </div>
 
         <div class="aside">
-          <span class="matches">Samlede antal: {{ page_obj.paginator.count }}</span>
+          <span class="matches">Samlede antal: <span id="number_of_matches"></span></span>
         </div>
 
         {% include "components/filters.html" %}
@@ -24,7 +24,7 @@
         {% else %}
           {% include "components/hits.html" %}
         {% endif %}
-
+        <div id="all_matches"></div>
       </div>
 
     </main>
@@ -39,26 +39,55 @@
         
         var socket = new WebSocket(endpoint)
 
-        // socket.onmessage = function(e) {
-        //   console.log("Received a message from the socket:", e.data);
-        
-        // };
-
-        // socket.onopen = function(e) {
-        //   console.log("Socket connected; sending a ping");
-        //   socket.send("echo");
-            
-        // };
-
-        // socket.onclose = function(e) {
-        //     console.error("close", e);
-        // };
-
         socket.onmessage = function(e){
             console.log("message", e);
+            const data = JSON.parse(e.data);
+            console.log(data);
+            $("#number_of_matches").html(data.length)
+            $("#all_matches").empty()
+            for (i=0;i<data.length;i++) {
+              var test = `
+                <tr tabindex="0" data-type="{{ type }}">
+                  <td colspan="3">
+                    <table class="datatable datatable--nested">
+                      <tbody>
+                        <tr>
+                          <td class="datatable__column--match">
+                            <span class="more">
+                              ${data[i].matches.handle.path}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>    
+                        `
+              // for (j=0;j<data[i].matches.matches[0].matches.length;j++) {
+              //   test += `
+              //     <tr>
+              //       <td class="datatable__column--match">
+              //           <span class="more">
+                            
+              //           </span>
+              //       </td>
+              //       <td class="datatable__column--context">
+              //           {% if match.context %}
+                            
+              //           {% endif %}
+              //       </td>
+              //       <td class="datatable__column--probability">
+              //           {% include "components/probability.html"%}
+              //       </td>
+              //     </tr>`
+              // }
+
+              $("#all_matches").append(test)
+            }
         };
         socket.onopen = function(e){
             console.log("open", e);
+            $("#number_of_matches").html("Hola")
         };
         socket.onerror = function(e){
             console.log("error", e)
