@@ -1,6 +1,4 @@
-from typing import Iterator, List, Match, Optional, Tuple, Dict
-import re
-from itertools import chain
+from typing import Iterator, List, Match, Optional, Tuple
 from enum import Enum, unique
 
 from .rule import Rule, Sensitivity
@@ -20,12 +18,16 @@ calculator = CprProbabilityCalculator()
 # if the sourronding context contains some of these, we get suspicious.
 # fmt: off
 # check if these delimiters are balanced
-_pre_delim = ("(", "[", "{", "<", "<?", "<%", "/*", )
-_post_delim = (")", "]", "}", ">", "?>", "%>", "*/", )
+_pre_delim = ("(", "[", )
+_post_delim = (")", "]", )
 # any of these symbols in the context result in probability=0
+_other_delim = (
+    "{", "<", "<?", "<%", "/*",
+    "}", ">", "?>", "%>", "*/",
+)
 _operators = ("+", "-", )
 _symbols = ("!", "#", "%", )
-_all_symbols = _operators + _symbols
+_all_symbols = _operators + _symbols + _other_delim
 # fmt: on
 
 
@@ -114,7 +116,6 @@ class CPRRule(RegexRule):
                 p, ctype = self.examine_context(m)
                 probability = p if p is not None else probability
 
-
             # Extract context.
             match_context = content[max(low - 50, 0) : high + 50]
             match_context = self._compiled_expression.sub(
@@ -151,64 +152,54 @@ class CPRRule(RegexRule):
         """
 
         probability = None
-        words, symbols = self.extract_surrounding_words(match, n_words=3)
+        context = self.extract_surrounding_words(match, n_words=2)
         ctype = []
 
         # test if a whitelist-word is found in the context words.
         # combine the list of 'pre' & 'post' keys in words dict.
-        words_lower = [w.lower() for w in chain.from_iterable(words.values())]
-        for cw in self._whitelist:
-            res = next(
-                (True for keyword in words_lower if cw in keyword),
-                False,
-            )
-            if res:
-                ctype.append((Context.WHITELIST, cw))
-                return 1.0, ctype
+        for w in self._whitelist:
+            for cw in context:
+                if w in cw:
+                    ctype.append((Context.WHITELIST, cw))
+                    return 1.0, ctype
 
         # test for balanced delimiters
         delimiters = 0
-        for w in chain.from_iterable(symbols.values()):
-            if w.startswith(_pre_delim):
+        for cw in context:
+            if cw.startswith(_pre_delim):
                 delimiters += 1
-            elif w.endswith(_pre_delim):
+            elif cw.endswith(_pre_delim):
                 delimiters += 1
-            elif w.startswith(_post_delim):
+            elif cw.startswith(_post_delim):
                 delimiters -= 1
-            elif w.endswith(_post_delim):
+            elif cw.endswith(_post_delim):
                 delimiters -= 1
-            elif w in _all_symbols:
-                ctype.append((Context.SYMBOL, w))
-                probability = 0.0
         if delimiters != 0:
             ctype.append((Context.UNBALANCED, delimiters))
             probability = 0.0
 
-        # only do context checking on surrounding words
-        for w in [words["pre"][-1], words["post"][0]]:
-            if w == "":
+        # only do context checking on surrounding words.
+        for cw in context:
+            # a word must be more than one char long
+            if cw == "" or len(cw) < 2 or self._compiled_expression.match(cw):
                 continue
-            # this check is newer reached due to '\w' splitting
-            elif w.endswith(_all_symbols) or w.startswith(_all_symbols):
-                ctype.append((Context.SYMBOL, w))
+            elif cw.endswith(_all_symbols) or cw.startswith(_all_symbols):
+                ctype.append((Context.SYMBOL, cw))
                 probability = 0.0
-            # test if surrounding word is a number (and not looks like a cpr)
-            elif is_number(w) and not self._compiled_expression.match(w):
+            # test if surrounding words is a number
+            elif is_number(cw):
                 probability = 0.0
-                ctype.append((Context.NUMBER, w))
-            elif not is_alpha_case(w):
+                ctype.append((Context.NUMBER, cw))
+            elif not is_alpha_case(cw):
                 # test for case, ie Magenta, magenta, MAGENTA are ok, but not MaGenTa
                 # nor magenta10. w must not be empty string
                 probability = 0.0
-                ctype.append((Context.WRONG_CASE, w))
-            else:
-                pass
+                ctype.append((Context.WRONG_CASE, cw))
 
         return probability, ctype
 
-    def extract_surrounding_words(
-        self, match: Match[str], n_words: int = 2
-    ) -> Tuple[Dict[str, list], Dict[str, list]]:
+    def extract_surrounding_words(self, match: Match[str], n_words: int = 2
+    ):
         """Extract at most `n_words` before and after the match
 
         Return a dict with words and one with symbols
@@ -217,34 +208,15 @@ class CPRRule(RegexRule):
         # get full content
         content = match.string
         low, high = match.span()
-        # get previous/next n words
-        pre = " ".join(content[max(low-50,0):low].split()[-n_words:])
-        post = " ".join(content[high:high+50].split()[:n_words])
-
-        # split in two capture groups: (word, symbol)
-        # Ex: 'The brown, fox' ->
-        # [('The', ''), ('brown', ''), ('', ','), ('fox', '')]
-        word_str = r"(\w+(?:[-\./]\w*)*)"
-        symbol_str = r"([^\w\s\.\"])"
-        split_str = r"|".join([word_str, symbol_str])
-        pre_res = re.findall(split_str, pre)
-        post_res = re.findall(split_str, post)
-        # remove empty strings
-        pre_words = [s[0] for s in pre_res if s[0]]
-        post_words = [s[0] for s in post_res if s[0]]
-        pre_sym = [s[1] for s in pre_res if s[1]]
-        post_sym = [s[1] for s in post_res if s[1]]
-
-        # XXX Should be set instead?
-        words = dict(
-            pre=pre_words if len(pre_words) > 0 else [""],
-            post=post_words if len(post_words) > 0 else [""],
-        )
-        symbols = dict(
-            pre=pre_sym if len(pre_sym) > 0 else [""],
-            post=post_sym if len(post_sym) > 0 else [""],
-        )
-        return words, symbols
+        # replace 111111 1118 with 111111-1118
+        # we do that to ensure the full CPR is include in the splitting
+        pre = self._compiled_expression.sub(
+            r"\1-\2", content[max(low-50,0):low]).split()[-n_words:]
+        post = self._compiled_expression.sub(
+            r"\1-\2",content[high:high+50]).split()[:n_words]
+        # remove some textual symbols
+        context = [x.replace(",", "").replace(":", "") for x in pre + post]
+        return context
 
     def to_json_object(self) -> dict:
         # Deliberately skip the RegexRule implementation of this method (we
