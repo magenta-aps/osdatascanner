@@ -87,7 +87,53 @@ function putTableData(result) {
         $("#list_data").show();
         $("#listing").html("");  
         $.each(result["results"], function (a, b) {
-            row = "<tr> <td>" + b.sensitivity + "</td>"
+            console.log(b);
+            console.log(b.data.matches.matches[0]);
+            row = `
+            <tr>
+                <td class="datatable__column--handle">
+                    <div class="datatable__column--filetype-icon">
+                        <input type="checkbox" id="match-checkbox" name="match-checkbox" 
+                            class="datatable-checkbox" data-report-pk="${b.id}">
+                        <span class="icon-filetype icon-filetype--ews">
+                            <svg viewBox="0 0 17 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 16L4 14.75V5L11 3V17.5L0.5 16.25L11 20L17 18.75V1.5L10.95 0L0 3.75V16Z" />
+                            </svg>
+                        </span>
+                    </div>
+                </td>
+                <td class="datatable__column--item">
+                    <span class="scan__item-title">
+                        <strong>${b.data.matches.handle.path}</strong>
+                    </span>
+                    <span class="scan__item-count">
+                        Matches: <em>${b.data.matches.matches[0].matches.length}</em>
+                    </span>
+                    <span class="scan__item-meta">
+                        <strong>${b.data.matches.handle.path}</strong>
+                    </span>
+                    <div class="hit-link">
+                        <div class="button-group">
+                            <a href="https://www.google.dk" class="button" target="_blank" rel="noopener">Open</a>    
+                        </div>
+                    </div>
+                </td>
+                <td colspan="3">
+                    <table class="datatable datatable--nested">
+                        <tbody>
+                            <tr>
+                                <td class="datatable__column--match">
+                                    <span class="more">${b.data.matches.matches[0].matches[0].match}</span>
+                                </td>
+                                <td class="datatable__column--context">
+                                </td>
+                                <td class="datatable__column--probability">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>`
             $("#listing").append(row);   
         });
     }

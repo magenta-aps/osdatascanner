@@ -11,22 +11,7 @@
         <div class="aside">
           <h1 class="page-title">Matches</h1>
         </div>
-
-        <div class="aside">
-          <span class="matches">Samlede antal: <span id="number_of_matches"></span></span>
-        </div>
-
-        {% include "components/filters.html" %}
-
-        {% if page_obj.paginator.count == 0 %}
-          <span class="datatable-none-matches">
-            {% trans "No matches were found" %}
-          </span>
-        {% else %}
-          {% include "components/hits.html" %}
-        {% endif %}
         {% include "components/documentreports.html" %}
-
       </div>
 
     </main>
@@ -113,8 +98,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="{% static "src/js/documentReports.js" %}">
-    </script>
+    <script src="{% static "src/js/documentReports.js" %}"></script>
     {% endblock %}
 
 </body>
