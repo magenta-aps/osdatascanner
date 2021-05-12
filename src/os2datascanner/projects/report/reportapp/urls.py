@@ -9,7 +9,8 @@ from django.urls import path
 from .views import socketview
 from .views.api import JSONAPIView
 from .views.views import (MainPageView, LeaderStatisticsPageView, DPOStatisticsPageView, ApprovalPageView,
-                          StatsPageView, SettingsPageView, AboutPageView, LogoutPageView)
+                          StatsPageView, SettingsPageView, AboutPageView, LogoutPageView, ReportListing,
+                          getSensitivities, getScannerjobs)
 
 urlpatterns = [
     url(r'^$',      MainPageView.as_view(),     name="index"),
@@ -21,8 +22,12 @@ urlpatterns = [
     url('settings', SettingsPageView.as_view(), name="settings"),
     url('about',    AboutPageView.as_view(),    name="about"),
     url(r'^health/', lambda r: HttpResponse()),
-    # path('', socketview.socketindex, name='index'),
-    # path('<str:room_name>/', socketview.socketroom, name='room'),
+    #DRF
+    # List of documentreports
+    path("report_listing/", ReportListing.as_view(), name='listing'),
+    # These urls are for getting the options for the select fields
+    path("ajax/sensitivities/", getSensitivities, name='get_sensitivities'),
+    path("ajax/scannerjobs/", getScannerjobs, name='get_scannerjobs'),
 ]
 
 if settings.SAML2_ENABLED:

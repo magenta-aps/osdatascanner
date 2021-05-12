@@ -47,6 +47,13 @@ from ..models.roles.remediator_model import Remediator
 from ..models.roles.dpo_model import DataProtectionOfficer
 from ..models.roles.leader_model import Leader
 
+#DRF
+from django.http import JsonResponse
+from rest_framework.generics import ListAPIView
+from ..serializers import DocumentReportSerializers
+from ..pagination import StandardResultsSetPagination
+
+
 logger = structlog.get_logger()
 
 RENDERABLE_RULES = (CPRRule.type_label, RegexRule.type_label,)
@@ -63,78 +70,75 @@ class LogoutPageView(TemplateView, View):
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'index.html'
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     roles = Role.get_user_roles_or_default(user)
-    #     # Handles filtering by role + org and sets datasource_last_modified if non existing
-    #     self.matches = filter_inapplicable_matches(user, self.matches, roles)
+class ReportListing(LoginRequiredMixin, ListAPIView):
 
-    #     # Filters by datasource_last_modified.
-    #     # lte mean less than or equal to.
-    #     # A check whether something is more recent than a month
-    #     # is done by subtracting 30 days from now and then comparing if the saved time is "bigger" than that
-    #     # and vice versa/smaller for older than.
-    #     # By default we only show matches older than 30 days, if filter enabled we show everything.
-    #     if not self.request.GET.get('30-days') or self.request.GET.get('30-days') == 'false':
-    #         # Exactly 30 days is deemed to be "older than 30 days"
-    #         # and will therefore be shown.
-    #         time_threshold = time_now() - timedelta(days=30)
-    #         older_than_30_days = self.matches.filter(
-    #             datasource_last_modified__lte=time_threshold)
-    #         self.matches = older_than_30_days
+    # set the pagination and serializer class
 
-    #     if self.request.GET.get('scannerjob') \
-    #             and self.request.GET.get('scannerjob') != 'all':
-    #         # Filter by scannerjob
-    #         self.matches = self.matches.filter(
-    #             data__scan_tag__scanner__pk=int(
-    #                 self.request.GET.get('scannerjob'))
-    #         )
-    #     if self.request.GET.get('sensitivities') \
-    #             and self.request.GET.get('sensitivities') != 'all':
-    #         # Filter by sensitivities
-    #         self.matches = self.matches.filter(
-    #             sensitivity=int(
-    #                 self.request.GET.get('sensitivities'))
-    #         )
+    pagination_class = StandardResultsSetPagination
+    serializer_class = DocumentReportSerializers
 
-    #     # matches are always ordered by sensitivity desc. and probability desc.
-    #     return self.matches
+    def get_queryset(self):
+    # filter the queryset based on the filters applied
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["renderable_rules"] = RENDERABLE_RULES
+        queryList = DocumentReport.objects.filter(
+                data__matches__matched=True).filter(
+                resolution_status__isnull=True)
+        sensitivity = self.request.query_params.get('sensitivity', None)
+        scannerjob = self.request.query_params.get('scannerjob', None)
+        thirty_day_rule = self.request.query_params.get('30-day-rule', None)
+        # region = self.request.query_params.get('region', None)
+        # sort_by = self.request.query_params.get('sort_by', None)
 
-    #     if self.scannerjob_filters is None:
-    #         # Create select options
-    #         self.scannerjob_filters = self.matches.order_by(
-    #             'data__scan_tag__scanner__pk').values(
-    #             'data__scan_tag__scanner__pk').annotate(
-    #             total=Count('data__scan_tag__scanner__pk')
-    #         ).values(
-    #             'data__scan_tag__scanner__name',
-    #             'total',
-    #             'data__scan_tag__scanner__pk'
-    #         )
+        if sensitivity:
+            queryList = queryList.filter(sensitivity = sensitivity)
+        if scannerjob:
+            queryList = queryList.filter(
+                    data__scan_tag__scanner__pk = int(scannerjob))
+        if thirty_day_rule == 'false':
+            time_threshold = time_now() - timedelta(days=30)
+            print(queryList.filter(datasource_last_modified__gte=time_threshold))
+            queryList = queryList.filter(
+                datasource_last_modified__lte=time_threshold)
+            print(queryList.count())
+        # if region:
+        #     queryList = queryList.filter(region = region)    
 
-    #     context['scannerjobs'] = (self.scannerjob_filters,
-    #                               self.request.GET.get('scannerjob', 'all'))
+        # sort it if applied on based on price/points
 
-    #     context['30_days'] = self.request.GET.get('30-days', 'false')
+        # if sort_by == "price":
+        #     queryList = queryList.order_by("price")
+        # elif sort_by == "points":
+        #     queryList = queryList.order_by("points")
+        return queryList
 
-    #     sensitivities = self.matches.order_by(
-    #         '-sensitivity').values(
-    #         'sensitivity').annotate(
-    #         total=Count('sensitivity')
-    #     ).values(
-    #         'sensitivity', 'total'
-    #     )
+def getSensitivities(request):
+    if request.method == "GET" and request.is_ajax():
+        documentreports = DocumentReport.objects.filter(
+                data__matches__matched=True).filter(
+                resolution_status__isnull=True)
+        sensitivities = documentreports.exclude(sensitivity__isnull=True).\
+                order_by('sensitivity').\
+                values_list('sensitivity').distinct()
+        sensitivities = [i[0] for i in list(sensitivities)]
+        data = {
+            "sensitivities": sensitivities, 
+        }
+        return JsonResponse(data, status = 200)
 
-    #     context['sensitivities'] = (((Sensitivity(s["sensitivity"]),
-    #                                   s["total"]) for s in sensitivities),
-    #                                 self.request.GET.get('sensitivities', 'all'))
 
-    #     return context
+def getScannerjobs(request):
+    if request.method == "GET" and request.is_ajax():
+        documentreports = DocumentReport.objects.filter(
+                data__matches__matched=True).filter(
+                resolution_status__isnull=True)
+        scannerjobs = documentreports.exclude(data__scan_tag__scanner__pk__isnull=True).\
+                order_by('data__scan_tag__scanner__pk').\
+                values_list('data__scan_tag__scanner__pk').distinct()
+        scannerjobs = [i[0] for i in list(scannerjobs)]
+        data = {
+        "scannerjobs": scannerjobs, 
+        }
+        return JsonResponse(data, status = 200)
 
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):

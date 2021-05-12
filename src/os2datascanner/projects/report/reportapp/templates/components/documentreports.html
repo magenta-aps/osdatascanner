@@ -1,0 +1,80 @@
+{% load static %}
+{% block style %}
+    <style type="text/css">
+    .properties_table{
+       min-height: 540px;
+       font-size: 14px;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <section class="site_filter">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-2 col-2">
+                    <div class="form-group">
+                        <label for="sensitivity">Sensitivity</label>
+                        <select class="form-control" id="sensitivities" 
+                            url = "{% url 'get_sensitivities' %}">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2 col-2">
+                    <div class="form-group">
+                        <label for="scannerjob">Scannerjob</label>
+                        <select class="form-control" id="scannerjobs" 
+                            url = "{% url 'get_scannerjobs' %}">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2 col-2">
+                    <div class="form-group">
+                        <label for="30_day_rule">30 day rule</label>
+                        <input type="checkbox" id="30_day_rule">
+                    </div>
+                </div>
+                <div class="col-sm-2 col-2">
+                    <div class="row justify-content-center align-self-center"
+                        style="color:white; margin-top:30px;">
+                        <button class="btn btn-secondary" id="display_all">Reset filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <br />
+    <section>
+        <div class="container-fluid">
+            <div id = "result-count" class="text-right">
+                <span class='font-weight-bold'></span> results found.
+            </div>
+            <div class="row properties_table justify-content-center">
+                <div id = "no_results">
+                    <h5>No results found</h5>
+                </div>
+                <table class="table table-bordered table-responsive table-hover table-striped"
+                 id="list_data" data-toggle="table" url = "{% url 'listing' %}">
+                    <thead>
+                        <tr>
+                            <th data-field="sensitivity">Sensitivity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listing">
+                    </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-center">
+                <nav aria-label="navigation">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <button class="btn btn-primary page-link" id="previous">Previous</button>
+                        </li>
+                        <li class="page-item pull-right">
+                            <button class="btn btn-primary page-link" id="next">Next</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+{% endblock %}

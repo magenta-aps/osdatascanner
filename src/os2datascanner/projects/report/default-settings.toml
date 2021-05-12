@@ -42,6 +42,7 @@ OIDC_OP_LOGOUT_URL_METHOD = "os2datascanner.projects.report.reportapp.views.view
 INSTALLED_APPS = [
     'channels',
     'channels_redis',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
