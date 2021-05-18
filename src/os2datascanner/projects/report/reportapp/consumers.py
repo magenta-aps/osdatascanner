@@ -1,54 +1,44 @@
 import json
 import asyncio
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import WebsocketConsumer
 
 
-class ReportWebsocketConsumer(AsyncJsonWebsocketConsumer):
-
-    async def connect(self):
-        from .models.documentreport_model import DocumentReport
-        from channels.db import database_sync_to_async
-        print("connected")
-        await self.accept()
-        # maybe rest?
-    
-        @database_sync_to_async
-        def get_documentreports():
-        # Hardcoded filter
-                    # .filter(
-                    # sensitivity=250).filter(
-                    # data__scan_tag__scanner__pk=1)
-            documentreports = DocumentReport.objects.filter(
-                    data__matches__matched=True).filter(
-                    resolution_status__isnull=True)
-            return [x.data for x in documentreports]
-
-        await asyncio.sleep(3)
-        obj = await get_documentreports()
-
-        await self.send_json(obj)
+class ReportWebsocketConsumer(WebsocketConsumer):
+    def connect(self):
+        self.channel = 'get_updates'
+        async_to_sync(self.channel_layer.group_add)(
+            self.channel,
+            self.channel_name
+        )
+        self.accept()
+        print("#######CONNECTED############")
 
 
-    async def websocket_receive(self, event):
-        from .models.documentreport_model import DocumentReport
-        from channels.db import database_sync_to_async
-        text_data_json = json.loads(event['text'])
-        message = text_data_json['message']
-
-        @database_sync_to_async
-        def get_new():
-            documentreports = DocumentReport.objects.filter(
-                    data__matches__matched=True).filter(
-                    resolution_status__isnull=True).filter(
-                    sensitivity=message)
-            print(documentreports.count())
-            return [x.data for x in documentreports]
-
-        await asyncio.sleep(1)
-        obj = await get_new()
-
-        await self.send_json(obj)
+    def websocket_disconnect(self, code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.channel,
+            self.channel_name
+        )
+        print("DISCONNECED CODE: ",code)
 
 
-    async def websocket_disconnect(self, event):
-        print("disconnected", event)
+    def websocket_receive(self, text_data=None, bytes_data=None):
+        print(" MESSAGE RECEIVED")
+        data = json.loads(text_data)
+        message = data['message']
+        async_to_sync(self.channel_layer.group_send)(
+            self.channel,{
+                "type": 'send_message_to_frontend',
+                "message": message
+            }
+        )
+
+    def send_message_to_frontend(self,event):
+        print("EVENT TRIGERED")
+        # Receive message from room group
+        message = event['message']
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'message': message
+        }))

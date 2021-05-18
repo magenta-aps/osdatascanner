@@ -2,6 +2,7 @@
 import '../css/master.scss';
 
 // import js files
+import './documentReports.js'
 import './handle-match.js';
 import './show-more.js';
 // import './filter-options.js';

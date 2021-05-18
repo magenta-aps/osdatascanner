@@ -44,6 +44,12 @@ if not SAML2_AUTH['METADATA_LOCAL_FILE_PATH']:
 # ASGI_APPLICATION = 'channelproj.asgi.application'
 ASGI_APPLICATION = "os2datascanner.projects.report.asgi.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

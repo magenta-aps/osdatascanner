@@ -24,7 +24,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
 from django.forms.models import modelform_factory
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _

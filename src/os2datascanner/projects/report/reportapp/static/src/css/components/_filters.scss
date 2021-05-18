@@ -6,7 +6,6 @@
 
 .match_filtering_clear_button {
   cursor:pointer;
-  float:right;
   margin-right: 2rem;
   margin-top: .5rem;
   border:none;
@@ -28,9 +27,43 @@
   font-size: .9rem;
 }
 
-.match_filtering select {
+// .match_filtering select {
+//   display: none;
+// }
+
+.hide {
   display: none;
 }
+
+.new-matches-alert {
+  position: fixed;
+  z-index: 10;
+  right: 0;
+  top: 10%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.new-matches-alert-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: 1rem;
+  padding: 2rem;
+  width: 100%;
+}
+
+.new-matches-alert-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.new-matches-alert-close:hover {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 
 /* style the selected item */
 .select-selected {

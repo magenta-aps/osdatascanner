@@ -81,7 +81,7 @@ class DocumentReport(models.Model):
 
     custom_resolution_status = models.CharField(max_length=1024, blank=True,
                                                 verbose_name=_("justification"))
-
+        
     def clean(self):
         self.clean_custom_resolution_status()
 
@@ -130,6 +130,9 @@ class DocumentReport(models.Model):
                         print("Failed to create match_relation")
         except:
             print(self, " has no metadata")
+
+        from ..views.views import send_socket_message
+        send_socket_message()
 
     class Meta:
         verbose_name_plural = _("document reports")

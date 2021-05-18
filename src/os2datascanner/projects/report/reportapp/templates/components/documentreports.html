@@ -1,34 +1,60 @@
-<div class="container-fluid">
-    <div class="">
-        <div class="form-group">
-            <label for="sensitivity">Sensitivity</label>
-            <select class="form-control" id="sensitivities" 
-                url = "{% url 'get_sensitivities' %}">
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="scannerjob">Scannerjob</label>
-            <select class="form-control" id="scannerjobs" 
-                url = "{% url 'get_scannerjobs' %}">
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="30_day_rule">30 day rule</label>
-            <input type="checkbox" id="30_day_rule">
-        </div>
-        <div class="row justify-content-center align-self-center"
-            style="color:white; margin-top:30px;">
-            <button class="btn btn-secondary" id="display_all">Reset filter</button>
-        </div>
+{% load handle_extras %}
+{% load i18n %}
+{% load l10n %}
+<div id="alert-box" class="new-matches-alert hide">
+    <div class="new-matches-alert-content">
+        <span class="new-matches-alert-close">&times;</span>
+        <span>NEW MATCHES - RELOAD SITE</span>
     </div>
 </div>
-<div id="result-count" class="text-right">
-    <span class='font-weight-bold'></span> results found.
+<div id="result-count" class="aside">
+    <span></span> results found.
 </div>
-<br />
-<table class="datatable" id="list_data" data-toggle="table" url="{% url 'listing' %}">
+<div class="match_filtering_wrapper">
+    <div>
+        <label for="scannerjobs" class="match_filtering_label">
+            {% trans "Scan" %}
+        </label>
+    </div>
+    <div class="match_filtering">
+        <select name="scannerjobs" id="scannerjobs" 
+                url = "{% url 'get_scannerjobs' %}">
+        </select>
+    </div>
+</div>
+<div class="match_filtering_wrapper">
+    <div>
+        <label for="sensitivity" class="match_filtering_label">
+            {% trans "Sensitivity" %}
+        </label>
+    </div>
+    <div class="match_filtering">
+        <select name="sensitivities" id="sensitivities" 
+                url = "{% url 'get_sensitivities' %}">
+        </select>
+    </div>
+</div>
+<div class="checkbox_wrapper">
+    <div class="checkbox-group">
+    <div class="ds-checkbox">
+        <input type="checkbox" id="30_day_rule" name="30_day_rule">
+        <label for="30_day_rule">
+        {% trans "Only show matches less than 30 days old" %}
+        </label>
+    </div>
+    </div>
+</div>
+<div class="match_filtering_wrapper">
+    <button class="match_filtering_clear_button" id="display_all">Reset filter</button>
+</div>
+
+<table class="datatable" id="list_data" url="{% url 'listing' %}">
     <thead>
-        <tr></tr>
+        <tr>
+            <th>
+                {% include "components/handle-match.html" %}
+            </th>
+        </tr>
         <tr class="grey-bg">
             <th class="datatable__column--handle">
                 <div class="datatable__column--filetype-icon">

@@ -41,7 +41,6 @@ $(document).ready(function () {
 
     $('#30_day_rule').on('change', function () {
         // get the api data of updated variety
-        console.log(this.checked);
         if(this.checked)
             send_data['30-day-rule'] = true;
         else
@@ -87,13 +86,11 @@ function putTableData(result) {
         $("#list_data").show();
         $("#listing").html("");  
         $.each(result["results"], function (a, b) {
-            console.log(b);
-            console.log(b.data.matches.matches[0]);
             row = `
-            <tr>
+            <tr tabindex="0">
                 <td class="datatable__column--handle">
                     <div class="datatable__column--filetype-icon">
-                        <input type="checkbox" id="match-checkbox" name="match-checkbox" 
+                        <input type="checkbox" value="" id="match-checkbox" name="match-checkbox" 
                             class="datatable-checkbox" data-report-pk="${b.id}">
                         <span class="icon-filetype icon-filetype--ews">
                             <svg viewBox="0 0 17 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -175,8 +172,7 @@ function putTableData(result) {
 
 function getAPIData() {
     let url = $('#list_data').attr("url")
-    console.log(url);
-    console.log(send_data);
+    console.log('API CALL');
     $.ajax({
         method: 'GET',
         url: url,
@@ -284,6 +280,7 @@ function getScannerjobs() {
                 scannerjobs_option += "<option>" + b + "</option>"
             });
             $("#scannerjobs").html(scannerjobs_option)
+            
         },
         error: function(response){
             console.log(response)

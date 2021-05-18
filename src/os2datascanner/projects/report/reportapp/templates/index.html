@@ -17,88 +17,39 @@
     </main>
 
     {% include "partials/scripts.html" %}
-    <!-- <script>
-        
-        var formData = document.querySelector("#filter_form")
-        
+    <script> 
         var wsStart = window.location.protocol == 'https:' ? 'wss://' : 'ws://'
         var endpoint = wsStart + window.location.host + window.location.pathname
         
         var socket = new WebSocket(endpoint)
 
+        
         socket.onmessage = function(e){
-            console.log("message", e);
-            const data = JSON.parse(e.data);
-            console.log(data);
-            $("#number_of_matches").html(data.length)
-            $("#all_matches").empty()
-            for (i=0;i<data.length;i++) {
-              var test = `
-                <tr tabindex="0" data-type="{{ type }}">
-                  <td colspan="3">
-                    <table class="datatable datatable--nested">
-                      <tbody>
-                        <tr>
-                          <td class="datatable__column--match">
-                            <span class="more">
-                              ${data[i].matches.handle.path}
-                            </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>    
-                        `
-              // for (j=0;j<data[i].matches.matches[0].matches.length;j++) {
-              //   test += `
-              //     <tr>
-              //       <td class="datatable__column--match">
-              //           <span class="more">
-                            
-              //           </span>
-              //       </td>
-              //       <td class="datatable__column--context">
-              //           {% if match.context %}
-                            
-              //           {% endif %}
-              //       </td>
-              //       <td class="datatable__column--probability">
-              //           {% include "components/probability.html"%}
-              //       </td>
-              //     </tr>`
-              // }
+          console.log("message", e)
+          $('#alert-box').removeClass('hide')
+        };
 
-              $("#all_matches").append(test)
-            }
-        };
         socket.onopen = function(e){
-            console.log("open", e);
-            $("#number_of_matches").html("Hola")
+          console.log("open", e);
         };
+
         socket.onerror = function(e){
             console.log("error", e)
         };
-        socket.onclose = function(e){
-            console.log("close", e)
-        };
 
-        $("#submit-button").click(function(event) {
-          event.preventDefault()
-          const messageInputDom = document.getElementById('message-select');
-          const message = messageInputDom.value;
-          socket.send(JSON.stringify({ //This is what we send into the socket
-                'message': message
-            }));
-          console.log(message);
+        socket.onclose = function(e){
+          console.log("close", e)
+        };
+        
+        $('.new-matches-alert-close').click(function() {
+            $('#alert-box').addClass('hide');
         })
 
-    </script> -->
+    </script>
     {% block script %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="{% static "src/js/documentReports.js" %}"></script>
     {% endblock %}
 
 </body>

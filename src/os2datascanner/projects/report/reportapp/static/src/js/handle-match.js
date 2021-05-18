@@ -25,11 +25,15 @@ function showChecked(){
   $(".selected-cb").text(selected);
 }
 // Iterate each checkbox
-$("input[name=match-checkbox]").each(function( i ) {
-  $(this).on("click", function(){
-    i = showChecked();
-});
-});
+// Fix in production - shouldn't be setTimeout.
+
+setTimeout(function() {
+  $("input[name=match-checkbox]").each(function( i ) {
+    $(this).on("click", function(){
+      i = showChecked();
+    });
+  });
+}, 2000)
 
 function getCookie(name) {
   var cookieValue = null;

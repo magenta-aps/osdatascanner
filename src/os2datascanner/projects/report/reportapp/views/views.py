@@ -53,6 +53,9 @@ from rest_framework.generics import ListAPIView
 from ..serializers import DocumentReportSerializers
 from ..pagination import StandardResultsSetPagination
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 logger = structlog.get_logger()
 
@@ -86,8 +89,6 @@ class ReportListing(LoginRequiredMixin, ListAPIView):
         sensitivity = self.request.query_params.get('sensitivity', None)
         scannerjob = self.request.query_params.get('scannerjob', None)
         thirty_day_rule = self.request.query_params.get('30-day-rule', None)
-        # region = self.request.query_params.get('region', None)
-        # sort_by = self.request.query_params.get('sort_by', None)
 
         if sensitivity:
             queryList = queryList.filter(sensitivity = sensitivity)
@@ -96,22 +97,13 @@ class ReportListing(LoginRequiredMixin, ListAPIView):
                     data__scan_tag__scanner__pk = int(scannerjob))
         if thirty_day_rule == 'false':
             time_threshold = time_now() - timedelta(days=30)
-            print(queryList.filter(datasource_last_modified__gte=time_threshold))
             queryList = queryList.filter(
                 datasource_last_modified__lte=time_threshold)
-            print(queryList.count())
-        # if region:
-        #     queryList = queryList.filter(region = region)    
 
-        # sort it if applied on based on price/points
-
-        # if sort_by == "price":
-        #     queryList = queryList.order_by("price")
-        # elif sort_by == "points":
-        #     queryList = queryList.order_by("points")
         return queryList
 
 def getSensitivities(request):
+    # Change to also send what kind of sensitivity number is
     if request.method == "GET" and request.is_ajax():
         documentreports = DocumentReport.objects.filter(
                 data__matches__matched=True).filter(
@@ -140,6 +132,15 @@ def getScannerjobs(request):
         }
         return JsonResponse(data, status = 200)
 
+def send_socket_message():
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'get_updates',
+        {
+            'type':'send_message_to_frontend',
+            'message': 'new matches'
+        }
+    )
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):
     template_name = 'statistics.html'
