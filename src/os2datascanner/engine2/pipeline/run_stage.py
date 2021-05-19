@@ -4,6 +4,7 @@ from prometheus_client import start_http_server
 from .utilities.prometheus import prometheus_summary
 
 
+from os2datascanner.utils.tipd import install_debugger
 from ..model.core import SourceManager
 from .utilities.pika import PikaPipelineRunner
 from .utilities.systemd import notify_ready, notify_stopping
@@ -35,6 +36,10 @@ def main():
             "--debug",
             action="store_true",
             help="print all incoming messages to the console")
+    parser.add_argument(
+            "--debugger-interrupt",
+            action="store_true",
+            help="on receipt of SIGUSR2, run a debug shell over named pipes")
 
     monitoring = parser.add_argument_group("monitoring")
     monitoring.add_argument(
@@ -64,6 +69,8 @@ def main():
     args = parser.parse_args()
     module = __module_mapping[args.stage]
 
+    if args.debugger_interrupt:
+        install_debugger(globals())
     if args.enable_metrics:
         start_http_server(args.prometheus_port)
 
