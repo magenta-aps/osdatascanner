@@ -41,13 +41,17 @@ def message_received_raw(body, channel, source_manager):
 
     if isinstance(rule, bool):
         # We've come to a conclusion!
+        matched = final_matches != []
+
         for matches_q in ("os2ds_matches", "os2ds_checkups",):
             yield (matches_q,
                     messages.MatchesMessage(
                             message.scan_spec, message.handle,
-                            rule, final_matches).to_json_object())
+                            matched=matched, matches=final_matches).to_json_object())
         # Only trigger metadata scanning if the match succeeded
-        if rule:
+        # XXX regarding above comment: Is that for the *final* rule or...
+        # I am unsure what the metadata scanner does.
+        if matched:
             yield ("os2ds_handles",
                     messages.HandleMessage(
                             message.scan_spec.scan_tag,
