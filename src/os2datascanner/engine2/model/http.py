@@ -155,6 +155,7 @@ class WebResource(FileResource):
     def check(self) -> bool:
         try:
             response = self._get_head_raw()
+            # XXX or response.raise_for_status()?
             return response.status_code not in (404, 410,)
         except RequestException as e:
             # examples of Exceptions
@@ -292,7 +293,8 @@ def make_outlinks(content, where):
         for el, _, li, _ in doc.iterlinks():
             if el.tag in ("a", "img",):
                 yield li
-    except ParserError:
+    except ParserError as e:
         # Silently drop ParserErrors, but only for empty documents
         if content and not content.isspace():
-            logging.exception("{0}: unexpected ParserError".format(where))
+            logger.error("{0}: unexpected ParserError".format(where),
+                         exc_info=True)
