@@ -230,6 +230,11 @@ class Scanner(models.Model):
         """Return the name of the scanner."""
         return self.name
 
+    def local_rules(self) -> list:
+        """Return list of rules specific for the scanner model
+        """
+        return []
+
     def run(self, user=None):
         """Schedules a scan to be run by the pipeline. Returns the scan tag of
         the resulting scan on success.
@@ -267,6 +272,12 @@ class Scanner(models.Model):
             # ... and, if we're not, then skip all of the image files
             configuration["skip_mime_types"] = ["image/*"]
 
+        # append any model-specific rules
+        lrules = self.local_rules()
+        if lrules:
+            prerules.extend(lrules)
+        print(prerules)
+
         rule = AndRule.make(*prerules, rule)
 
         scan_tag = messages.ScanTagFragment(
@@ -299,6 +310,8 @@ class Scanner(models.Model):
                         rule=None,
                         matches=[]))
         for reminder in self.checkups.all():
+            # XXX add some checking if scanner is a webscanner AND have
+            # check_external_links enabled
             ib = reminder.interested_before
             rule_here = AndRule.make(
                     LastModifiedRule(ib) if ib else True,
