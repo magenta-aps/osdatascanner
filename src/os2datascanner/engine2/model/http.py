@@ -20,7 +20,7 @@ from .utilities.datetime import parse_datetime
 logger = logging.getLogger(__name__)
 MAX_REQUESTS_PER_SECOND = 10
 SLEEP_TIME = 1 / MAX_REQUESTS_PER_SECOND
-
+TIMEOUT = 1.0
 
 def simplify_mime_type(mime):
     r = mime.split(';', maxsplit=1)
@@ -97,7 +97,8 @@ class WebSource(Source):
             here, to_visit = to_visit[0], to_visit[1:]
             # only search for links on `here` if it belongs to base Source
             if here in self:
-                response = session.head(here.presentation_url, timeout=5)
+                response = session.head(
+                    here.presentation_url, timeout=TIMEOUT)
                 if response.status_code == 200:
                     ct = response.headers.get("Content-Type", "application/octet-stream")
                     if simplify_mime_type(ct) == 'text/html':
@@ -150,7 +151,8 @@ class WebResource(FileResource):
         yield from super()._generate_metadata()
 
     def _get_head_raw(self):
-        return self._get_cookie().head(self._make_url())
+        return self._get_cookie().head(
+            self._make_url(), timeout=TIMEOUT)
 
     def check(self) -> bool:
         try:
@@ -216,7 +218,8 @@ class WebResource(FileResource):
 
     @contextmanager
     def make_stream(self):
-        response = self._get_cookie().get(self._make_url())
+        response = self._get_cookie().get(
+            self._make_url(), timeout=TIMEOUT)
         response.raise_for_status()
         with BytesIO(response.content) as s:
             yield s
