@@ -62,6 +62,41 @@ class CompoundRule(Rule):
         )
 
 
+class AllRule(CompoundRule):
+    """An AllRule is a CompoundRule where all components will be evaulated, no matter
+    the status of the previous component
+
+    """
+    type_label = "all"
+
+    @property
+    def presentation_raw(self):
+        if len(self._components) == 2:
+            conjunction = "or"
+        else:
+            conjunction = "or any of"
+        return "({0})".format(oxford_comma(self._components, conjunction))
+
+    @classmethod
+    def make(cls, *components):
+        return super().make(*[c for c in components if c is not isinstance(c, bool)])
+
+    def split(self):
+        # return all other components as both pve and nve
+        fst, rest = self._components[0], self._components[1:]
+        return (fst, self.make(*rest), self.make(*rest))
+
+    @staticmethod
+    @Rule.json_handler(type_label)
+    def from_json_object(obj):
+        return AllRule(
+            *[Rule.from_json_object(o) for o in obj["components"]],
+            sensitivity=Sensitivity.make_from_dict(obj),
+            name=obj["name"] if "name" in obj else None,
+        )
+
+
+
 class AndRule(CompoundRule):
     """An AndRule is a CompoundRule corresponding to the C "&&" operator or the
     Python "and" operator (i.e., it has short-circuiting: as soon as one
@@ -91,7 +126,7 @@ class AndRule(CompoundRule):
 
 
 class OrRule(CompoundRule):
-    """An AndRule is a CompoundRule corresponding to the C "||" operator or the
+    """An OrRule is a CompoundRule corresponding to the C "||" operator or the
     Python "or" operator (i.e., it has short-circuiting: as soon as one
     component reduces to True, no other components will be evaluated)."""
 
