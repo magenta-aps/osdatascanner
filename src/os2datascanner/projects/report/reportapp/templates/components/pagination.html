@@ -1,0 +1,39 @@
+{%  load i18n %}
+<tbody class="pagination">
+  <tr>
+    <td class="pagination__column--page">
+      <span class="page_of_pages">
+      </span>
+    </td>
+
+    <td class="pagination__column--pages">
+      <div class="flex">
+        <a id="previous" class="link--pre">
+          <span class="flex">
+            <i id="chevron_left" class="material-icons">chevron_left</i>
+            {% trans "Previous" %}
+          </span>
+        </a>
+        <a id="next" class="link--next">
+          <span class="flex">
+            {% trans "Next" %}
+            <i id="chevron_right" class="material-icons">chevron_right</i>
+          </span>
+        </a>
+        <div class="line"></div>
+          <form action="">
+            <div class="flex">
+              <label for="page" class="text">
+                {% trans "Go to page" %}
+              </label>
+              <input required id="page" type="number" name="page" min="1" max="">
+              <button class="button button--submit" type="submit" id="go_to_page">
+                {% trans "Go" %}
+              </button>
+            </div>
+          </form>
+      </div>
+    </td>
+  </tr>
+
+</tbody>

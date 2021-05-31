@@ -1,7 +1,7 @@
 import os
 import django
 
-from channels.http import AsgiHandler
+from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from os2datascanner.projects.report.reportapp import routing
 
@@ -11,7 +11,7 @@ django.setup()
 from channels.auth import AuthMiddlewareStack
 
 application = ProtocolTypeRouter({
-  "http": AsgiHandler(),
+  "http": get_asgi_application(),
   "websocket": AuthMiddlewareStack(
     URLRouter(
       routing.websocket_urlpatterns

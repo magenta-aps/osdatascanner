@@ -44,6 +44,11 @@ if not SAML2_AUTH['METADATA_LOCAL_FILE_PATH']:
 # ASGI_APPLICATION = 'channelproj.asgi.application'
 ASGI_APPLICATION = "os2datascanner.projects.report.asgi.application"
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'os2datascanner.projects.report.reportapp.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 10
+}
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"

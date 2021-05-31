@@ -1,6 +1,7 @@
 {% load handle_extras %}
 {% load i18n %}
 {% load l10n %}
+Handle matches not working properly, when changing page. showChecked is never run, since the eventlistener is only on the elements of the first page.
 <div id="alert-box" class="new-matches-alert hide">
     <div class="new-matches-alert-content">
         <span class="new-matches-alert-close">&times;</span>
@@ -8,7 +9,7 @@
     </div>
 </div>
 <div id="result-count" class="aside">
-    <span></span> results found.
+   <span class="matches"></span>
 </div>
 <div class="match_filtering_wrapper">
     <div>
@@ -17,7 +18,7 @@
         </label>
     </div>
     <div class="match_filtering">
-        <select name="scannerjobs" id="scannerjobs" 
+        <select class="form-control" name="scannerjobs" id="scannerjobs" 
                 url = "{% url 'get_scannerjobs' %}">
         </select>
     </div>
@@ -29,7 +30,7 @@
         </label>
     </div>
     <div class="match_filtering">
-        <select name="sensitivities" id="sensitivities" 
+        <select class="form-control" name="sensitivities" id="sensitivities" 
                 url = "{% url 'get_sensitivities' %}">
         </select>
     </div>
@@ -78,6 +79,9 @@
             </th>
         </tr>
     </thead>
-    <tbody id="listing">        
+  
+    <tbody id="listing">
+        <div id="spinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </tbody>
+    {% include "components/pagination.html" %}
 </table>

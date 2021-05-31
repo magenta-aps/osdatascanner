@@ -111,9 +111,22 @@ def getSensitivities(request):
         sensitivities = documentreports.exclude(sensitivity__isnull=True).\
                 order_by('sensitivity').\
                 values_list('sensitivity').distinct()
-        sensitivities = [i[0] for i in list(sensitivities)]
+        
+        sensitivity_list = [
+            [Sensitivity.CRITICAL.presentation, Sensitivity.CRITICAL.value],
+            [Sensitivity.PROBLEM.presentation, Sensitivity.PROBLEM.value],
+            [Sensitivity.WARNING.presentation, Sensitivity.WARNING.value],
+            [Sensitivity.NOTICE.presentation, Sensitivity.NOTICE.value],
+        ]
+
+        dropdown_list = []
+        for a in sensitivities:
+            for b in sensitivity_list:
+                if a[0] == b[1]:
+                    dropdown_list.append([a[0],b[0]])
+        print(list(dropdown_list))
         data = {
-            "sensitivities": sensitivities, 
+            "sensitivities": dropdown_list, 
         }
         return JsonResponse(data, status = 200)
 
@@ -125,10 +138,10 @@ def getScannerjobs(request):
                 resolution_status__isnull=True)
         scannerjobs = documentreports.exclude(data__scan_tag__scanner__pk__isnull=True).\
                 order_by('data__scan_tag__scanner__pk').\
-                values_list('data__scan_tag__scanner__pk').distinct()
-        scannerjobs = [i[0] for i in list(scannerjobs)]
+                values_list('data__scan_tag__scanner__pk','data__scan_tag__scanner__name').distinct()
+        scannerjobs = [i for i in list(scannerjobs)]
         data = {
-        "scannerjobs": scannerjobs, 
+            "scannerjobs": scannerjobs, 
         }
         return JsonResponse(data, status = 200)
 
@@ -137,7 +150,7 @@ def send_socket_message():
     async_to_sync(channel_layer.group_send)(
         'get_updates',
         {
-            'type':'send_message_to_frontend',
+            'type':'websocket_receive',
             'message': 'new matches'
         }
     )

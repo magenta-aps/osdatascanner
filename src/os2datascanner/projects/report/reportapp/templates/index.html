@@ -23,14 +23,13 @@
         
         var socket = new WebSocket(endpoint)
 
+        socket.onopen = function(e){
+          console.log("open", e);
+        };
         
         socket.onmessage = function(e){
           console.log("message", e)
           $('#alert-box').removeClass('hide')
-        };
-
-        socket.onopen = function(e){
-          console.log("open", e);
         };
 
         socket.onerror = function(e){

@@ -6,8 +6,7 @@
 
 .match_filtering_clear_button {
   cursor:pointer;
-  margin-right: 2rem;
-  margin-top: .5rem;
+  margin: 0 0 1rem;
   border:none;
   background: none;
   color: var(--color-primary-dark);
@@ -141,10 +140,8 @@
 
 /* style checkbox */
 .checkbox_wrapper {
-  float:left;
   clear: left;
   max-width: 100%;
-  margin-bottom: 2rem;
 }
 
 .ds-checkbox {

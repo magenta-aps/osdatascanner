@@ -147,44 +147,69 @@ function putTableData(result) {
     let next_url = result["next"];
     // disabling-enabling button depending on existence of next/prev page. 
 
+    // Pagination
+
     if (prev_url === null) {
         $("#previous").addClass("disabled");
         $("#previous").prop('disabled', true);
+        $("#previous").removeClass("link");
+        $("#previous").prop('link', false);
     } else {
         $("#previous").removeClass("disabled");
         $("#previous").prop('disabled', false);
+        $("#previous").addClass("link");
+        $("#previous").prop('link', true);
     }
     if (next_url === null) {
         $("#next").addClass("disabled");
         $("#next").prop('disabled', true);
+        $("#next").removeClass("link");
+        // $("#next").prop('link', false);
     } else {
         $("#next").removeClass("disabled");
         $("#next").prop('disabled', false);
+        $("#next").addClass("link");
+        // $("#next").prop('link', true);
     }
-    // setting the url
 
+    // PAGINATION
+
+    // setting the urls of 'previous' and 'next' button
     $("#previous").attr("url", result["previous"]);
     $("#next").attr("url", result["next"]);
-    // displaying result count
 
-    $("#result-count span").html(result["count"]);
+    // setting page x of x
+    $(".page_of_pages").html(result['page_number'] + ' of ' + result['total_pages'])
+
+    // setting input field's 'max' attribute
+    $("#page").attr("max", result['total_pages'])
+
+    // displaying result count
+    $("#result-count span").html('Total matches: ' + result["count"]);
 }
 
 function getAPIData() {
     let url = $('#list_data').attr("url")
-    console.log('API CALL');
+    console.log(url);
     $.ajax({
         method: 'GET',
         url: url,
         data: send_data,
         beforeSend: function(){
-            $("#no_results h5").html("Loading data...");
+            $("#spinner").show()
         },
         success: function (result) {
+            $("#spinner").hide()
             putTableData(result);
+
+            // setTimeout(function() {
+            //     $("#spinner").hide()
+            //     putTableData(result);
+            // },5000)
         },
         error: function (response) {
             $("#no_results h5").html("Something went wrong");
+            $("#spinner").hide()
             $("#list_data").hide();
         }
     });
@@ -238,6 +263,57 @@ $("#previous").click(function () {
     });
 })
 
+$("#go_to_page").click(function (event) {
+
+    event.preventDefault();
+
+    // get number from input field and set variable if input 'page' is valid
+    // let go_to_page = page.checkValidity() ? page.value : null
+    // if not, end the function
+    let go_to_page;
+    if(page.checkValidity()) {
+        go_to_page = page.value
+        page.value = ''
+    }
+    else {
+        return;
+    }
+
+    // Get either previous or next url (current not available in DRF)
+    let url;
+    if (!$('#previous').attr("url")) {
+        url = $('#next').attr("url")
+    }else {
+        url = $('#previous').attr("url")
+    }
+
+    url = replaceUrlParam(url, 'page', go_to_page)
+
+    $.ajax({
+        method: 'GET',
+        url: url,
+        success: function (result) {
+            putTableData(result);
+        },
+        error: function(response){
+            console.log(response)
+        }
+    });
+})
+
+// Function that replaces url parammeter, takes url, the parameter name and the 'new' value
+function replaceUrlParam(url, paramName, paramValue){
+    if (paramValue == null) {
+        paramValue = '';
+    }
+    var pattern = new RegExp('\\b('+paramName+'=).*?(&|#|$)');
+    if (url.search(pattern)>=0) {
+        return url.replace(pattern,'$1' + paramValue + '$2');
+    }
+    url = url.replace(/[?#]$/,'');
+    return url + (url.indexOf('?')>0 ? '&' : '?') + paramName + '=' + paramValue;
+}
+
 function getSensitivities() {
     // fill the options of sensitivites by making ajax call
 
@@ -252,9 +328,10 @@ function getSensitivities() {
         url: url,
         data: {},
         success: function (result) {
+            
             sensitivities_option = "<option value='all' selected>All Sensitivities</option>";
             $.each(result["sensitivities"], function (a, b) {
-                sensitivities_option += "<option>" + b + "</option>"
+                sensitivities_option += "<option value='" + b[0] + "'>" + b[1] + "</option>"
             });
             $("#sensitivities").html(sensitivities_option)
         },
@@ -277,7 +354,7 @@ function getScannerjobs() {
         success: function (result) {
             scannerjobs_option = "<option value='all' selected>All scannerjobs</option>";
             $.each(result["scannerjobs"], function (a, b) {
-                scannerjobs_option += "<option>" + b + "</option>"
+                scannerjobs_option += "<option value='" + b[0] + "'>" + b[1] + "</option>"
             });
             $("#scannerjobs").html(scannerjobs_option)
             

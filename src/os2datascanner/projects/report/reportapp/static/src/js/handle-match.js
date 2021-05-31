@@ -1,7 +1,8 @@
 // Changes 'x of x' on load, to avoid showing 0 of 10
 // while having less than 10 matches.
+// WE NEED A BETTER SOLUTION - MAYBE COMBINE THIS WITH THE API CALL
 window.addEventListener('load', function () {
-  showChecked();
+  setTimeout(showChecked,1000)
 });
 
 // Listen for click on toggle checkbox
@@ -20,9 +21,10 @@ $('#select-all').click(function() {
 
 // Show selected checkboxes
 function showChecked(){
-  var selected = $("td input:checked").length
-      + " af " + $("td input").length + " valgt";
+  var selected = $("td #match-checkbox:checked").length
+      + " af " + $("td #match-checkbox").length + " valgt";
   $(".selected-cb").text(selected);
+  console.log(selected);
 }
 // Iterate each checkbox
 // Fix in production - shouldn't be setTimeout.
