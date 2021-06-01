@@ -1,41 +1,4 @@
-// Changes 'x of x' on load, to avoid showing 0 of 10
-// while having less than 10 matches.
-// WE NEED A BETTER SOLUTION - MAYBE COMBINE THIS WITH THE API CALL
-window.addEventListener('load', function () {
-  setTimeout(showChecked,1000)
-});
-
-// Listen for click on toggle checkbox
-$('#select-all').click(function() {
-  if(this.checked) {
-      // Iterate each checkbox
-      $('td input:checkbox').each(function() {
-        this.checked = true;
-      });
-  } else {
-      $('td input:checkbox').each(function() {
-        this.checked = false;                   
-      });
-  }
-});
-
-// Show selected checkboxes
-function showChecked(){
-  var selected = $("td #match-checkbox:checked").length
-      + " af " + $("td #match-checkbox").length + " valgt";
-  $(".selected-cb").text(selected);
-  console.log(selected);
-}
-// Iterate each checkbox
-// Fix in production - shouldn't be setTimeout.
-
-setTimeout(function() {
-  $("input[name=match-checkbox]").each(function( i ) {
-    $(this).on("click", function(){
-      i = showChecked();
-    });
-  });
-}, 2000)
+// Moved chunk regarding checkboxes to documentReports.js
 
 function getCookie(name) {
   var cookieValue = null;
