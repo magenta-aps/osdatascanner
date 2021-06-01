@@ -86,6 +86,14 @@ function putTableData(result) {
         $("#list_data").show();
         $("#listing").html("");  
         $.each(result["results"], function (a, b) {
+            if(b.data.metadata.handle.type == "web") {
+                url = b.data.metadata.handle.source.url + b.data.metadata.handle.path
+            }
+            else {
+                // Find good logic for finding url.
+                url = "https://www.erdetfredag.dk/"
+            }
+            
             row = `
             <tr tabindex="0">
                 <td class="datatable__column--handle">
@@ -111,7 +119,7 @@ function putTableData(result) {
                     </span>
                     <div class="hit-link">
                         <div class="button-group">
-                            <a href="https://www.google.dk" class="button" target="_blank" rel="noopener">Open</a>    
+                            <a href="${url}" class="button" target="_blank" rel="noopener">Open</a>    
                         </div>
                     </div>
                 </td>
@@ -201,6 +209,8 @@ function getAPIData() {
         success: function (result) {
             $("#spinner").hide()
             putTableData(result);
+            setEventOnCheckbox()
+            showChecked()
 
             // setTimeout(function() {
             //     $("#spinner").hide()
@@ -232,6 +242,8 @@ $("#next").click(function () {
         url: url,
         success: function (result) {
             putTableData(result);
+            setEventOnCheckbox()
+            showChecked()
         },
         error: function(response){
             console.log(response)
@@ -256,6 +268,8 @@ $("#previous").click(function () {
         url: url,
         success: function (result) {
             putTableData(result);
+            setEventOnCheckbox()
+            showChecked()
         },
         error: function(response){
             console.log(response)
@@ -294,6 +308,8 @@ $("#go_to_page").click(function (event) {
         url: url,
         success: function (result) {
             putTableData(result);
+            setEventOnCheckbox()
+            showChecked()
         },
         error: function(response){
             console.log(response)
@@ -301,7 +317,7 @@ $("#go_to_page").click(function (event) {
     });
 })
 
-// Function that replaces url parammeter, takes url, the parameter name and the 'new' value
+// Function that replaces url parammeter, takes a url, the parameter name and the 'new' value
 function replaceUrlParam(url, paramName, paramValue){
     if (paramValue == null) {
         paramValue = '';
@@ -362,5 +378,34 @@ function getScannerjobs() {
         error: function(response){
             console.log(response)
         }
+    });
+}
+
+// Listen for click on toggle checkbox
+$('#select-all').click(function() {
+    if(this.checked) {
+        // Iterate each checkbox
+        $('td input:checkbox').each(function() {
+            this.checked = true;
+        });
+    } else {
+        $('td input:checkbox').each(function() {
+            this.checked = false;                   
+        });
+    }
+});
+  
+// Show selected checkboxes
+function showChecked(){
+    var selected = $('td #match-checkbox:checked').length
+        + " af " + $('td #match-checkbox').length + " valgt";
+    $(".selected-cb").text(selected);
+}
+// Iterate each checkbox
+function setEventOnCheckbox() {
+    $("input[name=match-checkbox]").each(function( i ) {
+        $(this).on("click", function(){
+            i = showChecked();
+        });
     });
 }
