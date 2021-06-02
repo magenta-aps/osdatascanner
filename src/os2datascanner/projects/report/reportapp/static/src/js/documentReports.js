@@ -153,8 +153,8 @@ function putTableData(result) {
 
     let prev_url = result["previous"];
     let next_url = result["next"];
+    
     // disabling-enabling button depending on existence of next/prev page. 
-
     // Pagination
 
     if (prev_url === null) {

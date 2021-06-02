@@ -47,7 +47,7 @@ from ..models.roles.remediator_model import Remediator
 from ..models.roles.dpo_model import DataProtectionOfficer
 from ..models.roles.leader_model import Leader
 
-#DRF
+# DRF
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
 from ..serializers import DocumentReportSerializers
@@ -73,28 +73,27 @@ class LogoutPageView(TemplateView, View):
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'index.html'
 
+
 class ReportListing(LoginRequiredMixin, ListAPIView):
 
     # set the pagination and serializer class
-
     pagination_class = StandardResultsSetPagination
     serializer_class = DocumentReportSerializers
 
     def get_queryset(self):
-    # filter the queryset based on the filters applied
-
+        # filter the queryset based on the filters applied
         queryList = DocumentReport.objects.filter(
-                data__matches__matched=True).filter(
-                resolution_status__isnull=True)
+            data__matches__matched=True).filter(
+            resolution_status__isnull=True)
         sensitivity = self.request.query_params.get('sensitivity', None)
         scannerjob = self.request.query_params.get('scannerjob', None)
         thirty_day_rule = self.request.query_params.get('30-day-rule', None)
 
         if sensitivity:
-            queryList = queryList.filter(sensitivity = sensitivity)
+            queryList = queryList.filter(sensitivity=sensitivity)
         if scannerjob:
             queryList = queryList.filter(
-                    data__scan_tag__scanner__pk = int(scannerjob))
+                data__scan_tag__scanner__pk=int(scannerjob))
         if thirty_day_rule == 'false':
             time_threshold = time_now() - timedelta(days=30)
             queryList = queryList.filter(
@@ -102,16 +101,17 @@ class ReportListing(LoginRequiredMixin, ListAPIView):
 
         return queryList
 
+
 def getSensitivities(request):
     # Change to also send what kind of sensitivity number is
     if request.method == "GET" and request.is_ajax():
         documentreports = DocumentReport.objects.filter(
-                data__matches__matched=True).filter(
-                resolution_status__isnull=True)
+            data__matches__matched=True).filter(
+            resolution_status__isnull=True)
         sensitivities = documentreports.exclude(sensitivity__isnull=True).\
-                order_by('sensitivity').\
-                values_list('sensitivity').distinct()
-        
+            order_by('sensitivity').\
+            values_list('sensitivity').distinct()
+
         sensitivity_list = [
             [Sensitivity.CRITICAL.presentation, Sensitivity.CRITICAL.value],
             [Sensitivity.PROBLEM.presentation, Sensitivity.PROBLEM.value],
@@ -123,37 +123,40 @@ def getSensitivities(request):
         for a in sensitivities:
             for b in sensitivity_list:
                 if a[0] == b[1]:
-                    dropdown_list.append([a[0],b[0]])
+                    dropdown_list.append([a[0], b[0]])
         print(list(dropdown_list))
         data = {
-            "sensitivities": dropdown_list, 
+            "sensitivities": dropdown_list,
         }
-        return JsonResponse(data, status = 200)
+        return JsonResponse(data, status=200)
 
 
 def getScannerjobs(request):
     if request.method == "GET" and request.is_ajax():
         documentreports = DocumentReport.objects.filter(
-                data__matches__matched=True).filter(
-                resolution_status__isnull=True)
+            data__matches__matched=True).filter(
+            resolution_status__isnull=True)
         scannerjobs = documentreports.exclude(data__scan_tag__scanner__pk__isnull=True).\
-                order_by('data__scan_tag__scanner__pk').\
-                values_list('data__scan_tag__scanner__pk','data__scan_tag__scanner__name').distinct()
+            order_by('data__scan_tag__scanner__pk').\
+            values_list('data__scan_tag__scanner__pk',
+                        'data__scan_tag__scanner__name').distinct()
         scannerjobs = [i for i in list(scannerjobs)]
         data = {
-            "scannerjobs": scannerjobs, 
+            "scannerjobs": scannerjobs,
         }
-        return JsonResponse(data, status = 200)
+        return JsonResponse(data, status=200)
+
 
 def send_socket_message():
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         'get_updates',
         {
-            'type':'websocket_receive',
+            'type': 'websocket_receive',
             'message': 'new matches'
         }
     )
+
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):
     template_name = 'statistics.html'
@@ -166,7 +169,7 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
         resolution_status__isnull=False)
     unhandled_matches = matches.filter(
         resolution_status__isnull=True)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         today = timezone.now()
@@ -267,7 +270,7 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
                 formatted_counts[0][1] += s[1]
 
         return formatted_counts
-        
+
     def count_unhandled_matches(self):
         # Counts the amount of unhandled matches
         # TODO: Optimize queries by reading from relational db
@@ -384,14 +387,15 @@ def filter_inapplicable_matches(user, matches, roles):
     try:
         user_organization = user.profile.organization
         # Include matches without organization (backwards compatibility)
-        matches = matches.filter(Q(organization=None) | Q(organization=user_organization))
+        matches = matches.filter(Q(organization=None) |
+                                 Q(organization=user_organization))
     except UserProfile.DoesNotExist:
         # No UserProfile has been set on the request user
         # Default action depends on how many organization objects we have
         # If more than one exist, limit matches to ones without an organization (safety measure)
         if Organization.objects.count() > 1:
             matches = matches.filter(organization=None)
-    
+
     if user_is(roles, Remediator):
         # Filter matches by role.
         matches = Remediator(user=user).filter(matches)
