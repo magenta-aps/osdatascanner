@@ -1,6 +1,6 @@
 // variable that keeps all the filter information
 
-var send_data = {}
+var parameters = {}
 
 $(document).ready(function () {
     // reset all parameters on page load
@@ -23,9 +23,9 @@ $(document).ready(function () {
         // get the api data of updated variety
 
         if(this.value == "all")
-            send_data['sensitivity'] = "";
+            parameters['sensitivity'] = "";
         else
-            send_data['sensitivity'] = this.value;
+            parameters['sensitivity'] = this.value;
         getAPIData();
     });
 
@@ -33,18 +33,18 @@ $(document).ready(function () {
         // get the api data of updated variety
 
         if(this.value == "all")
-            send_data['scannerjob'] = "";
+            parameters['scannerjob'] = "";
         else
-            send_data['scannerjob'] = this.value;
+            parameters['scannerjob'] = this.value;
         getAPIData();
     });
 
     $('#30_day_rule').on('change', function () {
         // get the api data of updated variety
         if(this.checked)
-            send_data['30-day-rule'] = true;
+            parameters['30-day-rule'] = true;
         else
-            send_data['30-day-rule'] = false;
+            parameters['30-day-rule'] = false;
         getAPIData();
     });
     
@@ -66,19 +66,16 @@ function resetFilters() {
     $("#scannerjobs").val("all");
     $("#30_day_rule").prop('checked', false);
 
-    send_data['sensitivity'] = '';
-    send_data['scannerjob'] = '';
-    send_data['30-day-rule'] = false;
+    parameters['sensitivity'] = '';
+    parameters['scannerjob'] = '';
+    parameters['30-day-rule'] = false;
 }
 
-/**.
-    Utility function to showcase the api data 
-    we got from backend to the table content
-**/
+
+// Function to show the api data 
 function putTableData(result) {
     // creating table row for each result and
-
-    // pushing to the html cntent of table body of listing table
+    // pushing to the html content of table
 
     let row;
     if(result["results"].length > 0){
@@ -198,11 +195,10 @@ function putTableData(result) {
 
 function getAPIData() {
     let url = $('#list_data').attr("url")
-    console.log(url);
     $.ajax({
         method: 'GET',
         url: url,
-        data: send_data,
+        data: parameters,
         beforeSend: function(){
             $("#spinner").show()
         },
@@ -211,11 +207,6 @@ function getAPIData() {
             putTableData(result);
             setEventOnCheckbox()
             showChecked()
-
-            // setTimeout(function() {
-            //     $("#spinner").hide()
-            //     putTableData(result);
-            // },5000)
         },
         error: function (response) {
             $("#no_results h5").html("Something went wrong");
