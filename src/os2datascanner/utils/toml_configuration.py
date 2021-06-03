@@ -11,16 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 def read_config(config_path):
+    logger.info("reading config from {0}".format(config_path))
     try:
         with open(config_path) as f:
             content = f.read()
     except FileNotFoundError as err:
-        logger.critical("%s: %r", err.strerror, err.filename)
+        logger.error("%s: %r", err.strerror, err.filename, exc_info=True)
         sys.exit(5)
     try:
         return toml.loads(content)
     except toml.TomlDecodeError:
-        logger.critical("Failed to parse TOML")
+        logger.error(f"Failed to parse TOML from file {config_path}", exc_info=True)
         sys.exit(4)
 
 

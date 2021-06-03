@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from sys import stderr
 import json
 import pika
+import logging
 
 from ...utilities.backoff import run_with_backoff
 from ....utils.system_utilities import json_utf8_decode
 from os2datascanner.utils import pika_settings
 
+logger = logging.getLogger(__name__)
 
 class PikaConnectionHolder(ABC):
     """A PikaConnectionHolder manages a blocking connection to a RabbitMQ
