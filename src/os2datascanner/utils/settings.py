@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+import logging
+import os
+import sys
+from pathlib import Path
+from enum import Enum
+from os2datascanner.utils.toml_configuration import get_3_layer_config
+
+logger = logging.getLogger(__name__)
+
+"""read the settings for the different components of datascanner
+
+by checking if any of the `ADMIN`, `ENGINE` or `REPORT` environment variable is
+set, in this order. Thus, only set one of the env's.
+
+XXX: This is very error-phrone. Should be fixed during consolidation period
+XXX: unite all the config-reading facilities. config files are shattered all over
+
+"""
+
+_ERROR_MSG = "OS2DS_{MODULE_NAME}_USER_CONFIG_PATH not set"
+
+class OS2DSModule(Enum):
+    ADMIN = ('admin',)
+    ENGINE = ('engine',)
+    REPORT = ('report',)
+    SERVER = ('server',)
+
+    @classmethod
+    def determine_OS2DS_module(cls):
+        # TODO: Consider a more elegant way to determine this
+        if os.getenv('OS2DS_ADMIN_USER_CONFIG_PATH'):
+            return cls.ADMIN
+        elif os.getenv('OS2DS_ENGINE_USER_CONFIG_PATH'):
+            return cls.ENGINE
+        elif os.getenv('OS2DS_REPORT_USER_CONFIG_PATH'):
+            return cls.REPORT
+        elif (os.getenv('OS2DS_SERVER_USER_CONFIG_PATH') or
+            os.getenv('OS2DS_SERVER_SYSTEM_CONFIG_PATH')):
+            return cls.SERVER
+        else:
+            logger.error(_ERROR_MSG)
+            sys.exit(4)
+
+    def __init__(self, _):
+        self.sys_var = f"OS2DS_{self.name}_SYSTEM_CONFIG_PATH"
+        self.user_var = f"OS2DS_{self.name}_USER_CONFIG_PATH"
+
+
+def _get_default_settings_path(OS2DS_module):
+    # abs path of src/os2datascanner
+    path = Path(__file__).parents[1].resolve()
+    
+    # get module specific path
+    if OS2DS_module == OS2DSModule.ENGINE:
+        path = path / 'engine2'
+    elif OS2DS_module == OS2DSModule.ADMIN:
+        path = path / 'projects/admin'
+    elif OS2DS_module == OS2DSModule.REPORT:
+        path = path / 'projects/report'
+    elif OS2DS_module == OS2DSModule.SERVER:
+        path = path / 'server'
+
+    return path / 'default-settings.toml'
+
+
+def get_config(key=None):
+    """"""
+    OS2DS_module = OS2DSModule.determine_OS2DS_module()
+    try:
+        sys_var = OS2DS_module.sys_var
+        user_var = OS2DS_module.user_var
+    except:
+        sys_var = ""
+        user_var = ""
+        logger.warning(f"sys_var and/or user_var not set (probably because {_ERROR_MSG})")
+
+    default_settings = _get_default_settings_path(OS2DS_module)
+    config = get_3_layer_config(default_settings,
+                                sys_var=sys_var,
+                                user_var=user_var)
+
+    if key:
+        try:
+            config = config[key]
+        except KeyError as e:
+            raise ValueError("Error during loading of settings") from e
+    return config
+
+
+# NEVER print or log the config object, as it will expose secrets
+# Only ever print or log explicitly chosen (and safe!) settings!
+_config = get_config()
+for key, value in _config.items():
+    if not key.startswith('_'):
+        # NB! Never log the value for an unspecified key!
+        if isinstance(value, list):
+            logger.debug("Converting list value to tuple for %s", key)
+            value = tuple(value)
+        logger.info("Adding setting: %s", key)
+        globals()[key] = value
+
+
+del key, value, _config
