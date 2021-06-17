@@ -12,8 +12,6 @@ by checking if any of the `ADMIN`, `ENGINE` or `REPORT` environment variable is
 set, in this order. Thus, only set one of the env's.
 """
 
-_ERROR_MSG = "OS2DS_{MODULE_NAME}_USER_CONFIG_PATH not set"
-
 
 class OS2DSModule(Enum):
     ADMIN = ("admin",)
@@ -35,7 +33,7 @@ class OS2DSModule(Enum):
         ):
             return cls.SERVER
         else:
-            raise ValueError(_ERROR_MSG)
+            raise ImportError("OS2DS_@MODULE_USER_CONFIG_PATH not set")
 
     def __init__(self, _):
         self.sys_var = f"OS2DS_{self.name}_SYSTEM_CONFIG_PATH"

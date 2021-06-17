@@ -6,3 +6,7 @@ permitted_sources = ["data", "web"]
 # header) in all requests to the API host. If this value is empty, the API host
 # will reject all incoming requests
 token = ""
+
+[log]
+log_path = ""
+log_level = "INFO"

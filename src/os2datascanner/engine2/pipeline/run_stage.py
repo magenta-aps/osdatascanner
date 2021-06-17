@@ -12,6 +12,9 @@ from .utilities.pika import PikaPipelineRunner
 from .utilities.systemd import notify_ready, notify_stopping
 from . import explorer, processor, matcher, tagger, exporter, worker
 
+# __name__ resolves to __main__ when called like
+# python -m os2datascanner.engine2.pipeline.run_stage
+logger = logging.getLogger("os2datascanner.pipeline.run_stage")
 
 def backtrace(signal, frame):
     """send `SIGURS1` to print the stacktrace,
@@ -59,9 +62,8 @@ def main():
             help="print all incoming messages to the console")
     parser.add_argument(
             "--log",
-            default="info",
             help=(
-                "Set logging level. Example --log debug', default='info'"
+                "Change logging level. Example --log debug"
             ),
             choices=("critical", "error", "warn", "warning", "info", "debug",)
         )
@@ -94,13 +96,9 @@ def main():
     args = parser.parse_args()
     module = _module_mapping[args.stage]
 
-    # leave all loggers from external libraries at default(WARNING) level.
-    # change formatting to include datestamp
-    fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-    # set level for root logger
-    logger = logging.getLogger("os2datascanner")
-    logger.setLevel(_loglevels[args.log])
+    if args.log:
+        # change level for root logger.
+        logging.getLogger("os2datascanner").setLevel(_loglevels[args.log])
     logger.info("starting pipeline {0}".format(args.stage))
 
     if args.enable_metrics:
