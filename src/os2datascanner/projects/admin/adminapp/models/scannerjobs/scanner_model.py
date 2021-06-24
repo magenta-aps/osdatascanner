@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# encoding: utf-8
 # The contents of this file are subject to the Mozilla Public License
 # Version 2.0 (the "License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
@@ -10,11 +9,9 @@
 # for the specific language governing rights and limitations under the
 # License.
 #
-# OS2Webscanner was developed by Magenta in collaboration with OS2 the
-# Danish community of open source municipalities (http://www.os2web.dk/).
+# OS2datascanner is developed by Magenta in collaboration with the OS2 public
+# sector open source network <https://os2.eu/>.
 #
-# The code is currently governed by OS2 the Danish community of open
-# source municipalities ( http://www.os2web.dk/ )
 
 """Contains Django model for the scanner types."""
 
@@ -383,26 +380,53 @@ class ScanStatus(models.Model):
     """A ScanStatus object collects the status messages received from the
     pipeline for a given scan."""
 
-    scan_tag = JSONField(verbose_name=_("scan tag"), unique=True)
+    scan_tag = JSONField(
+        verbose_name=_("scan tag"),
+        unique=True
+    )
 
-    scanner = models.ForeignKey(Scanner, related_name="statuses",
-                                verbose_name=_("associated scanner job"),
-                                on_delete=models.CASCADE)
+    scanner = models.ForeignKey(
+        Scanner,
+        related_name="statuses",
+        verbose_name=_("associated scanner job"),
+        on_delete=models.CASCADE
+    )
 
-    total_sources = models.IntegerField(verbose_name=_("total sources"),
-                                       null=True)
-    explored_sources = models.IntegerField(verbose_name=_("explored sources"),
-                                         null=True)
+    total_sources = models.IntegerField(
+        verbose_name=_("total sources"),
+        null=True
+    )
 
-    total_objects = models.IntegerField(verbose_name=_("total objects"),
-                                        null=True)
-    scanned_objects = models.IntegerField(verbose_name=_("scanned objects"),
-                                          null=True)
+    explored_sources = models.IntegerField(
+        verbose_name=_("explored sources"),
+        null=True,
+    )
+
+    total_objects = models.IntegerField(
+        verbose_name=_("total objects"),
+        null=True,
+    )
+
+    scanned_objects = models.IntegerField(
+        verbose_name=_("scanned objects"),
+        null=True,
+    )
+
     scanned_size = models.BigIntegerField(
             verbose_name=_("size of scanned objects"),
-            null=True)
-    message = models.CharField(max_length=2048, blank=True, verbose_name='message')
-    status_is_error = models.BooleanField(default=False)
+            null=True,
+    )
+
+    message = models.CharField(
+        max_length=2048,
+        null=True,
+        verbose_name=_("status message"),
+    )
+
+    status_is_error = models.BooleanField(
+        verbose_name=_("is status failed"),
+        default=False,
+    )
 
     @property
     def finished(self) -> bool:

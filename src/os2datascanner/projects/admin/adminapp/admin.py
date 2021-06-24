@@ -73,7 +73,8 @@ class ScanStatusAdmin(admin.ModelAdmin):
                        'estimated_completion_time',)
     fields = ('scan_tag', 'scanner', 'total_sources', 'explored_sources',
               'fraction_explored', 'total_objects', 'scanned_objects',
-              'fraction_scanned', 'scanned_size', 'estimated_completion_time',)
+              'fraction_scanned', 'scanned_size', 'estimated_completion_time',
+              'message', 'status_is_error')
 
 
 admin.site.unregister(Group)
