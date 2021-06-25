@@ -59,6 +59,13 @@ services:
       - queue
 
 
+  redis:
+    restart: always
+    image: redis:latest
+    expose:
+      - "6379"
+
+
   idp:
     image: magentalabs/simplesamlphp:2.0.0
     environment:

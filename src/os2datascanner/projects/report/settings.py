@@ -49,9 +49,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+# https://github.com/django/channels/issues/624#issuecomment-609483480
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)]
+        }
     }
 }
 
