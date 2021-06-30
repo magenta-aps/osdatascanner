@@ -132,6 +132,4 @@ USER os2ds_report:os2ds_report
 EXPOSE 5000
 ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
 
-CMD ["gunicorn", \
-     "--config", "/code/docker/gunicorn-settings.py", \
-     "wsgi"]
+CMD ["uvicorn --host 0.0.0.0 --port 5000 --ws websockets --reload os2datascanner.projects.report.asgi:application"]
