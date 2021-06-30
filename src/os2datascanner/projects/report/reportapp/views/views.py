@@ -49,6 +49,9 @@ from ..models.roles.remediator_model import Remediator
 from ..models.roles.dpo_model import DataProtectionOfficer
 from ..models.roles.leader_model import Leader
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 logger = structlog.get_logger()
 
 RENDERABLE_RULES = (
@@ -388,6 +391,16 @@ class SettingsPageView(TemplateView):
 class AboutPageView(TemplateView):
     template_name = 'about.html'
 
+# Function for sending message to socket
+def send_socket_message():
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'get_updates',
+        {
+            'type': 'websocket_receive',
+            'message': 'new matches'
+        }
+    )
 
 # Logic separated to function to allow usability in send_notifications.py
 def filter_inapplicable_matches(user, matches, roles):
