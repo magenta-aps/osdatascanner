@@ -234,7 +234,7 @@ systemd-python==234
     # via
     #   -c requirements-engine.txt
     #   -r requirements-engine.in
-toml==0.10.1
+toml==0.10.2
     # via
     #   -c requirements-engine.txt
     #   -r requirements-common.in

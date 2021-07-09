@@ -333,7 +333,7 @@ structlog==20.1.0
     #   -c requirements-engine.txt
     #   -r requirements-common.in
     #   django-structlog
-toml==0.10.1
+toml==0.10.2
     # via
     #   -c requirements-engine.txt
     #   -r requirements-common.in
