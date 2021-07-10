@@ -50,7 +50,7 @@ class Engine2ConversionTest(unittest.TestCase):
                 "This is only a test. "
                 "There's one paragraph, "
                 "and then there's the other paragraph.",
-                convert(self._hr, OutputType.Text).value)
+                " ".join(convert(self._hr, OutputType.Text).value.split()))
 
     def test_empty_html(self):
         self.assertEqual(
