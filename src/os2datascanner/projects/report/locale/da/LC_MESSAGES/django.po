@@ -255,26 +255,26 @@ msgid "DPO statistics"
 msgstr "DPO statistik"
 
 #: reportapp/templates/components/statistics-template.html:14
-#: reportapp/templates/components/statistics-template.html:162
-msgid "Development overview"
-msgstr "Udviklingsoverblik"
+#: reportapp/templates/components/statistics-template.html:230
+msgid "Employee overview"
+msgstr "Medarbejderoverblik"
 
 #: reportapp/templates/components/statistics-template.html:15
-msgid "New matches by month"
-msgstr "Antal nye matches per måned"
+msgid "Overview of departments with the most unhandled matches"
+msgstr "Overblik over afdelinger med flest uhåndterede matches"
 
 #: reportapp/templates/components/statistics-template.html:16
-msgid "Unhandled matches by month"
-msgstr "Antal uhåndterede matches per måned"
+msgid "Overview of departments with the oldest unhandled matches"
+msgstr "Overblik over afdelinger med flest uhåndterede matches"
 
 #: reportapp/templates/components/statistics-template.html:22
 #: reportapp/templates/components/statistics-template.html:28
-msgid "New matches"
-msgstr "Nye matches"
-
-#: reportapp/templates/components/statistics-template.html:29
 msgid "Unhandled matches"
 msgstr "Uhåndterede matches"
+
+#: reportapp/templates/components/statistics-template.html:29
+msgid "Oldest matches"
+msgstr "Ældste matches"
 
 #: reportapp/templates/components/statistics-template.html:46
 msgid "Distribution of matches"
@@ -322,17 +322,17 @@ msgstr "Alle matches"
 msgid "of"
 msgstr "af"
 
+#: reportapp/templates/components/statistics-template.html:162
+msgid "Development overview"
+msgstr "Udviklingsoverblik"
+
 #: reportapp/templates/components/statistics-template.html:163
-msgid "Overview for department with most unhandled matches"
-msgstr "Overblik over afdelinger med flest uhåndterede matches"
+msgid "New matches by month"
+msgstr "Antal nye matches per måned"
 
 #: reportapp/templates/components/statistics-template.html:164
-msgid "Overview for departments with the oldest matches"
-msgstr "Overblik over afdelinger med flest uhåndterede matches"
-
-#: reportapp/templates/components/statistics-template.html:170
-msgid "Comming soon"
-msgstr "Kommer snart"
+msgid "Unhandled matches by month"
+msgstr "Antal uhåndterede matches per måned"
 
 #: reportapp/templates/django_saml2_auth/denied.html:6
 msgid "Permission denied"
@@ -499,6 +499,6 @@ msgstr "Filscan"
 msgid "Mailscan"
 msgstr "Mailscan"
 
-#: reportapp/views/views.py:329
+#: reportapp/views/views.py:353
 msgid "Not assigned"
 msgstr "Ikke tildelt"
