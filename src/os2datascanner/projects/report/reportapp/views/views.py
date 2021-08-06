@@ -318,7 +318,6 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return employee_unhandled_list
 
-<<<<<<< HEAD
     def count_unhandled_matches_by_month(self, current_date):
         """Counts new matches and resolved matches by month for the last year,
         rotates the current month to the end of the list, inserts and subtracts using the counts
@@ -365,8 +364,6 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return list(full_year_of_months)
 
-=======
->>>>>>> [#41650] Add the five oldest matches method
     def count_new_matches_by_month(self, current_date):
         """Counts matches by months for the last year
         and rotates them by the current month"""

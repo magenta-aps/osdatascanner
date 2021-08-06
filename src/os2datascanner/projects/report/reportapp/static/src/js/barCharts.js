@@ -25,26 +25,23 @@ Chart.pluginService.register({
 					var start = model.y;
 					var end = model.y + height;
 					
-					
 					// and to create the gradient
 					gradient = chart.ctx.createLinearGradient(0, start, 0, end);
 
 					// Make the gradient yellow if -> Find something to check for
 					// TODO: 
-					// if (model.label !== !user) {
-					// 	// The colors of the gradient that were defined in the data
-					// 	gradient.addColorStop(0, dataset.backgroundColor[0][2]);
-					// 	gradient.addColorStop(1, dataset.backgroundColor[0][3]);
-					// }
-					// else {
+					if (!fiveOldestMatches[j][2]) {
 						// The colors of the gradient that were defined in the data
-						// gradient.addColorStop(0, dataset.backgroundColor[j][0]);
-						// gradient.addColorStop(1, dataset.backgroundColor[j][1]);
+						gradient.addColorStop(0, dataset.backgroundColor[0][2]);
+						gradient.addColorStop(1, dataset.backgroundColor[0][3]);
+					}
+					else {
+						// The colors of the gradient that were defined in the data
+						gradient.addColorStop(0, dataset.backgroundColor[0][0]);
+						gradient.addColorStop(1, dataset.backgroundColor[0][1]);
 
-						//Use this instead of ^ if we need the same color every time
-					gradient.addColorStop(0, dataset.backgroundColor[0][0]);
-					gradient.addColorStop(1, dataset.backgroundColor[0][1]);
-					// }
+					}
+
 					// We set this new color to the data background
 					model.backgroundColor = gradient;
 				}
@@ -336,76 +333,77 @@ Chart.pluginService.register({
 
 // Creating data for unhandled matches bar chart
 
-var unhandledBarChartCtx = document.querySelector("#bar_chart_unhandled").getContext('2d');
+// var unhandledBarChartCtx = document.querySelector("#bar_chart_unhandled").getContext('2d');
 
-// Recieve data and create array for labels and data.
+// // Recieve data and create array for labels and data.
 
-var unhandledBarChartLabels = [];
-var unhandledBarChartValues = [];
+// var unhandledBarChartLabels = [];
+// var unhandledBarChartValues = [];
 
-for(var i = 0; i<unhandledMatches.length && i<5;i++) {
-	unhandledBarChartLabels.push(unhandledMatches[i][0]);
-	unhandledBarChartValues.push(unhandledMatches[i][1]);
-}
+// for(var i = 0; i<unhandledMatches.length && i<5;i++) {
+// 	unhandledBarChartLabels.push(unhandledMatches[i][0]);
+// 	unhandledBarChartValues.push(unhandledMatches[i][1]);
+// }
 
-// this function works for arrays with only values
-var unhandledMatchesAverage = unhandledBarChartValues.reduce((a,b) => (a + b)) / unhandledBarChartValues.length;
+// // this function works for arrays with only values
+// var unhandledMatchesAverage = unhandledBarChartValues.reduce((a,b) => (a + b)) / unhandledBarChartValues.length;
 
-new Chart(unhandledBarChartCtx, {
-	type: 'bar',
-	data: {
-		labels: unhandledBarChartLabels,
-		datasets: [{
-			data: unhandledBarChartValues,
-			backgroundColor: [
-				[colorFunction('--color-primary-light'), colorFunction('--color-primary'), colorFunction('--color-warning'),colorFunction('--color-gradient-dark-yellow') ],
-			],
-			barThickness: 55,
-		}]
-	},
-	options: {
-		cornerRadius: 5, 
-		//Default: false; if true, this would round all corners of final box;
-		fullCornerRadius: true,
-		legend: {
-			display: false
-		},
-		tooltips: {
-			enabled: false
-		},
-		hover: {
-			mode: null
-		},
-		plugins: {
-		// chartjs-plugin-datalabels.js
-			datalabels: {
-				display: false
-			}
-		},
-		scales: {
-			xAxes: [{
-				gridLines: {
-					display: false,
-					// drawOnChartArea:false
-				}
-			}],
-			yAxes: [{
-				gridLines: {
-						display: false,
-						// drawOnChartArea:false
-				},
-				ticks: {
-					beginAtZero: true,
-					stepSize: stepSizeFunction(unhandledBarChartValues, 3),
-				}
-			}]
-		},
-		lineAt: unhandledMatchesAverage, // Average line value
-		responsive:true
-	}
-});
+// new Chart(unhandledBarChartCtx, {
+// 	type: 'bar',
+// 	data: {
+// 		labels: unhandledBarChartLabels,
+// 		datasets: [{
+// 			data: unhandledBarChartValues,
+// 			backgroundColor: [
+// 				[colorFunction('--color-primary-light'), colorFunction('--color-primary'), colorFunction('--color-warning'),colorFunction('--color-gradient-dark-yellow') ],
+// 			],
+// 			barThickness: 55,
+// 		}]
+// 	},
+// 	options: {
+// 		cornerRadius: 5, 
+// 		//Default: false; if true, this would round all corners of final box;
+// 		fullCornerRadius: true,
+// 		legend: {
+// 			display: false
+// 		},
+// 		tooltips: {
+// 			enabled: false
+// 		},
+// 		hover: {
+// 			mode: null
+// 		},
+// 		plugins: {
+// 		// chartjs-plugin-datalabels.js
+// 			datalabels: {
+// 				display: false
+// 			}
+// 		},
+// 		scales: {
+// 			xAxes: [{
+// 				gridLines: {
+// 					display: false,
+// 					// drawOnChartArea:false
+// 				}
+// 			}],
+// 			yAxes: [{
+// 				gridLines: {
+// 						display: false,
+// 						// drawOnChartArea:false
+// 				},
+// 				ticks: {
+// 					beginAtZero: true,
+// 					stepSize: stepSizeFunction(unhandledBarChartValues, 3),
+// 				}
+// 			}]
+// 		},
+// 		lineAt: unhandledMatchesAverage, // Average line value
+// 		responsive:true
+// 	}
+// });
 
 // Creating data for oldest matches
+var testarray = [10, 20, 30]
 
 var oldestBarChartCtx = document.querySelector("#bar_chart_oldest").getContext('2d');
 
@@ -414,15 +412,13 @@ var oldestBarChartCtx = document.querySelector("#bar_chart_oldest").getContext('
 var oldestBarChartLabels = [];
 var oldestBarChartValues = [];
 
-for(var i = 0; i<oldestMatches.length && i<5;i++) {
-  oldestBarChartLabels.push(oldestMatches[i][0]);
-  oldestBarChartValues.push(oldestMatches[i][1]);
+for(var i = 0; i<fiveOldestMatches.length && i<5;i++) {
+  oldestBarChartLabels.push(fiveOldestMatches[i][0]);
+  oldestBarChartValues.push(fiveOldestMatches[i][1]);
 }
 
 // this function works for arrays with only values
-var oldestMatchesAverage = oldestBarChartValues.reduce(function (a, b) {
-	return a + b;
-}) / oldestBarChartValues.length;
+var oldestMatchesAverage = oldestBarChartValues.reduce((a,b) => (a + b)) / oldestBarChartValues.length;
 
 new Chart(oldestBarChartCtx, {
   type: 'bar',
@@ -431,7 +427,7 @@ new Chart(oldestBarChartCtx, {
     datasets: [{
       data: oldestBarChartValues,
       backgroundColor: [
-        [colorFunction('--color-primary-light'), colorFunction('--color-primary')],
+        ['#5ca4cd', '#21759c', '#fed149','#eac445'],
       ],
       barPercentage: 0.8,
     }]
@@ -480,3 +476,4 @@ new Chart(oldestBarChartCtx, {
     responsive:true
   }
 });
+

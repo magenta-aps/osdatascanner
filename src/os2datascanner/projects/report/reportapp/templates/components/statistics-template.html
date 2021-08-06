@@ -7,6 +7,38 @@
   {% endif %}
   <div class="statistic_wrapper">
 
+    <!-- Bar chart -->
+    <!-- <div class="statistic statistic--one">
+      <div class="statistic_header">
+        <div>
+          <h1 class="page-title__sub">{% trans "Employee overview" %}</h1>
+          <p class="chart_description">{% trans "Overview of departments with the most unhandled matches" %}</p>
+          <p class="hidden chart_description">{% trans "Overview of departments with the oldest unhandled matches" %}</p>
+        </div>
+        <div class="statistic_header_nav">
+          <div></div>
+          <div class="dropdown">
+            <div class="select">
+              <span class="select_span">{% trans "Unhandled matches" %}</span>
+              <i class="material-icons">
+                keyboard_arrow_down
+              </i>
+            </div>
+            <ul class="dropdown-menu">
+              <li>{% trans "Unhandled matches" %}</li>
+              <li>{% trans "Oldest matches" %}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="bar_chart_container chart_container">
+        <canvas id="bar_chart_unhandled"></canvas>
+      </div>
+      <div class="hidden bar_chart_container chart_container">
+        <canvas id="bar_chart_oldest"></canvas>
+      </div>
+    </div> -->
+
     <!-- Line chart -->
     <div class="statistic statistic--one">
       <div class="statistic_header">
@@ -17,25 +49,27 @@
         </div>
         <div class="statistic_header_nav">
         <div></div>
+        <!-- Commented out until the method for 'Uhåndterede matches' is ready
         <div class="dropdown">
           <div class="select">
-            <span class="select_span">{% trans "New matches" %}</span>
+            <span class="select_span">Nye matches pr. md.</span>
             <i class="material-icons">
               keyboard_arrow_down
             </i>
           </div>
           <ul class="dropdown-menu">
-            <li>{% trans "New matches" %}</li>
-            <li>{% trans "Unhandled matches" %}</li>
+            <li>Nye matches pr. md.</li>
+            <li>Uhåndterede matches</li>
           </ul>
         </div>
+        -->
         </div>
       </div>
       <div class="chart_container">
         <canvas id="line_chart_new_matches_by_month"></canvas>
       </div>
       <div class="hidden chart_container">
-        <canvas id="line_chart_unhandled_matches"></canvas>
+        <canvas id="line_chart_unhandled"></canvas>
       </div>
     </div>
 
@@ -155,24 +189,57 @@
 
       </div>
     </div>
-    <!-- Bar chart -->
+    <!-- Line chart -->
+    <!-- <div class="statistic statistic--four">
+      <div class="statistic_header">
+        <div class="">
+          <h1 class="page-title__sub">{% trans "Development overview" %}</h1>
+          <p class="chart_description">{% trans "New matches by month" %}</p>
+          <p class="hidden chart_description">{% trans "Unhandled matches by month" %}</p>
+        </div>
+        <div class="statistic_header_nav">
+        <div></div> -->
+        <!-- Commented out until the method for 'Uhåndterede matches' is ready
+        <div class="dropdown">
+          <div class="select">
+            <span class="select_span">Nye matches pr. md.</span>
+            <i class="material-icons">
+              keyboard_arrow_down
+            </i>
+          </div>
+          <ul class="dropdown-menu">
+            <li>Nye matches pr. md.</li>
+            <li>Uhåndterede matches</li>
+          </ul>
+        </div>
+        -->
+        <!-- </div>
+      </div>
+      <div class="chart_container">
+        <canvas id="line_chart_new_matches_by_month"></canvas>
+      </div>
+      <div class="hidden chart_container">
+        <canvas id="line_chart_unhandled"></canvas>
+      </div>
+    </div> -->
+
+    <!-- Only until all charts are ready -->
     <div class="statistic statistic--four">
       <div class="statistic_header">
         <div>
-          <h1 class="page-title__sub">{% trans "Development overview" %}</h1>
-          <p class="chart_description">{% trans "Overview for department with most unhandled matches" %}</p>
-          <p class="hidden chart_description">{% trans "Overview for departments with the oldest matches" %}</p>
+          <h1 class="page-title__sub">{% trans "Employee overview" %}</h1>
         </div>
         <div class="statistic_header_nav">
         </div>
       </div>
       <div>
-        <h1 class="page-title__sub">{% trans "Comming soon" %}</h1>
+        <h1 class="page-title__sub">{% trans "Coming soon" %}</h1>
       </div>
     </div>
   </div>
 </div>
 
+{{ five_oldest_matches|json_script:"five_oldest_matches" }}
 {{ sensitivities|json_script:"sensitivities" }}
 {{ source_types|json_script:"source_types" }}
 {{ handled_matches|json_script:"handled_matches" }}
@@ -180,6 +247,8 @@
 {{ unhandled_matches_by_month|json_script:"unhandled_matches_by_month" }}
 <script>
   // json_script solution - Safe from in-page script execution
+
+  var fiveOldestMatches = JSON.parse(document.getElementById('five_oldest_matches').textContent);
 
   var sensitivities = JSON.parse(document.getElementById('sensitivities').textContent);
   
