@@ -25,12 +25,12 @@ WORKDIR /srv
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY ./package*.json .
+COPY ./package*.json ./
 # Install from lockfile
 RUN npm ci --only=production
 
 # Bundle app source
-COPY ./src .
+COPY ./src ./
 
 EXPOSE 8888
 

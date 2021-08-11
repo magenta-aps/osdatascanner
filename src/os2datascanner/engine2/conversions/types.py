@@ -12,6 +12,7 @@ class OutputType(Enum):
     LastModified = "last-modified" # datetime.datetime
     ImageDimensions = "image-dimensions" # (int, int)
     Links = "links"  # list
+    ConformanceProblems = "conformance-problems" # [str]
 
     AlwaysTrue = "fallback" # True
     NoConversions = "dummy"
@@ -29,6 +30,8 @@ class OutputType(Enum):
             return [int(v[0]), int(v[1])]
         elif self == OutputType.Links:
             return list(v)
+        elif self == OutputType.ConformanceProblems:
+            return [str(k) for k in v]
         else:
             raise TypeError(self.value)
 
@@ -37,7 +40,7 @@ class OutputType(Enum):
         from a JSON representation."""
         if v == None:
             return None
-        elif self == OutputType.Text:
+        elif self in (OutputType.Text, OutputType.ConformanceProblems,):
             return v
         elif self == OutputType.LastModified:
             return _str_to_datetime(v)
