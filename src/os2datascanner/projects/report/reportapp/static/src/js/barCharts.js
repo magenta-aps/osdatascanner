@@ -346,7 +346,9 @@ Chart.pluginService.register({
 // }
 
 // // this function works for arrays with only values
-// var unhandledMatchesAverage = unhandledBarChartValues.reduce((a,b) => (a + b)) / unhandledBarChartValues.length;
+// var unhandledMatchesAverage = unhandledBarChartValues.reduce(function(a,b){
+// 	return a +b;
+// }) / unhandledBarChartValues.length;
 
 // new Chart(unhandledBarChartCtx, {
 // 	type: 'bar',
@@ -402,78 +404,78 @@ Chart.pluginService.register({
 // 	}
 // });
 
-// Creating data for oldest matches
-var testarray = [10, 20, 30]
+// // Creating data for oldest matches
 
-var oldestBarChartCtx = document.querySelector("#bar_chart_oldest").getContext('2d');
+// var oldestBarChartCtx = document.querySelector("#bar_chart_oldest").getContext('2d');
 
-// Recieve data and create array for labels and data.
+// // Recieve data and create array for labels and data.
 
-var oldestBarChartLabels = [];
-var oldestBarChartValues = [];
+// var oldestBarChartLabels = [];
+// var oldestBarChartValues = [];
 
-for(var i = 0; i<fiveOldestMatches.length && i<5;i++) {
-  oldestBarChartLabels.push(fiveOldestMatches[i][0]);
-  oldestBarChartValues.push(fiveOldestMatches[i][1]);
-}
+// for(var i = 0; i<fiveOldestMatches.length && i<5;i++) {
+//   oldestBarChartLabels.push(fiveOldestMatches[i][0]);
+//   oldestBarChartValues.push(fiveOldestMatches[i][1]);
+// }
 
-// this function works for arrays with only values
-var oldestMatchesAverage = oldestBarChartValues.reduce((a,b) => (a + b)) / oldestBarChartValues.length;
+// // this function works for arrays with only values
+// var oldestMatchesAverage = oldestBarChartValues.reduce(function(a,b){
+// 	return a + b;
+// }) / oldestBarChartValues.length;
 
-new Chart(oldestBarChartCtx, {
-  type: 'bar',
-  data: {
-    labels: oldestBarChartLabels,
-    datasets: [{
-      data: oldestBarChartValues,
-      backgroundColor: [
-        ['#5ca4cd', '#21759c', '#fed149','#eac445'],
-      ],
-      barPercentage: 0.8,
-    }]
-  },
-  options: {
-    cornerRadius: 5, 
-    //Default: false; if true, this would round all corners of final box;
-    fullCornerRadius: true,
-    legend: {
-      display: false
-    },
-    tooltips: {
-      enabled: false
-    },
-    hover: {
-      mode: null
-    },
-    plugins: {
-    // chartjs-plugin-datalabels.js
-      datalabels: {
-        display: false
-      }
-    },
-    scales: {
-      xAxes: [{
-        gridLines: {
-          display: false,
-          // drawOnChartArea:false
-        }
-      }],
-      yAxes: [{
-        gridLines: {
-            display: false,
-            // drawOnChartArea:false
-        },
-        ticks: {
-          beginAtZero: true,
-          stepSize: stepSizeFunction(oldestBarChartValues, 3),
-          callback: function(label) {
-            return label + ' dage';
-          }
-        }
-      }]
-    },
-    lineAt: oldestMatchesAverage, // Average line value
-    responsive:true
-  }
-});
-
+// new Chart(oldestBarChartCtx, {
+//   type: 'bar',
+//   data: {
+//     labels: oldestBarChartLabels,
+//     datasets: [{
+//       data: oldestBarChartValues,
+//       backgroundColor: [
+//         ['#5ca4cd', '#21759c', '#fed149','#eac445'],
+//       ],
+//       barPercentage: 0.8,
+//     }]
+//   },
+//   options: {
+//     cornerRadius: 5, 
+//     //Default: false; if true, this would round all corners of final box;
+//     fullCornerRadius: true,
+//     legend: {
+//       display: false
+//     },
+//     tooltips: {
+//       enabled: false
+//     },
+//     hover: {
+//       mode: null
+//     },
+//     plugins: {
+//     // chartjs-plugin-datalabels.js
+//       datalabels: {
+//         display: false
+//       }
+//     },
+//     scales: {
+//       xAxes: [{
+//         gridLines: {
+//           display: false,
+//           // drawOnChartArea:false
+//         }
+//       }],
+//       yAxes: [{
+//         gridLines: {
+//             display: false,
+//             // drawOnChartArea:false
+//         },
+//         ticks: {
+//           beginAtZero: true,
+//           stepSize: stepSizeFunction(oldestBarChartValues, 3),
+//           callback: function(label) {
+//             return label + ' dage';
+//           }
+//         }
+//       }]
+//     },
+//     lineAt: oldestMatchesAverage, // Average line value
+//     responsive:true
+//   }
+// });

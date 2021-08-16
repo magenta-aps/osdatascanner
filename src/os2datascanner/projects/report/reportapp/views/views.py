@@ -399,50 +399,73 @@ class LeaderStatisticsPageView(StatisticsPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        today = timezone.now()
+        #     today = timezone.now()
 
-        context['five_oldest_matches'] = self.five_oldest_unhandled_matches_by_employee(today)
+        context['most_unhandled_employees'] = self.five_most_unhandled_employees()
+        #     context['five_oldest_matches'] = self.five_oldest_unhandled_matches_by_employee(today)
 
         return context
 
-    def five_oldest_unhandled_matches_by_employee(self, current_date):
-        """Gets the five oldest matches with unique users"""
-        oldest_matches_by_time = self.unhandled_matches.order_by('created_timestamp')
 
-        alias_rels = [(o.alias_relation.all(), o.created_timestamp) for o in oldest_matches_by_time]
+    # UNITTEST FOR THIS VIEW HAS BEEN MADE, IT HAS BEEN COMMENTED OUT UNTIL /
+    # THIS VIEW HAS BEEN OPTIMIZED 
 
-        # Takes the oldest match with an empty alias_relation
-        oldest_unassigned = None
+    # # Might be causing slow load on leader-page.
+    # def five_oldest_unhandled_matches_by_employee(self, current_date):
+    #     """Gets the five oldest matches with unique users"""
+    #     oldest_matches_by_time = self.unhandled_matches.order_by('created_timestamp')
 
-        for alias_rel, created_timestamp in alias_rels:
-            if not alias_rel:
-                oldest_unassigned = (_('Not assigned'),
-                                     (current_date - created_timestamp).days, False)
-                break
-        if oldest_unassigned is None:
-            logger.info('No unassigned matches when calculating oldest unhandled matches')
+    #     alias_rels = [(o.alias_relation.all(), o.created_timestamp) for o in oldest_matches_by_time]
 
-        # Takes the oldest matches with alias_relation
-        oldest_assigned = [[alias_rel, (current_date - created_timestamp).days]
-                           for alias_rel, created_timestamp in alias_rels if alias_rel]
+    #     # Takes the oldest match with an empty alias_relation
+    #     oldest_unassigned = None
 
-        oldest_unique_users = []
-        # Picks each unique users oldest match
-        if oldest_assigned:
-            existing_users = []
-            for alias_rel, created_timestamp in oldest_assigned:
-                for alias in alias_rel:
-                    if alias.user.pk not in existing_users:
-                        existing_users.append(alias.user.pk)
-                        oldest_unique_users.append((alias.user.first_name, created_timestamp, True))
-        else:
-            logger.info('No assigned matches when calculating oldest unhandled matches')
+    #     for alias_rel, created_timestamp in alias_rels:
+    #         if not alias_rel:
+    #             oldest_unassigned = (_('Not assigned'),
+    #                                  (current_date - created_timestamp).days, False)
+    #             break
+    #     if oldest_unassigned is None:
+    #         logger.info('No unassigned matches when calculating oldest unhandled matches')
 
-        if oldest_unassigned:
-            oldest_unique_users.append(oldest_unassigned)
+    #     # Takes the oldest matches with alias_relation
+    #     oldest_assigned = [[alias_rel, (current_date - created_timestamp).days]
+    #                        for alias_rel, created_timestamp in alias_rels if alias_rel]
 
-        # Sorted by days, then alphabetically to make tests stable
-        return sorted(oldest_unique_users, key=lambda x: (-x[1], x[0]))[:5]
+    #     oldest_unique_users = []
+    #     # Picks each unique users oldest match
+    #     if oldest_assigned:
+    #         existing_users = []
+    #         for alias_rel, created_timestamp in oldest_assigned:
+    #             for alias in alias_rel:
+    #                 if alias.user.pk not in existing_users:
+    #                     existing_users.append(alias.user.pk)
+    #                     oldest_unique_users.append((alias.user.first_name, created_timestamp, True))
+    #     else:
+    #         logger.info('No assigned matches when calculating oldest unhandled matches')
+
+    #     if oldest_unassigned:
+    #         oldest_unique_users.append(oldest_unassigned)
+
+    #     # Sorted by days, then alphabetically to make tests stable
+    #     return sorted(oldest_unique_users, key=lambda x: (-x[1], x[0]))[:5]
+
+    def five_most_unhandled_employees(self):
+        counted_unhandled_matches_alias = self.unhandled_matches.values(
+            'alias_relation__user__id').annotate(
+            total=Count('data')).values(
+                'alias_relation__user__first_name', 'total'
+            ).order_by('-total')
+
+        top_five = [[c['alias_relation__user__first_name'], c['total'], True]
+                    for c in counted_unhandled_matches_alias][:5]
+        
+        for t in top_five:  # Finds and replaces 'None' with translated 'Not assigned'
+            if t[0] is None:
+                t[0], t[2] = _('Not assigned'), False
+
+        # Sorted by counts, then alphabetically to make tests stable
+        return sorted(top_five, key=lambda x: (-x[1], x[0]))
 
 
     def dispatch(self, request, *args, **kwargs):

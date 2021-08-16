@@ -9,17 +9,12 @@ var colorFunction = function (color) {
 // Array = values
 // steps = how many steps on y-axis ( 0 doesn't count)
 var stepSizeFunction = function(array, steps) {
-<<<<<<< HEAD
-  return (Math.ceil(Math.max.apply(null, array)/100)*100)/steps;
-=======
   if (Math.ceil(Math.ceil(Math.max.apply(null,array)/100)*100) <= 100) {
     return (Math.ceil((Math.ceil(Math.max.apply(null,array)/10)*10)/steps))
   }
   else {
     return (Math.ceil((Math.ceil(Math.max.apply(null,array)/100)*100)/steps))
   }
-
->>>>>>> [#41650] 'Turned on' bar chart for oldest matches. Changed stepSize helper-function and translated frontend
 }
 
 // isNan function
