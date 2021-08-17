@@ -55,12 +55,17 @@ defusedxml==0.6.0
     # via
     #   -c requirements-engine.txt
     #   exchangelib
+    #   odfpy
     #   pysaml2
     #   python3-saml
+diff-match-patch==20200713
+    # via django-import-export
 django-debug-toolbar==3.2.1
     # via -r requirements-django.in
 django-extensions==2.2.9
     # via -r requirements-django.in
+django-import-export==2.5.0
+    # via -r requirements-report.in
 django-ipware==2.1.0
     # via django-structlog
 django-model-utils==4.0.0
@@ -79,6 +84,7 @@ django==3.2.4
     # via
     #   -r requirements-django.in
     #   django-debug-toolbar
+    #   django-import-export
     #   django-model-utils
     #   django-rest-auth
     #   django-settings-export
@@ -98,6 +104,8 @@ dropbox==10.3.0
     # via
     #   -c requirements-engine.txt
     #   -r requirements-django.in
+et-xmlfile==1.1.0
+    # via openpyxl
 exchangelib==3.1.1
     # via
     #   -c requirements-engine.txt
@@ -168,6 +176,8 @@ lxml==4.5.0
     #   -c requirements-engine.txt
     #   exchangelib
     #   xmlsec
+markuppy==1.14
+    # via tablib
 mozilla-django-oidc==1.2.4
     # via -r requirements-report.in
 ntlm-auth==1.4.0
@@ -183,10 +193,14 @@ oauthlib==3.1.0
     #   -c requirements-engine.txt
     #   exchangelib
     #   requests-oauthlib
+odfpy==1.4.1
+    # via tablib
 olefile==0.46
     # via
     #   -c requirements-engine.txt
     #   -r requirements-django.in
+openpyxl==3.0.7
+    # via tablib
 parameterized==0.8.1
     # via
     #   -c requirements-engine.txt
@@ -275,6 +289,8 @@ pytz==2019.3
     #   google-api-core
     #   pysaml2
     #   tzlocal
+pyyaml==5.4.1
+    # via tablib
 randomtimestamp==1.0.0
     # via -r requirements-report.in
 regex==2020.4.4
@@ -338,6 +354,8 @@ structlog==20.1.0
     #   -c requirements-engine.txt
     #   -r requirements-common.in
     #   django-structlog
+tablib[html,ods,xls,xlsx,yaml]==3.0.0
+    # via django-import-export
 toml==0.10.1
     # via
     #   -c requirements-engine.txt
@@ -365,6 +383,10 @@ wcwidth==0.1.9
     # via prompt-toolkit
 whitenoise==5.2.0
     # via -r requirements-django.in
+xlrd==2.0.1
+    # via tablib
+xlwt==1.3.0
+    # via tablib
 xmlsec==1.3.3
     # via python3-saml
 zipp==3.4.1

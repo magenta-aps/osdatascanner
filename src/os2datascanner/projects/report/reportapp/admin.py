@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from .models.roles.remediator_model import Remediator
 from .models.roles.leader_model import Leader
@@ -15,7 +17,7 @@ from .models.userprofile_model import UserProfile
 
 # Register your models here.
 
-admin.site.register(DocumentReport)
+
 
 
 # Solution for avoiding m2m relations to get cleared
@@ -142,5 +144,15 @@ class MyUserAdmin(UserAdmin):
         )
 
 
+class DocumentReportResource(resources.ModelResource):
+
+    class Meta:
+        model = DocumentReport
+
+class DocumentReportAdmin(ImportExportModelAdmin):
+    resource_class = DocumentReportResource
+
+admin.site.register(DocumentReport, DocumentReportAdmin)
 admin.site.unregister(User)
 admin.site.register(User, MyUserAdmin)
+
