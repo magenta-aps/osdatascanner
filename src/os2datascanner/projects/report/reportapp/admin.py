@@ -145,6 +145,8 @@ class MyUserAdmin(UserAdmin):
 
 
 class DocumentReportResource(resources.ModelResource):
+    chunk_size = 1000
+    use_bulk = True
 
     class Meta:
         model = DocumentReport
