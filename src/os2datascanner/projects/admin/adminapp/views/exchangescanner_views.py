@@ -23,6 +23,23 @@ from ..models.scannerjobs.exchangescanner_model import ExchangeScanner
 from ...core.models import Feature, Client
 from ...organizations.models import OrganizationalUnit
 
+from rest_framework.generics import ListAPIView
+from ..serializers import OrganizationalUnitSerializer
+
+
+class OrganizationalUnitListing(ListAPIView):
+    serializer_class = OrganizationalUnitSerializer
+
+    def get_queryset(self):
+        organization_id = self.request.query_params.get('organization_id', None)
+        if organization_id:
+            queryList = OrganizationalUnit.objects.filter(
+                    organization=organization_id)
+            # Important in future https://stackoverflow.com/questions/22367711/construct-hierarchy-tree-from-flat-list-with-parent-field
+        else:
+            queryList = []
+
+        return queryList
 
 class ExchangeScannerList(ScannerList):
     """Displays list of exchange scanners."""
