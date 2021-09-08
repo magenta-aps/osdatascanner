@@ -5,12 +5,17 @@ $(function() {
 
     // Eventlistener on change 
     var target = document.querySelector('#id_organization_container>.dropdown>.select-selected');
-    var callOnChange = new WebKitMutationObserver(function() {
+    var callOnChange = new MutationObserver(function() {
         
         parameters['organization_id'] = document.querySelector('#id_organization_container>.dropdown>.select-items>.same-as-selected').value
         getOrgUnits();
     });
-    callOnChange.observe(target, { characterData: false, attributes: false, childList: true, subtree: false });
+    callOnChange.observe(target, { 
+        characterData: false, 
+        attributes: false, 
+        childList: true, 
+        subtree: false }
+    );
     
     function getOrgUnits() {
         console.log("GET ORG UNITS");
@@ -58,7 +63,8 @@ $(function() {
 
     function insertData(result) {
         console.log("Inserting data")
-            var treeArray = treeify(result)
-            $("#sel_1").select2ToTree({treeData: {dataArr:treeArray}})
+        var treeArray = treeify(result)
+        console.log(treeArray);
+        $("#sel_1").select2ToTree({treeData: {dataArr:treeArray}})
     }
 })
