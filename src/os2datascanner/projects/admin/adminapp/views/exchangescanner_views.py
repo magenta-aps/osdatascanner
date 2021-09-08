@@ -99,6 +99,9 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
 
         form = super().get_form(form_class)
 
+        if self.request.method == 'POST':
+            form = validate_userlist_or_org_units(form)
+        
         return initialize_form(form)
 
 
@@ -120,6 +123,9 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
             form_class = self.get_form_class()
 
         form = super().get_form(form_class)
+        if self.request.method == 'POST':
+            form = validate_userlist_or_org_units(form)
+
         return initialize_form(form)
 
     def get_initial(self):
@@ -166,6 +172,10 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
                                bytes(authentication.ciphertext))
             form.fields['password'].initial = password
 
+        #checks if either org_unit or userlist is selected 
+        if self.request.method == 'POST':
+            form = validate_userlist_or_org_units(form)
+
         return form
 
 
@@ -193,6 +203,13 @@ class ExchangeScannerRun(ScannerRun):
 
     model = ExchangeScanner
 
+def validate_userlist_or_org_units(form):
+    form.is_valid()
+    if not form.cleaned_data['userlist'] and not form.cleaned_data['org_unit']:
+        error = _("Either a user list or an organisational unit is required")
+        form.add_error('org_unit', error)
+        form.add_error('userlist', error)
+    return form
 
 def initialize_form(form):
     """Initializes the form fields for username and password

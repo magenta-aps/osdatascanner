@@ -516,8 +516,7 @@
           </h3>
           {% if form.org_unit and request.user.is_superuser or FEATURES.IMPORT_SERVICES in client.enabled_features %}
           <p class="information">{% trans "select users from"|capfirst %}</p>
-
-          <div class="form__group">
+          <div class="form__group {% if form.org_unit.errors %} has-error{% endif %}">
             <label 
               class="treeview-label 
               {% if required %}required-form{% endif %}"
@@ -526,6 +525,7 @@
             </label>
             <select class="treeview" id="sel_1" multiple="multiple" name="{{ form.org_unit.name }}" size="10" url="{% url 'org-units-listing' %}">
             </select>
+            {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
           </div>
 
           <p class="information">{% trans "or upload"|capfirst %}</p>
