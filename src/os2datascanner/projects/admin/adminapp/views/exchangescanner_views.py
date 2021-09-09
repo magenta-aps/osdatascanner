@@ -86,6 +86,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     fields = ['name', 'url', 'schedule', 'exclusion_rules', 'do_ocr',
               'do_last_modified_check', 'rules', 'userlist',
               'service_endpoint', 'organization', 'org_unit']
+    type = 'exchange'
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
@@ -109,6 +110,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
     fields = ['name', 'url', 'schedule', 'exclusion_rules', 'do_ocr',
               'do_last_modified_check', 'rules', 'userlist',
               'service_endpoint', 'organization', 'org_unit']
+    type = 'exchange'
 
     def get_form(self, form_class=None):
         """Adds special field password."""
@@ -133,6 +135,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     fields = ['name', 'url', 'schedule', 'exclusion_rules', 'do_ocr',
               'do_last_modified_check', 'rules', 'userlist',
               'service_endpoint', 'organization', 'org_unit']
+    type = 'exchange'
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.
