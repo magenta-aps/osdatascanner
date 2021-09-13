@@ -291,8 +291,8 @@ let selected_values = [];
 
 				$opt.addClass("l" + curLevel);
 				if (pup) $opt.attr("data-pup", pup);
-				$el.append($opt);
 				var inc = data[treeData.incFld || "inc"];
+				$el.append($opt);
 				if (inc && inc.length > 0) {
 					$opt.addClass("non-leaf");
 					buildOptions(inc, curLevel + 1, $opt.val());
