@@ -155,9 +155,9 @@
 .select2-container--default 
 .select2-selection--multiple 
 .select2-selection__choice {
-	margin-top: 7px !important;
-	background-color: #e9e9e9 !important;
-}
+	padding: .3rem .5rem !important;
+    transition: var(--transition-default) !important;
+	background-color: #e9e9e9 !important;}
 
 .select2-container--default .select2-selection--single {
 	padding: .5rem !important;
@@ -166,13 +166,35 @@
 	border-radius: var(--border-radius-small) !important;
 }
 
+.select2-selection {
+	padding: 0 !important;
+	min-height: 3rem !important;
+	width: 100% !important;
+}
+.select2-selection:after {
+	top: 1.4rem !important;
+}
+.select2-selection[aria-expanded="true"]:after {
+	top: 0.8rem !important;
+}
+
+.select2-selection__rendered {
+	padding: 0.4em !important;
+	min-width: 95% !important;
+}
+
 .select2-container .select2-selection--single {
 	height: 2.5rem !important;
+	width: 100% !important;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
 	color: #222 !important;
 	line-height: 26px !important;
+}
+
+.select2-selection__clear{
+	display: none;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
@@ -197,6 +219,8 @@
 	}
 
 .select2-search__field {
+	transition: var(--transition-default);
+	margin-top: .55rem !important;
 	outline: none !important;
 	border: none !important;
 	padding: 0.5rem !important;
@@ -214,9 +238,26 @@
 	background-size: 100% 100%;
 	background-image: url("../svg/users.svg");
 	position: absolute;
+	transition-delay: 0.1s;
 	top: 0.1em;
 	left: -0.35em;
 	margin-left: 0.5em;
+}
+
+.s2-to-tree .org-icon-selected{
+    background-color: #12496e;
+	border-radius: 3px;
+	display: block;
+	width: 18px;
+	height: 18px;
+	background-size: 100% 100%;
+	position: absolute;
+	top: 0.3em;
+	transition-delay: 0.2s;
+	transition: var(--transition-default);
+	left: -0.35em;
+	margin-left: 0.5em;
+	background-image: url("../svg/done.svg") !important;
 }
 
 .s2-to-tree .item-label {
@@ -229,12 +270,26 @@
 	max-height: 400px!important;
 }
 
+.select2-selection input{
+	font-family:  "Inter var", system-ui, sans-serif;
+}
 
 // For IE support
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 
+	.select2-search__field {
+		margin-top: 0.9rem !important;
+	}
+
+	.s2-to-tree .org-icon-selected::before{
+		left: 0.15rem !important;
+		bottom: 0.1rem;
+		content: "✓";
+		color: white;
+	}
+
 	.s2-to-tree li.select2-results__option.non-leaf.opened .expand-collapse:before {
-		content: "⮟" !important;
+		content: "a⮟" !important;
 		font-size: 1em !important;
 		top: 0em !important;
 		transform: rotate(90deg);
