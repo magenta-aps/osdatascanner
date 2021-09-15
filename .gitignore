@@ -16,8 +16,8 @@ django-os2webscanner/django.os2webscanner.egg-info
 var/prometheus/*.json
 local_settings.py
 db.sqlite3
-**/node_modules/**/*
-**/dist/**/*
+node_modules
+dist
 src/os2datascanner/projects/static/
 src/os2datascanner/projects/uploads/
 .vscode

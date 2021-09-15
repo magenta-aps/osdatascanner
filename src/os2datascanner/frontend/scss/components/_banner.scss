@@ -1,0 +1,31 @@
+.banner {
+  position: fixed;
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--color-header-bg);
+  box-shadow: var(--box-shadow);
+  display: grid;
+  grid-template-columns: var(--size-logo-width) 1fr 1fr;
+  grid-template-areas: "banner-logo banner-notification banner-user";
+  line-height: 1;
+  transition: background-color 0.2s ease-in-out;
+  z-index: var(--z-index-navigation);
+}
+
+.banner .logo {
+  grid-area: banner-logo;
+  height: var(--size-logo-height);
+  width: var(--size-logo-width);
+}
+
+.banner .notification {
+  grid-area: banner-notification;
+  margin-right: 1rem;
+  text-align: right;
+}
+
+.banner .user {
+  grid-area: banner-user;
+  margin-right: 1rem;
+  text-align: right;
+}

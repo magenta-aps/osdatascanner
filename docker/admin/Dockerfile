@@ -10,23 +10,17 @@
 # Labs as required approval to your MR if you have any changes.                #
 ################################################################################
 
-FROM node:14 AS frontend
+FROM node:15 AS frontend
 
-WORKDIR /code/src/os2datascanner/projects/admin/adminapp
+WORKDIR /code/src/os2datascanner/frontend
 
-COPY src/os2datascanner/projects/admin/adminapp/package.json .
-COPY src/os2datascanner/projects/admin/adminapp/package-lock.json .
+COPY src/os2datascanner/frontend/*.json .
 RUN npm ci
-
-COPY src/os2datascanner/projects/admin/adminapp/postcss.config.js .
-COPY src/os2datascanner/projects/admin/adminapp/webpack.dev.js .
-COPY src/os2datascanner/projects/admin/adminapp/webpack.prod.js .
-COPY src/os2datascanner/projects/admin/adminapp/static/src ./static/src
-COPY src/os2datascanner/projects/admin/adminapp/static/3rdparty ./static/3rdparty
-# Do we need templates?
 
 # Build production bundle
 # NB! Doesn't start a webserver, only bundles files!
+COPY src/os2datascanner/frontend/*.js .
+COPY src/os2datascanner/frontend/ .
 RUN npm run prod
 
 # Build development bundle
@@ -120,10 +114,6 @@ WORKDIR /code
 COPY LICENSE ./
 COPY README.rst ./
 COPY CHANGELOG.md ./
-
-# Copy frontend dist folder to static
-WORKDIR /code/src/os2datascanner/projects/admin/adminapp/static
-COPY --from=frontend /code/src/os2datascanner/projects/admin/adminapp/static/dist ./dist
 
 # Run the server as the os2ds_admin user on port 5000
 WORKDIR /code/src/os2datascanner/projects/admin
