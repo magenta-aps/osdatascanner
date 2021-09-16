@@ -30,6 +30,7 @@ from os2datascanner.projects.report.reportapp.utils import hash_handle
 from os2datascanner.engine2.conversions.types import OutputType
 from ...models.documentreport_model import DocumentReport
 from ...models.organization_model import Organization
+from ...models.matches_model import Matches
 
 import structlog
 logger = structlog.get_logger(__name__)
@@ -200,6 +201,31 @@ def handle_match_message(previous_report, new_report, body):
         new_report.data["matches"] = sort_matches_by_probability(body)
         new_report.save()
         logger.info(f"Matches: Saving new {new_report}")
+
+        # save all MatchFragments as separate Matches objects pointing to the
+        # DocumentReport
+        for frag in new_matches.matches:
+            if not frag.matches:
+                # this specific rule did not produce any matches
+                continue
+
+            # XXX: each match can have a probability. For now just store the highest
+            probability = [m.get("probability") for m in frag.matches if
+                            m.get("probability") is not None]
+            probability = max(probability, default = None)
+                    
+            mobj = Matches(
+                report = new_report,
+                rule = frag.rule.to_json_object(),
+                matches = frag.matches,  # list of matches(dict)
+                # all matches have the same sensitivity as the rule that gave the match
+                sensitivity = (
+                    frag.rule.sensitivity.value if frag.rule.sensitivity else None),
+                probability = probability,
+                rule_type = frag.rule.type_label,
+            )
+        
+            mobj.save()
     else:
         logger.info(f"No new matches. {new_report} not saved")
 

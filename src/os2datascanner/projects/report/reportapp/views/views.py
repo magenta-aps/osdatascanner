@@ -40,6 +40,7 @@ from os2datascanner.projects.report.reportapp.models.roles.role_model import Rol
 
 from ..utils import user_is
 from ..models.documentreport_model import DocumentReport
+from ..models.matches_model import Matches
 from ..models.roles.defaultrole_model import DefaultRole
 from ..models.userprofile_model import UserProfile
 from ..models.organization_model import Organization
@@ -77,12 +78,30 @@ class MainPageView(LoginRequiredMixin, ListView):
     paginate_by = 10  # Determines how many objects pr. page.
     context_object_name = "matches"  # object_list renamed to something more relevant
     model = DocumentReport
-    matches = DocumentReport.objects.filter(
-        data__matches__matched=True).filter(
-        resolution_status__isnull=True)
+    # report_id is a Foreignkey to DocumentReport.
+    # Thus "give me matches where":
+    # DocumentReport.matched=True AND Matched.resolution_status=Null
+    matches = Matches.objects.filter(
+        report_id__data__matches__matched=True).filter(
+        resolution_status__isnull=True
+    )
     scannerjob_filters = None
     paginate_by_options = [10, 20, 50, 100, 250]
 
+
+    """TODO
+    
+    This is unfinished. The queryset is good, we get the matches and can reference
+    the corresponding DocumentReport by e.g.
+        pk = matches[0].report_id
+        DocumentReport.objects.get(pk=pk)
+
+    However: filter_inapplicable_matches (and probably more) expect the matches
+    queryset to be a DocumentReport. This can be fixed by either:
+    - combine the two queryset, ie. Matches & Documentreport
+    - make filter_inapplicable_matches use the new matches queryset
+    """
+    
     def get_queryset(self):
         user = self.request.user
         roles = Role.get_user_roles_or_default(user)
