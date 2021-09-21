@@ -20,10 +20,9 @@ from django.core.validators import validate_email
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from os2datascanner.projects.admin.core.models import utilities
-from os2datascanner.projects.admin.import_services.models import Imported
-
 from .broadcasted_mixin import Broadcasted
+from ...core.models import utilities
+from ...import_services.models import Imported
 
 # Kept here to ensure it compiles only once
 _sid_regex = re.compile('^S-1-\d+(-\d+){0,15}$')
