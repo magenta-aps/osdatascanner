@@ -63,7 +63,16 @@ class CPRRule(RegexRule):
         # Our black- and whitelists are sets of lowercase strings. They are
         # used to match our content case-insensitively.
         self._whitelist = set(whitelist) if whitelist else self.WHITELIST_WORDS
-        self._blacklist = set(blacklist) if blacklist else self.BLACKLIST_WORDS
+        blacklist = set(blacklist) if blacklist else self.BLACKLIST_WORDS
+
+        # We split the blacklist into two sets, one with words and one with
+        # "sentences" (strings with spaces). This allows faster matching.
+        self._blacklist_multi = set(w for w in blacklist if " " in w)
+        self._blacklist_single = blacklist - self._blacklist_multi
+
+    @property
+    def _blacklist(self):
+        return self._blacklist_single | self._blacklist_multi
 
     @property
     def presentation_raw(self) -> str:
@@ -84,14 +93,17 @@ class CPRRule(RegexRule):
         if content is None:
             return
 
-        # If there's p-nr or anthore blacklist anywhere in content, assume
-        # there's no valid CPR
-        if self._examine_context and self._blacklist and any(
-            w in content.lower() for w in self._blacklist
-        ):
-            logger.debug("Content contains a word from the blacklist "
-                        f"[{self._blacklist}]")
-            return
+        if self._examine_context and self._blacklist:
+            casefolded_content = content.casefold()
+
+            if (matches := self._blacklist_single & set(casefolded_content.split())):
+                logger.debug("Content in blacklist", matches=matches)
+                return
+
+            for token in self._blacklist_multi:
+                if token in casefolded_content:
+                    logger.debug("Content in blacklist", matches=token)
+                    return
 
         imatch = 0
         for itot, m in enumerate(self._compiled_expression.finditer(content), 1):
