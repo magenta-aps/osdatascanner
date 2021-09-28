@@ -1,4 +1,4 @@
-from typing import Iterator, List, Match, Optional, Tuple, Dict, Union
+from typing import Iterator, List, Match, Optional, Tuple, Dict, Union, Iterable
 import re
 from itertools import chain
 from enum import Enum, unique
@@ -52,25 +52,18 @@ class CPRRule(RegexRule):
         modulus_11: bool = True,
         ignore_irrelevant: bool = True,
         examine_context: bool = True,
-        whitelist: Union[bool, List[str]] = True,
-        blacklist: Union[bool, List[str]] = True,
+        whitelist: Union[bool, Iterable[str]] = None,
+        blacklist: Union[bool, Iterable[str]] = None,
         **super_kwargs,
     ):
         super().__init__(cpr_regex, **super_kwargs)
         self._modulus_11 = modulus_11
         self._ignore_irrelevant = ignore_irrelevant
         self._examine_context = examine_context
-        # self._whitelist is either a set(str) or False
-        self._whitelist = (
-            self.WHITELIST_WORDS if whitelist is True else (
-                set(whitelist) if isinstance(whitelist, Iterable)
-                else whitelist
-            ))
-        self._blacklist = (
-            self.BLACKLIST_WORDS if blacklist is True else (
-                set(blacklist) if isinstance(blacklist, Iterable)
-                else blacklist
-        ))
+        # Our black- and whitelists are sets of lowercase strings. They are
+        # used to match our content case-insensitively.
+        self._whitelist = set(whitelist) if whitelist else self.WHITELIST_WORDS
+        self._blacklist = set(blacklist) if blacklist else self.BLACKLIST_WORDS
 
     @property
     def presentation_raw(self) -> str:

@@ -69,7 +69,7 @@ Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nummer: 2305000003
             (
                 CPRRule(
                     modulus_11=True, ignore_irrelevant=True, examine_context=True,
-                    whitelist=["whiteword"], blacklist=True
+                    whitelist=["whiteword"]
                 ),
                 """
 Vejstrand Kommune, Børn- og Ungeforvaltningen. WhiteWord 2205995008
