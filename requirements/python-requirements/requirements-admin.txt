@@ -75,6 +75,8 @@ cryptography==3.4.8
     #   service-identity
 daphne==3.0.2
     # via channels
+dateutils==0.6.12
+    # via django-rest-framework-braces
 decorator==4.4.2
     # via
     #   ipython
@@ -99,6 +101,8 @@ django-prometheus==2.1.0
     # via -r requirements-django.in
 django-recurrence==1.10.2
     # via -r requirements-admin.in
+django-rest-framework-braces==0.3.4
+    # via -r requirements-admin.in
 django-settings-export==1.2.1
     # via -r requirements-django.in
 django-storages[google]==1.10.1
@@ -113,12 +117,15 @@ django==3.2.4
     #   django-model-utils
     #   django-mptt
     #   django-recurrence
+    #   django-rest-framework-braces
     #   django-settings-export
     #   django-storages
     #   django-structlog
     #   djangorestframework
 djangorestframework==3.12.4
-    # via -r requirements-django.in
+    # via
+    #   -r requirements-django.in
+    #   django-rest-framework-braces
 dnspython==1.16.0
     # via
     #   -c requirements-engine.txt
@@ -293,6 +300,7 @@ python-dateutil==2.8.1
     # via
     #   -c requirements-engine.txt
     #   -r requirements-admin.in
+    #   dateutils
     #   django-recurrence
     #   exchangelib
 python-dotenv==0.19.0
@@ -304,8 +312,10 @@ python-magic==0.4.18
 pytz==2019.3
     # via
     #   -c requirements-engine.txt
+    #   dateutils
     #   django
     #   django-recurrence
+    #   django-rest-framework-braces
     #   exchangelib
     #   google-api-core
     #   tzlocal
@@ -344,6 +354,7 @@ six==1.14.0
     #   -c requirements-engine.txt
     #   automat
     #   django-extensions
+    #   django-rest-framework-braces
     #   dropbox
     #   google-api-core
     #   google-api-python-client

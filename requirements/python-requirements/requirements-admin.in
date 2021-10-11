@@ -5,3 +5,4 @@ django-mptt
 django-recurrence
 pycryptodome
 python-dateutil
+django-rest-framework-braces

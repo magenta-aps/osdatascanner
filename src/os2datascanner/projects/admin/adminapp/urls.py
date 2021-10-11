@@ -14,11 +14,15 @@
 """URL mappings."""
 
 import django.contrib.auth.views
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.http import HttpResponse
+from django.urls.conf import path
 from django.views.i18n import JavaScriptCatalog
 from django.views.generic.base import TemplateView
 from os2datascanner import __version__
+from os2datascanner.projects.admin.adminapp.views.restfull_implementation.custom_router import CustomRouter
+from os2datascanner.projects.admin.adminapp.views.restfull_implementation.filescanner_view_set import FileScannerViewSet
+from os2datascanner.projects.admin.adminapp.views.restfull_implementation.webscanner_view_set import WebscannerViewSet
 
 from .models.scannerjobs.dropboxscanner_model import DropboxScanner
 from .models.scannerjobs.exchangescanner_model import ExchangeScanner
@@ -80,7 +84,14 @@ from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphFileCreate, MSGraphFileUpdate,
                                   MSGraphFileRun, MSGraphFileAskRun, MSGraphMailCopy, MSGraphFileCopy)
 
+
+
+router = CustomRouter()
+router.register(r'webscanners', WebscannerViewSet, basename='mywebscan')
+
+
 urlpatterns = [
+    path('', include(router.urls)),
     # App URLs
     url(r'^$', WebScannerList.as_view(), name='index'),
     url(r'^api/openapi.yaml$', TemplateView.as_view(
@@ -111,22 +122,22 @@ urlpatterns = [
     url(r'^exchangescanners/(?P<pk>\d+)/copy/$', ExchangeScannerCopy.as_view(), name='exchangescanner_copy'),
 
     # Webscanner URL's
-    url(r'^webscanners/$', WebScannerList.as_view(), name='webscanners'),
-    url(r'^webscanners/add/$', WebScannerCreate.as_view(), name='webscanner_add'),
-    url(r'^webscanners/(?P<pk>\d+)/delete/$', WebScannerDelete.as_view(),
-        name='webscanner_delete'),
-    url(r'^webscanners/(?P<pk>\d+)/validate/$', WebScannerValidate.as_view(),
-        name='web_scanner_validate'),
-    url(r'^webscanners/(?P<pk>\d+)/run/$', WebScannerRun.as_view(),
-        name='webscanner_run'),
-    url(r'^webscanners/(?P<pk>\d+)/askrun/$',
-        WebScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=WebScanner),
-        name='webscanner_askrun'),
-    url(r'^webscanners/(?P<pk>\d+)/$', WebScannerUpdate.as_view(),
-        name='webscanner_update'),
-    url(r'^webscanners/(?P<pk>\d+)/copy/$', WebScannerCopy.as_view(), name='webscanner_copy'),
+    #url(r'^webscanners/$', WebScannerList.as_view(), name='webscanners'),
+    #url(r'^webscanners/add/$', WebScannerCreate.as_view(), name='webscanner_add'),
+    #url(r'^webscanners/(?P<pk>\d+)/delete/$', WebScannerDelete.as_view(),
+    #    name='webscanner_delete'),
+    #url(r'^webscanners/(?P<pk>\d+)/validate/$', WebScannerValidate.as_view(),
+    #    name='web_scanner_validate'),
+    #url(r'^webscanners/(?P<pk>\d+)/run/$', WebScannerRun.as_view(),
+    #    name='webscanner_run'),
+    #url(r'^webscanners/(?P<pk>\d+)/askrun/$',
+    #    WebScannerAskRun.as_view(
+    #        template_name='os2datascanner/scanner_askrun.html',
+    #        model=WebScanner),
+    #    name='webscanner_askrun'),
+    #url(r'^webscanners/(?P<pk>\d+)/$', WebScannerUpdate.as_view(),
+    #    name='webscanner_update'),
+    #url(r'^webscanners/(?P<pk>\d+)/copy/$', WebScannerCopy.as_view(), name='webscanner_copy'),
 
     # Filescanner URL's
     url(r'^filescanners/$', FileScannerList.as_view(), name='filescanners'),
