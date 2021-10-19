@@ -354,6 +354,82 @@ adding new entry "cn=Mikkel Testsen,ou=Test Department,dc=magenta,dc=test"
 adding new entry "cn=Hamish MacTester,ou=Test Department,dc=magenta,dc=test"
 ```
 
+## Setting up scans
+This page describes how to set up and use the different scans.
+
+### Web Scan
+
+...
+
+### File Scan
+
+...
+
+### Exchange Scan
+
+
+An Exchange scan scans an organizations active directory (AD),
+by looking through a AD server.
+
+A developer can create their own LDAP server by following the instructions in: 
+[LDAP](../dev-environment/#setting-up-openldap) and [LDAP-Profile](../dev-environment/#-profile-ldap).
+When a server has been set up.
+
+When the enviroment has been set up, simply log in with:
+login DN: cn=admin,dc=magenta,dc=test
+Password: testMAG
+
+Then click the globe to the left that says `dc=magenta,dc=test` and create a `child entry`. 
+Select `Generic: Organisational Unit` and give it a desired name. Commit it.
+Now create a `Courier Mail: Account` the same way. Commit it.
+Add as many users and organizational units as desired.
+
+Then go to [organisations](http://localhost:8020/organizations/) and add an importservice.
+```
+protocol: ldap
+connection url: ldap_server
+username: cn=admin,dc=magenta,dc=test
+password: testMAG
+
+supplier: Other supplier
+import based on: Organizational units
+
+Classes for user-objects: inetOrgPerson
+Search scope: whole subtree
+
+username: mail
+RDN: cn
+UUID: uid
+```
+
+Now you can add a new Exchangescanner job:
+
+``` 
+URL: @magenta43dk.onmicrosoft.com
+service-endpoint: https://outlook.office365.com/EWS/Exchange.asmx
+
+user information: Use bitwarden to get the proper authentication.
+
+then select the organizational units and desired rules.
+```
+
+### Google Drive Scan
+
+...
+
+### Office 365 Scan
+
+...
+
+### Gmail Scan
+
+...
+
+### SBSYS Scan
+
+...
+
+
 ## Linting and static analysis
 
 The coding standards below should be followed by all new and edited code for
