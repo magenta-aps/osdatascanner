@@ -54,6 +54,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         self.txt_mail_template = loader.get_template("mail/overview.txt")
         self.html_mail_template = loader.get_template("mail/overview.html")
+        self.debug_message = {}
 
         image_name = None
         image_content = None
@@ -76,6 +77,11 @@ class Command(BaseCommand):
             ).filter(
             resolution_status__isnull=True)
 
+        self.debug_message['estimated_amount_of_users'] = 0
+        self.debug_message['succesfull_amount_of_users'] = 0
+        self.debug_message['unsuccesfull_users'] = []
+        self.debug_message['succesfull_users'] = []
+
         for user in User.objects.all():
             context = self.shared_context.copy()
             context["full_name"] = user.get_full_name() or user.username
@@ -86,9 +92,27 @@ class Command(BaseCommand):
                 print("Nothing for user {0}".format(user.username))
                 continue
 
+            self.debug_message['estimated_amount_of_users'] += 1
+
             context = self.count_matches_in_batches(context, data_results)
             msg = self.create_msg(image_name, image_content, context, user)
             self.send_to_user(user, msg, options["dry_run"])
+
+        _ = self.debug_message
+        if not _["unsuccesfull_users"]:
+            debug = self.style.SUCCESS(
+                f'Succesfully sent {_["succesfull_amount_of_users"]} Email to following users'
+                f': {_["succesfull_users"]}'
+            )
+        else:
+            debug = self.style.ERROR(
+                f'succesfully sent to {_["succesfull_amount_of_users"]}'
+                f' out of {_["estimated_amount_of_users"]} \n'
+                f' succesfull users: {_["succesfull_users"]}'
+                f' unsuccesfull users: {_["unsuccesfull_users"]}'
+            )
+
+        self.stdout.write(debug)
 
     def get_filtered_results(self, user, matches, all_results=False):
         """ Finds results based on the users role and organization
@@ -161,5 +185,8 @@ class Command(BaseCommand):
         else:
             try:
                 msg.send()
+                self.debug_message['succesfull_users'].append(str(user))
+                self.debug_message['succesfull_amount_of_users'] += 1
             except Exception as ex:
                 print("Exception occured while trying to send an email: {0}".format(ex))
+                self.debug_message['unsuccesfull_users'].append(str(user))
