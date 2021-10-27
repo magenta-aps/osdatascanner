@@ -23,6 +23,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.template import loader
+from os2datascanner.projects.report.reportapp.utils import iterate_queryset_in_batches
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.rules.rule import Sensitivity
@@ -50,9 +51,9 @@ class Command(BaseCommand):
             action="store_true",
             help="Allows result under 30 days old to be sent")
 
-    def handle(self, **options):  # noqa: CCR001, too high cognitive complexity
-        txt_mail_template = loader.get_template("mail/overview.txt")
-        html_mail_template = loader.get_template("mail/overview.html")
+    def handle(self, **options):
+        self.txt_mail_template = loader.get_template("mail/overview.txt")
+        self.html_mail_template = loader.get_template("mail/overview.html")
 
         image_name = None
         image_content = None
@@ -61,69 +62,104 @@ class Command(BaseCommand):
                 image_content = fp.read()
             image_name = basename(options["header_banner"])
 
-        shared_context = {
+        self.shared_context = {
             "image_name": image_name,
             "report_login_url": settings.SITE_URL,
             "institution": settings.NOTIFICATION_INSTITUTION
         }
+
+        # filter all document reports objects that are matched and is not resoluted.
+        matches = DocumentReport.objects.only(
+            'organization', 'data', 'resolution_status'
+            ).filter(
+            data__matches__matched=True
+            ).filter(
+            resolution_status__isnull=True)
+
         for user in User.objects.all():
-            context = shared_context.copy()
+            context = self.shared_context.copy()
             context["full_name"] = user.get_full_name() or user.username
 
-            # XXX: this is pretty much all cannibalised from MainPageView
-            roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
-            results = DocumentReport.objects.none()
-            for role in roles:
-                results |= role.filter(DocumentReport.objects.all())
-
-            matches = DocumentReport.objects.filter(
-                data__matches__matched=True).filter(
-                resolution_status__isnull=True)
-
-            # Handles filtering by role + org and sets datasource_last_modified if non existing
-            data_results = views.filter_inapplicable_matches(user, matches, roles)
-
-            if not options['all_results']:
-                # Exactly 30 days is deemed to be "older than 30 days"
-                # and will therefore be shown.
-                time_threshold = time_now() - timedelta(days=30)
-                older_than_30_days = data_results.filter(
-                    datasource_last_modified__lte=time_threshold)
-                data_results = older_than_30_days
-
-            if not results or not data_results:
+            if not (data_results := self.get_filtered_results(
+                    user, matches, options['all_results'])
+                    ).exists():
                 print("Nothing for user {0}".format(user.username))
                 continue
 
-            match_counts = {s: 0 for s in list(Sensitivity)}
-            for dr in data_results:
-                if dr.matches:
-                    match_counts[dr.matches.sensitivity] += 1
-            context["matches"] = {
-                    k.presentation: v for k, v in match_counts.items()
-                    if k != Sensitivity.INFORMATION}.items()
-            context["match_count"] = sum(
-                    [v for k, v in match_counts.items()
-                     if k != Sensitivity.INFORMATION])
+            context = self.count_matches_in_batches(context, data_results)
+            msg = self.create_msg(image_name, image_content, context, user)
+            self.send_to_user(user, msg, options["dry_run"])
 
-            msg = EmailMultiAlternatives(
-                    "Der ligger uhåndterede matches i OS2datascanner",
-                    txt_mail_template.render(context),
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email])
-            msg.attach_alternative(
-                    html_mail_template.render(context), "text/html")
-            if image_name and image_content:
-                mime_image = MIMEImage(image_content)
-                mime_image.add_header("Content-Location", image_name)
-                msg.attach(mime_image)
+    def get_filtered_results(self, user, matches, all_results=False):
+        """ Finds results based on the users role and organization
+        NOTE: do not iterate pver the queryset unless in batches, as
+        it will cache all the items and might lead to too high ram usage.
+        """
+        roles = user.roles.select_subclasses() or [DefaultRole(user=user)]
+        data_results = views.filter_inapplicable_matches(user, matches, roles)
+        if not all_results:
+            # Exactly 30 days is deemed to be "older than 30 days"
+            # and will therefore be shown.
+            # todo remove this from loop : no reason to keep assigning it
+            time_threshold = time_now() - timedelta(days=30)
+            data_results = data_results.filter(
+                datasource_last_modified__lte=time_threshold)
 
-            if options["dry_run"]:
-                print(user)
-                print(msg.message().as_string())
-                print("--")
-            else:
-                try:
-                    msg.send()
-                except Exception as ex:
-                    print("Exception occured while trying to send an email: {0}".format(ex))
+        return data_results
+
+    def count_matches_in_batches(self, context, data_results):
+        """ Iterates over batches and counts them by severity, this is added to the given context.
+        matches : all matches with a severity above informational
+        match count: how many of matches sorted by severity
+        """
+        match_counts = {s: 0 for s in list(Sensitivity)}
+        matches = {}
+        match_count = 0
+
+        for batch in iterate_queryset_in_batches(10000, data_results):
+            for document_report in batch:
+                if document_report.matches:
+                    match_counts[document_report.matches.sensitivity] += 1
+
+            for k, v in match_counts.items():
+                if k != Sensitivity.INFORMATION:
+                    matches[k.presentation] = v
+
+            match_count += (sum(
+                [v for k, v in match_counts.items()
+                 if k != Sensitivity.INFORMATION]))
+
+        # unpack the matches, else the context cannot be rendered
+        context['matches'] = matches.items()
+        context['match_count'] = match_count
+        return context
+
+    def create_msg(self, image_name, image_content, context, user):
+        """ Creates a msg ready to send to a user
+        If a image have been supplied, it will be used at the top of the mail.
+        """
+
+        msg = EmailMultiAlternatives(
+            "Der ligger uhåndterede matches i OS2datascanner",
+            self.txt_mail_template.render(context),
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email])
+        msg.attach_alternative(self.html_mail_template.render(context), "text/html")
+
+        if image_name and image_content:
+            mime_image = MIMEImage(image_content)
+            mime_image.add_header("Content-Location", image_name)
+            msg.attach(mime_image)
+
+        return msg
+
+    def send_to_user(self, user, msg, dry_run=False):
+        if dry_run:
+            print(user)
+            print(msg.message().as_string())
+            print("--")
+        else:
+            try:
+                msg.send()
+            except Exception as ex:
+                print("Exception occured while trying to send an email: {0}".format(ex))
