@@ -29,6 +29,7 @@ from .models.scannerjobs.msgraph_models import (MSGraphMailScanner,
                                                 MSGraphFileScanner)
 from .models.scannerjobs.gmail_model import GmailScanner
 from .models.scannerjobs.sbsysscanner_model import SbsysScanner
+from .models.scannerjobs.msteams_model import MSTeamsScanner
 from .views.api import JSONAPIView
 from .views.views import GuideView, DialogSuccess
 
@@ -80,6 +81,8 @@ from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphFileCreate, MSGraphFileUpdate,
                                   MSGraphFileRun, MSGraphFileAskRun,
                                   MSGraphMailCopy, MSGraphFileCopy)
+
+from .views.msteams_views import (MSTeamsScannerList)
 
 urlpatterns = [
     # App URLs
@@ -258,6 +261,9 @@ urlpatterns = [
         name='msgraphmailscanner_askrun'),
     url(r'^(msgraph-mailscanners|msgraph-filescanners)/(\d+)/(created|saved)/$',
         DialogSuccess.as_view()),
+
+    # MS Teams
+    url(r'^msgraph-teamsscanners/$', MSTeamsScannerList.as_view(), name='msteamsscanner_list'),
 
     # Rules
     url(r'^rules/$', RuleList.as_view(), name='rules'),
