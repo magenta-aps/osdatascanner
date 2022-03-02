@@ -54,6 +54,11 @@
             {% trans "Sbsysscanner" %}
         </a>
         {% endif %}
+	{% if settings.ENABLE_MSGRAPH_TEAMSSCAN %}
+        <a id="msteams" class="tabs__control" href="/msgraph-teamsscanners/">
+            {% trans "Microsoft Teams Scanner" %}
+        </a>
+	{% endif %}
     </div>
 </div>
         {% endif %}
@@ -81,6 +86,7 @@
     var msgraph_mail = document.getElementById("msgraph-mail")
     var msgraph_file = document.getElementById("msgraph-file")
     var msgraph_calendar = document.getElementById("msgraph-calendar")
+    var msteams = document.getElementById("msteams")
     var googledrive = document.getElementById("googledrive")
     var gmail = document.getElementById("gmail")
     var sbsys = document.getElementById("sbsys")
@@ -91,7 +97,7 @@
             web.classList.add('active')
         } else if (file) {
             window.location.href = "/filescanners/"
-            file.classList.add('active')
+	    file.classList.add('active')
         } else if (exchange) {
             window.location.href = "/exchangescanners/"
             exchange.classList.add('active')
@@ -107,6 +113,9 @@
         } else if (msgraph_calendar) {
             window.location.href = "/msgraph-calendarscanners/"
             msgraph_calendar.classList.add('active')
+        } else if (msteams) {
+	    window.location.href = "/msgraph-teamsscanners/"
+	    msteams.classList.add('active')
         } else if (googledrive) {
             window.location.href = "/googledrivescanners/"
             googledrive.classList.add('active')
@@ -116,7 +125,7 @@
         } else if (sbsys) {
             window.location.href = "/sbsysscanners/"
             sbsys.classList.add('active')
-        }
+	}
     }
     if (location.pathname === '/webscanners/') {
         web.classList.add('active')
@@ -138,6 +147,9 @@
     }
     if (location.pathname === '/msgraph-calendarscanners/') {
         msgraph_calendar.classList.add("active")
+    }
+    if (location.pathname === '/msgraph-teamsscanners/') {
+	msteams.classList.add("active")
     }
     if (location.pathname === '/gmailscanners/') {
         gmail.classList.add("active")

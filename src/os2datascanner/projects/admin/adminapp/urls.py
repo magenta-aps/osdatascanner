@@ -2,6 +2,7 @@
 # Version 2.0 (the "License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 #    http://www.mozilla.org/MPL/
+
 #
 # Software distributed under the License is distributed on an "AS IS"basis,
 # WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -30,49 +31,91 @@ from .models.scannerjobs.msgraph_models import (MSGraphMailScanner,
                                                 MSGraphCalendarScanner)
 from .models.scannerjobs.gmail_model import GmailScanner
 from .models.scannerjobs.sbsysscanner_model import SbsysScanner
+from .models.scannerjobs.msteams_model import MSTeamsScanner
 from .views.api import JSONAPIView
 from .views.views import GuideView, DialogSuccess
 
-from .views.exchangescanner_views import (ExchangeScannerList, ExchangeScannerCreate,
-                                          ExchangeScannerUpdate, ExchangeScannerDelete,
-                                          ExchangeScannerRun, ExchangeScannerAskRun,
-                                          ExchangeScannerCopy, OrganizationalUnitListing)
+from .views.exchangescanner_views import (
+    ExchangeScannerList,
+    ExchangeScannerCreate,
+    ExchangeScannerUpdate,
+    ExchangeScannerDelete,
+    ExchangeScannerRun,
+    ExchangeScannerAskRun,
+    ExchangeScannerCopy,
+    OrganizationalUnitListing,
+)
 
-from .views.filescanner_views import (FileScannerCreate, FileScannerRun,
-                                      FileScannerAskRun, FileScannerUpdate,
-                                      FileScannerDelete, FileScannerList,
-                                      FileScannerCopy)
+from .views.filescanner_views import (
+    FileScannerCreate,
+    FileScannerRun,
+    FileScannerAskRun,
+    FileScannerUpdate,
+    FileScannerDelete,
+    FileScannerList,
+    FileScannerCopy,
+)
 
-from .views.dropboxscanner_views import (DropboxScannerCreate, DropboxScannerRun,
-                                         DropboxScannerAskRun, DropboxScannerUpdate,
-                                         DropboxScannerDelete, DropboxScannerList)
+from .views.dropboxscanner_views import (
+    DropboxScannerCreate,
+    DropboxScannerRun,
+    DropboxScannerAskRun,
+    DropboxScannerUpdate,
+    DropboxScannerDelete,
+    DropboxScannerList,
+)
 
-from .views.googledrivescanner_views import (GoogleDriveScannerCreate, GoogleDriveScannerRun,
-                                             GoogleDriveScannerAskRun, GoogleDriveScannerUpdate,
-                                             GoogleDriveScannerList, GoogleDriveScannerDelete,
-                                             GoogleDriveScannerCopy)
+from .views.googledrivescanner_views import (
+    GoogleDriveScannerCreate,
+    GoogleDriveScannerRun,
+    GoogleDriveScannerAskRun,
+    GoogleDriveScannerUpdate,
+    GoogleDriveScannerList,
+    GoogleDriveScannerDelete,
+    GoogleDriveScannerCopy,
+)
 
-from .views.gmailscanner_views import (GmailScannerCreate, GmailScannerRun,
-                                       GmailScannerAskRun, GmailScannerUpdate,
-                                       GmailScannerDelete, GmailScannerList,
-                                       GmailScannerCopy)
+from .views.gmailscanner_views import (
+    GmailScannerCreate,
+    GmailScannerRun,
+    GmailScannerAskRun,
+    GmailScannerUpdate,
+    GmailScannerDelete,
+    GmailScannerList,
+    GmailScannerCopy,
+)
 
-from .views.sbsysscanner_views import (SbsysScannerCreate, SbsysScannerList,
-                                       SbsysScannerAskRun, SbsysScannerDelete,
-                                       SbsysScannerRun, SbsysScannerUpdate)
+from .views.sbsysscanner_views import (
+    SbsysScannerCreate,
+    SbsysScannerList,
+    SbsysScannerAskRun,
+    SbsysScannerDelete,
+    SbsysScannerRun,
+    SbsysScannerUpdate,
+)
 
-from .views.rule_views import (RuleList, CPRRuleCreate,
-                               CPRRuleUpdate, CPRRuleDelete,
-                               RegexRuleCreate, RegexRuleUpdate,
-                               RegexRuleDelete)
+from .views.rule_views import (
+    RuleList,
+    CPRRuleCreate,
+    CPRRuleUpdate,
+    CPRRuleDelete,
+    RegexRuleCreate,
+    RegexRuleUpdate,
+    RegexRuleDelete,
+)
 
-from .views.scanner_views import (StatusOverview, StatusCompleted,
-                                  StatusDelete)
+from .views.scanner_views import StatusOverview, StatusCompleted, StatusDelete
 
-from .views.webscanner_views import (WebScannerCreate, WebScannerUpdate,
-                                     WebScannerDelete, WebScannerRun,
-                                     WebScannerAskRun, WebScannerList,
-                                     WebScannerValidate, WebScannerCopy)
+from .views.webscanner_views import (
+    WebScannerCreate,
+    WebScannerUpdate,
+    WebScannerDelete,
+    WebScannerRun,
+    WebScannerAskRun,
+    WebScannerList,
+    WebScannerValidate,
+    WebScannerCopy,
+)
 
 from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphMailCreate, MSGraphMailUpdate,
@@ -86,134 +129,119 @@ from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphCalendarRun, MSGraphCalendarAskRun,
                                   MSGraphCalendarCopy)
 
+from .views.msteams_views import (
+    MSTeamsScannerList,
+    MSTeamsScannerCreate,
+    MSTeamsScannerAskRun,
+    MSTeamsScannerCopy,
+    MSTeamsScannerDelete,
+    MSTeamsScannerRun,
+    MSTeamsScannerUpdate,
+)
+
 urlpatterns = [
     # App URLs
-    url(r'^$', WebScannerList.as_view(), name='index'),
-    url(r'^api/openapi.yaml$', TemplateView.as_view(
-        template_name="openapi.yaml", content_type="application/yaml"),
-        name="json-api"),
-    url(r'^api/(?P<path>.*)$', JSONAPIView.as_view(), name="json-api"),
-
+    url(r"^$", WebScannerList.as_view(), name="index"),
+    url(
+        r"^api/openapi.yaml$",
+        TemplateView.as_view(template_name="openapi.yaml", content_type="application/yaml"),
+        name="json-api",
+    ),
+    url(r"^api/(?P<path>.*)$", JSONAPIView.as_view(), name="json-api"),
     # App URLs
-    url(r'^status/$', StatusOverview.as_view(), name='status'),
-    url(r'^status-completed/$', StatusCompleted.as_view(), name='status-completed'),
-    url(r'^status/(?P<pk>\d+)/delete/$', StatusDelete.as_view(), name='status-delete'),
-    url(r'^help/guide/$', GuideView.as_view(), name='guide'),
+    url(r"^status/$", StatusOverview.as_view(), name="status"),
+    url(r"^status-completed/$", StatusCompleted.as_view(), name="status-completed"),
+    url(r"^status/(?P<pk>\d+)/delete/$", StatusDelete.as_view(), name="status-delete"),
+    url(r"^help/guide/$", GuideView.as_view(), name="guide"),
     # Exchangescanner URL's
-    url(r'^org-units-listing/', OrganizationalUnitListing.as_view(), name='org-units-listing'),
-    url(r'^exchangescanners/$', ExchangeScannerList.as_view(), name='exchangescanners'),
-    url(r'^exchangescanners/add/$', ExchangeScannerCreate.as_view(), name='exchangescanner_add'),
-    url(r'^exchangescanners/(?P<pk>\d+)/delete/$', ExchangeScannerDelete.as_view(),
-        name='exchangescanner_delete'),
-    url(r'^exchangescanners/(?P<pk>\d+)/$', ExchangeScannerUpdate.as_view(),
-        name='exchangescanner_update'),
-    url(r'^exchangescanners/(?P<pk>\d+)/run/$', ExchangeScannerRun.as_view(),
-        name='exchangescanner_run'),
-    url(r'^exchangescanners/(?P<pk>\d+)/askrun/$',
-        ExchangeScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=ExchangeScanner),
-        name='scanner_askrun'),
-    url(r'^exchangescanners/(?P<pk>\d+)/copy/$', ExchangeScannerCopy.as_view(),
-        name='exchangescanner_copy'),
-
+    url(r"^org-units-listing/", OrganizationalUnitListing.as_view(), name="org-units-listing"),
+    url(r"^exchangescanners/$", ExchangeScannerList.as_view(), name="exchangescanners"),
+    url(r"^exchangescanners/add/$", ExchangeScannerCreate.as_view(), name="exchangescanner_add"),
+    url(r"^exchangescanners/(?P<pk>\d+)/delete/$",
+    ExchangeScannerDelete.as_view(),
+     name="exchangescanner_delete"),
+    url(r"^exchangescanners/(?P<pk>\d+)/$",
+    ExchangeScannerUpdate.as_view(),
+     name="exchangescanner_update"),
+    url(r"^exchangescanners/(?P<pk>\d+)/run/$",
+    ExchangeScannerRun.as_view(),
+     name="exchangescanner_run"),
+    url(r"^exchangescanners/(?P<pk>\d+)/askrun/$", ExchangeScannerAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=ExchangeScanner),
+        name="scanner_askrun"),
+    url(r"^exchangescanners/(?P<pk>\d+)/copy/$",
+    ExchangeScannerCopy.as_view(),
+     name="exchangescanner_copy"),
     # Webscanner URL's
-    url(r'^webscanners/$', WebScannerList.as_view(), name='webscanners'),
-    url(r'^webscanners/add/$', WebScannerCreate.as_view(), name='webscanner_add'),
-    url(r'^webscanners/(?P<pk>\d+)/delete/$', WebScannerDelete.as_view(),
-        name='webscanner_delete'),
-    url(r'^webscanners/(?P<pk>\d+)/validate/$', WebScannerValidate.as_view(),
-        name='web_scanner_validate'),
-    url(r'^webscanners/(?P<pk>\d+)/run/$', WebScannerRun.as_view(),
-        name='webscanner_run'),
-    url(r'^webscanners/(?P<pk>\d+)/askrun/$',
-        WebScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=WebScanner),
-        name='webscanner_askrun'),
-    url(r'^webscanners/(?P<pk>\d+)/$', WebScannerUpdate.as_view(),
-        name='webscanner_update'),
-    url(r'^webscanners/(?P<pk>\d+)/copy/$', WebScannerCopy.as_view(), name='webscanner_copy'),
-
+    url(r"^webscanners/$", WebScannerList.as_view(), name="webscanners"),
+    url(r"^webscanners/add/$", WebScannerCreate.as_view(), name="webscanner_add"),
+    url(r"^webscanners/(?P<pk>\d+)/delete/$", WebScannerDelete.as_view(), name="webscanner_delete"),
+    url(r"^webscanners/(?P<pk>\d+)/validate/$",
+    WebScannerValidate.as_view(),
+     name="web_scanner_validate"),
+    url(r"^webscanners/(?P<pk>\d+)/run/$", WebScannerRun.as_view(), name="webscanner_run"),
+    url(r"^webscanners/(?P<pk>\d+)/askrun/$", WebScannerAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=WebScanner),
+        name="webscanner_askrun"),
+    url(r"^webscanners/(?P<pk>\d+)/$", WebScannerUpdate.as_view(), name="webscanner_update"),
+    url(r"^webscanners/(?P<pk>\d+)/copy/$", WebScannerCopy.as_view(), name="webscanner_copy"),
     # Filescanner URL's
-    url(r'^filescanners/$', FileScannerList.as_view(), name='filescanners'),
-    url(r'^filescanners/add/$', FileScannerCreate.as_view(), name='filescanner_add'),
-    url(r'^filescanners/(?P<pk>\d+)/$', FileScannerUpdate.as_view(),
-        name='filescanner_update'),
-    url(r'^filescanners/(?P<pk>\d+)/delete/$', FileScannerDelete.as_view(),
-        name='filescanner_delete'),
-    url(r'^filescanners/(?P<pk>\d+)/run/$', FileScannerRun.as_view(),
-        name='filescanner_run'),
-    url(r'^filescanners/(?P<pk>\d+)/askrun/$',
-        FileScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=FileScanner),
-        name='filescanner_askrun'),
-    url(r'^filescanners/(?P<pk>\d+)/copy/$', FileScannerCopy.as_view(), name='filescanner_copy'),
-
+    url(r"^filescanners/$", FileScannerList.as_view(), name="filescanners"),
+    url(r"^filescanners/add/$", FileScannerCreate.as_view(), name="filescanner_add"),
+    url(r"^filescanners/(?P<pk>\d+)/$", FileScannerUpdate.as_view(), name="filescanner_update"),
+    url(r"^filescanners/(?P<pk>\d+)/delete/$", FileScannerDelete.as_view(), name="filescanner_delete"),
+    url(r"^filescanners/(?P<pk>\d+)/run/$", FileScannerRun.as_view(), name="filescanner_run"),
+    url(r"^filescanners/(?P<pk>\d+)/askrun/$", FileScannerAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=FileScanner),
+        name="filescanner_askrun"),
+    url(r"^filescanners/(?P<pk>\d+)/copy/$", FileScannerCopy.as_view(), name="filescanner_copy"),
     # Dropbox scanner URL's
-    url(r'^dropboxscanners/$', DropboxScannerList.as_view(), name='dropboxscanners'),
-    url(r'^dropboxscanners/add/$', DropboxScannerCreate.as_view(), name='dropboxscanner_add'),
-    url(r'^dropboxscanners/(?P<pk>\d+)/$', DropboxScannerUpdate.as_view(),
-        name='dropboxscanner_update'),
-    url(r'^dropboxscanners/(?P<pk>\d+)/delete/$', DropboxScannerDelete.as_view(),
-        name='dropboxscanner_delete'),
-    url(r'^dropboxscanners/(?P<pk>\d+)/run/$', DropboxScannerRun.as_view(),
-        name='dropboxscanner_run'),
-    url(r'^dropboxscanners/(?P<pk>\d+)/askrun/$',
-        DropboxScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=DropboxScanner),
-        name='dropboxscanner_askrun'),
-
+    url(r"^dropboxscanners/$", DropboxScannerList.as_view(), name="dropboxscanners"),
+    url(r"^dropboxscanners/add/$", DropboxScannerCreate.as_view(), name="dropboxscanner_add"),
+    url(r"^dropboxscanners/(?P<pk>\d+)/$", DropboxScannerUpdate.as_view(),
+        name="dropboxscanner_update"),
+    url(r"^dropboxscanners/(?P<pk>\d+)/delete/$", DropboxScannerDelete.as_view(),
+        name="dropboxscanner_delete"),
+    url(r"^dropboxscanners/(?P<pk>\d+)/run/$", DropboxScannerRun.as_view(),
+        name="dropboxscanner_run"),
+    url(r"^dropboxscanners/(?P<pk>\d+)/askrun/$", DropboxScannerAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=DropboxScanner),
+        name="dropboxscanner_askrun"),
     # Google Drive scanner URL's
-    url(r'^googledrivescanners/$', GoogleDriveScannerList.as_view(),
-        name='googledrivescanners'),
-    url(r'^googledrivescanners/add/$', GoogleDriveScannerCreate.as_view(),
-        name='googledrivescanner_add'),
-    url(r'^googledrivescanners/(?P<pk>\d+)/$', GoogleDriveScannerUpdate.as_view(),
-        name='googledrivescanner_update'),
-    url(r'^googledrivescanners/(?P<pk>\d+)/delete/$', GoogleDriveScannerDelete.as_view(),
-        name='googledrivescanner_delete'),
-    url(r'^googledrivescanners/(?P<pk>\d+)/run/$', GoogleDriveScannerRun.as_view(),
-        name='googledrivescanner_run'),
-    url(r'^googledrivescanners/(?P<pk>\d+)/askrun/$',
-        GoogleDriveScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=GoogleDriveScanner),
-        name='googledrivescanner_askrun'),
-    url(r'^googledrivescanners/(?P<pk>\d+)/copy/$', GoogleDriveScannerCopy.as_view(),
-        name='googledrivescanner_copy'),
-
+    url(r"^googledrivescanners/$", GoogleDriveScannerList.as_view(), name="googledrivescanners"),
+    url(r"^googledrivescanners/add/$", GoogleDriveScannerCreate.as_view(),
+        name="googledrivescanner_add"),
+    url(r"^googledrivescanners/(?P<pk>\d+)/$", GoogleDriveScannerUpdate.as_view(),
+        name="googledrivescanner_update"),
+    url(r"^googledrivescanners/(?P<pk>\d+)/delete/$", GoogleDriveScannerDelete.as_view(),
+        name="googledrivescanner_delete"),
+    url(r"^googledrivescanners/(?P<pk>\d+)/run/$", GoogleDriveScannerRun.as_view(),
+        name="googledrivescanner_run"),
+    url(r"^googledrivescanners/(?P<pk>\d+)/askrun/$", GoogleDriveScannerAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=GoogleDriveScanner),
+        name="googledrivescanner_askrun"),
+    url(r"^googledrivescanners/(?P<pk>\d+)/copy/$", GoogleDriveScannerCopy.as_view(),
+        name="googledrivescanner_copy"),
     # Gmail scanner URL's
-    url(r'^gmailscanners/$', GmailScannerList.as_view(), name='gmailscanners'),
-    url(r'^gmailscanners/add/$', GmailScannerCreate.as_view(), name='gmailscanner_add'),
-    url(r'^gmailscanners/(?P<pk>\d+)/$', GmailScannerUpdate.as_view(),
-        name='gmailscanner_update'),
-    url(r'^gmailscanners/(?P<pk>\d+)/delete/$', GmailScannerDelete.as_view(),
-        name='gmailscanner_delete'),
-    url(r'^gmailscanners/(?P<pk>\d+)/run/$', GmailScannerRun.as_view(),
-        name='gmailscanner_run'),
-    url(r'^gmailscanners/(?P<pk>\d+)/askrun/$',
-        GmailScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=GmailScanner),
-        name='gmailscanner_askrun'),
-    url(r'^gmailscanners/(?P<pk>\d+)/copy/$', GmailScannerCopy.as_view(), name='gmailscanner_copy'),
-
+    url(r"^gmailscanners/$", GmailScannerList.as_view(), name="gmailscanners"),
+    url(r"^gmailscanners/add/$", GmailScannerCreate.as_view(), name="gmailscanner_add"),
+    url(r"^gmailscanners/(?P<pk>\d+)/$", GmailScannerUpdate.as_view(), name="gmailscanner_update"),
+    url(r"^gmailscanners/(?P<pk>\d+)/delete/$", GmailScannerDelete.as_view(),
+        name="gmailscanner_delete"),
+    url(r"^gmailscanners/(?P<pk>\d+)/run/$", GmailScannerRun.as_view(), name="gmailscanner_run"),
+    url(r"^gmailscanners/(?P<pk>\d+)/askrun/$", GmailScannerAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=GmailScanner),
+        name="gmailscanner_askrun"),
+    url(r"^gmailscanners/(?P<pk>\d+)/copy/$", GmailScannerCopy.as_view(), name="gmailscanner_copy"),
     # Sbsys scanner URL's
-    url(r'^sbsysscanners/$', SbsysScannerList.as_view(), name='sbsysscanners'),
-    url(r'^sbsysscanners/add/$', SbsysScannerCreate.as_view(), name='sbsysscanner_add'),
-    url(r'^sbsysscanners/(?P<pk>\d+)/$', SbsysScannerUpdate.as_view(),
-        name='sbsysscanner_update'),
-    url(r'^sbsysscanners/(?P<pk>\d+)/delete/$', SbsysScannerDelete.as_view(),
-        name='sbsysscanner_delete'),
-    url(r'^sbsysscanners/(?P<pk>\d+)/run/$', SbsysScannerRun.as_view(),
-        name='sbsysscanner_run'),
-    url(r'^sbsysscanners/(?P<pk>\d+)/askrun/$',
-        SbsysScannerAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=SbsysScanner),
+    url(r"^sbsysscanners/$", SbsysScannerList.as_view(), name="sbsysscanners"),
+    url(r"^sbsysscanners/add/$", SbsysScannerCreate.as_view(), name="sbsysscanner_add"),
+    url(r"^sbsysscanners/(?P<pk>\d+)/$", SbsysScannerUpdate.as_view(), name="sbsysscanner_update"),
+    url(r"^sbsysscanners/(?P<pk>\d+)/delete/$", SbsysScannerDelete.as_view(),
+        name="sbsysscanner_delete"),
+    url(r"^sbsysscanners/(?P<pk>\d+)/run/$", SbsysScannerRun.as_view(), name="sbsysscanner_run"),
+    url(r"^sbsysscanners/(?P<pk>\d+)/askrun/$", SbsysScannerAskRun.as_view(
+            template_name='os2datascanner/scanner_askrun.html', model=SbsysScanner),
         name='sbsysscanner_askrun'),
 
     # OAuth-based data sources
@@ -254,102 +282,84 @@ urlpatterns = [
         name='msgraphmailscanner_add'),
     url(r'^msgraph-filescanners/(?P<pk>\d+)/$',
         MSGraphFileUpdate.as_view(),
-        name='msgraphfilescanner_update'),
-    url(r'^msgraph-mailscanners/(?P<pk>\d+)/$',
+        name="msgraphfilescanner_update"),
+    url(r"^msgraph-mailscanners/(?P<pk>\d+)/$",
         MSGraphMailUpdate.as_view(),
-        name='msgraphmailscanner_update'),
-    url(r'^msgraph-filescanners/(?P<pk>\d+)/delete/$',
+        name="msgraphmailscanner_update"),
+    url(r"^msgraph-filescanners/(?P<pk>\d+)/delete/$",
         MSGraphFileDelete.as_view(),
-        name='msgraphfilescanner_delete'),
-    url(r'^msgraph-mailscanners/(?P<pk>\d+)/delete/$',
+        name="msgraphfilescanner_delete"),
+    url(r"^msgraph-mailscanners/(?P<pk>\d+)/delete/$",
         MSGraphMailDelete.as_view(),
-        name='msgraphmailscanner_delete'),
-    url(r'^msgraph-mailscanners/(?P<pk>\d+)/copy/$', MSGraphMailCopy.as_view(),
-        name='msgraphmailscanner_copy'),
-    url(r'^msgraph-filescanners/(?P<pk>\d+)/copy/$', MSGraphFileCopy.as_view(),
-        name='filescanners_copy'),
-    url(r'^msgraph-filescanners/(?P<pk>\d+)/run/$',
+        name="msgraphmailscanner_delete"),
+    url(r"^msgraph-mailscanners/(?P<pk>\d+)/copy/$",
+        MSGraphMailCopy.as_view(),
+        name="msgraphmailscanner_copy"),
+    url(r"^msgraph-filescanners/(?P<pk>\d+)/copy/$",
+        MSGraphFileCopy.as_view(),
+        name="filescanners_copy"),
+    url(r"^msgraph-filescanners/(?P<pk>\d+)/run/$",
         MSGraphFileRun.as_view(),
-        name='msgraphfilescanner_run'),
-    url(r'^msgraph-mailscanners/(?P<pk>\d+)/run/$',
+        name="msgraphfilescanner_run"),
+    url(r"^msgraph-mailscanners/(?P<pk>\d+)/run/$",
         MSGraphMailRun.as_view(),
-        name='msgraphmailscanner_run'),
-    url(r'^msgraph-filescanners/(?P<pk>\d+)/askrun/$',
+        name="msgraphmailscanner_run"),
+    url(r"^msgraph-filescanners/(?P<pk>\d+)/askrun/$",
         MSGraphFileAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
+            template_name="os2datascanner/scanner_askrun.html",
             model=MSGraphFileScanner),
-        name='msgraphfilescanner_askrun'),
-    url(r'^msgraph-mailscanners/(?P<pk>\d+)/askrun/$',
-        MSGraphMailAskRun.as_view(
-            template_name='os2datascanner/scanner_askrun.html',
-            model=MSGraphMailScanner),
-        name='msgraphmailscanner_askrun'),
-    url(r'^(msgraph-mailscanners|msgraph-filescanners)/(\d+)/(created|saved)/$',
+        name="msgraphfilescanner_askrun"),
+    url(r"^msgraph-mailscanners/(?P<pk>\d+)/askrun/$", MSGraphMailAskRun.as_view(
+            template_name="os2datascanner/scanner_askrun.html", model=MSGraphMailScanner),
+        name="msgraphmailscanner_askrun"),
+    url(r"^(msgraph-mailscanners|msgraph-filescanners)/(\d+)/(created|saved)/$",
         DialogSuccess.as_view()),
     url(r'^(msgraph-calendarscanners)/(\d+)/(created|saved)/$',
         DialogSuccess.as_view()),
 
-    # Rules
-    url(r'^rules/$', RuleList.as_view(), name='rules'),
-    url(r'^rules/cpr/add/$', CPRRuleCreate.as_view(), name='cprrule_add'),
-    url(r'^rules/cpr/(?P<pk>\d+)/$', CPRRuleUpdate.as_view(),
-        name='rule_update'),
-    url(r'^rules/cpr/(?P<pk>\d+)/delete/$', CPRRuleDelete.as_view(),
-        name='rule_delete'),
-    url(r'^rules/regex/add/$', RegexRuleCreate.as_view(), name='regexrule_add'),
-    url(r'^rules/regex/(?P<pk>\d+)/$', RegexRuleUpdate.as_view(),
-        name='rule_update'),
-    url(r'^rules/regex/(?P<pk>\d+)/delete/$', RegexRuleDelete.as_view(),
-        name='rule_delete'),
-    # Login/logout stuff
-    url(r'^accounts/login/',
-        django.contrib.auth.views.LoginView.as_view(
-            template_name='login.html',
-        ),
-        name='login'),
-    url(r'^accounts/logout/',
-        django.contrib.auth.views.LogoutView.as_view(
-            template_name='logout.html',
-        ),
-        name='logout'),
-    url(r'^accounts/password_change/',
-        django.contrib.auth.views.PasswordChangeView.as_view(
-            template_name='password_change.html',
-        ),
-        name='password_change'
-        ),
-    url(r'^accounts/password_change_done/',
-        django.contrib.auth.views.PasswordChangeDoneView.as_view(
-            template_name='password_change_done.html',
-        ),
-        name='password_change_done'
-        ),
-    url(r'^accounts/password_reset/$',
-        django.contrib.auth.views.PasswordResetView.as_view(
-            template_name='password_reset_form.html',
-        ),
-        name='password_reset'
-        ),
-    url(r'^accounts/password_reset/done/',
-        django.contrib.auth.views.PasswordResetDoneView.as_view(
-            template_name='password_reset_done.html',
-        ),
-        name='password_reset_done'
-        ),
-    url(r'^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/' +
-        '(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/',
-        django.contrib.auth.views.PasswordResetConfirmView.as_view(
-            template_name='password_reset_confirm.html',
-        ),
-        name='password_reset_confirm'
-        ),
-    url(r'^accounts/reset/complete',
-        django.contrib.auth.views.PasswordResetCompleteView.as_view(
-            template_name='password_reset_complete.html',
-        ),
-        name='password_reset_complete'
-        ),
+    # MS-Graph Teams data source
+    url(r"^msgraph-teamsscanners/$", MSTeamsScannerList.as_view(), name="msteamsscanner_list"),
+    url(r"^msgraph-teamsscanners/add/$", MSTeamsScannerCreate.as_view(),
+        name="msteamsscanner_add"),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/$", MSTeamsScannerUpdate.as_view(),
+        name="msteamsscanner_update"),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/delete/$", MSTeamsScannerDelete.as_view(),
+        name="msteamsscanner_delete"),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/copy/$", MSTeamsScannerCopy.as_view(),
+        name="msteamsscanner_copy"),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/run/$", MSTeamsScannerRun.as_view(),
+        name="msteamsscanner_run"),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/askrun/$", MSTeamsScannerAskRun.as_view(
+        template_name="os2datascanner/scanner_askrun.html", model=MSTeamsScanner),
+        name="msteamsscanner_askrun"),
+    url(r"^msgraph-teamsscanners/(\d+)/(created|saved)/$", DialogSuccess.as_view()),
 
+    # Rules
+    url(r"^rules/$", RuleList.as_view(), name="rules"),
+    url(r"^rules/cpr/add/$", CPRRuleCreate.as_view(), name="cprrule_add"),
+    url(r"^rules/cpr/(?P<pk>\d+)/$", CPRRuleUpdate.as_view(), name="rule_update"),
+    url(r"^rules/cpr/(?P<pk>\d+)/delete/$", CPRRuleDelete.as_view(), name="rule_delete"),
+    url(r"^rules/regex/add/$", RegexRuleCreate.as_view(), name="regexrule_add"),
+    url(r"^rules/regex/(?P<pk>\d+)/$", RegexRuleUpdate.as_view(), name="rule_update"),
+    url(r"^rules/regex/(?P<pk>\d+)/delete/$", RegexRuleDelete.as_view(), name="rule_delete"),
+    # Login/logout stuff
+    url(r"^accounts/login/", django.contrib.auth.views.LoginView.as_view(
+        template_name="login.html"), name="login"),
+    url(r"^accounts/logout/", django.contrib.auth.views.LogoutView.as_view(
+        template_name="logout.html"), name="logout"),
+    url(r"^accounts/password_change/", django.contrib.auth.views.PasswordChangeView.as_view(
+        template_name="password_change.html"), name="password_change"),
+    url(r"^accounts/password_change_done/", django.contrib.auth.views.PasswordChangeDoneView.as_view(
+        template_name="password_change_done.html"), name="password_change_done"),
+    url(r"^accounts/password_reset/$", django.contrib.auth.views.PasswordResetView.as_view(
+        template_name="password_reset_form.html"), name="password_reset"),
+    url(r"^accounts/password_reset/done/", django.contrib.auth.views.PasswordResetDoneView.as_view(
+        template_name="password_reset_done.html"), name="password_reset_done"),
+    url(r"^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/" + "(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/",
+        django.contrib.auth.views.PasswordResetConfirmView.as_view(
+            template_name="password_reset_confirm.html"), name="password_reset_confirm"),
+    url(r"^accounts/reset/complete", django.contrib.auth.views.PasswordResetCompleteView.as_view(
+        template_name="password_reset_complete.html"), name="password_reset_complete"),
     # General success handler
     url(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|gmailscanners|sbsysscanners)/(\d+)/(created)/$',  # noqa
         DialogSuccess.as_view()),

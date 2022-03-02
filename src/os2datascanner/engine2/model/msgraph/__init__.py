@@ -3,3 +3,4 @@ from .mail import (MSGraphMailSource, MSGraphMailAccountHandle,  # noqa
                    MSGraphMailMessageResource, MSGraphMailMessageHandle)
 from . import files  # noqa
 from . import calendar  # noqa
+from . import teams  # noqa
