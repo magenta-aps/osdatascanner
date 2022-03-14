@@ -25,6 +25,7 @@ from ....organizations.models.aliases import AliasType
 from os2datascanner.engine2.model.msgraph.mail import MSGraphMailSource
 from os2datascanner.engine2.model.msgraph.files import MSGraphFilesSource
 from os2datascanner.engine2.model.msgraph.calendar import MSGraphCalendarSource
+from os2datascanner.engine2.model.msgraph.teams import MSGraphTeamsSource
 from .scanner_model import Scanner
 
 logger = logging.getLogger(__name__)
@@ -172,6 +173,42 @@ class MSGraphCalendarScanner(MSGraphScanner):
             # Otherwise yield a source for every user
             # in the selected organizational unit(s).
             yield MSGraphCalendarSource(
+                client_id=settings.MSGRAPH_APP_ID,
+                tenant_id=self.tenant_id,
+                client_secret=settings.MSGRAPH_CLIENT_SECRET,
+                userlist=_create_user_list(self.org_unit, self.url)
+            )
+
+
+class MSGraphTeamsScanner(MSGraphScanner):
+    """MS Teams scanner for scanning MS Teams chats and channels."""
+    org_unit = TreeManyToManyField(
+        "organizations.OrganizationalUnit",
+        related_name="msgraphteamsscanners",
+        blank=True,
+        verbose_name=_("organizational unit"),
+    )
+
+    def get_type(self):
+        return "msgraph-teams"
+
+    def get_absolute_url(self):
+        """Get the absolute URL for scanners."""
+        return "/msgraph-teamsscanners/"
+
+    def generate_sources(self):
+        if not self.org_unit.exists():
+            # If no organizational units have been selected
+            # yield one source.
+            yield MSGraphTeamsSource(
+                client_id=settings.MSGRAPH_APP_ID,
+                tenant_id=self.tenant_id,
+                client_secret=settings.MSGRAPH_CLIENT_SECRET,
+            )
+        else:
+            # Otherwise yield a source for every user
+            # in the selected organizational unit(s).
+            yield MSGraphTeamsSource(
                 client_id=settings.MSGRAPH_APP_ID,
                 tenant_id=self.tenant_id,
                 client_secret=settings.MSGRAPH_CLIENT_SECRET,

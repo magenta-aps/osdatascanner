@@ -28,10 +28,10 @@ from .models.scannerjobs.webscanner_model import WebScanner
 from .models.scannerjobs.googledrivescanner_model import GoogleDriveScanner
 from .models.scannerjobs.msgraph_models import (MSGraphMailScanner,
                                                 MSGraphFileScanner,
-                                                MSGraphCalendarScanner)
+                                                MSGraphCalendarScanner,
+                                                MSGraphTeamsScanner)
 from .models.scannerjobs.gmail_model import GmailScanner
 from .models.scannerjobs.sbsysscanner_model import SbsysScanner
-from .models.scannerjobs.msteams_model import MSTeamsScanner
 from .views.api import JSONAPIView
 from .views.views import GuideView, DialogSuccess
 
@@ -117,27 +117,23 @@ from .views.webscanner_views import (
     WebScannerCopy,
 )
 
-from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
-                                  MSGraphMailCreate, MSGraphMailUpdate,
-                                  MSGraphMailRun, MSGraphMailAskRun,
-                                  MSGraphFileList, MSGraphFileDelete,
-                                  MSGraphFileCreate, MSGraphFileUpdate,
-                                  MSGraphFileRun, MSGraphFileAskRun,
-                                  MSGraphMailCopy, MSGraphFileCopy,
-                                  MSGraphCalendarList, MSGraphCalendarDelete,
-                                  MSGraphCalendarCreate, MSGraphCalendarUpdate,
-                                  MSGraphCalendarRun, MSGraphCalendarAskRun,
-                                  MSGraphCalendarCopy)
-
-from .views.msteams_views import (
-    MSTeamsScannerList,
-    MSTeamsScannerCreate,
-    MSTeamsScannerAskRun,
-    MSTeamsScannerCopy,
-    MSTeamsScannerDelete,
-    MSTeamsScannerRun,
-    MSTeamsScannerUpdate,
+from .views.msgraph_views import (
+    MSGraphMailList, MSGraphMailDelete,
+    MSGraphMailCreate, MSGraphMailUpdate,
+    MSGraphMailRun, MSGraphMailAskRun,
+    MSGraphFileList, MSGraphFileDelete,
+    MSGraphFileCreate, MSGraphFileUpdate,
+    MSGraphFileRun, MSGraphFileAskRun,
+    MSGraphMailCopy, MSGraphFileCopy,
+    MSGraphCalendarList, MSGraphCalendarDelete,
+    MSGraphCalendarCreate, MSGraphCalendarUpdate,
+    MSGraphCalendarRun, MSGraphCalendarAskRun,
+    MSGraphCalendarCopy, MSGraphTeamsScannerList,
+    MSGraphTeamsScannerCreate, MSGraphTeamsScannerAskRun,
+    MSGraphTeamsScannerCopy, MSGraphTeamsScannerDelete,
+    MSGraphTeamsScannerRun, MSGraphTeamsScannerUpdate,
 )
+
 
 urlpatterns = [
     # App URLs
@@ -158,27 +154,27 @@ urlpatterns = [
     url(r"^exchangescanners/$", ExchangeScannerList.as_view(), name="exchangescanners"),
     url(r"^exchangescanners/add/$", ExchangeScannerCreate.as_view(), name="exchangescanner_add"),
     url(r"^exchangescanners/(?P<pk>\d+)/delete/$",
-    ExchangeScannerDelete.as_view(),
-     name="exchangescanner_delete"),
+        ExchangeScannerDelete.as_view(),
+        name="exchangescanner_delete"),
     url(r"^exchangescanners/(?P<pk>\d+)/$",
-    ExchangeScannerUpdate.as_view(),
-     name="exchangescanner_update"),
+        ExchangeScannerUpdate.as_view(),
+        name="exchangescanner_update"),
     url(r"^exchangescanners/(?P<pk>\d+)/run/$",
-    ExchangeScannerRun.as_view(),
-     name="exchangescanner_run"),
+        ExchangeScannerRun.as_view(),
+        name="exchangescanner_run"),
     url(r"^exchangescanners/(?P<pk>\d+)/askrun/$", ExchangeScannerAskRun.as_view(
-            template_name="os2datascanner/scanner_askrun.html", model=ExchangeScanner),
+        template_name="os2datascanner/scanner_askrun.html", model=ExchangeScanner),
         name="scanner_askrun"),
     url(r"^exchangescanners/(?P<pk>\d+)/copy/$",
-    ExchangeScannerCopy.as_view(),
-     name="exchangescanner_copy"),
+        ExchangeScannerCopy.as_view(),
+        name="exchangescanner_copy"),
     # Webscanner URL's
     url(r"^webscanners/$", WebScannerList.as_view(), name="webscanners"),
     url(r"^webscanners/add/$", WebScannerCreate.as_view(), name="webscanner_add"),
     url(r"^webscanners/(?P<pk>\d+)/delete/$", WebScannerDelete.as_view(), name="webscanner_delete"),
     url(r"^webscanners/(?P<pk>\d+)/validate/$",
-    WebScannerValidate.as_view(),
-     name="web_scanner_validate"),
+        WebScannerValidate.as_view(),
+        name="web_scanner_validate"),
     url(r"^webscanners/(?P<pk>\d+)/run/$", WebScannerRun.as_view(), name="webscanner_run"),
     url(r"^webscanners/(?P<pk>\d+)/askrun/$", WebScannerAskRun.as_view(
             template_name="os2datascanner/scanner_askrun.html", model=WebScanner),
@@ -189,7 +185,8 @@ urlpatterns = [
     url(r"^filescanners/$", FileScannerList.as_view(), name="filescanners"),
     url(r"^filescanners/add/$", FileScannerCreate.as_view(), name="filescanner_add"),
     url(r"^filescanners/(?P<pk>\d+)/$", FileScannerUpdate.as_view(), name="filescanner_update"),
-    url(r"^filescanners/(?P<pk>\d+)/delete/$", FileScannerDelete.as_view(), name="filescanner_delete"),
+    url(r"^filescanners/(?P<pk>\d+)/delete/$", FileScannerDelete.as_view(),
+        name="filescanner_delete"),
     url(r"^filescanners/(?P<pk>\d+)/run/$", FileScannerRun.as_view(), name="filescanner_run"),
     url(r"^filescanners/(?P<pk>\d+)/askrun/$", FileScannerAskRun.as_view(
             template_name="os2datascanner/scanner_askrun.html", model=FileScanner),
@@ -310,7 +307,7 @@ urlpatterns = [
             model=MSGraphFileScanner),
         name="msgraphfilescanner_askrun"),
     url(r"^msgraph-mailscanners/(?P<pk>\d+)/askrun/$", MSGraphMailAskRun.as_view(
-            template_name="os2datascanner/scanner_askrun.html", model=MSGraphMailScanner),
+        template_name="os2datascanner/scanner_askrun.html", model=MSGraphMailScanner),
         name="msgraphmailscanner_askrun"),
     url(r"^(msgraph-mailscanners|msgraph-filescanners)/(\d+)/(created|saved)/$",
         DialogSuccess.as_view()),
@@ -318,19 +315,19 @@ urlpatterns = [
         DialogSuccess.as_view()),
 
     # MS-Graph Teams data source
-    url(r"^msgraph-teamsscanners/$", MSTeamsScannerList.as_view(), name="msteamsscanner_list"),
-    url(r"^msgraph-teamsscanners/add/$", MSTeamsScannerCreate.as_view(),
+    url(r"^msgraph-teamsscanners/$", MSGraphTeamsScannerList.as_view(), name="msteamsscanner_list"),
+    url(r"^msgraph-teamsscanners/add/$", MSGraphTeamsScannerCreate.as_view(),
         name="msteamsscanner_add"),
-    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/$", MSTeamsScannerUpdate.as_view(),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/$", MSGraphTeamsScannerUpdate.as_view(),
         name="msteamsscanner_update"),
-    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/delete/$", MSTeamsScannerDelete.as_view(),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/delete/$", MSGraphTeamsScannerDelete.as_view(),
         name="msteamsscanner_delete"),
-    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/copy/$", MSTeamsScannerCopy.as_view(),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/copy/$", MSGraphTeamsScannerCopy.as_view(),
         name="msteamsscanner_copy"),
-    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/run/$", MSTeamsScannerRun.as_view(),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/run/$", MSGraphTeamsScannerRun.as_view(),
         name="msteamsscanner_run"),
-    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/askrun/$", MSTeamsScannerAskRun.as_view(
-        template_name="os2datascanner/scanner_askrun.html", model=MSTeamsScanner),
+    url(r"^msgraph-teamsscanners/(?P<pk>\d+)/askrun/$", MSGraphTeamsScannerAskRun.as_view(
+        template_name="os2datascanner/scanner_askrun.html", model=MSGraphTeamsScanner),
         name="msteamsscanner_askrun"),
     url(r"^msgraph-teamsscanners/(\d+)/(created|saved)/$", DialogSuccess.as_view()),
 
@@ -349,13 +346,17 @@ urlpatterns = [
         template_name="logout.html"), name="logout"),
     url(r"^accounts/password_change/", django.contrib.auth.views.PasswordChangeView.as_view(
         template_name="password_change.html"), name="password_change"),
-    url(r"^accounts/password_change_done/", django.contrib.auth.views.PasswordChangeDoneView.as_view(
-        template_name="password_change_done.html"), name="password_change_done"),
-    url(r"^accounts/password_reset/$", django.contrib.auth.views.PasswordResetView.as_view(
-        template_name="password_reset_form.html"), name="password_reset"),
-    url(r"^accounts/password_reset/done/", django.contrib.auth.views.PasswordResetDoneView.as_view(
-        template_name="password_reset_done.html"), name="password_reset_done"),
-    url(r"^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/" + "(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/",
+    url(r"^accounts/password_change_done/",
+        django.contrib.auth.views.PasswordChangeDoneView.as_view(
+            template_name="password_change_done.html"), name="password_change_done"),
+    url(r"^accounts/password_reset/$",
+        django.contrib.auth.views.PasswordResetView.as_view(
+            template_name="password_reset_form.html"), name="password_reset"),
+    url(r"^accounts/password_reset/done/",
+        django.contrib.auth.views.PasswordResetDoneView.as_view(
+            template_name="password_reset_done.html"), name="password_reset_done"),
+    url(r"^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/" +
+        "(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/",
         django.contrib.auth.views.PasswordResetConfirmView.as_view(
             template_name="password_reset_confirm.html"), name="password_reset_confirm"),
     url(r"^accounts/reset/complete", django.contrib.auth.views.PasswordResetCompleteView.as_view(
