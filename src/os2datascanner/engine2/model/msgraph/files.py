@@ -169,8 +169,7 @@ class MSGraphFileResource(FileResource):
         return super().get_last_modified()
 
     def get_size(self):
-        size = self.get_file_metadata()["size"]
-        return SingleResult(size, 'size', 1024)
+        return SingleResult(None, 'size', 1024)
 
     @contextmanager
     def make_path(self):
