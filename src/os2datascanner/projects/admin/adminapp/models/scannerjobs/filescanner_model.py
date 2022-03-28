@@ -60,8 +60,13 @@ class FileScanner(Scanner):
         )
 
         if path.startswith(root_url):
+            win_path = (
+                PureWindowsPath(self.alias + '\\') if ':' in str(self.alias)
+                else PureWindowsPath(self.alias + ':\\')
+            )
+
             return str(
-                PureWindowsPath(self.alias + ':\\') / path[len(root_url):]
+                win_path / path[len(root_url):]
             )
 
         return path
