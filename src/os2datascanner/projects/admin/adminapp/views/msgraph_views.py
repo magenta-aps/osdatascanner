@@ -19,6 +19,8 @@ from urllib.parse import urlencode
 from ..models.scannerjobs.msgraph_models import MSGraphMailScanner
 from ..models.scannerjobs.msgraph_models import MSGraphFileScanner
 from .views import LoginRequiredMixin
+from ...core.models import Feature, Client
+from ...organizations.models import OrganizationalUnit
 from .scanner_views import (ScannerRun, ScannerList,
                             ScannerAskRun, ScannerCreate, ScannerDelete, ScannerUpdate, ScannerCopy)
 
@@ -37,6 +39,34 @@ def make_consent_url(label):
         return None
 
 
+class MSGraphScannerBase(View):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org_units = OrganizationalUnit.objects.all()
+        client = Client.objects.none()
+        user = self.request.user
+        if self.request.user.is_superuser:
+            # if you are superuser you are allowed to view all org_units
+            # across customers. Also if org_unit featureflags are disabled.
+            context['org_units'] = org_units
+        elif hasattr(user, 'administrator_for'):
+            # if I am administrator for a client I can view org_units
+            # for that client.
+            client = user.administrator_for.client
+            org_units = org_units.filter(
+                organization__in=client.organizations.all()
+            )
+            context['org_units'] = org_units
+        else:
+            context['org_units'] = OrganizationalUnit.objects.none()
+
+        # Needed to upheld feature flags.
+        context['FEATURES'] = Feature.__members__
+        context['client'] = client
+        return context
+
+
 class MSGraphMailList(ScannerList):
     """Displays the list of all Microsoft Graph mail scanner jobs."""
     model = MSGraphMailScanner
@@ -49,6 +79,7 @@ class MSGraphMailCreate(View):
     This view delegates to two other views: one sends the user to Microsoft
     Online to grant permission for the scan, and the other renders the normal
     scanner job creation form when the response comes back."""
+
     def dispatch(self, request, *args, **kwargs):
         if 'tenant' in request.GET:
             handler = _MSGraphMailCreate.as_view()
@@ -76,12 +107,13 @@ class _MSGraphMailPermissionRequest(LoginRequiredMixin, TemplateView):
         })
 
 
-class _MSGraphMailCreate(ScannerCreate):
+class _MSGraphMailCreate(MSGraphScannerBase, ScannerCreate):
     """Creates a new Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
     type = 'msgraph-mail'
     fields = ['name', 'schedule', 'tenant_id', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rules', 'organization',
+              'org_unit', ]
 
     def get_context_data(self, **kwargs):
         return dict(**super().get_context_data(**kwargs), **{
@@ -93,13 +125,14 @@ class _MSGraphMailCreate(ScannerCreate):
         return '/msgraph-mailscanners/%s/created/' % self.object.pk
 
 
-class MSGraphMailUpdate(ScannerUpdate):
+class MSGraphMailUpdate(MSGraphScannerBase, ScannerUpdate):
     """Displays the parameters of an existing Microsoft Graph mail scanner job
     for modification."""
     model = MSGraphMailScanner
     type = 'msgraph-mailscanners'
     fields = ['name', 'schedule', 'tenant_id', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rules', 'organization',
+              'org_unit', ]
 
     def get_success_url(self):
         return '/msgraph-mailscanners/%s/saved/' % self.object.pk
@@ -112,12 +145,13 @@ class MSGraphMailDelete(ScannerDelete):
     success_url = '/msgraph-mailscanners/'
 
 
-class MSGraphMailCopy(ScannerCopy):
+class MSGraphMailCopy(MSGraphScannerBase, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
     type = 'msgraph-mail'
     fields = ['name', 'schedule', 'tenant_id', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rules', 'organization',
+              'org_unit', ]
 
 
 class MSGraphMailAskRun(ScannerAskRun):
@@ -141,6 +175,7 @@ class MSGraphFileList(ScannerList):
 class MSGraphFileCreate(View):
     """Creates a new Microsoft Graph file scanner job. (See MSGraphMailCreate
     for more details.)"""
+
     def dispatch(self, request, *args, **kwargs):
         if 'tenant' in request.GET:
             handler = _MSGraphFileCreate.as_view()
@@ -165,13 +200,14 @@ class _MSGraphFilePermissionRequest(TemplateView, LoginRequiredMixin):
         })
 
 
-class _MSGraphFileCreate(ScannerCreate):
+class _MSGraphFileCreate(MSGraphScannerBase, ScannerCreate):
     """Creates a new Microsoft Graph file scanner job."""
     model = MSGraphFileScanner
     type = 'msgraph-file'
     fields = ['name', 'schedule', 'tenant_id',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rules', 'organization',
+              'org_unit', ]
 
     def get_context_data(self, **kwargs):
         return dict(**super().get_context_data(**kwargs), **{
@@ -183,14 +219,15 @@ class _MSGraphFileCreate(ScannerCreate):
         return '/msgraph-filescanners/%s/created/' % self.object.pk
 
 
-class MSGraphFileUpdate(ScannerUpdate):
+class MSGraphFileUpdate(MSGraphScannerBase, ScannerUpdate):
     """Displays the parameters of an existing Microsoft Graph file scanner job
     for modification."""
     model = MSGraphFileScanner
     type = 'msgraph-filescanners'
     fields = ['name', 'schedule', 'tenant_id',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rules', 'organization',
+              'org_unit', ]
 
     def get_success_url(self):
         return '/msgraph-filescanners/%s/saved/' % self.object.pk
@@ -203,13 +240,14 @@ class MSGraphFileDelete(ScannerDelete):
     success_url = '/msgraph-filescanners/'
 
 
-class MSGraphFileCopy(ScannerCopy):
+class MSGraphFileCopy(MSGraphScannerBase, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphFileScanner
     type = 'msgraph-file'
     fields = ['name', 'schedule', 'tenant_id',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rules', 'organization',
+              'org_unit', ]
 
 
 class MSGraphFileAskRun(ScannerAskRun):
