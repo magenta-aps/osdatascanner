@@ -15,14 +15,18 @@ from django.conf import settings
 from django.views import View
 from django.views.generic.base import TemplateView
 from urllib.parse import urlencode
+from rest_framework.generics import ListAPIView
 
 from ..models.scannerjobs.msgraph_models import MSGraphMailScanner
 from ..models.scannerjobs.msgraph_models import MSGraphFileScanner
 from .views import LoginRequiredMixin
 from ...core.models import Feature, Client
+from ..serializers import OrganizationalUnitSerializer
 from ...organizations.models import OrganizationalUnit
 from .scanner_views import (ScannerRun, ScannerList,
-                            ScannerAskRun, ScannerCreate, ScannerDelete, ScannerUpdate, ScannerCopy)
+                            ScannerAskRun, ScannerCreate,
+                            ScannerDelete, ScannerUpdate,
+                            ScannerCopy)
 
 
 def make_consent_url(label):
@@ -37,6 +41,21 @@ def make_consent_url(label):
                 }))
     else:
         return None
+
+
+class OrganizationalUnitListing(ListAPIView):
+    serializer_class = OrganizationalUnitSerializer
+
+    def get_queryset(self):
+        organization_id = self.request.query_params.get('organizationId', None)
+
+        if organization_id:
+            queryList = OrganizationalUnit.objects.filter(
+                    organization=organization_id)
+        else:
+            queryList = []
+
+        return queryList
 
 
 class MSGraphScannerBase(View):
