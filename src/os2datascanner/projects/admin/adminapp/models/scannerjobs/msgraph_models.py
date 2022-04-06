@@ -16,6 +16,8 @@
 
 from django.db import models
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
+from mptt.models import TreeManyToManyField
 
 from os2datascanner.engine2.model.msgraph.mail import MSGraphMailSource
 from os2datascanner.engine2.model.msgraph.files import MSGraphFilesSource
@@ -31,6 +33,13 @@ class MSGraphScanner(Scanner):
 
 
 class MSGraphMailScanner(MSGraphScanner):
+    org_unit = TreeManyToManyField(
+        "organizations.OrganizationalUnit",
+        related_name="msgraphmailscanners",
+        blank=True,
+        verbose_name=_("organizational unit"),
+    )
+
     def get_type(self):
         return 'msgraph-mail'
 
@@ -47,6 +56,13 @@ class MSGraphMailScanner(MSGraphScanner):
 
 
 class MSGraphFileScanner(MSGraphScanner):
+    org_unit = TreeManyToManyField(
+        "organizations.OrganizationalUnit",
+        related_name="msgraphfilescanners",
+        blank=True,
+        verbose_name=_("organizational unit"),
+    )
+
     scan_site_drives = models.BooleanField(
             default=True, verbose_name='Scan alle SharePoint-mapper')
     scan_user_drives = models.BooleanField(
