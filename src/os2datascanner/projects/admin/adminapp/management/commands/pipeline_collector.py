@@ -54,6 +54,12 @@ def status_message_received_raw(body):
             scanner=scanner,
             scan_tag=body["scan_tag"])
 
+    if message.new_sources is not None:
+        scan_status.update(
+            message=message.message,
+            status_is_error=message.status_is_error,
+            total_sources=F('total_sources') + message.new_sources)
+
     if message.total_objects is not None:
         # An explorer has finished exploring a Source
         scan_status.update(

@@ -428,6 +428,9 @@ class StatusMessage(NamedTuple):
     # Emitted by (top-level) explorers
     total_objects: Optional[int] = None
 
+    # Counts newly explored sources
+    new_sources: Optional[int] = None
+
     # Emitted by workers
     object_size: Optional[int] = None
     object_type: Optional[str] = None
@@ -439,6 +442,7 @@ class StatusMessage(NamedTuple):
             "status_is_error": self.status_is_error,
 
             "total_objects": self.total_objects,
+            "new_sources": self.new_sources,
 
             "object_size": self.object_size,
             "object_type": self.object_type
@@ -451,6 +455,7 @@ class StatusMessage(NamedTuple):
                 message=obj.get("message"),
                 status_is_error=obj.get("status_is_error"),
                 total_objects=obj.get("total_objects"),
+                new_sources=obj.get("new_sources"),
                 object_size=obj.get("object_size"),
                 object_type=obj.get("object_type"))
 

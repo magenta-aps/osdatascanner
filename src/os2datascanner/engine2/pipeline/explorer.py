@@ -50,6 +50,10 @@ def message_received_raw(body, channel, source_manager):
 
     count = 0
     exception_message = ""
+    if scan_spec.source.yields_independent_sources:
+        new_sources = 1
+    else:
+        new_sources = None
     try:
         for handle in scan_spec.source.handles(source_manager):
             if not scan_spec.source.yields_independent_sources:
@@ -82,7 +86,7 @@ def message_received_raw(body, channel, source_manager):
     finally:
         yield ("os2ds_status", messages.StatusMessage(
                 scan_tag=scan_tag, total_objects=count,
-                message=exception_message,
+                message=exception_message, new_sources=new_sources,
                 status_is_error=exception_message != "").to_json_object())
 
 
