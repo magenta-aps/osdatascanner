@@ -97,11 +97,19 @@
                                 </td>
                             </tr>
                             {% if status.message and status.status_is_error %}
-                              <tr class="error">
-                                <td colspan="4">
-                                  {{ status.message }}
-                                </td>
-                              </tr>
+				{% if status.is_error_breaking %}
+				    <tr class="error">
+					<td colspan="4">
+					    {{ status.message }}
+					</td>
+				    </tr>
+				{% else %}
+				    <tr class="warning">
+					<td colspan="4">
+					    {{ status.message }}
+					</td>
+				    </tr>
+				{% endif %}
                             {% endif %}
                         {% endfor %}
                     </tbody>

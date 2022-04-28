@@ -412,6 +412,9 @@ class ScanStage(Enum):
     SCANNING = 2
 
 
+NON_BREAKING_ERRORS = []
+
+
 class ScanStatus(models.Model):
     """A ScanStatus object collects the status messages received from the
     pipeline for a given scan."""
@@ -524,6 +527,17 @@ class ScanStatus(models.Model):
     def start_time(self) -> datetime.datetime:
         """Returns the start time of this scan."""
         return messages.ScanTagFragment.from_json_object(self.scan_tag).time
+
+    @property
+    def is_error_breaking(self) -> bool:
+        """Checks whether or not an error is crashing the scanner job."""
+        if self.message:
+            for message in NON_BREAKING_ERRORS:
+                if message in self.message:
+                    return False
+            return True
+        else:
+            return False
 
     class Meta:
         verbose_name = _("scan status")

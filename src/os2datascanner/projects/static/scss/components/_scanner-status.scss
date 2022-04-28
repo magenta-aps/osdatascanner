@@ -125,6 +125,13 @@
   }
 }
 
+.warning {
+    color: var(--color-warning-dark);
+    &:last-child {
+	margin-bottom: 0;
+    }
+}
+
 // Completed icon
 .completed_icon {
   display: flex;
