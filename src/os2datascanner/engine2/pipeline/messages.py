@@ -424,6 +424,7 @@ class StatusMessage(NamedTuple):
     scan_tag: ScanTagFragment
     message: str = ""
     status_is_error: bool = False
+    is_error_breaking: bool = True
 
     # Emitted by (top-level) explorers
     """If set, the number of Handles found during an exploration pass."""
@@ -441,6 +442,7 @@ class StatusMessage(NamedTuple):
             "scan_tag": self.scan_tag.to_json_object(),
             "message": self.message,
             "status_is_error": self.status_is_error,
+            "is_error_breaking": self.is_error_breaking,
 
             "total_objects": self.total_objects,
             "new_sources": self.new_sources,
@@ -455,6 +457,7 @@ class StatusMessage(NamedTuple):
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 message=obj.get("message"),
                 status_is_error=obj.get("status_is_error"),
+                is_error_breaking=obj.get("is_error_breaking"),
                 total_objects=obj.get("total_objects"),
                 new_sources=obj.get("new_sources"),
                 object_size=obj.get("object_size"),
