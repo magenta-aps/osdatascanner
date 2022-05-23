@@ -11,10 +11,13 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import modelform_factory
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, TemplateView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -212,3 +215,18 @@ class DialogSuccess(TemplateView):
             model_type = self.reload_map[model_type]
         context['reload_url'] = '/' + model_type + '/'
         return context
+
+
+class ModifiedLoginView(LoginView):
+    template_name = 'login.html'
+
+    def get_success_url(self):
+        username = self.get_form_kwargs().get('data').dict().get('username')
+        user = User.objects.filter(username=username).first()
+
+        logger.info(f"User last login: {user.last_login}")
+
+        if user and user.last_login:
+            return reverse('index')
+        else:
+            return reverse('password_change')

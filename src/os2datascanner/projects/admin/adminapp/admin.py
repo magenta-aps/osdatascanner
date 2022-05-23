@@ -34,8 +34,10 @@ from .models.scannerjobs.exchangescanner_model import ExchangeScanner
 from .models.scannerjobs.dropboxscanner_model import DropboxScanner
 from .models.scannerjobs.googledrivescanner_model import GoogleDriveScanner
 from .models.scannerjobs.gmail_model import GmailScanner
+from .models.user import User
 
 
+@admin.site.register(User)
 @admin.register(Authentication)
 class AuthenticationAdmin(admin.ModelAdmin):
     list_display = ('username', 'domain')

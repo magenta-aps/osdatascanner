@@ -12,6 +12,7 @@ from .views.views import (
     MainPageView, LeaderStatisticsPageView,
     DPOStatisticsPageView, ApprovalPageView,
     StatsPageView, SettingsPageView, AboutPageView, LogoutPageView)
+from .views.views import ModifiedLoginView as LoginView
 
 urlpatterns = [
     url(r'^$',      MainPageView.as_view(),     name="index"),
@@ -43,7 +44,7 @@ if settings.KEYCLOAK_ENABLED:
                            name='logout'))
 else:
     urlpatterns.append(url(r'^accounts/login/',
-                           django.contrib.auth.views.LoginView.as_view(
+                           LoginView.as_view(
                                template_name='login.html',
                                extra_context={'body_class': 'login-bg'}
                            ),

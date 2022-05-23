@@ -22,11 +22,14 @@ from collections import deque
 from urllib.parse import urlencode
 from django.conf import settings
 
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden, Http404
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.views.generic import View, TemplateView, ListView
@@ -512,3 +515,16 @@ def oidc_op_logout_url_method(request):
     return_to_url = settings.LOGOUT_REDIRECT_URL
     return logout_url + '?' + urlencode({'redirect_uri': return_to_url,
                                          'client_id': settings.OIDC_RP_CLIENT_ID})
+
+
+class ModifiedLoginView(LoginView):
+    template_name = 'login.html'
+
+    def get_success_url(self):
+        username = self.get_form_kwargs().get('data').dict().get('username')
+        user = User.objects.filter(username=username).first()
+
+        if user and user.last_login:
+            return reverse('index')
+        else:
+            return reverse('password_change')
