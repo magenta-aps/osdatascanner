@@ -154,7 +154,8 @@ class UserErrorLogView(RestrictedListView):
 
     def get_queryset(self):
         """Order errors by most recent scan."""
-        return super().get_queryset().order_by('-scan_status__scan_tag__time')
+        return super().get_queryset().filter(archive_status__isnull=True
+                                             ).order_by('-scan_status__scan_tag__time')
 
 
 class ScannerList(RestrictedListView):

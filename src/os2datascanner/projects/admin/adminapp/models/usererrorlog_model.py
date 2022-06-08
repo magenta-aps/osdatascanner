@@ -1,3 +1,5 @@
+import enum
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -29,9 +31,33 @@ class UserErrorLog(models.Model):
         verbose_name=_('Error message')
     )
 
-    # hidden = models.BooleanField(
-    #     default=False
-    # )
+    @enum.unique
+    class ArchiveChoices(enum.Enum):
+        ARCHIVED = 0, "Arkiveret"
+        NO_ACTION = 1, "Intet foretaget"
+
+        def __new__(cls, *args):
+            obj = object.__new__(cls)
+            # models.Choices compatibility: the last element of the enum value
+            # tuple, if there is one, is a human-readable label
+            obj._value_ = args[0] if len(args) < 3 else args[:-1]
+            return obj
+
+        def __init__(self, *args):
+            self.label = args[-1] if len(args) > 1 else self.name
+
+        @classmethod
+        def choices(cls):
+            return [(k.value, k.label) for k in cls]
+
+        def __repr__(self):
+            return f"<{self.__class__.__name__}.{self.name}>"
+
+    archive_status = models.IntegerField(
+        choices=ArchiveChoices.choices(),
+        null=True, blank=True, db_index=True,
+        verbose_name=_("archive status")
+    )
 
     @property
     def user_friendly_error_message(self):

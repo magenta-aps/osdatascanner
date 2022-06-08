@@ -9,6 +9,7 @@ from os2datascanner.engine2.rules.logical import OrRule
 from ..models.rules.rule_model import Rule
 from ..models.apikey_model import APIKey
 from ..models.scannerjobs.scanner_model import Scanner
+# from ..models.usererrorlog_model import UserErrorLog
 
 
 def get_rule_1(key, body):
@@ -67,6 +68,48 @@ def get_scanner_1(key, body):
     }
 
 
+# def set_status_hidden(key, body):
+#     """Retrieves a list of UserErrorLog id's and a handling-status value
+#     from template.
+#     Converts list to queryset and bulk_updates UserErrorLog model"""
+
+#     error_pk = body.get("error_id")
+#     status_value = body.get("new_status")
+#     user_errors = UserErrorLog.objects.filter(pk__in=error_pk)
+
+#     logger.info(
+#         "User changing match status",
+#         user=username,
+#         status=UserErrorLog.ArchiveChoices(status_value),
+#         **body,
+#     )
+
+#     if not user_errors.exists():
+#         logger.warning(
+#             "Could not find reports for status change",
+#             user=username,
+#             **body,
+#         )
+#         return {
+#             "status": "fail",
+#             "message": "unable to populate list of user errors"
+#         }
+#     for batch in iterate_queryset_in_batches(10000, user_errors):
+#         for ue in batch:
+#             if ue.archive_status is not None:
+#                 return {
+#                     "status": "fail",
+#                     "message": "error {0} already has a status".format(ue.pk)
+#                 }
+#             else:
+#                 ue.archive_status = status_value
+
+#         UserErrorLog.objects.bulk_update(batch, ['archive_status'])
+#         return {
+#             "status": "ok"
+#         }
+
+
 def error_1(key, body):
     return {
         "status": "fail",
@@ -83,7 +126,8 @@ def catastrophe_1(key, body):
 
 api_endpoints = {
     "get-rule/1": get_rule_1,
-    "get-scanner/1": get_scanner_1
+    "get-scanner/1": get_scanner_1,
+    # "set-status-hidden": set_status_hidden
 }
 
 
