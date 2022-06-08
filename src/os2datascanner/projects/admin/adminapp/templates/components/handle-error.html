@@ -1,0 +1,17 @@
+{% load l10n %}
+{%  load i18n %}
+
+  <div class="handle-match-wrapper">
+      <button type="button" class="button handle-error__action button--has-icon"
+              data-status="error-handle"
+              disabled
+              title="{% blocktrans %}Archive the chosen errors.{% endblocktrans %}"
+              data-label-processing="{% trans 'Working' %} &hellip;"
+              data-label-done="{% trans 'Archived' %}!"
+              data-label-default="{% trans 'Archive' %}">
+          <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Archive" %}</span>
+      </button>
+      <span class="selected-cb">
+        <span class="num-selected">0</span> {% trans "of" %} {{ object_list|length }} {% trans "selected" %}
+      </span>
+  </div>

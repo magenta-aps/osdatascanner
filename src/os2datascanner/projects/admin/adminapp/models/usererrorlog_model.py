@@ -29,6 +29,10 @@ class UserErrorLog(models.Model):
         verbose_name=_('Error message')
     )
 
+    # hidden = models.BooleanField(
+    #     default=False
+    # )
+
     @property
     def user_friendly_error_message(self):
         """Translates an error message into a meaningful instruction
@@ -37,3 +41,6 @@ class UserErrorLog(models.Model):
             return translation_table[self.error_message]
         else:
             return self.error_message
+
+    # def hide(self):
+    #     self.hidden = True

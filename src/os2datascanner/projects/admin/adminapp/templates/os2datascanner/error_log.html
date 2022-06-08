@@ -2,6 +2,7 @@
 {% load l10n %}
 {% load i18n %}
 {% load tz %}
+{% load static %}
 
 {% block body %}
 {% include "partials/header.html" %}
@@ -22,13 +23,27 @@
         <div class="datatable-wrapper card lg" role="region" tabindex="0" aria-label="{% trans 'Error Log' %}">
           <table class="datatable">
             <colgroup>
+              <col class="datatable__column--handle">
               <col class="datatable__column--name">
               <col class="datatable__column--automatic">
               <col class="datatable__column--path">
               <col class="datatable__column--automatic"
             </colgroup>
             <thead>
+              <tr class="handle-errors sticky">
+                <th colspan="12">
+                  {% include "components/handle-error.html" %}
+                </th>
+              </tr>
               <tr>
+                <th class="datatable__column--handle">
+                  <div class="ds-checkbox">
+                    <input id="select-all" type="checkbox">
+                    <label for="select-all">
+                      <span class="screen-reader-only">{% trans 'Select all results' %}</span>
+                    </label>
+                  </div>
+                </th>
                 <th class="datatable__column--name">
                   {% trans "Error" %}
                 </th>
@@ -47,6 +62,14 @@
             <tbody>
                 {% for error_log in object_list %}
                     <tr>
+                      <td class="datatable__column--handle">
+                        <div class="ds-checkbox">
+                          <input type="checkbox" id="error-checkbox-{{ error_log.pk|unlocalize }}" value="" name="error-checkbox" class="datatable-checkbox" error-log-pk="{{ error_log.pk|unlocalize }}">
+                          <label for="error-checkbox-{{ error_log.pk|unlocalize }}">
+                            <span class="screen-reader-only">{% trans "Select result" %}</span>
+                          </label>
+                        </div>
+                      </td>
                         <td class="datatable__column--name">
                             {{ error_log.user_friendly_error_message }}
                         </td>
@@ -74,5 +97,7 @@
         {% endif %}
     </div>
 </main>
+<script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+<script src="{% static 'js/handle-error.js' %} "></script>
 {% endblock %}
 
