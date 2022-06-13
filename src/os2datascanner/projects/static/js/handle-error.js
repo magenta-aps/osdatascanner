@@ -25,7 +25,7 @@ function handleMatches(pks, buttonEl) {
         updateButtons(pks, buttonEl, 'sync', 'data-label-processing');
 
         $.ajax({
-            url: "/api",
+            url: "/api/",
             method: "POST",
             data: JSON.stringify({
                 "action": "set-status-hidden",
@@ -34,9 +34,9 @@ function handleMatches(pks, buttonEl) {
             }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-            }
+            // beforeSend: function (xhr) {
+            //     xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+            // }
         }).done(function (body) {
             if (body.status === "ok") {
                 // let user know that we succeeded the action by mutating the button(s) again
@@ -90,18 +90,18 @@ function updateButtons(pks, buttonEl, icon, attr, addClasses, removeClasses) {
     });
 }
 
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-        var cookies = document.cookie.split(";");
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+// function getCookie(name) {
+//     var cookieValue = null;
+//     if (document.cookie && document.cookie !== "") {
+//         var cookies = document.cookie.split(";");
+//         for (var i = 0; i < cookies.length; i++) {
+//             var cookie = cookies[i].trim();
+//             // Does this cookie string begin with the name we want?
+//             if (cookie.substring(0, name.length + 1) === (name + "=")) {
+//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                 break;
+//             }
+//         }
+//     }
+//     return cookieValue;
+// }
