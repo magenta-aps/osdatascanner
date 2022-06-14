@@ -154,7 +154,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
 
-        context['order_by'] = self.request.GET.get('order_by', 'sort_key')
+        context['order_by'] = self.request.GET.get('order_by', 'path')
         context['order'] = self.request.GET.get('order', 'ascending')
 
         return context
