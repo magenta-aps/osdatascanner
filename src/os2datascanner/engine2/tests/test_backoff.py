@@ -1,7 +1,10 @@
 import unittest
 
 from os2datascanner.engine2.utilities.backoff import (
-        Testing, ExponentialBackoffRetrier as EBRetrier)
+        Testing, ExponentialBackoffRetrier as EBRetrier,
+        WebRetrier)
+
+from requests.exceptions import HTTPError
 
 
 class EtiquetteBreach(Exception):
@@ -60,3 +63,19 @@ class TestBackoff(unittest.TestCase):
                 call_counter,
                 10,
                 "called the function too few times(?)")
+
+
+class TestWebRetrier(unittest.TestCase):
+
+    def setup(self):
+        self.e429 = HTTPError('error')
+        self.e429.response = unittest.mock.MagicMock()
+        self.e429.response.status_code = 429
+        self.e429.response.header['retry-after'] = 0.1
+
+    def test_eventual_success_webretrier(self):
+        operation = Testing.requires_k_seconds(8, self.e429)
+        self.assertEqual(
+                WebRetrier(self.e429).run(
+                        operation, 2, 3, scale_factor=4),
+                20)
