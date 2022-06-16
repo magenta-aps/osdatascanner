@@ -16,6 +16,7 @@ djangorestframework
 channels
 channels_redis
 cryptography>=3.2
+sentry-sdk
 
 # At the moment only used during development:
 django_extensions

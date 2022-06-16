@@ -40,6 +40,7 @@ certifi==2020.4.5.1
     # via
     #   -c requirements-engine.txt
     #   requests
+    #   sentry-sdk
 cffi==1.14.0
     # via
     #   -c requirements-engine.txt
@@ -364,6 +365,8 @@ rsa==4.6
     #   -c requirements-engine.txt
     #   google-auth
     #   oauth2client
+sentry-sdk==1.5.12
+    # via -r requirements-django.in
 service-identity==21.1.0
     # via twisted
 six==1.14.0
@@ -426,6 +429,7 @@ urllib3==1.25.9
     # via
     #   -c requirements-engine.txt
     #   requests
+    #   sentry-sdk
 uvicorn[standard]==0.15.0
     # via -r requirements-django.in
 uvloop==0.16.0

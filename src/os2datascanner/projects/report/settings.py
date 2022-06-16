@@ -14,8 +14,12 @@ import os
 import sys
 import pathlib
 import structlog
+import sentry_sdk
 
+from os2datascanner import __version__
 from os2datascanner.projects.django_toml_configuration import process_toml_conf_for_django
+
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = str(pathlib.Path(
@@ -199,6 +203,23 @@ LOGGING = {
 }
 
 os.makedirs(globals()['BUILD_DIR'], exist_ok=True)
+
+# Sentry
+if not DEBUG:  # noqa: F821
+    dsn = SENTRY_DSN if SENTRY_DSN else None  # noqa: F821
+    server_name = SITE_URL if SITE_URL else None  # noqa: F821
+    if dsn and server_name:
+        sentry_sdk.init(
+            dsn=dsn,
+            integrations=[
+                DjangoIntegration(),
+            ],
+            traces_sample_rate=1.0,
+            environment="production",
+            server_name=server_name,
+            request_bodies="medium",
+            release=__version__,
+        )
 
 # Set default primary key - new in Django 3.2
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

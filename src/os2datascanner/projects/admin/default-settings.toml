@@ -207,6 +207,12 @@ GS_BUCKET_NAME = ""
 # that they never will (early estimates are always less accurate)
 ESTIMATE_AFTER = 0.05
 
+# [sentry]
+# This is the dsn for sentry.io.
+# This enables automatic error logging and performance monitoring
+# through push notifications.
+SENTRY_DSN = "https://963809544835451cb4d94598a8fc3c6b@o1286937.ingest.sentry.io/6509317"
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"
@@ -246,3 +252,4 @@ LOGS_DIR = ["*", "var", "logs"]
 STATIC_ROOT = ["*", 'src', 'os2datascanner', 'projects', 'static', 'admin']
 MEDIA_ROOT = ["*", "uploads", "admin"]
 TEST_OUTPUT_FILE_NAME = ["*", "build", "test-results.xml"]
+

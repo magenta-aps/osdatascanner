@@ -40,6 +40,12 @@ ADMIN_EMAIL = "os2datascanner@magenta.dk"
 EMAIL_HOST = 'mailhog'
 EMAIL_PORT = 1025
 
+# [sentry]
+# This is the dsn for sentry.io.
+# This enables automatic error logging and performance monitoring
+# through push notifications.
+SENTRY_DSN = ""
+
 # options for django_debug_toolbar,
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config
 [DEBUG_TOOLBAR_CONFIG]

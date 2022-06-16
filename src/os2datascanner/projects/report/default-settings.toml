@@ -134,6 +134,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # [logging]
 DJANGO_LOG_LEVEL = "INFO"
 
+# [sentry]
+# This is the dsn for sentry.io.
+# This enables automatic error logging and performance monitoring
+# through push notifications.
+SENTRY_DSN = "https://963809544835451cb4d94598a8fc3c6b@o1286937.ingest.sentry.io/6509317"
+
 [DATABASES]
 
     [DATABASES.default]
@@ -215,3 +221,4 @@ STATIC_ROOT = ["*", 'src', 'os2datascanner', 'projects', 'static', 'report']
 [log]
 log_path = ""
 log_level = "INFO"
+
