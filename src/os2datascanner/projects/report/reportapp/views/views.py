@@ -93,6 +93,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         roles = Role.get_user_roles_or_default(user)
         # Handles filtering by role + org and sets datasource_last_modified if non existing
         self.document_reports = filter_inapplicable_matches(user, self.document_reports, roles)
+        self.all_reports = self.document_reports
 
         # Filters by datasource_last_modified.
         # lte mean less than or equal to.
@@ -124,22 +125,20 @@ class MainPageView(LoginRequiredMixin, ListView):
 
         if self.scannerjob_filters is None:
             # Create select options
-            self.scannerjob_filters = self.document_reports.order_by(
+            self.scannerjob_filters = self.all_reports.order_by(
                 'scanner_job_pk').values(
                 'scanner_job_pk').annotate(
                 total=Count('scanner_job_pk')
-            ).values(
-                'scanner_job_name',
-                'total',
-                'scanner_job_pk'
-            )
+                ).values(
+                    'scanner_job_name', 'total', 'scanner_job_pk'
+                )
 
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
 
         context['30_days'] = self.request.GET.get('30-days', 'true')
 
-        sensitivities = self.document_reports.order_by(
+        sensitivities = self.all_reports.order_by(
             '-sensitivity').values(
             'sensitivity').annotate(
             total=Count('sensitivity')

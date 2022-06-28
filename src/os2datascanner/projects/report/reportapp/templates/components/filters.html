@@ -4,7 +4,7 @@
 <script>
   function clear_filter(elementid){
       var element = document.querySelector('#' + elementid + ' [value="all"]').selected = true;
-      document.getElementById("filter_form", element).submit();
+      document.getElementById("filter_form", element);
   };
   function checkedBox() {
     var checkbox = document.getElementById('30-days-toggle');
@@ -14,7 +14,7 @@
     } else {
       thirtyDays.value = 'false';
     }
-    document.getElementById("filter_form").submit();
+    document.getElementById("filter_form");
   };
   document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('30-days-toggle').addEventListener('click', checkedBox)
@@ -33,7 +33,8 @@
 
   <div class="match_filtering_wrapper">
       <div>
-          <button type="button" onclick="clear_filter('scannerjobs')" class="match_filtering_clear_button">
+          <button type="button" onclick="clear_filter('scannerjobs')" class="match_filtering_clear_button"
+                  hx-get="" hx-trigger="click" hx-target=".content" hx-swap="innerHTML">
             {% trans "Clear" %}
           </button>
           <label for="scannerjobs" class="match_filtering_label">
@@ -41,7 +42,8 @@
           </label>
       </div>
       <div class="match_filtering dropdown">
-          <select name="scannerjob" id="scannerjobs" data-autosubmit data-compareto="all">
+          <select name="scannerjob" id="scannerjobs" data-autosubmit data-compareto="all"
+                  hx-get="" hx-trigger="click changed" hx-target=".content" hx-swap="innerHTML">
             <option value="all"
                     {% if scannerjobs|last == "all" %}
                         selected="selected"
@@ -62,7 +64,8 @@
 
   <div class="match_filtering_wrapper">
       <div>
-          <button type="button" onclick="clear_filter('sensitivities')" class="match_filtering_clear_button">
+          <button type="button" onclick="clear_filter('sensitivities')" class="match_filtering_clear_button"
+                  hx-get="" hx-trigger="click" hx-target=".content" hx-swap="innerHTML">
             {% trans "Clear" %}
           </button>
           <label for="sensitivities" class="match_filtering_label">
