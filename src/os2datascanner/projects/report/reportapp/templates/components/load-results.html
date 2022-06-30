@@ -12,7 +12,8 @@
   <input type="hidden" name="sensitivities" id="sensitivities" value="{{ sensitivities|last }}">
   <input type="hidden" name="30-days" id="30-days" value="{{ 30_days }}">
 
-  <select name="paginate_by" id="paginate_by" data-autosubmit>
+  <select name="paginate_by" id="paginate_by" data-autosubmit
+          hx-get="" hx-trigger="click changed" hx-target=".content" hx-swap="innerHTML">
         {% for option in paginate_by_options %}
             <option value="{{ option }}"
             {% if option == paginate_by %} selected="selected"{% endif %}>

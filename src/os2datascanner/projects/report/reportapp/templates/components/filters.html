@@ -4,21 +4,18 @@
 <script>
   function clear_filter(elementid){
       var element = document.querySelector('#' + elementid + ' [value="all"]').selected = true;
-      document.getElementById("filter_form", element);
   };
   function checkedBox() {
     var checkbox = document.getElementById('30-days-toggle');
     var thirtyDays = document.getElementById('30-days');
+    console.log(thirtyDays.value)
     if (checkbox.checked) {
       thirtyDays.value = 'true';
     } else {
       thirtyDays.value = 'false';
     }
-    document.getElementById("filter_form");
+    console.log(thirtyDays.value)
   };
-  document.addEventListener('DOMContentLoaded', function () {
-      document.getElementById('30-days-toggle').addEventListener('click', checkedBox)
-  });
 </script>
 
 <form method="GET" action="{% url 'index' %}" id="filter_form">  
@@ -73,7 +70,8 @@
           </label>
       </div>
       <div class="match_filtering dropdown">
-          <select name="sensitivities" id="sensitivities" data-autosubmit data-compareto="all">
+          <select name="sensitivities" id="sensitivities" data-autosubmit data-compareto="all"
+                  hx-get="" hx-trigger="click changed" hx-target=".content" hx-swap="innerHTML">
             <option value="all"
                     {% if sensitivities|last == "all" %}
                         selected="selected"
@@ -103,6 +101,8 @@
     <div class="checkbox-group">
       <div class="ds-checkbox">
         <input type="checkbox" id="30-days-toggle"
+        hx-get="" hx-trigger="click delay:1s" hx-target=".content" hx-swap="innerHTML"
+        onclick="checkedBox()"
         {% if 30_days == "true" %}checked{% endif %}>
         <label for="30-days-toggle">
           {% trans "Include results, that are less than 30 days old" %}
@@ -110,4 +110,6 @@
       </div>
     </div>
   </div>
+
+
 </form>
