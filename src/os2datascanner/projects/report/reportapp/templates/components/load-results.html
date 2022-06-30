@@ -11,6 +11,8 @@
   <input type="hidden" name="scannerjob" id="scannerjob" value="{{ scannerjobs|last }}">
   <input type="hidden" name="sensitivities" id="sensitivities" value="{{ sensitivities|last }}">
   <input type="hidden" name="30-days" id="30-days" value="{{ 30_days }}">
+  <input type="hidden" name="30-days-toggle" id="30-days-toggle" value="{{ 30_days }}">
+  <input type="hidden" name="page" id="page" value="{{ page_obj.number }}">
 
   <select name="paginate_by" id="paginate_by" data-autosubmit
           hx-get="" hx-trigger="click changed" hx-target=".content" hx-swap="innerHTML" hx-include=".dropdown">

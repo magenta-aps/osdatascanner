@@ -86,7 +86,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         raw_matches__matched=True).filter(
         resolution_status__isnull=True).order_by("sort_key")
     scannerjob_filters = None
-    paginate_by_options = [10, 20, 50, 100, 250]
+    paginate_by_options = [2, 10, 20, 50, 100, 250]
 
     def get_queryset(self):
         user = self.request.user
@@ -105,7 +105,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         # and vice versa/smaller for older than.
         # By default true and we show all document_reports. If false we only show
         # document_reports older than 30 days
-        if self.request.GET.get('30-days') and self.request.GET.get('30-days-toggle') != 'true':
+        if self.request.GET.get('30-days-toggle') != 'true':
             older_than_30 = time_now() - timedelta(days=30)
             self.document_reports = self.document_reports.filter(
                 datasource_last_modified__lte=older_than_30)
@@ -138,8 +138,6 @@ class MainPageView(LoginRequiredMixin, ListView):
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
 
-        print(self.request.GET.get('30-days'))
-
         if self.request.GET.get('30-days'):
             context['30_days'] = self.request.GET.get('30-days-toggle', 'false')
             print('false')
@@ -154,6 +152,8 @@ class MainPageView(LoginRequiredMixin, ListView):
         ).values(
             'sensitivity', 'total'
         )
+
+        context['page_obj'] = self.listing(self.request)
 
         context['sensitivities'] = (((Sensitivity(s["sensitivity"]),
                                       s["total"]) for s in sensitivities),
@@ -200,6 +200,17 @@ class MainPageView(LoginRequiredMixin, ListView):
         is_htmx = self.request.headers.get('HX-Request') == "true"
         return 'content.html' if is_htmx \
             else 'index.html'
+
+    def listing(self, request):
+        paginator = Paginator(
+            self.document_reports, int(
+                self.request.GET.get(
+                    'paginate_by', self.paginate_by)))
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        return page_obj
 
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):
