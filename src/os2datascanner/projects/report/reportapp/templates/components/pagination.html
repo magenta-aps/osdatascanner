@@ -24,7 +24,10 @@
 
         <div class="pages">
           {% if page_obj.previous_page_number != 0 %}
-            <a class="link link--pre flex" href="?{% param_replace page=page_obj.previous_page_number %}">
+            <a class="link link--pre flex" 
+            hx-get="" hx-trigger="click" hx-swap="innerHTML" 
+            hx-target=".content" hx-include="#page-search" 
+            hx-vals="{'page': '{{ page_obj.previous_page_number }}'}">
               <i id="chevron_left" class="material-icons">chevron_left</i>
               {% trans "Previous" %}
             </a>
@@ -39,28 +42,31 @@
             {% for n in paginator.page_range %}
               {% if page_obj.number|add:'-2' == n %} <!-- If current page -2 = 1 (n)  -->
                 {# First page #}
-                <a class="page" href="?{% param_replace page=1 %}">1</a>
+                <a class="page" hx-get="" hx-trigger="click" hx-swap="innerHTML" hx-target=".content" hx-include="#page-search">1</a>
                 {% if n != 1 %}
                   <span class="page--dot">...</span>
                 {% endif %}
               {% elif page_obj.number == n %}
                 {# Current page #}
-                <a class="page page--active" href="#">{{ n }}</a>
+                <a class="page page--active" hx-get="" hx-trigger="click" hx-swap="innerHTML" hx-target=".content" hx-include="#page-search">{{ n }}</a>
                   {# Set how many pages on each side of current page #}
               {% elif page_obj.number|add:'-2' < n and n < page_obj.number|add:'2' %} {# Pages around current page #}
-                  <a class="page" href="?{% param_replace page=n %}">{{ n }}</a>
+                  <a class="page" hx-get="" hx-trigger="click" hx-swap="innerHTML" hx-target=".content" hx-include="#page-search">{{ n }}</a>
               {% elif page_obj.number|add:'2' == n %}
                 {# Last page #}
                 {% if page_obj.number != paginator.num_pages %}
                   <span class="page--dot">...</span>
                 {% endif %}
-                  <a class="page" href="?{% param_replace page=paginator.num_pages %}">{{ paginator.num_pages }}</a>
+                  <a class="page" hx-get="" hx-trigger="click" hx-swap="innerHTML" hx-target=".content" hx-include="#page-search">{{ paginator.num_pages }}</a>
               {% endif %}
             {% endfor %}
           {% endif %}
 
           {% if page_obj.number != page_obj.paginator.num_pages %}
-          <a class="link link--next flex" href="?{% param_replace page=page_obj.next_page_number %}">
+          <a class="link link--next flex" 
+          hx-get="" hx-trigger="click" hx-swap="innerHTML" 
+          hx-target=".content" hx-include="#page-search" 
+          hx-vals="{'page': '{{ page_obj.previous_page_number }}'}">
             {% trans "Next" %}
             <i id="chevron_right" class="material-icons">chevron_right</i>
           </a>
