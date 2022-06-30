@@ -5,7 +5,7 @@
     <main class="wrapper">
       {% include "partials/sidemenu.html" with active_tab="home" %}
 
-      <div class="content">
+      <div class="content" hx-get="" hx-swap="innerHTML" hx-trigger="load once" hx-target=".content" hx-include="#filter_form">
 
         {% include "content.html" %}
 

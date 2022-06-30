@@ -95,6 +95,8 @@ class MainPageView(LoginRequiredMixin, ListView):
         self.document_reports = filter_inapplicable_matches(user, self.document_reports, roles)
         self.all_reports = self.document_reports
 
+        print(self.request.GET)
+
         # Filters by datasource_last_modified.
         # lte mean less than or equal to.
         # A check whether something is more recent than a month
@@ -103,7 +105,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         # and vice versa/smaller for older than.
         # By default true and we show all document_reports. If false we only show
         # document_reports older than 30 days
-        if self.request.GET.get('30-days') == 'false':
+        if self.request.GET.get('30-days') and self.request.GET.get('30-days-toggle') != 'true':
             older_than_30 = time_now() - timedelta(days=30)
             self.document_reports = self.document_reports.filter(
                 datasource_last_modified__lte=older_than_30)
@@ -136,7 +138,14 @@ class MainPageView(LoginRequiredMixin, ListView):
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
 
-        context['30_days'] = self.request.GET.get('30-days', 'true')
+        print(self.request.GET.get('30-days'))
+
+        if self.request.GET.get('30-days'):
+            context['30_days'] = self.request.GET.get('30-days-toggle', 'false')
+            print('false')
+        else:
+            context['30_days'] = 'true'
+            print('true')
 
         sensitivities = self.all_reports.order_by(
             '-sensitivity').values(
