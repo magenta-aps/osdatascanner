@@ -1,5 +1,6 @@
 from io import BytesIO
 from contextlib import contextmanager
+from datetime import datetime
 from dateutil.parser import isoparse
 
 from ..core import Handle, Source, Resource, FileResource
@@ -164,6 +165,7 @@ class MSGraphFileResource(FileResource):
         yield "msgraph-owner-account", msgraph_metadata["createdBy"]["user"]["email"]
         yield "msgraph-last-modified-by", msgraph_metadata["lastModifiedBy"]["user"]["email"]
         yield "msgraph-last-modified-date-time", msgraph_metadata["lastModifiedDateTime"]
+        yield "msgraph-created-date-time", msgraph_metadata["createdDateTime"]
         yield from super()._generate_metadata()
 
     def check(self) -> bool:
@@ -183,8 +185,22 @@ class MSGraphFileResource(FileResource):
         return self._metadata
 
     def get_last_modified(self):
-        timestamp = self.get_file_metadata().get("lastModifiedDateTime")
-        return isoparse(timestamp) if timestamp else None
+        metadata = self.get_event_metadata()
+
+        ct = metadata.get("lastModifiedDateTime")
+        mt = metadata.get("createdDateTime")
+
+        match (ct, mt):
+            case (datetime(), datetime()):
+                timestamp = max(isoparse(ct), isoparse(mt))
+            case (datetime(), None):
+                timestamp = isoparse(ct)
+            case (None, datetime()):
+                timestamp = isoparse(mt)
+            case _:
+                return
+
+        return SingleResult(None, OutputType.LastModified, timestamp)
 
     def get_size(self):
         return self.get_file_metadata()["size"]

@@ -142,7 +142,7 @@ class MSGraphCalendarEventResource(FileResource):
     def get_event_metadata(self):
         if not self._event:
             self._event = self._get_cookie().get(
-                self.make_object_path() + "?$select=lastModifiedDateTime")
+                self.make_object_path() + "?$select=lastModifiedDateTime,createdDateTime")
         return self._event
 
     @contextmanager
@@ -159,8 +159,22 @@ class MSGraphCalendarEventResource(FileResource):
         return 1024
 
     def get_last_modified(self):
-        timestamp = self.get_event_metadata().get("lastModifiedDateTime")
-        return isoparse(timestamp) if timestamp else None
+        metadata = self.get_event_metadata()
+
+        ct = metadata.get("lastModifiedDateTime")
+        mt = metadata.get("createdDateTime")
+
+        match (ct, mt):
+            case (datetime(), datetime()):
+                timestamp = max(isoparse(ct), isoparse(mt))
+            case (datetime(), None):
+                timestamp = isoparse(ct)
+            case (None, datetime()):
+                timestamp = isoparse(mt)
+            case _:
+                return
+
+        return SingleResult(None, OutputType.LastModified, timestamp)
 
 
 class MSGraphCalendarEventHandle(Handle):
