@@ -4,7 +4,7 @@
 {% with type=document_report.matches.handle|find_type_label %}
   {% for frag in document_report.matches.matches %}
     {% if frag.rule.type_label in renderable_rules and frag.matches %}
-      <tr data-type="{{ type }}">
+      <tr data-type="{{ type }}" class="match-hit">
         <td class="datatable__column--handle">
           <div class="ds-checkbox">
             <input type="checkbox" id="match-checkbox-{{ document_report.pk|unlocalize }}" value="" name="match-checkbox" class="datatable-checkbox" data-report-pk="{{ document_report.pk|unlocalize }}">
