@@ -36,6 +36,7 @@ from .models.scannerjobs.exchangescanner_model import ExchangeScanner
 from .models.scannerjobs.dropboxscanner_model import DropboxScanner
 from .models.scannerjobs.googledrivescanner_model import GoogleDriveScanner
 from .models.scannerjobs.gmail_model import GmailScanner
+from .forms import CustomRuleAdminForm
 
 
 @admin.register(Authentication)
@@ -46,11 +47,16 @@ class AuthenticationAdmin(admin.ModelAdmin):
 @admin.register(CPRRule)
 @admin.register(NameRule)
 @admin.register(RegexRule)
-@admin.register(CustomRule)
 @admin.register(AddressRule)
 class RuleAdmin(admin.ModelAdmin):
     list_filter = ('sensitivity',)
     list_display = ('name', 'organization', 'sensitivity')
+
+
+@admin.register(CustomRule)
+class CustomRuleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'organization', 'sensitivity')
+    form = CustomRuleAdminForm
 
 
 @admin.register(RegexPattern)
