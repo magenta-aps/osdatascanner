@@ -233,12 +233,25 @@ msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 msgid "go to the front page"
 msgstr "gå til forsiden"
 
-#: reportapp/templates/components/dpo-statistics-template.html:7
-msgid "DPO statistics"
-msgstr "DPO-statistik"
+#: reportapp/templates/components/filters.html:14
+msgid "Search for a path..."
+msgstr "Søg efter sti..."
 
-#: reportapp/templates/components/dpo-statistics-template.html:27
-#: reportapp/templates/components/filters.html:37
+#: reportapp/templates/components/filters.html:17
+msgid "Search"
+msgstr "Søg"
+
+#: reportapp/templates/components/filters.html:27
+#: reportapp/templates/components/filters.html:56
+msgid "Clear"
+msgstr "Ryd"
+
+#: reportapp/templates/components/filters.html:30
+msgid "Scan"
+msgstr "Scan"
+
+#: reportapp/templates/components/filters.html:30
+#: reportapp/templates/components/statistics-template.html:19
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"
 

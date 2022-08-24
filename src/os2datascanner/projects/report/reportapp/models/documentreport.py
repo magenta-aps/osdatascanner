@@ -60,6 +60,8 @@ class DocumentReport(models.Model):
     # filename
     name = models.CharField(max_length=256, verbose_name=_("name"), default="")
 
+    place = models.CharField(max_length=256, verbose_name=_("place"), default="")
+
     source_type = models.CharField(max_length=2000,
                                    verbose_name=_("source type"))
 
