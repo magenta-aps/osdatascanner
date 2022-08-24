@@ -99,31 +99,6 @@ class MainPageView(LoginRequiredMixin, ListView):
     def get_queryset(self):  # noqa CCR001
         user = self.request.user
         roles = Role.get_user_roles_or_default(user)
-        # If called from a "distribute-matches"-button, remove all
-        # `only_notify_superadmin`-flags from reports.
-        is_htmx = self.request.headers.get("HX-Request") == "true"
-        if is_htmx:
-            htmx_trigger = self.request.headers.get("HX-Trigger-Name")
-            if htmx_trigger == "distribute-matches":
-                update_pks = self.request.GET.getlist('distribute-to')
-                DocumentReport.objects.filter(
-                    scanner_job_pk__in=update_pks).update(
-                    only_notify_superadmin=False)
-
-            # If called from a "open-button"-htmx link, update the last_opened_time value.
-            elif htmx_trigger == "open-button":
-                DocumentReport.objects.get(pk=self.request.GET.get('pk')).update_opened()
-            elif htmx_trigger == "handle-match":
-                if UserProfile.objects.filter(user=user).exists():
-                    user.profile.update_last_handle()
-                self.document_reports.filter(
-                    pk=self.request.GET.get('pk')).update(
-                    resolution_status=0)
-            elif htmx_trigger == "handle-matches":
-                if UserProfile.objects.filter(user=user).exists():
-                    user.profile.update_last_handle()
-                DocumentReport.objects.filter(pk__in=self.request.GET.getlist(
-                    'match-checkbox')).update(resolution_status=0)
 
         # Handles filtering by role + org and sets datasource_last_modified if non existing
         self.user_reports = filter_inapplicable_matches(user, self.document_reports, roles)
@@ -137,17 +112,17 @@ class MainPageView(LoginRequiredMixin, ListView):
         # and vice versa/smaller for older than.
         # By default true and we show all document_reports. If false we only show
         # document_reports older than 30 days
-        if self.request.GET.get('30-days') == 'false':
-            older_than_30 = time_now() - timedelta(days=30)
-            self.document_reports = self.document_reports.filter(
-                datasource_last_modified__lte=older_than_30)
+        # if self.request.GET.get('30-days') == 'false':
+        #     older_than_30 = time_now() - timedelta(days=30)
+        #     self.document_reports = self.document_reports.filter(
+        #         datasource_last_modified__lte=older_than_30)
 
-        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
-            self.document_reports = self.document_reports.filter(
-                scanner_job_pk=int(scannerjob))
+        # if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
+        #     self.document_reports = self.document_reports.filter(
+        #         scanner_job_pk=int(scannerjob))
 
-        if (sensitivity := self.request.GET.get('sensitivities')) and sensitivity != 'all':
-            self.document_reports = self.document_reports.filter(sensitivity=int(sensitivity))
+        # if (sensitivity := self.request.GET.get('sensitivities')) and sensitivity != 'all':
+        #     self.document_reports = self.document_reports.filter(sensitivity=int(sensitivity))
 
         self.order_queryset_by_property()
 
@@ -275,6 +250,42 @@ class MainPageView(LoginRequiredMixin, ListView):
                 return 'components/matches_table.html'
         else:
             return 'index.html'
+
+    def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        user = request.user
+
+        # If called from a "distribute-matches"-button, remove all
+        # `only_notify_superadmin`-flags from reports.
+        is_htmx = self.request.headers.get("HX-Request") == "true"
+        if is_htmx:
+            htmx_trigger = self.request.headers.get("HX-Trigger-Name")
+            if htmx_trigger == "distribute-matches":
+                update_pks = self.request.GET.getlist('distribute-to')
+                DocumentReport.objects.filter(
+                    scanner_job_pk__in=update_pks).update(
+                    only_notify_superadmin=False)
+
+            # If called from a "open-button"-htmx link, update the last_opened_time value.
+            elif htmx_trigger == "open-button":
+                DocumentReport.objects.get(pk=self.request.GET.get('pk')).update_opened()
+            elif htmx_trigger == "handle-match":
+                if UserProfile.objects.filter(user=user).exists():
+                    user.profile.update_last_handle()
+                self.document_reports.filter(
+                    pk=self.request.GET.get('pk')).update(
+                    resolution_status=0)
+            elif htmx_trigger == "handle-matches":
+                if UserProfile.objects.filter(user=user).exists():
+                    user.profile.update_last_handle()
+                DocumentReport.objects.filter(pk__in=self.request.GET.getlist(
+                    'match-checkbox')).update(resolution_status=0)
+
+        print(context)
+
+        return self.render_to_response(context)
 
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):

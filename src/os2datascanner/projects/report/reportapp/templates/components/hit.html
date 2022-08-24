@@ -30,7 +30,7 @@
           <div class="hit-link">
             <div class="button-group" name='open-button'
             hx-vals='{"pk": "{{ document_report.pk|unlocalize }}"}' 
-            hx-get="" hx-swap="innerHTML" hx-target=".content" hx-trigger="click target:.btn-{{ document_report.pk|unlocalize }}"
+            hx-post="{% url "index" %}" hx-swap="innerHTML" hx-target=".content" hx-trigger="click target:.btn-{{ document_report.pk|unlocalize }}"
             >
               {% if document_report.matches.handle|present_url %}
                 <a href="{{ document_report.matches.handle|present_url }}" class="button btn-{{ document_report.pk|unlocalize }}" target="_blank" rel="noopener">
