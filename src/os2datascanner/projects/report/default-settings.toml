@@ -19,6 +19,9 @@ DEBUG = false
 KEYCLOAK_ENABLED = false
 SAML2_ENABLED = false
 
+# [functionality]
+DELEGATE_MATCHES = false
+
 # [site]
 # The URL of this site, used in links in emails and in the redirect URL for
 # OAuth 2.0 services. (This value should end with a forward slash.)
@@ -103,8 +106,11 @@ MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 SETTINGS_EXPORT = [
     'DEBUG',
+    'DELEGATE_MATCHES'
 ]
 
 # [internationalization]

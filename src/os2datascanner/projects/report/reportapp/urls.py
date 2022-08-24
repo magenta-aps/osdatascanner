@@ -10,9 +10,16 @@ from os2datascanner import __version__
 
 from .views.api import JSONAPIView
 from .views.views import (
-    MainPageView, LeaderStatisticsPageView,
-    DPOStatisticsPageView, ApprovalPageView,
-    StatsPageView, SettingsPageView, AboutPageView, LogoutPageView)
+    MainPageView,
+    LeaderStatisticsPageView,
+    DPOStatisticsPageView,
+    ApprovalPageView,
+    StatsPageView,
+    SettingsPageView,
+    AboutPageView,
+    LogoutPageView,
+    DelegateMatches,
+    delegate_reports)
 from .views.user_views import UserView
 
 urlpatterns = [
@@ -26,6 +33,8 @@ urlpatterns = [
     url('stats',    StatsPageView.as_view(),    name="about"),
     url('settings', SettingsPageView.as_view(), name="settings"),
     url('about',    AboutPageView.as_view(),    name="about"),
+    url('delegate-matches/', DelegateMatches.as_view(), name="delegate-matches"),
+    url('delegate', delegate_reports, name="delegate"),
     url(r'^health/', lambda r: HttpResponse()),
     url(r'^version/?$', lambda r: HttpResponse(__version__)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

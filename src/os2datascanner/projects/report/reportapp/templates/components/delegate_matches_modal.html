@@ -1,0 +1,55 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% comment %} {% block topnav %}{% endblock %}
+{% block rendertype %}iframe-modal{% endblock %} {% endcomment %}
+{% block scripts %}
+  <script src="{% static 'js/toggleDetails.js' %}"></script>
+  <script src="{% static 'js/redirectFromModal.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+
+<div class="runner-container">
+
+  <div class="runner-content">
+    <form name="delegate-details" method="post" action="{% url "delegate-matches" %}">
+      {% csrf_token %}
+
+      <input type="hidden" name="pks" value=""
+
+      <h1>{% trans "Delegate matches" %}</h1>
+
+      <div class="dropdown">
+        <label for="delegate-to">{% trans "New owner" %}</label>
+        <select class="delegate-to" name="delegate-to" autocomplete="off">
+          <option value="none">{% trans "None" %}</option>
+          {% for other_user in other_users %}
+            <option value="{{ other_user.uuid }}">
+              {{ other_user.first_name }} {{ other_user.last_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="textbox">
+        <label for="delegation_message">{% trans "Message" %}</label>
+        <textarea name="delegation_message" 
+                  id="delegation_message" 
+                  maxlength="500" 
+                  placeholder="{% trans "Write a message for the person you are delegating matches to." %}"
+                  ></textarea>
+      </div>
+
+      <div class="modal-buttons">
+        <button type="submit" class="button button--cta"
+        >{% trans "Delegate" %}</button>
+      </div>
+
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

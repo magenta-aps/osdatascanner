@@ -39,6 +39,7 @@ from os2datascanner.engine2.rules.address import AddressRule
 from os2datascanner.engine2.rules.links_follow import LinksFollowRule
 from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
+from os2datascanner.projects.report.organizations.models import Organization, Alias, Account
 from os2datascanner.projects.report.reportapp.models.roles.role import Role
 
 from ..utils import user_is
@@ -68,6 +69,11 @@ def user_is_superadmin(user):
     roles = Role.get_user_roles_or_default(user)
     return (user_is(roles, DataProtectionOfficer)
             or user_is(roles, Leader) or user.is_superuser)
+
+
+def can_delegate_matches(user):
+    """Determines whether a user can delegate their matches to other users."""
+    return user_is_superadmin(user)
 
 
 class LogoutPageView(TemplateView, View):
@@ -196,6 +202,8 @@ class MainPageView(LoginRequiredMixin, ListView):
         context['order_by'] = self.request.GET.get('order_by', 'sort_key')
         context['order'] = self.request.GET.get('order', 'ascending')
 
+        context['user_can_delegate'] = can_delegate_matches(self.request.user)
+
         is_htmx = self.request.headers.get('HX-Request') == "true"
 
         if is_htmx:
@@ -204,7 +212,7 @@ class MainPageView(LoginRequiredMixin, ListView):
 
                 context['last_open_pk'] = self.request.GET.get('pk')
 
-            # Serve the match fragment of the document report, that the user requested
+        # Serve the match fragment of the document report, that the user requested
             # more matches from. This could probably use a refactor.
             elif htmx_trigger == 'show-more-matches':
 
@@ -267,7 +275,8 @@ class MainPageView(LoginRequiredMixin, ListView):
                     'filter_form',
                     'dropdown_options',
                     'clear_scannerjob',
-                    'clear_sensitivities']:
+                    'clear_sensitivities',
+                    'delegate_report']:
                 return 'content.html'
             elif htmx_trigger in ['show-more-matches']:
                 return 'components/matches_table.html'
@@ -300,6 +309,48 @@ class MainPageView(LoginRequiredMixin, ListView):
         response.headers["HX-Trigger"] = "reload-htmx"
 
         return response
+
+
+class DelegateMatches(TemplateView):
+    model = DocumentReport
+    template_name = "components/delegate_matches_modal.html"
+
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        print(self.request.GET)
+        context = super().get_context_data(**kwargs)
+        if UserProfile.objects.filter(user=user).exists():
+            user_org = user.profile.organization
+        elif Organization.objects.count() == 1:
+            user_org = Organization.objects.first()
+        else:
+            user_org = None
+        org_users = Account.objects.filter(organization=user_org)
+        context["other_users"] = org_users
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        return HttpResponse()
+
+
+def delegate_reports(request):
+
+    pks = request.POST.getlist("match-checkbox") or request.POST.getlist("pk")
+    alias_uuid = request.POST.get("delegate_to")
+
+    document_reports = DocumentReport.objects.filter(
+        pk__in=pks).iterator()
+
+    for report in document_reports:
+        report.alias_relation.set(
+            Alias.objects.filter(uuid=alias_uuid)
+        )
+        report.only_notify_superadmin = False
+        report.last_opened_time = None
+        report.save()
+    return HttpResponse()
 
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):

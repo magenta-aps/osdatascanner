@@ -16,6 +16,12 @@
 
     </main>
 
+    {% block modal %}
+    <div class="modal" id="delegate-matches-modal" tabindex="-1" role="dialog" aria-labelledby="delegate-matches-modal-title" aria-hidden="true" data-href="/delegate-matches/">
+      <iframe src="about:blank" frameborder="0"></iframe>
+    </div>
+    {% endblock %}
+
     {% include "partials/scripts.html" %}
 </body>
 </html>

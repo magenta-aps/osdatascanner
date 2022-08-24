@@ -1,5 +1,12 @@
 {% load l10n %}
 {%  load i18n %}
+{% load static %}
+
+{% block scripts %}
+  <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+  <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
+  <script src="{% static "js/index.js" %}"></script>
+{% endblock %}
 
   <div class="checkbox-button-wrapper">
       <button type="button" class="button table-checkbox__action button--has-icon"
@@ -18,6 +25,18 @@ Marking a result as handled will only remove the result from OS2datascanner.{% e
               name="handle-matches">
           <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Mark as handled" %}</span>
       </button>
+      {% comment %} {% if aliases and user_can_delegate %} {% endcomment %}
+      <button {% comment %} disabled {% endcomment %}
+         title="{% blocktrans %}Delegate the chosen matches to another user. Click this button, then choose which user to delegate the matches to.{% endblocktrans %}"
+         hx-get="{% url "delegate-matches" %}"
+         hx-target="#delegate-matches-modal"
+         hx-trigger="click"
+         hx-include="#match_checkboxes"
+         class="button button--small button--grey"
+         >
+              <span>{% trans "Delegate matches" %}</span>
+    </button>
+      {% comment %} {% endif %} {% endcomment %}
       <span class="selected-cb">
         <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}
       </span>

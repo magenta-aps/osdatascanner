@@ -13,7 +13,10 @@
     display: flex;
     justify-content: center;
     position: fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: calc(var(--z-index-modal) - 1);
   }
 
@@ -23,7 +26,7 @@
     margin: 0;
   }
 
-  & > iframe {
+  &>iframe {
     height: calc(100% - 3rem);
     width: 100%;
     border-radius: var(--border-radius-widget);
@@ -46,9 +49,43 @@
     width: 100%;
     height: auto;
 
+    .modal-buttons {
+      display: flex;
+      justify-content: right;
+
+      .button {
+        margin: 0.5rem;
+      }
+    }
+
     .icon {
       width: 15rem;
       height: auto;
+    }
+
+    >form {
+      width: 80%;
+    }
+
+    .textbox {
+      padding: 0;
+
+      >textarea {
+        resize: none;
+        height: 15rem;
+        margin: 0;
+        width: 100%;
+        border: none !important;
+        font-size: 1em;
+        font-family: inherit;
+        font-weight: normal;
+        color: var(--color-text-main);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1);
+
+        &:focus-visible {
+          outline: 2px solid var(--color-primary-light);
+        }
+      }
     }
   }
 
@@ -123,7 +160,7 @@
   background-color: #111;
   height: 20px;
 
-  & > div {
+  &>div {
     border-radius: 100px;
     background-color: #fff;
     height: 20px;
@@ -148,6 +185,7 @@
 }
 
 @keyframes sk-stretchdelay {
+
   0%,
   40%,
   100% {
