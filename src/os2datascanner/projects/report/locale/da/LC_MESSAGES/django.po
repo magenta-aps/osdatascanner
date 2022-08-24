@@ -457,10 +457,6 @@ msgstr "Scan"
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: reportapp/templates/components/filters.html:70
-msgid "All sensitivities"
-msgstr "Alle følsomheder"
-
 #: reportapp/templates/components/filters.html:99
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
@@ -470,6 +466,11 @@ msgid "All resolution statuses"
 msgstr "Alle håndteringsstatusser"
 
 #: reportapp/templates/components/filters.html:132
+#: reportapp/templates/components/filters.html:68
+msgid "All sensitivities"
+msgstr "Alle følsomheder"
+
+#: reportapp/templates/components/filters.html:96
 msgid "Include results, that are less than 30 days old"
 msgstr "Inkludér resultater, der er under 30 dage gamle"
 

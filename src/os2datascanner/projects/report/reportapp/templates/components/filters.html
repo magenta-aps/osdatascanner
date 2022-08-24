@@ -23,6 +23,15 @@
   <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}">
   <input type="hidden" name="order" id="order" value="{{ order }}">
 
+
+<div class="search_field_wrapper">
+  {% comment %} <label for="search_field" class="match_filtering_label">{% trans "Search for path" %}</label> {% endcomment %}
+  <input class="form-control" type="search" name="search_field" id="search_field" placeholder="{% trans "Search for a path..." %}"
+  value="{{ request.GET.search_field }}"
+  >
+  <button class="button" id="search_button">{% trans "Search" %}</button>
+</div>
+
   <div class="match_filtering_wrapper">
     <div>
       <button type="button"
