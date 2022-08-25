@@ -27,6 +27,28 @@ h1.userprofile-text {
   font-size: x-large;
 }
 
+.message-popup {
+  position: fixed;
+  display: block;
+  opacity: 0;
+  background-color: var(--color-grey-light);
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: var(--border-radius-default);
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%);
+  transform: translateY(-50%);
+  cursor: default;
+  transition: opacity 2s ease-in;
+
+
+  &.htmx-request {
+    opacity: 1;
+    transition: opacity 50ms ease-out;
+  }
+}
+
 .userprofile-table {
   margin: 0 0 10px 0;
 
@@ -83,7 +105,41 @@ h1.userprofile-text {
   td {
     padding: 0.8rem 1rem;
 
-    div {
+    &.dropdown {
+      padding: 0;
+
+      >select {
+        box-shadow: none;
+      }
+
+
+
+    }
+
+    &.textbox {
+      padding: 0;
+      padding-left: 1rem;
+
+      >textarea {
+        border: none;
+        resize: none;
+        height: 10rem;
+        margin: 0;
+        width: 100%;
+        font-size: 1em;
+        font-family: inherit;
+        font-weight: normal;
+        color: var(--color-text-main);
+        border-bottom-right-radius: var(--border-radius-default);
+        box-shadow: none;
+
+        &:focus-visible {
+          outline: 2px solid var(--color-primary-light);
+        }
+      }
+    }
+
+    div.checkmark {
       height: 1rem;
       width: 1rem;
 
@@ -93,15 +149,15 @@ h1.userprofile-text {
       display: inline-block;
 
       margin-right: 0.2rem;
+
+      &.checkmark_true {
+        background-color: green;
+      }
+
+      &.checkmark_false {
+        background-color: red;
+      }
     }
-  }
-
-  .checkmark_true {
-    background-color: green;
-  }
-
-  .checkmark_false {
-    background-color: red;
   }
 }
 

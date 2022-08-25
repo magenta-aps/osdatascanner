@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 
 from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.projects.report.organizations.models import Organization
+from os2datascanner.projects.report.organizations.models import Organization, Alias
 
 
 class UserProfile(models.Model):
@@ -25,6 +25,19 @@ class UserProfile(models.Model):
                                        null=True, blank=True)
     _image = models.ImageField(upload_to="media/images/",
                                default=None, null=True, blank=True, verbose_name=_('image'))
+
+    delegate_all_to = models.ForeignKey(
+        Alias,
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        verbose_name=_('Delegate all matches to'),
+        related_name='delegate_all_from')
+
+    delegate_all_message = models.TextField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name=_('Delegation message'))
 
     def __str__(self):
         """Return the user's username."""

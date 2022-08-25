@@ -15,6 +15,7 @@
 # source municipalities ( http://www.os2web.dk/ )
 
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.query_utils import Q
 from ..documentreport import DocumentReport
 from .role import Role
 
@@ -32,9 +33,16 @@ class DefaultRole(Role):
         aliases = self.user.aliases.all()
         results = DocumentReport.objects.none()
         for alias in aliases:
-            result = document_reports.filter(alias_relation=alias.pk)
+            result = document_reports.filter(Q(alias_relation=alias.pk))
             # Merges django querysets together
             results = results | result
+            # If another user has delegated matches to this user, include these as well.
+            if alias.delegate_all_from.all().exists():
+                for profile in alias.delegate_all_from.iterator():
+                    other_aliases = profile.user.aliases.all()
+                    for other_alias in other_aliases:
+                        other_result = document_reports.filter(Q(alias_relation=other_alias.pk))
+                        results = results | other_result
         return results
 
     class Meta:

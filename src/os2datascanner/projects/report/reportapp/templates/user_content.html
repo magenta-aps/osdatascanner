@@ -4,6 +4,9 @@
 
 <h1 class="userprofile-text"> {% trans "Account" %} </h1>
 
+<form name="delegate-matches-form" id="delegate-matches-form"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
 <div class="userprofile-content-wrapper user-image">
     <span class="user__avatar_verybig">
       {% if request.user.profile.image %}
@@ -38,12 +41,48 @@
           {% endif %}
         </td>
       </tr>
+      {% if settings.DELEGATE_ALL_MATCHES and other_users %}
+      <tr>
+        <td>{% trans "Delegate matches to" %}</td>
+        <td class="dropdown">
+          <select name="delegate_to" id="delegate_to" autocomplete="off"
+                  hx-post="{% url "delegate_all" %}" hx-trigger="click changed" hx-swap="afterend" hx-target="this"
+                  hx-include='[name="delegate-matches-form"]' hx-indicator="#message-sent-popup"
+          >
+            <option value="none">{% trans "None" %}</option>
+          {% for other_user in other_users %}
+            <option value='{{ other_user.uuid }}' {% if other_user.uuid == user.profile.delegate_all_to.account.uuid %} selected="selected" {% endif %}>
+              {{ other_user.first_name }} {{ other_user.last_name }}
+            </option>
+          {% endfor %}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{% trans "Delegation message" %}</td>
+        <td class="textbox">
+          <textarea name="delegation_message" id="delegation_message" maxlength="500" placeholder="{% trans "Write a message for the person you are delegating your matches to." %}"
+                    hx-post="{% url "delegate_all" %}" hx-trigger="keyup changed delay:1s" hx-swap="afterend" hx-target="this"
+                    hx-include='[name="delegate-matches-form"]' hx-indicator="#message-saved-popup"
+          >{% if user.profile.delegate_all_message != None %}{{ user.profile.delegate_all_message }}{% endif %}</textarea>
+        </td>
+      </tr>
+      {% endif %}
     </tbody>
   </table>
+
+  <div class="message-popup" id="message-saved-popup">
+    {% trans "Message saved!" %}
+  </div>
+
+  <div class="message-popup" id="message-sent-popup">
+    {% trans "Message sent!" %}
+  </div>
 
   <h2>{% trans "User Rights" %}</h2>
   <table class="userprofile-table user-rights">
     <tbody>
+      {% if user_roles %}
       <tr>
         <td>{% trans "Roles" %}</td>
         <td>
@@ -54,14 +93,15 @@
           </ul>
         </td>
       </tr>
+      {% endif %}
       <tr>
         <td>{% trans "Active" %}</td>
         <td>
           {% if user.is_active %}
-            <div class="checkmark_true"></div>
+            <div class="checkmark checkmark_true"></div>
             {% trans "Yes" %}
           {% else %}
-            <div class="checkmark_false"></div>
+            <div class="checkmark checkmark_false"></div>
             {% trans "No" %}
           {% endif %}
         </td>
@@ -70,10 +110,10 @@
         <td>{% trans "Staff" %}</td>
         <td>
           {% if user.is_staff %}
-            <div class="checkmark_true"></div>
+            <div class="checkmark checkmark_true"></div>
             {% trans "Yes" %}
           {% else %}
-            <div class="checkmark_false"></div>
+            <div class="checkmark checkmark_false"></div>
             {% trans "No" %}
           {% endif %}
         </td>
@@ -82,14 +122,15 @@
         <td>{% trans "Superuser" %}</td>
         <td>
           {% if user.is_superuser %}
-            <div class="checkmark_true"></div>
+            <div class="checkmark checkmark_true"></div>
             {% trans "Yes" %}
           {% else %}
-            <div class="checkmark_false"></div>
+            <div class="checkmark checkmark_false"></div>
             {% trans "No" %}
           {% endif %}
         </td>
       </tr>
+      {% if aliases %}
       <tr>
         <td>{% trans "Aliases" %}</td>
         <td>
@@ -100,6 +141,7 @@
           </ul>
         </td>
       </tr>
+      {% endif %}
     </tbody>
   </table>
 
@@ -123,3 +165,4 @@
     </tbody>
   </table>
 </div>
+</form>

@@ -91,7 +91,21 @@
   width: 100%;
 
   .last-opened {
+    margin-top: 5px;
     opacity: .6;
+  }
+
+  .delegated-by {
+    margin-top: 5px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+
+    img {
+      margin-left: 0.5rem;
+      width: 24px;
+      height: 24px;
+    }
   }
 
   &.disabled {

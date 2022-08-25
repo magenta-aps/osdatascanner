@@ -16,8 +16,10 @@
 # source municipalities ( https://os2.eu/ )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.http import HttpResponse
 
-from ..models.userprofile import User
+from ..models.userprofile import User, UserProfile
+from ...organizations.models import Alias, Account
 
 
 class UserView(TemplateView, LoginRequiredMixin):
@@ -29,8 +31,36 @@ class UserView(TemplateView, LoginRequiredMixin):
         return User.objects.get(username=self.request.user)
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
+        if not user.profile:
+            UserProfile.objects.update_or_create(
+                user=user, defaults={
+                    "organization": user.aliases.first().account.organization})
         context = super().get_context_data(**kwargs)
         context["user_roles"] = [role._meta.verbose_name for role in User.objects.get(
-            username=self.request.user).roles.select_subclasses().all()]
-        context["aliases"] = User.objects.get(username=self.request.user).aliases.all()
+            username=user.username).roles.select_subclasses().all()]
+        context["aliases"] = User.objects.get(username=user.username).aliases.all()
+
+        # Change this to only aliases from the same organization as the user.
+        org_users = Account.objects.filter(organization=user.profile.organization)
+        context["other_users"] = org_users
+
         return context
+
+
+def delegate_user_matches(request):
+    user = request.user
+    account_uuid = request.POST.get('delegate_to')
+    delegation_message = request.POST.get('delegation_message')
+
+    if account_uuid == "none":
+        user.profile.delegate_all_to = None
+        user.profile.delegate_all_message = None
+        user.profile.save()
+    else:
+        alias = Alias.objects.filter(account__uuid=account_uuid).first()
+        user.profile.delegate_all_to = alias
+        user.profile.delegate_all_message = delegation_message
+        user.profile.save()
+
+    return HttpResponse()

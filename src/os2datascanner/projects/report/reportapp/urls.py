@@ -13,19 +13,20 @@ from .views.views import (
     MainPageView, LeaderStatisticsPageView,
     DPOStatisticsPageView, ApprovalPageView,
     StatsPageView, SettingsPageView, AboutPageView, LogoutPageView)
-from .views.user_views import UserView
+from .views.user_views import UserView, delegate_user_matches
 
 urlpatterns = [
     url(r'^$',      MainPageView.as_view(),     name="index"),
     url(r'^content', MainPageView.as_view(), name="content"),
     url('api$',     JSONAPIView.as_view(),     name="json-api"),
-    url(r'^user/', UserView.as_view(), name="user"),
+    url(r'^user/$', UserView.as_view(), name="user"),
     url(r'^statistics/leader/$', LeaderStatisticsPageView.as_view(), name='statistics'),
     url(r'^statistics/dpo/$', DPOStatisticsPageView.as_view(), name='statistics'),
     url('approval', ApprovalPageView.as_view(), name="about"),
     url('stats',    StatsPageView.as_view(),    name="about"),
     url('settings', SettingsPageView.as_view(), name="settings"),
     url('about',    AboutPageView.as_view(),    name="about"),
+    url(r'^user/delegate-all/$', delegate_user_matches, name="delegate_all"),
     url(r'^health/', lambda r: HttpResponse()),
     url(r'^version/?$', lambda r: HttpResponse(__version__)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
