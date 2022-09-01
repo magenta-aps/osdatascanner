@@ -67,7 +67,7 @@
         </td>
 
         <td class="datatable__column--source">
-          <span class="icon-filetype icon-filetype--{{ type }}">
+          <span class="icon-filetype icon-filetype--{{ type }}" title="{{ type|title }}">
           {% with svg_icon=type|find_svg_icon %}
             {% include svg_icon %}
           {% endwith %}
