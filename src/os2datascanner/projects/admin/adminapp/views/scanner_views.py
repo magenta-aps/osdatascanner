@@ -139,9 +139,25 @@ class StatusCompleted(StatusBase):
 
         return (
             super().get_queryset()
-            .filter(completed_scans)
+            .filter(completed_scans).filter(resolved=False)
             .order_by('-scan_tag__time')
         )
+
+    def post(self, request, *args, **kwargs):
+        is_htmx = self.request.headers.get("HX-Request", False) == "true"
+        htmx_trigger = self.request.headers.get('HX-Trigger-Name')
+
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        if is_htmx:
+            if htmx_trigger == "status-resolved":
+                resolve_pk = self.request.POST.get('pk')
+                self.object_list.filter(pk=resolve_pk).update(resolved=True)
+            elif htmx_trigger == "status-resolved-all":
+                self.object_list.update(resolved=True)
+
+        return self.render_to_response(context)
 
 
 class StatusDelete(RestrictedDeleteView):
@@ -163,6 +179,27 @@ class StatusDelete(RestrictedDeleteView):
         self.object = self.get_object(
                 queryset=self.get_queryset().select_for_update())
         return super().form_valid()
+
+
+class StatusResolved(RestrictedListView):
+    template_name = 'os2datascanner/scan_completed.html'
+    model = ScanStatus
+
+    def post(self, request, *args, **kwargs):
+        is_htmx = self.request.headers.get("HX-Request", False) == "true"
+        htmx_trigger = self.request.headers.get('HX-Trigger-Name')
+
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        if is_htmx:
+            if htmx_trigger == "delete_errorlog":
+                delete_pk = self.request.POST.get('pk')
+                self.object_list.filter(pk=delete_pk).update(is_removed=True)
+            elif htmx_trigger == "delete_all":
+                self.object_list.update(is_removed=True)
+
+        return self.render_to_response(context)
 
 
 class UserErrorLogView(RestrictedListView):
