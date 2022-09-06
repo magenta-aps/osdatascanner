@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-05 09:36+0200\n"
+"POT-Creation-Date: 2022-09-14 15:26+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -282,8 +282,8 @@ msgid "Scannerjob"
 msgstr "Scannerjob"
 
 #: adminapp/templates/components/navigation.html:28
-#: adminapp/templates/os2datascanner/rules.html:20
-#: adminapp/templates/os2datascanner/rules.html:39
+#: adminapp/templates/os2datascanner/rules.html:19
+#: adminapp/templates/os2datascanner/rules.html:38
 #: adminapp/templates/partials/breadcrumb.html:51
 msgid "Rules"
 msgstr "Regler"
