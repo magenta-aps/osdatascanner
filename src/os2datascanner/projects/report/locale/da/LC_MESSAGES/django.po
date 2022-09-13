@@ -250,7 +250,7 @@ msgstr "Ryd"
 msgid "Scan"
 msgstr "Scan"
 
-#: reportapp/templates/components/filters.html:35
+#: reportapp/templates/components/filters.html:37
 #: reportapp/templates/components/statistics-template.html:19
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"

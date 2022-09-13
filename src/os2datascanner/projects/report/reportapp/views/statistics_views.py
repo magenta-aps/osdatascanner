@@ -47,6 +47,35 @@ from ..models.roles.dpo import DataProtectionOfficer
 logger = structlog.get_logger()
 
 
+class ArchiveView(MainPageView):
+    document_reports = DocumentReport.objects.filter(
+        raw_matches__matched=True).filter(
+        resolution_status__isnull=False).order_by("sort_key", "pk")
+
+    def post(self, request, *args, **kwargs):
+
+        is_htmx = self.request.headers.get("HX-Request")
+        if is_htmx:
+            htmx_trigger = self.request.headers.get("HX-Trigger-Name")
+            if htmx_trigger == "revert-match":
+                revert_pk = self.request.POST.get("pk")
+                DocumentReport.objects.filter(
+                    pk=revert_pk).update(
+                    resolution_status=self.request.POST.get(
+                        'action', None))
+            elif htmx_trigger == "revert-matches":
+                DocumentReport.objects.filter(pk__in=self.request.POST.getlist(
+                    'table-checkbox')).update(
+                    resolution_status=self.request.POST.get(
+                        'action', None))
+
+        # Add a header value to the response before returning to initiate reload of some elements.
+        response = HttpResponse()
+        response.headers["HX-Trigger"] = "reload-htmx"
+
+        return response
+
+
 class StatisticsPageView(LoginRequiredMixin, TemplateView):
     context_object_name = "matches"  # object_list renamed to something more relevant
     template_name = "statistics.html"
