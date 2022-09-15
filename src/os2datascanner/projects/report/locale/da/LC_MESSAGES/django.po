@@ -250,7 +250,7 @@ msgstr "Ryd"
 msgid "Scan"
 msgstr "Scan"
 
-#: reportapp/templates/components/filters.html:30
+#: reportapp/templates/components/filters.html:35
 #: reportapp/templates/components/statistics-template.html:19
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"
@@ -362,29 +362,16 @@ msgstr ""
 "Resultatet markeres udelukkende som håndteret i OS2datascanner."
 
 #: reportapp/templates/components/handle-match.html:11
-#: reportapp/templates/components/handle-match.html:55
+#: reportapp/templates/components/hit.html:94
+msgid "Handled"
+msgstr "Håndteret"
+
+#: reportapp/templates/components/handle-match.html:12
+#: reportapp/templates/components/handle-match.html:22
 msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
-#: reportapp/templates/components/handle-match.html:18
-#: reportapp/templates/components/hit.html:130
-#: reportapp/templates/components/hit.html:179
-msgid ""
-"You are about to handle this result. This action does not change the file, "
-"that the result is about. Please do not handle a result before action has "
-"been manually taken to the file."
-msgstr ""
-"Du er ved at håndtere det markerede resultat. Denne handling ændrer ikke på "
-"filen, som resultatet handler om. Håndtér venligst ikke et resultat, før du "
-"manuelt har gjort noget ved filen."
-
-#: reportapp/templates/components/handle-match.html:26
-#: reportapp/templates/components/hit.html:137
-#: reportapp/templates/components/hit.html:166
-msgid "Revert"
-msgstr "Fortryd"
-
-#: reportapp/templates/components/handle-match.html:53
+#: reportapp/templates/components/handle-match.html:19
 msgid ""
 "You are about to handle the marked results. This action does not change the "
 "files, that the results are about. Please do not handle a result before "
@@ -394,56 +381,68 @@ msgstr ""
 "filerne, som resultaterne handler om. Håndtér venligst ikke et resultat, før "
 "du manuelt har gjort noget ved filen."
 
-#: reportapp/templates/components/handle-match.html:59
+#: reportapp/templates/components/handle-match.html:25
+#: reportapp/templates/components/pagination.html:11
+#: reportapp/templates/components/statistics-template.html:118
+#: reportapp/templates/components/statistics-template.html:127
+#: reportapp/templates/components/statistics-template.html:136
+#: reportapp/templates/components/statistics-template.html:145
+#: reportapp/templates/components/statistics-template.html:156
+msgid "of"
+msgstr "af"
+
+#: reportapp/templates/components/handle-match.html:25
 msgid "selected"
 msgstr "valgt"
 
-#: reportapp/templates/components/hit.html:18
+#: reportapp/templates/components/hit.html:24
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/hit.html:44
+#: reportapp/templates/components/hit.html:42
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/hit.html:53
+#: reportapp/templates/components/hit.html:47
+msgid "Copy"
+msgstr "Kopiér"
+
+#: reportapp/templates/components/hit.html:51
 msgid "Open folder"
 msgstr "Åbn mappe"
 
-#: reportapp/templates/components/hit.html:60
+#: reportapp/templates/components/hit.html:59
 msgid "Opened"
 msgstr "Åbnet: "
 
 #: reportapp/templates/components/hit.html:95
-msgid "Copy folder path"
-msgstr "Kopiér sti til mappe"
-
-#: reportapp/templates/components/hit.html:100
-msgid "Copy path"
-msgstr "Kopiér sti"
-
-#: reportapp/templates/components/hit.html:107
-msgid "Copy link"
-msgstr "Kopiér link"
-
-#: reportapp/templates/components/hit.html:122
-#: reportapp/templates/components/hit.html:181
+#: reportapp/templates/components/hit.html:108
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/hit.html:186
+#: reportapp/templates/components/hit.html:105
+msgid ""
+"You are about to handle this result. This action does not change the file, "
+"that the result is about. Please do not handle a result before action has "
+"been manually taken to the file."
+msgstr ""
+"Du er ved at håndtere det markerede resultat. Denne handling ændrer ikke på "
+"filen, som resultatet handler om. Håndtér venligst ikke et resultat, før du "
+"manuelt har gjort noget ved filen."
+
+#: reportapp/templates/components/hit.html:109
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/hit.html:202
+#: reportapp/templates/components/hit.html:122
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/hit.html:203
+#: reportapp/templates/components/hit.html:123
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/hit.html:204
+#: reportapp/templates/components/hit.html:124
 msgid "Probability"
 msgstr "Sandsynlighed"
 
