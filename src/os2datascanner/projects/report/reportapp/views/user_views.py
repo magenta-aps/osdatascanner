@@ -19,7 +19,7 @@ from django.views.generic import TemplateView
 from django.http import HttpResponse
 
 from ..models.userprofile import User, UserProfile
-from ...organizations.models import Alias, Account
+from ...organizations.models import Alias, Account, Organization
 
 
 class UserView(TemplateView, LoginRequiredMixin):
@@ -32,10 +32,15 @@ class UserView(TemplateView, LoginRequiredMixin):
 
     def get_context_data(self, **kwargs):
         user = self.request.user
-        if not user.profile:
+        if not UserProfile.objects.filter(user=user).exists():
+            if user.aliases.exists():
+                user_org = user.aliases.first().account.organization
+            else:
+                user_org = Organization.objects.first()
             UserProfile.objects.update_or_create(
                 user=user, defaults={
-                    "organization": user.aliases.first().account.organization})
+                    "organization": user_org})
+
         context = super().get_context_data(**kwargs)
         context["user_roles"] = [role._meta.verbose_name for role in User.objects.get(
             username=user.username).roles.select_subclasses().all()]
