@@ -15,10 +15,10 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 
-from ..models.userprofile import User, UserProfile
 from ...organizations.models import Alias, Account, Organization
 
 

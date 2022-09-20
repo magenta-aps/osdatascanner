@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-15 14:13+0200\n"
+"POT-Creation-Date: 2022-09-27 11:56+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -18,6 +18,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: adminapp/admin.py:121
+msgid "Change marked resolved=False"
+msgstr "Gør markerede løst=False"
+
+#: adminapp/admin.py:127
+#| msgid " elements resolved-status to False"
+msgid "Changed {qs_count} elements resolved-status to False"
+msgstr "Ændrede {qs_count} elementers løst-status til False"
+
+#: adminapp/admin.py:131
+msgid "Change marked resolved=True"
+msgstr "Gør markerede løst=True"
+
+#: adminapp/admin.py:137
+#| msgid " elements resolved-status to True"
+msgid "Changed {qs_count} elements resolved-status to True"
+msgstr "Ændrede {qs_count} elementers løst-status til True"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules/rule.py:47
 #: adminapp/models/scannerjobs/scanner.py:77 adminapp/models/usererrorlog.py:40
@@ -52,7 +70,7 @@ msgid "Login method"
 msgstr "Login metode"
 
 #: adminapp/models/rules/rule.py:40 core/models/client.py:73
-#: organizations/templates/organizations/org_table.html:38
+#: organizations/templates/organizations/org_table.html:48
 msgid "name"
 msgstr "navn"
 
@@ -108,37 +126,42 @@ msgstr "scannede objekter"
 msgid "size of scanned objects"
 msgstr "størrelse af scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner.py:510
+#: adminapp/models/scannerjobs/scanner.py:514
 #: import_services/models/exported_mixin.py:37
 msgid "last modified"
 msgstr "senest opdateret"
 
-#: adminapp/models/scannerjobs/scanner.py:515
+#: adminapp/models/scannerjobs/scanner.py:519
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner.py:522
+#: adminapp/models/scannerjobs/scanner.py:526
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner.py:551
+#: adminapp/models/scannerjobs/scanner.py:527
+msgid "resolved"
+msgstr "løst"
+
+#: adminapp/models/scannerjobs/scanner.py:556
+#: adminapp/models/scannerjobs/scanner.py:555
 #: adminapp/models/usererrorlog.py:25
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:552
+#: adminapp/models/scannerjobs/scanner.py:557
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner.py:591
+#: adminapp/models/scannerjobs/scanner.py:596
 msgid "timestamp"
 msgstr ""
 
-#: adminapp/models/scannerjobs/scanner.py:596
+#: adminapp/models/scannerjobs/scanner.py:601
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner.py:597
+#: adminapp/models/scannerjobs/scanner.py:602
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
@@ -264,12 +287,16 @@ msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 msgid "go to the front page"
 msgstr "gå til forsiden"
 
+#: adminapp/templates/components/load-results.html:23
+msgid "per page"
+msgstr "pr. side"
+
 #: adminapp/templates/components/navigation.html:12
 msgid "Scanner status"
 msgstr "Scanner status"
 
 #: adminapp/templates/components/navigation.html:20
-#: adminapp/templates/os2datascanner/scan_completed.html:33
+#: adminapp/templates/os2datascanner/scan_completed.html:71
 #: adminapp/templates/os2datascanner/scan_status_table.html:22
 #: adminapp/templates/os2datascanner/scanners.html:21
 #: adminapp/templates/os2datascanner/scanners.html:40
@@ -310,15 +337,40 @@ msgstr "Håndbog"
 msgid "Logout"
 msgstr "Log ud"
 
-#: adminapp/templates/components/pagination.html:19
+#: adminapp/templates/components/pagination.html:11
+#: adminapp/templates/components/resolve-status.html:18
+msgid "of"
+msgstr "af"
+
+#: adminapp/templates/components/pagination.html:21
 #: adminapp/templates/components/pagination.html:26
 msgid "Previous"
 msgstr "Forrige"
 
-#: adminapp/templates/components/pagination.html:58
-#: adminapp/templates/components/pagination.html:65
+#: adminapp/templates/components/pagination.html:68
+#: adminapp/templates/components/pagination.html:73
 msgid "Next"
 msgstr "Næste"
+
+#: adminapp/templates/components/resolve-status.html:7
+msgid "Remove selected scan data"
+msgstr "Fjern valgte scan data"
+
+#: adminapp/templates/components/resolve-status.html:13
+msgid ""
+"You are about to remove the selected data. This action cannot be reverted. "
+"Are you sure?"
+msgstr ""
+"Du er ved at slette den valgte data. Denne handling kan ikke fortrydes. Er "
+"du sikker?"
+
+#: adminapp/templates/components/resolve-status.html:15
+msgid "Remove selected"
+msgstr "Fjern valgte"
+
+#: adminapp/templates/components/resolve-status.html:18
+msgid "selected"
+msgstr "valgt"
 
 #: adminapp/templates/components/user.html:29
 #: adminapp/templates/password_change.html:6
@@ -520,7 +572,7 @@ msgstr "Nej"
 
 #: adminapp/templates/os2datascanner/error_log.html:19
 #: adminapp/templates/os2datascanner/error_log.html:24
-#: adminapp/templates/os2datascanner/scanner_tabs.html:72
+#: adminapp/templates/os2datascanner/scanner_tabs.html:77
 msgid "Error Log"
 msgstr "Fejlbeskeder"
 
@@ -529,7 +581,7 @@ msgid "Error"
 msgstr "Fejl"
 
 #: adminapp/templates/os2datascanner/error_log.html:39
-#: adminapp/templates/os2datascanner/scan_completed.html:36
+#: adminapp/templates/os2datascanner/scan_completed.html:74
 msgid "Started"
 msgstr "Startet"
 
@@ -546,19 +598,43 @@ msgstr ""
 "du sikker?"
 
 #: adminapp/templates/os2datascanner/error_log.html:52
+#: adminapp/templates/os2datascanner/scan_completed.html:55
 msgid "Delete all"
 msgstr "Slet alle"
 
-#: adminapp/templates/os2datascanner/error_log.html:78
+#: adminapp/templates/os2datascanner/error_log.html:57
+msgid ""
+"You are about to mark all error log messages as seen. This action cannot be "
+"reverted. Are you sure?"
+msgstr ""
+"Du er ved at markere alle fejlbeskeder som set. Denne handling kan ikke "
+"fortrydes. Er du sikker?"
+
+#: adminapp/templates/os2datascanner/error_log.html:59
+msgid "Mark all as seen"
+msgstr "Markér alle som set"
+
+#: adminapp/templates/os2datascanner/error_log.html:76
+msgid "New"
+msgstr "Ny"
+
+#: adminapp/templates/os2datascanner/error_log.html:93
 #: adminapp/templates/os2datascanner/regexrule_confirm_delete.html:6
 #: adminapp/templates/os2datascanner/rules.html:114
 #: adminapp/templates/os2datascanner/scan_confirm_delete.html:6
 #: adminapp/templates/os2datascanner/scan_status_table.html:83
 #: adminapp/templates/os2datascanner/scanners.html:166
+#: organizations/templates/organizations/org_table.html:57
+#: organizations/templates/organizations/org_table.html:211
+#: organizations/templates/organizations/org_table.html:223
 msgid "Delete"
 msgstr "Slet"
 
-#: adminapp/templates/os2datascanner/error_log.html:90
+#: adminapp/templates/os2datascanner/error_log.html:99
+msgid "Mark as seen"
+msgstr "Markér som set"
+
+#: adminapp/templates/os2datascanner/error_log.html:112
 msgid "no errors found."
 msgstr "ingen fejl fundet."
 
@@ -732,30 +808,55 @@ msgstr "Handlingen kan ikke fortrydes."
 msgid "Yes"
 msgstr "Ja"
 
-#: adminapp/templates/os2datascanner/scan_completed.html:17
-#: adminapp/templates/os2datascanner/scan_completed.html:22
-#: adminapp/templates/os2datascanner/scanner_tabs.html:69
+#: adminapp/templates/os2datascanner/scan_completed.html:24
+#: adminapp/templates/os2datascanner/scan_completed.html:29
+#: adminapp/templates/os2datascanner/scanner_tabs.html:74
 msgid "Completed scans"
 msgstr "Udførte scanninger"
 
-#: adminapp/templates/os2datascanner/scan_completed.html:39
+#: adminapp/templates/os2datascanner/scan_completed.html:50
+msgid "You are about to delete"
+msgstr "Du er ved at slette"
+
+#: adminapp/templates/os2datascanner/scan_completed.html:50
+msgid " scan status data. This action cannot be reverted. Are you sure?"
+msgstr " datascanninger. Denne handling kan ikke fortrydes. Er du sikker?"
+
+#: adminapp/templates/os2datascanner/scan_completed.html:65
+msgid "Select all"
+msgstr "Vælg alle"
+
+#: adminapp/templates/os2datascanner/scan_completed.html:66
+msgid "Select all results"
+msgstr "Vælg alle resultater"
+
+#: adminapp/templates/os2datascanner/scan_completed.html:77
 msgid "Objects"
 msgstr "Objekter"
 
-#: adminapp/templates/os2datascanner/scan_completed.html:42
+#: adminapp/templates/os2datascanner/scan_completed.html:80
 #: adminapp/templates/os2datascanner/scan_status_table.html:28
 msgid "Status"
 msgstr "Status"
 
-#: adminapp/templates/os2datascanner/scan_completed.html:60
+#: adminapp/templates/os2datascanner/scan_completed.html:84
+#: adminapp/templates/os2datascanner/scan_status_table.html:31
+msgid "Actions"
+msgstr "Handlinger"
+
+#: adminapp/templates/os2datascanner/scan_completed.html:103
+msgid "Select result"
+msgstr "Vælg resultater"
+
+#: adminapp/templates/os2datascanner/scan_completed.html:116
 msgid "objects explored"
 msgstr "objekter udforsket"
 
-#: adminapp/templates/os2datascanner/scan_completed.html:66
+#: adminapp/templates/os2datascanner/scan_completed.html:122
 msgid "Done"
 msgstr "Udført"
 
-#: adminapp/templates/os2datascanner/scan_completed.html:80
+#: adminapp/templates/os2datascanner/scan_completed.html:149
 msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
@@ -767,17 +868,13 @@ msgstr ""
 
 #: adminapp/templates/os2datascanner/scan_status.html:22
 #: adminapp/templates/os2datascanner/scan_status_table.html:11
-#: adminapp/templates/os2datascanner/scanner_tabs.html:66
+#: adminapp/templates/os2datascanner/scanner_tabs.html:71
 msgid "Scans in progress"
 msgstr "Igangværende scanninger"
 
 #: adminapp/templates/os2datascanner/scan_status_table.html:25
 msgid "Phase"
 msgstr "Fase"
-
-#: adminapp/templates/os2datascanner/scan_status_table.html:31
-msgid "Actions"
-msgstr "Handlinger"
 
 #: adminapp/templates/os2datascanner/scan_status_table.html:44
 msgid "Indexing data ..."
@@ -1264,7 +1361,6 @@ msgstr ""
 "indtastet er den rigtige, og tjekke din spam mappe."
 
 #: adminapp/templates/password_reset_email.html:3
-#, python-format
 msgid ""
 "\n"
 "  You're receiving this email because you requested a password reset for "
@@ -1287,13 +1383,13 @@ msgid "Thanks for using our site!"
 msgstr "Tak, fordi du brugte vores side!"
 
 #: adminapp/templates/password_reset_email.html:18
-#, python-format
 msgid ""
 "\n"
 "  The %(site_name)s team\n"
 msgstr ""
 "\n"
 "  %(site_name)s team\n"
+
 
 #: adminapp/templates/password_reset_form.html:21
 msgid ""
@@ -1337,11 +1433,11 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/scanner_views.py:50
+#: adminapp/views/scanner_views.py:61
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:329
+#: adminapp/views/scanner_views.py:412
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
@@ -1408,12 +1504,12 @@ msgstr "vent %(METAVAR)s sekunder hvis der ikke var nogle jobs til afvikling"
 msgid "do not loop: run a single job and then exit"
 msgstr "kør ikke i løkke: kør et enkelt job og gå derefter ud"
 
-#: core/management/commands/run_background_jobs.py:209
+#: core/management/commands/run_background_jobs.py:222
 #, python-brace-format
 msgid "{0} job(s) completed."
 msgstr "{0} færdige job(s)."
 
-#: core/management/commands/run_background_jobs.py:210
+#: core/management/commands/run_background_jobs.py:223
 #, python-brace-format
 msgid "{0} job(s) failed."
 msgstr "{0} fejlede job(s)."
@@ -1423,7 +1519,7 @@ msgid "user"
 msgstr "bruger"
 
 #: core/models/administrator.py:37 core/models/client.py:113
-#: organizations/models/organization.py:30
+#: organizations/models/organization.py:33
 msgid "client"
 msgstr "kunde"
 
@@ -1469,19 +1565,19 @@ msgstr "annulleret"
 msgid "failed"
 msgstr "fejlet"
 
-#: core/models/background_job.py:41
+#: core/models/background_job.py:50
 msgid "job creation time"
 msgstr "job-oprettelsestid"
 
-#: core/models/background_job.py:44
+#: core/models/background_job.py:53
 msgid "job update time"
 msgstr "job-opdateringstid"
 
-#: core/models/background_job.py:49
+#: core/models/background_job.py:58
 msgid "execution state"
 msgstr "kørselsstatus"
 
-#: core/models/background_job.py:53
+#: core/models/background_job.py:62
 msgid "last status message"
 msgstr "sidst status-besked"
 
@@ -1625,7 +1721,7 @@ msgid "organization UUID"
 msgstr "UUID for organisation"
 
 #: import_services/models/import_service.py:43
-#: organizations/templates/organizations/org_table.html:42
+#: organizations/templates/organizations/org_table.html:52
 msgid "import service"
 msgstr "importservice"
 
@@ -1900,7 +1996,7 @@ msgstr ""
 "Denne organisationsstruktur ligger i skyen, og en eksterne tjeneste skal "
 "tillade OS2datascanner adgang til dens indhold."
 
-#: organizations/models/organization.py:36
+#: organizations/models/organization.py:39
 msgid "slug"
 msgstr "slug"
 
@@ -1909,40 +2005,68 @@ msgstr "slug"
 msgid "create new organization"
 msgstr "opret ny organisation"
 
-#: organizations/templates/organizations/org_table.html:9
+#: organizations/templates/organizations/org_delete_blocked.html:19
+msgid "Deletion blocked"
+msgstr "Sletning ikke mulig"
+
+#: organizations/templates/organizations/org_delete_blocked.html:22
+msgid ""
+"The organization could not be deleted because scannerjobs are still running. "
+"Delete running jobs before proceding. "
+msgstr ""
+"Organisationen kan ikke slettes fordi der stadig kører mindst et scannerjob. "
+"Afbryd alle scannerjobs der kører for at fortsætte sletningen."
+
+#: organizations/templates/organizations/org_delete_blocked.html:27
+msgid "Go to scanner status"
+msgstr "Gå til scanner status"
+
+#: organizations/templates/organizations/org_table.html:14
 msgid "organizations for"
 msgstr "organisationer for"
 
-#: organizations/templates/organizations/org_table.html:15
 #: organizations/templates/organizations/org_table.html:20
+#: organizations/templates/organizations/org_table.html:25
 msgid "Add new organization"
 msgstr "Tilføj ny organisation"
 
-#: organizations/templates/organizations/org_table.html:39
+#: organizations/templates/organizations/org_table.html:49
 msgid "email"
 msgstr "e-mail"
 
-#: organizations/templates/organizations/org_table.html:40
+#: organizations/templates/organizations/org_table.html:50
 msgid "phone"
 msgstr "telefon"
 
-#: organizations/templates/organizations/org_table.html:44
+#: organizations/templates/organizations/org_table.html:54
 msgid "Import service (Microsoft Graph)"
 msgstr "Importservice (Microsoft Graph)"
 
-#: organizations/templates/organizations/org_table.html:82
-#: organizations/templates/organizations/org_table.html:90
-#: organizations/templates/organizations/org_table.html:151
-#: organizations/templates/organizations/org_table.html:158
+#: organizations/templates/organizations/org_table.html:95
+#: organizations/templates/organizations/org_table.html:103
+#: organizations/templates/organizations/org_table.html:164
+#: organizations/templates/organizations/org_table.html:171
 msgid "sync"
 msgstr "synkroniser"
 
-#: organizations/templates/organizations/org_table.html:106
-#: organizations/templates/organizations/org_table.html:174
+#: organizations/templates/organizations/org_table.html:119
+#: organizations/templates/organizations/org_table.html:187
 msgid "last updated"
 msgstr "sidst opdateret"
 
-#: organizations/templates/organizations/org_table.html:221
+#: organizations/templates/organizations/org_table.html:210
+msgid "Do you really want to delete this organization?"
+msgstr "Er du sikker på, at du vil slette denne organisation?"
+
+#: organizations/templates/organizations/org_table.html:210
+msgid ""
+"This will delete all associated import- and scannerjobs. The action cannot "
+"be reversed"
+msgstr ""
+"Dette vil også slette import- og scannerjobs der tilhører organisationen. "
+"Handlingen kan ikke fortrydes."
+
+#: organizations/templates/organizations/org_table.html:264
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
@@ -1954,12 +2078,10 @@ msgstr "organisatorisk struktur"
 msgid "organizational hierarchy for"
 msgstr "organisatorisk struktur for"
 
-#: organizations/views/org_views.py:78
+#: organizations/views/org_views.py:82
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 
-#~ msgid "Email notification interval"
-#~ msgstr "Mailudsendelse interval"
 
 #, python-format
 #~ msgid ""

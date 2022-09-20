@@ -9,8 +9,8 @@
 
 <div class="userprofile-content-wrapper user-image">
     <span class="user__avatar_verybig">
-      {% if request.user.profile.image %}
-        <img class="userprofile-image" src="{{ request.user.profile.image }}">
+      {% if request.user.account.image %}
+        <img class="userprofile-image" src="{{ request.user.account.image }}">
       {% else %}
         <i id="account_circle" class="material-icons">account_circle</i>
       {% endif %}
@@ -36,8 +36,8 @@
       <tr>
         <td>{% trans "Organization" %}</td>
         <td>
-          {% if user.profile.organization %}
-            {{ user.profile.organization }}
+          {% if user.account.organization %}
+            {{ user.account.organization }}
           {% endif %}
         </td>
       </tr>
@@ -93,44 +93,39 @@
           </ul>
         </td>
       </tr>
-      {% endif %}
+      {% if user.is_active %}
       <tr>
         <td>{% trans "Active" %}</td>
         <td>
-          {% if user.is_active %}
-            <div class="checkmark checkmark_true"></div>
-            {% trans "Yes" %}
-          {% else %}
-            <div class="checkmark checkmark_false"></div>
-            {% trans "No" %}
-          {% endif %}
+          <span class="checkmark true">
+            {% include "components/svg-icons/check_circle_full.svg" %}
+            <span class="width">{% trans "Yes" %}</span>
+          </span>
         </td>
       </tr>
+      {% endif %}
+      {% if user.is_staff %}
       <tr>
         <td>{% trans "Staff" %}</td>
         <td>
-          {% if user.is_staff %}
-            <div class="checkmark checkmark_true"></div>
-            {% trans "Yes" %}
-          {% else %}
-            <div class="checkmark checkmark_false"></div>
-            {% trans "No" %}
-          {% endif %}
+          <span class="checkmark true">
+            {% include "components/svg-icons/check_circle_full.svg" %}
+            <span class="width">{% trans "Yes" %}</span>
+          </span>
         </td>
       </tr>
+      {% endif %}
+      {% if user.is_superuser %}
       <tr>
         <td>{% trans "Superuser" %}</td>
         <td>
-          {% if user.is_superuser %}
-            <div class="checkmark checkmark_true"></div>
-            {% trans "Yes" %}
-          {% else %}
-            <div class="checkmark checkmark_false"></div>
-            {% trans "No" %}
-          {% endif %}
+          <span class="checkmark true">
+            {% include "components/svg-icons/check_circle_full.svg" %}
+            <span class="width">{% trans "Yes" %}</span>
+          </span>
         </td>
       </tr>
-      {% if aliases %}
+      {% endif %}
       <tr>
         <td>{% trans "Aliases" %}</td>
         <td>

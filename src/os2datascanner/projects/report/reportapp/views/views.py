@@ -26,7 +26,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponseForbidden, Http404
+from django.http import HttpResponseForbidden, Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.views.generic import View, TemplateView, ListView
@@ -44,8 +44,8 @@ from os2datascanner.projects.report.reportapp.models.roles.role import Role
 from ..utils import user_is
 from ..models.documentreport import DocumentReport
 from ..models.roles.defaultrole import DefaultRole
-from ..models.userprofile import UserProfile
 from ..models.roles.remediator import Remediator
+from ...organizations.models.account import Account
 
 # For permissions
 from ..models.roles.dpo import DataProtectionOfficer
@@ -93,7 +93,7 @@ class MainPageView(LoginRequiredMixin, ListView):
     model = DocumentReport
     document_reports = DocumentReport.objects.filter(
         raw_matches__matched=True).filter(
-        resolution_status__isnull=True).order_by("sort_key")
+        resolution_status__isnull=True).order_by("sort_key", "pk")
     scannerjob_filters = None
     paginate_by_options = [10, 20, 50, 100, 250]
 
@@ -105,26 +105,10 @@ class MainPageView(LoginRequiredMixin, ListView):
         is_htmx = self.request.headers.get("HX-Request") == "true"
         if is_htmx:
             htmx_trigger = self.request.headers.get("HX-Trigger-Name")
-            if htmx_trigger == "distribute-matches":
-                update_pks = self.request.GET.getlist('distribute-to')
-                DocumentReport.objects.filter(
-                    scanner_job_pk__in=update_pks).update(
-                    only_notify_superadmin=False)
 
             # If called from a "open-button"-htmx link, update the last_opened_time value.
-            elif htmx_trigger == "open-button":
+            if htmx_trigger == "open-button":
                 DocumentReport.objects.get(pk=self.request.GET.get('pk')).update_opened()
-            elif htmx_trigger == "handle-match":
-                if UserProfile.objects.filter(user=user).exists():
-                    user.profile.update_last_handle()
-                self.document_reports.filter(
-                    pk=self.request.GET.get('pk')).update(
-                    resolution_status=0)
-            elif htmx_trigger == "handle-matches":
-                if UserProfile.objects.filter(user=user).exists():
-                    user.profile.update_last_handle()
-                DocumentReport.objects.filter(pk__in=self.request.GET.getlist(
-                    'match-checkbox')).update(resolution_status=0)
 
         # Handles filtering by role + org and sets datasource_last_modified if non existing
         self.user_reports = filter_inapplicable_matches(user, self.document_reports, roles)
@@ -268,7 +252,7 @@ class MainPageView(LoginRequiredMixin, ListView):
 
             if order != 'ascending':
                 sort_key = '-'+sort_key
-            self.document_reports = self.document_reports.order_by(sort_key)
+            self.document_reports = self.document_reports.order_by(sort_key, 'pk')
 
     def get_template_names(self):
         is_htmx = self.request.headers.get('HX-Request') == "true"
@@ -276,9 +260,8 @@ class MainPageView(LoginRequiredMixin, ListView):
         if is_htmx:
             if htmx_trigger in [
                     'open-button',
-                    'handle-match',
-                    'handle-matches',
-                    'distribute-matches',
+                    'handle-matches-get',
+                    'distribute-container',
                     'form-button',
                     'page-button',
                     'filter_form',
@@ -291,11 +274,38 @@ class MainPageView(LoginRequiredMixin, ListView):
         else:
             return 'index.html'
 
+    def post(self, request, *args, **kwargs):
+
+        is_htmx = request.headers.get("HX-Request", False) == "true"
+        if is_htmx:
+            htmx_trigger = request.headers.get("HX-Trigger-Name")
+            if htmx_trigger == "distribute-matches":
+                update_pks = request.POST.getlist('distribute-to')
+                DocumentReport.objects.filter(
+                    scanner_job_pk__in=update_pks).update(
+                    only_notify_superadmin=False)
+            elif htmx_trigger == "handle-matches":
+                if Account.objects.filter(user=request.user).exists():
+                    request.user.account.update_last_handle()
+                DocumentReport.objects.filter(pk__in=self.request.POST.getlist(
+                    'table-checkbox')).update(resolution_status=0)
+            elif htmx_trigger == "handle-match":
+                if Account.objects.filter(user=request.user).exists():
+                    request.user.account.update_last_handle()
+                self.document_reports.filter(
+                    pk=self.request.POST.get('pk')).update(
+                    resolution_status=0)
+
+        response = HttpResponse()
+        response.headers["HX-Trigger"] = "reload-htmx"
+
+        return response
+
 
 class StatisticsPageView(LoginRequiredMixin, TemplateView):
     context_object_name = "matches"  # object_list renamed to something more relevant
     model = DocumentReport
-    users = UserProfile.objects.all()
+    users = Account.objects.all()
     matches = DocumentReport.objects.filter(
         raw_matches__matched=True)
     handled_matches = matches.filter(
@@ -613,11 +623,11 @@ def filter_inapplicable_matches(user, matches, roles, account=None):
 
     # Filter by organization
     try:
-        user_organization = user.profile.organization
+        user_organization = user.account.organization
         if user_organization:
             matches = matches.filter(organization=user_organization)
-    except UserProfile.DoesNotExist:
-        # No UserProfile has been set on the request user
+    except Account.DoesNotExist:
+        # No Account has been set on the request user
         # Check if we have received an account as arg (from send_notifications.py) and use
         # its organization to locate matches.
         if account:

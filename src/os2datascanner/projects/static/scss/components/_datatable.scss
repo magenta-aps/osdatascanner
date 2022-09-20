@@ -171,7 +171,7 @@
   }
 
   &__column {
-    &--handle {
+    &--checkbox {
       width: 4.2rem;
     }
 
@@ -218,6 +218,10 @@
       width: 100%;
     }
 
+    &--status {
+      width: 14rem;
+    }
+
     &--actions {
       width: 14rem;
 
@@ -233,6 +237,18 @@
         >* {
           flex: 0 1 auto; // be explicit for IE11s sake
         }
+      }
+    }
+
+    &--delete {
+      width: 8rem;
+
+      .button {
+        margin: .25rem 0 0 .25rem;
+      }
+
+      >* {
+        flex: 0 1 auto; // be explicit for IE11s sake
       }
     }
 
@@ -338,7 +354,7 @@
 }
 
 .datatable .column-headings th,
-.datatable .handle-matches th {
+.datatable .topbar-stick th {
   position: static; // override aggressive position: relative; on * in _base.scss
 }
 
@@ -368,7 +384,7 @@
   }
 }
 
-.datatable .handle-matches {
+.datatable .topbar-stick {
   th {
     background-color: #fff;
     z-index: 2;
