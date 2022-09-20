@@ -35,8 +35,10 @@ class UserView(TemplateView, LoginRequiredMixin):
         if not UserProfile.objects.filter(user=user).exists():
             if user.aliases.exists():
                 user_org = user.aliases.first().account.organization
-            else:
+            elif Organization.objects.count() == 1:
                 user_org = Organization.objects.first()
+            else:
+                user_org = None
             UserProfile.objects.update_or_create(
                 user=user, defaults={
                     "organization": user_org})
