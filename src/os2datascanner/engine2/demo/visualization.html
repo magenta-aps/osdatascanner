@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js" 
+    integrity="sha512-Tfw6etYMUhL4RTki37niav99C6OHwMDB2iBT5S5piyHO+ltK2YX8Hjy9TXxhE1Gm/TmAV0uaykSpnHKFIAif/A==" 
+    crossorigin="anonymous" 
+    referrerpolicy="no-referrer"></script>
+    <title>Visualization</title>
+</head>
+<body>
+
+<h1>Graph ex 1</h1>
+<p>Nested pie chart </p>
+
+<div style="width:100%; margin:auto;" class="row">
+    <div style="width: 49%; float: left;">
+        <canvas id="mean">
+        </canvas>
+    </div>
+    <div style="width: 49%; float:right;">
+        <canvas id="median">
+        </canvas>
+    </div>
+    
+</div>
+<!-- <button onclick="fetchData()">get data</button> -->
+<script type="module" src="nestedChart.js"></script>
+
+</body>
+
+</html> 
