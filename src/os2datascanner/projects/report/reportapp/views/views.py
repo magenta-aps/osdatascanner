@@ -100,6 +100,7 @@ class MainPageView(LoginRequiredMixin, ListView):
     def get_queryset(self):  # noqa CCR001
         user = self.request.user
         roles = Role.get_user_roles_or_default(user)
+        print(roles)
         # If called from a "distribute-matches"-button, remove all
         # `only_notify_superadmin`-flags from reports.
         is_htmx = self.request.headers.get("HX-Request") == "true"
@@ -112,6 +113,7 @@ class MainPageView(LoginRequiredMixin, ListView):
 
         # Handles filtering by role + org and sets datasource_last_modified if non existing
         self.user_reports = filter_inapplicable_matches(user, self.document_reports, roles)
+        print(self.user_reports)
         self.document_reports = self.user_reports
 
         # Filters by datasource_last_modified.

@@ -4,7 +4,7 @@
 <nav class="navi">
   <ul>
     {% if user.is_authenticated %}
-      {% if not user.profile.is_upload_only %}
+      {% if not user.account.is_upload_only %}
         <li>
           <a href="/status" class="{% if active_tab == 'status' %}active{% endif %}">
             {% include "components/svg-icons/scan_status.svg" %}

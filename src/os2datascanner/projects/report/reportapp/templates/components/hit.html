@@ -57,7 +57,7 @@
             {% if document_report.alias_relation.all and document_report.alias_relation.first.user != request.user %}
             <div class="delegated-by">
               {% trans "Delegated by: " %}{{ document_report.alias_relation.first.user.get_full_name }}
-              <span title="{{ document_report.alias_relation.first.user.profile.delegate_all_message }}">
+              <span title="{{ document_report.alias_relation.first.user.account.delegate_all_message }}">
                 <img src="{% static "svg/question-circle.svg" %}">
               </span>
             </div>

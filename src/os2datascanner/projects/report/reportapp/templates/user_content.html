@@ -51,9 +51,17 @@
           >
             <option value="none">{% trans "None" %}</option>
           {% for other_user in other_users %}
-            <option value='{{ other_user.uuid }}' {% if other_user.uuid == user.profile.delegate_all_to.account.uuid %} selected="selected" {% endif %}>
+            {% if other_user != user.account%}
+            <option value='{{ other_user.uuid }}' {% if other_user.uuid == user.account.delegate_all_to.account.uuid %} selected="selected" {% endif %}>
+              {% if other_user.user.get_full_name %}
+              {{ other_user.user.get_full_name }}
+              {% elif other_user.first_name or other_user.last_name %}
               {{ other_user.first_name }} {{ other_user.last_name }}
+              {% else %}
+              {{ other_user.username }}
+              {% endif %}
             </option>
+            {% endif %}
           {% endfor %}
           </select>
         </td>
@@ -64,7 +72,7 @@
           <textarea name="delegation_message" id="delegation_message" maxlength="500" placeholder="{% trans "Write a message for the person you are delegating your matches to." %}"
                     hx-post="{% url "delegate_all" %}" hx-trigger="keyup changed delay:1s" hx-swap="afterend" hx-target="this"
                     hx-include='[name="delegate-matches-form"]' hx-indicator="#message-saved-popup"
-          >{% if user.profile.delegate_all_message != None %}{{ user.profile.delegate_all_message }}{% endif %}</textarea>
+          >{% if user.account.delegate_all_message != None %}{{ user.account.delegate_all_message }}{% endif %}</textarea>
         </td>
       </tr>
       {% endif %}
@@ -93,6 +101,7 @@
           </ul>
         </td>
       </tr>
+      {% endif %}
       {% if user.is_active %}
       <tr>
         <td>{% trans "Active" %}</td>
@@ -126,6 +135,7 @@
         </td>
       </tr>
       {% endif %}
+      {% if aliases %}
       <tr>
         <td>{% trans "Aliases" %}</td>
         <td>

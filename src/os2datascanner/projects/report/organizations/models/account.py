@@ -21,6 +21,7 @@ from django.contrib.auth.models import User
 
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
 from os2datascanner.utils.system_utilities import time_now
+from os2datascanner.projects.report.organizations.models.aliases import Alias
 from rest_framework import serializers
 
 from ..serializer import BaseSerializer

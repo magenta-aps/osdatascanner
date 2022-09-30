@@ -28,28 +28,28 @@ class UserView(TemplateView, LoginRequiredMixin):
     model = User
 
     def get_queryset(self):
-        return User.objects.get(username=self.request.user)
+        return self.request.user
 
     def get_context_data(self, **kwargs):
         user = self.request.user
-        if not UserProfile.objects.filter(user=user).exists():
+        if not Account.objects.filter(user=user).exists():
             if user.aliases.exists():
                 user_org = user.aliases.first().account.organization
             elif Organization.objects.count() == 1:
                 user_org = Organization.objects.first()
             else:
                 user_org = None
-            UserProfile.objects.update_or_create(
+            Account.objects.update_or_create(
                 user=user, defaults={
                     "organization": user_org})
 
         context = super().get_context_data(**kwargs)
         context["user_roles"] = [role._meta.verbose_name for role in User.objects.get(
             username=user.username).roles.select_subclasses().all()]
-        context["aliases"] = User.objects.get(username=user.username).aliases.all()
+        context["aliases"] = user.aliases.all()
 
         # Change this to only aliases from the same organization as the user.
-        org_users = Account.objects.filter(organization=user.profile.organization)
+        org_users = Account.objects.filter(organization=user.account.organization)
         context["other_users"] = org_users
 
         return context
@@ -61,13 +61,13 @@ def delegate_user_matches(request):
     delegation_message = request.POST.get('delegation_message')
 
     if account_uuid == "none":
-        user.profile.delegate_all_to = None
-        user.profile.delegate_all_message = None
-        user.profile.save()
+        user.account.delegate_all_to = None
+        user.account.delegate_all_message = None
+        user.account.save()
     else:
         alias = Alias.objects.filter(account__uuid=account_uuid).first()
-        user.profile.delegate_all_to = alias
-        user.profile.delegate_all_message = delegation_message
-        user.profile.save()
+        user.account.delegate_all_to = alias
+        user.account.delegate_all_message = delegation_message
+        user.account.save()
 
     return HttpResponse()

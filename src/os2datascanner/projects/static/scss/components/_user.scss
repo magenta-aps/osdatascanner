@@ -106,18 +106,26 @@ h1.userprofile-text {
     padding: 0.8rem 1rem;
   }
 
-  &.dropdown {
+  .dropdown {
     padding: 0;
 
     >select {
       box-shadow: none;
+
+      &:hover {
+        box-shadow: none;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
     }
 
 
 
   }
 
-  &.textbox {
+  .textbox {
     padding: 0;
     padding-left: 1rem;
 
