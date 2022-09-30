@@ -46,7 +46,6 @@ from ..utils import user_is
 from ..models.documentreport import DocumentReport
 from ..models.roles.defaultrole import DefaultRole
 from ..models.roles.remediator import Remediator
-from ...organizations.models.account import Account
 
 # For permissions
 from ..models.roles.dpo import DataProtectionOfficer
@@ -319,8 +318,8 @@ class DelegateMatches(TemplateView):
         user = self.request.user
         print(self.request.GET)
         context = super().get_context_data(**kwargs)
-        if UserProfile.objects.filter(user=user).exists():
-            user_org = user.profile.organization
+        if Account.objects.filter(user=user).exists():
+            user_org = user.account.organization
         elif Organization.objects.count() == 1:
             user_org = Organization.objects.first()
         else:
@@ -337,7 +336,7 @@ class DelegateMatches(TemplateView):
 
 def delegate_reports(request):
 
-    pks = request.POST.getlist("match-checkbox") or request.POST.getlist("pk")
+    pks = request.POST.getlist("table-checkbox") or request.POST.getlist("pk")
     alias_uuid = request.POST.get("delegate_to")
 
     document_reports = DocumentReport.objects.filter(

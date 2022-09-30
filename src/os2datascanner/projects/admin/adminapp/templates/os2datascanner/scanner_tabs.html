@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if page == 'scannerjob' %}
     {% if user.is_authenticated %}
-        {% if not user.profile.is_upload_only %}
+        {% if not user.account.is_upload_only %}
 <div class="scrollbar-content">
     <div class="tabs">
         {% if settings.ENABLE_WEBSCAN %}

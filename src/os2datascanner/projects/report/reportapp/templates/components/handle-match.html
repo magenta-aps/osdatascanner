@@ -26,16 +26,16 @@ Marking a result as handled will only remove the result from OS2datascanner.{% e
           <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Mark as handled" %}</span>
       </button>
       {% comment %} {% if aliases and user_can_delegate %} {% endcomment %}
-      <button {% comment %} disabled {% endcomment %}
+      <a {% comment %} disabled {% endcomment %}
          title="{% blocktrans %}Delegate the chosen matches to another user. Click this button, then choose which user to delegate the matches to.{% endblocktrans %}"
-         hx-get="{% url "delegate-matches" %}"
-         hx-target="#delegate-matches-modal"
-         hx-trigger="click"
-         hx-include="#match_checkboxes"
-         class="button button--small button--grey"
+         href="#delegate-matches-modal"
+         data-modal="modal:open"
+         data-src="/delegate-matches"
+         disabled
+         class="table-checkbox__action button button--small button--grey"
          >
               <span>{% trans "Delegate matches" %}</span>
-    </button>
+    </a>
       {% comment %} {% endif %} {% endcomment %}
       <span class="selected-cb">
         <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}
