@@ -1,0 +1,108 @@
+/* Styling of chart containers and chart canvases */
+
+.pie-charts-container {
+    display: grid;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    width: 80%;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, auto);
+    align-items: left;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 40px #22222229;
+    box-shadow: 0px 0px 40px #22222229;
+    border-radius: 1.25rem;
+    padding: 2rem
+}
+
+.bar-charts-container {
+  display: grid;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  width: 80%;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2rem;
+  row-gap: 5rem;
+  grid-template-rows: minmax(0, auto);
+  align-items: left;
+  background-color: white;
+  -webkit-box-shadow: 0px 0px 40px #22222229;
+  box-shadow: 0px 0px 40px #22222229;
+  border-radius: 1.25rem;
+  padding: 2rem
+}
+
+.chart-container {
+  max-width: 90%;
+  /* height: 40vh; */
+  position: relative;
+}
+
+.chart-canvas {
+  grid-area: chrt;
+}
+
+
+.pie-chart-content{ 
+  display: -ms-grid;
+	display: grid;
+	-ms-grid-columns: 1fr;
+	grid-template-columns: minmax(0, 1fr);
+  /* -ms-grid-columns: 1fr 1fr;
+	grid-template-columns:  repeat(2, minmax(0, 1fr)); */
+	-ms-grid-rows: minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  -webkit-box-align: center;
+	-ms-grid-row-align: center;
+  grid-template-areas:
+    "ttl ."
+    "chrt lgnd"
+  ;
+}
+
+.bar-chart-content{ 
+  display: -ms-grid;
+	display: grid;
+	-ms-grid-columns: 1fr ;
+	grid-template-columns: minmax(0, 1fr);
+	-ms-grid-rows: minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  -webkit-box-align: center;
+	-ms-grid-row-align: center;
+  grid-template-areas:
+  /* Predefines the cells in the grid so that titles can be placed centered over the chart */
+  /* This is done by leaving top- and right-most cell empty */
+    "ttl"
+    "chrt"
+  ;
+}
+
+.chart-legend{
+  list-style: none;
+	bottom: 0;
+	margin: 0 0 0 1rem;
+  grid-area: lgnd;
+}
+
+li>span {
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.chart-title {
+  text-align: center;
+  font-size: 1.5rem;
+  color: rgba(100, 100, 100, 1);
+  grid-area: ttl;
+}
+
+.bullet {
+	content: "\2022 ";
+	/* Add content: \2022 is the CSS Code/unicode for a bullet */
+	font-weight: bold;
+	padding-right: .2rem;
+	font-size: 2rem;
+	line-height: 1;
+}

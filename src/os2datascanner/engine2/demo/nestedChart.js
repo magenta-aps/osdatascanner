@@ -20,24 +20,35 @@ function getData(jsonData, variable){
   return data;
 }
 
-function getColors(color1, color2, hoverBorder="rgba(2, 2, 60, 1)"){
+function getColors(){
   // Hacky solution for dynamically insetting alphas in the same base color
-  const alphaHover = "1)";
-  const alphaOuter = "0.8)";
-  const alphaInner = "0.5)";
-  var outerLayer = [color1.concat(alphaOuter), color2.concat(alphaOuter)];
-  var outerHover  = [color1.concat(alphaHover), color2.concat(alphaHover)];
-  var innerLayer = Array(4).fill(color1.concat(alphaInner)).concat(Array(4).fill(color2.concat(alphaInner)));
-  var innerHover = Array(4).fill(color1.concat(alphaHover)).concat(Array(4).fill(color2.concat(alphaHover)));
+  let colorList = ["rgba(94, 21, 157)", 
+                    "rgba(15, 162, 131)",
+                    "rgba(184, 95, 13)",
+                    "rgba(167, 28, 60)",
+                    "rgba(82, 167, 4)",
+                    "rgba(38, 70, 197)"];
+
+  var outerLayer = [colorList[0], colorList[1]];
+  var innerLayer = Array(4).fill(colorList[0]).concat(Array(4).fill(colorList[1]));
+
   let colors = {
     "outerLayer": outerLayer,
-    "outerHover": outerHover,
     "innerLayer": innerLayer,
-    "innerHover": innerHover,
-    "hoverBorder": hoverBorder
+    "hoverBorder": "rgba(2, 2, 60, 1)"
   };
   return colors;
 }
+
+let colorList = ["rgba(84, 71, 140)", 
+                "rgba(44, 105, 154)",
+                "rgba(4, 139, 168)",
+                "rgba(13, 179, 158)",
+                "rgba(22, 219, 147)",
+                "rgba(131, 227, 119)",
+                "rgba(185, 231, 105)",
+                "rgba(239, 234, 90)",
+                "rgba(241, 196, 83)"];
 
 function getChartData(data, colors) {
   const nBuckets = data.buckets.length / data.labels.length;
@@ -52,30 +63,38 @@ function getChartData(data, colors) {
         labels: data.labels,
         data: data.outer,
         sum: data.outer.reduce((a, b) => a + b, 0),
-        backgroundColor: colors.outerLayer,
-        hoverBackgroundColor: colors.outerHover,
+        backgroundColor: colorList.map(color => color.replace(")", ", 0.8)")),
+        hoverBackgroundColor: colorList.map(color => color.replace(")", ", 1)")),
         hoverBorderColor: colors.hoverBorder
       },
       { 
         label: "Inner",
-        labels: innerLabels.concat(innerLabels),
+        labels: innerLabels.concat(innerLabels), //doubling because of 
         data: data.buckets,
         sum: data.buckets.reduce((a, b) => a + b, 0),
-        backgroundColor: colors.innerLayer,
-        hoverBackgroundColor: colors.innerHover,
+        backgroundColor: colorList.map(color => color.replace(")", ", 0.5)")),
+        hoverBackgroundColor: colorList.map(color => color.replace(")", ", 1)")),
         hoverBorderColor: colors.hoverBorder
-      }]  
+      },
+    ]  
   };
   return chartData;
 }
 
-function getOptions(title, titleColor="rgba(2, 2, 60, 1)", legendPosition="right") {
+function getOptions(title, titleColor="rgba(2, 2, 60, 1)") {
   var chartOptions = {
-    plugins: {
-      legend: {
-        display: true,
-        position: legendPosition
+    elements: {
+      arc: {
+        roundedCornersFor: 0
       },
+      center: {
+        minFontSize: 20,
+        maxFontSize: 20,
+        weight: 'bold',
+        text: "something",
+      }
+    },
+    plugins: {
       tooltip: {
         callbacks: {
           label: (context) => {
@@ -91,22 +110,23 @@ function getOptions(title, titleColor="rgba(2, 2, 60, 1)", legendPosition="right
           size: 30
         }
       },
-      datalabels: {
-        color: "rgba(241, 241, 252, 1)",
-        formatter: (value, context) => {
-            if (context.dataset.label !== "Outer"){
-              return "";
-            }
-            else {
-              return context.dataset.labels[context.dataIndex];
-            }
-        },
-        font: {
-          weight: "bold",
-          size: 13
-        },
-      }
+      // datalabels: {
+      //   color: "rgba(241, 241, 252, 1)",
+      //   formatter: (value, context) => {
+      //       if (context.dataset.label !== "Outer"){
+      //         return "";
+      //       }
+      //       else {
+      //         return context.dataset.labels[context.dataIndex];
+      //       }
+      //   },
+      //   font: {
+      //     weight: "bold",
+      //     size: 13
+      //   },
+      // }
     },
+    // cutout: "50%",    
   };
   return chartOptions;
 }
@@ -115,13 +135,22 @@ function drawChart(type, context, data, options) {
   var theChart = new Chart(context, {
     type: type,
     data: data,
-    // options: options,
-    plugins: [ChartDataLabels],
-    options: options
+    // plugins: [ChartDataLabels],
+    options: options,
+    centerText: {
+      display: true,
+      text: "hello"
+    }
   });
+  // Chart.pluginService.register({
+  //   beforeDraw: function (chart) {
+  //     if (chart.config.type === 'doughnut') {
+  //       console.log("at BeforeDraw")
+  //     }
+  //   } 
+  // })
   return theChart;
 }
-
 // Defining colors
 // Green and blue
 // const color1 = "rgba(38, 70, 197, "
@@ -132,23 +161,21 @@ function drawChart(type, context, data, options) {
 // const color2 = "rgba(184, 95, 13, "
 
 // Purple and turquise 
-const color1 = "rgba(94, 21, 157, ";
-const color2 = "rgba(15, 162, 131, ";
-var colors = getColors(color1, color2);
+// const color1 = "rgba(94, 21, 157, ";
+// const color2 = "rgba(15, 162, 131, ";
+var colors = getColors();
 
 var data = getData(jsonData, "mean");
 var ctx = document.getElementById("mean");
 var chartData = getChartData(data, colors);
-var chartOptions = getOptions("Analysis of mean");
+var chartOptions = getOptions("Analysis of mean", undefined, undefined, "hello");
 
 drawChart("pie", ctx, chartData, chartOptions);
 
 var data = getData(jsonData, "median");
 var ctx = document.getElementById("median");
 var chartData = getChartData(data, colors);
-var chartOptions = getOptions("Analysis of median");
+var chartOptions = getOptions("Analysis of median", undefined, undefined, "hello");
 
 drawChart("pie", ctx, chartData, chartOptions);
-
-
 

@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
-import sys
+import argparse
 from math import ceil
 from typing import Sequence, NamedTuple
 import bisect
 import statistics
-import json
-
+import re
 from os2datascanner.engine2.model.core import Source, SourceManager
+
+
+def extract_domain(url):
+    domain = re.findall("(?<=www.).*(?=\\.)", url)+re.findall("(?<=https:\\/\\/).*(?=\\.)", url)
+    return domain[0].replace(".", "_").replace("www.", "")
 
 
 def buckets(sequence, max_buckets=10):
@@ -88,13 +92,14 @@ def main(argv, breakpoint=None):
             bisect.insort(info.sizes, size)
 
         sorted_infos = sorted(
-                (t for t in type_infos.values() if t.count >= 50),
+                (t for t in type_infos.values() if t.count >= 5),
                 key=lambda i: i.count)
         data_list = []
         names = ["type", "n_files", "total_size", "mean", "median", "min", "max"]
         for info in sorted_infos:
-            print(info)
+            # print(info)
             stats = info.get_stats()
+            print(f'Sizes for {info.mime}:\n{info.sizes}\n')
             data = {names[i]: stats[i] for i in range(len(names))}
             buckets = []
             for n, bucket in enumerate(info.buckets()):
@@ -102,15 +107,21 @@ def main(argv, breakpoint=None):
                 bucket_dict = {names[i]: bucket_stats[i] for i in range(len(names))}
                 bucket_dict["name"] = f'bucket_{n+1}'
                 buckets.append(bucket_dict)
-                print(f"\t{bucket}")
+                # print(f"\t{bucket}")
             data["buckets"] = buckets
             data_list.append(data)
 
-        with open(f"data_{url}.json", "w") as f:
-            json.dumps(data_list, f)
-        print(f"File with data from {url} saved")
+        file_name = extract_domain(url)
+        print(file_name)
+        # with open(f"data_{file_name}.json", "w") as f:
+        #     json.dumps(data_list, f)
+        # print(f"File with data from {url} saved")
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    main([args[0]], *args[1:])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('urls', metavar='URLS', type=str, help="URL(s) to scan", nargs='+')
+    parser.add_argument('-b', '--breakpoint', default=None,
+                        help="Stop pagesearch after this many handles")
+    args = parser.parse_args()
+    main(args.urls, args.breakpoint)

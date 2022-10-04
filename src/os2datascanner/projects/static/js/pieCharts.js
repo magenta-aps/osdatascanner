@@ -105,7 +105,6 @@ function drawPies(sensitivities, sourceTypes, handledMatchesStatus) {
             weight: 'bold'
           },
           position: 'top',
-          align: 'center',
           formatter: displayAsPercentage,
           color: '#fff',
         }

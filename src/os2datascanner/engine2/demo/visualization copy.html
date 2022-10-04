@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Visualization</title>
-    <link rel="stylesheet" href="viz.css">
+    <link rel="stylesheet" href="viz_version2.css">
   </head>
   <body>
     <div style="margin-left: 60px; margin-top: 80px;">
@@ -37,6 +37,7 @@
       <div>
         <h2>Bar charts</h2>
         <div class="bar-charts-container"> 
+          
           <div class="chart-container">
             <div class="bar-chart-content">
               <!-- <h3 class="chart-title">Total number of files</h3> -->
@@ -54,25 +55,27 @@
               </div>
             </div>
           </div>
+
+          <div class="chart-container">
+            <div class="bar-chart-content">
+              <!-- <h3 class="chart-title">Total number of files</h3> -->
+              <div class="chart-canvas">
+                <canvas id="bar3"> </canvas>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
   </body>
 </html>
 
 
+<script src="chart-3.9.1.min.js"></script>
+<script type="module" src="pies-3-9.js"></script>
+<script type="module" src="bar-3-9.js"></script>
 
-
-
-
-<!-- <script src="chart-3.9.1.min.js"></script>
-<script type="module" src="pies-3-9.js"></script> -->
-<!-- <script type="module" src="bar-3-9.js"></script> -->
-
-
-<script src="../../projects/static/3rdparty/chart-2.9.4.min.js"></script>
-<script type="module" src="pies.js"></script>
-<script type="module" src="bar.js"></script>
-
-<script src="../../projects/static/3rdparty/chartjs-plugin-datalabels.js"></script>
+<!-- <script src="../../projects/static/3rdparty/chartjs-plugin-datalabels.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="../../projects/static/3rdparty/jquery-3.6.0.min.js"></script>
+
 
