@@ -159,6 +159,41 @@
 
       </div>
     </div>
+
+    {{ employees }}
+    {% if request.path == "/statistics/leader/" %}
+    <div class="datatable-wrapper card">
+      <table class="datatable">
+        <colgroup>
+          <col class="datatable__column--name">
+          <col class="datatable__column--matchcount">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="datatable__column--name">
+              {% trans "Name" %}
+            </th>
+            <th class="datatable__column--matchcount">
+              {% trans "Number" %}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for person in employees %}
+          <tr>
+            <td class="datatable__column--name">
+              {{ person.alias_relation__user__first_name }} {{ person.alias_relation__user__last_name }}
+            </td>
+            <td class="datatable__column--matchcount">
+              {{ person.total }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
     {% comment %}
     <!-- Bar chart -->
     <div class="statistic statistic--four">

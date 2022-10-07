@@ -561,8 +561,19 @@ class LeaderStatisticsPageView(StatisticsPageView):
         context = super().get_context_data(**kwargs)
 
         context['most_unhandled_employees'] = self.five_most_unhandled_employees()
+        context['employees'] = self.count_user_matches()
 
         return context
+
+    def count_user_matches(self):
+        counted_unhandled_matches_alias = self.unhandled_matches.values(
+            'alias_relation__user__id').annotate(
+            total=Count('raw_matches')).values(
+            'alias_relation__user__first_name',
+            'alias_relation__user__last_name',
+            'total').order_by('-total')
+
+        return counted_unhandled_matches_alias
 
     def five_most_unhandled_employees(self):
         counted_unhandled_matches_alias = self.unhandled_matches.values(
