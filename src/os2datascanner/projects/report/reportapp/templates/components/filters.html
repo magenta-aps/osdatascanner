@@ -9,6 +9,7 @@
       hx-swap="outerHTML"
       hx-trigger="change"
       hx-include="[id='dropdown_options']"
+      hx-indicator="#report-page-indicator"
 >
 
 <div class="search_field_wrapper">
@@ -135,6 +136,7 @@
           hx-target=".content"
           hx-include="[id='filter_form'], [id='dropdown_options']"
           hx-params="not resolution_status"
+          hx-indicator="#report-page-indicator"
   >
             {% trans "Clear" %}
           </button>
