@@ -53,9 +53,8 @@ function drawBars(newMatchesByMonth, unhandledMatchesByMonth) {
 				data: newMatchesBarChartValues,
 				fill: 0,
 				backgroundColor: "#21759c",
-				borderWidth: 4,
+				hoverBackgroundColor: "#5ca4cd",
 				tension: 0,
-				borderColor: "#21759c",
 			}],
 		},
 		options: {
@@ -95,15 +94,9 @@ function drawBars(newMatchesByMonth, unhandledMatchesByMonth) {
 
 					// Set Text
 					if (tooltipModel.body) {
-						var titleBars = tooltipModel.title || [];
 						var bodyBars = tooltipModel.body.map(getBody);
 
-						var innerHtml = '<thead>';
-
-						titleBars.forEach(function (title) {
-							innerHtml += '<tr><th>' + title + '</th></tr>';
-						});
-						innerHtml += '</thead><tbody>';
+						var innerHtml = '<tbody>';
 
 						bodyBars.forEach(function (body, i) {
 							var colors = tooltipModel.labelColors[i];
@@ -126,7 +119,7 @@ function drawBars(newMatchesByMonth, unhandledMatchesByMonth) {
 					tooltipEl.style.opacity = 1;
 					tooltipEl.style.position = 'absolute';
 					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-					tooltipEl.style.top = position.top + window.pageYOffset + 'px';
+					tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
 					tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
 					tooltipEl.style.fontSize = '1rem';
 					tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
@@ -197,10 +190,9 @@ function drawBars(newMatchesByMonth, unhandledMatchesByMonth) {
 			labels: unhandledMatchesBarChartLabels,
 			datasets: [{
 				data: unhandledMatchesBarChartValues,
-				borderWidth: 4,
 				tension: 0,
-				borderColor: "#21759c",
 				backgroundColor: "#21759c",
+				hoverBackgroundColor: "#5ca4cd",
 			}],
 		},
 		options: {
@@ -240,15 +232,9 @@ function drawBars(newMatchesByMonth, unhandledMatchesByMonth) {
 
 					// Set Text
 					if (tooltipModel.body) {
-						var titleBars = tooltipModel.title || [];
 						var bodyBars = tooltipModel.body.map(getBody);
 
-						var innerHtml = '<thead>';
-
-						titleBars.forEach(function (title) {
-							innerHtml += '<tr><th>' + title + '</th></tr>';
-						});
-						innerHtml += '</thead><tbody>';
+						var innerHtml = '<tbody>';
 
 						bodyBars.forEach(function (body, i) {
 							var colors = tooltipModel.labelColors[i];
