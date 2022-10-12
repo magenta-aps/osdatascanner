@@ -59,7 +59,7 @@ function drawCharts() {
 
   drawDoughnuts(sensitivities, totalHandledMatches, totalMatches, handledPercentage);
   drawPies(sensitivities, sourceTypes, handledMatchesStatus[0]);
-  drawLines(newMatchesByMonth, unhandledMatchesByMonth);
+  drawBars(newMatchesByMonth, unhandledMatchesByMonth);
 }
 
 function setStatDropdownEvent() {

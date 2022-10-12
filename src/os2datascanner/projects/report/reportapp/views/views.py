@@ -582,7 +582,7 @@ class StatisticsPageView(LoginRequiredMixin, TemplateView):
         and then makes a running total"""
         a_year_ago = current_date - timedelta(days=365)
 
-        new_matches_by_month = self.matches.filter(
+        new_matches_by_month = self.unhandled_matches.filter(
             created_timestamp__range=(a_year_ago, current_date)).annotate(
             month=TruncMonth('created_timestamp')).values(
             'month').annotate(
