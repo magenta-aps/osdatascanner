@@ -1,0 +1,46 @@
+dn: ou=Stor by,dc=magenta,dc=test
+objectClass: organizationalUnit
+ou: Stor by
+
+dn: ou=Mindre by,dc=magenta,dc=test
+objectClass: organizationalUnit
+ou: Mindre by
+
+dn: ou=Rigsdagen,ou=Stor by,dc=magenta,dc=test
+objectClass: organizationalUnit
+ou: Rigsdagen
+
+dn: cn=Mikkel Testsen,ou=Stor by,dc=magenta,dc=test
+objectClass: inetOrgPerson
+cn: Mikkel Testsen
+givenName: Mikkel
+sn: Testsen
+mail: mt@test.example
+
+dn: cn=HamishMacTester,ou=Stor by,dc=magenta,dc=test
+objectClass: inetOrgPerson
+cn: Hamish MacTester
+givenName: Hamish
+sn: MacTester
+mail: hm@test.example
+
+dn: cn=HamishMacTester2,ou=Stor by,dc=magenta,dc=test
+objectClass: inetOrgPerson
+cn: Hamish MacTester2
+givenName: Hamish
+sn: MacTester2
+mail: hm2@test.example
+
+dn: cn=HamishMacTester3,ou=Stor by,dc=magenta,dc=test
+objectClass: inetOrgPerson
+cn: Hamish MacTester3
+givenName: Hamish
+sn: MacTester3
+mail: hm3@test.example
+
+dn: cn=HamishMacTester4,ou=Stor by,dc=magenta,dc=test
+objectClass: inetOrgPerson
+cn: Hamish MacTester4
+givenName: Hamish
+sn: MacTester4
+mail: hm4@test.example

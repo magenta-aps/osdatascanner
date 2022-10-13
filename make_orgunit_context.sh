@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Creating objects for leader overview ..."
+echo "Creating Dumbledores Armé ..."
+sudo docker-compose exec admin django-admin shell_plus --quiet-load -c "os2ds=Organization.objects.first(); da,_=OrganizationalUnit.objects.get_or_create(name='Dumbledores Armé', defaults={'organization': os2ds}); hp,_=Account.objects.get_or_create(username='harryp', defaults={'first_name': 'Harry', 'last_name': 'Potter', 'organization': os2ds}); rw,_=Account.objects.get_or_create(username='ronw', defaults={'first_name': 'Ronald', 'last_name': 'Weasley', 'organization': os2ds}); hg,_=Account.objects.get_or_create(username='hermioneg', defaults={'first_name': 'Hermione', 'last_name': 'Granger', 'organization': os2ds}); hp.units.add(da); rw.units.add(da); hg.units.add(da);"
