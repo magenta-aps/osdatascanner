@@ -145,4 +145,5 @@ class AddressRule(SimpleRule):
         return AddressRule(
                 whitelist=frozenset(obj["whitelist"]),
                 blacklist=frozenset(obj["blacklist"]),
-                sensitivity=Sensitivity.make_from_dict(obj))
+                sensitivity=Sensitivity.make_from_dict(obj),
+                name=obj["name"])

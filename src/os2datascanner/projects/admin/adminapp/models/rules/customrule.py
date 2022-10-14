@@ -30,7 +30,10 @@ class CustomRule(Rule):
 
     @property
     def rule(self):
-        return E2Rule.from_json_object(self._rule)
+        return E2Rule.from_json_object(
+            self._rule | {
+                "name": self.name,
+                "sensitivity": self.make_engine2_sensitivity()})
 
     @rule.setter
     def set_rule(self, r: E2Rule):

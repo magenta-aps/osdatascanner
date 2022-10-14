@@ -5,6 +5,7 @@
     {% with frag.matches|between:interval as matches %}
       {% for match in matches %}
         <tr>
+          <td>{{ document_report.raw_matches.matches }}</td>
           <td>{{ match.match }}</td>
           {% if match.context %}
           <td class="match-context">{{ match.context }}</td>

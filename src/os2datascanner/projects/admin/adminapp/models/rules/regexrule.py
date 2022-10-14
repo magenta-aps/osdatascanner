@@ -23,12 +23,14 @@ from .rule import Rule
 
 class RegexRule(Rule):
     """Represents matching rules based on regular expressions."""
+
     def make_engine2_rule(self) -> RegexTwule:
         # Use the original engine's RegexRule abstraction to make the required
         # compound expression
         return RegexTwule(
                 compund_rules(self),
-                sensitivity=self.make_engine2_sensitivity())
+                sensitivity=self.make_engine2_sensitivity(),
+                name=self.name)
 
 
 class RegexPattern(models.Model):

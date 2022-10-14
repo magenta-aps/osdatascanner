@@ -196,4 +196,5 @@ class NameRule(SimpleRule):
         return NameRule(
                 whitelist=frozenset(obj["whitelist"]),
                 blacklist=frozenset(obj["blacklist"]),
-                sensitivity=Sensitivity.make_from_dict(obj))
+                sensitivity=Sensitivity.make_from_dict(obj),
+                name=obj["name"])

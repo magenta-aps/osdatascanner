@@ -1,0 +1,736 @@
+{
+  "handle": {
+    "path": "file_example_XLSX_100.html",
+    "type": "lo-object",
+    "source": {
+      "type": "lo",
+      "handle": {
+        "path": "file_example_XLSX_100.xlsx",
+        "type": "smbc",
+        "source": {
+          "unc": "//samba/e2test",
+          "type": "smbc",
+          "user": null,
+          "domain": null,
+          "password": null,
+          "driveletter": null,
+          "skip_super_hidden": false
+        }
+      }
+    }
+  },
+  "origin": "os2ds_matches",
+  "matched": true,
+  "matches": [
+    {
+      "rule": {
+        "name": null,
+        "type": "conversion",
+        "target": "image-dimensions",
+        "sensitivity": null
+      },
+      "matches": null
+    },
+    {
+      "rule": {
+        "name": null,
+        "type": "name",
+        "blacklist": [],
+        "whitelist": [],
+        "sensitivity": null
+      },
+      "matches": [
+        {
+          "match": "Name",
+          "sensitivity": null
+        },
+        {
+          "match": "Name",
+          "sensitivity": null
+        },
+        {
+          "match": "Age",
+          "sensitivity": null
+        },
+        {
+          "match": "Dulce",
+          "sensitivity": null
+        },
+        {
+          "match": "Mara",
+          "sensitivity": null
+        },
+        {
+          "match": "Philip",
+          "sensitivity": null
+        },
+        {
+          "match": "Gent",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Kathleen",
+          "sensitivity": null
+        },
+        {
+          "match": "Gaston",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Etta",
+          "sensitivity": null
+        },
+        {
+          "match": "Vincenza",
+          "sensitivity": null
+        },
+        {
+          "match": "Franklyn",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Marcel",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Kina",
+          "sensitivity": null
+        },
+        {
+          "match": "Pia",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Benito",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Perrine",
+          "sensitivity": null
+        },
+        {
+          "match": "Loreta",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Teresa",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Belinda",
+          "sensitivity": null
+        },
+        {
+          "match": "Holly",
+          "sensitivity": null
+        },
+        {
+          "match": "Many",
+          "sensitivity": null
+        },
+        {
+          "match": "Libbie",
+          "sensitivity": null
+        },
+        {
+          "match": "Dalby",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Lester",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Marvel",
+          "sensitivity": null
+        },
+        {
+          "match": "Angelyn",
+          "sensitivity": null
+        },
+        {
+          "match": "Vong",
+          "sensitivity": null
+        },
+        {
+          "match": "Francesca",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Garth",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Carla",
+          "sensitivity": null
+        },
+        {
+          "match": "Veta",
+          "sensitivity": null
+        },
+        {
+          "match": "Stasia",
+          "sensitivity": null
+        },
+        {
+          "match": "Becker",
+          "sensitivity": null
+        },
+        {
+          "match": "Jona",
+          "sensitivity": null
+        },
+        {
+          "match": "Judie",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Borger",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Nena",
+          "sensitivity": null
+        },
+        {
+          "match": "Kelsie",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Sau",
+          "sensitivity": null
+        },
+        {
+          "match": "Shanice",
+          "sensitivity": null
+        },
+        {
+          "match": "Chase",
+          "sensitivity": null
+        },
+        {
+          "match": "Karner",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Tommie",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Dorcas",
+          "sensitivity": null
+        },
+        {
+          "match": "Angel",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Martina",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Roma",
+          "sensitivity": null
+        },
+        {
+          "match": "Felisa",
+          "sensitivity": null
+        },
+        {
+          "match": "Cail",
+          "sensitivity": null
+        },
+        {
+          "match": "Abbey",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Rasheeda",
+          "sensitivity": null
+        },
+        {
+          "match": "Dulce",
+          "sensitivity": null
+        },
+        {
+          "match": "Mara",
+          "sensitivity": null
+        },
+        {
+          "match": "Philip",
+          "sensitivity": null
+        },
+        {
+          "match": "Gent",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Kathleen",
+          "sensitivity": null
+        },
+        {
+          "match": "Gaston",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Etta",
+          "sensitivity": null
+        },
+        {
+          "match": "Vincenza",
+          "sensitivity": null
+        },
+        {
+          "match": "Franklyn",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Marcel",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Kina",
+          "sensitivity": null
+        },
+        {
+          "match": "Pia",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Benito",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Perrine",
+          "sensitivity": null
+        },
+        {
+          "match": "Loreta",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Teresa",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Belinda",
+          "sensitivity": null
+        },
+        {
+          "match": "Holly",
+          "sensitivity": null
+        },
+        {
+          "match": "Many",
+          "sensitivity": null
+        },
+        {
+          "match": "Libbie",
+          "sensitivity": null
+        },
+        {
+          "match": "Dalby",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Lester",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Marvel",
+          "sensitivity": null
+        },
+        {
+          "match": "Angelyn",
+          "sensitivity": null
+        },
+        {
+          "match": "Vong",
+          "sensitivity": null
+        },
+        {
+          "match": "Francesca",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Garth",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Carla",
+          "sensitivity": null
+        },
+        {
+          "match": "Veta",
+          "sensitivity": null
+        },
+        {
+          "match": "Stasia",
+          "sensitivity": null
+        },
+        {
+          "match": "Becker",
+          "sensitivity": null
+        },
+        {
+          "match": "Jona",
+          "sensitivity": null
+        },
+        {
+          "match": "Judie",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Borger",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Nena",
+          "sensitivity": null
+        },
+        {
+          "match": "Kelsie",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Sau",
+          "sensitivity": null
+        },
+        {
+          "match": "Shanice",
+          "sensitivity": null
+        },
+        {
+          "match": "Chase",
+          "sensitivity": null
+        },
+        {
+          "match": "Karner",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Tommie",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Dorcas",
+          "sensitivity": null
+        },
+        {
+          "match": "Angel",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "France",
+          "sensitivity": null
+        },
+        {
+          "match": "Martina",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Roma",
+          "sensitivity": null
+        },
+        {
+          "match": "Felisa",
+          "sensitivity": null
+        },
+        {
+          "match": "Cail",
+          "sensitivity": null
+        },
+        {
+          "match": "Abbey",
+          "sensitivity": null
+        },
+        {
+          "match": "Male",
+          "sensitivity": null
+        },
+        {
+          "match": "Rasheeda",
+          "sensitivity": null
+        }
+      ]
+    }
+  ],
+  "scan_spec": {
+    "rule": {
+      "name": null,
+      "type": "and",
+      "components": [
+        {
+          "name": null,
+          "type": "or",
+          "components": [
+            {
+              "name": null,
+              "type": "and",
+              "components": [
+                {
+                  "name": null,
+                  "type": "conversion",
+                  "target": "image-dimensions",
+                  "sensitivity": null
+                },
+                {
+                  "name": null,
+                  "type": "dimensions",
+                  "width": [
+                    32,
+                    16385
+                  ],
+                  "height": [
+                    32,
+                    16385
+                  ],
+                  "minimum": 128,
+                  "sensitivity": null
+                }
+              ],
+              "sensitivity": null
+            },
+            {
+              "name": null,
+              "rule": {
+                "name": null,
+                "type": "conversion",
+                "target": "image-dimensions",
+                "sensitivity": null
+              },
+              "type": "not",
+              "sensitivity": null
+            }
+          ],
+          "sensitivity": null
+        },
+        {
+          "name": null,
+          "type": "name",
+          "blacklist": [],
+          "whitelist": [],
+          "sensitivity": null
+        }
+      ],
+      "sensitivity": null
+    },
+    "source": {
+      "type": "lo",
+      "handle": {
+        "path": "file_example_XLSX_100.xlsx",
+        "type": "smbc",
+        "source": {
+          "unc": "//samba/e2test",
+          "type": "smbc",
+          "user": null,
+          "domain": null,
+          "password": null,
+          "driveletter": null,
+          "skip_super_hidden": false
+        }
+      }
+    },
+    "progress": null,
+    "scan_tag": {
+      "time": "2022-10-13T13:34:27+02:00",
+      "user": "dev",
+      "scanner": {
+        "pk": 3,
+        "name": "Lille Samba navne",
+        "test": false
+      },
+      "destination": "pipeline_collector",
+      "organisation": {
+        "name": "OS2datascanner",
+        "uuid": "5b22e633-9caf-4b2a-8050-8e624eeb4589"
+      }
+    },
+    "filter_rule": null,
+    "configuration": {}
+  }
+}
