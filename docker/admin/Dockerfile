@@ -29,7 +29,7 @@ CMD ["npm", "run", "dev", "--prefix", "static"]
 
 ######################
 
-FROM python:3.9.7 AS application
+FROM python:3.9.7-slim AS application
 
 ARG SUPERCRONIC_VERSION=v0.1.12
 ARG SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e

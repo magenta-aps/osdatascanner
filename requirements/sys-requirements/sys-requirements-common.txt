@@ -4,6 +4,15 @@
 #                                                           #
 #############################################################
 
-# Intentionally left empty
-
+curl
+pkg-config
+build-essential
+git
+libffi-dev
+zlib1g-dev
+libjpeg-turbo-progs
+libjpeg62-turbo-dev
+libxml2-dev
+libxslt-dev
+libmagic1
 
