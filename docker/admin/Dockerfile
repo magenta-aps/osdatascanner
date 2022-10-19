@@ -75,7 +75,7 @@ RUN set -ex \
   && apt-get -y update \
   && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements*.txt) \
   # clean up after apt-get and man-pages
-  && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*" \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_* \
   # install supercronic
   && curl -fsSL "https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/supercronic-linux-amd64" \
      -o /usr/local/bin/supercronic \
@@ -86,6 +86,7 @@ RUN set -ex \
   && install -o os2ds_admin -g os2ds_admin -d /code/static \
   && install -o os2ds_admin -g os2ds_admin -d /code/build \
   && install -o os2ds_admin -g os2ds_admin -d /code/var \
+  # Install python dependencies and clean up build dependencies
   && pip install --no-cache-dir -r python-requirements/requirements-admin.txt \
                                -r python-requirements/requirements-test.txt \
                                -r python-requirements/requirements-lint.txt \

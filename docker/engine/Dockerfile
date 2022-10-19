@@ -59,7 +59,8 @@ RUN set -ex \
   # Install from backport file too.
   && apt-get -y -t bullseye-backports install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/backport-sys-requirements.txt) \
   # clean up after apt-get and man-pages
-  && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*" \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_* \
+  # Install python dependencies and clean up build dependencies
   && pip install --no-cache-dir -r python-requirements/requirements-engine.txt \
                                 -r python-requirements/requirements-test.txt \
                                 -r python-requirements/requirements-lint.txt \
