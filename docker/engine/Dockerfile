@@ -27,11 +27,18 @@ ENV PYTHONUNBUFFERED=1 \
   PYTHONPATH=/code/src/:$PYTHONPATH
 
 # Ensure system user and install system depedencies
-WORKDIR /code/requirements/sys-requirements
+WORKDIR /code/requirements
 COPY requirements/sys-requirements/sys-requirements-common.txt \
      requirements/sys-requirements/sys-requirements-engine.txt \
+     requirements/sys-requirements/sys-requirements-build.txt \
      requirements/sys-requirements/backport-sys-requirements.txt \
-     ./
+     ./sys-requirements/
+
+COPY requirements/python-requirements/requirements-engine.txt \
+     requirements/python-requirements/requirements-test.txt \
+     requirements/python-requirements/requirements-lint.txt \
+     ./python-requirements/
+
 # hadolint ignore=DL3008,SC2046
 RUN set -ex \
   # Add an image specific group and user.
@@ -48,21 +55,16 @@ RUN set -ex \
   deb-src https://deb.debian.org/debian bullseye-backports main contrib non-free" >> /etc/apt/sources.list \
   # Install system dependencies from file.
   && apt-get -y update \
-  && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements*.txt) \
+  && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements*.txt) \
   # Install from backport file too.
-  && apt-get -y -t bullseye-backports install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' backport-sys-requirements.txt) \
+  && apt-get -y -t bullseye-backports install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/backport-sys-requirements.txt) \
   # clean up after apt-get and man-pages
-  && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*"
-
-# Install python requirements
-WORKDIR /code/requirements/python-requirements
-COPY requirements/python-requirements/requirements-engine.txt \
-     requirements/python-requirements/requirements-test.txt \
-     requirements/python-requirements/requirements-lint.txt \
-     ./
-RUN pip install --no-cache-dir -r requirements-engine.txt \
-                               -r requirements-test.txt \
-                               -r requirements-lint.txt
+  && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*" \
+  && pip install --no-cache-dir -r python-requirements/requirements-engine.txt \
+                                -r python-requirements/requirements-test.txt \
+                                -r python-requirements/requirements-lint.txt \
+  && apt-get -y remove $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements-build.txt) \
+  && apt-get -y autoremove
 
 # Copy code
 WORKDIR /code/src/os2datascanner

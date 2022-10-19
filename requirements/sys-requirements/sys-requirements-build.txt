@@ -1,0 +1,9 @@
+#################################################################
+#                                                               #
+#    All build-time requirements shared by all three modules    #
+#                                                               #
+#################################################################
+
+pkg-config
+build-essential
+libffi-dev

@@ -50,11 +50,18 @@ ENV PYTHONUNBUFFERED=1 \
   DJANGO_SETTINGS_MODULE=os2datascanner.projects.report.settings
 
 # Ensure system user and install system depedencies
-WORKDIR /code/requirements/sys-requirements
+WORKDIR /code/requirements
 COPY requirements/sys-requirements/sys-requirements-common.txt \
      requirements/sys-requirements/sys-requirements-django.txt \
      requirements/sys-requirements/sys-requirements-report.txt \
-     ./
+     requirements/sys-requirements/sys-requirements-build.txt \
+     ./sys-requirements/
+
+COPY requirements/python-requirements/requirements-report.txt \
+     requirements/python-requirements/requirements-test.txt \
+     requirements/python-requirements/requirements-lint.txt \
+     ./python-requirements/
+
 # hadolint ignore=DL3008,SC2046,DL4006
 RUN set -ex \
   # Add an application specific group and user.
@@ -67,7 +74,7 @@ RUN set -ex \
   && useradd -u 73040 --no-log-init -r -g os2ds_report os2ds_report \
   # Install system dependencies from file.
   && apt-get -y update \
-  && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements*.txt) \
+  && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements*.txt) \
   # clean up after apt-get and man-pages
   && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*" \
   # install supercronic
@@ -78,17 +85,12 @@ RUN set -ex \
   # create folders for output from django
   && install -o os2ds_report -g os2ds_report -d /code/build \
   && install -o os2ds_report -g os2ds_report -d /code/static \
-  && install -o os2ds_report -g os2ds_report -d /code/var
-
-# Install python requirements
-WORKDIR /code/requirements/python-requirements
-COPY requirements/python-requirements/requirements-report.txt \
-     requirements/python-requirements/requirements-test.txt \
-     requirements/python-requirements/requirements-lint.txt \
-     ./
-RUN pip install --no-cache-dir -r requirements-report.txt \
-                               -r requirements-test.txt \
-                               -r requirements-lint.txt
+  && install -o os2ds_report -g os2ds_report -d /code/var \
+  && pip install --no-cache-dir -r python-requirements/requirements-report.txt \
+                               -r python-requirements/requirements-test.txt \
+                               -r python-requirements/requirements-lint.txt \
+  && apt-get -y remove $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements-build.txt) \
+  && apt-get -y autoremove
 
 WORKDIR /code/docker/
 COPY docker/report/crontab ./crontab

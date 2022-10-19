@@ -27,12 +27,18 @@ ENV PYTHONUNBUFFERED=1 \
   PYTHONPATH=/code/src/:$PYTHONPATH
 
 # Install system depedencies
-WORKDIR /code/requirements/sys-requirements
+WORKDIR /code/requirements
 COPY requirements/sys-requirements/sys-requirements-common.txt \
      requirements/sys-requirements/sys-requirements-engine.txt \
-     ./
+     requirements/sys-requirements/sys-requirements-build.txt \
+     ./sys-requirements/
 
-# hadolint ignore=DL3008,SC2046
+COPY requirements/python-requirements/requirements-api.txt \
+     requirements/python-requirements/requirements-test.txt \
+     requirements/python-requirements/requirements-lint.txt \
+     ./python-requirements/
+
+# hadolint ignore=DL3008,SC2046,DL4006
 RUN set -ex \
   # Add an image specific group and user.
   # Note: this is a system user/group, but have
@@ -44,18 +50,12 @@ RUN set -ex \
   && useradd -u 73050 --no-log-init -r -g os2ds_api os2ds_api \
   # Install system dependencies from file.
   && apt-get -y update \
-  && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements*.txt) \
+  && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements*.txt) \
   # clean up after apt-get and man-pages
-  && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*"
-
-# Install python requirements
-WORKDIR /code/requirements/python-requirements
-COPY requirements/python-requirements/requirements-api.txt \
-     requirements/python-requirements/requirements-test.txt \
-     requirements/python-requirements/requirements-lint.txt \
-     ./
-# hadolint ignore=DL4006
-RUN find requirements*.txt -print0 | xargs -0 -n1 pip install -r
+  && apt-get clean && rm -rf "/var/lib/apt/lists/*" "/tmp/*" "/var/tmp/*" "/usr/share/man/??" "/usr/share/man/??_*" \
+  && find python-requirements/requirements*.txt -print0 | xargs -0 -n1 pip install -r \
+  && apt-get -y remove $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements-build.txt) \
+  && apt-get -y autoremove
 
 WORKDIR /code/docker/
 COPY docker/api/docker-settings.toml ./docker-settings.toml
