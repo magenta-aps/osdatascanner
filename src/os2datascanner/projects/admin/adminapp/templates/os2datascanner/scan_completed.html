@@ -36,7 +36,7 @@
                 <col class="datatable__column--info">
                 <col class="datatable__column--status">
                 {% if user.is_superuser %}
-                <col class="datatable__column--actions">
+                <col class="datatable__column--delete">
                 {% endif %}
               </colgroup>
               <thead>
@@ -80,8 +80,8 @@
                     {% trans "Status" %}
                   </th>
                   {% if user.is_superuser %}
-                  <th class="datatable__column--actions">
-                    {% trans "Actions" %}
+                  <th class="datatable__column--delete">
+                    {% trans "Delete" %}
                   </th>
                   {% endif %}
                 </tr>
@@ -116,7 +116,7 @@
                       <td class="datatable__column--automatic">
                         {{ status.total_objects }} {% trans "objects explored" %}
                       </td>
-                      <td class="datatable__column--actions">
+                      <td class="datatable__column--delete">
                         <span class="completed_icon">
                           {% include "components/svg-icons/check_circle_full.svg" %}
                           <span class="width">

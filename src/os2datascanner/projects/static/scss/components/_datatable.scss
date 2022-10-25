@@ -162,6 +162,7 @@
     }
 
     &--name {
+      min-width: 10rem;
       width: 100%;
       max-width: 15rem;
       word-wrap: break-word;
@@ -218,8 +219,8 @@
     }
 
     &--status {
-      width: 100%;
-      word-wrap: break-word;
+      width: 50%;
+      overflow: hidden;
     }
 
     &--actions {
@@ -254,7 +255,7 @@
     }
 
     &--info {
-      width: 20rem;
+      width: 15rem;
     }
 
     &--shortinfo {
