@@ -250,8 +250,8 @@ msgstr "Ryd"
 msgid "Scan"
 msgstr "Scan"
 
-#: reportapp/templates/components/filters.html:37
-#: reportapp/templates/components/statistics-template.html:19
+#: reportapp/templates/components/filters.html:39
+#: reportapp/templates/components/statistics-template.html:33
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"
 
@@ -399,15 +399,15 @@ msgstr "valgt"
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/hit.html:42
+#: reportapp/templates/components/hit.html:43
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/hit.html:47
+#: reportapp/templates/components/hit.html:48
 msgid "Copy"
 msgstr "Kopiér"
 
-#: reportapp/templates/components/hit.html:51
+#: reportapp/templates/components/hit.html:52
 msgid "Open folder"
 msgstr "Åbn mappe"
 
