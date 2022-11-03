@@ -1,103 +1,82 @@
-import random
-import requests
-import uuid
-import unittest
 import json
+import unittest
+import requests
 from os2datascanner.engine2.rules.cpr import CPRRule
 
 
-class WebScanIntegrationTest(unittest.TestCase):
+class TestIntegrationWebScanner(unittest.TestCase):
+    '''Tests the WebScanner'''
+
+    def setUp(self):
+        self.web_url = "http://nginx"
+        self.token = "thisIsNotASecret"
+        self.api_base_url = "http://api_server:5000"
 
     def test_scan_finds_all_sources(self):
-        """Tests whether a scan finds all matches in a websource."""
-        # create scans
-        scanner_objects = {}
-        amount_of_scans = 1
-        actual_matches = 0
-        expected_matches = 0
+        """Tests whether a scan finds all matches"""
 
-        for _ in range(amount_of_scans):
-            seed = str(uuid.uuid1())
-            matches = random.randrange(1, 500)
-            expected_matches += matches
-            sub_files = random.randrange(1, 20)
-            response = requests.get(
-                    "http://datasynth:5010/websource"
-                    + f"?seed={seed}&sub_files={sub_files}"
-                    + '&matches={"010180-0008":' + str(matches) + '}'
-                    ).json()
-            scan_url = response["reference"]
-            scanner_objects[seed] = {
-                "scan_name": seed, "scan_url": scan_url,
-                "matches": matches, "sub_files": sub_files}
+        # Arrange
+        expected_matches = 3
 
-            headers = {
-                'accept': 'application/jsonl',
-                'Authorization': 'Bearer thisIsNotASecret',
-                'Content-Type': 'application/json',
+        headers = {
+            'accept': 'application/jsonl',
+            'Authorization': f'Bearer {self.token}',
+            'Content-Type': 'application/json',
             }
-            data = '{"url":'f'"{scan_url}"'+'}'
+        data = '{"url":' + f'"{self.web_url}"' + '}'
+        rule = CPRRule()
+        rule.BLACKLIST_WORDS = None
+        rule_as_json = rule.to_json_object()
 
-            response = requests.post(
-                'http://api_server:5000/parse-url/1',
-                headers=headers,
-                data=data)
+        # Act
+        response = requests.post(
+            self.api_base_url + '/parse-url/1',
+            headers=headers,
+            data=data)
 
-            self.assertEqual(response.status_code, 200, response.content)
+        # Assert
+        self.assertEqual(
+            response.status_code,
+            200,
+            response.content)
 
-            source = response.json()["source"]
-            print(f"\nScan url: {source['url']}\n\n")
+        # Arrange
+        source = response.json()["source"]
 
-            rule = CPRRule()
-            rule.BLACKLIST_WORDS = None
-            rule = rule.to_json_object()
-            data = json.dumps({"rule": rule, "source": source})
+        data = json.dumps({
+            "rule": rule_as_json,
+            "source": source})
 
-            response = requests.post('http://api_server:5000/scan/1', headers=headers, data=data)
+        # Act
+        api_response = requests.post(
+            self.api_base_url + '/scan/1',
+            headers=headers,
+            data=data)
 
-            self.assertEqual(response.status_code, 200, response.content)
+        actual_matches = self.count_matches(api_response)
 
-            messages = response.content.decode("utf-8")
-            # we need to parse the incoming data as it is not properly json formatted
-            messages = messages.split('}\n{')
-            source_matches = 0
-            for i in range(len(messages)):
-                msg = messages[i]
-                if i == 0:
-                    msg = msg + "}"
-                elif i == len(messages)-1:
-                    msg = "{" + msg
-                else:
-                    msg = "{" + msg + "}"
-                source_matches += self.parse_msg(msg)
-            actual_matches += source_matches
+        # Assert
+        self.assertEqual(
+            response.status_code,
+            200,
+            response.content)
 
-        self.assertEquals(
+        self.assertEqual(
             actual_matches,
             expected_matches,
-            f"found matches: {actual_matches}, expected: {expected_matches}")
+            f"Expected: {expected_matches} matches, got: {actual_matches}"
+            )
 
-    def parse_msg(self, msg):
-        """ Parses a json message to find path and matches """
-        no_matches = 0
-        message = json.loads(msg)
-        if message['origin'] == "os2ds_matches":
-            no_matches = self.find_matches(message["matches"])
-            source = message['handle']['source']
-            if source['type'] == 'web':
-                source = source['url']
-                path = message['handle']['path']
-            elif source['type'] == 'pdf-page':
-                source = source['handle']['source']['handle']
-                path = source['path']
-                source = source['source']['url']
+    def count_matches(self, response):
+        """Utility for counting the number of matches."""
+        messages = response.content.splitlines()
+        matches_list = filter(
+            lambda m: m != [],
+            (json.loads(msg)["matches"][0]
+             if "matches" in json.loads(msg) else []
+             for msg in messages))
 
-            print(f"found {no_matches} on {source}{path}")
-        return no_matches
-
-    def find_matches(self, list_dict):
-        matches = 0
-        for item in list_dict:
-            if "matches" in item and (match_list := item["matches"]):
-                matches += len(match_list)
-        return matches
+        return sum(
+            len(m["matches"])
+            if m["matches"] is not None else 0
+            for m in matches_list)

@@ -1,11 +1,169 @@
+import json
 import random
-import requests
 import uuid
 import unittest
-import json
+import requests
 from os2datascanner.engine2.rules.cpr import CPRRule
 
 
+class TestIntegrationWebScan(unittest.TestCase):
+    """Integration tests for the web scanner functionality
+    available through the API server."""
+
+    def setUp(self):
+        # Token, headers, API URL and timeout for requests
+        self.token = "thisIsNotASecret"
+        self.api_base_url = "http://api_server:5000"
+        self.headers = {
+            'accept': 'application/jsonl',
+            'Authorization': f'Bearer {self.token}',
+            'Content-Type': 'application/json',
+        }
+        self.max_timeout = 300
+
+        # Rule for use in tests
+        self.rule = CPRRule().to_json_object()
+        self.rule["blacklist"] = ""
+
+        # Base source to use during testing.
+        self.source = {
+            'type': 'web',
+            'url': 'http://nginx',
+            'sitemap': '',
+            'exclude': [],
+            'params': {}}
+
+    def test_web_scan(self):
+        """ A webscan should find all matches in a given source"""
+
+        # Arrange
+        expected_matches = 2
+        data = json.dumps({
+            "rule": self.rule,
+            "source": self.source})
+
+        # Act
+        response = requests.post(
+            self.api_base_url + '/scan/1',
+            headers=self.headers,
+            data=data,
+            timeout=self.max_timeout)
+
+        # Assert
+        actual_matches = self.count_matches(response)
+        self.assertEqual(
+            actual_matches,
+            expected_matches,
+            f"Expected: {expected_matches} matches, got: {actual_matches}")
+
+    def test_web_scan_with_excluded_file(self):
+        """ A webscan with an excluded file, should not scan that file."""
+
+    def test_web_scan_with_last_modified(self):
+        """ A webscan with last modified should find
+        the same matches as one without."""
+
+        # Arrange
+        api_source = self.source
+        api_data = json.dumps({
+            "rule": self.rule,
+            "source": api_source})
+
+        lm_source = self.source
+        lm_source["params"] = {"last_modified": True}
+        lm_data = json.dumps({
+            "rule": self.rule,
+            "source": lm_source})
+
+        # Act
+        api_response = requests.post(
+            self.api_base_url + '/scan/1',
+            headers=self.headers,
+            data=api_data,
+            timeout=self.max_timeout)
+
+        lm_response = requests.post(
+            self.api_base_url + '/scan/1',
+            headers=self.headers,
+            data=lm_data,
+            timeout=self.max_timeout)
+
+        # Assert
+        matches = self.count_matches(api_response)
+        lm_matches = self.count_matches(lm_response)
+
+        self.assertEqual(
+            matches,
+            lm_matches,
+            "Number of matches differ between last-modified and default scan.")
+
+    def test_web_scan_with_last_modified_and_excluded_file(self):
+        """ A webscan with an excluded file and last modified,
+        should not scan the excluded file, but find all other matches."""
+
+    def test_web_scan_with_sitemap(self):
+        """ A webscan should find all matches in a given source"""
+        # Arrange
+        expected_matches = 3
+        source = self.source
+        source["sitemap"] = "http://nginx/sitemap.xml"
+        data = json.dumps({
+            "rule": self.rule,
+            "source": source})
+
+        # Act
+        response = requests.post(
+            self.api_base_url + '/scan/1',
+            headers=self.headers,
+            data=data,
+            timeout=self.max_timeout)
+
+        # Assert
+        actual_matches = self.count_matches(response)
+        self.assertEqual(
+            actual_matches,
+            expected_matches,
+            f"Expected: {expected_matches} matches, got: {actual_matches}")
+
+    def test_web_scan_with_sitemap_and_excluded_file(self):
+        """A webscan with a sitemap and an excluded file,
+        shouldn't scan the excluded file, but should find the rest of the matches."""
+
+    def test_web_scan_with_sitemap_and_last_modified(self):
+        """A webscan with a sitemap and last modified enabled,
+        should produce the same matches as with last modified disabled."""
+
+    def test_web_scan_with_sitemap_with_last_modified_and_excluded_file(self):
+        """ A webscan with an excluded file and last modified and a sitemap,
+        should not scan the excluded file but should find the rest of the matches."""
+
+    def count_matches(self, response):
+        """Utility for counting the number of matches."""
+        return len(list(self.get_matches(response)))
+
+    def get_matches(self, response):
+        """Utility for retrieving a flat list of matches."""
+        lines = response.content.splitlines()
+        filtered = filter(
+            lambda j: j['origin'] == 'os2ds_matches' and j['matched'],
+            (json.loads(line) for line in lines))
+        for message in filtered:
+            source = message['handle']['source']
+            if source['type'] == 'web':
+                source = source['url']
+                path = message['handle']['path']
+            elif source['type'] == 'pdf-page':
+                source = source['handle']['source']['handle']
+                path = source['path']
+                source = source['source']['url']
+            elif source['type'] == 'lo-object':
+                source = source['handle']['source']['handle']
+                path = source['path']
+                source = source['source']['url']
+            yield source + path
+
+
+@unittest.skip("Skip to investigate pipeline")
 class WebScanTest(unittest.TestCase):
     """ Tests the webscans and their results"""
 
