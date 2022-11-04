@@ -243,6 +243,19 @@ msgstr "Søg"
 
 #: reportapp/templates/components/filters.html:27
 #: reportapp/templates/components/filters.html:56
+#: reportapp/templates/components/faq_toc.html:7
+#: reportapp/templates/manual.html:88
+msgid "Why doesn't 'handle' delete my file or email?"
+msgstr "Hvorfor sletter 'Håndtér'-knappen ikke min fil eller e-mail?"
+
+#: reportapp/templates/components/faq_toc.html:13
+#: reportapp/templates/manual.html:92
+msgid "Why can't I open file scan matches?"
+msgstr "Hvorfor kan jeg ikke åbne matches fra filscan?"
+
+#: reportapp/templates/components/filters.html:26
+#: reportapp/templates/components/filters.html:64
+#: reportapp/templates/components/filters.html:104
 msgid "Clear"
 msgstr "Ryd"
 
@@ -251,7 +264,7 @@ msgid "Scan"
 msgstr "Scan"
 
 #: reportapp/templates/components/filters.html:39
-#: reportapp/templates/components/statistics-template.html:33
+#: reportapp/templates/components/statistics-template.html:34
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"
 
@@ -395,19 +408,19 @@ msgstr "af"
 msgid "selected"
 msgstr "valgt"
 
-#: reportapp/templates/components/hit.html:24
+#: reportapp/templates/components/hit.html:25
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/hit.html:43
+#: reportapp/templates/components/hit.html:44
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/hit.html:48
+#: reportapp/templates/components/hit.html:49
 msgid "Copy"
 msgstr "Kopiér"
 
-#: reportapp/templates/components/hit.html:52
+#: reportapp/templates/components/hit.html:53
 msgid "Open folder"
 msgstr "Åbn mappe"
 
