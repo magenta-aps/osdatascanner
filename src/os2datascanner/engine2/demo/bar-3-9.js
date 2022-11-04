@@ -1,15 +1,5 @@
 import jsonData from './magenta_data.json' assert {type: 'json'} // jshint ignore:line
 
-// let colorList = ["rgba(84, 71, 140)", 
-//                 "rgba(44, 105, 154)",
-//                 "rgba(4, 139, 168)",
-//                 "rgba(13, 179, 158)",
-//                 "rgba(22, 219, 147)",
-//                 "rgba(131, 227, 119)",
-//                 "rgba(185, 231, 105)",
-//                 "rgba(239, 234, 90)",
-//                 "rgba(241, 196, 83)"];
-
 drawBars(jsonData);
 
 function getDigitLength(number) {
@@ -22,29 +12,11 @@ function bytesToKB(bytes) {
   return KB;
 }
 
-function bytesToMB(bytes) {
-  if (bytes === 0) {return 0;}
-  let MB = parseInt((bytes / Math.pow(1024, 2)).toFixed(1));
-  return MB;
-}
-
-function bytesToNext(bytes, power) {
-  if (bytes === 0) {
-    var newVal = 0;
-  }
-  else {
-    var newVal = parseInt((bytes / Math.pow(1024, power)).toFixed(1));
-  }
-  return newVal; 
-}
-
-function countOccurences(arr, val){
-  return arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
-}
-
 function binAndCount(array, binVal){
+  // divides array into bins with a range of approx {binVal} % of total range
+  // counts number of instances in each bin
+
   let max = Math.max.apply(Math, array);
-  // console.log(max/20)
   let binSize = Math.round(max*(binVal/100));
   let roundNumber = Math.pow(10, getDigitLength(binSize)-1);
   binSize = Math.round(binSize/roundNumber)*roundNumber;
@@ -61,23 +33,39 @@ function binAndCount(array, binVal){
   return [counts, binSize];
 }
 
-function getData(dataArray, granularity=16){
-  const power = 1;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  console.log(dataArray.map((value) => bytesToNext(value, power)));
-  let size = sizes[power];
-  console.log(size);
+function getData(dataArray, granularity=5){
+  // bins and counts dataArray
+  // begins with a binrange of approx {granularity} % of total range
+  // balances number of vary large and very small bins
+  // balancing values are rather arbitrary - should they be soft-coded???
+  // binsize is passed as it is used to create appropriate labels for tooltips
 
   dataArray.sort(function(a,b) {
     return a-b;
   });
-  let converted = dataArray.map(byte => bytesToKB(byte));
-  let [counts, binSize] = binAndCount(converted, 4);
-  let nLarge = counts.filter((val)=>val>converted.length*0.05).length;
-  // console.log(nLarge)
+
+  const converted = dataArray.map(byte => bytesToKB(byte));
+  var [counts, binSize] = binAndCount(converted, granularity);
+  var nLarge = counts.filter((val)=>val>converted.length*0.05).length;
+  var nSmall = counts.filter((val)=>val<=0).length;
+
+  // If there are too many bins with much data in it, make granularity finer
+  let i=0.5;
+  while (nLarge > 7) {
+    [counts, binSize] = binAndCount(converted, granularity-i);
+    nLarge = counts.filter((value)=>value>converted.length*0.05).length;
+    i+=0.5;
+  }
+
+  // If there are too many bins with zero or one datapoint, make granularity more coarse
+  let j = 0.5;
+  while (nSmall/counts.length > 0.3){
+    [counts, binSize] = binAndCount(converted, granularity+j);
+    nSmall = counts.filter((val)=>val ===0).length;
+    j+=0.5;
+  }
 
   let nBins = counts.length;
-  
   let labels = [];
   for (let i = 0; i<nBins; i++){
     labels.push(binSize*i+(binSize/2));
@@ -92,7 +80,7 @@ function drawBars(jsonData){
     let [data, binSize] = getData(dataset.sizes);
     let title = dataset.type.charAt(0).toUpperCase() + dataset.type.slice(1);
     createBars(data, ctx, title, binSize);
-  })
+  });
 }
 
 function createBars(data, ctx, titleText, binSize){
