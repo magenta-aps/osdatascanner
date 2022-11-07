@@ -159,6 +159,8 @@ Build API:
     - rabbitmq:3.8-alpine
     - name: magentalabs/samba-test:1.1
       alias: samba
+    - name: nginx
+      alias: nginx
   variables:
     SMB_USER: os2
     SMB_PASSWD: 12345_rosebud_password_admin
@@ -212,12 +214,6 @@ Integration Test Admin Application:
   rules:
     - when: never  # until 53346 is fixed 
   services:
-    - rabbitmq:3.8-alpine
-    - postgres:12
-    - name: nginx
-      alias: nginx
-    - name: magentalabs/samba-test:1.1
-      alias: samba
     - name: ${ENGINE_IMAGE}
       alias: worker
       command: [worker]
@@ -228,15 +224,6 @@ Integration Test Admin Application:
       alias: exporter
       command: [exporter]
   variables:
-    SMB_USER: os2
-    SMB_PASSWD: 12345_rosebud_password_admin
-    SMB_SHARE_NAME: general
-    SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
-    SMB_SHARE_BROWSABLE: "no"
-    SMB_SHARE_READONLY: "yes"
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
     COVERAGE_FILE: /tmp/.coverage
     FF_NETWORK_PER_BUILD: "true"
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
@@ -249,7 +236,8 @@ Integration Test Admin Application:
     - bash /code/docker/docker-entrypoint.sh
     # The pipeline collector cannot be created as a service, as the ADMIN_USER_PATH
     # overwrites the ENGINE_USER_PATH and individual services cannot have variables set.
-    - python manage.py pipeline_collector &
+    - python manage.py checkup_collector &
+    - python manage.py status_collector &
     - django-admin test os2datascanner.projects.admin.tests.integration
 
 Integration Test Engine:
@@ -329,6 +317,7 @@ Benchmark Test Engine:
   coverage: '/^TOTAL.+?(\d+\%)$/'
 
 Performance Test:
+  extends: .test-default
   image:
     name: ${ADMIN_IMAGE}
     entrypoint: [""]
@@ -339,14 +328,6 @@ Performance Test:
   rules:
     - when: never # until 53346 is fixed
   services:
-    - name: egnmagenta/os2datasynth:v0.2.5
-      alias: datasynth
-      variables:
-       DATASYNTH_HOST: "datasynth"
-    - rabbitmq:3.8-alpine
-    - postgres:12
-    - name: magentalabs/samba-test:1.1
-      alias: samba
     - name: ${ENGINE_IMAGE}
       alias: worker
       command: [worker]
@@ -357,15 +338,6 @@ Performance Test:
       alias: exporter
       command: [exporter]
   variables:
-    SMB_USER: os2
-    SMB_PASSWD: 12345_rosebud_password_admin
-    SMB_SHARE_NAME: general
-    SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
-    SMB_SHARE_BROWSABLE: "no"
-    SMB_SHARE_READONLY: "yes"
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
     COVERAGE_FILE: /tmp/.coverage
     FF_NETWORK_PER_BUILD: "true"
     DATASYNTH_HOST: "datasynth"
@@ -380,7 +352,8 @@ Performance Test:
 
     # The pipeline collector cannot be created as a service, as the ADMIN_USER_PATH
     # overwrites the ENGINE_USER_PATH and individual services cannot have variables set.
-    - python manage.py pipeline_collector &
+    - python manage.py checkup_collector &
+    - python manage.py status_collector &
     - python manage.py performance_measurement ${CI_PROJECT_DIR}
   artifacts:
     when: always
@@ -417,6 +390,7 @@ Unit Test Report Application:
         path: ${CI_PROJECT_DIR}/report-coverage.xml
 
 Integration Test Report Application:
+  extends: .test-default
   image:
     name: ${REPORT_IMAGE}
     entrypoint: [""]
@@ -428,23 +402,11 @@ Integration Test Report Application:
     - docker
     - network-per-build
   services:
-    - rabbitmq:3.8-alpine
-    - postgres:12
     - name: ${API_IMAGE}
       alias: api_server
     - name: nginx
-    - name: magentalabs/samba-test:1.1
-      alias: samba
+      alias: nginx
   variables:
-    SMB_USER: os2
-    SMB_PASSWD: 12345_rosebud_password_admin
-    SMB_SHARE_NAME: general
-    SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
-    SMB_SHARE_BROWSABLE: "no"
-    SMB_SHARE_READONLY: "yes"
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
     server__token: 'thisIsNotASecret'
     FF_NETWORK_PER_BUILD: "true"
     OS2DS_SERVER_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/api/dev-settings.toml
