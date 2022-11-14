@@ -74,6 +74,17 @@ COPY src/os2datascanner/__init__.py ./
 COPY docker/engine/docker-settings.toml /code/docker/docker-settings.toml
 COPY docker/engine/docker-entrypoint.sh /code/docker/docker-entrypoint.sh
 
+# Download and install pdfcpu
+WORKDIR /tmp
+RUN curl -OL https://github.com/pdfcpu/pdfcpu/releases/download/v0.3.13/pdfcpu_0.3.13_Linux_x86_64.tar.xz \
+    && tar -xvf pdfcpu_0.3.13_Linux_x86_64.tar.xz \
+    && chmod +x pdfcpu_0.3.13_Linux_x86_64/pdfcpu \
+    && chown os2ds_engine:os2ds_engine pdfcpu_0.3.13_Linux_x86_64/pdfcpu \
+    && cp pdfcpu_0.3.13_Linux_x86_64/pdfcpu /usr/bin/ \
+    && mkdir -p /home/os2ds_engine/.config/pdfcpu/fonts/ \
+    && chown -R os2ds_engine /home/os2ds_engine/.config/pdfcpu \
+    && pdfcpu version
+
 # Copy VERSION, LICENCE, README, NEWS to /code
 WORKDIR /code
 COPY LICENSE ./

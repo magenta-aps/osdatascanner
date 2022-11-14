@@ -129,13 +129,13 @@ class PDFPageSource(DerivedSource):
             if not should_skip_images(sm.configuration):
                 run_custom(
                     [
-                            "pdfimages", "-q", "-png", "-j", "-f", page, "-l", page,
-                            path, "{0}/image".format(outputdir)
+                            "pdfcpu", "extract", "-q", "-mode", "image",
+                            path, f"{outputdir}"
                     ],
                     timeout=engine2_settings.subprocess["timeout"],
                     check=True, isolate_tmp=True)
 
-            outputdir = PDFImageFilter().apply(outputdir)
+                PDFImageFilter().apply(outputdir)
 
             yield outputdir
 

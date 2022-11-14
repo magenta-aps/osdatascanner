@@ -23,6 +23,7 @@ class PDFImageFilter:
     small to contain any text in PDF files.
     '''
     dimensions: (int, int) = (8, 8)
+    globs = ["*.png", "*.jp*g"]
 
     def get_hash(self, filename):
         """
@@ -51,9 +52,11 @@ class PDFImageFilter:
         duplicate files using their hash values.
         """
         hashes = {}
-        for filename in Path(folder).glob("*"):
-            hash_val = self.get_hash(filename)
-            hashes.setdefault(hash_val, []).append(filename)
+        for glob in self.globs:
+            for filename in Path(folder).glob(glob):
+                print(f"deduplicate - filename: {filename}")
+                hash_val = self.get_hash(filename)
+                hashes.setdefault(hash_val, []).append(filename)
 
         return hashes
 
@@ -66,8 +69,13 @@ class PDFImageFilter:
             for dup in paths[1:]:
                 dup.unlink()
 
-        for image in Path(tmpdir).glob("*.png"):
-            if self._image_too_small(image):
-                image.unlink()
+        for glob in self.globs:
+            for image in Path(tmpdir).glob(glob):
+                if self._image_too_small(image):
+                    image.unlink()
 
-        return tmpdir
+    def __call__(self, tmpdir):
+        """
+        Overrides the () operator to do the same as the apply function.
+        """
+        self.apply(tmpdir)
