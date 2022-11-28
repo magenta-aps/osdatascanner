@@ -46,50 +46,53 @@ function drawDoughnuts(sensitivities, totalHandledMatches, totalMatches, handled
 	// //
 	// //
 	// function for rounded corners
-	Chart.pluginService.register({
-		afterUpdate: function (chart) {
-			if (chart.config.options.elements.arc.roundedCornersFor !== undefined) {
-				var arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
-				arc.round = {
-					x: (chart.chartArea.left + chart.chartArea.right) / 2,
-					y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
-					radius: (chart.outerRadius + chart.innerRadius) / 2,
-					thickness: (chart.outerRadius - chart.innerRadius) / 2 - 1,
-					backgroundColor: arc._model.backgroundColor
-				};
-			}
-		},
+	// Chart.register({
+	// 	id: 'afterConfig',
+	// 	afterUpdate: function (chart) {
+	// 		console.log(chart.getDatasetMeta(0))
+	// 		if (chart.config.options.elements.arc.roundedCornersFor !== undefined) {
+	// 			var arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
+	// 			arc.round = {
+	// 				x: (chart.chartArea.left + chart.chartArea.right) / 2,
+	// 				y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
+	// 				radius: (chart.outerRadius + chart.innerRadius) / 2,
+	// 				thickness: (chart.outerRadius - chart.innerRadius) / 2 - 1,
+	// 				// backgroundColor: arc._model.backgroundColor
+	// 			};
+	// 		}
+	// 	},
 
-		afterDraw: function (chart) {
-			if (chart.config.options.elements.arc.roundedCornersFor !== undefined) {
-				var ctx = chart.chart.ctx;
-				var arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
-				var startAngle = Math.PI / 2 - arc._view.startAngle;
-				var endAngle = Math.PI / 2 - arc._view.endAngle;
+	// 	afterDraw: function (chart) {
+	// 		if (chart.config.options.elements.arc.roundedCornersFor !== undefined) {
+	// 			var ctx = chart.ctx;
+	// 			var arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
+	// 			var startAngle = Math.PI / 2 - arc._view.startAngle;
+	// 			var endAngle = Math.PI / 2 - arc._view.endAngle;
 
-				ctx.save();
-				ctx.translate(arc.round.x, arc.round.y);
-				ctx.fillStyle = arc.round.backgroundColor;
-				ctx.beginPath();
-				ctx.arc(arc.round.radius * Math.sin(startAngle), arc.round.radius * Math.cos(startAngle), arc.round.thickness, 0, 2 * Math.PI);
-				ctx.arc(arc.round.radius * Math.sin(endAngle), arc.round.radius * Math.cos(endAngle), arc.round.thickness, 0, 2 * Math.PI);
-				ctx.closePath();
-				ctx.fill();
-				ctx.restore();
-			}
-		},
-	});
+	// 			ctx.save();
+	// 			ctx.translate(arc.round.x, arc.round.y);
+	// 			ctx.fillStyle = arc.round.backgroundColor;
+	// 			ctx.beginPath();
+	// 			ctx.arc(arc.round.radius * Math.sin(startAngle), arc.round.radius * Math.cos(startAngle), arc.round.thickness, 0, 2 * Math.PI);
+	// 			ctx.arc(arc.round.radius * Math.sin(endAngle), arc.round.radius * Math.cos(endAngle), arc.round.thickness, 0, 2 * Math.PI);
+	// 			ctx.closePath();
+	// 			ctx.fill();
+	// 			ctx.restore();
+	// 		}
+	// 	},
+	// });
 
 	// http://jsfiddle.net/kdvuxbtj/
 
 	// function for moving label to center of chart
-	Chart.pluginService.register({
+	Chart.register({
+		id: 'beforeConfig',
 		beforeDraw: function (chart) {
 			if (chart.config.type === 'doughnut') {
 				var ctx, centerConfig, fontStyle, txt, weight, color, maxFontSize, sidePadding, sidePaddingCalculated;
 				if (chart.config.options.elements.center) {
 					// Get ctx from string
-					ctx = chart.chart.ctx;
+					ctx = chart.ctx;
 
 					// Get options from the center object in options
 					centerConfig = chart.config.options.elements.center;
