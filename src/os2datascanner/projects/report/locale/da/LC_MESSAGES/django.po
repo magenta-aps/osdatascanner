@@ -244,12 +244,12 @@ msgstr "Søg"
 #: reportapp/templates/components/filters.html:27
 #: reportapp/templates/components/filters.html:56
 #: reportapp/templates/components/faq_toc.html:7
-#: reportapp/templates/manual.html:88
+#: reportapp/templates/manual.html:90
 msgid "Why doesn't 'handle' delete my file or email?"
 msgstr "Hvorfor sletter 'Håndtér'-knappen ikke min fil eller e-mail?"
 
 #: reportapp/templates/components/faq_toc.html:13
-#: reportapp/templates/manual.html:92
+#: reportapp/templates/manual.html:94
 msgid "Why can't I open file scan matches?"
 msgstr "Hvorfor kan jeg ikke åbne matches fra filscan?"
 
