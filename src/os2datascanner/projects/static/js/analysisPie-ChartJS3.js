@@ -8,29 +8,35 @@ function displayAsPercentage(value, ctx) {
   
   
 function displayLabelUnit(index, chartObject) {
-let dataset = chartObject.datasets[0];
-let labelName = chartObject.labels[index];
-if (dataset.name === "nfiles"){
-    return labelName.concat(": ", formatNumber(dataset.data[index]).toString(), " ", gettext("files"));
-}
-else if (dataset.name === "storage"){
-    return `${labelName}: ${bytesToSize(dataset.data[index])}`;
-}
-else {
-    return `${labelName}: ${formatNumber(dataset.data[index])}`;
-}
+    let dataset = chartObject.datasets[0];
+    let labelName = chartObject.labels[index];
+    const val = dataset.data[index];
+    if (dataset.name === "nfiles"){
+        if (val ===1){
+            return labelName.concat(": ", formatNumber(val).toString(), " ", gettext("file"));
+        }
+        else {
+            return labelName.concat(": ", formatNumber(val).toString(), " ", gettext("files"));
+        }
+    }
+    else if (dataset.name === "storage"){
+        return `${labelName}: ${bytesToSize(val)}`;
+    }
+    else {
+        return `${labelName}: ${formatNumber(val)}`;
+    }
 }
 
 function bytesToSize(bytes) {
-const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-if (bytes === 0) {return 'n/a';}
-const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-if (i === 0) {return `${bytes} ${sizes[i]}`;}
-return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) {return 'n/a';}
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    if (i === 0) {return `${bytes} ${sizes[i]}`;}
+    return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 }
 
 function formatNumber(x) {
-return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function createPie(data, htmlElements, colors){ // jshint ignore:line
@@ -45,9 +51,10 @@ function createPie(data, htmlElements, colors){ // jshint ignore:line
             datasets: [{
                 data: data.data,
                 backgroundColor: colors.slice(0, data.labels.length),
+                hoverBackgroundColor: colors.slice(0, data.labels.length),
                 borderColor: colors.slice(0, data.labels.length),
-                borderAlign: "center",
-                name: data.name
+                name: data.name,
+                hoverBorderWidth:0
             }],
         },
         plugins: [
@@ -107,7 +114,7 @@ function createPie(data, htmlElements, colors){ // jshint ignore:line
                 align: "center"
                 },
             tooltip: {
-                backgroundColor: 'white',
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
                 borderWidth: 1,
                 titleAlign: 'center',
                 bodyAlign: 'center',

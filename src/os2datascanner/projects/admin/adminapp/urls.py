@@ -19,7 +19,9 @@ from django.http import HttpResponse
 from django.views.i18n import JavaScriptCatalog
 from django.views.generic.base import TemplateView
 from os2datascanner import __version__, __commit__, __tag__, __branch__
-from os2datascanner.projects.admin.adminapp.views.analysis_views import AnalysisPageView
+from os2datascanner.projects.admin.adminapp.views.analysis_views import (AnalysisPageView,
+                                                                         AnalysisJobRunView,
+                                                                         ResponseAnalysisView)
 
 from os2datascanner.projects.admin import settings
 
@@ -109,6 +111,9 @@ urlpatterns = [
         name="json-api"),
     re_path(r'^api/(?P<path>.*)$', JSONAPIView.as_view(), name="json-api"),
     re_path(r'^analysis/$',  AnalysisPageView.as_view(), name='analysis'),
+    re_path(r'^analysis/run/$', AnalysisJobRunView.as_view(), name='run-analysis-job'),
+    re_path(r'^analysis/run-status/(?P<pk>\d+)/$', ResponseAnalysisView.as_view(),
+            name='response-analysis-view'),
 
     # App URLs
     re_path(r'^status/$', StatusOverview.as_view(), name='status'),
