@@ -75,6 +75,9 @@ class Account(models.Model):
         return self.units.filter(pk__in=self.positions.filter(
             role="manager").select_related("unit").values("unit__pk"))
 
+    def get_managed_units(self):
+        return self.positions.filter(role="manager").select_related("unit")
+
     class Meta:
         abstract = True
         verbose_name = _('account')

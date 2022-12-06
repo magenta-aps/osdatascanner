@@ -243,6 +243,116 @@ msgstr "Søg"
 
 #: reportapp/templates/components/filters.html:27
 #: reportapp/templates/components/filters.html:56
+#: reportapp/templates/components/dpo-statistics-template.html:8
+msgid "Leader statistics"
+msgstr "Lederstatistik"
+
+#: reportapp/templates/components/dpo-statistics-template.html:10
+msgid "DPO statistics"
+msgstr "DPO statistik"
+
+#: reportapp/templates/components/dpo-statistics-template.html:30
+#: reportapp/templates/components/filters.html:39
+msgid "All scannerjobs"
+msgstr "Alle scannerjobs"
+
+#: reportapp/templates/components/dpo-statistics-template.html:52
+msgid "Development overview"
+msgstr "Udviklingsoverblik"
+
+#: reportapp/templates/components/dpo-statistics-template.html:53
+msgid "New results by month"
+msgstr "Antal nye resultater per måned"
+
+#: reportapp/templates/components/dpo-statistics-template.html:54
+msgid "Unhandled results by month"
+msgstr "Antal uhåndterede resultater per måned"
+
+#: reportapp/templates/components/dpo-statistics-template.html:59
+msgid "New results"
+msgstr "Nye resultater"
+
+#: reportapp/templates/components/dpo-statistics-template.html:60
+msgid "Unhandled results"
+msgstr "Uhåndterede resultater"
+
+#: reportapp/templates/components/dpo-statistics-template.html:77
+msgid "Distribution of results"
+msgstr "Fordeling af resultater"
+
+#: reportapp/templates/components/dpo-statistics-template.html:78
+msgid "Results distributed by sensitivities"
+msgstr "Resultater fordelt på følsomheder"
+
+#: reportapp/templates/components/dpo-statistics-template.html:79
+msgid "Results distributed by data sources"
+msgstr "Resultater fordelt på datakilder"
+
+#: reportapp/templates/components/dpo-statistics-template.html:80
+msgid "Results distributed by resolution statuses"
+msgstr "Resultater fordelt på håndteringsstatusser"
+
+#: reportapp/templates/components/dpo-statistics-template.html:85
+#: reportapp/templates/components/dpo-statistics-template.html:125
+#: reportapp/templates/components/filters.html:67
+msgid "Sensitivity"
+msgstr "Følsomhed"
+
+#: reportapp/templates/components/dpo-statistics-template.html:86
+msgid "Data sources"
+msgstr "Datakilder"
+
+#: reportapp/templates/components/dpo-statistics-template.html:88
+msgid "Resolution statuses"
+msgstr "Håndteringsstatusser"
+
+#: reportapp/templates/components/dpo-statistics-template.html:118
+#: reportapp/templates/components/dpo-statistics-template.html:177
+msgid "Handled results"
+msgstr "Håndterede resultater"
+
+#: reportapp/templates/components/dpo-statistics-template.html:119
+msgid "Percentage of handled results distributed by sensitivity"
+msgstr "Procentvis andel af håndterede resultater fordelt på følsomhed"
+
+#: reportapp/templates/components/dpo-statistics-template.html:120
+msgid "The department's percentage of handled results"
+msgstr "Afdelingens procentvise andel af håndterede resultater"
+
+#: reportapp/templates/components/dpo-statistics-template.html:126
+msgid "All results"
+msgstr "Alle resultater"
+
+#: reportapp/templates/components/dpo-statistics-template.html:139
+#: reportapp/templates/components/sensitivity-chart.html:8
+msgid "Critical"
+msgstr "Kritisk"
+
+#: reportapp/templates/components/dpo-statistics-template.html:140
+#: reportapp/templates/components/dpo-statistics-template.html:149
+#: reportapp/templates/components/dpo-statistics-template.html:158
+#: reportapp/templates/components/dpo-statistics-template.html:167
+#: reportapp/templates/components/dpo-statistics-template.html:178
+#: reportapp/templates/components/handle-match.html:91
+#: reportapp/templates/components/pagination.html:11
+msgid "of"
+msgstr "af"
+
+#: reportapp/templates/components/dpo-statistics-template.html:148
+#: reportapp/templates/components/sensitivity-chart.html:12
+msgid "Problem"
+msgstr "Problem"
+
+#: reportapp/templates/components/dpo-statistics-template.html:157
+#: reportapp/templates/components/sensitivity-chart.html:16
+msgid "Warning"
+msgstr "Advarsel"
+
+#: reportapp/templates/components/dpo-statistics-template.html:166
+#: reportapp/templates/components/sensitivity-chart.html:20
+msgid "Notification"
+msgstr "Notifikation"
+
 #: reportapp/templates/components/faq_toc.html:7
 #: reportapp/templates/manual.html:90
 msgid "Why doesn't 'handle' delete my file or email?"
@@ -252,112 +362,6 @@ msgstr "Hvorfor sletter 'Håndtér'-knappen ikke min fil eller e-mail?"
 #: reportapp/templates/manual.html:94
 msgid "Why can't I open file scan matches?"
 msgstr "Hvorfor kan jeg ikke åbne matches fra filscan?"
-
-#: reportapp/templates/components/dpo-statistics-template.html:5
-msgid "DPO statistics"
-msgstr "DPO statistik"
-
-#: reportapp/templates/components/dpo-statistics-template.html:26
-#: reportapp/templates/components/filters.html:39
-msgid "All scannerjobs"
-msgstr "Alle scannerjobs"
-
-#: reportapp/templates/components/dpo-statistics-template.html:47
-msgid "Development overview"
-msgstr "Udviklingsoverblik"
-
-#: reportapp/templates/components/dpo-statistics-template.html:48
-msgid "New results by month"
-msgstr "Antal nye resultater per måned"
-
-#: reportapp/templates/components/dpo-statistics-template.html:49
-msgid "Unhandled results by month"
-msgstr "Antal uhåndterede resultater per måned"
-
-#: reportapp/templates/components/dpo-statistics-template.html:54
-msgid "New results"
-msgstr "Nye resultater"
-
-#: reportapp/templates/components/dpo-statistics-template.html:55
-msgid "Unhandled results"
-msgstr "Uhåndterede resultater"
-
-#: reportapp/templates/components/dpo-statistics-template.html:72
-msgid "Distribution of results"
-msgstr "Fordeling af resultater"
-
-#: reportapp/templates/components/dpo-statistics-template.html:73
-msgid "Results distributed by sensitivities"
-msgstr "Resultater fordelt på følsomheder"
-
-#: reportapp/templates/components/dpo-statistics-template.html:74
-msgid "Results distributed by data sources"
-msgstr "Resultater fordelt på datakilder"
-
-#: reportapp/templates/components/dpo-statistics-template.html:75
-msgid "Results distributed by resolution statuses"
-msgstr "Resultater fordelt på håndteringsstatusser"
-
-#: reportapp/templates/components/dpo-statistics-template.html:80
-#: reportapp/templates/components/dpo-statistics-template.html:120
-#: reportapp/templates/components/filters.html:67
-msgid "Sensitivity"
-msgstr "Følsomhed"
-
-#: reportapp/templates/components/dpo-statistics-template.html:81
-msgid "Data sources"
-msgstr "Datakilder"
-
-#: reportapp/templates/components/dpo-statistics-template.html:83
-msgid "Resolution statuses"
-msgstr "Håndteringsstatusser"
-
-#: reportapp/templates/components/dpo-statistics-template.html:113
-#: reportapp/templates/components/dpo-statistics-template.html:172
-msgid "Handled results"
-msgstr "Håndterede resultater"
-
-#: reportapp/templates/components/dpo-statistics-template.html:114
-msgid "Percentage of handled results distributed by sensitivity"
-msgstr "Procentvis andel af håndterede resultater fordelt på følsomhed"
-
-#: reportapp/templates/components/dpo-statistics-template.html:115
-msgid "The department's percentage of handled results"
-msgstr "Afdelingens procentvise andel af håndterede resultater"
-
-#: reportapp/templates/components/dpo-statistics-template.html:121
-msgid "All results"
-msgstr "Alle resultater"
-
-#: reportapp/templates/components/dpo-statistics-template.html:134
-#: reportapp/templates/components/sensitivity-chart.html:8
-msgid "Critical"
-msgstr "Kritisk"
-
-#: reportapp/templates/components/dpo-statistics-template.html:135
-#: reportapp/templates/components/dpo-statistics-template.html:144
-#: reportapp/templates/components/dpo-statistics-template.html:153
-#: reportapp/templates/components/dpo-statistics-template.html:162
-#: reportapp/templates/components/dpo-statistics-template.html:173
-#: reportapp/templates/components/handle-match.html:87
-#: reportapp/templates/components/pagination.html:11
-msgid "of"
-msgstr "af"
-
-#: reportapp/templates/components/dpo-statistics-template.html:143
-#: reportapp/templates/components/sensitivity-chart.html:12
-msgid "Problem"
-msgstr "Problem"
-
-#: reportapp/templates/components/dpo-statistics-template.html:152
-#: reportapp/templates/components/sensitivity-chart.html:16
-msgid "Warning"
-msgstr "Advarsel"
-
-#: reportapp/templates/components/dpo-statistics-template.html:161
-#: reportapp/templates/components/sensitivity-chart.html:20
-msgid "Notification"
-msgstr "Notifikation"
 
 #: reportapp/templates/components/filters.html:26
 #: reportapp/templates/components/filters.html:64
