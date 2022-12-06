@@ -100,3 +100,33 @@
   font-size: 2rem;
   line-height: 1;
 }
+
+.scanner_dropdown {
+	width: 15rem;
+  padding-bottom: 10px;
+}
+
+.response_analysis {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  font-size: .8rem;
+
+  .analysis-response-text {
+    display: flex;
+    margin-top: -.75rem;
+  }
+
+  .analysis-response-icon  {
+    display: flex;
+    margin: 0 .25rem .75rem 0;
+    font-size: .8rem;
+
+    &--error {
+      color: var(--color-error);
+    }
+    &--success {
+      color: var(--color-ok-dark);
+    }
+  }
+}
