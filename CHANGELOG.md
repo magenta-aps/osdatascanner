@@ -14,7 +14,6 @@
 
   - Instructions for setup can be found in the dev-environment.md file.
 
-
 ### Bugfixes
 
 - "Completed scans" now correctly display charts after the first 1000 scans.
