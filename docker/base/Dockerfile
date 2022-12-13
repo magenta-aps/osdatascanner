@@ -177,7 +177,8 @@ WORKDIR /code/src/os2datascanner/projects/admin
 
 # Make os2ds_admin owner of /code/docker. This is only needed to remove the
 # insecure settings file after `collectstatic`.
-RUN chown -R os2ds_admin:os2ds_admin /code/docker
+RUN chown -R os2ds_admin:os2ds_admin /code/docker \
+  && chown -R os2ds_admin:os2ds_admin /code/var
 
 USER os2ds_admin:os2ds_admin
 
@@ -238,7 +239,8 @@ COPY src/os2datascanner/ ./
 WORKDIR /code/src/os2datascanner/projects/report
 # Make os2ds_report owner of /code/docker. This is only needed to remove the
 # insecure settings file after `collectstatic`.
-RUN chown -R os2ds_report:os2ds_report /code/docker
+RUN chown -R os2ds_report:os2ds_report /code/docker \
+  && chown -R os2ds_report:os2ds_report /code/var
 
 USER os2ds_report:os2ds_report
 
