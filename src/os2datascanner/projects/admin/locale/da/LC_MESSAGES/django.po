@@ -149,6 +149,9 @@ msgstr "Regel"
 msgid "name"
 msgstr "navn"
 
+msgid "Email notification interval"
+msgstr "Mailudsendelsesinterval"
+
 #: adminapp/models/rules/rule.py:53
 msgid "description"
 msgstr "Beskrivelse"

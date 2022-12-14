@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 3.17.5,
+
+"Salt in the Ice Rink"
+
+### Bugfixes
+
+- Fixed missing translation on email notification schedule in admin module.
+
 ## Version 3.17.4, 19th December 2022
 
 "Cinnamon; 'Tis the Seasoning"
