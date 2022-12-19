@@ -18,6 +18,11 @@
   }
 }
 
+.loading {
+  width: 100%;
+  text-align: center;
+}
+
 #circle {
   fill: none;
   stroke: var(--color-primary);

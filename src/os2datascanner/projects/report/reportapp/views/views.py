@@ -286,6 +286,7 @@ class MainPageView(LoginRequiredMixin, ListView):
         htmx_trigger = self.request.headers.get('HX-Trigger-Name')
         if is_htmx:
             if htmx_trigger in [
+                    'content-element',
                     'open-button',
                     'handle-matches-get',
                     'distribute-container',

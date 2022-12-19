@@ -1,19 +1,26 @@
-{%  load i18n %}
+{% load i18n %}
 {% load static %}
 {% include "partials/header.html" %}
 {% include "components/banner.html" %}
-
-    <main class="wrapper">
-
-      <meta name="htmx-config" content='{"historyEnabled": "false", "historyCacheSize": "0"}'>
-      <div class="content" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-
-        {% include "content.html" %}
-
-      </div>
-
-    </main>
-
-    {% include "partials/scripts.html" %}
+<main class="wrapper">
+  <meta name="htmx-config"
+        content='{"historyEnabled": "false", "historyCacheSize": "0"}'/>
+  <div class="content"
+       name="content-element"
+       hx-push-url="true"
+       hx-get="{% url "index" %}"
+       hx-trigger="load"
+       hx-swap="innerHTML"
+       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div class="loading">
+      <svg class="relative page-indicator" id="report-page-indicator" viewbox="0 0 100 100">
+        <circle id="circle" cx="50" cy="50" r="45"></circle>
+      </svg>
+      <p>{% trans "Loading results..." %}</p>
+    </div>
+    
+  </div>
+</main>
+{% include "partials/scripts.html" %}
 </body>
 </html>
