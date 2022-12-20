@@ -7,7 +7,7 @@ def populate_resolution_time(apps, schema_editor):
     the report was created. All reports with a resolution time of exactly
     00:00 on the 2nd december of 2022 are all temporary resolution_times, so
     these are changed as well."""
-    
+
     DocumentReport = apps.get_model("os2datascanner_report", "DocumentReport")
 
     temp_date = timezone.make_aware(timezone.datetime(year=2022, month=12, day=2, hour=0, minute=0))
@@ -26,7 +26,7 @@ def populate_resolution_time(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner_report', '0060_alter_documentreport_resolution_status'),
+        ('os2datascanner_report', '0061_dataprotectionofficer_contact_person'),
     ]
 
     operations = [
