@@ -2,6 +2,7 @@
 Utility functions to support configuration through toml-files.
 """
 
+import traceback
 import logging
 import os
 import sys
@@ -14,13 +15,13 @@ def read_config(config_path):
     try:
         with open(config_path) as f:
             content = f.read()
-    except FileNotFoundError as err:
-        logger.critical("%s: %r", err.strerror, err.filename, exc_info=True)
+    except FileNotFoundError:
+        traceback.print_exc()
         sys.exit(5)
     try:
         return toml.loads(content)
     except toml.TomlDecodeError:
-        logger.critical("Failed to parse TOML", exc_info=True)
+        traceback.print_exc()
         sys.exit(4)
 
 

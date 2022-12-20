@@ -150,13 +150,13 @@ Build API:
   tags:
     - docker
     - network-per-build
-  services:
+  services: &everything-that-actually-needs-to-run-for-this-to-work
     - name: egnmagenta/os2datasynth:v0.2.5
       alias: datasynth
       variables:
         DATASYNTH_HOST: "datasynth"
     - postgres:12
-    - rabbitmq:3.8-alpine
+    - rabbitmq:3.11.1-alpine
     - name: magentalabs/samba-test:1.1
       alias: samba
     - name: nginx
@@ -204,16 +204,15 @@ Unit Test Admin Application:
         path: ${CI_PROJECT_DIR}/admin_unit_tests-junit.xml
 
 Integration Test Admin Application:
+  extends: .test-default
   image:
     name: ${ADMIN_IMAGE}
-    entrypoint: [""]
   tags:
     - docker
     - network-per-build
   stage: test
-  rules:
-    - when: never  # until 53346 is fixed 
   services:
+    - !reference [.test-default, services]
     - name: ${ENGINE_IMAGE}
       alias: worker
       command: [worker]
@@ -226,7 +225,7 @@ Integration Test Admin Application:
   variables:
     COVERAGE_FILE: /tmp/.coverage
     FF_NETWORK_PER_BUILD: "true"
-    OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
+    OS2DS_ADMIN_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/admin/test-settings.toml
   needs:
     - Build Admin Application
     - Build Engine
@@ -238,7 +237,7 @@ Integration Test Admin Application:
     # overwrites the ENGINE_USER_PATH and individual services cannot have variables set.
     - python manage.py checkup_collector &
     - python manage.py status_collector &
-    - django-admin test os2datascanner.projects.admin.tests.integration
+    - pytest tests/integration/
 
 Integration Test Engine:
   extends: .test-default
@@ -305,7 +304,7 @@ Benchmark Test Engine:
     - Build Engine
   services:
     - postgres:12
-    - rabbitmq:3.8-alpine
+    - rabbitmq:3.11.1-alpine
   variables:
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
     POSTGRES_DB: os2datascanner
@@ -393,11 +392,7 @@ Integration Test Report Application:
   extends: .test-default
   image:
     name: ${REPORT_IMAGE}
-    entrypoint: [""]
   stage: test
-  rules:
-    - when: never # until 53346 is fixed
-  allow_failure: true # until 48725 has been fixed
   tags:
     - docker
     - network-per-build
@@ -409,7 +404,7 @@ Integration Test Report Application:
   variables:
     server__token: 'thisIsNotASecret'
     FF_NETWORK_PER_BUILD: "true"
-    OS2DS_SERVER_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/api/dev-settings.toml
+    OS2DS_REPORT_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/report/test-settings.toml
   needs:
     - Build Report Application
     - Build API
@@ -417,7 +412,7 @@ Integration Test Report Application:
     - export OS2DS_REPORT_USER_CONFIG_PATH=${CI_PROJECT_DIR}/dev-environment/report/test-settings.toml
     - cd src/os2datascanner/projects/report
     - bash /code/docker/docker-entrypoint.sh
-    - django-admin test os2datascanner.projects.report.tests.integration
+    - pytest tests/integration/
 
 Run Engine notice scripts:
   stage: test
@@ -449,8 +444,8 @@ Run Engine notice scripts:
     - Unit Test Engine
     - Integration Test Engine
     - Unit Test Report Application
-    # No point in waiting ages for job that is always failing
     - Integration Test Report Application
+    - Integration Test Admin Application
   image: alpine
   variables:
     GIT_STRATEGY: none # We do not need the source code
