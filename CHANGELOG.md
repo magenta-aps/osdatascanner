@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 3.17.5,
+
+"A Solution for Polution"
+
+### Bugfixes
+
+- An issue where some missing fields on document report objects could break the
+  report_event_collector process has been fixed.
+
 ## Version 3.17.4, 19th December 2022
 
 "Cinnamon; 'Tis the Seasoning"
