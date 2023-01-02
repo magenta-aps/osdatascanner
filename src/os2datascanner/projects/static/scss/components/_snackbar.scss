@@ -1,0 +1,35 @@
+.snackbar-ul {
+  position: fixed;
+  bottom: 1rem;
+  left: 4rem;
+  z-index: 10;
+  list-style: none;
+}
+
+.snackbar {
+  opacity: 1;
+  min-width: 300px;
+  min-height: 2rem;
+  width: fit-content;
+  padding: 1rem;
+  margin: 1rem;
+  background-color: var(--color-widget-bg);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius-widget);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  transition: all 1s;
+
+  &.htmx-added {
+    min-height: 0;
+    height: 0px;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+  }
+
+  &.htmx-swapping {
+    opacity: 0;
+  }
+
+}

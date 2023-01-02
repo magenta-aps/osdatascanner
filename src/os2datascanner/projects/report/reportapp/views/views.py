@@ -15,6 +15,7 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 import structlog
+import json
 
 from datetime import timedelta
 from calendar import month_abbr
@@ -317,21 +318,23 @@ class MainPageView(LoginRequiredMixin, ListView):
             elif htmx_trigger == "handle-matches":
                 if Account.objects.filter(user=request.user).exists():
                     request.user.account.update_last_handle()
+                pks = self.request.POST.getlist('table-checkbox')
                 DocumentReport.objects.filter(
-                    pk__in=self.request.POST.getlist('table-checkbox')).update(
+                    pk__in=pks).update(
                     resolution_status=self.request.POST.get(
                         'action', 0), resolution_time=time_now())
             elif htmx_trigger == "handle-match":
                 if Account.objects.filter(user=request.user).exists():
                     request.user.account.update_last_handle()
+                pks = self.request.POST.get('pk')
                 report = self.document_reports.get(
-                    pk=self.request.POST.get('pk'))
+                    pk=pks)
                 report.resolution_status = self.request.POST.get('action', 0)
                 report.save()
 
         # Add a header value to the response before returning to initiate reload of some elements.
         response = HttpResponse()
-        response.headers["HX-Trigger"] = "reload-htmx"
+        response.headers["HX-Trigger"] = json.dumps({"reload-htmx": {"pks": pks}})
 
         return response
 
@@ -347,20 +350,20 @@ class ArchiveView(MainPageView):
         if is_htmx:
             htmx_trigger = self.request.headers.get("HX-Trigger-Name")
             if htmx_trigger == "revert-match":
-                revert_pk = self.request.POST.get("pk")
+                pks = self.request.POST.get("pk")
                 DocumentReport.objects.filter(
-                    pk=revert_pk).update(
+                    pk=pks).update(
                     resolution_status=self.request.POST.get(
                         'action', None))
             elif htmx_trigger == "revert-matches":
-                DocumentReport.objects.filter(pk__in=self.request.POST.getlist(
-                    'table-checkbox')).update(
+                pks = self.request.POST.getlist('table-checkbox')
+                DocumentReport.objects.filter(pk__in=pks).update(
                     resolution_status=self.request.POST.get(
                         'action', None))
 
         # Add a header value to the response before returning to initiate reload of some elements.
         response = HttpResponse()
-        response.headers["HX-Trigger"] = "reload-htmx"
+        response.headers["HX-Trigger"] = json.dumps({"reload-htmx": {"pks": pks}})
 
         return response
 
@@ -753,6 +756,18 @@ class SettingsPageView(TemplateView):
 
 class AboutPageView(TemplateView):
     template_name = 'about.html'
+
+
+class SnackbarView(TemplateView):
+    template_name = 'components/snackbar.html'
+
+    def get(self, request):
+        htmx_trigger = request.headers.get("HX-Trigger-Name")
+        if htmx_trigger == 'snackbar-li':
+            res = HttpResponse()
+            return res
+        else:
+            return super().get(request)
 
 
 # Logic separated to function to allow usability in send_notifications.py

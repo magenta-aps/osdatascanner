@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-21 13:34+0100\n"
+"POT-Creation-Date: 2023-01-02 08:43+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -111,7 +111,7 @@ msgstr "følsomhed"
 msgid "probability"
 msgstr "sandsynlighed"
 
-#: reportapp/models/documentreport.py:136 reportapp/views/views.py:520
+#: reportapp/models/documentreport.py:136 reportapp/views/views.py:527
 msgid "Other"
 msgstr "Andet"
 
@@ -1054,19 +1054,23 @@ msgstr "Bruger siden"
 msgid "%0D%0A%0D%0A--- Do not alter text below this line! ---%0D%0A"
 msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 
-#: reportapp/views/views.py:78
+#: reportapp/views/views.py:80
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/views.py:521
+#: reportapp/views/views.py:336
+msgid "You handled {len(pks) if isinstance(pks, list) else 1} results."
+msgstr "Du har håndteret {len(pks) if isinstance(pks, list) else 1} resultater."
+
+#: reportapp/views/views.py:528
 msgid "Webscan"
 msgstr "Webscan"
 
-#: reportapp/views/views.py:522
+#: reportapp/views/views.py:529
 msgid "Filescan"
 msgstr "Filscan"
 
-#: reportapp/views/views.py:523
+#: reportapp/views/views.py:530
 msgid "Mailscan"
 msgstr "Mailscan"
 

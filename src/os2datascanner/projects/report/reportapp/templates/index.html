@@ -6,6 +6,9 @@
     <main class="wrapper">
 
       <meta name="htmx-config" content='{"historyEnabled": "false", "historyCacheSize": "0"}'>
+
+      <ul class="snackbar-ul" hx-trigger="reload-htmx from:body" hx-get="{% url 'snackbar' %}" hx-swap="beforeend" hx-target="this"></ul>
+      
       <div class="content" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
         {% include "content.html" %}
@@ -15,5 +18,6 @@
     </main>
 
     {% include "partials/scripts.html" %}
+
 </body>
 </html>

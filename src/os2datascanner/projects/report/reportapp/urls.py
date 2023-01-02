@@ -13,7 +13,7 @@ from .views.saml import metadata
 from .views.views import (
     MainPageView, LeaderStatisticsPageView,
     DPOStatisticsPageView, UserStatisticsPageView, ApprovalPageView,
-    StatsPageView, SettingsPageView, AboutPageView, LogoutPageView, ArchiveView)
+    StatsPageView, SettingsPageView, AboutPageView, LogoutPageView, ArchiveView, SnackbarView)
 from .views.user_views import UserView
 from .views.manual_views import ManualMainView
 
@@ -29,6 +29,7 @@ urlpatterns = [
     url('stats',    StatsPageView.as_view(),    name="about"),
     url('settings', SettingsPageView.as_view(), name="settings"),
     url('about',    AboutPageView.as_view(),    name="about"),
+    url('snackbar', SnackbarView.as_view(), name="snackbar"),
     url(r'^health/', lambda r: HttpResponse()),
     url(r'^version/?$', lambda r: HttpResponse(__version__)),
     url(r'^help/$', ManualMainView.as_view(), name="guide")
