@@ -7,7 +7,15 @@
 
       <meta name="htmx-config" content='{"historyEnabled": "false", "historyCacheSize": "0"}'>
 
-      <ul class="snackbar-ul" hx-trigger="reload-htmx from:body" hx-get="{% url 'snackbar' %}" hx-swap="beforeend" hx-target="this"></ul>
+      <ul class="snackbar-ul" 
+          hx-trigger="reload-htmx from:body" 
+          hx-get="{% url 'snackbar' %}" 
+          hx-swap="beforeend" 
+          hx-target="this"
+          hx-include="[id='pks_input'], [id='action_input']">
+      </ul>
+      <input type="hidden" name="pks" id="pks_input" autocomplete="off"/>
+      <input type="hidden" name="action" id="action_input" autocomplete="off"/>
       
       <div class="content" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 

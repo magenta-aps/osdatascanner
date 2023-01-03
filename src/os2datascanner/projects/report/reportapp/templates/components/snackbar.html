@@ -1,4 +1,16 @@
 {%  load i18n %}
-<li name="snackbar-li" class="snackbar" hx-get="{% url 'snackbar' %}" hx-trigger="load delay:4s" hx-swap="outerHTML swap:1s" hx-target="this">
-  {% trans "You did something." %}
+<li name="snackbar-li" 
+    class="snackbar" 
+    hx-get="{% url 'snackbar' %}" 
+    hx-trigger="load delay:4s" 
+    hx-swap="outerHTML swap:1s" 
+    hx-target="this">
+  {% if action == "handle" %}
+    {% trans "You handled" %} {{ pk_num }} {% if pk_num > 1 %}{% trans "results." %}{% else %}{% trans "result." %}{% endif %}
+    <button type="button" name="revert-matches" hx-post="{% url "archive" %}" hx-swap="none" hx-vals='{"table-checkbox": "{{ pks }}"}'>{% trans "Revert" %}
+  {% elif action == "revert" %}
+    {% trans "You changed the resolution status of" %} {{ pk_num }} {% if pk_num > 1 %}{% trans "results." %}{% else %}{% trans "result." %}{% endif %}
+  {% else %}
+    {% trans "You did something." %}
+  {% endif %}
 </li>

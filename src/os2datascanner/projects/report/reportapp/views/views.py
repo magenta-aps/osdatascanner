@@ -334,7 +334,8 @@ class MainPageView(LoginRequiredMixin, ListView):
 
         # Add a header value to the response before returning to initiate reload of some elements.
         response = HttpResponse()
-        response.headers["HX-Trigger"] = json.dumps({"reload-htmx": {"pks": pks}})
+        response.headers["HX-Trigger"] = json.dumps(
+            {"reload-htmx": {"pks": pks, "action": "handle"}})
 
         return response
 
@@ -363,7 +364,8 @@ class ArchiveView(MainPageView):
 
         # Add a header value to the response before returning to initiate reload of some elements.
         response = HttpResponse()
-        response.headers["HX-Trigger"] = json.dumps({"reload-htmx": {"pks": pks}})
+        response.headers["HX-Trigger"] = json.dumps(
+            {"reload-htmx": {"pks": pks, "action": "revert"}})
 
         return response
 
@@ -760,6 +762,15 @@ class AboutPageView(TemplateView):
 
 class SnackbarView(TemplateView):
     template_name = 'components/snackbar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pks = self.request.GET.get("pks", "").split(",")
+        print(pks)
+        context["pk_num"] = len(pks)
+        context["pks"] = pks
+        context["action"] = self.request.GET.get("action", None)
+        return context
 
     def get(self, request):
         htmx_trigger = request.headers.get("HX-Trigger-Name")
