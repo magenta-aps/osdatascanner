@@ -230,7 +230,7 @@ services:
     image: magentaaps/os2datascanner-engine:dev
     build:
       context: .
-      dockerfile: docker/base/Dockerfile
+      dockerfile: docker/engine/Dockerfile
       target: engine
     env_file:
       - ./dev-environment/engine/dev-settings.env
@@ -246,7 +246,7 @@ services:
     image: magentaaps/os2datascanner-engine:dev
     build:
       context: .
-      dockerfile: docker/base/Dockerfile
+      dockerfile: docker/engine/Dockerfile
       target: engine
     command: worker
     init: true
@@ -264,7 +264,7 @@ services:
     image: magentaaps/os2datascanner-engine:dev
     build:
       context: .
-      dockerfile: docker/base/Dockerfile
+      dockerfile: docker/engine/Dockerfile
       target: engine
     command: exporter
     env_file:
@@ -518,7 +518,7 @@ x-disabled:
     image: magentaaps/os2datascanner-engine:dev
     build:
       context: .
-      dockerfile: docker/base/Dockerfile
+      dockerfile: docker/engine/Dockerfile
       target: engine
     command: processor --enable-metrics
     init: true
@@ -532,7 +532,7 @@ x-disabled:
     image: magentaaps/os2datascanner-engine:dev
     build:
       context: .
-      dockerfile: docker/base/Dockerfile
+      dockerfile: docker/engine/Dockerfile
       target: engine
     command: matcher --enable-metrics
     init: true
@@ -547,7 +547,7 @@ x-disabled:
     image: magentaaps/os2datascanner-engine:dev
     build:
       context: .
-      dockerfile: docker/base/Dockerfile
+      dockerfile: docker/engine/Dockerfile
       target: engine
     command: tagger --enable-metrics
     init: true
