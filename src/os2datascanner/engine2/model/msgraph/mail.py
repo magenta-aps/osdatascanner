@@ -139,7 +139,7 @@ class MSGraphMailAccountSource(DerivedSource):
 
             # Exclude deleted post by issuing a 'not equal to' (ne) filter query
             result = sm.open(self).get(
-                f"{query}&$filter=parentFolderId ne '{del_post_folder_id}'")
+                f"{query}&$filter=parentFolderId ne {del_post_folder_id!r}")
 
         yield from (self._wrap(msg, builder) for msg in result["value"])
         # We want to get all emails for given account
@@ -229,11 +229,11 @@ class MSGraphMailMessageHandle(Handle):
 
     @property
     def presentation_name(self):
-        return f"\"{self._mail_subject}\""
+        return f"{self._mail_subject!r}"
 
     @property
     def presentation_place(self):
-        return f"\"{self._folder}\" of {str(self.source.handle)}" \
+        return f"{self._folder!r} of {str(self.source.handle)}" \
             if self._folder else f"{str(self.source.handle)}"
 
     @property

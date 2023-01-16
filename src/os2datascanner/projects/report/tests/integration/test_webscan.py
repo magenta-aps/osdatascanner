@@ -308,7 +308,7 @@ class WebScanTest(unittest.TestCase):
             'Authorization': 'Bearer thisIsNotASecret',
             'Content-Type': 'application/json',
         }
-        data = '{"url":'f'"{scan["scan_url"]}"'+'}'
+        data = '{"url":'f'{scan["scan_url"]!r}'+'}'
         response = requests.post(
                 'http://api_server:5000/parse-url/1',
                 headers=headers,

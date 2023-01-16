@@ -250,7 +250,7 @@ class EWSMailHandle(Handle):
 
     @property
     def presentation_name(self):
-        return f"\"{self._mail_subject}\""
+        return f"{self._mail_subject!r}"
 
     @property
     def presentation_place(self):

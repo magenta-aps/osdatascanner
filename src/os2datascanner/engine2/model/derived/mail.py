@@ -96,7 +96,7 @@ class MailPartHandle(Handle):
         container = self.source.handle.presentation_name
         if (name := self._path_name):
             # This is a named attachment
-            return (f"attachment \"{decode_encoded_words(name)}\""
+            return (f"attachment {decode_encoded_words(name)!r}"
                     f" in {container}")
         else:
             # This is a message body. Use its subject

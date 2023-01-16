@@ -69,7 +69,7 @@ def create_usererrorlog(message: messages.ProblemMessage):
 
     if scan_status:
         logger.info(
-            f"Logging the error: '{error_message}' from scanner {scan_status.scanner.name}.")
+            f"Logging the error: {error_message!r} from scanner {scan_status.scanner.name}.")
         UserErrorLog.objects.create(
             scan_status=scan_status,
             error_message=error_message,
