@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 from ..core.models.client import Client
-# from ..core.models.administrator import Administrator
+from ..core.models.administrator import Administrator
 from ..organizations.models import Organization
 from ..adminapp.models.rules.rule import Rule
 from ..adminapp.models.scannerjobs.filescanner import FileScanner
@@ -42,7 +42,30 @@ class FileScannerListViewTest(TestCase):
 
         response = self.client.get(url)
 
-        print(self.filescanner1)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.filescanner1, response.context.get("scanner_list"))
+        self.assertIn(self.filescanner2, response.context.get("scanner_list"))
 
-        self.assertIn(self.filescanner1, response.get("object_list"))
-        self.assertIn(self.filescanner2, response.get("object_list"))
+    def test_administrator_list(self):
+        """An administrator should be able to see the filescanners of the
+        client they are administrators for."""
+        Administrator.objects.create(user=self.user, client=self.client1)
+
+        url = reverse_lazy("filescanners")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.filescanner1, response.context.get("scanner_list"))
+        self.assertNotIn(self.filescanner2, response.context.get("scanner_list"))
+
+    def test_regular_user_list(self):
+        """An unprivileged user should not be able to see any scanners."""
+
+        url = reverse_lazy("filescanners")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(self.filescanner1, response.context.get("scanner_list"))
+        self.assertNotIn(self.filescanner2, response.context.get("scanner_list"))
