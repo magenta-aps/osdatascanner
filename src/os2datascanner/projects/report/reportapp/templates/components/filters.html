@@ -127,43 +127,37 @@
 
 
   {% if request.path == "/archive" %}
-  <div class="match_filtering_wrapper">
+    <div class="match_filtering_wrapper">
       <div>
-          <button type="button" class="match_filtering_clear_button" name="clear_resolution_status"
-          hx-trigger="click"
-          hx-get="{% if request.path == "/" %}{% url "index" %}{% elif request.path == "/archive" %}{% url "archive" %}{% endif %}" 
-          hx-swap="innerHTML"
-          hx-target=".content"
-          hx-include="[id='filter_form'], [id='dropdown_options']"
-          hx-params="not resolution_status"
-          hx-indicator="#report-page-indicator"
-  >
-            {% trans "Clear" %}
-          </button>
-          <label for="resolution_status" class="match_filtering_label">
-            {% trans "Resolution Status" %}
-          </label>
+        <button type="button"
+                class="match_filtering_clear_button"
+                name="clear_resolution_status"
+                hx-trigger="click"
+                hx-get="{% if request.path == "/" %}{% url "index" %}{% elif request.path == "/archive" %}{% url "archive" %}{% endif %}"
+                hx-swap="innerHTML"
+                hx-target=".content"
+                hx-include="[id='filter_form'], [id='dropdown_options']"
+                hx-params="not resolution_status"
+                hx-indicator="#report-page-indicator">
+          {% trans "Clear" %}
+        </button>
+        <label for="resolution_status" class="match_filtering_label">{% trans "Resolution Status" %}</label>
       </div>
       <div class="match_filtering dropdown">
-          <select name="resolution_status" id="resolution_status" autocomplete="off"
-          >
-            <option value="all"
-                    {% if resolution_status|last == "all" %}
-                        selected="selected"
-                    {% endif %} >
-              {% trans "All resolution statuses" %}
+        <select name="resolution_status" id="resolution_status" autocomplete="off">
+          <option value="all"
+                  {% if resolution_status|last == "all" %} selected="selected"{% endif %}>
+            {% trans "All resolution statuses" %}
+          </option>
+          {% for method in resolution_status|first %}
+            <option value="{{ method.resolution_status|stringformat:"i" }}"
+                    {% if resolution_status|last == method.resolution_status|stringformat:"i" %} selected="selected" {% endif %}>
+              {{ method.resolution_label }} ({{ method.total }})
             </option>
-              {% for method in resolution_status|first %}
-                  <option value="{{ method.resolution_status|stringformat:"i" }}"
-                        {% if resolution_status|last == method.resolution_status|stringformat:"i" %}
-                            selected="selected"
-                        {% endif %} >
-                        {{ method.resolution_label }} ({{ method.total }})
-                  </option>
-              {% endfor %}
-          </select>
+          {% endfor %}
+        </select>
       </div>
-  </div>
+    </div>
   {% endif %}
 
 
