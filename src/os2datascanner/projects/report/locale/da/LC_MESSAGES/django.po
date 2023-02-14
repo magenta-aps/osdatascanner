@@ -249,7 +249,7 @@ msgstr "Lederstatistik"
 
 #: reportapp/templates/components/dpo-statistics-template.html:10
 msgid "DPO statistics"
-msgstr "DPO statistik"
+msgstr "DPO-statistik"
 
 #: reportapp/templates/components/dpo-statistics-template.html:27
 #: reportapp/templates/components/filters.html:39
