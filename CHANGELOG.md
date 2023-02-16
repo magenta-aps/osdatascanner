@@ -66,6 +66,8 @@
 
   - Units are now sorted alphabetically.
 
+  - Users are able to see folder struture and owner for Msgraph-file scans
+
 ### General improvements
 
 - The documentation for the scanner engine has been updated.
