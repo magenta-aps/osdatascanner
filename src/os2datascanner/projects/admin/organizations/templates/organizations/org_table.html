@@ -25,15 +25,15 @@
   <div class="datatable-wrapper card xl">
     <table class="datatable">
       <colgroup>
-        <col class="datatable__column--name">
-        <col class="datatable__column--info">
-        <col class="datatable__column--info">
+        <col class="datatable__column--name"/>
+        <col class="datatable__column--info"/>
+        <col class="datatable__column--info"/>
         {% with client.enabled_features as feature %}
           {% if FEATURES.IMPORT_SERVICES in feature or FEATURES.IMPORT_SERVICES_MS_GRAPH in feature or FEATURES.IMPORT_SERVICES_OS2MO in feature %}
-            <col class="datatable__column--btn">
+            <col class="datatable__column--btn"/>
           {% endif %}
           {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in feature %}
-            <col class="datatable__column--delete">
+            <col class="datatable__column--actions"/>
           {% endif %}
         {% endwith %}
       </colgroup>
@@ -275,10 +275,9 @@
               <td class="datatable__column--actions">
                 {% if FEATURES.ORG_STRUCTURE in client.enabled_features %}
                   <a href="{% url "orgunit-list" organization.slug %}"
-                     class="button button--small button--grey">
-                    <svg class="icon">
-                      <use xlink:href="/static/svg/symbol-defs.svg#icon-info"></use>
-                    </svg>
+                     class="button button--small button--grey"
+                     title="{% trans "View organizational units." %}">
+                    {% include "../components/svg-icons/org.svg" %}
                   </a>
                 {% endif %}
                 {% if request.user.is_superuser %}
@@ -294,8 +293,7 @@
                     </a>
                   {% else %}
                     <form action="{% url 'delete-organization' slug=organization.slug %}"
-                          method="post"
-                          style="display: inline-block">
+                          method="post">
                       {% csrf_token %}
                       {{ form.as_p }}
                       <button type="submit"

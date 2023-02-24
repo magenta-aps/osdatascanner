@@ -290,6 +290,10 @@
           flex: 0 1 auto; // be explicit for IE11s sake
         }
       }
+
+      form {
+        display: inline-block;
+      }
     }
 
     &--leader-actions {
