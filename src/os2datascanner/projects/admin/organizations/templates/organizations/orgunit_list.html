@@ -13,7 +13,7 @@
 
     {% include "partials/breadcrumb.html" with page="orgunit_views" %}
 
-    {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features and orgunit_list.exists %}
+    {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
       <h1>{% trans "organizational hierarchy for"|capfirst %} {{ organization }}</h1>
       <form name="orgunit_filters"
             id="orgunit_filters"
@@ -36,30 +36,52 @@
           <label for="show_empty">{% trans "Show empty units" %}</label>
         </div>
       </form>
-      <ul class="root">
-        {% for node in orgunit_list|unique_roots %}
-          {% include "organizations/orgunit_element.html" with node=node.get_root %}
-        {% endfor %}
-      </ul>
-      <div class="pagination_options">
-        <span class="step-links">
-          {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; {% trans "First" %}</a>
-            <a href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
-          {% endif %}
+      {% if orgunit_list.exists %}
+        <div class="datatable-wrapper card root">
+          <table class="datatable">
+            <colgroup>
+              <col class="datatable__column--name"/>
+              <col class="datatable__column--accounts"/>
+              <col class="datatable__column--managers"/>
+            </colgroup>
+            <thead>
+              <tr class="table-topbar">
+                <th class="datatable__column--name">{% trans "Organizational unit" %}</th>
+                <th class="datatable__column--accounts">{% trans "Associations" %}</th>
+                <th class="datatable__column--managers">{% trans "Managers" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for node in orgunit_list|unique_roots %}
+                {% include "organizations/orgunit_element.html" with node=node.get_root %}
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+
+        {% comment %} <div class="pagination_options">
+          <span class="step-links">
+            {% if page_obj.has_previous %}
+              <a href="?page=1">&laquo; {% trans "First" %}</a>
+              <a href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
+            {% endif %}
  
-          <span class="current">
-            {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}.
+            <span class="current">
+              {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}.
+            </span>
+ 
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a>
+            {% endif %}
           </span>
- 
-          {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a>
-          {% endif %}
-        </span>
-      </div>
+        </div> {% endcomment %}
+      {% else %}
+        <div class="root">{% trans "No organizational units." %}</div>
+      {% endif %}
     {% else %}
-      <div class="root">{% trans "No organizational units." %}</div>
+      <div class="root">{% trans "Organizational structure is not available." %}</div>
     {% endif %}
   </div>
 {% endblock %}
