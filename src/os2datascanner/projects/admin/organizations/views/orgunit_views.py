@@ -1,17 +1,32 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
+from django.utils.translation import ugettext_lazy as _
 
 from ...adminapp.views.views import RestrictedListView
 from ..models import OrganizationalUnit, Organization, Account, Position
 from ...core.models import Feature, Administrator
 
 
+class EmptyPagePaginator(Paginator):
+    def validate_number(self, number):
+        try:
+            return super(EmptyPagePaginator, self).validate_number(number)
+        except EmptyPage:
+            if number > 1:
+                return self.num_pages
+            else:
+                raise Http404(_('The page does not exist'))
+
+
 class OrganizationalUnitListView(RestrictedListView):
     model = OrganizationalUnit
     context_object_name = 'orgunit_list'
     template_name = 'organizations/orgunit_list.html'
+    paginator = EmptyPagePaginator
     paginate_by = 10
+    paginate_by_options = [10, 20, 50, 100]
 
     # Filter queryset based on organization:
     def get_queryset(self):
@@ -51,6 +66,8 @@ class OrganizationalUnitListView(RestrictedListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
+        context['paginate_by_options'] = self.paginate_by_options
         context['organization'] = self.kwargs['org']
         context['accounts'] = Account.objects.filter(organization=self.kwargs['org'])
         context['FEATURES'] = Feature.__members__
@@ -58,6 +75,11 @@ class OrganizationalUnitListView(RestrictedListView):
             unit.uuid for unit in self.object_list] if self.request.GET.get(
             "search_field", None) else []
         return context
+
+    def get_paginate_by(self, queryset):
+        # Overrides get_paginate_by to allow changing it in the template
+        # as url param paginate_by=xx
+        return self.request.GET.get('paginate_by', self.paginate_by)
 
     def post(self, request, *args, **kwargs):
 

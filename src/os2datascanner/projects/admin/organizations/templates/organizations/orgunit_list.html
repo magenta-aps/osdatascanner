@@ -7,23 +7,24 @@
 {% endblock %}
 
 {% block content %}
-  <div class="orgunit-list content-header"
-       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-       hx-push-url='true'>
+  <div class="orgunit-list content-header">
+
+    {{ page_obj.number }}
 
     {% include "partials/breadcrumb.html" with page="orgunit_views" %}
 
     {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
       <h1>{% trans "organizational hierarchy for"|capfirst %} {{ organization }}</h1>
       <form name="orgunit_filters"
-            id="orgunit_filters"
+            id="filter_form"
             class="orgunit_filtering_wrapper"
             onsubmit="return false"
             hx-get="{% url "orgunit-list" organization.slug %}"
             hx-trigger="change, keyup delay:200ms from:#search_field"
             hx-swap="outerHTML"
             hx-select=".root"
-            hx-target=".root">
+            hx-target=".root"
+            hx-include="[id='dropdown_options'], [id='filter_form']">
         <div class="orgunit_input_wrapper search_field_wrapper">
           <input type="search"
                  name="search_field"
@@ -32,35 +33,41 @@
                  value="{{ request.GET.search_field }}"/>
         </div>
         <div class="orgunit_input_wrapper">
-          <input type="checkbox" name="show_empty" id="show_empty" value="on"/>
+          <input type="checkbox"
+                 name="show_empty"
+                 id="show_empty"
+                 value="on"
+                 {% if request.GET.show_empty == "on" %}checked{% endif %}/>
           <label for="show_empty">{% trans "Show empty units" %}</label>
         </div>
       </form>
-      {% if orgunit_list.exists %}
-        <div class="datatable-wrapper card root">
-          <table class="datatable">
-            <colgroup>
-              <col class="datatable__column--name"/>
-              <col class="datatable__column--accounts"/>
-              <col class="datatable__column--managers"/>
-            </colgroup>
-            <thead>
-              <tr class="table-topbar">
-                <th class="datatable__column--name">{% trans "Organizational unit" %}</th>
-                <th class="datatable__column--accounts">{% trans "Associations" %}</th>
-                <th class="datatable__column--managers">{% trans "Managers" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for node in orgunit_list|unique_roots %}
-                {% include "organizations/orgunit_element.html" with node=node.get_root %}
-              {% endfor %}
-            </tbody>
-          </table>
+    </div>
+    {% if orgunit_list.exists %}
+      <div class="datatable-wrapper card root">
+        <table class="datatable">
+          <colgroup>
+            <col class="datatable__column--name"/>
+            <col class="datatable__column--accounts"/>
+            <col class="datatable__column--managers"/>
+          </colgroup>
+          <thead>
+            <tr class="table-topbar">
+              <th class="datatable__column--name">{% trans "Organizational unit" %}</th>
+              <th class="datatable__column--accounts">{% trans "Associations" %}</th>
+              <th class="datatable__column--managers">{% trans "Managers" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for node in orgunit_list|unique_roots %}
+              {% include "organizations/orgunit_element.html" with node=node.get_root %}
+            {% endfor %}
+          </tbody>
+          {% include "components/pagination.html" %}
+        </table>
 
-        </div>
+      </div>
 
-        {% comment %} <div class="pagination_options">
+      {% comment %} <div class="pagination_options">
           <span class="step-links">
             {% if page_obj.has_previous %}
               <a href="?page=1">&laquo; {% trans "First" %}</a>
@@ -76,12 +83,11 @@
               <a href="?page={{ page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a>
             {% endif %}
           </span>
-        </div> {% endcomment %}
-      {% else %}
-        <div class="root">{% trans "No organizational units." %}</div>
-      {% endif %}
+      </div> {% endcomment %}
     {% else %}
-      <div class="root">{% trans "Organizational structure is not available." %}</div>
+      <div class="root">{% trans "No organizational units." %}</div>
     {% endif %}
-  </div>
+  {% else %}
+    <div class="root">{% trans "Organizational structure is not available." %}</div>
+  {% endif %}
 {% endblock %}

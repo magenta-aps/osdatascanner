@@ -2,7 +2,6 @@
 {% load pagination_tags %}
 {% load l10n %}
 
-
 <tbody class="pagination">
   <tr>
     <td colspan="{% if request.path == "/" %}6{% elif request.path == "/archive" %}7{% endif %}">
@@ -111,7 +110,7 @@
                    min="1"
                    max="{{ paginator.num_pages|unlocalize }}"
                    onkeyup="imposeMinMax"
-                   this>
+                   this/>
             <button class="button button--submit"
                     type="button"
                     id="form-button"

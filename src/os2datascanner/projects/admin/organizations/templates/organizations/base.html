@@ -26,7 +26,7 @@
     {% include 'partials/header.html' %}
   {% endblock %}
   <meta name="htmx-config"
-        content='{"historyEnabled": "false", "historyCacheSize": "0"}'>
+        content='{"historyEnabled": "false", "historyCacheSize": "0"}'/>
   <main class="wrapper">
     <!-- override with empty block to remove sidebar navigation -->
     {% block sidenav %}
@@ -36,7 +36,9 @@
       </section>
     {% endblock %}
 
-    <div class="content">
+    <div class="content"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+         hx-push-url='true'>
       {% block content %}{% endblock %}
     </div>
   </main>
