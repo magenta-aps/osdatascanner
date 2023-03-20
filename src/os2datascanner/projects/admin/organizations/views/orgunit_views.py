@@ -24,7 +24,7 @@ class OrganizationalUnitListView(RestrictedListView):
     model = OrganizationalUnit
     context_object_name = 'orgunit_list'
     template_name = 'organizations/orgunit_list.html'
-    paginator = EmptyPagePaginator
+    paginator_class = EmptyPagePaginator
     paginate_by = 10
     paginate_by_options = [10, 20, 50, 100]
 
