@@ -9,8 +9,6 @@
 {% block content %}
   <div class="orgunit-list content-header">
 
-    {{ page_obj.number }}
-
     {% include "partials/breadcrumb.html" with page="orgunit_views" %}
 
     {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
@@ -44,7 +42,7 @@
     </div>
     {% if orgunit_list.exists %}
       <div class="datatable-wrapper card root">
-        <table class="datatable">
+        <table class="orgunit datatable">
           <colgroup>
             <col class="datatable__column--name"/>
             <col class="datatable__column--accounts"/>

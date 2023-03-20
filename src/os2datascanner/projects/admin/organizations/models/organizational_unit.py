@@ -41,6 +41,12 @@ class OrganizationalUnit(Core_OrganizationalUnit, Broadcasted, Imported):
         else:
             return self.parent.get_root()
 
+    def get_depth(self, curr_depth=1):
+        if self.parent is None:
+            return curr_depth
+        else:
+            return self.parent.get_depth(curr_depth=curr_depth+1)
+
 
 OrganizationalUnit.factory = ModelFactory(OrganizationalUnit)
 
