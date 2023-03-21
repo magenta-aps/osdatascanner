@@ -15,6 +15,7 @@
       hx-target=".content"
       hx-select=".content"
       hx-swap="outerHTML"
+      hx-include="[id='dropdown_options'],[id='filter_form']"
       hx-get="{{ request.path }}">
 
   <input type="hidden" name="page" id="page" value={{ page_obj.number }} />

@@ -62,29 +62,33 @@
           </tbody>
           {% include "components/pagination.html" %}
         </table>
+      {% else %}
+        <div class="datatable-wrapper card root">
+          <table class="datatable">
+            <colgroup>
+              <col class="datatable__column--name"/>
+              <col class="datatable__column--accounts"/>
+              <col class="datatable__column--managers"/>
+            </colgroup>
+            <thead>
+              <tr class="table-topbar">
+                <th class="datatable__column--name">{% trans "Organizational unit" %}</th>
+                <th class="datatable__column--accounts">{% trans "Associations" %}</th>
+                <th class="datatable__column--managers">{% trans "Managers" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="7">
+                  <div class="no_units root">{% trans "No organizational units." %}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
 
-      </div>
-
-      {% comment %} <div class="pagination_options">
-          <span class="step-links">
-            {% if page_obj.has_previous %}
-              <a href="?page=1">&laquo; {% trans "First" %}</a>
-              <a href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
-            {% endif %}
- 
-            <span class="current">
-              {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}.
-            </span>
- 
-            {% if page_obj.has_next %}
-              <a href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
-              <a href="?page={{ page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a>
-            {% endif %}
-          </span>
-      </div> {% endcomment %}
-    {% else %}
-      <div class="root">{% trans "No organizational units." %}</div>
-    {% endif %}
+    </div>
   {% else %}
     <div class="root">{% trans "Organizational structure is not available." %}</div>
   {% endif %}

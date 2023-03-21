@@ -72,6 +72,14 @@
   }
 }
 
+.no_units {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
 .orgunit.datatable {
 
   td.datatable__column--name span {
