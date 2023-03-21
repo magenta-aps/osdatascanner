@@ -74,14 +74,25 @@
 
 .orgunit.datatable {
 
+  td.datatable__column--name span {
+    button {
+      transform: rotate(-90deg);
+    }
+  }
+
   tr.level-1 td.datatable__column--name span {
     margin-left: 1rem;
+  }
+
+  tr.has_children td {
+    padding-bottom: calc(var(--datatable-cell-padding) / 2);
   }
 
   tr:not(.level-1) {
     td {
       border-top: none;
-      padding-top: 0;
+      padding-top: calc(var(--datatable-cell-padding) / 2);
+      padding-bottom: calc(var(--datatable-cell-padding) / 2);
 
       &.datatable__column--name span::before {
         display: block;
