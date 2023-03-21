@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <tr id="orgunit__{{ node.pk }}"
-    class="{% if node.pk in search_targets %}highlighted{% endif %} level-{{ node.get_depth }} {% if node.children.exists %}has_children{% endif %}">
+    class="{% if node.pk in search_targets %}highlighted{% endif %} level-{{ node.get_depth }} {% if node.children.exists %}has_children{% endif %} closed">
   <td class="datatable__column--name">
     <span class="orgunit_name">
       {% if node.children.exists %}
@@ -9,7 +9,8 @@
           <i class="material-icons" aria-hidden="true">expand_more</i>
         </button>
       {% endif %}
-    {{ node.name }}</span>
+      {{ node.name }}
+    </span>
   </td>
   <td class="datatable__column--accounts">{{ node.members_associated }} {% trans "accounts associated." %}</td>
   <td class="datatable__column--managers">

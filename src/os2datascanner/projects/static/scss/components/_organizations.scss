@@ -61,17 +61,6 @@
   }
 }
 
-.orgunit-list {
-
-  .root {
-
-    li:last-of-type {
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-  }
-}
-
 .no_units {
   width: 100%;
   display: flex;
@@ -84,17 +73,24 @@
 
   td.datatable__column--name span {
     button {
-      transform: rotate(-90deg);
+      position: absolute;
+      left: -1.8rem;
+      bottom: -0.4rem;
     }
+  }
+
+  tr.closed td.datatable__column--name span button {
+    transform: rotate(-90deg);
   }
 
   tr.level-1 td.datatable__column--name span {
     margin-left: 1rem;
   }
 
-  tr.has_children td {
+  tr.has_children:not(.closed) td {
     padding-bottom: calc(var(--datatable-cell-padding) / 2);
   }
+
 
   tr:not(.level-1) {
     td {
@@ -110,7 +106,7 @@
         content: "";
         border-bottom: 2px solid rgba(0, 0, 0, 0.2);
         border-left: 2px solid rgba(0, 0, 0, 0.2);
-        width: 2rem;
+        width: 1.5rem;
         height: 4rem;
       }
     }
@@ -145,7 +141,6 @@
       }
     }
   }
-
 }
 
 .datatable__column--managers {
