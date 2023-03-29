@@ -10,13 +10,13 @@ exclude = "**/**/migrations/**"
 recursive = true
 aggressive = 3
 
-[tool.flake8]
-max-line-length = 100
+[tool.ruff]
+line-length = 100
 max-complexity = 15
 max-cognitive-complexity = 15
 max-expression-complexity = 10
-extend-exclude = "**/**/migrations/**"
-ignore = "B009, B017, W503, E126, W504, E226, E121, E241, E123, B008"
+extend-exclude = ["**/**/migrations/**"]
+ignore = ["B009", "B017", "B008"]
 statistics = "true"
 doctests = "true"
 
