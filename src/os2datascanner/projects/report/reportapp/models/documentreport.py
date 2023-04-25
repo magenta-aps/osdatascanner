@@ -3,7 +3,7 @@ from functools import cached_property
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField
+from django.db.models import JSONField, Q
 from django.utils.translation import ugettext_lazy as _
 
 from os2datascanner.projects.report.organizations.models import Organization
@@ -40,7 +40,7 @@ class DocumentReport(models.Model):
     last_opened_time = models.DateTimeField(null=True, verbose_name=_('time last opened'))
 
     organization = models.ForeignKey(Organization,
-                                     null=True, blank=True,
+                                     null=True, blank=True, db_index=True,
                                      verbose_name=_('organization'),
                                      on_delete=models.PROTECT)
 
@@ -84,6 +84,7 @@ class DocumentReport(models.Model):
     only_notify_superadmin = models.BooleanField(
         default=False,
         verbose_name='Underret kun superadmin',
+        db_index=True
     )
 
     owner = models.TextField(
@@ -220,9 +221,21 @@ class DocumentReport(models.Model):
                 "raw_matches__matched",
                 name="documentreport_matched"),
             models.Index(
-                fields=("path",),
+                fields=(
+                    "path",
+                ),
                 name="pc_update_query"),
-        ]
+            models.Index(
+                    fields=(
+                        "resolution_status",
+                        "number_of_matches",
+                        "only_notify_superadmin",
+                        "organization", "owner"),
+                    name="dr_unhandled_query",
+                    condition=Q(
+                            resolution_status__isnull=True,
+                            number_of_matches__gte=1)),
+                             ]
         constraints = [
             models.UniqueConstraint(
                 fields=["scanner_job_pk", "path"],

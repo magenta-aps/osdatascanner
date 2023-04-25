@@ -30,11 +30,8 @@ class DefaultRole(Role):
 
     def filter(self, document_reports):
         aliases = self.user.aliases.all()
-        results = DocumentReport.objects.none()
-        for alias in aliases:
-            result = document_reports.filter(alias_relation=alias.pk)
-            # Merges django querysets together
-            results = results | result
+        alias_values = [alias._value for alias in aliases]
+        results = DocumentReport.objects.filter(owner__in=alias_values)
         return results
 
     class Meta:
