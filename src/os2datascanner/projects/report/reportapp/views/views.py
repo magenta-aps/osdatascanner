@@ -192,23 +192,28 @@ class MainPageView(LoginRequiredMixin, ListView):
                 sort_key = '-'+sort_key
             self.document_reports = self.document_reports.order_by(sort_key, 'pk')
 
-    def add_form_context(self, context):
-        sensitivity_filter = Q(sensitivity=self.request.GET.get('sensitivities')
-                               ) if self.request.GET.get('sensitivities') not in \
+    def get_filters(self):
+        self.sensitivity_filter = Q(sensitivity=self.request.GET.get('sensitivities')
+                                    ) if self.request.GET.get('sensitivities') not in \
             ['all', None] else Q()
-        scannerjob_filter = Q(scanner_job_pk=self.request.GET.get('scannerjob')
-                              ) if self.request.GET.get('scannerjob') not in \
+        self.scannerjob_filter = Q(scanner_job_pk=self.request.GET.get('scannerjob')
+                                   ) if self.request.GET.get('scannerjob') not in \
             ['all', None] else Q()
-        resolution_status_filter = Q(resolution_status=self.request.GET.get(
+        self.resolution_status_filter = Q(resolution_status=self.request.GET.get(
             'resolution_status')) if self.request.GET.get('resolution_status') not in \
             ['all', None] else Q()
+
+    def add_form_context(self, context):
+        self.get_filters()
 
         if self.scannerjob_filters is None:
             # Create select options
             self.scannerjob_filters = self.user_reports.order_by(
                 'scanner_job_pk').values(
                 'scanner_job_pk').annotate(
-                total=Count('scanner_job_pk', filter=sensitivity_filter & resolution_status_filter)
+                total=Count('scanner_job_pk',
+                            filter=self.sensitivity_filter &
+                            self.resolution_status_filter)
                 ).values(
                     'scanner_job_name', 'total', 'scanner_job_pk'
                 )
@@ -221,7 +226,9 @@ class MainPageView(LoginRequiredMixin, ListView):
         sensitivities = self.user_reports.order_by(
                 '-sensitivity').values(
                 'sensitivity').annotate(
-                total=Count('sensitivity', filter=scannerjob_filter & resolution_status_filter)
+                total=Count('sensitivity',
+                            filter=self.scannerjob_filter &
+                            self.resolution_status_filter)
             ).values(
                 'sensitivity', 'total'
             )
@@ -229,22 +236,6 @@ class MainPageView(LoginRequiredMixin, ListView):
         context['sensitivities'] = (((Sensitivity(s["sensitivity"]),
                                     s["total"]) for s in sensitivities),
                                     self.request.GET.get('sensitivities', 'all'))
-
-        resolution_status = self.user_reports.order_by(
-                'resolution_status').values(
-                'resolution_status').annotate(
-                total=Count('resolution_status', filter=sensitivity_filter & scannerjob_filter),
-                ).values('resolution_status', 'total',
-                         )
-
-        for method in resolution_status:
-            method['resolution_label'] = DocumentReport.ResolutionChoices(
-                method['resolution_status']).label if method['resolution_status'] \
-                or method['resolution_status'] == 0 else None
-
-        context['resolution_status'] = (
-            resolution_status, self.request.GET.get(
-                'resolution_status', 'all'))
 
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
@@ -337,6 +328,26 @@ class ArchiveView(MainPageView):
     document_reports = DocumentReport.objects.filter(
         number_of_matches__gte=1).filter(
         resolution_status__isnull=False).order_by("sort_key", "pk")
+
+    def add_form_context(self, context):
+        super().add_form_context(context)
+        resolution_status = self.user_reports.order_by(
+                'resolution_status').values(
+                'resolution_status').annotate(
+                total=Count('resolution_status',
+                            filter=self.sensitivity_filter &
+                            self.scannerjob_filter),
+                ).values('resolution_status', 'total',
+                         )
+
+        for method in resolution_status:
+            method['resolution_label'] = DocumentReport.ResolutionChoices(
+                method['resolution_status']).label if method['resolution_status'] \
+                or method['resolution_status'] == 0 else None
+
+        context['resolution_status'] = (
+            resolution_status, self.request.GET.get(
+                'resolution_status', 'all'))
 
     def post(self, request, *args, **kwargs):
 
