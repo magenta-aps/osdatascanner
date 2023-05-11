@@ -21,7 +21,7 @@ class TurboCPRRule(SimpleRule):
     operates_on = OutputType.Text
 
     def __init__(self,
-                 modulus_11: bool = True,
+                 modulus_11: bool = False,
                  examine_context: bool = False,
                  **super_kwargs):
         super().__init__(**super_kwargs)
@@ -63,5 +63,5 @@ class TurboCPRRule(SimpleRule):
             modulus_11=obj.get("modulus_11", True),
             examine_context=obj.get("examine_context", False),
             sensitivity=Sensitivity.make_from_dict(obj),
-            name=obj.get("name")
+            name=obj.get("name"),
         )
