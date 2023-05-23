@@ -1,12 +1,16 @@
 from io import BytesIO
 import pytz
+import logging
 from contextlib import contextmanager
+import datetime
 from dateutil.parser import isoparse, parse
 
 from ... import settings as engine2_settings
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
+
+logger = logging.getLogger(__name__)
 
 
 class MSGraphCalendarSource(MSGraphSource):
@@ -176,7 +180,14 @@ class MSGraphCalendarEventHandle(Handle):
     @property
     def start(self):
         if self._start:
-            date = parse(self._start["dateTime"])
+            try:
+                date = datetime.datetime.strptime(self._start["dateTime"], "%Y-%m-%dT%H:%M:%S.%f0")
+            except ValueError as e:
+                logger.warning(
+                    "Error encountered while parsing calendar timestamp ("
+                    f"{self._start['dateTime']}) with expected format: {e}. "
+                    "Using parser from dateutil instead.")
+                date = parse(self._start["dateTime"])
             tz = pytz.timezone(self._start["timeZone"])
             tz.localize(date)
             return date.strftime('%H:%M %-d/%-m/%y')
