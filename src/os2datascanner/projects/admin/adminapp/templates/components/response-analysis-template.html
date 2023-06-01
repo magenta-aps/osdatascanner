@@ -3,36 +3,38 @@
 {% load static %}
 
 <div class="response_analysis">
-    <p>{{selected_job}}</p>
-    {% with exec_state_value=selected_job.exec_state.value %}
-    
-        {% if exec_state_value == "finished" %}
-            <span 
-            class="analysis-response-icon analysis-response-icon--success" 
-            data-sync-for="{{ selected_job.pk }}"><i 
-            class="material-icons">check</i></span>
-        {% elif exec_state_value == "failed" %}
-            <span class="analysis-response-icon analysis-response-icon--error" 
-            data-sync-for="{{ selected_job.pk }}"><i 
-            class="material-icons">error</i></span>
-        {% elif exec_state_value == "waiting" or exec_state_value == "running" %}
-            <span 
-            class="analysis-response-icon analysis-response-icon--waiting" 
+  <p>{{ selected_job }}</p>
+  {% with exec_state_value=selected_job.exec_state.value %}
+ 
+    {% if exec_state_value == "finished" %}
+      <span class="analysis-response-icon analysis-response-icon--success"
+            data-sync-for="{{ selected_job.pk }}">
+        <i class="material-icons">check</i>
+      </span>
+    {% elif exec_state_value == "failed" %}
+      <span class="analysis-response-icon analysis-response-icon--error"
+            data-sync-for="{{ selected_job.pk }}">
+        <i class="material-icons">error</i>
+      </span>
+    {% elif exec_state_value == "waiting" or exec_state_value == "running" %}
+      <span class="analysis-response-icon analysis-response-icon--waiting"
             data-sync-for="{{ selected_job.pk }}"
-            hx-get="" 
-            hx-trigger="every 1s" 
-            hx-swap="innerHTML" 
-            hx-target=".response_analysis" 
-            hx-select=".response_analysis" 
-            hx-push-url="false"><i class="material-icons">hourglass_top</i></span>
-        {% endif %}
-        <span class="analysis-response-text" data-sync-for="{{ selected_job.pk }}">
-            {% if exec_state_value == "finished" %}
-                {% trans 'last updated'|capfirst %},
-            {% else %}
-                {{ selected_job.exec_state.label|capfirst  }},
-            {% endif %}
-            {{ selected_job.changed_at|date:'d-m-Y H:i'}}
-        </span>
-    {% endwith %}
+            hx-get=""
+            hx-trigger="every 1s"
+            hx-swap="innerHTML"
+            hx-target=".response_analysis"
+            hx-select=".response_analysis"
+            hx-push-url="false">
+        <i class="material-icons">hourglass_top</i>
+      </span>
+    {% endif %}
+    <span class="analysis-response-text" data-sync-for="{{ selected_job.pk }}">
+      {% if exec_state_value == "finished" %}
+        {% trans 'last updated'|capfirst %},
+      {% else %}
+        {{ selected_job.exec_state.label|capfirst  }},
+      {% endif %}
+      {{ selected_job.changed_at|date:'d-m-Y H:i' }}
+    </span>
+  {% endwith %}
 </div>
