@@ -110,9 +110,10 @@ urlpatterns = [
         template_name="openapi.yaml", content_type="application/yaml"),
         name="json-api"),
     re_path(r'^api/(?P<path>.*)$', JSONAPIView.as_view(), name="json-api"),
-    re_path(r'^analysis/$',  AnalysisPageView.as_view(), name='analysis'),
-    re_path(r'^analysis/run/$', AnalysisJobRunView.as_view(), name='run-analysis-job'),
-    re_path(r'^analysis/run-status/(?P<pk>\d+)/$', ResponseAnalysisView.as_view(),
+    re_path(r'^analysis/overview/$',  AnalysisPageView.as_view(), name='analysis'),
+    re_path(r'^analysis/overview/(?P<pk>\d+)/run/$',
+            AnalysisJobRunView.as_view(), name='run-analysis-job'),
+    re_path(r'^analysis/overview/(?P<pk>\d+)/$', ResponseAnalysisView.as_view(),
             name='response-analysis-view'),
 
     # App URLs
