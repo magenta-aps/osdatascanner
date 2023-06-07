@@ -79,6 +79,7 @@
   max-width: 100%;
   width: 20rem;
   max-width: 100%;
+  display: flex;
 
   &.wide {
     width: 30rem;
@@ -107,6 +108,10 @@
 
   &+select#distribute-to {
     margin-top: -1px;
+  }
+
+  button {
+    margin-left: 0.5rem;
   }
 
 }
