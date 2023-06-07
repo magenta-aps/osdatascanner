@@ -1,8 +1,18 @@
 # Changelog
 
+## Next release
+
 ### New in this release
 
 - A new experimental, high-performance rule for CPR detection: `TurboCPRRule`.
+
+- Support for simple scans in the administration system:
+
+  - It is now possible to upload individual files to the administration
+    system and to view the results of executing a rule on them.
+
+  - This feature is useful for rapidly prototyping rules prior to running a
+    full-scale scan.
 
 ## Version 3.20.0, 2nd June 2023
 

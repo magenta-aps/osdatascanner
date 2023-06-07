@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-02 15:33+0200\n"
+"POT-Creation-Date: 2023-06-07 13:39+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -903,6 +903,7 @@ msgstr ""
 "(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/os2datascanner/cprrule_confirm_delete.html:7
+#: adminapp/templates/os2datascanner/miniscan.html:7
 msgid "Delete rule?"
 msgstr "Slet regel?"
 
@@ -1052,6 +1053,39 @@ msgstr "Markér som set"
 #: adminapp/templates/os2datascanner/error_log.html:220
 msgid "no errors found."
 msgstr "ingen fejl fundet."
+
+#: adminapp/templates/os2datascanner/miniscan.html:15
+msgid "OS2datascanner mini-scanner"
+msgstr "OS2datascanner miniscanner"
+
+#: adminapp/templates/os2datascanner/miniscan.html:18
+msgid ""
+"The mini-scanner lets you execute any OS2datascanner rule on a single file, "
+"and returns the results directly to this page."
+msgstr ""
+"Med mini-scanneren kan man afvikle en arbitrær OS2datascanner-regel på én "
+"enkel fil. Resultaterne vises umiddelbart på denne side."
+
+#: adminapp/templates/os2datascanner/miniscan.html:32
+msgid "File to scan"
+msgstr "Upload fil"
+
+#: adminapp/templates/os2datascanner/miniscan.html:36
+msgid "Rule to execute"
+msgstr "Definér regel"
+
+#: adminapp/templates/os2datascanner/miniscan.html:41
+#: adminapp/templates/os2datascanner/scanners.html:126
+msgid "Run"
+msgstr "Kør"
+
+#: adminapp/templates/os2datascanner/miniscan.html:44
+msgid "Scan result"
+msgstr "Scanresultat"
+
+#: adminapp/templates/os2datascanner/miniscan.html:47
+msgid "(none yet)"
+msgstr "(endnu ingen)"
 
 #: adminapp/templates/os2datascanner/regexrule_confirm_delete.html:6
 #: adminapp/templates/os2datascanner/rules.html:95
@@ -1663,10 +1697,6 @@ msgstr "Er ikke godkendt"
 #: adminapp/templates/os2datascanner/scanners.html:111
 msgid "Next scan: "
 msgstr "Næste scan: "
-
-#: adminapp/templates/os2datascanner/scanners.html:126
-msgid "Run"
-msgstr "Kør"
 
 #: adminapp/templates/os2datascanner/scanners.html:156
 msgid "Do you really want to delete this scanner?"
