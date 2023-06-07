@@ -10,12 +10,12 @@
   <div data-template="rule_selector" id="select_slot"></div>
 </div>
 
-<textArea id="id_rule"
+<textarea id="id_rule"
           class="watcher"
           data-selector="#select_slot"
           data-function="stringifyRule"
-          name="{{ widget.name }}"
-          readonly>{{ widget.value }}</textArea>
+          name="{{ widget.name|default:"rule" }}"
+          readonly>{{ widget.value }}</textarea>
 
 <div id="__templates" style="display: none">
   <span id="blank"></span>
