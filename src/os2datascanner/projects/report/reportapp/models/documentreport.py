@@ -178,7 +178,7 @@ class DocumentReport(models.Model):
         super().__init__(*args, **kwargs)
         self.__resolution_status = self.resolution_status
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # noqa CCR001
         # Count and save number of matches
         self.number_of_matches = 0
         # Exclude rules meant for image conversion
@@ -196,6 +196,13 @@ class DocumentReport(models.Model):
         # Adds a timestamp if it's a new match:
         if not self.pk:
             self.created_timestamp = time_now()
+
+        # Save the presentation_name to field
+        try:
+            self.place = self.matches.handle.presentation_place
+        except Exception as e:
+            logger.exception(
+                f"Exception occured while saving to 'place'-field of DocumentReport {self}: {e}")
 
         # ensure model field constrains
         if len(old_name := self.name) > 256:

@@ -443,16 +443,6 @@ msgstr "Hvorfor sletter 'Håndtér'-knappen ikke min fil eller e-mail?"
 msgid "Why can't I open file scan matches?"
 msgstr "Hvorfor kan jeg ikke åbne matches fra filscan?"
 
-#: reportapp/templates/components/filters.html:29
-#: reportapp/templates/components/filters.html:62
-#: reportapp/templates/components/filters.html:97
-msgid "Clear"
-msgstr "Ryd"
-
-#: reportapp/templates/components/filters.html:31
-msgid "Scan"
-msgstr "Scan"
-
 #: reportapp/templates/components/filters.html:64
 msgid "Sensitivity"
 msgstr "Følsomhed"
@@ -1272,9 +1262,6 @@ msgstr "Du har slettet alle resultater fra {0} tilknyttet {1}."
 #~ msgstr ""
 #~ "OS2datascanner sletter ikke resultater fra systemet der blev scannet.\n"
 #~ "Resultatet markeres udelukkende som håndteret i OS2datascanner."
-
-#~ msgid "Leader statistics"
-#~ msgstr "Lederstatistik"
 
 #~ msgid "matches"
 #~ msgstr "matches"
