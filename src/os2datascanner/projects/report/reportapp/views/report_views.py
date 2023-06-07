@@ -134,6 +134,10 @@ class ReportView(LoginRequiredMixin, ListView):
         if (method := self.request.GET.get('resolution_status')) and method != 'all':
             self.document_reports = self.document_reports.filter(resolution_status=int(method))
 
+        if (search_string := self.request.GET.get('search_field')):
+            self.document_reports = self.document_reports.filter(
+                Q(name__icontains=search_string) | Q(place__icontains=search_string))
+
     def order_queryset_by_property(self):
         """Checks if a sort key is allowed and orders the queryset"""
         allowed_sorting_properties = ['sort_key', 'number_of_matches', 'resolution_status']

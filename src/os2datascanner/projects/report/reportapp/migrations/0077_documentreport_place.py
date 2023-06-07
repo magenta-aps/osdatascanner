@@ -17,7 +17,7 @@ def populate_doc_report_place(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner_report', '0058_userprofile_image'),
+        ('os2datascanner_report', '0076_alias_creation_index'),
     ]
 
     operations = [
