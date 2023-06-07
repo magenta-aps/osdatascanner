@@ -21,9 +21,9 @@ form .form-row p {
 /* FORM LABELS */
 
 form h4 {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
+    margin: 0 ;
+    padding: 0 ;
+    border: none ;
 }
 
 label {
@@ -31,8 +31,8 @@ label {
 }
 
 .required label, label.required {
-    font-weight: bold !important;
-    color: #333 !important;
+    font-weight: bold ;
+    color: #333 ;
 }
 
 /* RADIO BUTTONS */
@@ -91,7 +91,7 @@ form .aligned p.help {
 }
 
 .aligned .vCheckboxLabel {
-    float: none !important;
+    float: none ;
     display: inline;
     padding-left: 4px;
 }
@@ -102,7 +102,7 @@ form .aligned p.help {
 
 .checkbox-row p.help {
     margin-left: 0;
-    padding-left: 0 !important;
+    padding-left: 0 ;
 }
 
 fieldset .field-box {
@@ -113,7 +113,7 @@ fieldset .field-box {
 /* WIDE FIELDSETS */
 
 .wide label {
-    width: 15em !important;
+    width: 15em ;
 }
 
 form .wide p {
@@ -135,7 +135,7 @@ fieldset.collapsed * {
 }
 
 fieldset.collapsed h2, fieldset.collapsed {
-    display: block !important;
+    display: block ;
 }
 
 fieldset.collapsed h2 {
@@ -146,7 +146,7 @@ fieldset.collapsed h2 {
 
 fieldset.collapsed .collapse-toggle {
     background: transparent;
-    display: inline !important;
+    display: inline ;
 }
 
 /* MONOSPACE TEXTAREAS */
@@ -190,7 +190,7 @@ body.popup .submit-row {
 /* CUSTOM FORM FIELDS */
 
 .vSelectMultipleField {
-    vertical-align: top !important;
+    vertical-align: top ;
 }
 
 .vCheckboxField {

@@ -18,8 +18,8 @@ label+.dropdown {
 .select2-selection {
   background-color: var(--color-widget-bg);
   //select2 will override this if not important
-  border: none !important;
-  border-radius: 0 !important;
+  border: none ;
+  border-radius: 0 ;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   font-size: 1em;
   line-height: 1;
@@ -156,7 +156,7 @@ label+.dropdown {
     /* useful when width is set to anything other than 100% */
     box-sizing: border-box;
     margin: 0;
-    border: none !important;
+    border: none ;
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1);
     border-radius: 0;
     -moz-appearance: none;

@@ -80,7 +80,7 @@
     // query below to target IE11 and then remove the shadows
     @media (-ms-high-contrast: active),
     (-ms-high-contrast: none) {
-      background-image: none !important;
+      background-image: none ;
     }
 
     &:focus {
@@ -113,7 +113,7 @@
   }
 
   .button-caret {
-    background-color: transparent !important;
+    background-color: transparent ;
 
     .material-icons {
       pointer-events: none;

@@ -85,7 +85,7 @@
 	padding: 0.7rem;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: 0.4rem !important;
+	background-size: 0.4rem ;
 	height: 28px;
 	background-image: url("../svg/chevron-right.svg");
 	position: absolute;
@@ -100,11 +100,11 @@
 	content: "";
 	display: block;
 	width: 10px;
-	background-size: 0.55rem !important;
-	height: 28px !important;
+	background-size: 0.55rem ;
+	height: 28px ;
 	background-image: url("../svg/chevron-down.svg");
 	position: absolute;
-	top: -0.3em !important;
+	top: -0.3em ;
     left: -.6em;
 }
 
@@ -160,51 +160,51 @@
 }
 
 .select2-selection__choice {
-	padding: .2rem .5rem !important;
-  transition: var(--transition-default) !important;
-	background-color: #e9e9e9 !important;
-	margin: .175rem !important;
+	padding: .2rem .5rem ;
+  transition: var(--transition-default) ;
+	background-color: #e9e9e9 ;
+	margin: .175rem ;
 }
 
 .select2-selection__choice__remove {
-	margin-right: 0.4rem !important;
+	margin-right: 0.4rem ;
 }
 
 .select2-container--default .select2-selection--single {
-	padding: .5rem !important;
-	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
-	border: none !important;
-	border-radius: var(--border-radius-small) !important;
+	padding: .5rem ;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1) ;
+	border: none ;
+	border-radius: var(--border-radius-small) ;
 }
 
 .select2-selection {
-	padding: 0 !important;
-	min-height: 2.65rem !important;
-	width: 100% !important;
+	padding: 0 ;
+	min-height: 2.65rem ;
+	width: 100% ;
 }
 
 .select2-selection:after {
-	top: 1.2rem !important;
+	top: 1.2rem ;
 }
 
 .select2-selection[aria-expanded="true"]:after {
-	top: 0.7rem !important;
+	top: 0.7rem ;
 }
 
 .select2-selection__rendered {
-	padding: .175rem !important;
-	min-width: 95% !important;
-	height: 2.6rem !important;
+	padding: .175rem ;
+	min-width: 95% ;
+	height: 2.6rem ;
 }
 
 .select2-container .select2-selection--single {
-	height: 2.5rem !important;
-	width: 100% !important;
+	height: 2.5rem ;
+	width: 100% ;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-	color: #222 !important;
-	line-height: 26px !important;
+	color: #222 ;
+	line-height: 26px ;
 }
 
 .select2-selection__clear {
@@ -212,18 +212,18 @@
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
-	left: 0 !important;
-	top: 70% !important;
+	left: 0 ;
+	top: 70% ;
 }
 
 .select2-dropdown {
-	border: none !important;
-	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
+	border: none ;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1) ;
 }
 
 .select2-container .select2-search--inline {
 	float: left;
-	margin: 0 !important;
+	margin: 0 ;
 }
 
 .select2-results__option {
@@ -235,10 +235,10 @@
 
 .select2-search__field {
 	transition: var(--transition-default);
-	outline: none !important;
-	border: none !important;
-	margin:  0 !important;
-	padding: .575rem !important;
+	outline: none ;
+	border: none ;
+	margin:  0 ;
+	padding: .575rem ;
 }
 
 .s2-to-tree .org-icon {
@@ -269,17 +269,17 @@
 	transition: var(--transition-default);
 	left: -0.35em;
 	margin-left: 0.5em;
-	background-image: url("../svg/done.svg") !important;
+	background-image: url("../svg/done.svg") ;
 }
 
 .s2-to-tree .item-label {
-	margin-left: .8em !important;
-	padding-left: 2em !important;
+	margin-left: .8em ;
+	padding-left: 2em ;
 }
 
 .select2-results__options {
-	max-width: 98% !important;
-	max-height: 400px!important;
+	max-width: 98% ;
+	max-height: 400px;
 }
 
 .select2-selection input {
@@ -290,24 +290,24 @@
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 
 	.s2-to-tree .org-icon-selected::before {
-		left: 0.15rem !important;
+		left: 0.15rem ;
 		bottom: 0.1rem;
 		content: "✓";
 		color: white;
 	}
 
 	.s2-to-tree li.select2-results__option.non-leaf.opened .expand-collapse:before {
-		content: "⮞" !important;
-		font-size: 1em !important;
-		top: -.65em !important;
+		content: "⮞" ;
+		font-size: 1em ;
+		top: -.65em ;
 		transform: rotate(90deg);
-		left: -0.25em !important;
+		left: -0.25em ;
 	}
 
     .s2-to-tree li.select2-results__option.non-leaf .expand-collapse:before {
-		content: "⮞" !important;
-		font-size: 1em !important;
-    	top: -0.75em !important;
-		left: -1.2em !important;
+		content: "⮞" ;
+		font-size: 1em ;
+    	top: -0.75em ;
+		left: -1.2em ;
 	}
 }

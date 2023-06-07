@@ -11,8 +11,8 @@ Filetype is css, due to django only registering specific types as media
 }
 
 .cpr-rule-specs {
-    display: inline !important;
-    float: none !important;
+    display: inline;
+    float: none;
 }
 
 .watcher {

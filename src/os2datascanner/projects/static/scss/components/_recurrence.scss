@@ -2,7 +2,7 @@
 
 .add-rule, .add-date {
   background-color: transparent;
-  color: var(--color-text-main) !important;
+  color: var(--color-text-main) ;
   padding: .5rem;
   border: 1px solid #ddd;
   cursor: pointer;
@@ -23,7 +23,7 @@
   width: 1rem;
   height: 1rem;
   margin-right: .5rem;
-  fill: var(--color-primary-dark) !important;
+  fill: var(--color-primary-dark) ;
   background-size: 100% 100%;
   background-image: url("../svg/calendar.svg");
 }
@@ -31,7 +31,7 @@
 .recurrence-widget {
   width: 100%;
   color: var(--color-text-main);
-  border: none !important;
+  border: none ;
 
   .remove {
     z-index: 1;
@@ -55,23 +55,23 @@
   }
 
   .mode {
-    padding: 1rem 1.5rem !important;
+    padding: 1rem 1.5rem ;
   }
 
   .panel {
     margin-top: .5rem;
-    border: none !important;
+    border: none ;
   }
 
   form {
-    border: none !important;
-    padding: .5rem 0rem !important;
-    overflow: visible !important;
+    border: none ;
+    padding: .5rem 0rem ;
+    overflow: visible ;
   }
 
   .control {
     margin-top: 1rem;
-    padding: 1rem 0 !important;
+    padding: 1rem 0 ;
   }
 
   .active {
@@ -84,11 +84,11 @@
   }
 
   .header {
-    background-color: #e9e9e9 !important;
+    background-color: #e9e9e9 ;
   }
 
   .recurrence-label {
-    text-decoration: none !important;
+    text-decoration: none ;
   }
 
   .limit, .date, .date-selector {
@@ -101,17 +101,17 @@
 
   .date-field {
     width: 50%;
-    margin-left: .75rem !important;
+    margin-left: .75rem ;
   }
 
   .interval-field {
-    width: 3rem !important;
+    width: 3rem ;
   }
 
   .interval {
-    display: block !important;
-    padding-left: 0 !important;
-    margin-top: 1rem !important;
+    display: block ;
+    padding-left: 0 ;
+    margin-top: 1rem ;
   }
 
   .radio {
@@ -120,21 +120,21 @@
   }
 
   .form {
-    padding: 0 !important;
+    padding: 0 ;
   }
 
   .until-count .count {
-    padding: 0 !important;
+    padding: 0 ;
   }
   .until-count li {
-    display: flex !important;
-    align-items: baseline !important;
+    display: flex ;
+    align-items: baseline ;
   }
   .until-count {
-    margin: 0 !important;
+    margin: 0 ;
   }
   .count-field {
-    width: 4rem !important;
+    width: 4rem ;
   }
 }
 
@@ -157,7 +157,7 @@
   }
 
   td:last-child {
-    border-right: none !important;
+    border-right: none ;
   }
 
   .day:hover {
@@ -165,22 +165,22 @@
   }
 
   .year, .navigation {
-    border-right: none !important;
+    border-right: none ;
   }
 
   .footer {
-    border: none !important;
+    border: none ;
   }
 
   .remove {
     z-index: 1;
     padding: .25rem;
     background-color: var(--color-error);
-    fill: #fff !important;
-    color: #fff !important;
+    fill: #fff ;
+    color: #fff ;
   }
 }
 
 div.recurrence-widget select, div.recurrence-widget input {
-  margin: .25rem .25rem !important;
+  margin: .25rem .25rem ;
 }
