@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from typing import Union, Optional, Tuple, Iterator, Callable, Any
+from collections.abc import Sequence
 
 from ..utilities.json import JSONSerialisable
 from ..utilities.equality import TypePropertyEquality
@@ -162,3 +163,12 @@ class SimpleRule(Rule):
         each of which represents one match of this SimpleRule against the
         provided content. Matched content should appear under the dictionary's
         "match" key."""
+
+    def filter_matches(
+            self, content, *, matches: Optional[Sequence[dict]] = None):
+        """Returns a filtered version of the provided content in which the
+        sensitive matches of this SimpleRule have been removed.
+
+        (If this SimpleRule does not consider any of its matches to be
+        sensitive, then the provided content will just be returned as is.)"""
+        return content

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle, Source, SourceManager
+from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules.rule import Rule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.explorer import (
@@ -47,7 +48,7 @@ def requires_token(func):
     return runner
 
 
-def api_endpoint(func):
+def json_endpoint(func):
     @requires_token
     def runner(env, start_response, body):
         it = func(body)
@@ -57,6 +58,19 @@ def api_endpoint(func):
                 ("Content-Disposition", "inline")])
         for obj in it:
             yield json.dumps(obj).encode("ascii") + b"\n"
+    return runner
+
+
+def raw_endpoint(func):
+    @requires_token
+    def runner(env, start_response, body):
+        it = func(body)
+        status = next(it)
+        start_response(status, [
+                ("Content-Type", "text/plain; charset=ascii"),
+                ("Content-Disposition", "inline")])
+        for obj in it:
+            yield str(obj).encode()
     return runner
 
 
@@ -70,7 +84,7 @@ def resource_endpoint(path):
     return runner
 
 
-@api_endpoint
+@json_endpoint
 def dummy_1(body):
     yield "200 OK"
     yield {
@@ -78,7 +92,7 @@ def dummy_1(body):
     }
 
 
-@api_endpoint
+@json_endpoint
 def error_1(body):
     yield "400 Bad Request"
     yield {
@@ -93,7 +107,7 @@ def _get_top(s: Source) -> Source:
     return s
 
 
-@api_endpoint
+@json_endpoint
 def scan_1(body):  # noqa: CCR001
     if not body:
         yield "400 Bad Request"
@@ -175,7 +189,7 @@ def scan_1(body):  # noqa: CCR001
                 yield from (m2 for _, m2 in exporter_mrr(m1, c1, sm))
 
 
-@api_endpoint
+@json_endpoint
 def scan_handle_1(body):  # noqa: CCR001
     if not body:
         yield "400 Bad Request"
@@ -257,7 +271,7 @@ def scan_handle_1(body):  # noqa: CCR001
                 yield from (m2 for _, m2 in exporter_mrr(m, c, sm))
 
 
-@api_endpoint
+@json_endpoint
 def parse_url_1(body):  # noqa: CCR001
     if not body:
         yield "400 Bad Request"
@@ -291,7 +305,19 @@ def parse_url_1(body):  # noqa: CCR001
     }
 
 
-@api_endpoint
+@raw_endpoint
+def filter_matches_1(body):  # noqa: CCR001
+    input_text = body
+    rules = [CPRRule()]
+
+    for rule in rules:
+        input_text = rule.filter_matches(input_text)
+
+    yield "200 OK"
+    yield input_text
+
+
+@json_endpoint
 def catastrophe_1(body):
     yield "400 Really Very Bad Request Indeed"
     yield {
@@ -338,6 +364,10 @@ endpoints = {
     "/parse-url/1": {
         "POST": parse_url_1,
         "OPTIONS": option_endpoint("/parse-url/1")
+    },
+    "/experimental/filter-matches/1": {
+        "POST": (filter_matches_1, str),
+        "OPTIONS": option_endpoint("/experimental/filter-matches/1")
     }
 }
 
@@ -345,14 +375,16 @@ endpoints = {
 def application(env, start_response):
     try:
         body = None
-        parameters = env["wsgi.input"].read().decode("ascii")
-        if parameters:
-            body = json.loads(parameters)
+
         endpoint = endpoints.get(env.get("PATH_INFO"))
         if endpoint:
-            runner = endpoint.get(env.get("REQUEST_METHOD"), unsupported_1)
+            rt = endpoint.get(env.get("REQUEST_METHOD"), unsupported_1)
+            runner, loader = rt if isinstance(rt, tuple) else (rt, json.loads)
         else:
-            runner = error_1
+            runner, loader = error_1, None
+
+        parameters = env["wsgi.input"].read().decode("ascii")
+        body = loader(parameters) if loader and parameters else None
     except json.JSONDecodeError:
         runner = catastrophe_1
 

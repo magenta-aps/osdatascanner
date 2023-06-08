@@ -294,6 +294,9 @@ class CPRRule(RegexRule):
             blacklist=blacklist,
         )
 
+    def filter_matches(self, content, *, matches=None):
+        return re.compile(cpr_regex).sub("XXXXXX-XXXX", content)
+
 
 def is_number(s: str) -> bool:
     """Return True if the string is a int/float"""
