@@ -75,9 +75,10 @@
 }
 
 .search_field_wrapper {
-
+  display: flex;
   width: 20rem;
   max-width: 100%;
+  margin-top: 0.3rem;
 
   &.wide {
     width: 30rem;
@@ -86,8 +87,6 @@
   &.right {
     float: right;
   }
-
-  width: 20rem;
 
   input[type=search] {
     background-color: var(--color-widget-bg);
@@ -102,6 +101,10 @@
 
   &+select#distribute-to {
     margin-top: -1px;
+  }
+
+  button {
+    margin-left: 0.3rem;
   }
 
 }

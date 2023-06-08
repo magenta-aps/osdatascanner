@@ -125,6 +125,10 @@ class ReportView(LoginRequiredMixin, ListView):
             self.document_reports = self.document_reports.filter(
                 datasource_last_modified__lte=older_than_30)
 
+        if (search_string := self.request.GET.get('search_field')):
+            self.document_reports = self.document_reports.filter(
+                Q(name__icontains=search_string) | Q(place__icontains=search_string))
+
         if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
             self.document_reports = self.document_reports.filter(
                 scanner_job_pk=int(scannerjob))

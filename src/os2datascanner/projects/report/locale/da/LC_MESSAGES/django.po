@@ -100,15 +100,19 @@ msgstr "sortér efter"
 msgid "name"
 msgstr "navn"
 
-#: reportapp/models/documentreport.py:64
+#: reportapp/models/documentreport.py:63
+msgid "place"
+msgstr ""
+
+#: reportapp/models/documentreport.py:66
 msgid "source type"
 msgstr "kildetype"
 
-#: reportapp/models/documentreport.py:66
+#: reportapp/models/documentreport.py:68
 msgid "sensitivity"
 msgstr "følsomhed"
 
-#: reportapp/models/documentreport.py:68
+#: reportapp/models/documentreport.py:70
 msgid "probability"
 msgstr "sandsynlighed"
 
@@ -117,39 +121,39 @@ msgstr "sandsynlighed"
 msgid "Other"
 msgstr "Andet"
 
-#: reportapp/models/documentreport.py:142
+#: reportapp/models/documentreport.py:144
 msgid "Edited"
 msgstr "Redigeret"
 
-#: reportapp/models/documentreport.py:143
+#: reportapp/models/documentreport.py:145
 msgid "Deleted and journalized"
 msgstr "Slettet og journaliseret"
 
-#: reportapp/models/documentreport.py:144
+#: reportapp/models/documentreport.py:146
 msgid "Deleted"
 msgstr "Slettet"
 
-#: reportapp/models/documentreport.py:145
+#: reportapp/models/documentreport.py:147
 msgid "False positive"
 msgstr "Falsk positiv"
 
-#: reportapp/models/documentreport.py:148
+#: reportapp/models/documentreport.py:150
 msgid "number of matches"
 msgstr "antal matches"
 
-#: reportapp/models/documentreport.py:153
+#: reportapp/models/documentreport.py:155
 msgid "resolution status"
 msgstr "håndteringsstatus"
 
-#: reportapp/models/documentreport.py:156
+#: reportapp/models/documentreport.py:158
 msgid "resolution time"
 msgstr "håndteringstid"
 
-#: reportapp/models/documentreport.py:159
+#: reportapp/models/documentreport.py:161
 msgid "justification"
 msgstr "begrundelse"
 
-#: reportapp/models/documentreport.py:214
+#: reportapp/models/documentreport.py:216
 msgid "document reports"
 msgstr "dokument rapporter"
 

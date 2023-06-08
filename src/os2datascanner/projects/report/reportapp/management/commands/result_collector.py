@@ -239,6 +239,8 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                             new_matches.handle.presentation_name),
                     "sort_key": prepare_json_object(
                             new_matches.handle.sort_key),
+                    "place": prepare_json_object(
+                            new_matches.handle.presentation_place),
                     "sensitivity": new_matches.sensitivity.value,
                     "probability": new_matches.probability,
                     "raw_matches": prepare_json_object(

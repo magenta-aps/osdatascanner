@@ -106,6 +106,8 @@ coexist with imported ones.
   - This tab has three sub-tabs for personal, remediator and undistributed
     results.
 
+- Search functionality in the report module.
+
 ### General improvements
 
 - Guesses for the end time of running scannerjobs can no longer be in the past.

@@ -7,9 +7,21 @@
       hx-select=".content"
       hx-get="{{ request.path }}"
       hx-swap="outerHTML"
-      hx-trigger="change"
+      hx-trigger="change, click from:#search_button"
       hx-include="[id='dropdown_options']"
+      onsubmit="return false"
       hx-indicator="#report-page-indicator">
+
+  <div class="search_field_wrapper">
+    <input type="search"
+           name="search_field"
+           id="search_field"
+           placeholder="{% trans "Search for a path..." %}"
+           value="{{ request.GET.search_field }}">
+    <button type="button" class="button" id="search_button">{% trans "Search" %}</button>
+  </div>
+ 
+ 
   <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}" />
   <input type="hidden" name="order" id="order" value="{{ order }}" />
 
