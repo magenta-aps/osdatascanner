@@ -78,6 +78,9 @@ channels_redis
 cryptography>=3.2
 email-validator
 
+# AI
+openai
+
 # At the moment only used during development:
 django_extensions
 django-debug-toolbar

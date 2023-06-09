@@ -2,11 +2,13 @@
 
 {% widthratio match.probability 1.0 100 as percentage %}
 {% if match.probability < 0.5 %}
-  <div class="probability probability--green">{{ percentage }}%</div>
+  <div class="probability probability--green"
+       title="{{ match.explanation }}">{{ percentage }}%</div>
 {% elif match.probability <= 0.74 %}
-  <div class="probability probability--orange">{{ percentage }}%</div>
+  <div class="probability probability--orange"
+       title="{{ match.explanation }}">{{ percentage }}%</div>
 {% elif match.probability > 0.74 %}
-  <div class="probability probability--red">{{ percentage }}%</div>
+  <div class="probability probability--red" title="{{ match.explanation }}">{{ percentage }}%</div>
 {% else %}
-  <div class="probability">{{ percentage }}%</div>
+  <div class="probability" title="{{ match.explanation }}">{{ percentage }}%</div>
 {% endif %}

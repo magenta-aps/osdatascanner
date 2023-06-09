@@ -4,6 +4,8 @@ from functools import partial
 from itertools import chain
 from enum import Enum, unique
 import structlog
+import openai
+import json
 
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
@@ -132,6 +134,9 @@ class CPRRule(RegexRule):
                              f"due to {ctype}")
 
             if probability:
+
+                probability, explanation = calc_probability(content)
+
                 imatch += 1
                 yield {
                     "match": cpr,
@@ -144,6 +149,7 @@ class CPRRule(RegexRule):
                         else self.sensitivity
                     ),
                     "probability": probability,
+                    "explanation": explanation,
                 }
             logger.debug(f"{itot} cpr-like numbers, "
                          f"of which {imatch} had a probabiliy > 0")
@@ -310,3 +316,33 @@ def is_alpha_case(s: str) -> bool:
     s = s.replace("-", "")
     # We could enforce s.isalpha() to prevent ma10ta, but then "nr:" would fail
     return s.istitle() or s.islower() or s.isupper()  # and s.isalpha()
+
+
+def calc_probability(content):
+    from os2datascanner.engine2 import settings
+
+    openai.api_key = settings.openai["OPENAI_API_KEY"]
+
+    # set initial context
+    messages = [
+        {"role": "user", "content": content},
+        {"role": "system", "content": "Formuler dit svar som et JSON-objekt på"
+            " følgende form: {\"sensitive\": true or false, \"explanation\": "
+            "<expl>, \"probability\": <prob>}, hvor 'sensitive' er true hvis "
+            "teksten indeholder personfølsomme oplysninger, og false hvis den "
+            "ikke gør. <expl> er din forklaring på, hvorfor teksten er "
+            "personfølsom. <prob> er, hvor sikker du er på, din vurdering i "
+            "procent som en integer."},
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+
+    res = json.loads(response.get("choices")[0].get("message").get("content"))
+
+    if res.get('sensitive'):
+        return res.get('probability')/100, res.get('explanation')
+    else:
+        return (100 - res.get('probability'))/100, res.get('explanation')
