@@ -294,6 +294,29 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context["org_unit"] = self.org_unit
 
         context["employee_count"] = self.employee_count
+        
+        if unit_name := self.request.GET.get('org_unit', None):
+            org_unit = user_units.get(name=unit_name)
+        else:
+            org_unit = user_units.first() or None
+        context["org_unit"] = org_unit
+
+        if org_unit:
+            accounts = Account.objects.filter(units=org_unit)
+            if search_field := self.request.GET.get('search_field', None):
+                self.employees = accounts.filter(
+                    Q(first_name__icontains=search_field) |
+                    Q(last_name__icontains=search_field) |
+                    Q(username__istartswith=search_field))
+            else:
+                self.employees = accounts
+            self.order_employees()
+            # This operation should NOT be done here. Move this to somehwere it makes sense.
+            for employee in self.employees:
+                employee.save()
+        else:
+            self.employees = None
+        context["employees"] = self.employees
 
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')

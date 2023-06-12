@@ -41,12 +41,22 @@
               <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
             </div>
             <div class="org_filtering dropdown">
-              <select name="org_unit" id="org_units" autocomplete="off">
+              <input type="text"
+                     name="org_unit"
+                     id="org_units"
+                     open-modal="#test"
+                     text-modal-element
+                     value="{{ org_unit }}"/>
+              <dialog id="test">
+                <ul id="org_units_list">
+                  {% for unit in user_units %}<li>{{ unit }}</li>{% endfor %}
+                </ul>
+              </dialog>
+              {% comment %} <select name="org_unit" id="org_units" autocomplete="off">
                 {% for unit in user_units %}
-                  <option value="{{ unit.uuid }}"
-                          {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
+                  <option value="{{ unit.uuid }}" {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
                 {% endfor %}
-              </select>
+              </select> {% endcomment %}
             </div>
           </div>
 
