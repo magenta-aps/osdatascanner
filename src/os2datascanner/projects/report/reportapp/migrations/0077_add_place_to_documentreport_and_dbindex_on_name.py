@@ -2,6 +2,18 @@
 
 from django.db import migrations, models
 
+from os2datascanner.engine2.model.core import Handle
+
+
+def populate_place_fields_of_documentreports(apps, schema_editor):
+    DocumentReport = apps.get_model('os2datascanner_report', 'DocumentReport')
+
+    all_reports = DocumentReport.objects.all()
+    for dr in all_reports.filter(raw_matches__isnull=False).iterator():
+        handle = Handle.from_json_object(dr.raw_matches['handle'])
+        dr.place =  handle.presentation_place
+        dr.save()
+
 
 class Migration(migrations.Migration):
 
