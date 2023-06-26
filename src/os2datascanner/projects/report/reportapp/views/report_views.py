@@ -23,6 +23,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponse
@@ -126,8 +127,10 @@ class ReportView(LoginRequiredMixin, ListView):
                 datasource_last_modified__lte=older_than_30)
 
         if (search_string := self.request.GET.get('search_field')):
-            self.document_reports = self.document_reports.filter(
-                Q(name__icontains=search_string) | Q(place__icontains=search_string))
+            query = SearchQuery(search_string)
+            self.document_reports = self.document_reports.annotate(
+                search=SearchVector('name', 'place')).filter(
+                    search=query)
 
         if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
             self.document_reports = self.document_reports.filter(
