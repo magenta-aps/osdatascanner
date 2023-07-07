@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import JSONField
 from django.db.models.functions import Upper
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.indexes import GinIndex
 
 from os2datascanner.projects.report.organizations.models import Organization
 from os2datascanner.utils.system_utilities import time_now
@@ -60,7 +61,7 @@ class DocumentReport(models.Model):
     # filename
     name = models.CharField(max_length=256, verbose_name=_("name"), default="", db_index=True)
 
-    place = models.CharField(max_length=256, verbose_name=_("place"), default="", db_index=True)
+    place = models.TextField(verbose_name=_("place"), default="")
 
     source_type = models.CharField(max_length=2000,
                                    verbose_name=_("source type"), db_index=True)
@@ -231,6 +232,7 @@ class DocumentReport(models.Model):
             models.Index(
                 Upper("owner"),
                 name="alias_creation_query_idx"),
+            GinIndex(fields=["place"], name="place_search")
         ]
         constraints = [
             models.UniqueConstraint(
