@@ -52,6 +52,8 @@
         <!-- End modal dialog -->
       </div>
 
+      {% block footer %}{% endblock %}
+
       <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
 
       {% block scripts %}
@@ -76,7 +78,6 @@
 
       <!-- TODO: Do 'scripts' and 'jquery_script' need to be separate blocks? -->
       {% block jquery_script %}{% endblock %}
-
     </body>
   </html>
 {% endlanguage %}
