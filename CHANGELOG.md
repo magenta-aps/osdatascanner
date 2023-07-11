@@ -65,6 +65,9 @@ and proceed.
 
 - Adjusted left margin for content on smaller screens.
 
+- Convenience shortcut buttons can now be displayed when running the report
+  module in development mode.
+
 ## 3.20.6, 2nd October 2023
 
 "Purple Orchid in my Windowsill"

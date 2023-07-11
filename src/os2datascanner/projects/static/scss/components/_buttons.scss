@@ -1,3 +1,7 @@
+.__button {
+  display: none;
+}
+
 .button {
   background-color: #fff;
   background-color: rgba(0, 0, 0, 0.1);
@@ -219,6 +223,13 @@
     &:hover {
       color: var(--color-text-main);
     }
+  }
+
+  &--debug {
+    background: repeating-linear-gradient(
+        45deg, #ddd7, #fdd7 10px, #f667 10px, #f667 20px);
+    border: 1px dashed var(--color-primary-dark);
+    font-style: italic;
   }
 }
 

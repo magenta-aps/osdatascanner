@@ -1,7 +1,4 @@
-{% load handle_extras %}
-{% load i18n %}
-{% load l10n %}
-{% load humanize %}
+{% load i18n l10n humanize admin_urls handle_extras %}
 {% with type=document_report.matches.handle|find_type_label %}
   {% with frag=document_report.matches.matches|merge_renderable_match_fragments %}
     <tr data-type="{{ type }}"
@@ -103,6 +100,13 @@
                       data-clipboard-text="{{ document_report.matches.handle|find_parent:type|present_url }}">
                 {% trans "Copy link" %}
               </button>
+            {% endif %}
+            {% if settings.DEBUG %}
+              <a href="{% url 'admin:os2datascanner_report_documentreport_change' document_report.pk %}"
+                 class="__button button--debug btn-{{ document_report.pk|unlocalize }}"
+                 data-clipboard-text="{{ document_report.matches.handle|find_parent:type|present_url }}">
+                Open in Django administration
+              </a>
             {% endif %}
           </div>
         </div>

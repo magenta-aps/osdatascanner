@@ -117,3 +117,10 @@
     </table>
   </form>
 </div>
+
+{% if settings.DEBUG %}
+  {% block footer %}
+    <a class="button button--debug"
+       onclick="return (Array.from(document.querySelectorAll('.__button')).map(el => el.classList.replace('__button', 'button')) && false)">Reveal debug buttons</a>
+  {% endblock %}
+{% endif %}
