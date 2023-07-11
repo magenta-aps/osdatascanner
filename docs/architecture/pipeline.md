@@ -30,6 +30,26 @@ information transmitted over the underlying RabbitMQ message bus, the
 Processor, Matcher and Tagger stages are customarily bundled into a single
 process known as the _worker_.
 
+## Components supporting the pipeline operation
+
+In addition to the five stages mentioned above, there are also four _collectors_,
+which update the databases for the admin and report modules with relevant information
+about the running scanner jobs. While these _collectors_ are not technically a part of
+the pipeline, they provide important information about the state of the running scanner
+jobs across the admin and report modules:
+
+* Checkup Collector (admin): This collects *checkup* messages about objects that should be
+  revisited (scanned again) next time the scanner jobs runs.
+* Status Collector (admin): This collects *status* messages about the current status of a
+  scanner job, i.e. the number of objects scanned so far, the total number of objects,
+  the number of explored sources, etc.
+* Event Collector (report): This collector maintains `Organisation`s, `OrganizationalUnit`,
+  `Account`, `Alias` and `Position` objects in the report module database, such as 
+  bulk CRUD operations on said objects.
+* Result Collector (report): This collects *problem*, *metadata* and *match* messages and
+  is in charge of performing CRUD operations for `DocumentReport`s in the report module
+  database.
+
 ## What are the pipeline's design principles?
 
 * Simple external interfaces
@@ -90,3 +110,73 @@ process known as the _worker_.
   In particular, this means that pipeline stages should not communicate with a
   database: their tasks should be precisely and exclusively specified by their
   input.
+
+## The big picture - communication between OS2datascanner components
+
+As mentioned, the engine consists of five stages that work in tandem with the
+four collector processes and the admin and report module. This is a lot of complex,
+moving parts.
+
+To ease comprehension of the entire set of interactions at a fine devel of detail,
+the complete, detailed interaction between all components (as well as the user) is illustrated by
+the UML Sequence Diagram below:
+
+![UML Sequence Diagram of engine component communication](./os2ds_current_pipeline_sequence.svg)
+
+_Note: Due to the distributed nature of the system, all of the messages should be
+considered asynchronous._
+
+This diagram is divided into sections: one for each of the engine pipeline stages,
+one for the collector processes with subsections, as well as two sections that briefly
+describe startup and completion of a scanner job, respectively.
+
+## The basis of a pipeline stage instance
+
+Since every pipeline stage must communicate with RabbitMQ using AMQP and must be run
+concurrently on separate threads, all engine stages share some common abstractions
+depicted on the UML Class Diagram below:
+
+![UML Class Diagram of general pipeline stage abstractions](./os2ds_queues.svg)
+
+There are four classes in this class hierarchy, three of which that provide some general 
+interactions with RabbitMQ:
+
+- `PikaConnectionHolder`
+- `PikaPipelineRunner`
+- `PikaPipelineThread`
+
+The `GenericRunner` handles messages that are specific to the OS2datascanner engine.
+
+_Note: all of the four collector processes have their own specialized runner based
+on `PikaPipelineThread` instead of using the `GenericRunner`._
+
+Together, these three abstractions allows one to create a separate thread for some routine
+that involves communication with an AMQP message broker. Let's us examine each one in detail:
+
+### `PikaConnectionHolder`
+
+This class is responsible for establishing and maintaining a blocking connection with an AMQP broker
+with parameters defined in `os2datascanner/utils/pika_settings.py`.
+These parameters include host, port, virtual_host, heartbeat and authentication with credentials
+among others.
+
+It can also create an AMQP channel and automatically takes care of any required cleanup upon object
+destruction. In other words, if we consider AMQP connections and channels to be resources,
+`PikaConnectionHolder` implements [RAII](https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization) for said resources.
+
+### `PikaPipelineRunner`
+
+This class extends `PikaConnectionHolder` with AMQP exchange and queue declarations as well as
+wrapper methods for basic AMQP messages such as acknowledgement, consumption and cancellation.
+
+### `PikaPipelineThread`
+
+This class implements `threading.Thread` as well as extending `PikaPipelineRunner`. 
+It runs two threads: a main thread (`run_consumer()`) and a background thread (`run()`).
+
+The background thread runs an event-loop that reads from a local message buffer 
+(`self._outgoing`) and dispatches these to RabbitMQ depending on the message head.
+
+The main thread runs another event-loop that reads from a local message buffer
+(`self._incoming`), which contains the read queues. It produces messages for the background
+thread using the `handle_message()`-method.
