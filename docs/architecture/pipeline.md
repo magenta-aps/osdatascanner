@@ -130,6 +130,10 @@ This diagram is divided into sections: one for each of the engine pipeline stage
 one for the collector processes with subsections, as well as two sections that briefly
 describe startup and completion of a scanner job, respectively.
 
+It illustrates the interaction of the components, but as is evident, RabbitMQ is the mediator
+that enables communication between them. For a detailed description of the use of RabbitMQ
+and AMQP, please see the section on [RabbitMQ](./rabbitmq.md).
+
 ## The basis of a pipeline stage instance
 
 Since every pipeline stage must communicate with RabbitMQ using AMQP and must be run
