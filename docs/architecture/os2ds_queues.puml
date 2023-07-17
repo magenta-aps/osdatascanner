@@ -1,0 +1,71 @@
+@startuml
+class PikaConnectionHolder {
+      - _parameters
+      - _connection
+      - _channel 
+      - _backoff
+      + make_connection()
+      + connection()
+      + channel()
+      + has_connection()
+      + clear()
+      __enter__()
+      __exit__()
+}
+
+class PikaPipelineRunner {
+      - _read
+      - _write
+      - _prefetch_count
+      + make_channel()
+      + handle_message_raw()
+      - _basic_consume()
+      - _basic_cancel()
+}
+
+class PikaPipelineThread {
+        - _incoming
+        - _outgoing
+        - _live
+        - _condition
+        - _exclusive
+        - _default_basic_properties
+        - _shutdown_exception
+        - _enqueue()
+        + enqueue_ack()
+        + enqueue_reject()
+        + enqueue_stop()
+        + enqueue_message()
+        - _enqueue_pause()
+        + synchronise()
+        + await_message()
+        + handle_message()
+        + after_message()
+        + handle_message_raw()
+        + run()
+        + run_consumer()
+}
+
+class GenericRunner {
+        - _module
+        - _registry
+        - _summary
+        - _source_manager
+        - _cancelled
+        - _limit
+        - _count
+        + make_channel()
+        - _basic_consume()
+        - _handle_command()
+        - _handle_content()
+        + handle_message()
+        + after_message()
+}
+
+PikaConnectionHolder <|-- PikaPipelineRunner
+
+PikaPipelineRunner <|-- PikaPipelineThread
+threading.Thread <|-- PikaPipelineThread
+
+PikaPipelineThread <|-- GenericRunner
+@enduml

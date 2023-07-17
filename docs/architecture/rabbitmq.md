@@ -42,8 +42,9 @@ there are on the OS2datascanner instance. Similarly, the admin and report module
 structure in the engine or how many _workers_ there are and who they serve.
 
 Declaration and binding of the exchange structure and the associated queues has to be done at some point.
-Since the AMQP protocol is idempotent when it comes to exchange and queue declaration, the exchanges are
-declared at two points:
+Exchanges and queues do not need to be explicitly created in AMQP; they just need to be declared, and
+the broker will make sure that everything that is declared exists. As a result, there's no reason not
+to declare exchanges as a precaution, and this happens at several points in OS2datascanner:
 
 1. When starting a scanner job from UI in the admin module
 2. Upon startup of an engine stage instance
