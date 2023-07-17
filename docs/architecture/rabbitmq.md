@@ -58,3 +58,20 @@ This means that, although undesirable, two scenarios are possible:
 2. Workers for non-existant organisations have been provisioned, which take up system resources.
 
 The former is probably the worse offender here.
+
+## Overview of communication between engine components and RabbitMQ
+
+The engine components (stages + collectors) all have designated queues that they read from and
+queues that they write to. An overview is presented in the diagram below:
+
+![A diagram showing the engine components and the queues that they read from/write to](./rabbitmq_queues.svg)
+
+Except for the worker process/conversions queue, all messages are routed through the 
+[RabbitMQ default exchange](https://www.cloudamqp.com/blog/part4-rabbitmq-for-beginners-exchanges-routing-keys-bindings.html),
+using the `routing_key` to determine the destination queue.
+
+Each message queue has the prefix 'os2ds_' which is then followed by the type of messages that are 
+stored in the queue (e.g. the queue `os2ds_scan_specs` contains `ScanSpecMessage`s and so on).
+A queue should only contain one type of message at all times.
+
+Every engine component only has one queue that it reads from, but may have multiple queues that it writes to.
