@@ -196,6 +196,6 @@ scanner jobs in the first place.
 The interaction between the main thread, the background thread and RabbitMQ is captured by the UML
 Sequence Diagram below:
 
-![UML Sequence Diagram showing the interaction between threads in `PikaPipelineThread`](os2ds_ppt_threads.puml)
+![UML Sequence Diagram showing the interaction between threads in `PikaPipelineThread`](os2ds_ppt_threads.svg)
 
 
