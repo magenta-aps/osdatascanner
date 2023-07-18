@@ -1,0 +1,44 @@
+@startuml
+participant MainThread as main
+participant BackgroundThread as bg
+
+queue RabbitMQ as mq
+
+[o-> main : run_consumer()
+activate main
+        main -> bg ++ : Start
+        activate bg
+                bg -> bg : Run
+                activate bg
+                        bg ->> mq : Enqueue Incoming Messages
+                        loop Thread is alive
+                                main -> mq : Await Incoming Message
+                                mq -> main : Incoming Message
+
+                                alt Message is Ok
+                                        main -> main : Handle Incoming Message
+                                        main ->> mq : Enqueue Handled Message as Outgoing
+                                        main ->> mq : Acknowledge Message
+                                else Message is Rejection
+                                        main ->> mq : Reject Incoming Message
+                                end
+
+                                loop Has Outgoing Messages
+                                        bg -> mq : Get Outgoing Message
+                                        mq -> bg : Outgoing Message
+
+                                        alt Head is Message
+                                                bg ->> mq : Publish Message
+                                        else Head is Acknowledgement
+                                                bg ->> mq : Acknowledge Message
+                                        else Head is Rejection
+                                                bg ->> mq : Reject Message
+                                        end
+                                end
+                        end
+                deactivate bg
+        main ->x bg : Join()
+        deactivate bg
+deactivate main
+
+@enduml
