@@ -168,10 +168,15 @@ It can also create an AMQP channel and automatically takes care of any required 
 destruction. In other words, if we consider AMQP connections and channels to be resources,
 `PikaConnectionHolder` implements [RAII](https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization) for said resources.
 
+Although not an abstract class, `PikaConnectionHolder` is never instantiated in practice (except
+for testing purposes and some cli utilities), but serves as a base for inheritance.
+
 ### `PikaPipelineRunner`
 
 This class extends `PikaConnectionHolder` with AMQP exchange and queue declarations as well as
 wrapper methods for basic AMQP messages such as acknowledgement, consumption and cancellation.
+
+Like `PikaConnectionHolder`, `PikaPipelineRunner` is also never instantiated in practice.
 
 ### `PikaPipelineThread`
 
@@ -184,3 +189,13 @@ The background thread runs an event-loop that reads from a local message buffer
 The main thread runs another event-loop that reads from a local message buffer
 (`self._incoming`), which contains the read queues. It produces messages for the background
 thread using the `handle_message()`-method.
+
+This class is used not only by the pipeline stages, but also by the admin module to initiate
+scanner jobs in the first place.
+
+The interaction between the main thread, the background thread and RabbitMQ is captured by the UML
+Sequence Diagram below:
+
+![UML Sequence Diagram showing the interaction between threads in `PikaPipelineThread`](os2ds_ppt_threads.puml)
+
+
