@@ -13,6 +13,7 @@ nav:
   - Management Commands: management-commands.md
   - The engine:
     - Engine/pipeline: architecture/pipeline.md
+    - Engine/RabbitMQ: architecture/rabbitmq.md
     - The model: engine2.md
     - The rule engine: rules.md
   - Security Architecture: architecture/security.md
