@@ -41,13 +41,17 @@
               <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
             </div>
             <div class="org_filtering dropdown">
-              <input type="text"
-                     name="org_unit"
-                     id="org_units"
-                     open-modal="#test"
-                     text-modal-element
-                     value="{{ org_unit }}"/>
-              <dialog id="test">
+              <div class="search_field_wrapper">
+                <input type="search"
+                       name="org_unit"
+                       id="org_units"
+                       open-modal="#org_units_dialog"
+                       text-modal-element
+                       value="{{ org_unit }}"
+                       placeholder="{{ org_unit }}"
+                       autocomplete="off" />
+              </div>
+              <dialog id="org_units_dialog" class="dialog-dropdown">
                 <ul id="org_units_list">
                   {% for unit in user_units %}<li>{{ unit }}</li>{% endfor %}
                 </ul>
@@ -66,7 +70,8 @@
                    name="search_field"
                    id="search_field"
                    placeholder="{% trans "Search for employee" %}"
-                   value="{{ request.GET.search_field }}" />
+                   value="{{ request.GET.search_field }}"
+                   autocomplete="off" />
           </div>
         </div>
       </form>

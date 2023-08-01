@@ -294,11 +294,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context["org_unit"] = self.org_unit
 
         context["employee_count"] = self.employee_count
-        
+
         if unit_name := self.request.GET.get('org_unit', None):
-            org_unit = user_units.get(name=unit_name)
+            org_unit = self.user_units.get(name=unit_name)
         else:
-            org_unit = user_units.first() or None
+            org_unit = self.user_units.first() or None
         context["org_unit"] = org_unit
 
         if org_unit:
@@ -310,7 +310,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                     Q(username__istartswith=search_field))
             else:
                 self.employees = accounts
-            self.order_employees()
+            self.employees = self.order_employees(self.employees)
             # This operation should NOT be done here. Move this to somehwere it makes sense.
             for employee in self.employees:
                 employee.save()
@@ -349,8 +349,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
             self.user_units = OrganizationalUnit.objects.filter(
                 Q(positions__account=self.request.user.account) & Q(positions__role="manager"))
 
-        if unit_uuid := request.GET.get('org_unit', None):
-            self.org_unit = self.user_units.get(uuid=unit_uuid)
+        if unit_name := request.GET.get('org_unit', None):
+            self.org_unit = self.user_units.get(name=unit_name)
         else:
             self.org_unit = self.user_units.first() or None
 

@@ -4,7 +4,7 @@ function setModalEvents() {
   textModalElements.forEach(e => {
     const modalId = e.getAttribute("open-modal");
     const modal = document.querySelector(modalId);
-    e.addEventListener("focus", () => {
+    e.addEventListener("focusin", () => {
       e.value = "";
       modal.show();
     });
@@ -30,8 +30,20 @@ function searchOrgUnitKeyUp() {
   });
 }
 
-htmx.onLoad(() => {
-  setModalEvents();
-  searchOrgUnitKeyUp();
-});
+function inputOrgUnitsInSearchField() {
+  const searchField = document.querySelector('#org_units');
+  const choices = document.querySelector('#org_units_list').querySelectorAll('li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      searchField.value = li.textContent;
+    });
+  });
+}
 
+htmx.onLoad(content => {
+  if (content.classList.contains('page')) {
+    setModalEvents();
+    searchOrgUnitKeyUp();
+    inputOrgUnitsInSearchField();
+  }
+});
