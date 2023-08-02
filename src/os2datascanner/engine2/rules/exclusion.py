@@ -12,7 +12,7 @@ class ExclusionRule(SimpleRule):
     '''
     type_label = "exclusion"
 
-    operates_on = OutputType.Exclusion
+    operates_on = OutputType.Presentation
 
     def __init__(self, rule: Rule, **kwargs):
         super().__init__(**kwargs)
