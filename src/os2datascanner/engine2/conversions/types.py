@@ -37,6 +37,7 @@ class OutputType(Enum):
     Links = "links"  # list[Link]
     Manifest = "manifest"  # list[Handle]
     EmailHeaders = "email-headers"  # dict[str, str]
+    Presentation = "presentation"  # str(Handle)
 
     AlwaysTrue = "fallback"  # True
     NoConversions = "dummy"
@@ -61,7 +62,8 @@ class OutputType(Enum):
         elif self == OutputType.EmailHeaders:
             # v is already suitable for JSON serialisation
             return v
-
+        elif self == OutputType.Presentation:
+            return v
         elif self == OutputType.AlwaysTrue:
             return True
         else:
@@ -85,7 +87,8 @@ class OutputType(Enum):
         elif self == OutputType.EmailHeaders:
             # Force all keys to be lower-case
             return {k.lower(): v for k, v in v.items()}
-
+        elif self == OutputType.Presentation:
+            return v
         elif self == OutputType.AlwaysTrue:
             return True
         else:
