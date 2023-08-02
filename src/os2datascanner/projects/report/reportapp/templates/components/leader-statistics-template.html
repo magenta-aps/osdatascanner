@@ -27,6 +27,7 @@
       </p>
 
       <form name="leader_overview_form"
+            id="leader_overview_form"
             hx-get="{% url "statistics-leader" %}"
             hx-target=".content"
             hx-select=".content"
@@ -45,17 +46,17 @@
                 <input type="search"
                        name="org_unit"
                        id="org_units"
-                       open-modal="#org_units_dialog"
-                       text-modal-element
                        value="{{ org_unit }}"
                        placeholder="{{ org_unit }}"
-                       autocomplete="off" />
+                       autocomplete="off"
+                       open-modal="#org_units_dialog"
+                       text-modal-element />
               </div>
-              <dialog id="org_units_dialog" class="dialog-dropdown">
+              <div id="org_units_dialog" class="dialog-dropdown hidden">
                 <ul id="org_units_list">
                   {% for unit in user_units %}<li>{{ unit }}</li>{% endfor %}
                 </ul>
-              </dialog>
+              </div>
               {% comment %} <select name="org_unit" id="org_units" autocomplete="off">
                 {% for unit in user_units %}
                   <option value="{{ unit.uuid }}" {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>

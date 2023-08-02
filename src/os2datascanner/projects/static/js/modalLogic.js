@@ -6,10 +6,10 @@ function setModalEvents() {
     const modal = document.querySelector(modalId);
     e.addEventListener("focusin", () => {
       e.value = "";
-      modal.show();
+      modal.classList.remove('hidden');
     });
     e.addEventListener("focusout", () => {
-      modal.close();
+      modal.classList.add('hidden');
     });
   });
 }
@@ -32,18 +32,21 @@ function searchOrgUnitKeyUp() {
 
 function inputOrgUnitsInSearchField() {
   const searchField = document.querySelector('#org_units');
+  const overviewForm = document.querySelector('#leader_overview_form');
   const choices = document.querySelector('#org_units_list').querySelectorAll('li');
   choices.forEach(li => {
     li.addEventListener('click', () => {
+      console.log(searchField);
       searchField.value = li.textContent;
+      overviewForm.dispatchEvent(new Event('change'));
     });
   });
 }
 
 htmx.onLoad(content => {
-  if (content.classList.contains('page')) {
+  if (content.classList.contains('page') || content.classList.contains('content')) {
+    inputOrgUnitsInSearchField();
     setModalEvents();
     searchOrgUnitKeyUp();
-    inputOrgUnitsInSearchField();
   }
 });
