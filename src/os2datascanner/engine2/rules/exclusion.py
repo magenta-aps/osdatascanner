@@ -12,14 +12,17 @@ class ExclusionRule(SimpleRule):
     '''
     type_label = "exclusion"
 
-    operates_on = OutputType.Presentation
+    operates_on = OutputType.Exclusion
 
     def __init__(self, rule: Rule, **kwargs):
         super().__init__(**kwargs)
         self._rule = rule
 
     def match(self, value: Handle):
-        yield from self._rule.match(value.presentation_name)
+        presentation = value.presentation_name
+
+        for _, rms in self._rule.match(presentation):
+            yield from (r for r in rms if r["match"])
 
     def to_json_object(self):
         return super().to_json_object() | {
