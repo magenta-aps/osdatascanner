@@ -81,7 +81,6 @@ scan_spec = messages.ScanSpecMessage(
     source=email_handle.source,
     rule=common_rule,
     configuration={},
-    filter_rule=None,
     progress=None)
 
 match = messages.MatchesMessage(

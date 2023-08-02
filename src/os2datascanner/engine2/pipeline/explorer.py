@@ -6,7 +6,6 @@ from ..model.core.errors import (ModelException,
                                  UnavailableError)
 from ..utilities.backoff import DummyRetrier, TimeoutRetrier
 from . import messages
-from .utilities.filtering import is_handle_relevant
 
 import structlog
 
@@ -106,16 +105,12 @@ def message_received_raw(body, channel, source_manager):  # noqa
                             scan_spec, handle, progress).to_json_object())
                 handle_count += 1
             else:
-                # Check if the handle should be excluded.
-                if is_handle_relevant(handle, scan_spec.filter_rule):
-                    # This Handle is a thin wrapper around an independent Source.
-                    # Construct that Source and enqueue it for further exploration
-                    new_source = Source.from_handle(handle)
-                    yield ("os2ds_scan_specs", scan_spec._replace(
-                        source=new_source).to_json_object())
-                    source_count = (source_count or 0) + 1
-                else:
-                    log.info("handle excluded", handle=handle)
+                # This Handle is a thin wrapper around an independent Source.
+                # Construct that Source and enqueue it for further exploration
+                new_source = Source.from_handle(handle)
+                yield ("os2ds_scan_specs", scan_spec._replace(
+                    source=new_source).to_json_object())
+                source_count = (source_count or 0) + 1
 
         log.warning("stopped unexpectedly")
     except StopIteration:

@@ -106,7 +106,6 @@ class Engine2PipelineTests(unittest.TestCase):
                 source=secret_source,
                 rule=AlwaysMatchesRule(),
                 configuration={},
-                filter_rule=None,
                 progress=None)
 
         for message in (

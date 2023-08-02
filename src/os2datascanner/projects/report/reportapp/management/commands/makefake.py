@@ -263,7 +263,6 @@ def make_fake_scan_type(organization, scan_name):
         scan_tag=scan_tag,
         source=None,
         rule=make_fake_rule(),
-        filter_rule=make_fake_rule(),
         configuration={},
         progress=None,
     )

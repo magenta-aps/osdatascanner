@@ -143,11 +143,6 @@ class Scanner(models.Model):
                                             default=INVALID,
                                             verbose_name=_('validation status'))
 
-    exclusion_rules = models.ManyToManyField(Rule,
-                                             blank=True,
-                                             verbose_name=_('exclusion rules'),
-                                             related_name='scanners_ex_rules')
-
     covered_accounts = models.ManyToManyField('organizations.Account',
                                               blank=True,
                                               verbose_name=_('covered accounts'),
@@ -296,28 +291,18 @@ class Scanner(models.Model):
         # prerules includes: do_ocr, LastModifiedRule
         return AndRule.make(*prerules, rule)
 
-    def _construct_filter_rule(self) -> Rule:
-        try:
-            return OrRule.make(
-                *[er.make_engine2_rule()
-                  for er in self.exclusion_rules.all().select_subclasses()])
-        except ValueError:
-            pass
-        return None
-
     def _construct_scan_spec_template(self, user, force: bool) -> (
             messages.ScanSpecMessage):
         """Builds a scan specification template for this scanner. This template
         has no associated Source, so make sure you put one in with the _replace
         or _deep_replace methods before trying to scan with it."""
         rule = self._construct_rule(force)
-        filter_rule = self._construct_filter_rule()
         scan_tag = self._construct_scan_tag(user)
         configuration = self._construct_configuration()
 
         return messages.ScanSpecMessage(
                 scan_tag=scan_tag, rule=rule, configuration=configuration,
-                filter_rule=filter_rule, source=None, progress=None)
+                source=None, progress=None)
 
     def _add_sources(
             self, spec_template: messages.ScanSpecMessage,

@@ -35,7 +35,6 @@ class DropboxScannerCreate(ScannerCreate):
     fields = [
         'name',
         'schedule',
-        'exclusion_rules',
         'token',
         'do_ocr',
         'do_last_modified_check',
@@ -65,7 +64,6 @@ class DropboxScannerUpdate(ScannerUpdate):
     fields = [
         'name',
         'schedule',
-        'exclusion_rules',
         'token',
         'do_ocr',
         'do_last_modified_check',

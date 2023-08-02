@@ -49,7 +49,6 @@ def execute_mini_scan(request):  # noqa:CCR001
                             scan_tag=messages.ScanTagFragment.make_dummy(),
                             source=handle.source,
                             rule=rule,
-                            filter_rule=None,
                             configuration={},
                             progress=None),
                     handle=handle,

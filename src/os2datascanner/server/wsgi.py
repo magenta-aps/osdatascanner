@@ -160,7 +160,6 @@ def scan_1(body):  # noqa: CCR001
                             uuid=uuid4())),
             source=source,
             rule=rule,
-            filter_rule=None,
             configuration=body.get("configuration", {}),
             progress=None).to_json_object()
 
@@ -243,7 +242,6 @@ def scan_handle_1(body):  # noqa: CCR001
                                     uuid=uuid4())),
                     source=handle.source,
                     rule=rule,
-                    filter_rule=None,
                     configuration=body.get("configuration", {}),
                     progress=None),
             handle=handle,

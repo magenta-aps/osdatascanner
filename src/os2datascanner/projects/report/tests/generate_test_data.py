@@ -46,7 +46,6 @@ def get_common_scan_spec():
         rule=get_regex_rule("Vores hemmelige adgangskode er",
                             Sensitivity.WARNING),
         configuration={},
-        filter_rule=None,
         progress=None)
 
 

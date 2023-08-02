@@ -185,7 +185,6 @@ class ScanSpecMessage(NamedTuple):
     rule: Rule
     configuration: dict
     progress: ProgressFragment
-    filter_rule: Rule
 
     def to_json_object(self):
         return {
@@ -193,9 +192,6 @@ class ScanSpecMessage(NamedTuple):
             "source": self.source.to_json_object(),
             "rule": self.rule.to_json_object(),
             "configuration": self.configuration or {},
-            "filter_rule": (
-                self.filter_rule.to_json_object()
-                if self.filter_rule else None),
             "progress": (
                     self.progress.to_json_object() if self.progress else None)
         }
@@ -205,7 +201,6 @@ class ScanSpecMessage(NamedTuple):
         # The progress fragment is only present when a scan spec is based on a
         # derived source and so already contains scan progress information
         progress_fragment = obj.get("progress")
-        filter_rule = obj.get("filter_rule")
         return ScanSpecMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 source=Source.from_json_object(obj["source"]),
@@ -214,10 +209,6 @@ class ScanSpecMessage(NamedTuple):
                 # specs, so not all clients will send it. Add an empty one if
                 # necessary
                 configuration=obj.get("configuration", {}),
-                filter_rule=(
-                    SimpleRule.from_json_object(filter_rule)
-                    if filter_rule
-                    else None),
                 progress=(
                     ProgressFragment.from_json_object(progress_fragment)
                     if progress_fragment

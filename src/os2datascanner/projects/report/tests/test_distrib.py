@@ -82,7 +82,7 @@ scan_spec = messages.ScanSpecMessage(
         scan_tag=messages.ScanTagFragment.make_dummy(),
         source=lucky_file.source,
         rule=AlwaysMatchesRule(),
-        configuration={}, progress=None, filter_rule=None)
+        configuration={}, progress=None)
 
 
 match_message = messages.MatchesMessage(

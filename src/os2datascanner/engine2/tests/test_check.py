@@ -21,7 +21,6 @@ class CheckTests(unittest.TestCase):
                         source=dummy,
                         rule=CPRRule(),
                         configuration={},
-                        filter_rule=None,
                         progress=None),
                 handle=dummy_handle,
                 progress=messages.ProgressFragment(
@@ -49,7 +48,6 @@ class CheckTests(unittest.TestCase):
                 source=dummy,
                 rule=CPRRule(),
                 configuration={},
-                filter_rule=None,
                 progress=None)
 
         template = messages.ConversionMessage(

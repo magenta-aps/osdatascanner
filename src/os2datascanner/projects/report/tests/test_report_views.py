@@ -95,7 +95,6 @@ egon_scan_spec = messages.ScanSpecMessage(
     source=egon_adsid_handle.source,
     rule=common_rule,
     configuration={},
-    filter_rule=None,
     progress=None)
 
 egon_positive_match = messages.MatchesMessage(
@@ -193,7 +192,6 @@ kjeld_scan_spec = messages.ScanSpecMessage(
     source=kjeld_adsid_handle.source,
     rule=common_rule,
     configuration={},
-    filter_rule=None,
     progress=None)
 
 kjeld_positive_match = messages.MatchesMessage(

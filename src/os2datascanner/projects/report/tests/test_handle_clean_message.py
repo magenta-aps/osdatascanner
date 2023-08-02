@@ -187,7 +187,6 @@ raw_matches_json_matched = json.loads('''
         "uuid": "0e18b3f2-89b6-4200-96cd-38021bbfa00f"
       }
     },
-    "filter_rule": null,
     "configuration": {
       "skip_mime_types": [
         "image/*"
