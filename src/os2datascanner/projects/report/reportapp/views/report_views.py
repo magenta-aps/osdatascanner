@@ -39,6 +39,7 @@ from os2datascanner.engine2.rules.links_follow import LinksFollowRule
 from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
+from os2datascanner.engine2.rules.exclusion import ExclusionRule
 from os2datascanner.projects.report.reportapp.models.roles.role import Role
 
 from ..utils import user_is, user_is_superadmin
@@ -53,7 +54,7 @@ logger = structlog.get_logger()
 RENDERABLE_RULES = (
     CPRRule.type_label, RegexRule.type_label, LinksFollowRule.type_label,
     OrderedWordlistRule.type_label, NameRule.type_label, AddressRule.type_label,
-    TurboCPRRule.type_label, EmailHeaderRule.type_label
+    TurboCPRRule.type_label, EmailHeaderRule.type_label, ExclusionRule.type_label
 )
 
 

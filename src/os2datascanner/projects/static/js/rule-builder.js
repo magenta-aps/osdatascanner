@@ -39,6 +39,7 @@ function selectOptions(obj, selector) {
     "address": "CustomRule_Address",
     "cpr_turbo": "TurboCPRRule",
     "email-header": "EmailHeader",
+    "exclusion": "ExclusionRule",
   };
 
   selectElem.value = valueMap[type];
@@ -55,7 +56,7 @@ function selectOptions(obj, selector) {
         inserters[inserters.length - 1].dispatchEvent(click);
       }
     });
-  } else if (["not", "email-header"].includes(type)) {
+  } else if (["not", "email-header", "exclusion"].includes(type)) {
     let rule = obj.rule;
     getSelectorAndSelect(rule, index = 0, selector);
   }
@@ -78,6 +79,9 @@ function selectOptions(obj, selector) {
       inputs[0].value = obj.expression;
       break;
     case "email-header":
+      inputs[0].value = obj.property;
+      break;
+    case "exclusion":
       inputs[0].value = obj.property;
       break;
   }
@@ -159,6 +163,7 @@ function makeRule(elem) {
 
   let type = elem.getAttribute("data-template-instance");
   let children = Array.from(elem.children);
+  let inputs;
   switch (type) {
     /* Directly convertible rules */
     case "AndRule":
@@ -209,13 +214,18 @@ function makeRule(elem) {
         "blacklist": [],
       };
     case "EmailHeader":
-      let inputs = elem.querySelectorAll("input");
+      inputs = elem.querySelectorAll("input");
       return {
         "type": "email-header",
         "property": inputs[0].value,
         "rule": children.map(makeRule).filter(c => c !== null)[0],
       };
-
+    case "ExclusionRule":
+      inputs = elem.querySelectorAll("input");
+      return {
+        "type": "exclusion",
+        "rule": children.map(makeRule).filter(c => c !== null)[0],
+      };
     case "TurboCPRRule":
       tickboxes = elem.querySelectorAll("input[type='checkbox']");
       return {

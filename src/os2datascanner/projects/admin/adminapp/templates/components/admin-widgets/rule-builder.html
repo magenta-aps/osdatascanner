@@ -32,6 +32,7 @@
       <option value="CustomRule_Name">{% trans "names" %}</option>
       <option value="CustomRule_Address">{% trans "address" %}</option>
       <option value="EmailHeader">{% trans "e-mail header" %}</option>
+      <option value="ExclusionRule">{% trans "exclusion" %}</option>
       <optgroup label="{% trans "Experimental" %}">
         <option value="TurboCPRRule">{% trans "CPR-nr. (Turbo)" %}</option>
       </optgroup>
@@ -103,6 +104,12 @@
   <span id="CustomRule_Address"></span>
   <span id="EmailHeader">
     <input type="text" placeholder="{% trans "field name" %}" />
+    <span class="logical-rule">
+      {% trans "matches" context "verb" %}
+      <span data-template="rule_selector"></span>
+    </span>
+  </span>
+  <span id="ExclusionRule">
     <span class="logical-rule">
       {% trans "matches" context "verb" %}
       <span data-template="rule_selector"></span>
