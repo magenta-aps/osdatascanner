@@ -89,6 +89,9 @@ def message_received_raw(body, channel, source_manager, *, _check=True):  # noqa
         resource = conversion.handle.follow(source_manager)
         representation = None
 
+        if (required == OutputType.Presentation):
+            print(head)
+
         if (required == OutputType.Text
                 and "skip_mime_types" in configuration):
             mime_type = resource.compute_type()
