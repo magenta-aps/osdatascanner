@@ -10,22 +10,19 @@ class ExclusionRule(SimpleRule):
 
     This can be used to exclude certain paths from begin scanned.
     '''
-    type_label = "presentation"
+    type_label = "exclusion"
 
-    operates_on = OutputType.Presentation
+    operates_on = OutputType.Exclusion
 
     def __init__(self, rule: Rule, **kwargs):
         super().__init__(**kwargs)
         self._rule = rule
 
     def match(self, value: Handle):
-        # Calling 'str()' on a handle will return it
-        presentation = str(value)
+        presentation = value.presentation_name
 
-        conclusion, all_matches = self._rule.try_match(presentation)
-        if conclusion is True:
-            for _, rms in all_matches:
-                yield from (r for r in rms if r["match"])
+        for _, rms in self._rule.match(presentation):
+            yield from (r for r in rms if r["match"])
 
     def to_json_object(self):
         return super().to_json_object() | {
@@ -42,3 +39,6 @@ class ExclusionRule(SimpleRule):
     @property
     def presentation_raw(self):
         return (f'presentation matches the rule "{self._rule.presentation}"')
+
+
+Rule.json_handler(ExclusionRule.type_label)(ExclusionRule.from_json_object)

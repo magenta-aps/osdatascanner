@@ -1,5 +1,6 @@
 import logging
 from urllib.error import HTTPError
+
 from .. import settings
 from ..model.core import Source
 from ..utilities.backoff import TimeoutRetrier
@@ -87,9 +88,6 @@ def message_received_raw(body, channel, source_manager, *, _check=True):  # noqa
 
         resource = conversion.handle.follow(source_manager)
         representation = None
-
-        if (required == OutputType.Presentation):
-            print(head)
 
         if (required == OutputType.Text
                 and "skip_mime_types" in configuration):

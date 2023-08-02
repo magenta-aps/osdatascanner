@@ -24,7 +24,10 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
     try:
         # Keep executing rules for as long as we can with the representations
         # we have
-        conclusion, new_matches = rule.try_match(lambda t: representations[t])
+        def _match_func(t):
+            return (representations | {"handle": message.handle})[t]
+
+        conclusion, new_matches = rule.try_match(_match_func)
     except Exception as e:
         exception_message = "Matching error"
         exception_message += ". {0}: ".format(type(e).__name__)
