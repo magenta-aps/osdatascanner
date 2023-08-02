@@ -10,4 +10,5 @@ from . import name  # noqa
 from . import address  # noqa
 from . import wordlists  # noqa
 from . import dict_lookup  # noqa
+from . import exclusion  # noqa
 from .experimental import cpr  # noqa

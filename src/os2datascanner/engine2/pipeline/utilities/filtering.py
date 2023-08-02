@@ -11,7 +11,7 @@ logger = structlog.get_logger(__name__)
 def is_handle_relevant(handle: Handle, filter_rule: Rule) -> bool:
     """Checks whether a handle should be skipped based on the exclusion rule
     specified by a ScanSpecMessage and the global TypeRules."""
-    h_p = handle.relative_path
+    h_p = str(handle)
 
     # Let everything pass if there is no filter_rule set.
     if filter_rule is None:
