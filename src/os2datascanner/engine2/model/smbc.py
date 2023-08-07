@@ -351,7 +351,17 @@ class SMBCResource(FileResource):
             f = self.open_file()
             try:
                 stat = stat_result(f.fstat())
-                ts = datetime.fromtimestamp(stat.st_mtime)
+                # On NTFS (Windows), if a file is copied within the same
+                # volume, the new file inherits the Modified Datetime (MTIME)
+                # from the original, but the Changed Datetime (CTIME)
+                # IS updated. CTIME in NTFS represents file creation,
+                # and thus a file is also "created" when copied.
+                mt = datetime.fromtimestamp(stat.st_mtime)
+                ct = datetime.fromtimestamp(stat.st_ctime)
+
+                # So we simply choose the most recent datetime among
+                # CTIME and MTIME.
+                ts = max(ct, mt)
                 self._mr = make_values_navigable(
                         {k: getattr(stat, k) for k in stat_attributes} |
                         {OutputType.LastModified: ts})
