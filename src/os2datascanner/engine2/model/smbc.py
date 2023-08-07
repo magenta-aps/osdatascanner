@@ -356,12 +356,12 @@ class SMBCResource(FileResource):
                 # from the original, but the Changed Datetime (CTIME)
                 # IS updated. CTIME in NTFS represents file creation,
                 # and thus a file is also "created" when copied.
-                mt = datetime.fromtimestamp(stat.st_mtime)
-                ct = datetime.fromtimestamp(stat.st_ctime)
+                mt = stat.st_mtime
+                ct = stat.st_ctime
 
                 # So we simply choose the most recent datetime among
                 # CTIME and MTIME.
-                ts = max(ct, mt)
+                ts = datetime.fromtimestamp(max(ct, mt))
                 self._mr = make_values_navigable(
                         {k: getattr(stat, k) for k in stat_attributes} |
                         {OutputType.LastModified: ts})

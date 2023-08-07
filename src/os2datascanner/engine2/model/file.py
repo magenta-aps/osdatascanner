@@ -79,7 +79,17 @@ class FilesystemResource(FileResource):
     def unpack_stat(self):
         if not self._mr:
             stat = os.stat(self._full_path)
-            ts = datetime.fromtimestamp(stat.st_mtime, gettz())
+            # On NTFS (Windows), if a file is copied within the same
+            # volume, the new file inherits the Modified Datetime (MTIME)
+            # from the original, but the Changed Datetime (CTIME)
+            # IS updated. CTIME in NTFS represents file creation,
+            # and thus a file is also "created" when copied.
+            ct = stat.st_ctime
+            mt = stat.st_mtime
+
+            # So we simply choose the most recent datetime among
+            # CTIME and MTIME.
+            ts = datetime.fromtimestamp(max(ct, mt), gettz())
             self._mr = make_values_navigable(
                     {attr: getattr(stat, attr) for attr in stat_attributes} |
                     {OutputType.LastModified: ts})
