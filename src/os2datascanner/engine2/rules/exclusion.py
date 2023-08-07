@@ -19,10 +19,7 @@ class ExclusionRule(SimpleRule):
         self._rule = rule
 
     def match(self, value: Handle):
-        presentation = value.presentation_name
-
-        for _, rms in self._rule.match(presentation):
-            yield from (r for r in rms if r["match"])
+        yield from self._rule.match(value.presentation_name)
 
     def to_json_object(self):
         return super().to_json_object() | {
