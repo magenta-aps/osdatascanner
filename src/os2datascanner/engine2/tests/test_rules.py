@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import MagicMock
 from datetime import datetime, timezone
 
 from os2datascanner.engine2.rules.address import AddressRule
@@ -20,8 +21,14 @@ from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
+from os2datascanner.engine2.rules.exclusion import ExclusionRule
 
 from os2datascanner.engine2.conversions.types import OutputType
+
+
+# This is a stub Handle for tests with ExclusionRule.
+mock_handle = MagicMock()
+mock_handle.configure_mock(presentation_name='C://path/to/111111-1118.txt')
 
 
 class RuleTests(unittest.TestCase):
@@ -173,6 +180,13 @@ more!""",
                 ),
                 dict(field="This is a test subject"),
                 [],
+            ),
+            (
+                ExclusionRule(
+                    rule=CPRRule(),
+                ),
+                mock_handle,
+                ['1111XXXXXX'],
             ),
         ]
 
