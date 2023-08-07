@@ -2,6 +2,7 @@ from io import BytesIO
 import pytz
 from contextlib import contextmanager
 from dateutil.parser import isoparse, parse
+from datetime import datetime
 
 from ... import settings as engine2_settings
 from ..core import Handle, Source, Resource, FileResource
@@ -166,15 +167,13 @@ class MSGraphCalendarEventResource(FileResource):
 
         match (ct, mt):
             case (datetime(), datetime()):
-                timestamp = max(isoparse(ct), isoparse(mt))
+                return max(isoparse(ct), isoparse(mt))
             case (datetime(), None):
-                timestamp = isoparse(ct)
+                return isoparse(ct)
             case (None, datetime()):
-                timestamp = isoparse(mt)
+                return isoparse(mt)
             case _:
-                return
-
-        return SingleResult(None, OutputType.LastModified, timestamp)
+                return None
 
 
 class MSGraphCalendarEventHandle(Handle):

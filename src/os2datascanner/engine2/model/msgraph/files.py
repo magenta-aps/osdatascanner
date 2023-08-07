@@ -192,15 +192,13 @@ class MSGraphFileResource(FileResource):
 
         match (ct, mt):
             case (datetime(), datetime()):
-                timestamp = max(isoparse(ct), isoparse(mt))
+                return max(isoparse(ct), isoparse(mt))
             case (datetime(), None):
-                timestamp = isoparse(ct)
+                return isoparse(ct)
             case (None, datetime()):
-                timestamp = isoparse(mt)
+                return isoparse(mt)
             case _:
-                return
-
-        return SingleResult(None, OutputType.LastModified, timestamp)
+                return None
 
     def get_size(self):
         return self.get_file_metadata()["size"]
