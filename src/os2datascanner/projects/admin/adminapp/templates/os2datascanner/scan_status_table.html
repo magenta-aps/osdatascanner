@@ -55,7 +55,7 @@
                 {% elif status.stage.value == 1 %}
                   {% trans "Scanning data (still indexing) ..." %}
                 {% elif status.stage.value == 2 %}
-                  {% trans "Scanning data ..." %}
+                  {% trans "Scanning data ..." %} {{status.relevant_objects / status.total_objects}}
  
                 {% elif status.stage.value == 3 %}
                   {% trans "No objects to scan" %}
@@ -69,7 +69,7 @@
                 {% elif status.stage.value == 1 %}
                   {% blocktranslate with obj=status.scanned_objects %}{{ obj }} objects scanned{% endblocktranslate %}
                 {% elif status.stage.value == 2 %}
-                  {% blocktranslate with obj=status.scanned_objects total=status.total_objects %}{{ obj }} out of {{ total }} objects scanned {% endblocktranslate %}
+                  {% blocktranslate with obj=status.scanned_objects total=status.relevant_objects %}{{ obj }} out of {{ total }} objects scanned {% endblocktranslate %}
                   {% with frac=status.fraction_scanned %}
                     <div class="progressbar-container">
                       <div class="progressbar"
