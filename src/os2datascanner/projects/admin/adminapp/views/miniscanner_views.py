@@ -1,6 +1,7 @@
 import json
+import structlog
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -11,6 +12,9 @@ from os2datascanner.engine2.model.utilities.temp_resource import (
         NamedTemporaryResource)
 from os2datascanner.engine2.pipeline import messages, worker
 from os2datascanner.projects.admin import settings
+
+
+logger = structlog.get_logger(__name__)
 
 
 class MiniScanner(TemplateView, LoginRequiredMixin):
@@ -29,7 +33,6 @@ def execute_mini_scan(request):  # noqa:CCR001
         "file_obj": (file_obj := request.FILES.get("file")),
         "raw_rule": (raw_rule := request.POST.get("rule")),
         "halfbaked_rule": (halfbaked_rule := json.loads(raw_rule or "null")),
-
         "replies": (replies := []),
     }
 
@@ -68,3 +71,14 @@ def execute_mini_scan(request):  # noqa:CCR001
                     replies.append(message)
 
     return render(request, "components/miniscan-results.html", context)
+
+
+def save_miniscanner_rule(request):
+    raw_rule = request.POST.get("rule")
+
+    if _ := json.loads(raw_rule or "null"):
+        logger.info("Submitted rule is ok.")
+        return redirect("customrule_add")
+    else:
+        logger.info("Submitted rule is ill-formatted.")
+        return render(request, "components/miniscan-results.html", {"rule_error": True})

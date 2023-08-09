@@ -90,7 +90,9 @@ from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphCalendarRun, MSGraphCalendarAskRun,
                                   MSGraphCalendarCopy)
 
-from .views.miniscanner_views import MiniScanner, execute_mini_scan
+from .views.miniscanner_views import (MiniScanner,
+                                      execute_mini_scan,
+                                      save_miniscanner_rule)
 
 urlpatterns = [
     # App URLs
@@ -394,4 +396,5 @@ if settings.ENABLE_MINISCAN:
     urlpatterns.extend([
         re_path(r"^miniscan/$", MiniScanner.as_view(), name="miniscan"),
         re_path(r"^miniscan/run/$", execute_mini_scan, name="miniscan_run"),
+        re_path(r"^miniscan/save/$", save_miniscanner_rule, name="miniscan_save")
     ])
