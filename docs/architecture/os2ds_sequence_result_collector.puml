@@ -1,0 +1,43 @@
+@startuml
+queue RabbitMQ as mq
+participant result_collector as rc
+database report_db
+
+== Result Collector ==
+
+rc -> rc : result_message_received_raw(body)
+activate rc
+        alt queue is matches
+                rc -> rc : handle_match_message(tag, body)
+                activate rc
+                        rc -> report_db : select_for_update(DocumentReport)
+                        report_db -> rc : locked_qs
+                        alt previous report has resolution status
+                                rc -> report_db : update(DocumentReport)
+                        end
+
+                        alt new matches found
+                                rc -> report_db : update_or_create(DocumentReport)
+                        end
+                deactivate rc
+        else queue is problem
+                rc -> rc : handle_problem_message(tag, body)
+                activate rc
+                        rc -> report_db : select_for_update(DocumentReport)
+                        report_db -> rc : locked_qs
+                        alt previous report contains deleted resource
+                                rc -> report_db : update(DocumentReport)
+                        else problem is still relevant
+                                rc -> report_db : update_or_create(DocumentReport)
+                        end
+                deactivate rc
+        else queue is metadata
+                rc -> rc : handle_metadata_message(tag, body)
+                activate rc
+                        rc -> report_db : update_or_create(DocumentReport)
+                        rc -> rc : create_aliases(document_report)
+                deactivate rc
+        end
+deactivate rc
+
+@enduml

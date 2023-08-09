@@ -1,0 +1,42 @@
+@startuml
+participant event_collector as ec
+database report_db
+
+
+== Event Collector ==
+
+ec -> ec : event_message_received_raw(body)
+activate ec
+        alt event processing successful
+                alt event_type is bulk_event_create
+                        loop models to create
+                                ec -> report_db : create(model)
+                        end
+                else event_type is bulk_event_update
+                        loop models to update
+                                ec -> report_db : update(model)
+                        end
+                else event_type is bulk_event_delete
+                        loop models to delete
+                                ec -> report_db : delete(model)
+                        end
+                else event_type is bulk_event_purge
+                        loop models to purge
+                                ec -> report_db : delete_all(model)
+                        end
+                else event_type is clean_document_reports
+                        ec -> ec : handle_clean_message(body)
+                        activate ec
+                                loop for each scanner and account
+                                        ec -> report_db : filter(DocumentReport, account, scanner)
+                                        report_db -> ec : related_reports
+                                        ec -> report_db : delete(related_reports)
+                                end
+                        deactivate ec
+                end
+        else event processing failure
+                ec -> ec : log()
+        end
+deactivate ec
+
+@enduml

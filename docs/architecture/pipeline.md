@@ -114,14 +114,14 @@ jobs across the admin and report modules:
 ## The big picture - communication between OS2datascanner components
 
 As mentioned, the engine consists of five stages that work in tandem with the
-four collector processes and the admin and report module. This is a lot of complex,
+four collector processes and the admin and report module. There are a lot of complex,
 moving parts.
 
 To ease comprehension of the entire set of interactions at a fine devel of detail,
-the complete, detailed interaction between all components (as well as the user) is illustrated by
+the complete, an overview interaction between all components (as well as the user) is illustrated by
 the UML Sequence Diagram below:
 
-![UML Sequence Diagram of engine component communication](./os2ds_current_pipeline_sequence.svg)
+![UML Sequence Diagram of engine component communication](./os2ds_sequence_overview.svg)
 
 _Note: Due to the distributed nature of the system, all of the messages should be
 considered asynchronous._
@@ -133,6 +133,37 @@ describe startup and completion of a scanner job, respectively.
 It illustrates the interaction of the components, but as is evident, RabbitMQ is the mediator
 that enables communication between them. For a detailed description of the use of RabbitMQ
 and AMQP, please see the section on [RabbitMQ](./rabbitmq.md).
+
+As stated this is a broad overview. Detailed diagrams of the individual component are
+presented in the following subsections.
+
+### Explorer
+
+![UML Sequence Diagram of Explorer Stage](./os2ds_sequence_explorer.svg)
+
+### Worker
+
+![UML Sequence Diagram of Worker Stage](./os2ds_sequence_worker.svg)
+
+### Exporter
+
+![UML Sequence Diagram of Exporter Stage](./os2ds_sequence_exporter.svg)
+
+### Checkup Collector
+
+![UML Sequence Diagram of Checkup Collector](./os2ds_sequence_checkup_collector.svg)
+
+### Status Collector
+
+![UML Sequence Diagram of Status Collector](./os2ds_sequence_status_collector.svg)
+
+### Event Collector
+
+![UML Sequence Diagram of Event Collector](./os2ds_sequence_event_collector.svg)
+
+### Result Collector
+
+![UML Sequence Diagram of Result Collector](./os2ds_sequence_result_collector.svg)
 
 ## The basis of a pipeline stage instance
 
