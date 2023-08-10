@@ -35,6 +35,8 @@
 - The loading time of the UserErrorLogView is now considerably faster, as both
   the ScanStatus and Scanner relations are prefetched.
 
+- IE supporting code has either been removed or rewritten to support modern browsers only. 
+
 ## 3.20.5, 11th September 2023
 
 "Mo' Code Less Problems"

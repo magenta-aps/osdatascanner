@@ -76,13 +76,6 @@
       local,
       scroll;
 
-    // IE11 doesn't understand this implementation properly, so we use the media
-    // query below to target IE11 and then remove the shadows
-    @media (-ms-high-contrast: active),
-    (-ms-high-contrast: none) {
-      background-image: none !important;
-    }
-
     &:focus {
       box-shadow: var(--box-shadow-widget), 0 0 0 3px var(--color-primary-light);
     }
@@ -353,7 +346,7 @@
         }
 
         >* {
-          flex: 0 1 auto; // be explicit for IE11s sake
+          flex: 0 1 auto;
         }
       }
     }
@@ -370,7 +363,7 @@
       }
 
       >* {
-        flex: 0 1 auto; // be explicit for IE11s sake
+        flex: 0 1 auto;
       }
     }
 

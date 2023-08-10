@@ -30,7 +30,7 @@ document.addEventListener("click", function (e) {
 
   if (hasClass(targ, "matches-expand")) {
     // toggle the matches of a single row
-    row = closestElement(targ, "tr[data-type]");
+    row = targ.closest("tr[data-type]");
     toggleMatchesList([row], targ);
   }
 
@@ -46,7 +46,8 @@ document.addEventListener("click", function (e) {
 
   if (hasClass(targ, "toggle-next-row")) {
     // toggle the matches of a single row
-    row = closestElement(targ, "tr");
+    row = targ.closest("tr");
+
     if (row) {
       toggleMatchesList([row], targ);
     }
@@ -89,18 +90,6 @@ function setStorage(item, value) {
   }
 }
 
-// IE11 way of doing Element.closest
-function closestElement(elm, selector) {
-  var parent = elm;
-  while (parent) {
-    if (parent.matches(selector)) {
-      break;
-    }
-    parent = parent.parentElement;
-  }
-  return parent;
-}
-
 function toggleMatchesList(objectRows, toggleButton) {
   toggleClass(toggleButton, "up");
   var buttonOpen = hasClass(toggleButton, "up");
@@ -130,34 +119,21 @@ function toggleMatchesList(objectRows, toggleButton) {
   });
 }
 
-// IE11 way of doing Element.classList.add and Element.classList.remove
+// class attribute handling
 function toggleClass(elm, className) {
-  if (!hasClass(elm, className)) {
-    addClass(elm, className);
-  } else {
-    removeClass(elm, className);
-  }
+  elm.classList.toggle(className);
 }
 
 function addClass(elm, className) {
-  if (!hasClass(elm, className)) {
-    elm.className = (elm.className + " " + className).trim();
-  }
+  elm.classList.add(className);
 }
 
 function removeClass(elm, className) {
-  elm.className = elm.className.replace(className, "").trim();
+  elm.classList.remove(className);
 }
 
-// IE11 way of doing elm.classList.contains
 function hasClass(elm, className) {
-  classList = [];
-  if (typeof (elm.className) === "string") {
-    classList = elm.className ? elm.className.split(" ") : [];
-  } else {
-    classList = Array.from(elm.classList);
-  }
-  return classList.indexOf(className) > -1;
+  return elm.classList.contains(className);
 }
 
 // show a tooltip based on an event and its target. Assumes a DOM structure

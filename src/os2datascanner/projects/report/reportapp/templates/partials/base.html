@@ -38,24 +38,6 @@
 
       {% block extra_head_html %}{% endblock %}
 
-      <!-- TODO: The following document.write action will try to write a Django template string literally on the client. This will not work in browsers. -->
-      <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="{% static "3rdparty/ie11CustomProperties.js" %}"><\x2fscript>');</script>
-
-      <!-- TODO: This is only necessary for IE8 and older browsers. Are we supporting IE8- ? -->
-      <script>
-    document.createElement('header');
-    document.createElement('section');
-    document.createElement('main');
-    document.createElement('article');
-    document.createElement('aside');
-    document.createElement('nav');
-    document.createElement('footer');
-      </script>
-
-      <!-- Support IE for svgxuse -->
-      <!-- TODO: Is is still needed? IE11 should have support for this: https://caniuse.com/mdn-svg_elements_use -->
-      <script src="{% static 'js/svgxuse.js' %}" defer></script>
-
     </head>
     <body class="{% block body_class %}{% endblock %} page">
 

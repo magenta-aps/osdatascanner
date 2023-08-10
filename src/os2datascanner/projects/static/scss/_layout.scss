@@ -24,10 +24,7 @@ body {
   display: flex;
   justify-content: stretch;
   flex-direction: column;
-  // IE11 chokes on nested calc() expressions, so while the margin-top
-  // below *should* be calc(var(--size-logo-height) + 2rem), we have to hard-
-  // code the value of --size-logo-height (which equates to 30px)
-  margin-top: calc(30px + 2rem);
+  margin-top: calc(var(--size-logo-height) + 2rem);
 
   @media (min-width: $break-lg) {
     flex-direction: row;
