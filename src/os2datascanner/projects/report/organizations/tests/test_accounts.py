@@ -254,11 +254,17 @@ class AccountTest(TestCase):
         # This is the real test. This is where .match_count and .match_status are set.
         self.egon_acc.save()
 
+        response = (Account.objects.with_match_counts()
+                    .filter(username='egon')
+                    .values('delegated_count')[0]
+                    .get('delegated_count'))
+
         self.assertEqual(
-            self.egon_acc.match_count,
+            Account.objects.with_match_counts().filter(
+                username="egon").values("delegated_count")[0].get("delegated_count"),
             all_matches-handled_matches,
             f"Expected to find {all_matches-handled_matches} unhandled match, "
-            f"but found {self.egon_acc.match_count} instead.")
+            f"but found {response} instead.")
         self.assertEqual(
             self.egon_acc.match_status,
             StatusChoices.OK,
@@ -290,19 +296,28 @@ class AccountTest(TestCase):
         self.benny_acc.save()
         self.kjeld_acc.save()
 
-        self.assertEqual(egon_all-egon_handled, self.egon_acc.match_count)
+        self.assertEqual(
+            egon_all-egon_handled,
+            Account.objects.with_match_counts().filter(
+                username='egon').values('delegated_count')[0].get('delegated_count'))
         self.assertEqual(
             StatusChoices.GOOD,
             self.egon_acc.match_status,
             f"Expected match_status to be 'GOOD', but found "
             f"{self.egon_acc.match_status.label} instead.")
-        self.assertEqual(benny_all-benny_handled, self.benny_acc.match_count)
+        self.assertEqual(
+            benny_all-benny_handled,
+            Account.objects.with_match_counts().filter(
+                username='benny').values('delegated_count')[0].get('delegated_count'))
         self.assertEqual(
             StatusChoices.OK,
             self.benny_acc.match_status,
             f"Expected match_status to be 'OK', but found "
             f"{self.egon_acc.match_status.label} instead.")
-        self.assertEqual(kjeld_all-kjeld_handled, self.kjeld_acc.match_count)
+        self.assertEqual(
+            kjeld_all-kjeld_handled,
+            Account.objects.with_match_counts().filter(
+                username='kjeld').values('delegated_count')[0].get('delegated_count'))
         self.assertEqual(
             StatusChoices.BAD,
             self.kjeld_acc.match_status,
@@ -320,12 +335,15 @@ class AccountTest(TestCase):
 
         self.kjeld_acc.save()
 
-        self.assertEqual(all_matches-handled, self.kjeld_acc.match_count)
+        self.assertEqual(
+            all_matches-handled,
+            Account.objects.with_match_counts().filter(
+                username="kjeld").values("delegated_count")[0].get("delegated_count"))
         self.assertEqual(
             StatusChoices.BAD,
             self.kjeld_acc.match_status,
             f"Expected match_status to be 'BAD', but found "
-            f"{self.egon_acc.match_status.label} instead.")
+            f"{self.kjeld_acc.match_status.label} instead.")
 
     def test_save_with_no_new_matches_and_no_handled(self):
         """If a user has not handled any matches, their status should be 'BAD',
@@ -344,7 +362,10 @@ class AccountTest(TestCase):
 
         self.benny_acc.save()
 
-        self.assertEqual(all_matches-handled, self.benny_acc.match_count)
+        self.assertEqual(
+            all_matches-handled,
+            Account.objects.with_match_counts().filter(
+                username="benny").values("delegated_count")[0].get("delegated_count"))
         self.assertEqual(
             StatusChoices.BAD,
             self.benny_acc.match_status,
@@ -392,10 +413,11 @@ class AccountTest(TestCase):
         handled = 0
         make_matched_document_reports_for(self.kjeld_alias, handled=handled, amount=all_matches)
 
-        # Refresh match count.
-        self.kjeld_acc._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.match_count, all_matches,
+        self.assertEqual(Account.objects.with_match_counts()
+                         .filter(username='kjeld')
+                         .values('delegated_count')[0]
+                         .get('delegated_count'), all_matches,
                          "Incorrect match_count on account object!")
 
         # Handle 9/10
@@ -404,18 +426,20 @@ class AccountTest(TestCase):
         dr = DocumentReport.objects.filter(alias_relation=self.kjeld_alias).first()
         dr.resolution_status = None
         dr.save()
-        # Refresh match count
-        self.kjeld_acc._count_matches()
+
         # Assert
-        self.assertEqual(self.kjeld_acc.match_count, 1,
+        self.assertEqual(Account.objects.with_match_counts()
+                         .filter(username='kjeld')
+                         .values('delegated_count')[0].get('delegated_count'), 1,
                          "Incorrect match_count on account object! All but one should be handled.")
 
         # Handle all matches
         DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(resolution_status=0)
-        # Refresh match count
-        self.kjeld_acc._count_matches()
+
         # Assert
-        self.assertEqual(self.kjeld_acc.match_count, 0,
+        self.assertEqual(Account.objects.with_match_counts()
+                         .filter(username='kjeld')
+                         .values('delegated_count')[0].get('delegated_count'), 0,
                          "Incorrect match_count on account object! All should be handled.")
 
     def test_account_withheld_matches_from_ten_to_one_to_zero(self):
@@ -427,13 +451,14 @@ class AccountTest(TestCase):
         DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(
             only_notify_superadmin=True)
 
-        # Refresh count
-        self.kjeld_acc._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.withheld_matches, 10,
+        self.assertEqual(Account.objects.with_match_counts()
+                         .filter(username='kjeld')
+                         .values('withheld_count')[0]
+                         .get('withheld_count'), 10,
                          "Matches that should be withheld aren't counted as withheld!")
-        self.assertEqual(self.kjeld_acc.match_count, 0,
-                         "Match count is not updated!")
+        self.assertEqual(Account.objects.with_match_counts().filter(username='kjeld').values(
+            'delegated_count')[0].get('delegated_count'), 0, "Match count is not updated!")
 
         # Distribute 9 of  Kjeld's matches
         DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(
@@ -442,22 +467,24 @@ class AccountTest(TestCase):
         dr.only_notify_superadmin = True
         dr.save()
 
-        # Refresh count
-        self.kjeld_acc._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.withheld_matches, 1,
+        self.assertEqual(Account.objects.with_match_counts()
+                         .filter(username='kjeld')
+                         .values('withheld_count')[0].get('withheld_count'), 1,
                          "Matches that shouldn't be withheld are counted as withheld!")
-        self.assertEqual(self.kjeld_acc.match_count, 9,
-                         "Match count is not updated!")
+        self.assertEqual(Account.objects.with_match_counts().filter(username='kjeld').values(
+            'delegated_count')[0].get('delegated_count'), 9, "Match count is not updated!")
 
         # Distribute last one
         DocumentReport.objects.filter(alias_relation=self.kjeld_alias,
                                       only_notify_superadmin=True).update(
             only_notify_superadmin=False)
-        # Refresh count
-        self.kjeld_acc._count_matches()
+
         # Assert, nothing should be withheld
-        self.assertEqual(self.kjeld_acc.withheld_matches, 0,
+        self.assertEqual(Account.objects.with_match_counts()
+                         .filter(username='kjeld')
+                         .values('withheld_count')[0]
+                         .get('withheld_count'), 0,
                          "Matches that shouldn't be withheld are counted as withheld!")
-        self.assertEqual(self.kjeld_acc.match_count, 10,
-                         "Match count is not updated!")
+        self.assertEqual(Account.objects.with_match_counts().filter(username='kjeld').values(
+            'delegated_count')[0].get('delegated_count'), 10, "Match count is not updated!")

@@ -14,6 +14,8 @@
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.db import models, transaction
+from django.db.models import Q
+from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
@@ -25,8 +27,28 @@ from os2datascanner.core_organizational_structure.models.aliases import AliasTyp
 from ..seralizer import BaseBulkSerializer
 
 
+class AliasManager(models.Manager):
+    def with_counts(self):
+        return self.annotate(
+            delegated_count=Coalesce(models.Count(
+                "match_relation", filter=Q(match_relation__resolution_status__isnull=True,
+                                           match_relation__number_of_matches__gte=1,
+                                           match_relation__only_notify_superadmin=False)), 0),
+            withheld_count=Coalesce(models.Count(
+                "match_relation", filter=Q(match_relation__resolution_status__isnull=True,
+                                           match_relation__number_of_matches__gte=1,
+                                           match_relation__only_notify_superadmin=True)), 0),
+            handled_count=Coalesce(models.Count(
+                "match_relation", filter=Q(match_relation__resolution_status__isnull=False,
+                                           match_relation__number_of_matches__gte=1,
+                                           match_relation__only_notify_superadmin=False)), 0)
+        )
+
+
 class Alias(Core_Alias):
     """ Core logic lives in the core_organizational_structure app. """
+
+    objects = AliasManager()
 
     serializer_class = None
     user = models.ForeignKey(User, null=False, verbose_name=_('user'),

@@ -88,10 +88,10 @@
                 <span>{% trans "Matches" %}</span>
               </label>
               <button type="button"
-                      name="match_count"
+                      name="delegated_count"
                       id="matches-caret"
-                      class="order-by button button-caret button--has-icon{% if order_by == 'match_count' and order == 'descending' %} up{% endif %}"
-                      value="{% if order_by == 'match_count' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                      class="order-by button button-caret button--has-icon{% if order_by == 'delegated_count' and order == 'descending' %} up{% endif %}"
+                      value="{% if order_by == 'delegated_count' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                 <i class="material-icons" aria-hidden="true">expand_more</i>
               </button>
             </th>
@@ -117,7 +117,7 @@
       </thead>
       <tbody>
         {% if employees %}
-          {% for employee in employees %}
+          {% for employee in employees.values %}
             <tr class="soft-load"
                 hx-get="{% url 'employee' employee.uuid %}"
                 hx-swap="outerHTML swap:200ms"

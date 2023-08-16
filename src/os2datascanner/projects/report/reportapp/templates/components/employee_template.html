@@ -8,11 +8,11 @@
     </div>
   </td>
   <td class="datatable__column--matchcount">
-    {{ employee.match_count }}
-    {% if employee.withheld_matches > 0 %}
+    {{ employee_values.delegated_count }}
+    {% if employee_values.withheld_count > 0 %}
       <div class="withheld-matches"
-           title="{% blocktranslate with withheld=employee.withheld_matches %}The user has {{ withheld }} matches, which have not been distributed to the user yet. This can be done by a superuser in the report module.{% endblocktranslate %}">
-        {{ employee.withheld_matches }} <span>{% trans "withheld" %}</span>
+           title="{% blocktranslate with withheld=employee_values.withheld_count %}The user has {{ withheld }} matches, which have not been distributed to the user yet. This can be done by a superuser in the report module.{% endblocktranslate %}">
+        {{ employee_values.withheld_count }} <span>{% trans "withheld" %}</span>
       </div>
     {% endif %}
   </td>
@@ -22,7 +22,7 @@
   <td class="datatable__column--leader-actions">
     <div class="action_wrapper">
       <a class="button"
-         href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}">{% trans "Send notification" %}</a>
+         href="mailto:{{ employee.email }}?body=Matches: {{ employee_values.delegated_count }}">{% trans "Send notification" %}</a>
       <button class="overview-expand button button-caret button--has-icon"
               title="{% trans 'Show/hide overview' %}"
               type="button">

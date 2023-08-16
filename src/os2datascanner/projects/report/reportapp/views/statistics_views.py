@@ -14,6 +14,7 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
+from typing import Any, Dict
 import structlog
 
 from datetime import date, timedelta
@@ -263,7 +264,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     template_name = "statistics.html"
     paginator_class = EmptyPagePaginator
     paginate_by = 200
-    model = Account
+    queryset = Account.objects.with_match_counts()
     context_object_name = "employees"
 
     def get_queryset(self):
@@ -304,7 +305,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         """Checks if a sort key is allowed and orders the employees queryset"""
         allowed_sorting_properties = [
             'first_name',
-            'match_count',
+            'delegated_count',
             'match_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):
@@ -312,7 +313,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
             if sort_key not in allowed_sorting_properties:
                 return
 
-            if sort_key == "match_count":
+            if sort_key == "delegated_count":
                 # Trigger recomputation of match_count by saving
                 # all the objects again. FIXME FIXME FIXME!!!
                 for acc in qs:
@@ -320,8 +321,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
             if order != 'ascending':
                 sort_key = '-'+sort_key
-            qs = qs.order_by(sort_key, 'pk').distinct(
-                sort_key if sort_key[0] != "-" else sort_key[1:], "pk")
+
+        qs = qs.order_by(sort_key, 'first_name')
 
         return qs
 
@@ -462,6 +463,12 @@ class EmployeeView(LoginRequiredMixin, DetailView):
         response = super().get(request, *args, **kwargs)
         self.object.save()
         return response
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        e: Account = self.get_object()
+        context["employee_values"] = Account.objects.with_match_counts().values().get(uuid=e.uuid)
+        return context
 
 # Logic separated to function to allow usability in send_notifications.py
 

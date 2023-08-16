@@ -19,7 +19,7 @@ from datetime import timedelta
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Q, Count
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
@@ -67,6 +67,25 @@ class AccountManager(models.Manager):
         account.save()
 
         return account
+
+    def with_match_counts(self):
+        return self.annotate(
+            delegated_count=Count('aliases__match_relation',
+                                  filter=Q(aliases__match_relation__resolution_status__isnull=True,
+                                           aliases__match_relation__number_of_matches__gte=1,
+                                           aliases__match_relation__only_notify_superadmin=False),
+                                  distinct=True),
+            withheld_count=Count('aliases__match_relation',
+                                 filter=Q(aliases__match_relation__resolution_status__isnull=True,
+                                          aliases__match_relation__number_of_matches__gte=1,
+                                          aliases__match_relation__only_notify_superadmin=True),
+                                 distinct=True),
+            handled_count=Count('aliases__match_relation',
+                                filter=Q(aliases__match_relation__resolution_status__isnull=False,
+                                         aliases__match_relation__number_of_matches__gte=1,
+                                         aliases__match_relation__only_notify_superadmin=False),
+                                distinct=True)
+        )
 
     # We must also delete the User object.
     def delete(self, *args, **kwargs):
@@ -119,16 +138,6 @@ class Account(Core_Account):
         null=True,
         blank=True,
         verbose_name=_('image'))
-    match_count = models.IntegerField(
-        default=0,
-        null=True,
-        blank=True,
-        verbose_name=_("Number of matches"))
-    withheld_matches = models.IntegerField(
-        default=0,
-        null=True,
-        blank=True,
-        verbose_name=_("Number of withheld matches"))
     match_status = models.IntegerField(
         choices=StatusChoices.choices,
         default=1,
@@ -152,28 +161,6 @@ class Account(Core_Account):
     @property
     def status(self):
         return StatusChoices(self.match_status).label
-
-    def _count_matches(self):
-        """Counts the number of unhandled matches associated with the account."""
-        from ...reportapp.models.documentreport import DocumentReport
-        reports = DocumentReport.objects.filter(
-            alias_relation__account=self,
-            number_of_matches__gte=1,
-            resolution_status__isnull=True).values(
-                "only_notify_superadmin").order_by(
-                    "only_notify_superadmin").annotate(
-            count=Count("only_notify_superadmin")).values(
-            "only_notify_superadmin",
-            "count")
-
-        # TODO: Revisit logic below (and its tests, organizations/tests/test_accounts.py)
-        self.match_count = 0
-        self.withheld_matches = 0
-        for obj in reports:
-            if obj.get("only_notify_superadmin"):
-                self.withheld_matches = obj.get("count")
-            else:
-                self.match_count = obj.get("count")
 
     def _calculate_status(self):
         """Calculate the status of the user. The user can have one of three
@@ -268,7 +255,6 @@ class Account(Core_Account):
             return False
 
     def save(self, *args, **kwargs):
-        self._count_matches()
         self._calculate_status()
 
         super().save(*args, **kwargs)
