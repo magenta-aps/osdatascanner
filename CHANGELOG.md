@@ -4,6 +4,10 @@
 
 "Mo' Code Less Problems"
 
+### General improvements
+
+- Scans of email headers now show a "subejct in" text in the report module
+
 ### Bugfixes
 
 - Result collector is now more robust if encountering identical problem messages.

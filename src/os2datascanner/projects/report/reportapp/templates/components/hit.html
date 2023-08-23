@@ -22,7 +22,11 @@
       <td class="datatable__column--name">
         <div class="tooltip">
           <div class="overflow-ellipsis">
-            <strong data-tooltip-text>{{ document_report.matches.handle.presentation_name }}</strong>
+            {% if document_report.matches.scan_spec.rule.type_label == "email-header" %}
+              <strong data-tooltip-text>subject in {{ document_report.matches.handle.presentation_name }}</strong>
+            {% else %}
+              <strong data-tooltip-text>{{ document_report.matches.handle.presentation_name }}</strong>
+            {% endif %}
           </div>
         </div>
         {% comment %} HTML is a programming language btw {% endcomment %}
