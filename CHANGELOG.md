@@ -6,7 +6,8 @@
 
 ### General improvements
 
-- Scans of email headers now show a "subejct in" text in the report module
+- Distinction between whether or not a match is found in the subject or the text
+  of a mail
 
 ### Bugfixes
 
