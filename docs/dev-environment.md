@@ -294,7 +294,7 @@ docker-compose up -d --build worker
 ```
 
 Note that, if all workers belong to organisation A and you start a scanner job belonging
-to organisation B, then `checkups` might not be handled correctly.
+to organisation B, then no data will be scanned as no workers are available.
 
 ### profiles
 
