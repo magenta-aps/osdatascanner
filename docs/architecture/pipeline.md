@@ -117,8 +117,8 @@ As mentioned, the engine consists of five stages that work in tandem with the
 four collector processes and the admin and report module. There are a lot of complex,
 moving parts.
 
-To ease comprehension of the entire set of interactions at a fine devel of detail,
-the complete, an overview interaction between all components (as well as the user) is illustrated by
+To ease comprehension of the entire set of interactions at a fine level of detail, 
+an overview of interactions between all components (as well as the user) is illustrated by
 the UML Sequence Diagram below:
 
 ![UML Sequence Diagram of engine component communication](./os2ds_sequence_overview.svg)
