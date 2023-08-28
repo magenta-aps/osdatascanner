@@ -235,17 +235,38 @@ This concept is called a checkup. Once a worker determines that a checkup is req
 some content, it emits a `CheckupMessage` which is then consumed by this stage, the checkup
 collector.
 
+The consumed `CheckupMessage` is then converted to a database object and stored in the
+admin modules database. The next time that the scanner job is started, every relevant
+checkup message is enqueued in the pipeline along with the regular `ScanSpecMessage`s. 
+
 ![UML Sequence Diagram of Checkup Collector](./os2ds_sequence_checkup_collector.svg)
 
 ### Status Collector
+
+Due to its distributed nature, it can be difficult for the user to keep up with what is
+happening during the execution of a scanner job. To keep the user informed, the various
+stages emit a `StatusMessage` with the latest state of the scanner job.
+
+The responsibility of the status collector is to consume these messages from RabbitMQ
+and perform CRUD operations on a corresponding database object in the admin module. 
+This database object is then queried by the admin module and presented to the user.
 
 ![UML Sequence Diagram of Status Collector](./os2ds_sequence_status_collector.svg)
 
 ### Event Collector
 
+This collector handles bulk CRUD operations on various objects in the report module
+database.
+
 ![UML Sequence Diagram of Event Collector](./os2ds_sequence_event_collector.svg)
 
 ### Result Collector
+
+Once the exporter stage has emitted a `ResultMessage`, the result collector listens
+for and consumes these messages with the purpose of performing CRUD operations on
+`DocumentReport` objects in the report module database. A `DocumentReport` represents
+scanned content and contains relevant metadata and either matches or a problem description
+in case of an error.
 
 ![UML Sequence Diagram of Result Collector](./os2ds_sequence_result_collector.svg)
 
