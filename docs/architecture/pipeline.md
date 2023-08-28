@@ -139,17 +139,101 @@ presented in the following subsections.
 
 ### Explorer
 
+The first stage of the pipeline is the explorer which starts out by consuming
+a `ScanSpecMessage` from RabbitMQ. This message contains a specification for the
+scanner jobs with the type of the data source that needs to be scanned.
+
+Then all scannable content from a source is fetched. Depending on whether the
+content is a "nested source" (i.e. contains other content, like a directory) then
+a new `ScanSpecMessage` with the "nested source" is enqueued in RabbitMQ or
+a `ConversionMessage` with the content is enqueued and sent to the worker.
+Should a conversion fail, a `ProblemMessage` is enqueued.
+
+Finally, no matter the outcome of the above, a `StatusMessage` describing
+the progression of the scanner job is enqueued and sent to the status collector.
+
 ![UML Sequence Diagram of Explorer Stage](./os2ds_sequence_explorer.svg)
 
 ### Worker
 
+The worker used to be four separate stages and as such is quite a bit more
+complicated than the other stages. To reduce the traffic and workload on RabbitMQ,
+these four stages were combined into a single unit to eliminate any unnecessary
+messages. That is, enqueueing messages to RabbitMQ may be bypassed if the target
+stage is a substage of the worker process, so not all messages actually go through
+the message broker. As such, words like "enqueued" and "consumed" should be interpreted
+as maybe for all substages of the worker stage.
+
 ![UML Sequence Diagram of Worker Stage](./os2ds_sequence_worker.svg)
 
+#### Processor
+
+The processor is in charge of converting whatever incoming data to a format that the
+remaining stages of the engine can work with, which is typically in the form of text.
+
+For each type of content there is an appropriate conversion to a desired output format
+which is run on that content. If the conversion yields a new "nested source" then a 
+`ScanSpecmessage` which is sent to the explorer. Otherwise if the conversion yields a
+desired output format, then a `RepresentationMessage` is passed to the matcher.
+If the conversion fails, two things happen: a `ProblemMessage` is emitted and a
+`CheckupMessage` is sent to the checkup collector, so that the content can be revisited
+some time in the future.
+
+#### Explorer
+
+This is an internalised clone of the explorer stage from earlier and does essentially the same thing, except that `ScanSpecMessage`s are rerouted to itself instead of utilizing RabbitMQ.
+
+#### Matcher
+
+Once the content has been converted into a workable representation by the processor, the actual
+scanning can take place. This is the responsibility of the matcher.
+
+First, a `RepresentationMessage` is consumed, which contains a scannable representation of the
+content, that the matcher can then apply an accompaning `Rule` to it until a conclusion is reached..
+Once a conclusion is reached, a `MatchesMessage` is enqueued and sent to the exporter,
+a `HandlesMessage` is sent to the tagger and a `CheckupMessage` is sent to the checkup collector.
+
+However, the matcher may not be able to reach a conclusion either because it encountered
+an error, in which case both a `ProblemMessage` and a `CheckupMessage` is emitted, or
+because the current representation might need further conversion.
+
+#### Tagger
+
+The tagger is responsible for extracting relevant metadata about the scanned content
+to be presented to the user. 
+
+Upon receiving a `HandlesMessage`, the tagger applies the appropriate handler to extract
+the relevant metadata from the content and enqueues a `MetadataMessage` that is sent to
+the exporter.
+
+Of cause, the extraction might fail in which case a `ProblemMessage` is enqueued in RabbitMQ.
+
 ### Exporter
+
+The exporter is the final stage of the pipeline before the data leaves the engine.
+Inside the engine space, everything is processed in memory, which means that no trails of sensitive
+information or even breadcrumbs thereof is left behind. 
+
+However, outside the engine results from a scanner job needs persistent storage for future 
+presentation to the user. If a result contains a match involving sensitive information, 
+this information would then be stored persistently in disk, where it might be vulnerable if 
+forgotten and left behind.
+
+The job of the exporter is to compile `MetadataMessage`s, `MatchesMessage`s and `ProblemMessage`s
+into a uniform `ResultMessage`s, which are censored in case of matches involving sensitive information.
 
 ![UML Sequence Diagram of Exporter Stage](./os2ds_sequence_exporter.svg)
 
 ### Checkup Collector
+
+Sometimes, some of the content to be scanned is not available, errors occur while processing
+it or the content matches against one of the applied rules. In any case, the scanning 
+of the content resulted in some kind of state that warrents revisiting it in the future
+to scan it again and see if said state has changed.
+
+This concept is called a checkup. Once a worker determines that a checkup is required for
+some content, it emits a `CheckupMessage` which is then consumed by this stage, the checkup
+collector.
 
 ![UML Sequence Diagram of Checkup Collector](./os2ds_sequence_checkup_collector.svg)
 
