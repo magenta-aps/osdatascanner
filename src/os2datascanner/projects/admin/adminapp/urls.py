@@ -14,7 +14,7 @@
 """URL mappings."""
 
 import django.contrib.auth.views
-from django.urls import re_path
+from django.urls import re_path, path
 from django.http import HttpResponse
 from django.views.i18n import JavaScriptCatalog
 from django.views.generic.base import TemplateView
@@ -35,7 +35,7 @@ from .models.scannerjobs.msgraph import (MSGraphMailScanner,
 from .models.scannerjobs.gmail import GmailScanner
 from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .views.api import JSONAPIView
-from .views.views import GuideView, DialogSuccess
+from .views.views import GuideView, DialogSuccess, test_500_view
 
 from .views.exchangescanner_views import (ExchangeScannerList, ExchangeScannerCreate,
                                           ExchangeScannerUpdate, ExchangeScannerDelete,
@@ -433,6 +433,7 @@ urlpatterns = [
         Tag:       {__tag__}<br/>
         Branch:    {__branch__}
         """)),
+    path('500/', test_500_view, name='500')
 ]
 
 if settings.ENABLE_MINISCAN:

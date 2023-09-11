@@ -48,6 +48,10 @@ DEFAULT_FROM_EMAIL = "os2datascanner@magenta.dk"
 ADMIN_EMAIL = "os2datascanner@magenta.dk"
 EMAIL_HOST = 'mailhog'
 EMAIL_PORT = 1025
+SERVER_EMAIL = "os2datascanner@magenta.dk"
+
+# [error reporting]
+ADMINS = ['os2datascannersupport@magenta-aps.dk']
 
 # options for django_debug_toolbar,
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config

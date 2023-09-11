@@ -20,6 +20,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 
 from django.views.generic import View, TemplateView
+from django.utils.translation import gettext_lazy as _
 
 
 logger = structlog.get_logger()
@@ -50,3 +51,7 @@ def oidc_op_logout_url_method(request):
     return_to_url = settings.LOGOUT_REDIRECT_URL
     return logout_url + '?' + urlencode({'redirect_uri': return_to_url,
                                          'client_id': settings.OIDC_RP_CLIENT_ID})
+
+
+def test_500_view(request):
+    raise Exception(_("Task failed successfully!"))

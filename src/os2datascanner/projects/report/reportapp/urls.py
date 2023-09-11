@@ -11,7 +11,8 @@ from os2datascanner import __version__
 from .views.api import JSONAPIView
 from .views.saml import metadata
 from .views.misc_views import (
-    ApprovalPageView, StatsPageView, SettingsPageView, AboutPageView, LogoutPageView)
+    ApprovalPageView, StatsPageView, SettingsPageView, AboutPageView,
+    LogoutPageView, test_500_view)
 from .views.statistics_views import (
     LeaderStatisticsPageView, DPOStatisticsPageView, UserStatisticsPageView,
     EmployeeView)
@@ -49,7 +50,9 @@ urlpatterns = [
     re_path(r'^version/?$', lambda r: HttpResponse(__version__)),
     re_path(r'^help/$', ManualMainView.as_view(), name="guide"),
     re_path(r'^support/$', SupportButtonView.as_view(), name="support_button"),
-    path('htmx_endpoints/', include('os2datascanner.projects.report.reportapp.htmx_endpoints_urls'))
+    path('htmx_endpoints/',
+         include('os2datascanner.projects.report.reportapp.htmx_endpoints_urls')),
+    path('500/', test_500_view, name='500')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.SAML2_ENABLED:

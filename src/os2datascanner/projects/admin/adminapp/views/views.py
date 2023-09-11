@@ -210,3 +210,7 @@ class DialogSuccess(TemplateView):
             model_type = self.reload_map[model_type]
         context['reload_url'] = '/' + model_type + '/'
         return context
+
+
+def test_500_view(request):
+    raise Exception(_("Task failed successfully!"))
