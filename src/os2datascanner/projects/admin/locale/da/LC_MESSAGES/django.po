@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 10:00+0200\n"
+"POT-Creation-Date: 2023-09-14 14:13+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2056,24 +2056,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:203
+#: adminapp/views/exchangescanner_views.py:197
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:204
+#: adminapp/views/exchangescanner_views.py:198
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:212
+#: adminapp/views/exchangescanner_views.py:206
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:216
+#: adminapp/views/exchangescanner_views.py:210
 #: adminapp/views/filescanner_views.py:174
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:221
+#: adminapp/views/exchangescanner_views.py:215
 #: adminapp/views/filescanner_views.py:175
 msgid "Password"
 msgstr "Adgangskode"
@@ -2095,7 +2095,7 @@ msgstr "Udtryk"
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:457
+#: adminapp/views/scanner_views.py:460
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
@@ -2696,6 +2696,14 @@ msgstr ""
 #: import_services/templates/import_services/os2mo_errorview.html:20
 msgid "return to organizations page"
 msgstr "vend tilbage til organisationer-siden"
+
+#: organizations/admin.py:38
+msgid "Tab access"
+msgstr "Menu-adgang"
+
+#: organizations/admin.py:44
+msgid "Support button settings"
+msgstr "Supportknap indstillinger"
 
 #: organizations/models/organization.py:58
 msgid "slug"

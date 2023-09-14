@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 10:04+0200\n"
+"POT-Creation-Date: 2023-09-14 14:23+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,27 +27,27 @@ msgstr "Accepteret"
 msgid "Not accepted"
 msgstr "Ikke accepteret"
 
-#: organizations/models/account.py:112
+#: organizations/models/account.py:116
 msgid "User"
 msgstr "Bruger"
 
-#: organizations/models/account.py:115
+#: organizations/models/account.py:119
 msgid "Last handle"
 msgstr "Sidste håndtering"
 
-#: organizations/models/account.py:123
+#: organizations/models/account.py:127
 msgid "image"
 msgstr "billede"
 
-#: organizations/models/account.py:128
+#: organizations/models/account.py:132
 msgid "Number of matches"
 msgstr "Antal matches"
 
-#: organizations/models/account.py:133
+#: organizations/models/account.py:137
 msgid "Number of withheld matches"
 msgstr "Antal tilbageholdte matches"
 
-#: organizations/models/account.py:139
+#: organizations/models/account.py:143
 msgid "Contact person"
 msgstr "Kontaktperson"
 
@@ -680,7 +680,8 @@ msgstr ""
 msgid "Contact Magenta"
 msgstr "Kontakt Magenta"
 
-#: reportapp/templates/components/service.html:18
+#: reportapp/templates/components/service.html:17
+#: reportapp/templates/components/service.html:41
 msgid ""
 "Do you have a question about some of your matches or which actions you "
 "should take to handle them? You can contact one of your DPOs by clicking "
@@ -690,19 +691,27 @@ msgstr ""
 "foretage for at håndtere dem? Du kan kontakte en af dine DPO'er ved at "
 "klikke her."
 
-#: reportapp/templates/components/service.html:19
+#: reportapp/templates/components/service.html:18
 msgid "Contact DPO"
 msgstr "Kontakt DPO"
 
-#: reportapp/templates/components/service.html:25
+#: reportapp/templates/components/service.html:24
+#: reportapp/templates/components/service.html:39
 msgid "Question about OS2datascanner"
 msgstr "Spørgsmål angående OS2datascanner"
 
-#: reportapp/templates/components/service.html:43
+#: reportapp/templates/components/service.html:42
+#: reportapp/templates/components/service.html:50
+#: reportapp/templates/components/service.html:56
+msgid "Contact"
+msgstr "Kontakt"
+
+#: reportapp/templates/components/service.html:47
 msgid "Issue with OS2datascanner"
 msgstr "Problem med OS2datascanner."
 
-#: reportapp/templates/components/service.html:45
+#: reportapp/templates/components/service.html:49
+#: reportapp/templates/components/service.html:55
 msgid ""
 "Are you experiencing issues with OS2datascanner, and have no luck resolving "
 "it by consulting the manual or FAQ? You can contact your IT department by "
@@ -712,20 +721,16 @@ msgstr ""
 "løse dem ved at læse håndbogen eller FAQ'en? Du kan kontakte din IT-afdeling "
 "ved at klikke her."
 
-#: reportapp/templates/components/service.html:46
-msgid "Contact IT"
-msgstr "Kontakt IT"
-
-#: reportapp/templates/components/service.html:52
+#: reportapp/templates/components/service.html:62
 msgid "Consult the manual to find instructions for using OS2datascanner."
 msgstr "Læs håndbogen for at finde instruktioner til brugen af OS2datascanner."
 
-#: reportapp/templates/components/service.html:52
+#: reportapp/templates/components/service.html:62
 #: reportapp/templates/manual.html:15 reportapp/templates/manual.html:44
 msgid "Manual"
 msgstr "Håndbog"
 
-#: reportapp/templates/components/service.html:57
+#: reportapp/templates/components/service.html:67
 msgid ""
 "Consult the FAQ to read answers to the most frequently asked questions asked "
 "by other users."
@@ -733,7 +738,7 @@ msgstr ""
 "Læs FAQ'en for at se svar på de mest almindelige spørgsmål stillet af andre "
 "brugere."
 
-#: reportapp/templates/components/service.html:58
+#: reportapp/templates/components/service.html:68
 msgid "FAQ"
 msgstr "FAQ"
 
@@ -1147,11 +1152,11 @@ msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/statistics_views.py:87
+#: reportapp/views/statistics_views.py:90
 msgid "The user does not have an account."
 msgstr "Brugeren har ikke en konto."
 
-#: reportapp/views/statistics_views.py:115
+#: reportapp/views/statistics_views.py:118
 #, python-brace-format
 msgid "An organizational unit with the UUID '{0}' was not found."
 msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
