@@ -4,6 +4,7 @@ from functools import partial
 from itertools import chain
 from enum import Enum, unique
 import structlog
+from copy import deepcopy
 
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
@@ -69,6 +70,7 @@ class CPRRule(RegexRule):
                  modulus_11: bool = True,
                  ignore_irrelevant: bool = True,
                  examine_context: bool = True,
+                 bin_check: bool = True,
                  whitelist: Optional[List[str]] = None,
                  blacklist: Optional[List[str]] = None,
                  **super_kwargs):
@@ -76,6 +78,7 @@ class CPRRule(RegexRule):
         self._modulus_11 = modulus_11
         self._ignore_irrelevant = ignore_irrelevant
         self._examine_context = examine_context
+        self._bin_check = bin_check
         self._whitelist = self.WHITELIST_WORDS if whitelist is None else set(whitelist)
         self._blacklist = self.BLACKLIST_WORDS if blacklist is None else set(blacklist)
         self._blacklist_pattern = re.compile("|".join(self._blacklist))
@@ -89,24 +92,69 @@ class CPRRule(RegexRule):
             properties.append("relevance check")
         if self._examine_context:
             properties.append("context check")
+        if self._bin_check:
+            properties.append("bin check")
 
         if properties:
             return "CPR number (with {0})".format(oxford_comma(properties, "and"))
         else:
             return "CPR number"
-
+    
     def match(self, content: str) -> Optional[Iterator[dict]]:  # noqa: CCR001,E501 too high cognitive complexity
         if content is None:
-            return
+                return
 
         if self._examine_context and self._blacklist:
             if (m := self._blacklist_pattern.search(content.lower())):
                 logger.debug("Blacklist matched content", matches=m.group(0))
                 return
-
+        
         imatch = 0
+        
+        if self._bin_check:
+            prev_bin_accepted = False
+            cur_bin_accepted = True
+            next_bin_accepted = False
+            bin_size = 100 #The number of elements in the first bin
+            cur_store = []
+            next_store = []
+            cutoff = 0.25 #How big a fraction of elements in a bin needs to be matches for that bin to be accepted
+            matches_in_bin = 0
+            ibin = 1
+            elems_in_next_bin = 0
+
         for itot, m in enumerate(self._compiled_expression.finditer(content), 1):
             cpr = m.group(1).replace(" ", "") + m.group(2)
+
+            if self._bin_check and bin_size == elems_in_next_bin:
+                next_bin_accepted = matches_in_bin / bin_size >= cutoff
+                ibin += 1
+                
+                if cur_bin_accepted and (prev_bin_accepted or next_bin_accepted): #If bin and one neighbor is accepted yield matches from the bin
+                    for c, mat, prob in cur_store:
+                        yield {
+                            "match": c,
+
+                            **make_context(mat, content),
+
+                            "sensitivity": (
+                                self.sensitivity.value
+                                if self.sensitivity
+                                else self.sensitivity
+                            ),
+                            "probability": prob,
+                        }
+
+                matches_in_bin = 0
+                elems_in_next_bin = 0
+                prev_bin_accepted = cur_bin_accepted
+                cur_bin_accepted = next_bin_accepted
+                cur_store = deepcopy(next_store)
+                next_store.clear()
+            
+            if self._bin_check: 
+                elems_in_next_bin += 1
+
             if self._modulus_11:
                 mod11, reason = modulus11_check(cpr)
                 if not mod11:
@@ -129,24 +177,66 @@ class CPRRule(RegexRule):
                 probability = p if p is not None else probability
                 ctype = ctype if ctype != [] else Context.PROBABILITY_CALC
                 logger.debug(f"{cpr} with probability {probability} from context "
-                             f"due to {ctype}")
+                                f"due to {ctype}")
 
             if probability:
                 imatch += 1
-                yield {
-                    "match": cpr,
+                if self._bin_check: #If _bin_check save match for next bin. If not, just yield it
+                    matches_in_bin += 1
+                    next_store.append([cpr, m, probability])
+                else:
+                    yield {
+                        "match": cpr,
 
-                    **make_context(m, content),
+                        **make_context(m, content),
 
-                    "sensitivity": (
-                        self.sensitivity.value
-                        if self.sensitivity
-                        else self.sensitivity
-                    ),
-                    "probability": probability,
-                }
+                        "sensitivity": (
+                            self.sensitivity.value
+                            if self.sensitivity
+                            else self.sensitivity
+                        ),
+                        "probability": probability,
+                    }
+                
             logger.debug(f"{itot} cpr-like numbers, "
-                         f"of which {imatch} had a probabiliy > 0")
+                        f"of which {imatch} had a probabiliy > 0")
+        
+        if self._bin_check: #Checking the last two bins
+            if elems_in_next_bin > 0:
+                next_bin_accepted = matches_in_bin / elems_in_next_bin >= cutoff
+            else:
+                next_bin_accepted = False
+            
+            if cur_bin_accepted and (prev_bin_accepted or next_bin_accepted):
+                for cpr, m, probability in cur_store:
+                        yield {
+                            "match": cpr,
+
+                            **make_context(m, content),
+
+                            "sensitivity": (
+                                self.sensitivity.value
+                                if self.sensitivity
+                                else self.sensitivity
+                            ),
+                            "probability": probability,
+                        }
+            
+            if next_bin_accepted or ibin == 1: #If there is only 1 bin, yield it
+                for cpr, m, probability in next_store:
+                        yield {
+                            "match": cpr,
+
+                            **make_context(m, content),
+
+                            "sensitivity": (
+                                self.sensitivity.value
+                                if self.sensitivity
+                                else self.sensitivity
+                            ),
+                            "probability": probability,
+                        }
+            
 
     def examine_context(  # noqa: CCR001, C901 too high cognitive complexity
         self, match: Match[str]
