@@ -34,6 +34,16 @@ def create_new_rules(apps, schema_editor):
         print("New system rules not created")
 
 
+def delete_new_rules(apps, schema_editor):
+    CustomRule = apps.get_model("os2datascanner", "CustomRule")
+
+    CustomRule.objects.filter(name="Helbredsinformation").delete()
+    CustomRule.objects.filter(name="Navne").delete()
+    CustomRule.objects.filter(name="Adresser").delete()
+
+    print("New system rules deleted.")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -42,5 +52,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(create_new_rules,
-                             reverse_code=migrations.RunPython.noop)
+                             reverse_code=delete_new_rules)
     ]
