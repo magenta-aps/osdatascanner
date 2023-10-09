@@ -10,24 +10,32 @@ from os2datascanner.projects.admin.adminapp.models.sensitivity_level import (
 
 def create_default_cprrule_and_organization(apps, schema_editor):
     Organization = apps.get_model("organizations", "Organization")
+    Client = apps.get_model("core", "Client")
+
     CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
     CustomRule = apps.get_model("os2datascanner", "CustomRule")
 
-    Organization.objects.get_or_create(
+    default_client, _ = Client.objects.get_or_create(
         name="OS2datascanner",
         contact_email="info@magenta-aps.dk",
         contact_phone="+45 3336 9696")
+    Organization.objects.get_or_create(
+        name="OS2datascanner",
+        contact_email="info@magenta-aps.dk",
+        contact_phone="+45 3336 9696",
+        client_id=default_client.uuid)
 
     CPRRuleModel.objects.filter(name="CPR regel").delete()
 
-    CustomRule.objects.get_or_create(
-        name="CPR regel",
-        description="Denne regel finder alle gyldige CPR numre.",
-        sensitivity=Sensitivity.CRITICAL,
-        _rule=CPRRule(
-            modulus_11=True,
-            ignore_irrelevant=True,
-            examine_context=True).to_json_object())
+    if CustomRule.objects.filter(name="CPR regel").first() is None:
+        CustomRule.objects.get_or_create(
+            name="CPR regel",
+            description="Denne regel finder alle gyldige CPR numre.",
+            sensitivity=Sensitivity.CRITICAL,
+            _rule=CPRRule(
+                modulus_11=True,
+                ignore_irrelevant=True,
+                examine_context=True).to_json_object())
 
     print("SUCCESS! Default organization: 'OS2datascanner'"
           " and default rule: 'CPR Regel' exists in the database.")
