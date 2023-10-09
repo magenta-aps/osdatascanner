@@ -27,9 +27,13 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         client_id=default_client.uuid,
         slug="os2datascanner")
 
+    # Get the old CPR rule and select the scanner jobs that use it.
     old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
-    jobs = Scanner.objects.filter(rules=old_cpr)
-    old_cpr.delete()
+    if old_cpr is not None:
+        jobs = Scanner.objects.filter(rules=old_cpr)
+        old_cpr.delete()
+    else:
+        jobs = []
 
     if CustomRule.objects.filter(name="CPR regel").first() is None:
         new_cpr = CustomRule.objects.get_or_create(
@@ -41,6 +45,8 @@ def create_default_cprrule_and_organization(apps, schema_editor):
                 ignore_irrelevant=True,
                 examine_context=True).to_json_object())
 
+        # If there are any jobs that used the old cpr rule
+        # add the new one instead.
         for job in jobs:
             job.rules.add(new_cpr)
 
