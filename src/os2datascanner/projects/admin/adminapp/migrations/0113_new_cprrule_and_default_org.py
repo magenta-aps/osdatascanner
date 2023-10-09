@@ -20,6 +20,9 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         contact_email="info@magenta-aps.dk",
         contact_phone="+45 3336 9696")
     Organization.objects.get_or_create(
+        name="OS2datascanner",
+        contact_email="info@magenta-aps.dk",
+        contact_phone="+45 3336 9696",
         client_id=default_client.uuid,
         slug="os2datascanner")
 
