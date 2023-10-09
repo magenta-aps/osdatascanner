@@ -39,18 +39,20 @@ class RuleViewTestCaseMixin(SerializeMixin):
             client=self.client,
         )
 
-        self.rule = RegexRule.objects.create(
-            name="En Regex Regel",
-            description="En gammel regex regel.",
-            organization=self.organization,
-            sensitivity=Sensitivity.HIGH)
-
         self.test_client = TestClient()
         self.test_client.login(username='kjeld', password='top_secret')
 
 
 class RegexRuleViewsTest(RuleViewTestCaseMixin, TestCase):
     '''Test fixture for rule views related to RegexRule.'''
+
+    def setUp(self):
+        super().setUp()
+        self.rule = RegexRule.objects.create(
+            name="En Regex Regel",
+            description="En gammel regex regel.",
+            organization=self.organization,
+            sensitivity=Sensitivity.HIGH)
 
     def test_create_regexrule(self):
         '''Check that an authenticated user can create a RegexRule.'''
@@ -80,6 +82,14 @@ class RegexRuleViewsTest(RuleViewTestCaseMixin, TestCase):
 
 class CPRRuleViewsTest(RuleViewTestCaseMixin, TestCase):
     '''Test fixture for rule views related to CPRRule.'''
+
+    def setUp(self):
+        super().setUp()
+        self.cprrule = CPRRule.objects.create(
+            name="CPR-reglen",
+            description="Den gode gamle regel til at finde CPR-numre.",
+            organization=self.organization,
+            sensitivity=Sensitivity.CRITICAL)
 
     def test_create_cprrule(self):
         '''Ensure that users are allowed to create CPRRules.'''
@@ -114,7 +124,7 @@ class CPRRuleViewsTest(RuleViewTestCaseMixin, TestCase):
             "description": "En opdateret beskrivelse for den nye CPR regel.",
             }
 
-        pk = CPRRule.objects.first().pk
+        pk = self.cprrule.pk
 
         view = CPRRuleUpdate()
         request = self.factory.post(f'/rules/cpr/{pk}', fields)

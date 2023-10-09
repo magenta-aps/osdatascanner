@@ -8,9 +8,6 @@ from recurrence import Recurrence
 
 from ....organizations.broadcast_bulk_events import BulkCreateEvent
 from ....organizations.publish import publish_events
-from os2datascanner.projects.admin.adminapp.models.sensitivity_level import (
-    Sensitivity,
-)
 from os2datascanner.projects.admin.adminapp.models.authentication import (
     Authentication,
 )
@@ -20,8 +17,8 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner impor
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import (
     WebScanner,
 )
-from os2datascanner.projects.admin.adminapp.models.rules.cprrule import (
-    CPRRule,
+from os2datascanner.projects.admin.adminapp.models.rules.customrule import (
+    CustomRule,
 )
 from os2datascanner.projects.admin.organizations.models.account import (
     Account,
@@ -36,19 +33,13 @@ def get_default_org_and_cprrule():
     Sets up the default organization along with an instance
     of the CPR rule for the dev environment.
     """
-    default_org = Organization.objects.get_or_create(
-        name="OS2datascanner",
-        contact_email="info@magenta-aps.dk",
-        contact_phone="+45 3336 9696")
 
-    cpr = CPRRule.objects.get_or_create(
+    default_org = Organization.objects.first()
+
+    cpr = CustomRule.objects.filter(
         name="CPR regel",
         description="Denne regel finder alle gyldige CPR numre.",
-        sensitivity=Sensitivity.CRITICAL,
-        do_modulus11=True,
-        ignore_irrelevant=True,
-        examine_context=True,
-        organization=default_org)
+        ).first()
 
     return default_org, cpr
 

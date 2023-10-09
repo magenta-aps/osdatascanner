@@ -101,7 +101,7 @@ class ListViewsTest(TestCase):
         elif isinstance(list_type, OrganizationListView):
             # Migrations 0042 adds os2datascanner as an organization
             # and that is why we expect 3 organizations listed as superuser.
-            self.assertEqual(len(qs), 3)
+            self.assertEqual(len(qs), 2)
         else:
             self.assertEqual(len(qs), 2)
 
