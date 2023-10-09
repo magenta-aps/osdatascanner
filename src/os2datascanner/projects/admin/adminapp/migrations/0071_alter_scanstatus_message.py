@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0070_new_special_rules'),
+        ('os2datascanner', '0069_customrule'),
     ]
 
     operations = [
