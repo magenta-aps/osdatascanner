@@ -1,3 +1,4 @@
+from os2datascanner.engine2.conversions.types import OutputType
 from .. import settings
 from ..model.core import Source, UnknownSchemeError, DeserialisationError
 from ..model.core.errors import (ModelException,
@@ -92,6 +93,17 @@ def message_received_raw(body, channel, source_manager):  # noqa
 
     try:
         while (handle := retrier.run(next, it)):
+            representation = {
+                OutputType.Presentation: str(handle),
+            }
+
+            left, matches = progress.rule.try_match(representation)
+            if left is False:
+                continue
+            else:
+                progress.rule = left
+                progress.matches = matches
+
             if isinstance(handle, tuple) and handle[1]:
                 # We were able to construct a Handle for something that
                 # exists, but then something unexpected (that we can tie to
