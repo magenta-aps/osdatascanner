@@ -14,6 +14,7 @@ def create_default_cprrule_and_organization(apps, schema_editor):
 
     CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
     CustomRule = apps.get_model("os2datascanner", "CustomRule")
+    Scanner = apps.get_model("os2datascanner", "Scanner")
 
     default_client, _ = Client.objects.get_or_create(
         name="OS2datascanner",
@@ -26,10 +27,12 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         client_id=default_client.uuid,
         slug="os2datascanner")
 
-    CPRRuleModel.objects.filter(name="CPR regel").delete()
+    old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
+    jobs = Scanner.objects.filter(rules=old_cpr)
+    old_cpr.delete()
 
     if CustomRule.objects.filter(name="CPR regel").first() is None:
-        CustomRule.objects.get_or_create(
+        new_cpr = CustomRule.objects.get_or_create(
             name="CPR regel",
             description="Denne regel finder alle gyldige CPR numre.",
             sensitivity=Sensitivity.CRITICAL,
@@ -37,6 +40,9 @@ def create_default_cprrule_and_organization(apps, schema_editor):
                 modulus_11=True,
                 ignore_irrelevant=True,
                 examine_context=True).to_json_object())
+
+        for job in jobs:
+            job.rules.add(new_cpr)
 
     print("SUCCESS! Default organization: 'OS2datascanner'"
           " and default rule: 'CPR Regel' exists in the database.")
