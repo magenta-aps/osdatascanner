@@ -12,22 +12,21 @@ from ..organizations.models import Account, Organization
 class CleanAccountResultsTests(TestCase):
 
     def setUp(self):
-        default_client, _ = Client.objects.get_or_create(
+        self.client = Client.objects.create(
             name="OS2datascanner",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696")
-        self.default_client = default_client
 
-        self.default_org = Organization.objects.get_or_create(
+        self.org = Organization.objects.create(
             name="OS2datascanner",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696",
-            client_id=default_client.uuid,
+            client_id=self.client.uuid,
             slug="os2datascanner")
 
     def tearDown(self):
-        self.default_org.delete()
-        self.default_client.delete()
+        self.org.delete()
+        self.client.delete()
 
     def call_command(self, *args, **kwargs):
         err = StringIO()
@@ -60,7 +59,7 @@ class CleanAccountResultsTests(TestCase):
 
         account = Account.objects.create(
             username="Bøffen",
-            organization=self.default_org)
+            organization=self.org)
 
         self.assertRaises(
             CommandError,
@@ -74,10 +73,10 @@ class CleanAccountResultsTests(TestCase):
         something to stderr."""
         account = Account.objects.create(
             username="Bøffen",
-            organization=self.default_org)
+            organization=self.org)
         scanner = Scanner.objects.create(
             name="SomeScanner",
-            organization=self.default_org)
+            organization=self.org)
         ScanStatus.objects.create(scanner=scanner,
                                   scan_tag=scanner._construct_scan_tag().to_json_object())
 

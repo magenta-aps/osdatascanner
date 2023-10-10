@@ -9,17 +9,16 @@ class AccountMethodTests(TestCase):
 
     def setUp(self):
         # Create new org for the sake of these tests.
-        client, _ = Client.objects.get_or_create(
+        self.client = Client.objects.create(
             name="OS2datascanner",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696")
-        self.client = client
 
-        self.org = Organization.objects.get_or_create(
+        self.org = Organization.objects.create(
             name="OS2datascanner",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696",
-            client_id=client.uuid,
+            client_id=self.client.uuid,
             slug="os2datascanner")
 
         # Create objects
