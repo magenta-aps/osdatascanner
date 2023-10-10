@@ -1,7 +1,9 @@
 from django.test import TestCase
 
+from os2datascanner.engine2.rules.logical import OrRule
+from os2datascanner.engine2.rules.regex import RegexRule
+
 from ..adminapp.models.rules.rule import Sensitivity
-from ..adminapp.models.rules.regexrule import RegexRule, RegexPattern
 from ..adminapp.models.rules.customrule import CustomRule
 
 
@@ -9,11 +11,13 @@ class RuleTest(TestCase):
     def test_regexrule_translation(self):
         names = ("Jason", "Timothy", "Davina", "Kristi",)
 
-        r = RegexRule.objects.create(
-                name="Look for names",
-                sensitivity=Sensitivity.CRITICAL)
-        for name in names:
-            RegexPattern.objects.create(regex=r, pattern_string=name)
+        r = CustomRule.objects.create(
+            name="Look for names",
+            description="A rule that looks for some names",
+            sensitivity=Sensitivity.CRITICAL,
+            _rule=OrRule.make(
+                RegexRule(name) for name in names).to_json_object(),
+            )
 
         e2r = r.make_engine2_rule()
 

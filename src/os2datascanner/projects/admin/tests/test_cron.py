@@ -11,15 +11,14 @@ from django.utils.text import slugify
 
 from os2datascanner.engine2.model.http import WebSource
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
-from os2datascanner.engine2.rules.regex import RegexRule as TwegexRule
+from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.rule import Sensitivity as Twensitivity
 from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.organizations.models.organization import (
     Organization,
 )
-from os2datascanner.projects.admin.adminapp.models.rules.regexrule import (
-    RegexPattern,
-    RegexRule,
+from os2datascanner.projects.admin.adminapp.models.rules.customrule import (
+    CustomRule,
 )
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import (
     WebScanner,
@@ -88,7 +87,7 @@ obj = {
     "source": WebSource(
         url="https://www.magenta.dk/", sitemap=None, exclude=[]
     ).to_json_object(),
-    "rule": TwegexRule(
+    "rule": RegexRule(
         "fællesskaber", name="MagentaTestRule1", sensitivity=Twensitivity.NOTICE
     ).to_json_object(),
     "configuration": {"skip_mime_types": ["image/*"]},
@@ -153,16 +152,14 @@ class CronTest(django.test.TestCase):
         self.magenta_scanner_tomorrow.save()
 
         # create regex cule
-        self.reg1 = RegexPattern(pattern_string="fællesskaber", pk=PATTERN_PK)
-        self.reg1.save()
-        self.tr_set1 = RegexRule(
+        self.reg1 = RegexRule(r"fællesskaber")
+        self.tr_set1 = CustomRule.objects.create(
             name="MagentaTestRule1",
+            description="Yet another test rule",
             sensitivity=Sensitivity.OK,
             organization=self.magenta_org,
-            pk=RULE_PK,
+            _rule=self.reg1.to_json_object(),
         )
-        self.tr_set1.patterns.add(self.reg1)
-        self.tr_set1.save()
         self.magenta_scanner.rules.add(self.tr_set1)
         self.magenta_scanner_no_recur.rules.add(self.tr_set1)
         self.magenta_scanner_tomorrow.rules.add(self.tr_set1)

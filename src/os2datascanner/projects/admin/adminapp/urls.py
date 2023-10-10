@@ -66,10 +66,7 @@ from .views.sbsysscanner_views import (SbsysScannerCreate, SbsysScannerList,
                                        SbsysScannerAskRun, SbsysScannerDelete,
                                        SbsysScannerRun, SbsysScannerUpdate)
 
-from .views.rule_views import (RuleList, CPRRuleCreate,
-                               CPRRuleUpdate, CPRRuleDelete,
-                               RegexRuleCreate, RegexRuleUpdate,
-                               RegexRuleDelete, CustomRuleCreate,
+from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete)
 
 from .views.scanner_views import (StatusOverview, StatusCompleted,
@@ -354,16 +351,6 @@ urlpatterns = [
 
     # Rules
     re_path(r'^rules/$', RuleList.as_view(), name='rules'),
-    re_path(r'^rules/cpr/add/$', CPRRuleCreate.as_view(), name='cprrule_add'),
-    re_path(r'^rules/cpr/(?P<pk>\d+)/$', CPRRuleUpdate.as_view(),
-            name='cprrule_update'),
-    re_path(r'^rules/cpr/(?P<pk>\d+)/delete/$', CPRRuleDelete.as_view(),
-            name='cprrule_delete'),
-    re_path(r'^rules/regex/add/$', RegexRuleCreate.as_view(), name='regexrule_add'),
-    re_path(r'^rules/regex/(?P<pk>\d+)/$', RegexRuleUpdate.as_view(),
-            name='rule_update'),
-    re_path(r'^rules/regex/(?P<pk>\d+)/delete/$', RegexRuleDelete.as_view(),
-            name='rule_delete'),
     re_path(r'^rules/custom/add/$', CustomRuleCreate.as_view(), name='customrule_add'),
     re_path(r'^rules/custom/(?P<pk>\d+)/$', CustomRuleUpdate.as_view(),
             name='customrule_update'),
