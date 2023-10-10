@@ -30,8 +30,6 @@ from ..models.scannerjobs.exchangescanner import ExchangeScanner
 from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.gmail import GmailScanner
 from ..models.scannerjobs.sbsysscanner import SbsysScanner
-from ..models.rules.cprrule import CPRRule
-from ..models.rules.regexrule import RegexRule
 from ..models.scannerjobs.msgraph import (
         MSGraphFileScanner, MSGraphMailScanner, MSGraphCalendarScanner, MSGraphTeamsFileScanner)
 from ..models.scannerjobs.webscanner import WebScanner
@@ -188,13 +186,6 @@ class DialogSuccess(TemplateView):
         'googledrivescanners': GoogleDriveScanner,
         'gmailscanners': GmailScanner,
         'sbsysscanners': SbsysScanner,
-        'rules/cpr': CPRRule,
-        'rules/regex': RegexRule,
-    }
-
-    reload_map = {
-        'rules/cpr': 'rules',
-        'rules/regex': 'rules'
     }
 
     def get_context_data(self, **kwargs):
@@ -209,8 +200,6 @@ class DialogSuccess(TemplateView):
         item = get_object_or_404(model, pk=pk)
         context['item_description'] = item.display_name
         context['action'] = _("created") if created else _("saved")
-        if model_type in self.reload_map:
-            model_type = self.reload_map[model_type]
         context['reload_url'] = '/' + model_type + '/'
         return context
 

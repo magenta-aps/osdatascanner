@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from ..adminapp.models.rules.rule import Rule
+from ..adminapp.models.rules import Rule
 from ..adminapp.models.authentication import Authentication
 from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
 from ..adminapp.views.exchangescanner_views import (

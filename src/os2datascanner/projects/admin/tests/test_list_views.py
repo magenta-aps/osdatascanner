@@ -8,7 +8,7 @@ from django.utils.text import slugify
 
 from ..adminapp.views.webscanner_views import WebScannerList
 from ..adminapp.models.scannerjobs.webscanner import WebScanner
-from ..adminapp.models.rules.rule import Rule
+from ..adminapp.models.rules import Rule
 from ..adminapp.views.rule_views import RuleList
 from ..adminapp.views.scanner_views import StatusOverview
 from ..adminapp.models.scannerjobs.scanner import Scanner, ScanStatus

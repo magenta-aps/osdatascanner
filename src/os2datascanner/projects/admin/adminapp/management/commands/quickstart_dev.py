@@ -17,7 +17,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner impor
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import (
     WebScanner,
 )
-from os2datascanner.projects.admin.adminapp.models.rules.customrule import (
+from os2datascanner.projects.admin.adminapp.models.rules import (
     CustomRule,
 )
 from os2datascanner.projects.admin.organizations.models.account import (
@@ -30,7 +30,7 @@ from os2datascanner.projects.admin.organizations.models.organization import (
 
 def get_default_org_and_cprrule():
     """
-    Sets up the default organization along with an instance
+    Retrieves the default organization along with an instance
     of the CPR rule for the dev environment.
     """
 

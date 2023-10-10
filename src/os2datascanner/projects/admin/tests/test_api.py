@@ -6,7 +6,8 @@ from django.utils.text import slugify
 from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.organizations.models.organization import Organization
 from os2datascanner.engine2.rules.rule import Rule
-from ..adminapp.models.rules.regexrule import RegexRule, RegexPattern
+from os2datascanner.engine2.rules.regex import RegexRule
+from ..adminapp.models.rules import CustomRule
 from ..adminapp.models.apikey import APIKey
 
 
@@ -27,14 +28,18 @@ class APITest(TestCase):
                 client=client2,
         )
 
-        self.rule1 = RegexRule.objects.create(
-                organization=self.org1, name="Check for tax number")
-        RegexPattern.objects.create(
-                regex=self.rule1, pattern_string="[0-9]{12}")
-        self.rule2 = RegexRule.objects.create(
-                organization=self.org2, name="Check for department ID")
-        RegexPattern.objects.create(
-                regex=self.rule2, pattern_string="Dx[1-58]{4}")
+        self.rule1 = CustomRule.objects.create(
+            name="Check for tax number",
+            description="A rule that searches for tax numbers",
+            organization=self.org1,
+            _rule=RegexRule(r"[0-9]{12}").to_json_object(),
+            )
+        self.rule2 = CustomRule.objects.create(
+            name="Check for department ID",
+            description="A rule that searches for department IDs",
+            organization=self.org2,
+            _rule=RegexRule(r"Dx[1-58]{4}").to_json_object(),
+            )
 
         self.key1_bad = APIKey.objects.create(organization=self.org1)
         self.key1_good = APIKey.objects.create(

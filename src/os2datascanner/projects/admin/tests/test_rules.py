@@ -1,19 +1,23 @@
 from django.test import TestCase
 
-from ..adminapp.models.rules.rule import Sensitivity
-from ..adminapp.models.rules.regexrule import RegexRule, RegexPattern
-from ..adminapp.models.rules.customrule import CustomRule
+from os2datascanner.engine2.rules.logical import OrRule
+from os2datascanner.engine2.rules.regex import RegexRule
+
+from ..adminapp.models.rules import CustomRule, Sensitivity
 
 
 class RuleTest(TestCase):
     def test_regexrule_translation(self):
         names = ("Jason", "Timothy", "Davina", "Kristi",)
 
-        r = RegexRule.objects.create(
-                name="Look for names",
-                sensitivity=Sensitivity.CRITICAL)
-        for name in names:
-            RegexPattern.objects.create(regex=r, pattern_string=name)
+        rules = (RegexRule(name) for name in names)
+
+        r = CustomRule.objects.create(
+            name="Look for names",
+            description="A rule that looks for some names",
+            sensitivity=Sensitivity.CRITICAL,
+            _rule=OrRule.make(*rules).to_json_object(),
+            )
 
         e2r = r.make_engine2_rule()
 
@@ -27,11 +31,10 @@ class RuleTest(TestCase):
                 1000,
                 "sensitivities do not match")
 
-        for name in names:
-            self.assertNotEqual(
-                    list(e2r.match(name)),
-                    [],
-                    f"generated rule could not find {name}")
+        for name, rule in zip(names, rules):
+            self.assertEqual([m['match'] for m in rule.match(name)],
+                             [name],
+                             f"generated rule could not find {name}")
 
     def test_customrule_translation(self):
         document = """\

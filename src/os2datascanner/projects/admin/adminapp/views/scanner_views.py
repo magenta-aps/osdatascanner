@@ -32,7 +32,7 @@ from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
     CSVExportMixin
 from ..models.authentication import Authentication
-from ..models.rules.rule import Rule
+from ..models.rules import Rule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.usererrorlog import UserErrorLog
 from ..utils import CleanMessage

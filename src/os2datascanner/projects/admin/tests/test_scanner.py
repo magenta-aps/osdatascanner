@@ -4,15 +4,15 @@ from django.contrib.auth import get_user_model
 
 from os2datascanner.engine2.model.derived import mail
 from os2datascanner.engine2.model.msgraph import mail as graph_mail
+from os2datascanner.engine2.rules import logical, regex
+from os2datascanner.engine2.rules.cpr import CPRRule
 
 from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.grants.models import GraphGrant
 from os2datascanner.projects.admin.adminapp.views.webscanner_views \
     import WebScannerUpdate
-from os2datascanner.projects.admin.adminapp.models.rules.cprrule \
-    import CPRRule
-from os2datascanner.projects.admin.adminapp.models.rules.regexrule \
-    import RegexRule, RegexPattern
+from os2datascanner.projects.admin.adminapp.models.rules \
+    import CustomRule
 from os2datascanner.projects.admin.adminapp.models.sensitivity_level \
     import Sensitivity
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
@@ -68,40 +68,20 @@ class ScannerTest(TestCase):
         theydontwantyouto_scanner.save()
 
         # create Rules and rulesets
-        reg1 = RegexPattern(pattern_string='fællesskaber', pk=1)
-        reg2 = RegexPattern(pattern_string='Ombudsmand', pk=2)
-        reg3 = RegexPattern(pattern_string='projektnetwerk', pk=3)
-        reg4 = RegexPattern(pattern_string='secure', pk=4)
-        reg5 = RegexPattern(pattern_string='control', pk=5)
-        reg6 = RegexPattern(pattern_string='breathe', pk=6)
-        reg1.save()
-        reg2.save()
-        reg3.save()
-        reg4.save()
-        reg5.save()
-        reg6.save()
+
+        reg1 = regex.RegexRule(r'fællesskaber')
+        reg2 = regex.RegexRule(r'Ombudsmand')
+        reg3 = regex.RegexRule(r'projektnetwerk')
 
         # Create rule sets
-        tr_set1 = RegexRule(
+        tr_set1 = CustomRule.objects.create(
             name='MagentaTestRule1',
+            description="Test rule 1",
             sensitivity=Sensitivity.OK,
             organization=magenta_org,
-            pk=1
+            _rule=logical.OrRule.make(
+                reg1, reg2, reg3).to_json_object(),
         )
-        tr_set2 = RegexRule(
-            name='TheyDontWantYouToKnow',
-            sensitivity=Sensitivity.OK,
-            organization=theydontwantyouto_org,
-            pk=2
-        )
-        tr_set1.save()
-        tr_set2.save()
-        tr_set1.patterns.add(reg1)
-        tr_set1.patterns.add(reg2)
-        tr_set1.patterns.add(reg3)
-        tr_set2.patterns.add(reg4)
-        tr_set1.save()
-        tr_set2.save()
 
         magenta_scanner.rules.add(tr_set1)
         magenta_scanner.save()
@@ -245,7 +225,13 @@ class ScannerTest(TestCase):
                 organization=org,
                 name="Test Department",
                 grant=grant)
-        cpr_rule = CPRRule.objects.create()
+        cpr_rule = CustomRule.objects.create(
+            name="Test CPR rule",
+            description="A rule for testing CPR in admin",
+            sensitivity=Sensitivity.CRITICAL,
+            organization=org,
+            _rule=CPRRule().to_json_object(),
+            )
         scanner.rules.add(cpr_rule)
 
         top_source = list(scanner.generate_sources())[0]

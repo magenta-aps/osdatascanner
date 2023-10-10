@@ -24,12 +24,7 @@ from os2datascanner.engine2.rules.rule import Rule
 from .models.authentication import Authentication
 from .models.apikey import APIKey
 from .models.usererrorlog import UserErrorLog
-from .models.rules.cprrule import CPRRule, TurboCPRRule
-from .models.rules.namerule import NameRule
-from .models.rules.regexrule import RegexRule, RegexPattern
-from .models.rules.customrule import CustomRule
-from .models.rules.addressrule import AddressRule
-from .models.rules.healthrule import TurboHealthRule
+from .models.rules import CustomRule
 from .models.scannerjobs.scanner import (ScanStatus,
                                          ScheduledCheckup,
                                          ScanStatusSnapshot)
@@ -51,12 +46,6 @@ class AuthenticationAdmin(admin.ModelAdmin):
     list_display_links = ('pk', 'username')
 
 
-@admin.register(CPRRule)
-@admin.register(TurboCPRRule)
-@admin.register(TurboHealthRule)
-@admin.register(NameRule)
-@admin.register(RegexRule)
-@admin.register(AddressRule)
 class RuleAdmin(admin.ModelAdmin):
     list_filter = ('sensitivity',)
     list_display = ('name', 'organization', 'sensitivity')
@@ -107,11 +96,6 @@ class CustomRuleForm(forms.ModelForm):
 @admin.register(CustomRule)
 class CustomRuleAdmin(admin.ModelAdmin):
     form = CustomRuleForm
-
-
-@admin.register(RegexPattern)
-class RegexPatternAdmin(admin.ModelAdmin):
-    list_display = ('pattern_string', 'regex')
 
 
 @admin.register(WebScanner)
