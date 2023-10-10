@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from ...core.models.client import Client
 from ..models import OrganizationalUnit, Organization, Account
 from ...adminapp.models.scannerjobs.scanner import Scanner
 
@@ -7,25 +8,51 @@ from ...adminapp.models.scannerjobs.scanner import Scanner
 class AccountMethodTests(TestCase):
 
     def setUp(self):
-        # Select existing org
-        org = Organization.objects.first()
+        # Create new org for the sake of these tests.
+        client, _ = Client.objects.get_or_create(
+            name="OS2datascanner",
+            contact_email="info@magenta-aps.dk",
+            contact_phone="+45 3336 9696")
+        self.client = client
+
+        self.org = Organization.objects.get_or_create(
+            name="OS2datascanner",
+            contact_email="info@magenta-aps.dk",
+            contact_phone="+45 3336 9696",
+            client_id=client.uuid,
+            slug="os2datascanner")
 
         # Create objects
         self.unit1 = OrganizationalUnit.objects.create(
-            name="Unit1", organization=org)
+            name="Unit1", organization=self.org)
         self.unit2 = OrganizationalUnit.objects.create(
-            name="Unit2", organization=org)
+            name="Unit2", organization=self.org)
         self.scanner1 = Scanner.objects.create(
-            name="Hansi & Günther", organization=org)
+            name="Hansi & Günther", organization=self.org)
         self.scanner2 = Scanner.objects.create(
-            name="Hansi", organization=org)
-        self.hansi = Account.objects.create(username="Hansi", organization=org)
-        self.günther = Account.objects.create(username="Günther", organization=org)
-        self.fritz = Account.objects.create(username="Fritz", organization=org)
+            name="Hansi", organization=self.org)
+        self.hansi = Account.objects.create(username="Hansi", organization=self.org)
+        self.günther = Account.objects.create(username="Günther", organization=self.org)
+        self.fritz = Account.objects.create(username="Fritz", organization=self.org)
 
         # Assign accounts to a unit
         self.unit1.account_set.add(self.hansi, self.günther)
         self.unit2.account_set.add(self.hansi)
+
+    def tearDown(self):
+        # Clean up this mess...
+        self.fritz.delete()
+        self.günther.delete()
+        self.hansi.delete()
+
+        self.scanner2.delete()
+        self.scanner1.delete()
+
+        self.unit2.delete()
+        self.unit1.delete()
+
+        self.org.delete()
+        self.client.delete()
 
     def test_get_stale_scanners(self):
         """Make sure, that accounts can correctly identify, when they have

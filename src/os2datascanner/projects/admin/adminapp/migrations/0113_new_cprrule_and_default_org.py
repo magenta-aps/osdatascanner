@@ -9,13 +9,9 @@ from os2datascanner.projects.admin.adminapp.models.sensitivity_level import (
 
 
 def create_default_cprrule_and_organization(apps, schema_editor):
-    Organization = apps.get_model("organizations", "Organization")
-    Client = apps.get_model("core", "Client")
-
     CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
     CustomRule = apps.get_model("os2datascanner", "CustomRule")
     Scanner = apps.get_model("os2datascanner", "Scanner")
-
 
     # Get the old CPR rule and select the scanner jobs that use it.
     old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
@@ -40,8 +36,7 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         for job in jobs:
             job.rules.add(new_cpr)
 
-    print("SUCCESS! Default organization: 'OS2datascanner'"
-          " and default rule: 'CPR Regel' exists in the database.")
+    print("SUCCESS! Default rule: 'CPR Regel' exists in the database.")
 
 
 class Migration(migrations.Migration):
