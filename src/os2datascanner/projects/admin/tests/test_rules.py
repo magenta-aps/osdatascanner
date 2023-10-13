@@ -11,12 +11,13 @@ class RuleTest(TestCase):
     def test_regexrule_translation(self):
         names = ("Jason", "Timothy", "Davina", "Kristi",)
 
+        rules = (RegexRule(name) for name in names)
+
         r = CustomRule.objects.create(
             name="Look for names",
             description="A rule that looks for some names",
             sensitivity=Sensitivity.CRITICAL,
-            _rule=OrRule.make(
-                *(RegexRule(name) for name in names)).to_json_object(),
+            _rule=OrRule.make(*rules).to_json_object(),
             )
 
         e2r = r.make_engine2_rule()
@@ -31,11 +32,10 @@ class RuleTest(TestCase):
                 1000,
                 "sensitivities do not match")
 
-        for name in names:
-            self.assertNotEqual(
-                    list(e2r.match(name)),
-                    [],
-                    f"generated rule could not find {name}")
+        for name, rule in zip(names, rules):
+            self.assertEqual([m['match'] for m in rule.match(name)],
+                             [name],
+                             f"generated rule could not find {name}")
 
     def test_customrule_translation(self):
         document = """\

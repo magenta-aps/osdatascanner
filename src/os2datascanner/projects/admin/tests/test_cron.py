@@ -152,13 +152,13 @@ class CronTest(django.test.TestCase):
         self.magenta_scanner_tomorrow.save()
 
         # create regex cule
-        self.reg1 = RegexRule(r"fællesskaber")
+        reg1 = RegexRule(r"fællesskaber")
         self.tr_set1 = CustomRule.objects.create(
             name="MagentaTestRule1",
             description="Yet another test rule",
             sensitivity=Sensitivity.OK,
             organization=self.magenta_org,
-            _rule=self.reg1.to_json_object(),
+            _rule=reg1.to_json_object(),
         )
         self.magenta_scanner.rules.add(self.tr_set1)
         self.magenta_scanner_no_recur.rules.add(self.tr_set1)
@@ -182,7 +182,6 @@ class CronTest(django.test.TestCase):
                 read=("os2ds_scan_specs",), write=set(), heartbeat=6000)
 
     def tearDown(self):
-        self.reg1.delete()
         self.tr_set1.delete()
         self.magenta_scanner.delete()
         self.magenta_scanner_no_recur.delete()
