@@ -34,7 +34,7 @@ class APITest(TestCase):
             organization=self.org1,
             _rule=RegexRule(r"[0-9]{12}").to_json_object(),
             )
-        self.rule2 = RegexRule.objects.create(
+        self.rule2 = CustomRule.objects.create(
             name="Check for department ID",
             description="A rule that searches for department IDs",
             organization=self.org2,

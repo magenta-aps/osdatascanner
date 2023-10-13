@@ -16,7 +16,7 @@ class RuleTest(TestCase):
             description="A rule that looks for some names",
             sensitivity=Sensitivity.CRITICAL,
             _rule=OrRule.make(
-                RegexRule(name) for name in names).to_json_object(),
+                *(RegexRule(name) for name in names)).to_json_object(),
             )
 
         e2r = r.make_engine2_rule()
