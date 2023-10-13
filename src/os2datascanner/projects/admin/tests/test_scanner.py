@@ -4,7 +4,8 @@ from django.contrib.auth import get_user_model
 
 from os2datascanner.engine2.model.derived import mail
 from os2datascanner.engine2.model.msgraph import mail as graph_mail
-from os2datascanner.engine2.rules import cpr, logical, regex
+from os2datascanner.engine2.rules import logical, regex
+from os2datascanner.engine2.rules.cpr import CPRRule
 
 from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.grants.models import GraphGrant
@@ -73,7 +74,7 @@ class ScannerTest(TestCase):
         reg3 = regex.RegexRule(r'projektnetwerk')
 
         # Create rule sets
-        tr_set1 = CustomRule(
+        tr_set1 = CustomRule.objects.create(
             name='MagentaTestRule1',
             description="Test rule 1",
             sensitivity=Sensitivity.OK,
@@ -227,9 +228,9 @@ class ScannerTest(TestCase):
         cpr_rule = CustomRule.objects.create(
             name="Test CPR rule",
             description="A rule for testing CPR in admin",
-            sensitivity_level=Sensitivity.CRITICAL,
+            sensitivity=Sensitivity.CRITICAL,
             organization=org,
-            _rule=cpr.CPRRule().to_json_object(),
+            _rule=CPRRule().to_json_object(),
             )
         scanner.rules.add(cpr_rule)
 
