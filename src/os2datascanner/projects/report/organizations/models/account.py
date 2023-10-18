@@ -129,7 +129,8 @@ class Account(Core_Account):
         on_delete=models.CASCADE,
         related_name='account',
         verbose_name=_('User'),
-        null=True, blank=True)
+        null=True,
+        blank=True)
     last_handle = models.DateTimeField(
         verbose_name=_('Last handle'),
         null=True,

@@ -186,6 +186,9 @@
 - The delete button, for Outlook e-mails on the reportmodule, has been moved
   and gotten a darker color.
 
+- Leader overview: when an orgunit is selected in the dropdown, all related 
+  orgunit-children will also be displayed.
+
 ### Bugfixes
 
 - When clearing the search bar on the user error log page, the table is now
