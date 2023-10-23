@@ -42,8 +42,7 @@ class OrderedWordlistRule(SimpleRule):
     eq_properties = ("_dataset",)
     properties = RuleProperties(
         precedence=RulePrecedence.RIGHT,
-        standalone=False,
-        )
+        standalone=False)
 
     def __init__(self, dataset: str, **super_kwargs):
         super().__init__(**super_kwargs)

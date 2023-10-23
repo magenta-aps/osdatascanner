@@ -40,17 +40,47 @@ class RulePrecedence(Enum):
     RIGHT = 'RIGHT'
 
     def __lt__(self, other):
+        if self.__class__ != other.__class__:
+            raise TypeError(
+                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+
         match (self, other):
-            case (RulePrecedence.LEFT,
-                  RulePrecedence.RIGHT | RulePrecedence.UNDEFINED):
+            case (RulePrecedence.RIGHT, RulePrecedence.LEFT | RulePrecedence.UNDEFINED):
+                return False
+            case _:
+                return True
+
+    def __gt__(self, other):
+        if self.__class__ != other.__class__:
+            raise TypeError(
+                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+
+        match (self, other):
+            case (RulePrecedence.LEFT, RulePrecedence.RIGHT | RulePrecedence.UNDEFINED):
+                return False
+            case _:
+                return True
+
+    def __le__(self, other):
+        if self.__class__ != other.__class__:
+            raise TypeError(
+                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+
+        match (self, other):
+            case ((RulePrecedence.LEFT, _)
+                  | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.RIGHT)):
                 return True
             case _:
                 return False
 
-    def __gt__(self, other):
+    def __ge__(self, other):
+        if self.__class__ != other.__class__:
+            raise TypeError(
+                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+
         match (self, other):
-            case (RulePrecedence.RIGHT,
-                  RulePrecedence.LEFT | RulePrecedence.UNDEFINED):
+            case ((RulePrecedence.RIGHT, _)
+                  | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.LEFT)):
                 return True
             case _:
                 return False
@@ -71,12 +101,5 @@ class RuleProperties(NamedTuple):
       through the invariant checking and has nothing to do
       with constructing instances of the rule.
     """
-    precedence = RulePrecedence.UNDEFINED
-    standalone = True
-
-
-class RulePropertyInvariantViolation(BaseException):
-    """
-    This exception is intended to be raised whenever an invariant has
-    violated with regards to the properties of a rule.
-    """
+    precedence: RulePrecedence
+    standalone: bool
