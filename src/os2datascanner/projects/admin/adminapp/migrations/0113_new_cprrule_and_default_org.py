@@ -16,7 +16,7 @@ def create_default_cprrule_and_organization(apps, schema_editor):
     # Get the old CPR rule and select the scanner jobs that use it.
     old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
     if old_cpr is not None:
-        jobs = Scanner.objects.filter(rules=old_cpr)
+        jobs = Scanner.objects.filter(rules=old_cpr).all()
         old_cpr.delete()
     else:
         jobs = []
