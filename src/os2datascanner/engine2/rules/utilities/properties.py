@@ -41,19 +41,19 @@ class RulePrecedence(Enum):
 
     def __lt__(self, other):
         match (self, other):
-            case (RulePrecedence.LEFT,
-                  RulePrecedence.RIGHT | RulePrecedence.UNDEFINED):
-                return True
-            case _:
+            case (RulePrecedence.RIGHT,
+                  RulePrecedence.LEFT | RulePrecedence.UNDEFINED):
                 return False
+            case _:
+                return True
 
     def __gt__(self, other):
         match (self, other):
-            case (RulePrecedence.RIGHT,
-                  RulePrecedence.LEFT | RulePrecedence.UNDEFINED):
-                return True
-            case _:
+            case (RulePrecedence.LEFT,
+                  RulePrecedence.RIGHT | RulePrecedence.UNDEFINED):
                 return False
+            case _:
+                return True
 
 
 class RuleProperties(NamedTuple):
