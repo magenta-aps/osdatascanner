@@ -24,7 +24,7 @@ from os2datascanner.engine2.rules.rule import Rule
 from .models.authentication import Authentication
 from .models.apikey import APIKey
 from .models.usererrorlog import UserErrorLog
-from .models.rules.customrule import CustomRule
+from .models.rules import CustomRule
 from .models.scannerjobs.scanner import (ScanStatus,
                                          ScheduledCheckup,
                                          ScanStatusSnapshot)

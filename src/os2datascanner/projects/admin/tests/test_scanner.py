@@ -11,7 +11,7 @@ from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.grants.models import GraphGrant
 from os2datascanner.projects.admin.adminapp.views.webscanner_views \
     import WebScannerUpdate
-from os2datascanner.projects.admin.adminapp.models.rules.customrule \
+from os2datascanner.projects.admin.adminapp.models.rules \
     import CustomRule
 from os2datascanner.projects.admin.adminapp.models.sensitivity_level \
     import Sensitivity

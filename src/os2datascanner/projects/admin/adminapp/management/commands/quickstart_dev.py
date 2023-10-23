@@ -17,7 +17,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner impor
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import (
     WebScanner,
 )
-from os2datascanner.projects.admin.adminapp.models.rules.customrule import (
+from os2datascanner.projects.admin.adminapp.models.rules import (
     CustomRule,
 )
 from os2datascanner.projects.admin.organizations.models.account import (

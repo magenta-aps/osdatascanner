@@ -7,7 +7,7 @@ from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.organizations.models.organization import Organization
 from os2datascanner.engine2.rules.rule import Rule
 from os2datascanner.engine2.rules.regex import RegexRule
-from ..adminapp.models.rules.customrule import CustomRule
+from ..adminapp.models.rules import CustomRule
 from ..adminapp.models.apikey import APIKey
 
 

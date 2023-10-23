@@ -23,7 +23,7 @@ from django.conf import settings
 
 from ....organizations.models import Account, Alias, OrganizationalUnit, Organization
 from ...models.usererrorlog import UserErrorLog
-from ...models.rules.customrule import CustomRule
+from ...models.rules import CustomRule
 
 
 class Command(BaseCommand):

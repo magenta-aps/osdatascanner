@@ -16,17 +16,17 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from ..sensitivity_level import Sensitivity
+from .sensitivity_level import Sensitivity
 
-from os2datascanner.engine2.rules.rule import Rule as Twule
-from os2datascanner.engine2.rules.rule import Sensitivity as Twensitivity
+from os2datascanner.engine2.rules.rule import Rule as E2Rule
+from os2datascanner.engine2.rules.rule import Sensitivity as E2Sensitivity
 
 
 _sensitivity_mapping = {
-    Sensitivity.OK: Twensitivity.NOTICE,
-    Sensitivity.LOW: Twensitivity.WARNING,
-    Sensitivity.HIGH: Twensitivity.PROBLEM,
-    Sensitivity.CRITICAL: Twensitivity.CRITICAL
+    Sensitivity.OK: E2Sensitivity.NOTICE,
+    Sensitivity.LOW: E2Sensitivity.WARNING,
+    Sensitivity.HIGH: E2Sensitivity.PROBLEM,
+    Sensitivity.CRITICAL: E2Sensitivity.CRITICAL
 }
 
 
@@ -72,11 +72,39 @@ class Rule(models.Model):
         """Return the name of the rule."""
         return self.name
 
-    def make_engine2_rule(self) -> Twule:
+    def make_engine2_rule(self) -> E2Rule:
         """Construct an engine2 Rule corresponding to this Rule."""
         # (this can't use the @abstractmethod decorator because of metaclass
         # conflicts with Django, but subclasses should override this method!)
         raise NotImplementedError("Rule.make_engine2_rule")
 
-    def make_engine2_sensitivity(self) -> Twensitivity:
+    def make_engine2_sensitivity(self) -> E2Sensitivity:
         return _sensitivity_mapping[self.sensitivity]
+
+
+class CustomRule(Rule):
+    """CustomRule is an escape hatch that allows for the JSON representation of
+    an arbitrary engine2 rule to be stored in the administration system's
+    database."""
+
+    _rule = models.JSONField(verbose_name=_('Rule'))
+
+    @property
+    def rule(self):
+        r = E2Rule.from_json_object(self._rule)
+        if not r._name:
+            r._name = self.name
+        r._sensitivity = Sensitivity(max(
+                # Technically speaking Sensitivity.INFORMATION is the lowest
+                # value, but it's not possible to specify that in the UI
+                r._sensitivity.value
+                if r._sensitivity else Sensitivity.NOTICE.value,
+                self.make_engine2_sensitivity().value))
+        return r
+
+    @rule.setter
+    def set_rule(self, r: E2Rule):
+        self._rule = r.to_json_object()
+
+    def make_engine2_rule(self) -> E2Rule:
+        return self.rule

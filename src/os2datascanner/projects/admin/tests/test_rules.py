@@ -3,8 +3,7 @@ from django.test import TestCase
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.regex import RegexRule
 
-from ..adminapp.models.rules.rule import Sensitivity
-from ..adminapp.models.rules.customrule import CustomRule
+from ..adminapp.models.rules import CustomRule, Sensitivity
 
 
 class RuleTest(TestCase):

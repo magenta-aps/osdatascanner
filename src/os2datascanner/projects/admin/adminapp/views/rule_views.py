@@ -23,8 +23,7 @@ from os2datascanner.projects.admin.organizations.models import Organization
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDeleteView
 from ..models.sensitivity_level import Sensitivity
-from ..models.rules.rule import Rule
-from ..models.rules.customrule import CustomRule
+from ..models.rules import Rule, CustomRule
 from ...utilities import UserWrapper
 
 

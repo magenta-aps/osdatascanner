@@ -53,7 +53,7 @@ from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.pipeline.headers import get_exchange, get_headers
 from mptt.models import TreeManyToManyField
 
-from ..rules.rule import Rule
+from ..rules import Rule
 from ..authentication import Authentication
 
 
