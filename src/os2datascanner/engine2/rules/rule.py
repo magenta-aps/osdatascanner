@@ -4,7 +4,7 @@ import json
 from typing import Union, Optional, Tuple, Iterator, Callable, Any
 from itertools import islice
 
-from .utilities.properties import RuleProperties
+from .utilities.properties import RulePrecedence, RuleProperties
 from ..utilities.json import JSONSerialisable
 from ..utilities.equality import TypePropertyEquality
 from ..conversions.types import OutputType
@@ -59,7 +59,9 @@ class Rule(TypePropertyEquality, JSONSerialisable):
 
     If you're not sure which class your new rule should inherit from, then use
     SimpleRule."""
-    properties = RuleProperties()
+    properties = RuleProperties(
+        precedence=RulePrecedence.UNDEFINED,
+        standalone=True)
 
     def __init__(self, *, sensitivity=None, name=None):
         self._sensitivity = sensitivity
