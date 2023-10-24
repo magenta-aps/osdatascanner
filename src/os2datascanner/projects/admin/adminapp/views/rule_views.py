@@ -22,6 +22,7 @@ from os2datascanner.projects.admin.organizations.models import Organization
 
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDeleteView
+from .validators import customrule_validator
 from ..models.sensitivity_level import Sensitivity
 from ..models.rules.rule import Rule
 from ..models.rules.cprrule import CPRRule
@@ -110,7 +111,8 @@ class CustomRuleCreate(RuleCreate):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields['rule'] = forms.JSONField()
+        form.fields['rule'] = forms.JSONField(
+            validators=[customrule_validator])
 
         return form
 
