@@ -5,6 +5,11 @@ invariants when combining using compound rules.
 from enum import Enum
 from typing import NamedTuple
 
+__all__ = [
+    'RulePrecedence',
+    'RuleProperties',
+]
+
 
 class RulePrecedence(Enum):
     """
@@ -42,29 +47,31 @@ class RulePrecedence(Enum):
     def __lt__(self, other):
         if self.__class__ != other.__class__:
             raise TypeError(
-                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+                f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
-            case (RulePrecedence.RIGHT, RulePrecedence.LEFT | RulePrecedence.UNDEFINED):
-                return False
-            case _:
+            case (RulePrecedence.LEFT | RulePrecedence.UNDEFINED,
+                  RulePrecedence.UNDEFINED | RulePrecedence.RIGHT):
                 return True
+            case _:
+                return False
 
     def __gt__(self, other):
         if self.__class__ != other.__class__:
             raise TypeError(
-                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+                f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
-            case (RulePrecedence.LEFT, RulePrecedence.RIGHT | RulePrecedence.UNDEFINED):
-                return False
-            case _:
+            case (RulePrecedence.RIGHT | RulePrecedence.UNDEFINED,
+                  RulePrecedence.UNDEFINED | RulePrecedence.LEFT):
                 return True
+            case _:
+                return False
 
     def __le__(self, other):
         if self.__class__ != other.__class__:
             raise TypeError(
-                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+                f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
             case ((RulePrecedence.LEFT, _)
@@ -76,7 +83,7 @@ class RulePrecedence(Enum):
     def __ge__(self, other):
         if self.__class__ != other.__class__:
             raise TypeError(
-                f"Incompatible types for comparison: {self.__class__} and {other.__class__}")
+                f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
             case ((RulePrecedence.RIGHT, _)
