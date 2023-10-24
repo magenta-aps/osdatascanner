@@ -11,6 +11,7 @@ from .regex import RegexRule
 from .logical import oxford_comma
 from .utilities.context import make_context, add_context_filter
 from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator
+from .utilities.properties import RuleProperties, RulePrecedence
 
 logger = structlog.get_logger(__name__)
 
@@ -65,6 +66,9 @@ class CPRRule(RegexRule):
         r"protocol no\.",
         "dhk:tx",
     }
+    properties = RuleProperties(
+        precedence=RulePrecedence.LEFT,
+        standalone=True)
 
     def __init__(self,
                  modulus_11: bool = True,
