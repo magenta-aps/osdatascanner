@@ -4,12 +4,16 @@ from typing import Iterator, Optional
 from ..conversions.types import OutputType
 from .rule import Rule, SimpleRule, Sensitivity
 from .utilities.context import make_context
+from .utilities.properties import RulePrecedence, RuleProperties
 
 
 class RegexRule(SimpleRule):
     operates_on = OutputType.Text
     type_label = "regex"
     eq_properties = ("_expression",)
+    properties = RuleProperties(
+        precedence=RulePrecedence.RIGHT,
+        standalone=True)
 
     def __init__(self, expression: str, **super_kwargs):
         super().__init__(**super_kwargs)

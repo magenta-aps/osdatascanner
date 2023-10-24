@@ -11,6 +11,11 @@
 ### General improvements
 
 - Added Google's Material Symbols as a font, so we can use it as an icon library.
+ 
+- The Rule Builder will now enforce so-called "invariants" when a user tries to construct
+  a custom rule. This means that some rules many not be used alone and the order of how
+  rules are combined matter.
+
 
 - Internal operation timeouts are now more reliable.
 
