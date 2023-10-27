@@ -4,7 +4,7 @@ by checking invariants.
 """
 from dataclasses import dataclass
 from itertools import pairwise
-from typing import Callable
+from typing import Callable, Optional
 
 from ..rule import Rule
 from ..logical import CompoundRule
@@ -23,7 +23,7 @@ Function signature for a rule invariant.
 An invariant is a test based on the properties of a rule
 that should hold for some rule (and perhaps its components).
 """
-RuleInvariant = Callable[[Rule], None]
+RuleInvariant = Callable[[Rule], Optional[bool]]
 
 
 @dataclass
@@ -59,7 +59,7 @@ def check_invariants(
     return errors
 
 
-def precedence_invariant(rule: Rule) -> None:
+def precedence_invariant(rule: Rule) -> Optional[bool]:
     """
     Invariant which checks that the precedence of a rule
     and its components are well-ordered, i.e. 'LEFT' < 'UNDEFINED' < 'RIGHT'.
@@ -79,8 +79,10 @@ def precedence_invariant(rule: Rule) -> None:
                     "Invariant violation - precedence: {r1} has lower precedence than {r2}.",
                     rules=[r1, r2])
 
+    return True
 
-def standalone_invariant(rule: Rule) -> None:
+
+def standalone_invariant(rule: Rule) -> Optional[bool]:
     """
     Invariant which checks that a given rule may be used without
     being combined with other rules.
@@ -97,3 +99,5 @@ def standalone_invariant(rule: Rule) -> None:
         raise RuleInvariantViolationError(
             "Invariant violation - standalone: {r1} must be used in a compound rule.",
             rules=[rule])
+
+    return True
