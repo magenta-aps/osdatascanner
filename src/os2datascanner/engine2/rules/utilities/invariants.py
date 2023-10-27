@@ -92,7 +92,7 @@ def standalone_invariant(rule: Rule) -> Optional[bool]:
     if not isinstance(rule, Rule):
         raise TypeError(f"Cannot apply invariant check to {rule} of type {type(rule)}")
 
-    if isinstance(rule, CompoundRule):
+    if isinstance(rule, CompoundRule) and len(rule._components) == 1:
         rule = rule._components[0]
 
     if not rule.properties.standalone:
