@@ -57,7 +57,9 @@ This means that, although undesirable, two scenarios are possible:
    because no queues have been bound to these exchanges.
 2. Workers for non-existant organisations have been provisioned, which take up system resources.
 
-The former is probably the worse offender here.
+The former is probably the worse offender here. Note that as a user in the admin module,
+you will not see any error messages. The only thing that you will experience is that your
+scanner jobs never progresses.
 
 ## Overview of communication between engine components and RabbitMQ
 
