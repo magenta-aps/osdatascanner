@@ -17,6 +17,18 @@ class RulePrecedence(Enum):
     This is similar to associativity in programming language theory,
     but here we are dealing with operands instead of operators.
 
+    Some SimpleRules are expensive, and some are cheap: checking when a file
+    was last modified requires much less work than unpacking a 400MB PDF and
+    doing OCR on the second massive JPEG on its 2,500th page, for example. The
+    hints given by the RulePrecedence enumeration can be used to warn the user
+    if a proposed Rule performs expensive (right) operations before cheaper
+    (left) ones.
+
+    Note that these hints are not used by the rule engine itself; if a user of
+    the rule engine wants to enforce precedence constraints, it should do so
+    /before/ submitting a Rule for execution.
+
+    An example:
     Let's say that for some rules 'r1' and 'r2', we want to create a third
     rule 'r3 = r1 (or) r2'. We have to take into account that
     the compound-rule implements short-circuiting for efficiency
@@ -33,11 +45,11 @@ class RulePrecedence(Enum):
       'UNDEFINED' is the neutral element of precedence.
 
     - 'LEFT':
-      'LEFT' means that a rule must be composed to the left of
+      'LEFT' means that a rule should be composed to the left of
       all rules that don't have left-precedence.
 
     - 'RIGHT':
-      'RIGHT' means that a rule must be composed to the right of
+      'RIGHT' means that a rule should be composed to the right of
       all rules that don't have right-precedence.
     """
     UNDEFINED = 'UNDEFINED'

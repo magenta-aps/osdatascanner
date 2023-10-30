@@ -5,7 +5,7 @@ from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.rules.rule import Rule as E2Rule
-from os2datascanner.engine2.rules.utilities.invariants import (
+from os2datascanner.projects.admin.adminapp.views.utils.invariants import (
     check_invariants, standalone_invariant, precedence_invariant,
     RuleInvariantViolationError,
 )

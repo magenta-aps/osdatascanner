@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from itertools import pairwise
 from typing import Callable, Optional
 
-from ..rule import Rule
-from ..logical import CompoundRule
+from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.rules.logical import CompoundRule
 
 __all__ = [
     'RuleInvariant',
@@ -59,7 +59,8 @@ def precedence_invariant(rule: Rule) -> Optional[bool]:
 
     For a 'SimpleRule'/'Rule' this is always True.
     For a 'CompoundRule' this is True if and only if all the components
-    are sorted.
+    are sorted according to their 'RulePrecedence'.
+
     :param rule:
     """
     if not isinstance(rule, Rule):
@@ -90,3 +91,16 @@ def standalone_invariant(rule: Rule) -> Optional[bool]:
         raise RuleInvariantViolationError("standalone", rules=[rule])
 
     return True
+
+
+def outputtype_invariant(rule: Rule) -> Optional[bool]:
+    """
+    Invariant which checks that a rule (and its components)
+    all work on a single OutputType in order to avoid duplicate
+    conversions.
+
+    :param rule:
+    """
+
+    # TODO
+    raise NotImplementedError("")
