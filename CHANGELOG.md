@@ -163,6 +163,10 @@
   - It is possible for an organisation to toggle whether this feature is enabled or not.
 
   - Category colours are customizable.
+  
+- The Rule Builder will now enforce so-called "invariants" when a user tries to construct
+  a custom rule. This means that some rules many not be used alone and the order of how
+  rules are combined matter.
 
 ### General improvements
 
