@@ -46,7 +46,7 @@ class RulePrecedence(Enum):
 
     def __lt__(self, other):
         if self.__class__ != other.__class__:
-            raise TypeError(
+            return NotImplemented(
                 f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
@@ -58,7 +58,7 @@ class RulePrecedence(Enum):
 
     def __gt__(self, other):
         if self.__class__ != other.__class__:
-            raise TypeError(
+            return NotImplemented(
                 f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
@@ -70,7 +70,7 @@ class RulePrecedence(Enum):
 
     def __le__(self, other):
         if self.__class__ != other.__class__:
-            raise TypeError(
+            return NotImplemented(
                 f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
@@ -82,7 +82,7 @@ class RulePrecedence(Enum):
 
     def __ge__(self, other):
         if self.__class__ != other.__class__:
-            raise TypeError(
+            return NotImplemented(
                 f"Incompatible types for comparison: {type(self)} and {type(other)}")
 
         match (self, other):
