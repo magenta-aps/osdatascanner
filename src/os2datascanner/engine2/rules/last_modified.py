@@ -30,7 +30,7 @@ class LastModifiedRule(SimpleRule):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            after=OutputType.LastModified.encode_json_object(self._after),
+            after=self.operates_on.encode_json_object(self._after),
         )
 
     @staticmethod
@@ -38,5 +38,19 @@ class LastModifiedRule(SimpleRule):
     def from_json_object(obj):
         return LastModifiedRule(
                 after=OutputType.LastModified.decode_json_object(obj["after"]),
+                sensitivity=Sensitivity.make_from_dict(obj),
+                name=obj["name"] if "name" in obj else None)
+
+
+class LastMetadataChangeRule(LastModifiedRule):
+    operates_on = OutputType.LastMetadataChange
+    type_label = "last-metadata-change"
+
+    @staticmethod
+    @Rule.json_handler(type_label)
+    def from_json_object(obj):
+        return LastMetadataChangeRule(
+                after=OutputType.LastMetadataChange.decode_json_object(
+                        obj["after"]),
                 sensitivity=Sensitivity.make_from_dict(obj),
                 name=obj["name"] if "name" in obj else None)
