@@ -42,6 +42,7 @@ from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
+from os2datascanner.engine2.rules.sickleave import SickLeaveRule
 
 from .utilities.document_report_utilities import handle_report
 from .utilities.msgraph_utilities import delete_email
@@ -55,7 +56,7 @@ RENDERABLE_RULES = (
     CPRRule.type_label, RegexRule.type_label, LinksFollowRule.type_label,
     OrderedWordlistRule.type_label, NameRule.type_label, AddressRule.type_label,
     TurboCPRRule.type_label, EmailHeaderRule.type_label, TurboHealthRule.type_label,
-    PassportRule.type_label,
+    PassportRule.type_label, SickLeaveRule.type_label,
 )
 
 

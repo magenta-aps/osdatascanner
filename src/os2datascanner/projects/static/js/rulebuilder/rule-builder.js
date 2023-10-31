@@ -47,6 +47,7 @@ function selectOptions(obj, selector) {
     "health_turbo": "TurboHealthRule",
     "email-header": "EmailHeader",
     "passport": "PassportRule",
+    "sick_leave": "SickLeaveRule",
   };
 
   selectElem.value = valueMap[type];
@@ -232,7 +233,10 @@ function makeRule(elem) {
       return {
         "type": "passport"
       };
-
+    case "SickLeaveRule":
+      return {
+        "type": "sick_leave"
+      };
     case "TurboCPRRule":
       tickboxes = elem.querySelectorAll("input[type='checkbox']");
       return {

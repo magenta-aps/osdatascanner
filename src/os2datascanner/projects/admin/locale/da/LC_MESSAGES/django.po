@@ -520,7 +520,15 @@ msgstr "adresse"
 msgid "e-mail header"
 msgstr "e-mail header"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:35
+#: adminapp/templates/components/admin-widgets/rule-builder.html:35
+msgid "passport"
+msgstr "pas"
+
+#: adminapp/templates/components/admin-widgets/rule-builder.html:35
+msgid "sick leave"
+msgstr "sygemeldinger"
+
+#: adminapp/templates/components/admin-widgets/rule-builder.html:36
 msgid "Experimental"
 msgstr "Eksperimentel"
 
@@ -1681,7 +1689,11 @@ msgid " in total - in "
 msgstr " i alt - på "
 
 #: adminapp/templates/mail/finished_scannerjob.html:45
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /"
+#| "><a href=\"%(admin_login_url)serror_log/\">Click here to inspect the "
+#| "error logs</a>"
 msgid ""
 "<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /><a "
 "href=\"%(admin_login_url)serror-log/\">Click here to inspect the error logs</"
