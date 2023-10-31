@@ -37,6 +37,7 @@ class OutputType(Enum):
     Links = "links"  # list[Link]
     Manifest = "manifest"  # list[Handle]
     EmailHeaders = "email-headers"  # dict[str, str]
+    LastMetadataChange = "last-metadata-change"  # datetime.datetime
 
     AlwaysTrue = "fallback"  # True
     NoConversions = "dummy"
@@ -50,7 +51,7 @@ class OutputType(Enum):
         match self:
             case OutputType.Text:
                 return str(v)
-            case OutputType.LastModified:
+            case OutputType.LastModified | OutputType.LastMetadataChange:
                 return unparse_datetime(v)
             case OutputType.ImageDimensions:
                 return [int(v[0]), int(v[1])]
@@ -78,7 +79,7 @@ class OutputType(Enum):
         match self:
             case OutputType.Text:
                 return v
-            case OutputType.LastModified:
+            case OutputType.LastModified | OutputType.LastMetadataChange:
                 return parse_datetime(v)
             case OutputType.ImageDimensions:
                 return int(v[0]), int(v[1])
