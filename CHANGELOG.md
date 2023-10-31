@@ -186,6 +186,8 @@
 - The delete button, for Outlook e-mails on the reportmodule, has been moved
   and gotten a darker color.
 
+- Old unused rule-models have been removed from the admin module.
+
 ### Bugfixes
 
 - When clearing the search bar on the user error log page, the table is now
