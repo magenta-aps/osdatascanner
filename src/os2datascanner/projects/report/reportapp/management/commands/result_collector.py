@@ -15,6 +15,7 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 
+from os import getenv
 import logging
 import structlog
 from django.db import transaction
@@ -473,7 +474,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
                 "--log",
-                default="info",
+                default=None,
                 help="change the level at which log messages will be printed",
                 choices=log_levels.keys())
 
@@ -484,7 +485,9 @@ class Command(BaseCommand):
         fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
         # set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        if log is None:
+            log = getenv("LOG_LEVEL", "info")
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         ResultCollectorRunner(
             read=["os2ds_results"],
