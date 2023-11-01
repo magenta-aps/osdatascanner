@@ -30,7 +30,8 @@ from os2datascanner.engine2.model.core import (
 from os2datascanner.engine2.model.msgraph import MSGraphMailSource
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
-from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.last_modified import (
+        LastModifiedRule, LastMetadataChangeRule)
 from os2datascanner.projects.report.organizations.models import Alias, AliasType, Organization
 from os2datascanner.utils.system_utilities import time_now
 from prometheus_client import Summary, start_http_server
@@ -40,6 +41,7 @@ from ...models.documentreport import DocumentReport
 from ...utils import prepare_json_object
 from ...views.utilities.msgraph_utilities import OutlookCategoryName
 from ....organizations.models import AccountOutlookSetting
+
 
 logger = structlog.get_logger(__name__)
 SUMMARY = Summary("os2datascanner_result_collector_report",
@@ -241,37 +243,48 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
         if not new_matches.matched:
             # No new matches. Be cautiously optimistic, but check what
             # actually happened
-            if (len(new_matches.matches) == 1
-                    and isinstance(new_matches.matches[0].rule,
-                                   LastModifiedRule)):
-                # The file hasn't been changed, so the matches are the same
-                # as they were last time. Instead of making a new entry,
-                # just update the timestamp on the old one
-                logger.debug("Resource not changed: updating scan timestamp",
+            match new_matches.matches:
+                case [messages.MatchFragment(rule=LastModifiedRule())]:
+                    # The file hasn't been changed, so the matches are the same
+                    # as they were last time. Instead of making a new entry,
+                    # just update the timestamp on the old one
+                    logger.debug(
+                            "Resource not changed: updating scan timestamp",
                              report=previous_report)
-                DocumentReport.objects.filter(pk=previous_report.pk).update(
-                        scan_time=scan_tag.time,
-                        # If there is a problem associated with this report, we
-                        # no longer care about it
-                        raw_problem=None)
-            else:
-                # The file has been edited and the matches are no longer
-                # present
-                logger.debug("Resource changed: no matches, status is EDITED",
-                             report=previous_report)
-                DocumentReport.objects.filter(pk=previous_report.pk).update(
-                        resolution_status=ResolutionChoices.EDITED.value,
-                        resolution_time=time_now(),
-                        raw_problem=None)
+                    DocumentReport.objects.filter(
+                            pk=previous_report.pk).update(
+                            scan_time=scan_tag.time,
+                            # If there is a problem associated with this
+                            # report, we no longer care about it
+                            raw_problem=None)
+                case _:
+                    # The file has been edited and the matches are no longer
+                    # present
+                    logger.debug("Resource changed: no matches, status is"
+                                 " EDITED",
+                                 report=previous_report)
+                    DocumentReport.objects.filter(
+                            pk=previous_report.pk).update(
+                            resolution_status=ResolutionChoices.EDITED.value,
+                            resolution_time=time_now(),
+                            raw_problem=None)
         else:
-            # The file has been edited, but matches are still present.
-            # Resolve the previous ones
-            logger.debug("matches still present, status is EDITED",
-                         report=previous_report)
-            DocumentReport.objects.filter(pk=previous_report.pk).update(
-                    resolution_status=ResolutionChoices.EDITED.value,
-                    resolution_time=time_now(),
-                    raw_problem=None)
+            match new_matches.matches:
+                case [messages.MatchFragment(rule=LastModifiedRule()),
+                      messages.MatchFragment(rule=LastMetadataChangeRule())]:
+                    logger.info(
+                            "Resource changed: metadata only, ignoring match")
+                    return dr
+                case _:
+                    # The file has been edited, but matches are still present.
+                    # Resolve the previous ones
+                    logger.debug("matches still present, status is EDITED",
+                                 report=previous_report)
+                    DocumentReport.objects.filter(
+                            pk=previous_report.pk).update(
+                            resolution_status=ResolutionChoices.EDITED.value,
+                            resolution_time=time_now(),
+                            raw_problem=None)
 
     if new_matches.matched:
         # Collect and store the top-level type label from the matched object
