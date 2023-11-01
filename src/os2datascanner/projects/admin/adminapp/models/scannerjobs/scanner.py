@@ -44,9 +44,11 @@ from recurrence.fields import RecurrenceField
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle, Source
 from os2datascanner.engine2.rules.meta import HasConversionRule
-from os2datascanner.engine2.rules.logical import OrRule, AndRule, AllRule, make_if
+from os2datascanner.engine2.rules.logical import (
+        OrRule, AndRule, AllRule, NotRule, make_if)
 from os2datascanner.engine2.rules.dimensions import DimensionsRule
-from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.last_modified import (
+        LastModifiedRule, LastMetadataChangeRule)
 import os2datascanner.engine2.pipeline.messages as messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.conversions.types import OutputType
@@ -398,8 +400,9 @@ class Scanner(models.Model):
 
             # XXX: we could be adding LastModifiedRule twice
             ib = reminder.interested_before
+            use_lm = bool(ib and not force)
             rule_here = AndRule.make(
-                    LastModifiedRule(ib) if ib and not force else True,
+                    LastModifiedRule(ib) if use_lm else True,
                     spec_template.rule)
             outbox.append((settings.AMQP_CONVERSION_TARGET,
                            conv_template._deep_replace(
@@ -408,6 +411,21 @@ class Scanner(models.Model):
                                progress__rule=rule_here),
                            ),)
             checkup_count += 1
+
+            if use_lm:
+                # XXX: Do we want separate timestamps for metadata and content?
+                # (What would that mean? How would we know?)
+                metadata_rule_here = AndRule.make(
+                        NotRule.make(LastModifiedRule(ib)),
+                        LastMetadataChangeRule(ib))
+                outbox.append((settings.AMQP_CONVERSION_TARGET,
+                               conv_template._deep_replace(
+                                   scan_spec__source=rh.source,
+                                   handle=rh,
+                                   progress__rule=metadata_rule_here),
+                               ),)
+                checkup_count += 1
+
         return checkup_count
 
     def run(
