@@ -79,10 +79,14 @@ class FilesystemResource(FileResource):
     def unpack_stat(self):
         if not self._mr:
             stat = os.stat(self._full_path)
-            ts = datetime.fromtimestamp(stat.st_mtime, gettz())
+            mts = datetime.fromtimestamp(stat.st_mtime, gettz())
+            cts = datetime.fromtimestamp(stat.st_ctime, gettz())
             self._mr = make_values_navigable(
                     {attr: getattr(stat, attr) for attr in stat_attributes} |
-                    {OutputType.LastModified: ts})
+                    {
+                        OutputType.LastModified: mts,
+                        OutputType.LastMetadataChange: cts
+                    })
         return self._mr
 
     def get_size(self):
@@ -91,6 +95,9 @@ class FilesystemResource(FileResource):
     def get_last_modified(self):
         return self.unpack_stat().setdefault(
                 OutputType.LastModified, super().get_last_modified())
+
+    def get_last_metadata_change(self):
+        return self.unpack_stat()[OutputType.LastMetadataChange]
 
     @contextmanager
     def make_path(self):

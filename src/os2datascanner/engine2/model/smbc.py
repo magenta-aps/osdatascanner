@@ -7,6 +7,7 @@ from typing import Optional
 from urllib.parse import quote
 from pathlib import PureWindowsPath
 from datetime import datetime
+from dateutil.tz import gettz
 import operator
 import warnings
 from functools import reduce
@@ -351,10 +352,16 @@ class SMBCResource(FileResource):
             f = self.open_file()
             try:
                 stat = stat_result(f.fstat())
-                ts = datetime.fromtimestamp(stat.st_mtime)
+                mts = datetime.fromtimestamp(stat.st_mtime, gettz())
+                cts = datetime.fromtimestamp(stat.st_ctime, gettz())
                 self._mr = make_values_navigable(
-                        {k: getattr(stat, k) for k in stat_attributes} |
-                        {OutputType.LastModified: ts})
+                        {
+                            attr: getattr(stat, attr)
+                            for attr in stat_attributes
+                        } | {
+                            OutputType.LastModified: mts,
+                            OutputType.LastMetadataChange: cts
+                        })
             finally:
                 f.close()
         return self._mr
@@ -365,6 +372,9 @@ class SMBCResource(FileResource):
     def get_last_modified(self):
         return self.unpack_stat().setdefault(OutputType.LastModified,
                                              super().get_last_modified())
+
+    def get_last_metadata_change(self):
+        return self.unpack_stat()[OutputType.LastMetadataChange]
 
     def get_owner_sid(self):
         """Returns the Windows security identifier of the owner of this file,

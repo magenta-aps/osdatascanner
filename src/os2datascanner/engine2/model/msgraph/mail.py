@@ -259,6 +259,11 @@ class MSGraphMailMessageResource(FileResource):
 
         return isoparse(timestamp) if timestamp else None
 
+    def get_last_metadata_change(self):
+        metadata = self.get_message_metadata()
+        timestamp = metadata.get("lastModifiedDateTime")
+        return isoparse(timestamp) if timestamp else None
+
     def compute_type(self):
         return "message/rfc822"
 
