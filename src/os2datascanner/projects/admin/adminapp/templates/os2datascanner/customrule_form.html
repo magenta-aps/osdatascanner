@@ -13,9 +13,9 @@
 
     <div class="content">
 
-      {% include "partials/breadcrumb.html" with page="rule_views" %}
-
-      <div class="aside">
+      <div class="content-header">
+        {% include "partials/breadcrumb.html" with page="rule_views" %}
+ 
         {% if view.edit %}
           <h1 class="page-title">{% trans "Edit rule" %}</h1>
         {% endif %}
@@ -142,8 +142,10 @@
           </fieldset>
         </section>
 
-        <div class="form__group last-btn">
-          <button type="submit" class="button button--cta" name="save">{% trans "Save changes" %}</button>
+        <div class="content-footer">
+          <div class="form__group last-btn">
+            <button type="submit" class="button button--cta" name="save">{% trans "Save changes" %}</button>
+          </div>
         </div>
       </form>
     </div>
