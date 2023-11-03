@@ -233,7 +233,7 @@ class Scanner(models.Model):
         should be started at the given time by filtering a query with:
             (WebScanner.pk % WebScanner.STARTTIME_QUARTERS) == <modulo_value>
         """
-        if(time < cls.FIRST_START_TIME):
+        if (time < cls.FIRST_START_TIME):
             return None
         hours = time.hour - cls.FIRST_START_TIME.hour
         minutes = 60 * hours + time.minute - cls.FIRST_START_TIME.minute
@@ -542,6 +542,13 @@ class Scanner(models.Model):
             self.covered_accounts.remove(*accounts)
         else:
             self.covered_accounts.remove(*self.get_stale_accounts())
+
+    def get_remediators(self):
+        """Returns the accounts with a remediator-alias for this scannerjob.
+        Disregards universal remediator aliases."""
+        # Avoid circular import
+        from ....organizations.models import Account
+        return Account.objects.filter(aliases___alias_type="remediator", aliases___value=self.pk)
 
     class Meta:
         abstract = False

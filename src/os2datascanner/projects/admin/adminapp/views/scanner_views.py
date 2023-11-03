@@ -24,7 +24,7 @@ import structlog
 
 from django.forms import ModelMultipleChoiceField, TypedChoiceField
 
-from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.organizations.models import Organization, Account, Alias
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .views import RestrictedListView, RestrictedCreateView, \
@@ -131,7 +131,7 @@ class StatusOverview(StatusBase):
             elif htmx_trigger == "status_table_poll":
                 return "components/scanstatus/scan_status_table.html"
         else:
-            return"scan_status.html"
+            return "os2datascanner/scan_status.html"
 
 
 class StatusCompleted(StatusBase):
@@ -451,6 +451,23 @@ class ScannerBase(object):
 class ScannerCreate(ScannerBase, RestrictedCreateView):
     """View for creating a new scannerjob."""
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = UserWrapper(self.request.user)
+        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+        context["possible_remediators"] = Account.objects.filter(organization__in=orgs)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        remediator_uuids = request.POST.getlist('remediators')
+        for remediator_uuid in remediator_uuids:
+            Alias.objects.get_or_create(
+                account=Account.objects.get(uuid=remediator_uuid),
+                _alias_type="remediator",
+                _value=self.object.pk)
+        return response
+
 
 class ScannerUpdate(ScannerBase, RestrictedUpdateView):
     """View for editing an existing scannerjob."""
@@ -504,6 +521,28 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
                                _("Password must be updated, when changing username or url."))
                 return super().form_invalid(form)
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = UserWrapper(self.request.user)
+        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+        context["possible_remediators"] = Account.objects.filter(organization__in=orgs)
+        context["remediators"] = self.object.get_remediators()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        remediator_uuids = request.POST.getlist('remediators')
+        Alias.objects.filter(
+            _alias_type="remediator",
+            _value=self.object.pk).exclude(
+            account__uuid__in=remediator_uuids)
+        for remediator_uuid in remediator_uuids:
+            Alias.objects.get_or_create(
+                account=Account.objects.get(uuid=remediator_uuid),
+                _alias_type="remediator",
+                _value=self.object.pk)
+        return response
 
 
 class ScannerDelete(RestrictedDeleteView):

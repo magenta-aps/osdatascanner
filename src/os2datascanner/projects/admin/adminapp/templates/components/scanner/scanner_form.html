@@ -157,6 +157,21 @@
             {% if form.validation_status %}
               {% include "components/scanner/scanner_form_select_option_field.html" with field=form.validation_status %}
             {% endif %}
+
+            {% if possible_remediators %}
+              <div id="scanner_remediators_container" class="dropdown-group form__group">
+                <label for="scanner_remediators">{% trans "Remediators" %}</label>
+                <div class="dropdown">
+                  <select multiple name="remediators" id="remediators">
+                    {% for account in possible_remediators %}
+                      <option value="{{ account.uuid }}"
+                              {% if account in remediators %}selected{% endif %}>{{ account.get_full_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            {% endif %}
+
           </fieldset>
         </section>
 

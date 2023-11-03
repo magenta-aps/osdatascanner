@@ -131,6 +131,11 @@
     /* icon size, then gradient */
     background-size: .75rem auto, 100%;
     transition: var(--transition-default);
+
+    &[multiple] {
+      background-image: none;
+      padding-right: .75rem;
+    }
   }
 
   input:disabled,
