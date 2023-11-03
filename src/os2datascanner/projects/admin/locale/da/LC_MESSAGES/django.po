@@ -2096,6 +2096,20 @@ msgstr "Scannerjob"
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
+#: adminapp/views/validators.py:18
+#, python-format
+msgid ""
+"Invariant violation - precedence: %(r1)s has lower precedence than %(r2)s."
+msgstr ""
+"Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på "
+"rækkefølgen."
+
+#: adminapp/views/validators.py:20
+#, python-format
+msgid ""
+"Invariant violation - standalone: %(r1)s must be used in a compound rule."
+msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
+
 #: adminapp/views/views.py:211 import_services/models/exported_mixin.py:31
 msgid "created"
 msgstr "oprettet"

@@ -15,12 +15,7 @@ __all__ = [
     'check_invariants',
     'precedence_invariant',
     'standalone_invariant',
-    'PRECEDENCE_VIOLATION',
-    'STANDALONE_VIOLATION',
 ]
-
-PRECEDENCE_VIOLATION = "Invariant violation - precedence: %(r1)s has lower precedence than %(r2)s."
-STANDALONE_VIOLATION = "Invariant violation - standalone: %(r1)s must be used in a compound rule."
 
 """
 Function signature for a rule invariant.
@@ -53,14 +48,8 @@ def check_invariants(
     :param rule:
     :param invariants:
     """
-    errors = []
-    for invariant in invariants:
-        try:
-            invariant(rule)
-        except RuleInvariantViolationError as ex:
-            errors.append(ex)
 
-    return errors
+    return all(invariant(rule) for invariant in invariants)
 
 
 def precedence_invariant(rule: Rule) -> Optional[bool]:
@@ -79,7 +68,7 @@ def precedence_invariant(rule: Rule) -> Optional[bool]:
     if isinstance(rule, CompoundRule):
         for r1, r2 in pairwise(rule._components):
             if not (r1.properties.precedence <= r2.properties.precedence):
-                raise RuleInvariantViolationError(PRECEDENCE_VIOLATION, rules=[r1, r2])
+                raise RuleInvariantViolationError("precedence", rules=[r1, r2])
 
     return True
 
@@ -98,6 +87,6 @@ def standalone_invariant(rule: Rule) -> Optional[bool]:
         rule = rule._components[0]
 
     if not rule.properties.standalone:
-        raise RuleInvariantViolationError(STANDALONE_VIOLATION, rules=[rule])
+        raise RuleInvariantViolationError("standalone", rules=[rule])
 
     return True
