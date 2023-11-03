@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.rules.rule import Rule as E2Rule
 from os2datascanner.projects.admin.adminapp.views.utils.invariants import (
-    check_invariants, standalone_invariant, precedence_invariant,
+    RuleInvariantChecker,
     RuleInvariantViolationError,
 )
 
@@ -27,9 +27,10 @@ def customrule_validator(value):
     invariant checks on the built rule. If any of the invariants
     fail, then a ValidationError is thrown.
     """
+    checker = RuleInvariantChecker()
+
     try:
-        check_invariants(E2Rule.from_json_object(value),
-                         precedence_invariant, standalone_invariant)
+        checker.check_invariants(E2Rule.from_json_object(value))
     except RuleInvariantViolationError as rive:
         raise ValidationError(
             error_table.get(rive.message) % {f"r{i+1}": str(r)

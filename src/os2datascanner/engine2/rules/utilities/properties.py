@@ -58,8 +58,7 @@ class RulePrecedence(Enum):
 
     def __lt__(self, other):
         if self.__class__ != other.__class__:
-            return NotImplemented(
-                f"Incompatible types for comparison: {type(self)} and {type(other)}")
+            return NotImplemented
 
         match (self, other):
             case (RulePrecedence.LEFT | RulePrecedence.UNDEFINED,
@@ -70,8 +69,7 @@ class RulePrecedence(Enum):
 
     def __gt__(self, other):
         if self.__class__ != other.__class__:
-            return NotImplemented(
-                f"Incompatible types for comparison: {type(self)} and {type(other)}")
+            return NotImplemented
 
         match (self, other):
             case (RulePrecedence.RIGHT | RulePrecedence.UNDEFINED,
@@ -82,24 +80,24 @@ class RulePrecedence(Enum):
 
     def __le__(self, other):
         if self.__class__ != other.__class__:
-            return NotImplemented(
-                f"Incompatible types for comparison: {type(self)} and {type(other)}")
+            return NotImplemented
 
         match (self, other):
             case ((RulePrecedence.LEFT, _)
-                  | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.RIGHT)):
+                  | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.RIGHT)
+                  | (_, RulePrecedence.RIGHT)):
                 return True
             case _:
                 return False
 
     def __ge__(self, other):
         if self.__class__ != other.__class__:
-            return NotImplemented(
-                f"Incompatible types for comparison: {type(self)} and {type(other)}")
+            return NotImplemented
 
         match (self, other):
             case ((RulePrecedence.RIGHT, _)
-                  | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.LEFT)):
+                  | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.LEFT)
+                  | (_, RulePrecedence.LEFT)):
                 return True
             case _:
                 return False

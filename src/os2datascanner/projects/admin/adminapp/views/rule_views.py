@@ -151,7 +151,9 @@ class CustomRuleUpdate(RuleUpdate):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields['rule'] = forms.JSONField(initial=self.object._rule)
+        form.fields['rule'] = forms.JSONField(
+            initial=self.object._rule,
+            validators=[customrule_validator])
 
         return form
 

@@ -3314,6 +3314,12 @@ msgstr "Konto ikke fundet."
 #~ msgid "All scanners"
 #~ msgstr "Alle scannere"
 
+#~ msgid "Rule violates invariants"
+#~ msgstr "Reglen overholder ikke kriterierne"
+
+#~ msgid "Rule cannot be compiled by scanner"
+#~ msgstr "Reglen kan ikke kompileres af scanneren"
+
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"
 
