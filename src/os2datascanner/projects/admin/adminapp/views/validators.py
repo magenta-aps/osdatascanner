@@ -2,7 +2,6 @@
 Custom validators for form fields.
 """
 from django.forms import ValidationError
-from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.rules.rule import Rule as E2Rule
 from os2datascanner.engine2.rules.utilities.invariants import (
@@ -14,7 +13,7 @@ def format_rule_invariant_error(error):
     """
     Formats an error message for use in ValidatorError
     """
-    return error.message.format(**{f"r{i+1}": str(r) for i, r in enumerate(error.rules)})
+    return error.message % {f"r{i+1}": str(r) for i, r in enumerate(error.rules)}
 
 
 def customrule_validator(value):
@@ -26,4 +25,4 @@ def customrule_validator(value):
     if errors := check_invariants(E2Rule.from_json_object(value),
                                   precedence_invariant, standalone_invariant):
         raise ValidationError(
-            [ValidationError(_(format_rule_invariant_error(e))) for e in errors])
+            [ValidationError(format_rule_invariant_error(e)) for e in errors])

@@ -19,27 +19,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adminapp/admin.py:94
+#: adminapp/admin.py:98
+msgid "Rule violates invariants"
+msgstr "Reglen overholder ikke kriterierne"
+
+#: adminapp/admin.py:101
 msgid "Rule cannot be compiled by scanner"
 msgstr "Reglen kan ikke kompileres af scanneren"
 
-#: adminapp/admin.py:98
+#: adminapp/admin.py:105
 msgid "CPR rule should not be used more than once"
 msgstr "CPR-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:102
+#: adminapp/admin.py:109
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:158
+#: adminapp/admin.py:165
 msgid "An errorlog cannot both be new and removed"
 msgstr "En fejlbesked kan ikke både være ny og fjernet"
 
-#: adminapp/admin.py:197
+#: adminapp/admin.py:204
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:201
+#: adminapp/admin.py:208
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -48,47 +52,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:206
+#: adminapp/admin.py:213
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:210
+#: adminapp/admin.py:217
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:213
+#: adminapp/admin.py:220
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:217
+#: adminapp/admin.py:224
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:220
+#: adminapp/admin.py:227
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:224
+#: adminapp/admin.py:231
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:242
+#: adminapp/admin.py:249
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:246
+#: adminapp/admin.py:253
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers løst-status til True"
 
-#: adminapp/admin.py:249
+#: adminapp/admin.py:256
 msgid "Change resolved-status to False"
 msgstr "Sæt løst-status til False"
 
-#: adminapp/admin.py:253
+#: adminapp/admin.py:260
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers løst-status til True"
@@ -1681,7 +1685,7 @@ msgid " in total - in "
 msgstr " i alt - på "
 
 #: adminapp/templates/mail/finished_scannerjob.html:45
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /><a "
 "href=\"%(admin_login_url)serror-log/\">Click here to inspect the error logs</"
@@ -1766,11 +1770,6 @@ msgstr ""
 "(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/mail/password_reset_email.html:4
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "  You're receiving this email because you requested a password reset for "
-#| "your user account at %(site_name)s.\n"
 msgid ""
 "\n"
 "  You're receiving this email because you requested a password reset for "

@@ -8,7 +8,6 @@ from typing import Callable, Optional
 
 from ..rule import Rule
 from ..logical import CompoundRule
-# from .properties import RulePrecedence, RuleProperties
 
 __all__ = [
     'RuleInvariant',
@@ -16,7 +15,12 @@ __all__ = [
     'check_invariants',
     'precedence_invariant',
     'standalone_invariant',
+    'PRECEDENCE_VIOLATION',
+    'STANDALONE_VIOLATION',
 ]
+
+PRECEDENCE_VIOLATION = "Invariant violation - precedence: %(r1)s has lower precedence than %(r2)s."
+STANDALONE_VIOLATION = "Invariant violation - standalone: %(r1)s must be used in a compound rule."
 
 """
 Function signature for a rule invariant.
@@ -75,9 +79,7 @@ def precedence_invariant(rule: Rule) -> Optional[bool]:
     if isinstance(rule, CompoundRule):
         for r1, r2 in pairwise(rule._components):
             if not (r1.properties.precedence <= r2.properties.precedence):
-                raise RuleInvariantViolationError(
-                    "Invariant violation - precedence: {r1} has lower precedence than {r2}.",
-                    rules=[r1, r2])
+                raise RuleInvariantViolationError(PRECEDENCE_VIOLATION, rules=[r1, r2])
 
     return True
 
@@ -96,8 +98,6 @@ def standalone_invariant(rule: Rule) -> Optional[bool]:
         rule = rule._components[0]
 
     if not rule.properties.standalone:
-        raise RuleInvariantViolationError(
-            "Invariant violation - standalone: {r1} must be used in a compound rule.",
-            rules=[rule])
+        raise RuleInvariantViolationError(STANDALONE_VIOLATION, rules=[rule])
 
     return True

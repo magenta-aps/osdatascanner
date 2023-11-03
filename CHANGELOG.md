@@ -249,6 +249,9 @@ and proceed.
 
 - A new replacement for the Health Rule has been added.
   This rule is simpler and promises far greater scanning speeds.
+  
+- A new analysis framework based around invariants for the rule builder has
+  been introduced. This prohibits the creation of inefficient CustomRules.
 
 ### General improvements
 
