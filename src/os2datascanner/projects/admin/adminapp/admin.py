@@ -19,12 +19,6 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.engine2.rules.rule import Rule
-from os2datascanner.projects.admin.adminapp.views.utils.invariants import (
-    RuleInvariantViolationError, check_invariants,
-    standalone_invariant, precedence_invariant,
-)
-
 from .models.authentication import Authentication
 from .models.apikey import APIKey
 from .models.usererrorlog import UserErrorLog
@@ -91,15 +85,6 @@ class CustomRuleForm(forms.ModelForm):
 
     # Check that POST-response is valid using clean_<field_name>
     def clean__rule(self):
-        try:
-            built_rule = Rule.from_json_object(self.cleaned_data["_rule"])
-            check_invariants(built_rule, precedence_invariant, standalone_invariant)
-        except RuleInvariantViolationError as rive:
-            raise forms.ValidationError(_("Rule violates invariants")) from rive
-        except Exception:
-            raise forms.ValidationError(
-                _("Rule cannot be compiled by scanner"))
-
         if str(self.cleaned_data["_rule"]).count("'type': 'cpr'") > 1:
             raise forms.ValidationError(
                 _("CPR rule should not be used more than once"))

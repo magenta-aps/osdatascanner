@@ -19,31 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adminapp/admin.py:98
-msgid "Rule violates invariants"
-msgstr "Reglen overholder ikke kriterierne"
-
-#: adminapp/admin.py:101
-msgid "Rule cannot be compiled by scanner"
-msgstr "Reglen kan ikke kompileres af scanneren"
-
-#: adminapp/admin.py:105
+#: adminapp/admin.py:90
 msgid "CPR rule should not be used more than once"
 msgstr "CPR-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:109
+#: adminapp/admin.py:94
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:165
+#: adminapp/admin.py:150
 msgid "An errorlog cannot both be new and removed"
 msgstr "En fejlbesked kan ikke både være ny og fjernet"
 
-#: adminapp/admin.py:204
+#: adminapp/admin.py:189
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:208
+#: adminapp/admin.py:193
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -52,47 +44,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:213
+#: adminapp/admin.py:198
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:217
+#: adminapp/admin.py:202
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:220
+#: adminapp/admin.py:205
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:224
+#: adminapp/admin.py:209
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:227
+#: adminapp/admin.py:212
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:231
+#: adminapp/admin.py:216
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:249
+#: adminapp/admin.py:234
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:253
+#: adminapp/admin.py:238
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers løst-status til True"
 
-#: adminapp/admin.py:256
+#: adminapp/admin.py:241
 msgid "Change resolved-status to False"
 msgstr "Sæt løst-status til False"
 
-#: adminapp/admin.py:260
+#: adminapp/admin.py:245
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers løst-status til True"
@@ -2895,6 +2887,12 @@ msgstr "Navnet er allerede i brug."
 #~ "This action cannot be undone. Are you sure you want to delete this report?"
 #~ msgstr ""
 #~ "Ønsker du virkelig at slette denne rapport? Handlingen kan ikke fortrydes."
+
+#~ msgid "Rule violates invariants"
+#~ msgstr "Reglen overholder ikke kriterierne"
+
+#~ msgid "Rule cannot be compiled by scanner"
+#~ msgstr "Reglen kan ikke kompileres af scanneren"
 
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"
