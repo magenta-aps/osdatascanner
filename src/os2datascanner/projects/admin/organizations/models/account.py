@@ -11,12 +11,14 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
 from os2datascanner.core_organizational_structure.models import \
     AccountSerializer as Core_AccountSerializer
 from os2datascanner.projects.admin.import_services.models import Imported
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 
 from .broadcasted_mixin import Broadcasted
 
@@ -35,6 +37,15 @@ class Account(Core_Account, Imported, Broadcasted):
             covered_accounts=self).exclude(
             org_unit__in=self.units.all())
         return stale_scanners
+
+    def get_remediator_scanners(self):
+        scanner_pks = [obj.get('_value') for obj in
+                       self.aliases.filter(_alias_type="remediator").values('_value')]
+        scanners = [{'name': scanner.get('name'), 'pk': scanner.get('pk')} for scanner in
+                    Scanner.objects.filter(pk__in=scanner_pks).values('name', 'pk')]
+        if "0" in scanner_pks:
+            scanners.append({'name': _("All scanners"), 'pk': "0"})
+        return scanners
 
 
 class AccountSerializer(Core_AccountSerializer):

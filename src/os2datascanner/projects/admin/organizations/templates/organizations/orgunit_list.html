@@ -89,7 +89,7 @@
                 <td class="datatable__column--managers orgunit_managers">
                   <ul>
                     {% for manager_pos in orgunit.managers %}
-                      <li class="manager_li"
+                      <li class="dynamic_li"
                           title="{% trans "Click to remove" %} {{ manager_pos.account.get_full_name }} {% trans "as manager of" %} {{ orgunit }}."
                           hx-post=""
                           hx-swap="outerHTML"
@@ -102,12 +102,12 @@
                         <!-- djlint:off -->{{ manager_pos.account.get_full_name }}</li><!-- djlint:on -->
                       {% endfor %}
                       <li class="add_manager">
-                        <button type="button" class="add_manager_button button button--small">
+                        <button type="button" class="add_button button button--small">
                           <svg class="icon">
                             <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
                           </svg>
                         </button>
-                        <select class="select_manager"
+                        <select class="select_options"
                                 name="add-manager"
                                 hidden
                                 hx-post=""
@@ -127,7 +127,7 @@
                   <td class="datatable__column--dpos orgunit_managers">
                     <ul>
                       {% for dpo_pos in orgunit.dpos %}
-                        <li class="manager_li"
+                        <li class="dynamic_li"
                             title="{% trans "Click to remove" %} {{ dpo_pos.account.get_full_name }} {% trans "as manager of" %} {{ orgunit }}."
                             hx-post=""
                             hx-swap="outerHTML"
@@ -141,12 +141,12 @@
                         </li>
                       {% endfor %}
                       <li class="add_dpo">
-                        <button type="button" class="add_manager_button button button--small">
+                        <button type="button" class="add_button button button--small">
                           <svg class="icon">
                             <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
                           </svg>
                         </button>
-                        <select class="select_manager"
+                        <select class="select_options"
                                 name="add-dpo"
                                 hidden
                                 hx-post=""

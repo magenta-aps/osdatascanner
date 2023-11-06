@@ -15,4 +15,6 @@ urlpatterns = [
     path('<slug:slug>/org_delete_blocked',
          views.OrganizationDeletionBlocked.as_view(),
          name='org_delete_block'),
+    path('<slug:org_slug>/accounts/<uuid:pk>', views.AccountDetailView.as_view(), name='account'),
+    path('<slug:org_slug>/accounts/', views.AccountListView.as_view(), name='accounts'),
 ]

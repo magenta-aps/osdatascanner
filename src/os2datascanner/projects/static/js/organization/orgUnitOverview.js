@@ -36,7 +36,7 @@ function setAddButtons(buttons) {
   buttons.forEach(element => {
     element.addEventListener("click", function (e) {
       let targ = e.target;
-      let selectField = targ.parentNode.querySelector(".select_manager");
+      let selectField = targ.parentNode.querySelector(".select_options");
       targ.style.display = "none";
       selectField.hidden = false;
     });
@@ -48,7 +48,7 @@ htmx.onLoad(function (content) {
   if (content.classList.contains("has_children")) {
     expandButtons = [content];
   }
-  let addButtons = content.querySelectorAll(".add_manager_button");
+  let addButtons = content.querySelectorAll(".add_button");
   setExpandButtons(expandButtons);
   setAddButtons(addButtons);
 

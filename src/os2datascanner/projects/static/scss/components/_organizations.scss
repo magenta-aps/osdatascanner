@@ -82,30 +82,10 @@
         display: inline;
         margin: 0;
 
-        &.manager_li:not(:nth-last-of-type(2))::after {
-          content: ", ";
-        }
-
         &.add_manager,
         &.add_dpo {
           margin-left: 0.3rem;
         }
-      }
-    }
-
-    .select_manager {
-      height: 2rem;
-      width: 15rem;
-      font-size: inherit;
-      font-weight: inherit;
-    }
-
-    .manager_li {
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: line-through;
-
       }
     }
 
@@ -115,6 +95,26 @@
     text-align: center;
     font-style: italic;
   }
+}
+
+.dynamic_li {
+  cursor: pointer;
+
+  &:not(:nth-last-of-type(2))::after {
+    content: ", ";
+  }
+
+  &:hover {
+    text-decoration: line-through;
+
+  }
+}
+
+.select_options {
+  height: 2rem;
+  width: 15rem;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 .orgunits {

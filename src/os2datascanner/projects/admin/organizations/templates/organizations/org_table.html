@@ -276,6 +276,9 @@
                     {% include "../components/svg-icons/org.svg" %}
                   </a>
                 {% endif %}
+                <a href="{% url "accounts" organization.slug %}"
+                   class="button buttons--small button--grey"
+                   title="{% trans "View accounts." %}">{% include "../components/svg-icons/people.svg" %}</a>
                 {% if request.user.is_superuser %}
                   {% if organization.scanners_running %}
                     <a href="#delete-org-blocked"

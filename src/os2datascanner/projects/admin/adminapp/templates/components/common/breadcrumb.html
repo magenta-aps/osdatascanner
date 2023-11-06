@@ -89,6 +89,26 @@
     <span class="text-grey">{% trans "organizational hierarchy"|capfirst %}</span>
   {% endif %}
 
+  {% if page == 'accounts' %}
+    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
+
+    <i id="chevron_right" class="material-icons">chevron_right</i>
+
+    <span class="text-grey">{% trans "accounts"|capfirst %}</span>
+  {% endif %}
+
+  {% if page == 'account' %}
+    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
+
+    <i id="chevron_right" class="material-icons">chevron_right</i>
+
+    <a href="{% url "accounts" organization.slug %}" class="link-color">{% trans "accounts"|capfirst %}</a>
+
+    <i id="chevron_right" class="material-icons">chevron_right</i>
+
+    <span class="text-grey">{{ account.get_full_name }}</span>
+  {% endif %}
+
   {% if page == 'ldap' %}
     <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
 

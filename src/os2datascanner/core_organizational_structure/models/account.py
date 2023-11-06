@@ -105,6 +105,19 @@ class Account(models.Model):
             else self.first_name if self.first_name \
             else self.username
 
+    @property
+    def is_manager(self):
+        return self.get_managed_units().exists()
+
+    @property
+    def is_dpo(self):
+        return self.get_dpo_units().exists()
+
+    @property
+    def is_remediator(self):
+        from .aliases import AliasType  # avoid circular import
+        return self.aliases.filter(_alias_type=AliasType.REMEDIATOR).exists()
+
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:

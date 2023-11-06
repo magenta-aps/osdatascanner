@@ -1,0 +1,41 @@
+{% extends "organizations/base.html" %}
+{% load i18n %}
+
+{% block title %}
+  {% trans "accounts"|capfirst %}
+{% endblock %}
+
+{% block content %}
+  <svg class="page-indicator"
+       id="orgunit-page-indicator"
+       viewbox="0 0 100 100">
+    <circle id="circle" cx="50" cy="50" r="45"></circle>
+  </svg>
+
+  <div class="content-header">
+
+    {% include "partials/breadcrumb.html" with page="accounts" %}
+
+    <h1>{% trans "accounts for"|capfirst %} {{ organization }}</h1>
+
+  </div>
+  {% if accounts %}
+    <div class="datatable-wrapper card">
+      <table class="datatable links">
+        <tbody>
+          {% for account in accounts %}
+            <tr hx-get="{% url "account" organization.slug account.uuid %}"
+                hx-push-url="true"
+                hx-target=".content"
+                hx-select=".content"
+                hx-swap="outerHTML">
+              <td>{{ account.get_full_name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="content-body">{% trans "No accounts found!" %}</div>
+  {% endif %}
+{% endblock content %}
