@@ -33,5 +33,5 @@ def customrule_validator(value):
         checker.check_invariants(E2Rule.from_json_object(value))
     except RuleInvariantViolationError as rive:
         raise ValidationError(
-            error_table.get(rive.message).format(
-                *{f"r{i+1}": str(r) for i, r in enumerate(rive.rules)}))
+            error_table.get(rive.message) % {f"r{i+1}": str(r)
+                                             for i, r in enumerate(rive.rules)})
