@@ -5,16 +5,14 @@ by checking invariants.
 from dataclasses import dataclass
 import functools
 from itertools import pairwise
-from typing import Callable, Optional
+from typing import Callable
 
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 from os2datascanner.engine2.rules.logical import CompoundRule
 
 __all__ = [
     'RuleInvariant',
-    'RuleInvariantViolationException',
     'RuleInvariantViolationError',
-    'RuleInvariantViolationWarning',
 ]
 
 """
@@ -22,36 +20,25 @@ Function signature for a rule invariant.
 An invariant is a test based on the properties of a rule
 that should hold for some rule (and perhaps its components).
 """
-RuleInvariant = Callable[[Rule], Optional[bool]]
+RuleInvariant = Callable[[Rule], bool | None]
 
 
 @dataclass
-class RuleInvariantViolationException(BaseException):
+class RuleInvariantViolationError(BaseException):
     """
     This exception is intended to be raised whenever an invariant has
     violated with regards to the properties of a rule.
 
     When raised, it should carry information about which rule(s) did
     not uphold a given invariant.
-    """
-    message: str
-    rules: list[Rule]
 
-
-class RuleInvariantViolationError(RuleInvariantViolationException):
-    """
     This exception is used to communicate that violation of the raising
     invariant is unacceptable and further usage of the violating rule
     should be discontinued until the invariant has been restored.
     """
-
-
-class RuleInvariantViolationWarning(RuleInvariantViolationException):
-    """
-    This exception is used to communicate that violation of the raising
-    invariant is not ideal, but it is not critical to the functioning
-    of the rule, so usage of the violating rule can continue.
-    """
+    message: str
+    rules: list[Rule]
+    is_warning: bool = False
 
 
 def rule_invariant_type_error(rule):
@@ -61,6 +48,26 @@ def rule_invariant_type_error(rule):
     """
     raise TypeError(
         f"Cannot apply invariant check to {rule} of type {type(rule)}")
+
+
+def _get_checked_otype(cr: CompoundRule, *otypes):
+    """
+    Checks and gets the OutputType for a rule.
+    OutputType is only well-defined for SimpleRule,
+    but since we require that components of a CompoundRule
+    all have the same OutputType for this invariant, we
+    check that they do indeed have the same OutputType and
+    return that.
+
+    If the OutputTypes don't match, we raise an exception.
+    """
+    for i, (left_rule, right_rule) in enumerate(pairwise(otypes)):
+        if left_rule != right_rule:
+            raise RuleInvariantViolationError(
+                "outputtype", rules=[cr._components[i], cr._components[i+1]],
+                is_warning=True)
+
+    return otypes[0]
 
 
 class RuleInvariantChecker:
@@ -98,7 +105,7 @@ class RuleInvariantChecker:
 
     @staticmethod
     @functools.cache
-    def precedence_invariant(rule: Rule) -> Optional[bool]:
+    def precedence_invariant(rule: Rule) -> bool | None:
         """
         Invariant which checks that the precedence of a rule
         and its components are well-ordered, i.e. 'LEFT' < 'UNDEFINED' < 'RIGHT'.
@@ -121,7 +128,7 @@ class RuleInvariantChecker:
 
     @staticmethod
     @functools.cache
-    def standalone_invariant(rule: Rule) -> Optional[bool]:
+    def standalone_invariant(rule: Rule) -> bool | None:
         """
         Invariant which checks that a given rule may be used without
         being combined with other rules.
@@ -141,7 +148,7 @@ class RuleInvariantChecker:
 
     @staticmethod
     @functools.cache
-    def outputtype_invariant(rule: Rule) -> Optional[bool]:
+    def outputtype_invariant(rule: Rule) -> bool | None:
         """
         Invariant which checks that a rule (and its components)
         all work on a single OutputType in order to avoid duplicate
@@ -156,29 +163,13 @@ class RuleInvariantChecker:
         @functools.cache
         def get_otype(rule: Rule):
             """
-            Checks and gets the OutputType for a rule.
-            OutputType is only well-defined for SimpleRule,
-            but since we require that components of a CompoundRule
-            all have the same OutputType for this invariant, we
-            check that they do indeed have the same OutputType and
-            return that.
+            Attempts to retrieve the OutputType of a rule.
 
-            If the OutputTypes don't match, we raise an exception.
+            :param rule:
             """
-
             match rule:
                 case CompoundRule() as cr:
-                    def check(left_otype, right_otype, i):
-                        if left_otype != right_otype:
-                            raise RuleInvariantViolationWarning(
-                                "outputtype", rules=[cr._components[i],
-                                                     cr._components[i+1]])
-                        return True
-
-                    otypes = [get_otype(c) for c in cr._components]
-
-                    if all(check(l, r, i) for i, (l, r) in enumerate(pairwise(otypes))):
-                        return otypes[0]
+                    return _get_checked_otype(cr, [get_otype(c) for c in cr._components])
                 case SimpleRule():
                     return rule.operates_on
                 case _:

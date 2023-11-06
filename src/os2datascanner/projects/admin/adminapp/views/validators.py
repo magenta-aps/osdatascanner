@@ -27,10 +27,11 @@ def customrule_validator(value):
     invariant checks on the built rule. If any of the invariants
     fail, then a ValidationError is thrown.
     """
+    checker = RuleInvariantChecker()
+
     try:
-        checker = RuleInvariantChecker()
         checker.check_invariants(E2Rule.from_json_object(value))
     except RuleInvariantViolationError as rive:
         raise ValidationError(
-            error_table.get(rive.message) % {f"r{i+1}": str(r)
-                                             for i, r in enumerate(rive.rules)})
+            error_table.get(rive.message).format(
+                *{f"r{i+1}": str(r) for i, r in enumerate(rive.rules)}))
