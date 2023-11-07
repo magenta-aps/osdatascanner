@@ -7,7 +7,7 @@ is used as the primary medium of communication between said modules/components.
 
 ## Use of AMQP exchanges in RabbitMQ
 
-To provide a scalable concurrent engine that can serve multiple users (organisations) on same
+To provide a scalable concurrent engine that can serve multiple users (organisations) on the same
 instance, a special routing strategy is required, which involves the use of AMQP headers-exchanges.
 
 Recall the _worker_ stage from the engine pipeline, each _worker_ instance should serve a specific user
