@@ -19,8 +19,9 @@ set using a `with`-statement when including it in other templates:
       <button type="button"
               onclick="closeSnackBar(this)"
               class="close-modal button button--modal-close"
-              title="Close"></button>
-      <img src="{% static 'svg/snackbar.svg' %}" alt="close pop-up" />
+              title="Close">
+        <img src="{% static 'svg/snackbar.svg' %}" alt="close pop-up" />
+      </button>
     </div>
   {% endfor %}
 </div>
