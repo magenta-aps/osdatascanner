@@ -29,7 +29,7 @@ class RulePropertyTests(unittest.TestCase):
         self.assertEqual(self.or_rule.properties.precedence, RulePrecedence.UNDEFINED)
         self.assertTrue(self.or_rule.properties.standalone)
 
-    def test_precedence_ordering_holds(self):
+    def test_precedence_ordering_lt(self):
         left = RulePrecedence.LEFT
         undefined = RulePrecedence.UNDEFINED
         right = RulePrecedence.RIGHT
@@ -45,6 +45,66 @@ class RulePropertyTests(unittest.TestCase):
         self.assertFalse(undefined < left)
 
         # Right is greater than everything, but right.
+        self.assertFalse(right < left)
+        self.assertFalse(right < undefined)
+        self.assertFalse(right < right)
+
+    def test_precedence_ordering_gt(self):
+        left = RulePrecedence.LEFT
+        undefined = RulePrecedence.UNDEFINED
+        right = RulePrecedence.RIGHT
+
+        # Left is less than everything, but left.
+        self.assertFalse(left > left)
+        self.assertFalse(left > undefined)
+        self.assertFalse(left > right)
+
+        # Undefined is less than right and itself.
+        self.assertTrue(undefined > left)
+        self.assertTrue(undefined > undefined)
+        self.assertFalse(undefined > right)
+
+        # Right is greater than everything, but right.
         self.assertTrue(right > left)
         self.assertTrue(right > undefined)
         self.assertFalse(right > right)
+
+    def test_precedence_ordering_le(self):
+        left = RulePrecedence.LEFT
+        undefined = RulePrecedence.UNDEFINED
+        right = RulePrecedence.RIGHT
+
+        # Left is less-than-or-equal-to everything.
+        self.assertTrue(left <= left)
+        self.assertTrue(left <= undefined)
+        self.assertTrue(left <= right)
+
+        # Undefined is less-than-or-equal-to right and itself.
+        self.assertFalse(undefined <= left)
+        self.assertTrue(undefined <= undefined)
+        self.assertTrue(undefined <= right)
+
+        # Right is less-than-or-equal-to only right.
+        self.assertFalse(right <= left)
+        self.assertFalse(right <= undefined)
+        self.assertTrue(right <= right)
+
+    def test_precedence_ordering_ge(self):
+        left = RulePrecedence.LEFT
+        undefined = RulePrecedence.UNDEFINED
+        right = RulePrecedence.RIGHT
+
+        # Left is greater-than-or-equal-to only left.
+        self.assertTrue(left >= left)
+        self.assertFalse(left >= undefined)
+        self.assertFalse(left >= right)
+
+        # Undefined is greater-than-or-equal-to left and itself.
+        self.assertTrue(undefined >= left)
+        self.assertTrue(undefined >= undefined)
+        self.assertFalse(undefined >= right)
+
+        # Right is greater-than-or-equal-to everything.
+        self.assertTrue(right >= left)
+        self.assertTrue(right >= undefined)
+        self.assertTrue(right >= right)
