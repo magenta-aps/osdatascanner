@@ -156,10 +156,11 @@ ENV OS2DS_ADMIN_SYSTEM_CONFIG_PATH=/code/docker/docker-settings.toml \
 
 RUN groupadd -g 63020 -r os2ds_admin \
   && useradd -u 63020 --no-log-init -r -g os2ds_admin os2ds_admin \
-  && install -o os2ds_admin -g os2ds_admin -m u+w -d /code/uploads/admin \
+  && install -o os2ds_admin -g os2ds_admin -d /code/uploads/admin \
   && install -o os2ds_admin -g os2ds_admin -d /code/static \
   && install -o os2ds_admin -g os2ds_admin -d /code/build \
-  && install -o os2ds_admin -g os2ds_admin -d /code/var
+  && install -o os2ds_admin -g os2ds_admin -d /code/var \
+  && chmod -R o+w /code/uploads/admin
 
 WORKDIR /code/docker/
 COPY docker/admin/crontab ./crontab
