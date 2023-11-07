@@ -67,6 +67,12 @@
     border: none !important;
     padding: .5rem 0rem !important;
     overflow: visible !important;
+
+    li {
+      // display: flex;
+      // margin: 0 !important;
+      padding: 1rem 0 !important;
+    }
   }
 
   .control {
@@ -95,12 +101,16 @@
     width: 100%;
   }
 
+  .limit {
+    padding-top: 1.25rem;
+  }
+
   .date-selector {
     width: 100%;
   }
 
   .date-field {
-    width: 50%;
+    width: 30%;
     margin-left: .75rem !important;
   }
 
@@ -109,14 +119,19 @@
   }
 
   .interval {
-    display: block !important;
+    display: flex !important;
+    align-items: center;
     padding-left: 0 !important;
     margin-top: 1rem !important;
   }
 
   .radio {
-    margin-top: 1.5rem;
-    margin-bottom: .5rem;
+    display: flex !important;
+    align-items: center;
+    flex-basis: 6rem !important;
+    // margin-top: 1.5rem;
+    // margin-bottom: .5rem;
+    margin: 0 !important;
   }
 
   .form {
@@ -128,7 +143,7 @@
   }
   .until-count li {
     display: flex !important;
-    align-items: baseline !important;
+    align-items: center !important;
   }
   .until-count {
     margin: 0 !important;
@@ -183,4 +198,41 @@
 
 div.recurrence-widget select, div.recurrence-widget input {
   margin: .25rem .25rem !important;
+}
+
+div.recurrence-widget .section {
+  margin: 0 !important;
+}
+
+.monthly {
+  span {
+    display: flex;
+
+    &.monthday {
+      align-items: flex-start;
+
+      .grid {
+        margin-left: 0.25rem !important;
+        margin-bottom: 0.5rem;
+      }
+
+      label.radio {
+        padding-top: 0.75rem;
+      }
+    }
+
+    &.weekday {
+      align-items: center;
+    }
+
+  }
+}
+
+.byday-section-container {
+  display: flex;
+  align-items: center;
+
+  .ds-checkbox {
+    margin-right: 0.5rem !important;
+  }
 }
