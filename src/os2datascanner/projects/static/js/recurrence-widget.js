@@ -1558,7 +1558,7 @@ recurrence.widget.RuleMonthlyForm.prototype = {
         // weekday-position
 
         var position_options = recurrence.array.foreach(
-            [1, 2, 3, -1, -2, -3], function(value) {
+            [1, 2, 3, -3, -2, -1], function(value) {
                 var option = recurrence.widget.e(
                     'option', {'value': value},
                     recurrence.string.strip(
