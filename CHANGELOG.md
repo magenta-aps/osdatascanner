@@ -32,6 +32,8 @@
 - A timeout is now enforced when retrieving OAuth 2.0 client credentials
   tokens.
 
+- The recurrence widget inside "create scanner job" has been styled and updated.
+
 ## 3.21.1, 6th November 2023
 
 "Quick Rewrite It"
