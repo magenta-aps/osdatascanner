@@ -44,7 +44,7 @@ class RulePropertyTests(unittest.TestCase):
         self.assertTrue(undefined < undefined)
         self.assertFalse(undefined < left)
 
-        # Right is greater than everything, but right.
+        # Right is less than nothing.
         self.assertFalse(right < left)
         self.assertFalse(right < undefined)
         self.assertFalse(right < right)
@@ -54,12 +54,12 @@ class RulePropertyTests(unittest.TestCase):
         undefined = RulePrecedence.UNDEFINED
         right = RulePrecedence.RIGHT
 
-        # Left is less than everything, but left.
+        # Left is greater than nothing.
         self.assertFalse(left > left)
         self.assertFalse(left > undefined)
         self.assertFalse(left > right)
 
-        # Undefined is less than right and itself.
+        # Undefined is greater than left and itself.
         self.assertTrue(undefined > left)
         self.assertTrue(undefined > undefined)
         self.assertFalse(undefined > right)
