@@ -97,7 +97,7 @@ class RulePrecedence(Enum):
         match (self, other):
             case ((RulePrecedence.RIGHT, _)
                   | (RulePrecedence.UNDEFINED, RulePrecedence.UNDEFINED | RulePrecedence.LEFT)
-                  | (_, RulePrecedence.LEFT)):
+                  | (RulePrecedence.LEFT, RulePrecedence.LEFT)):
                 return True
             case _:
                 return False
