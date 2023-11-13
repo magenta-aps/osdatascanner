@@ -10,16 +10,16 @@ class AccountMethodTests(TestCase):
     def setUp(self):
         # Create new org for the sake of these tests.
         self.client = Client.objects.create(
-            name="OS2datascanner",
+            name="OS2datascanner Test",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696")
 
         self.org = Organization.objects.create(
-            name="OS2datascanner",
+            name="OS2datascanner Test",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696",
             client_id=self.client.uuid,
-            slug="os2datascanner")
+            slug="os2datascanner-test")
 
         # Create objects
         self.unit1 = OrganizationalUnit.objects.create(
