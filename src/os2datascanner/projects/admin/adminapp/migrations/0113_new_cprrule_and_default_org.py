@@ -9,31 +9,51 @@ from os2datascanner.projects.admin.adminapp.models.sensitivity_level import (
 
 
 def create_default_cprrule_and_organization(apps, schema_editor):
+    Client = apps.get_model("core", "Client")
+    Organization = apps.get_model("organizations", "Organization")
     CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
     CustomRule = apps.get_model("os2datascanner", "CustomRule")
     Scanner = apps.get_model("os2datascanner", "Scanner")
+
+    # Get the default organization which should be the owner of the CPR rule.
+    org_name = "OS2datascanner"
+    default_org = Organization.objects.filter(name=org_name).first()
+    client = Client.objects.filter(name=org_name).first()
+
+    if default_org is None and client is None:
+        org_email = "info@magenta-aps.dk"
+        org_phone = "+45 3336 9696"
+        default_org = Organization.objects.create(
+            name=org_name,
+            contact_email=org_email,
+            contact_phone=org_phone,
+            client=Client.objects.create(
+                name=org_name,
+                contact_email=org_email,
+                contact_phone=org_phone))
 
     # Get the old CPR rule and select the scanner jobs that use it.
     old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
     if old_cpr is not None:
         jobs = list(Scanner.objects.filter(rules=old_cpr))
         old_cpr.delete()
-    else:
-        jobs = []
 
     if CustomRule.objects.filter(name="CPR regel").first() is None:
         new_cpr = CustomRule.objects.get_or_create(
             name="CPR regel",
             description="Denne regel finder alle gyldige CPR numre.",
             sensitivity=Sensitivity.CRITICAL,
+            #organization=default_org,
             _rule=CPRRule(
                 modulus_11=True,
                 ignore_irrelevant=True,
-                examine_context=True).to_json_object())
+                examine_context=True,
+                #organization=default_org,
+            ).to_json_object())
 
         # If there are any jobs that used the old cpr rule
         # add the new one instead.
-        for job in jobs:
+        for job in ('jobs' in locals() and jobs or []):
             job.rules.add(new_cpr)
 
     print("SUCCESS! Default rule: 'CPR Regel' exists in the database.")
