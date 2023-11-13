@@ -1,6 +1,7 @@
 from . import exchangescanner  # noqa
 from . import filescanner  # noqa
 from . import scanner  # noqa
+from . import scanner_helpers  # noqa
 from . import webscanner  # noqa
 from . import msgraph  # noqa
 from . import googledrivescanner  # noqa

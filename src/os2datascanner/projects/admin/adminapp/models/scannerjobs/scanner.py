@@ -53,6 +53,7 @@ from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.pipeline.headers import get_exchange, get_headers
 from mptt.models import TreeManyToManyField
 
+from . import scanner_helpers
 from ..rules.rule import Rule
 from ..authentication import Authentication
 
@@ -156,10 +157,11 @@ class Scanner(models.Model):
                                              verbose_name=_('exclusion rules'),
                                              related_name='scanners_ex_rules')
 
-    covered_accounts = models.ManyToManyField('organizations.Account',
-                                              blank=True,
-                                              verbose_name=_('covered accounts'),
-                                              related_name='covered_by_scanner')
+    covered_accounts = models.ManyToManyField(
+            'organizations.Account',
+            blank=True, through=scanner_helpers.CoveredAccount,
+            verbose_name=_('covered accounts'),
+            related_name='covered_by_scanner')
 
     def verify(self) -> bool:
         """Method documentation"""
