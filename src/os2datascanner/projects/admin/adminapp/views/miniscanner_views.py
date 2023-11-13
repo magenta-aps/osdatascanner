@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
 
-from ..models.rules.customrule import CustomRule
+from ..models.rules import CustomRule
 
 from os2datascanner.engine2.rules.rule import Rule
 from os2datascanner.engine2.model.core import SourceManager

@@ -19,16 +19,16 @@ class CleanupScannerViewTests(TestCase):
         self.user = get_user_model().objects.create(username="Fake user")
 
         self.client = Client.objects.create(
-            name="OS2datascanner",
+            name="OS2datascanner Test",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696")
 
         self.org = Organization.objects.create(
-            name="OS2datascanner",
+            name="OS2datascanner Test",
             contact_email="info@magenta-aps.dk",
             contact_phone="+45 3336 9696",
             client_id=self.client.uuid,
-            slug="os2datascanner")
+            slug="os2datascanner-test")
 
         self.scanner = Scanner.objects.create(name="Fake scanner", organization=self.org)
 

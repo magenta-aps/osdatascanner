@@ -159,8 +159,8 @@ msgid "sensitivity"
 msgstr "Følsomhed"
 
 #: adminapp/models/rules.py:90
-#: adminapp/templates/os2datascanner/customrule_form.html:65
-#: adminapp/templates/os2datascanner/regexrule_form.html:135
+#: adminapp/templates/components/rules/customrule_form.html:64
+#: adminapp/templates/components/rules/regexrule_form.html:135
 msgid "Rule"
 msgstr "Regel"
 
@@ -521,20 +521,20 @@ msgid "e-mail header"
 msgstr "e-mail header"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:35
+msgid "passport"
+msgstr "pas"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:36
 msgid "Experimental"
 msgstr "Eksperimentel"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:36
+#: adminapp/templates/components/admin_widgets/rule_builder.html:37
 msgid "CPR-nr. (Turbo)"
 msgstr "CPR-nr. (Turbo)"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:37
+#: adminapp/templates/components/admin_widgets/rule_builder.html:38
 msgid "health information (Turbo)"
 msgstr "helbredsinformation (Turbo)"
-
-#: adminapp/templates/components/admin_widgets/rule_builder.html:38
-msgid "passport"
-msgstr "pas"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:45
 #: adminapp/templates/components/admin_widgets/rule_builder.html:86
@@ -2104,13 +2104,13 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:77
+#: adminapp/views/rule_views.py:74
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:79
+#: adminapp/views/rule_views.py:76
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
@@ -3000,9 +3000,6 @@ msgstr "Konto ikke fundet."
 
 #~ msgid "All scanners"
 #~ msgstr "Alle scannere"
-
-#~ msgid "Expression"
-#~ msgstr "Udtryk"
 
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"
