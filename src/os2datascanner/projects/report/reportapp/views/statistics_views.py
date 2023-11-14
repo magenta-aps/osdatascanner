@@ -498,18 +498,15 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     model = Account
     context_object_name = "employees"
 
-    @staticmethod
-    def get_all_sub_units(org_unit):
-        sub_units = list(org_unit.children.all())
-        for child in org_unit.children.all():
-            sub_units.extend(LeaderStatisticsPageView.get_all_sub_units(child))
-        return sub_units
-
     def get_queryset(self):
         qs = super().get_queryset()
 
+        def get_all_sub_units(org_unit):
+            return [unit for child in org_unit.children.all()
+                    for unit in child.get_descendants(include_self=True)]
+
         if self.org_unit:
-            all_units = [self.org_unit] + self.get_all_sub_units(self.org_unit)
+            all_units = [self.org_unit] + get_all_sub_units(self.org_unit)
             qs = qs.filter(units__in=all_units)
         else:
             qs = Account.objects.none()
