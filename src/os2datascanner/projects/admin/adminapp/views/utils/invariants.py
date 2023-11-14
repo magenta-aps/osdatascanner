@@ -135,11 +135,16 @@ class RuleInvariantChecker:
 
         :param rule:
         """
-        if not isinstance(rule, Rule):
-            rule_invariant_type_error(rule)
-
-        if isinstance(rule, CompoundRule) and len(rule._components) == 1:
-            rule = rule._components[0]
+        match rule:
+            case CompoundRule() if len(rule._components) == 1:
+                rule = rule._components[0]
+            case CompoundRule():
+                return any(RuleInvariantChecker.standalone_invariant(c)
+                           for c in rule._components)
+            case Rule():
+                pass
+            case _:
+                rule_invariant_type_error(rule)
 
         if not rule.properties.standalone:
             raise RuleInvariantViolationError("standalone", rules=[rule])
