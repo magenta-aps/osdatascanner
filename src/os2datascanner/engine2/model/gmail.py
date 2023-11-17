@@ -28,9 +28,15 @@ class GmailSource(Source):
 
     eq_properties = ("_user_email_gmail",)
 
-    def __init__(self, service_account_file_gmail, user_email_gmail):
+    query_filter = "-has:attachment"
+
+    def __init__(self,
+                 service_account_file_gmail,
+                 user_email_gmail,
+                 skip_attachments=False):
         self._service_account_file_gmail = service_account_file_gmail
         self._user_email_gmail = user_email_gmail
+        self._skip_attachments = skip_attachments
 
     def _generate_state(self, source_manager):
         SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
@@ -55,19 +61,26 @@ class GmailSource(Source):
         label_ids = [label['id'] for label in labels["labels"]
                      if label['id'] not in ('TRASH', 'DRAFT')]
 
+        base_query_params = dict(
+            userId=self._user_email_gmail,
+            maxResults=500)
+        if self._skip_attachments:
+            base_query_params |= dict(q=self.query_filter)
+
         for label_id in label_ids:
-            # Call the Gmail API to fetch INBOX
-            results = service.users().messages().list(userId=self._user_email_gmail,
-                                                      labelIds=[label_id], maxResults=500).execute()
+            # Make specific query parameters for this Label ID.
+            query_params = base_query_params | {'labelIds': [label_id]}
+
+            # Call the Gmail API to fetch INBOX.
+            results = service.users().messages().list(**query_params).execute()
 
             messages = []
             if 'messages' in results:
                 messages.extend(results['messages'])
                 while 'nextPageToken' in results:
                     page_token = results['nextPageToken']
-                    results = service.users().messages().list(userId=self._user_email_gmail,
-                                                              labelIds=[label_id], maxResults=500,
-                                                              pageToken=page_token).execute()
+                    results = service.users().messages().list(
+                        **(query_params | dict(pageToken=page_token))).execute()
                     messages.extend(results['messages'])
 
                 for message in messages:
