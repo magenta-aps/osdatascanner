@@ -21,18 +21,22 @@ def create_default_cprrule_and_organization(apps, schema_editor):
     default_org = Organization.objects.filter(name=org_name).first()
     client = Client.objects.filter(name=org_name).first()
 
-    if default_org is None and client is None:
+    if default_org is None:
         org_email = "info@magenta-aps.dk"
         org_phone = "+45 3336 9696"
+
+        if client is None:
+            client = Client.objects.create(
+                name=org_name,
+                contact_email=org_email,
+                contact_phone=org_phone)
+
         default_org = Organization.objects.create(
             name=org_name,
             contact_email=org_email,
             contact_phone=org_phone,
             slug=slugify(org_name),
-            client=Client.objects.create(
-                name=org_name,
-                contact_email=org_email,
-                contact_phone=org_phone))
+            client=client)
 
     # Get the old CPR rule and select the scanner jobs that use it.
     old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
@@ -41,16 +45,15 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         old_cpr.delete()
 
     if CustomRule.objects.filter(name="CPR regel").first() is None:
-        new_cpr = CustomRule.objects.get_or_create(
+        new_cpr, _ = CustomRule.objects.get_or_create(
             name="CPR regel",
             description="Denne regel finder alle gyldige CPR numre.",
             sensitivity=Sensitivity.CRITICAL,
-            #organization=default_org,
+            organization=default_org,
             _rule=CPRRule(
                 modulus_11=True,
                 ignore_irrelevant=True,
                 examine_context=True,
-                #organization=default_org,
             ).to_json_object())
 
         # If there are any jobs that used the old cpr rule
