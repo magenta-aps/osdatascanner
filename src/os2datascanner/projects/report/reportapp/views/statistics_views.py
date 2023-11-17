@@ -501,11 +501,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
 
-        def get_all_sub_units(org_unit):
-            return [unit for child in org_unit.children.all()
-                    for unit in child.get_descendants(include_self=True)]
-
         if self.org_unit:
+            all_units = [self.org_unit, *[unit for child in self.org_unit
+                                          for unit in child.get_descendants(include_self=True)]]
             all_units = [self.org_unit] + get_all_sub_units(self.org_unit)
             qs = qs.filter(units__in=all_units)
         else:
