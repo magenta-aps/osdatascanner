@@ -45,7 +45,7 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         old_cpr.delete()
 
     if CustomRule.objects.filter(name="CPR regel").first() is None:
-        new_cpr, _ = CustomRule.objects.get_or_create(
+        new_cpr = CustomRule.objects.create(
             name="CPR regel",
             description="Denne regel finder alle gyldige CPR numre.",
             sensitivity=Sensitivity.CRITICAL,

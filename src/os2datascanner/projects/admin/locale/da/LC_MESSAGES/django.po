@@ -159,7 +159,7 @@ msgid "sensitivity"
 msgstr "Følsomhed"
 
 #: adminapp/models/rules.py:90
-#: adminapp/templates/os2datascanner/customrule_form.html:65
+#: adminapp/templates/os2datascanner/customrule_form.html:64
 #: adminapp/templates/os2datascanner/regexrule_form.html:135
 msgid "Rule"
 msgstr "Regel"
