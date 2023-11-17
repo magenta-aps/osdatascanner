@@ -14,7 +14,7 @@
 from json import dumps
 
 from django.db import transaction
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Subquery, Q
 from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from django.shortcuts import render
@@ -24,7 +24,8 @@ import structlog
 
 from django.forms import ModelMultipleChoiceField, TypedChoiceField
 
-from os2datascanner.projects.admin.organizations.models import Organization, Account, Alias
+from os2datascanner.projects.admin.organizations.models import (
+    Organization, Account, Alias)
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .views import RestrictedListView, RestrictedCreateView, \
@@ -35,6 +36,7 @@ from ..models.rules.rule import Rule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.usererrorlog import UserErrorLog
 from ..utils import CleanMessage
+from ...organizations.models.aliases import AliasType
 from django.utils.translation import gettext_lazy as _
 
 from channels.layers import get_channel_layer
@@ -131,7 +133,7 @@ class StatusOverview(StatusBase):
             elif htmx_trigger == "status_table_poll":
                 return "components/scanstatus/scan_status_table.html"
         else:
-            return "os2datascanner/scan_status.html"
+            return "scan_status.html"
 
 
 class StatusCompleted(StatusBase):
@@ -455,7 +457,10 @@ class ScannerCreate(ScannerBase, RestrictedCreateView):
         context = super().get_context_data(**kwargs)
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
-        context["possible_remediators"] = Account.objects.filter(organization__in=orgs)
+        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
+            Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
+            aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
         return context
 
     def post(self, request, *args, **kwargs):
@@ -464,7 +469,7 @@ class ScannerCreate(ScannerBase, RestrictedCreateView):
         for remediator_uuid in remediator_uuids:
             Alias.objects.get_or_create(
                 account=Account.objects.get(uuid=remediator_uuid),
-                _alias_type="remediator",
+                _alias_type=AliasType.REMEDIATOR,
                 _value=self.object.pk)
         return response
 
@@ -526,21 +531,24 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
         context = super().get_context_data(**kwargs)
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
-        context["possible_remediators"] = Account.objects.filter(organization__in=orgs)
         context["remediators"] = self.object.get_remediators()
+        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
+            Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
+            aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
         return context
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         remediator_uuids = request.POST.getlist('remediators')
         Alias.objects.filter(
-            _alias_type="remediator",
+            _alias_type=AliasType.REMEDIATOR,
             _value=self.object.pk).exclude(
-            account__uuid__in=remediator_uuids)
+            account__uuid__in=remediator_uuids).delete()
         for remediator_uuid in remediator_uuids:
             Alias.objects.get_or_create(
                 account=Account.objects.get(uuid=remediator_uuid),
-                _alias_type="remediator",
+                _alias_type=AliasType.REMEDIATOR,
                 _value=self.object.pk)
         return response
 
@@ -556,6 +564,17 @@ class ScannerDelete(RestrictedDeleteView):
 
 class ScannerCopy(ScannerBase, RestrictedCreateView):
     """Creates a copy of an existing scanner. """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = UserWrapper(self.request.user)
+        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+        context["remediators"] = self.object.get_remediators()
+        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
+            Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
+            aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+        return context
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()

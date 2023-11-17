@@ -11,7 +11,6 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
@@ -39,12 +38,16 @@ class Account(Core_Account, Imported, Broadcasted):
         return stale_scanners
 
     def get_remediator_scanners(self):
-        scanner_pks = [obj.get('_value') for obj in
-                       self.aliases.filter(_alias_type="remediator").values('_value')]
-        scanners = [{'name': scanner.get('name'), 'pk': scanner.get('pk')} for scanner in
-                    Scanner.objects.filter(pk__in=scanner_pks).values('name', 'pk')]
-        if "0" in scanner_pks:
-            scanners.append({'name': _("All scanners"), 'pk': "0"})
+        """Returns a list of dicts of all scanners, which the user is
+        specifically assigned remediator for. Each dict contains the name and
+        the primary key of the scanner."""
+
+        # Avoid circular import
+        from .aliases import AliasType
+
+        scanner_pks = list(self.aliases.filter(_alias_type=AliasType.REMEDIATOR)
+                                       .values_list('_value', flat=True))
+        scanners = list(Scanner.objects.filter(pk__in=scanner_pks).values('name', 'pk'))
         return scanners
 
 

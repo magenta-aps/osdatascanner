@@ -27,8 +27,6 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
 
-from functools import cached_property
-
 
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
 from os2datascanner.core_organizational_structure.models import \
@@ -336,19 +334,6 @@ class Account(Core_Account):
     def managed_by(self, account):
         units = self.units.all() & account.get_managed_units()
         return units.exists()
-
-    @property
-    def is_manager(self):
-        return self.get_managed_units().exists()
-
-    @property
-    def is_dpo(self):
-        return self.get_dpo_units().exists()
-
-    @cached_property
-    def is_remediator(self):
-        from .aliases import AliasType  # avoid circular import
-        return self.aliases.filter(_alias_type=AliasType.REMEDIATOR).exists()
 
     @property
     def leadertab_access(self) -> bool:

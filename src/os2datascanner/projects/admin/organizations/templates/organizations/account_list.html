@@ -14,28 +14,56 @@
 
   <div class="content-header">
 
-    {% include "partials/breadcrumb.html" with page="accounts" %}
+    {% include "components/common/breadcrumb.html" with page="accounts" %}
 
     <h1>{% trans "accounts for"|capfirst %} {{ organization }}</h1>
 
   </div>
+
+  <form name="account_filters"
+        id="account_filters"
+        class="account_filtering_wrapper"
+        onsubmit="return false"
+        hx-get="{% url "accounts" organization.slug %}"
+        hx-trigger="keyup delay:200ms from:#search_field, search from:#search_field"
+        hx-swap="outerHTML"
+        hx-include="[id='dropdown_options']"
+        hx-target=".account_content"
+        hx-select=".account_content">
+    <div class="search_field_wrapper">
+      <input type="search"
+             name="search_field"
+             id="search_field"
+             placeholder="{% trans "Search for account" %}"
+             value="{{ request.GET.search_field }}"
+             autocomplete="off" />
+    </div>
+    <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}">
+    <input type="hidden" name="order" id="order" value="{{ order }}">
+ 
+  </form>
+
   {% if accounts %}
-    <div class="datatable-wrapper card">
-      <table class="datatable links">
-        <tbody>
+    <div class="datatable-wrapper card account_content">
+      <table class="datatable">
+        <colgroup>
+          <col class="datatable__column--name">
+        </colgroup>
+        <tbody class="links">
           {% for account in accounts %}
             <tr hx-get="{% url "account" organization.slug account.uuid %}"
                 hx-push-url="true"
                 hx-target=".content"
                 hx-select=".content"
                 hx-swap="outerHTML">
-              <td>{{ account.get_full_name }}</td>
+              <td class="datatable__column--name">{{ account.get_full_name }}</td>
             </tr>
           {% endfor %}
         </tbody>
+        {% include "components/pagination/pagination.html" %}
       </table>
     </div>
   {% else %}
-    <div class="content-body">{% trans "No accounts found!" %}</div>
+    <div class="content-body account_content">{% trans "No accounts found!" %}</div>
   {% endif %}
 {% endblock content %}

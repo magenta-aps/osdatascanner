@@ -19,6 +19,7 @@ from email_validator import validate_email
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from ..serializer import BaseSerializer
@@ -112,10 +113,15 @@ class Alias(models.Model):
         verbose_name = _('alias')
         verbose_name_plural = _('aliases')
 
-        # Disallow duplicated aliases for account.
         constraints = [
+            # Disallow duplicated aliases for account.
             models.UniqueConstraint(fields=['account', '_alias_type', '_value'],
-                                    name='%(app_label)s_alias_account_unique_constraint')
+                                    name='%(app_label)s_alias_account_unique_constraint'),
+            # Disallow multiple remediator aliases for an account, if one of
+            # the remediator aliases is universal
+            models.UniqueConstraint(fields=['account', '_alias_type'],
+                                    condition=Q(_alias_type=AliasType.REMEDIATOR, _value=0),
+                                    name='%(app_label)s_universal_remediator_constraint')
         ]
 
     def __str__(self):

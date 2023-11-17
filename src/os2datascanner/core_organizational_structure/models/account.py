@@ -19,6 +19,8 @@ from rest_framework import serializers
 
 from .position import Role
 
+from functools import cached_property
+
 
 class Account(models.Model):
     """Represents a known entity in an organizational hierarchy.
@@ -105,18 +107,27 @@ class Account(models.Model):
             else self.first_name if self.first_name \
             else self.username
 
-    @property
+    @cached_property
     def is_manager(self):
         return self.get_managed_units().exists()
 
-    @property
+    @cached_property
     def is_dpo(self):
         return self.get_dpo_units().exists()
 
-    @property
+    @cached_property
     def is_remediator(self):
         from .aliases import AliasType  # avoid circular import
         return self.aliases.filter(_alias_type=AliasType.REMEDIATOR).exists()
+
+    @cached_property
+    def universal_remediator(self):
+        """Returns true if the account is a universal remediator."""
+
+        # Avoid circular import
+        from .aliases import AliasType
+
+        return self.aliases.filter(_alias_type=AliasType.REMEDIATOR, _value=0).exists()
 
 
 class AccountSerializer(serializers.ModelSerializer):

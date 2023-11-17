@@ -548,7 +548,10 @@ class Scanner(models.Model):
         Disregards universal remediator aliases."""
         # Avoid circular import
         from ....organizations.models import Account
-        return Account.objects.filter(aliases___alias_type="remediator", aliases___value=self.pk)
+        from ....organizations.models.aliases import AliasType
+        return Account.objects.filter(
+            aliases___alias_type=AliasType.REMEDIATOR,
+            aliases___value=self.pk)
 
     class Meta:
         abstract = False

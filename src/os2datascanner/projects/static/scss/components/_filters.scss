@@ -74,6 +74,15 @@
   }
 }
 
+.account_filtering_wrapper {
+  display: flex;
+  align-items: center;
+
+  >div {
+    margin: 1rem;
+  }
+}
+
 .search_field_wrapper {
 
   width: 20rem;
