@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0114_remove_rule_models_admin'),
+        ('os2datascanner', '0112_turbohealthrule'),
     ]
 
     operations = [

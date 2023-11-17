@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0113_new_cprrule_and_default_org'),
+        ('os2datascanner', '0114_new_cprrule_and_default_org'),
     ]
 
     operations = [

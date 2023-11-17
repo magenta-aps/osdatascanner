@@ -67,7 +67,7 @@ def create_default_cprrule_and_organization(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0112_turbohealthrule'),
+        ('os2datascanner', '0113_scanner_keep_false_positives'),
     ]
 
     operations = [
