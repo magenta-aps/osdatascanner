@@ -203,15 +203,15 @@ msgstr "UNC skal følge UNC-format"
 
 #: adminapp/models/scannerjobs/gmail.py:40
 msgid "skip attachments"
-msgstr "ignore vedhæftninger"
+msgstr "spring over vedhæftninger"
 
 #: adminapp/models/scannerjobs/gmail.py:41
 msgid ""
 "Do not scan files attachmented to an email. Be careful using this setting as "
-"a lot of attachments might contain sought-after matches."
+"a lot of attachments might contain relevant matches."
 msgstr ""
 "Undlad at scanne filer vedhæftet en email. Vær forsigt med at anvende denne "
-"indstilling eftersom, at der kan befinde sig mange matches i vedhæftninger."
+"indstilling eftersom, at der kan befinde sig relevante matches i vedhæftninger."
 
 #: adminapp/models/scannerjobs/msgraph.py:71
 msgid "Scan deleted items folder"
