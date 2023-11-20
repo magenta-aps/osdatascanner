@@ -28,7 +28,7 @@ class GmailSource(Source):
 
     eq_properties = ("_user_email_gmail",)
 
-    query_filter = "-has:attachment"
+    skip_attachment_filter = "-has:attachment"
 
     def __init__(self,
                  service_account_file_gmail,
@@ -65,7 +65,7 @@ class GmailSource(Source):
             userId=self._user_email_gmail,
             maxResults=500)
         if self._skip_attachments:
-            base_query_params |= dict(q=self.query_filter)
+            base_query_params |= dict(q=self.skip_attachment_filter)
 
         for label_id in label_ids:
             # Make specific query parameters for this Label ID.
