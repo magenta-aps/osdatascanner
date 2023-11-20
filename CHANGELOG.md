@@ -13,6 +13,8 @@
 
 - When adding a CPR rule to a custom rule, a list of exceptions can be defined,
   which will not cause a match if found in the scanned source.
+  
+- New setting in GmailScanner for skipping attachments.
 
 - A new rule for finding the passports.
 
