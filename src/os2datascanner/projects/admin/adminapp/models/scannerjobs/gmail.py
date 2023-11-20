@@ -4,6 +4,7 @@ from csv import DictReader
 
 from django.db import models
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
@@ -35,6 +36,13 @@ class GmailScanner(Scanner):
                                          null=False,
                                          validators=[validate_filetype_csv])
 
+    skip_attachments = models.BooleanField(
+        verbose_name=_("skip attachments"),
+        help_text=_("Do not scan files attachmented to an email."
+                    " Be careful using this setting as a lot of "
+                    "attachments might contain sought-after matches."),
+        default=False)
+
     def get_type(self):
         return 'gmail'
 
@@ -50,4 +58,5 @@ class GmailScanner(Scanner):
             for row in csv_dict_reader:
                 user_email = row['Email Address [Required]']
                 yield GmailSource(service_account_file_gmail=json.dumps(temp),
-                                  user_email_gmail=user_email)
+                                  user_email_gmail=user_email,
+                                  skip_attachments=self.skip_attachments)

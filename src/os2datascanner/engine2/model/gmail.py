@@ -33,7 +33,7 @@ class GmailSource(Source):
     def __init__(self,
                  service_account_file_gmail,
                  user_email_gmail,
-                 skip_attachments=False):
+                 skip_attachments: bool = False):
         self._service_account_file_gmail = service_account_file_gmail
         self._user_email_gmail = user_email_gmail
         self._skip_attachments = skip_attachments
@@ -95,19 +95,23 @@ class GmailSource(Source):
 
     # Censoring service account details
     def censor(self):
-        return GmailSource(None, self._user_email_gmail)
+        return GmailSource(None, self._user_email_gmail, self._skip_attachments)
 
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
             service_account_file=self._service_account_file_gmail,
             user_email=self._user_email_gmail,
+            skip_attachments=self._skip_attachments,
         )
 
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GmailSource(obj["service_account_file"], obj["user_email"])
+        return GmailSource(
+            obj["service_account_file"],
+            obj["user_email"],
+            skip_attachments=obj.get("skip_attachments", False))
 
 
 class GmailResource(FileResource):

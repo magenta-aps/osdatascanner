@@ -669,6 +669,10 @@
                 </div>
               {% endif %}
 
+              {% if form.skip_attachments %}
+                <div>{% include "os2datascanner/scanner_form_checkbox_field.html" with field=form.skip_attachments %}</div>
+              {% endif %}
+
               {% if form.exclude_urls %}
                 <div class="input-group">
                   {% include "components/scanner/scanner_form_input_field.html" with field=form.exclude_urls placeholder=form.exclude_urls.field.widget.attrs.placeholder %}

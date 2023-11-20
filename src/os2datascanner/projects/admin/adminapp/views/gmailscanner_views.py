@@ -44,6 +44,7 @@ class GmailScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'rules',
         'organization',
+        'skip_attachments',
     ]
 
     def get_success_url(self):
@@ -67,6 +68,7 @@ class GmailScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'rules',
         'organization',
+        'skip_attachments',
     ]
 
     def get_success_url(self):
@@ -103,12 +105,14 @@ class GmailScannerCopy(ScannerCopy):
         'only_notify_superadmin',
         'rules',
         'organization',
+        'skip_attachments',
     ]
 
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()
         initial["service_account_file_gmail"] = self.get_scanner_object().service_account_file_gmail
         initial["user_emails_gmail"] = self.get_scanner_object().user_emails_gmail
+        initial["skip_attachments"] = self.get_scanner_object().skip_attachments
         return initial
 
 
