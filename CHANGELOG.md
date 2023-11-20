@@ -307,6 +307,7 @@ added in connection with the changes to the Last-Modified function.
 - The default created instance of CPRRule has been converted to a CustomRule.
   On existing installations, the rule is changed during migration.
 
+<<<<<<< HEAD
 - The "rules" and "exclusion_rules" ManyToManyFields on the Scanner model have
   been replaced by the "rule" and "exclusion_rule" ForeignKey-fields.
 
@@ -324,6 +325,11 @@ added in connection with the changes to the Last-Modified function.
 
 - Last modified for Organizational Unit based scanners is now managed through 'CoveredAccount',
 allowing last modified timestamps to be on an account basis.
+=======
+- The Rule Builder will now enforce so-called "invariants" when a user tries to construct
+  a custom rule. This means that some rules many not be used alone and the order of how
+  rules are combined matter.
+>>>>>>> 7ff82b789 ([#57602] Refactor RuleInvariants to use a decorator.)
 
 ### General improvements
 
