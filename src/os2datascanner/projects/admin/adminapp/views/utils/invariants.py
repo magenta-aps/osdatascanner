@@ -10,17 +10,34 @@ from typing import Callable
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 from os2datascanner.engine2.rules.logical import CompoundRule
 
-__all__ = [
-    'RuleInvariant',
-    'RuleInvariantViolationError',
-]
-
 """
 Function signature for a rule invariant.
 An invariant is a test based on the properties of a rule
 that should hold for some rule (and perhaps its components).
 """
 RuleInvariant = Callable[[Rule], bool | None]
+
+rule_invariants: dict[str, RuleInvariant] = {}
+
+
+def register_invariant(name=None):
+    """
+    Registers a function that fulfills the type interface
+    as a RuleInvariant.
+    """
+    def decorate(func):
+        nonlocal name
+        if not name:
+            name = func.__name__
+
+        if name in rule_invariants:
+            raise ValueError("Duplicate registration - Invariant with "
+                             f"name: {name} has already been registered.")
+
+        rule_invariants[name] = func
+        return func
+
+    return decorate
 
 
 @dataclass
@@ -70,29 +87,104 @@ def _get_checked_otype(cr: CompoundRule, *otypes):
     return otypes[0]
 
 
+@functools.cache
+@register_invariant()
+def precedence_invariant(rule: Rule) -> bool | None:
+    """
+    Invariant which checks that the precedence of a rule
+    and its components are well-ordered, i.e. 'LEFT' < 'UNDEFINED' < 'RIGHT'.
+
+    For a 'SimpleRule'/'Rule' this is always True.
+    For a 'CompoundRule' this is True if and only if all the components
+    are sorted according to their 'RulePrecedence'.
+
+    :param rule:
+    """
+    if not isinstance(rule, Rule):
+        rule_invariant_type_error(rule)
+
+    if isinstance(rule, CompoundRule):
+        for r1, r2 in pairwise(rule._components):
+            if not (r1.properties.precedence <= r2.properties.precedence):
+                raise RuleInvariantViolationError("precedence", rules=[r1, r2])
+
+    return True
+
+
+@functools.cache
+@register_invariant()
+def standalone_invariant(rule: Rule) -> bool | None:
+    """
+    Invariant which checks that a given rule may be used without
+    being combined with other rules.
+
+    :param rule:
+    """
+    match rule:
+        case CompoundRule() if len(rule._components) == 1:
+            rule = rule._components[0]
+        case CompoundRule():
+            return any(standalone_invariant(c)
+                       for c in rule._components)
+        case Rule():
+            pass
+        case _:
+            rule_invariant_type_error(rule)
+
+    if not rule.properties.standalone:
+        raise RuleInvariantViolationError("standalone", rules=[rule])
+
+    return True
+
+
+@functools.cache
+@register_invariant()
+def outputtype_invariant(rule: Rule) -> bool | None:
+    """
+    Invariant which checks that a rule (and its components)
+    all work on a single OutputType in order to avoid duplicate
+    conversions.
+
+    :param rule:
+    """
+
+    if not isinstance(rule, Rule):
+        rule_invariant_type_error(rule)
+
+    @functools.cache
+    def get_otype(rule: Rule):
+        """
+        Attempts to retrieve the OutputType of a rule.
+
+        :param rule:
+        """
+        match rule:
+            case CompoundRule() as cr:
+                return _get_checked_otype(cr, [get_otype(c) for c in cr._components])
+            case SimpleRule():
+                return rule.operates_on
+            case _:
+                rule_invariant_type_error(rule)
+
+    if isinstance(rule, CompoundRule):
+        return all(get_otype(left) == get_otype(right)
+                   for left, right in pairwise(rule._components))
+    return True
+
+
 class RuleInvariantChecker:
     """
     Utility class for checking invariants.
     """
     default_invariants = [
-        "precedence",
-        "standalone",
+        "precedence_invariant",
+        "standalone_invariant",
         ]
 
     def __init__(self, *invariants: list) -> None:
-        if not invariants:
-            invariants = self.default_invariants
-
-        self._invariants = []
-
-        for invariant in invariants:
-            if callable(invariant):
-                self._invariants.append(invariant)
-            elif isinstance(invariant, str):
-                try:
-                    self._invariants.append(getattr(self, f"{invariant}_invariant"))
-                except AttributeError:
-                    continue
+        invariants = invariants or self.default_invariants
+        self._invariants = [func or inv for inv in invariants
+                            if (func := rule_invariants.get(inv)) or callable(inv)]
 
     def check_invariants(self, rule: Rule) -> bool:
         """
@@ -102,85 +194,3 @@ class RuleInvariantChecker:
         """
 
         return all(invariant(rule) for invariant in self._invariants)
-
-    @staticmethod
-    @functools.cache
-    def precedence_invariant(rule: Rule) -> bool | None:
-        """
-        Invariant which checks that the precedence of a rule
-        and its components are well-ordered, i.e. 'LEFT' < 'UNDEFINED' < 'RIGHT'.
-
-        For a 'SimpleRule'/'Rule' this is always True.
-        For a 'CompoundRule' this is True if and only if all the components
-        are sorted according to their 'RulePrecedence'.
-
-        :param rule:
-        """
-        if not isinstance(rule, Rule):
-            rule_invariant_type_error(rule)
-
-        if isinstance(rule, CompoundRule):
-            for r1, r2 in pairwise(rule._components):
-                if not (r1.properties.precedence <= r2.properties.precedence):
-                    raise RuleInvariantViolationError("precedence", rules=[r1, r2])
-
-        return True
-
-    @staticmethod
-    @functools.cache
-    def standalone_invariant(rule: Rule) -> bool | None:
-        """
-        Invariant which checks that a given rule may be used without
-        being combined with other rules.
-
-        :param rule:
-        """
-        match rule:
-            case CompoundRule() if len(rule._components) == 1:
-                rule = rule._components[0]
-            case CompoundRule():
-                return any(RuleInvariantChecker.standalone_invariant(c)
-                           for c in rule._components)
-            case Rule():
-                pass
-            case _:
-                rule_invariant_type_error(rule)
-
-        if not rule.properties.standalone:
-            raise RuleInvariantViolationError("standalone", rules=[rule])
-
-        return True
-
-    @staticmethod
-    @functools.cache
-    def outputtype_invariant(rule: Rule) -> bool | None:
-        """
-        Invariant which checks that a rule (and its components)
-        all work on a single OutputType in order to avoid duplicate
-        conversions.
-
-        :param rule:
-        """
-
-        if not isinstance(rule, Rule):
-            rule_invariant_type_error(rule)
-
-        @functools.cache
-        def get_otype(rule: Rule):
-            """
-            Attempts to retrieve the OutputType of a rule.
-
-            :param rule:
-            """
-            match rule:
-                case CompoundRule() as cr:
-                    return _get_checked_otype(cr, [get_otype(c) for c in cr._components])
-                case SimpleRule():
-                    return rule.operates_on
-                case _:
-                    rule_invariant_type_error(rule)
-
-        if isinstance(rule, CompoundRule):
-            return all(get_otype(left) == get_otype(right)
-                       for left, right in pairwise(rule._components))
-        return True
