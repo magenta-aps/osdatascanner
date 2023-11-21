@@ -135,11 +135,20 @@ recurrence.widget.Calendar.prototype = {
         var calendar_body = recurrence.widget.e('div', {'class': 'body'});
         var calendar_footer = recurrence.widget.e('div', {'class': 'footer'});
 
+        var remove_btn_container = recurrence.widget.e(
+            'div', {'class': 'remove-btn_container'},
+            [remove]
+        );
+
+        var remove_and_calendar_year = recurrence.widget.e(
+            'div', {'class': 'recurrence-calendar_header'},
+            [remove_btn_container, calendar_year]
+        );
+
         var td = recurrence.widget.e(
             'td', {},
             [
-                remove,
-                calendar_year,
+                remove_and_calendar_year,
                 calendar_navigation,
                 calendar_body,
                 calendar_footer
