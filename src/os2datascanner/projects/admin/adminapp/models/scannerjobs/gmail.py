@@ -38,7 +38,7 @@ class GmailScanner(Scanner):
 
     skip_attachments = models.BooleanField(
         verbose_name=_("skip attachments"),
-        help_text=_("Do not scan files attachmented to an email."
+        help_text=_("Do not scan files attached to an email."
                     " Be careful using this setting as a lot of "
                     "attachments might contain sought-after matches."),
         default=False)
