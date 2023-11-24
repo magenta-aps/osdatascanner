@@ -9,14 +9,10 @@ from os2datascanner.projects.admin.adminapp.models.sensitivity_level import (
 )
 
 
-def create_default_cprrule_and_organization(apps, schema_editor):
+def get_default_organization(apps, schema_editor):
     Client = apps.get_model("core", "Client")
     Organization = apps.get_model("organizations", "Organization")
-    CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
-    CustomRule = apps.get_model("os2datascanner", "CustomRule")
-    Scanner = apps.get_model("os2datascanner", "Scanner")
 
-    # Get the default organization which should be the owner of the CPR rule.
     org_name = "OS2datascanner"
     default_org = Organization.objects.filter(name=org_name).first()
     client = Client.objects.filter(name=org_name).first()
@@ -37,6 +33,17 @@ def create_default_cprrule_and_organization(apps, schema_editor):
             contact_phone=org_phone,
             slug=slugify(org_name),
             client=client)
+
+    return default_org
+
+
+def create_default_cprrule_and_organization(apps, schema_editor):
+    CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
+    CustomRule = apps.get_model("os2datascanner", "CustomRule")
+    Scanner = apps.get_model("os2datascanner", "Scanner")
+
+    # Get the default organization which should be the owner of the CPR rule.
+    default_org = get_default_organization(apps, schema_editor)
 
     # Get the old CPR rule and select the scanner jobs that use it.
     old_cpr = CPRRuleModel.objects.filter(name="CPR regel").first()
@@ -61,7 +68,37 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         for job in ('jobs' in locals() and jobs or []):
             job.rules.add(new_cpr)
 
-    print("SUCCESS! Default rule: 'CPR Regel' exists in the database.")
+    print("SUCCESS! Default rule: 'CPR Regel' created as CustomRule model in the database.")
+
+
+def undo_creation_of_cpr_as_customrule(apps, schema_editor):
+    CPRRuleModel = apps.get_model("os2datascanner", "CPRRule")
+    CustomRule = apps.get_model("os2datascanner", "CustomRule")
+    Scanner = apps.get_model("os2datascanner", "Scanner")
+
+    cpr_custom = CustomRule.objects.filter(name="CPR regel").first()
+    if cpr_custom is not None:
+        jobs = list(Scanner.objects.filter(rules=cpr_custom))
+        cpr_custom.delete()
+
+    # Get the default organization which should be the owner of the CPR rule.
+    default_org = get_default_organization(apps, schema_editor)
+
+    old_cpr = CPRRule.objects.first()
+    if old_cpr is None:
+        old_cpr = CPRRule.objects.create(
+            name="CPR regel",
+            description="Denne regel finder alle gyldige CPR numre.",
+            sensitivity=Sensitivity.CRITICAL,
+            do_modulus11=True,
+            ignore_irrelevant=True,
+            examine_context=True,
+            organization=default_org)
+
+    for job in ('jobs' in locals() and jobs or []):
+        jobs.rules.add(old_cpr)
+
+    print("SUCCESS! Default rule: 'CPR Regel' created as CPRRule model in the database.")
 
 
 class Migration(migrations.Migration):
@@ -73,5 +110,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             create_default_cprrule_and_organization,
-            reverse_code=migrations.RunPython.noop)
+            reverse_code=undo_creation_of_cpr_as_customrule)
     ]
