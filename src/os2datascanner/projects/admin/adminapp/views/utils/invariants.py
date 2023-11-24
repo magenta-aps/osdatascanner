@@ -122,11 +122,11 @@ def standalone_invariant(rule: Rule) -> bool | None:
     """
     match rule:
         case CompoundRule() if len(rule._components) == 1:
-            rule = rule._components[0]
+            return standalone_invariant(rule._components[0])
         case CompoundRule():
             return any(standalone_invariant(c)
                        for c in rule._components)
-        case Rule():
+        case SimpleRule() | Rule():
             pass
         case _:
             rule_invariant_type_error(rule)
