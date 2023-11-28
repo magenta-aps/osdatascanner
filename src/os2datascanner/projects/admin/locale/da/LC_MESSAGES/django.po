@@ -520,15 +520,15 @@ msgstr "adresse"
 msgid "e-mail header"
 msgstr "e-mail header"
 
-#: adminapp/templates/components/admin-widgets/rule-builder.html:35
+#: adminapp/templates/components/admin_widgets/rule_builder.html:35
 msgid "passport"
 msgstr "pas"
 
-#: adminapp/templates/components/admin-widgets/rule-builder.html:35
+#: adminapp/templates/components/admin_widgets/rule_builder.html:36
 msgid "sick leave"
 msgstr "sygemeldinger"
 
-#: adminapp/templates/components/admin-widgets/rule-builder.html:36
+#: adminapp/templates/components/admin_widgets/rule_builder.html:37
 msgid "Experimental"
 msgstr "Eksperimentel"
 
