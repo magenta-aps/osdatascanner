@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-30 10:35+0100\n"
+"POT-Creation-Date: 2023-11-30 15:53+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2023,20 +2023,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:198
+#: adminapp/views/exchangescanner_views.py:201
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:199
+#: adminapp/views/exchangescanner_views.py:202
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:207
+#: adminapp/views/exchangescanner_views.py:211
+msgid "The uploaded file does not appear to be a text file"
+msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
+
+#: adminapp/views/exchangescanner_views.py:221
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:212
+#: adminapp/views/exchangescanner_views.py:226
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2044,16 +2048,16 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:224
+#: adminapp/views/exchangescanner_views.py:238
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:228
+#: adminapp/views/exchangescanner_views.py:242
 #: adminapp/views/filescanner_views.py:176
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:233
+#: adminapp/views/exchangescanner_views.py:247
 #: adminapp/views/filescanner_views.py:177
 msgid "Password"
 msgstr "Adgangskode"

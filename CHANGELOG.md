@@ -15,6 +15,9 @@
 
 - Dropdowns for assigning leaders and DPOs are now ordered by full name.
 
+- The user list files given to the Exchange mail scanner can now be in an
+  arbitrary character set.
+
 ### Removed functionality
 
 - The organizational unit overview in the DPO module has been removed, until
