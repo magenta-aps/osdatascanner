@@ -1762,6 +1762,7 @@ msgstr ""
 "(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/mail/password_reset_email.html:4
+#, python-format
 msgid ""
 "\n"
 "  You're receiving this email because you requested a password reset for "
@@ -1771,6 +1772,7 @@ msgstr ""
 "\n"
 "  Du modtager denne e-mail, fordi du har anmodet om nulstilling af din "
 "adgangskode til din bruger på %(site_name)s.\n"
+"  "
 
 #: adminapp/templates/mail/password_reset_email.html:8
 msgid "Please go to the following page and choose a new password:"
@@ -2057,18 +2059,18 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:77
+#: adminapp/views/rule_views.py:78
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:79
+#: adminapp/views/rule_views.py:80
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/rule_views.py:133 adminapp/views/rule_views.py:245
-#: adminapp/views/rule_views.py:252
+#: adminapp/views/rule_views.py:135 adminapp/views/rule_views.py:249
+#: adminapp/views/rule_views.py:256
 msgid "Expression"
 msgstr "Udtryk"
 
