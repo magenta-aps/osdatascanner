@@ -2883,9 +2883,6 @@ msgstr "Navnet er allerede i brug."
 #~ msgstr ""
 #~ "Ønsker du virkelig at slette denne rapport? Handlingen kan ikke fortrydes."
 
-#~ msgid "Expression"
-#~ msgstr "Udtryk"
-
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"
 
