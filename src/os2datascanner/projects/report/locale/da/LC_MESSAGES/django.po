@@ -361,7 +361,7 @@ msgid "Consult the manual to find instructions for using OSdatascanner."
 msgstr "Læs håndbogen for at finde instruktioner til brugen af OSdatascanner."
 
 #: reportapp/templates/components/common/support_button.html:65
-#: reportapp/templates/manual.html:15 reportapp/templates/manual.html:52
+#: reportapp/templates/manual.html:17 reportapp/templates/manual.html:51
 msgid "Manual"
 msgstr "Håndbog"
 
@@ -378,17 +378,17 @@ msgid "FAQ"
 msgstr "FAQ"
 
 #: reportapp/templates/components/manual/faq_toc.html:5
-#: reportapp/templates/manual.html:194
+#: reportapp/templates/manual.html:232
 msgid "Why doesn't 'handle' delete my file or email?"
 msgstr "Hvorfor sletter 'Håndtér'-knappen ikke min fil eller e-mail?"
 
 #: reportapp/templates/components/manual/faq_toc.html:9
-#: reportapp/templates/manual.html:202
+#: reportapp/templates/manual.html:240
 msgid "Why can't I open file scan matches?"
 msgstr "Hvorfor kan jeg ikke åbne matches fra filscan?"
 
 #: reportapp/templates/components/manual/faq_toc.html:14
-#: reportapp/templates/manual.html:214
+#: reportapp/templates/manual.html:252
 msgid "Why are my emails not categorized in Outlook?"
 msgstr "Hvorfor er mine emails ikke kategoriseret i Outlook?"
 
@@ -410,6 +410,7 @@ msgid "Report"
 msgstr "Rapport"
 
 #: reportapp/templates/components/navigation/navigation.html:17
+#: reportapp/templates/manual.html:31 reportapp/templates/manual.html:188
 msgid "Archive"
 msgstr "Arkiv"
 
@@ -422,6 +423,7 @@ msgid "DPO Overview"
 msgstr "DPO-overblik"
 
 #: reportapp/templates/components/navigation/navigation.html:50
+#: reportapp/templates/manual.html:35 reportapp/templates/manual.html:200
 msgid "My Overview"
 msgstr "Mit overblik"
 
@@ -746,7 +748,7 @@ msgid "Show/hide technical details of the error"
 msgstr "Vis/skjul tekniske detaljer om fejlen"
 
 #: reportapp/templates/components/reports/match_table.html:7
-#: reportapp/templates/content.html:9
+#: reportapp/templates/content.html:9 reportapp/templates/manual.html:57
 msgid "Results"
 msgstr "Resultater"
 
@@ -986,16 +988,22 @@ msgid "No employees found."
 msgstr "Ingen medarbejdere fundet."
 
 #: reportapp/templates/components/statistics/total_source_count.html:10
+#, fuzzy
+#| msgid "Unhandled results"
 msgid "Unhandled results from"
-msgstr "Uhåndterede resultater fra"
+msgstr "Uhåndterede resultater"
 
 #: reportapp/templates/components/statistics/total_source_count.html:16
+#, fuzzy
+#| msgid "Current total number of unhandled matches from mails"
 msgid "Current total number of unhandled matches from"
-msgstr "Nuværende antal af uhåndterede matches fra"
+msgstr "Nuværende antal af uhåndterede matches fra mails"
 
 #: reportapp/templates/components/statistics/total_source_count.html:19
+#, fuzzy
+#| msgid "Total number of unhandled matches from mails"
 msgid "Total number of unhandled matches from"
-msgstr "Antal matches fra"
+msgstr "Antal af matches fra mails"
 
 #: reportapp/templates/components/statistics/total_source_count.html:25
 #: reportapp/templates/components/statistics/total_source_count.html:27
@@ -1388,11 +1396,343 @@ msgstr ""
 "\n"
 "  %(site_name)s team\n"
 
-#: reportapp/templates/manual.html:45 reportapp/templates/manual.html:191
+#: reportapp/templates/manual.html:21 reportapp/templates/manual.html:53
+msgid "User Interface Walkthrough"
+msgstr "Gennemgang af brugergrænsefladen"
+
+#: reportapp/templates/manual.html:24 reportapp/templates/manual.html:121
+msgid "How to Sign in"
+msgstr "Sådan logger man ind"
+
+#: reportapp/templates/manual.html:27 reportapp/templates/manual.html:145
+msgid "Handling Matches"
+msgstr "Håndtering af enkelte matches"
+
+#: reportapp/templates/manual.html:39 reportapp/templates/manual.html:217
+msgid "Categorization in Outlook"
+msgstr "Kategorisering i Outlook"
+
+#: reportapp/templates/manual.html:44 reportapp/templates/manual.html:229
 msgid "Frequently Asked Questions"
 msgstr "Ofte stillede spørgsmål"
 
-#: reportapp/templates/manual.html:192
+#: reportapp/templates/manual.html:58
+msgid ""
+"The results table presents files, documents, domains etc. containing "
+"sensitive data."
+msgstr ""
+"I tabellen over resultater finder man filer, dokumenter eller domæner "
+"der indeholder følsomme data."
+
+#: reportapp/templates/manual.html:61
+msgid "Filter: Scan"
+msgstr "Filter: Scan"
+
+#: reportapp/templates/manual.html:62
+msgid "Finds all results assigned to the user from selected scannerjob."
+msgstr "Viser resultater filtreret efter scannerjob."
+
+#: reportapp/templates/manual.html:65
+msgid "Filter: Sensitivity"
+msgstr "Filter: Følsomhed"
+
+#: reportapp/templates/manual.html:66
+msgid ""
+"Finds results with the selected category - critical, problem, warning, "
+"notification."
+msgstr ""
+"Viser resultater der indeholder en valgt følsomhed - kritisk, problem, "
+"advarsel, notifikation."
+
+#: reportapp/templates/manual.html:69
+msgid "Filter: Source Type"
+msgstr "Filter: Kildetype"
+
+#: reportapp/templates/manual.html:70
+msgid "Finds all results with the selected source."
+msgstr "Viser alle resultater fundet i den valgte kilde."
+
+#: reportapp/templates/manual.html:79
+msgid "Refers to the name of the file or mail the match was found in."
+msgstr "Referere til navnet på en fil eller mail matchet var fundet i."
+
+#: reportapp/templates/manual.html:83
+msgid "Indicates how many matches were found in the file or mail."
+msgstr "Indikere hvor mange matches der blev funder i filen/mailen."
+
+#: reportapp/templates/manual.html:87
+msgid "Indicates when the resource was created."
+msgstr "Indikere hvornår ressourcen blev oprettet."
+
+#: reportapp/templates/manual.html:91
+msgid "Indicates what source type a match was found in."
+msgstr "Indikere hvilken kildetype matchet blev fundet i."
+
+#: reportapp/templates/manual.html:95
+msgid "Indicates where a match was found."
+msgstr "Henviser til hvor matchet blev fundet."
+
+#: reportapp/templates/manual.html:98
+msgid "Figure 20: Functional overview 1 - Report module"
+msgstr "Figur 20: Funktionsoversigt 1 - Rapportmodul"
+
+#: reportapp/templates/manual.html:106
+msgid "Anonymous match"
+msgstr "Anonymiseret match"
+
+#: reportapp/templates/manual.html:107
+msgid "Presents the censored match found by the datascanner."
+msgstr "Viser det censurerede match fundet af datascanneren."
+
+#: reportapp/templates/manual.html:111
+msgid "Displays the context the match was found in."
+msgstr "Viser konteksten matchet blev fundet i."
+
+#: reportapp/templates/manual.html:115
+msgid ""
+"Displays the probability for the match to be genuine and not a false "
+"positive."
+msgstr "Viser sandsynligheden for at matchet er ægte og ikke et falsk positiv."
+
+#: reportapp/templates/manual.html:118
+msgid "Figure 21: Functional overview 2 - Report module"
+msgstr "Figur 21: Funktionsoversigt 2 - Rapportmodul"
+
+#: reportapp/templates/manual.html:122
+msgid "Open your browser (for instance Chrome, Edge, or Firefox) and go to:"
+msgstr "Åbn browseren (eksempelvis Chrome, Edge eller Firefox) og gå ind på:"
+
+#: reportapp/templates/manual.html:124
+#, fuzzy
+#| msgid "organization"
+msgid "organizationname"
+msgstr "organisationensnavn"
+
+#: reportapp/templates/manual.html:127
+msgid ""
+" Note that, instead of <span class=\"org-name\">organizationname</span> the "
+"part of the customers link that comes before \".dk\" should be input. "
+msgstr ""
+" skrives den del af linket til kundens hjemmeside, der står foran \".dk\"."
+
+#: reportapp/templates/manual.html:129
+msgid ""
+"From here, sign in using the username and password usually used for these "
+"systems."
+msgstr ""
+"Her vil man nu skulle logge ind, ved at indtaste det brugernavn og den "
+"adgangskode, der normalt bruges til systemerne."
+
+#: reportapp/templates/manual.html:130
+msgid ""
+"If a different username and password has been provided, sign in using those "
+"instead."
+msgstr ""
+"Har brugeren fået udleveret et andet brugernavn og en anden adgangskode til "
+"OSdatascanner, er det selvfølgelig disse, der skal bruges. "
+
+#: reportapp/templates/manual.html:131
+msgid ""
+"If questions arise refer to your nearest manager, co-worker, or superuser."
+msgstr ""
+"Ved tvivlsspørgsmål henvises til nærmeste leder, projektmedarbejder eller "
+"superbruger."
+
+#: reportapp/templates/manual.html:133
+msgid ""
+"If different login information is provided for every program used in the "
+"organization, this screen will be displayed. If, like most other "
+"orgnizations, you're provided with one username and password for all "
+"programs, a different page will be displayed."
+msgstr ""
+"Er der forskellige logins for hvert program i organisationen, vil man møde "
+"denne side. Hvis man derimod - som i langt de fleste organisationer - har ét "
+"brugernavn og kodeord til alle programmer, vil det se anderledes ud på "
+"brugerens skærm."
+
+#: reportapp/templates/manual.html:139
+msgid "Figure 22: Sign in - Report module"
+msgstr "Figur 22: Login - Rapportmodul"
+
+#: reportapp/templates/manual.html:142
+msgid ""
+"When signing in, all matches assigned to you will be displayed. From the "
+"report module, all relevant files can be opened and checked for matches. "
+"Note that, for this function to work on files from a network drive, some "
+"configurations have to be set."
+msgstr ""
+"Logger brugeren ind, vil vedkommende se de matches, som de har ansvaret for "
+"at håndtere. Fra rapportmodulet kan man så åbne de relevante filer for at "
+"undersøge matchene. Vær opmærksom på at ved åbning af filer fra et "
+"netværksdrev kan denne funktionalitet kræve ekstra opsætning."
+
+#: reportapp/templates/manual.html:150
+msgid "Figure 23: Office365 mailscan - Report module"
+msgstr "Figur 23: Office365 mailscan - Rapportmodul"
+
+#: reportapp/templates/manual.html:153
+msgid ""
+"Matches generated from scanners like Web- or Office365-scans on cloud "
+"services, can be opened from the report module."
+msgstr ""
+"Hvis der er blevet oprettet et scannerjob af en cloud service, såsom et Web- "
+"eller Office365-scan, kan man åbne den relevante fil eller mail direkte fra "
+"rapportmodulet ved at trykke “Åbn”."
+
+#: reportapp/templates/manual.html:159
+msgid "Figure 27: Filescan - Report module"
+msgstr "Figur 27: Filscan - Rapportmodul"
+
+#: reportapp/templates/manual.html:162
+msgid ""
+"For matches generated from File- or Exchange-scans on an on-premise services "
+"to be opened, some configurations have to be set. If this isn't an option, "
+"the path to the file or folder where the match is found, can be copied from "
+"the report module."
+msgstr ""
+"Hvis der er oprettet et scannerjob hvor dataen ligger on-premise, såsom et "
+"fil- eller Exchange-scan, kræves der som tidligere nævnt ekstra opsætning "
+"før filen/mailen kan åbnes. Hvis dette ikke er en mulighed kan man trykke på "
+"\"Kopiér sti\" eller \"kopiér sti til mappe\" knappen, som kopiere stien til "
+"den fil eller mappe matchet ligger i."
+
+#: reportapp/templates/manual.html:164
+msgid "Matches found be the scanners have to be manually removed."
+msgstr ""
+"Når brugerne har fundet det match, som skal håndteres, skal man manuelt "
+"fjerne eller redigere det relevante match."
+
+#: reportapp/templates/manual.html:166
+msgid ""
+"This can be done by, opening the file, mail, or website and delete or edit "
+"the part marked as a match by the scanner."
+msgstr ""
+"Eksempel: Hvis man har en fil, som giver et match, skal man åbne filen og "
+"fjerne eller redigere den del, som OSdatascanner har reageret på. Det samme "
+"gør sig gældende ved både mails og websites."
+
+#: reportapp/templates/manual.html:168
+msgid ""
+"When this has been done, mark the match as handled in the report module."
+msgstr ""
+"Når man manuelt har fjernet eller redigeret det pågældende match, skal dette "
+"markeres som håndteret i rapportmodulet. Det gøres ved at vælge \"Håndtér\"."
+
+#: reportapp/templates/manual.html:169
+msgid "Mass handling matches"
+msgstr "Håndtering af flere matches"
+
+#: reportapp/templates/manual.html:170
+msgid "If you want to handle more than one match at a time, you have to: "
+msgstr "Hvis man vil håndtere flere matches på en gang, skal man:"
+
+#: reportapp/templates/manual.html:173
+msgid ""
+"Check the checkbox on each individual match you have handled, or check the "
+"top checkbox to select all matches on that page."
+msgstr ""
+"Markér afkrydsningsfelterne til venstre for resultaterne eller markér "
+"afkrydsningsfeltet øverst til venstre for at vælge alle resultaterne på den "
+"aktuelle side."
+
+#: reportapp/templates/manual.html:175
+msgid "Click mark as handled at the top of the list."
+msgstr "Klik på Markér som håndterede foroven."
+
+#: reportapp/templates/manual.html:181
+msgid "Figure 26: Homepage - Report module"
+msgstr "Figur 26: Forside - Rapportmodul"
+
+#: reportapp/templates/manual.html:184
+
+msgid ""
+"If a file or mail has been deleted but not marked as handled in the report "
+"module, it will be done automatically when a new scan is run."
+msgstr ""
+"Hvis filen/mailen er blevet slettet og en ny scanning køres, vil dataen "
+"håndteres automatisk."
+
+#: reportapp/templates/manual.html:190
+msgid ""
+"On the archive tab all already handled matches are displayed. It's possible "
+"to revert a match marked as handled, in case of a mistake."
+msgstr ""
+"På “arkiv”-fanen kan du tilgå tidligere håndterede matches. Her kan status "
+"af hvert resultat også redigeres, f.eks. i tilfælde af fejlagtigt håndterede "
+"matches."
+
+#: reportapp/templates/manual.html:196
+msgid "Figure 24: Archive - Report module"
+msgstr "Figur 24: Arkiv - Rapportmodul"
+
+#: reportapp/templates/manual.html:201
+msgid "On my overview, the amount of unhandled matches per week is displayed."
+msgstr ""
+"På \"Mit overblik\" fanen, kan du se en oversigt over antallet af "
+"uhåndterede matches per uge."
+
+#: reportapp/templates/manual.html:203
+msgid ""
+"The large number under each week indicates unhandled matches in total. The "
+"red number indicates the amount of matches found in that week, and the green "
+"indicates how many have been handled."
+msgstr ""
+"Det store tal, under hver uge, viser antallet af uhåndterede matches. Det "
+"røde tal indikere hvor mange matches der er blevet fundet i løbet af ugen og "
+"det grønne indikere hvor mange der er blevet håndteret."
+
+#: reportapp/templates/manual.html:205
+msgid "The graph showcases the development of matches during the past year."
+msgstr ""
+"Grafen til højre viser udviklingen af uhåndterede matches i løbet af det "
+"seneste år."
+
+#: reportapp/templates/manual.html:210
+msgid "Figure 25: My overview - Report module"
+msgstr "Figur 25: Mit overblik - Rapportmodul"
+
+#: reportapp/templates/manual.html:213
+msgid ""
+"Note that, matches will be assigned to you over the course of a scan so keep "
+"an eye out for new matches to be handled."
+msgstr ""
+"Du skal være opmærksom på, at OSdatascanner løbende sender ny resultater til "
+"dig, mens scanneren kører, så det kan være en gode idé at holde øje med om "
+"der er tikket nye resultater ind."
+
+#: reportapp/templates/manual.html:219
+msgid ""
+" With OSdatascanner, it is possible to mark mails containing matches with a "
+"match-category in Outlook. To enable this feature, access your <a href="
+"\"%(my-account)s\">profile page</a> and check the box called Categorize "
+"emails. Now when a scan is run, mails containing matchs will aoutomatically "
+"be marked with a match category "
+msgstr ""
+"Med OSdatascanner er det muligt at markere emails der indeholder matches "
+"med en match-kategori i Outlook. Dette kan gøres ved at sætte flueben i "
+"indstillingen \"Kategorisér emails\" på brugerens <a href=\"%(my-account)s\">profilside</a>."
+" Fremtidige scanninger vil herefter automatisk tilføje kategorien \"OSdatascanner match"
+"\" til mails, hvori der findes matches."
+
+#: reportapp/templates/manual.html:222
+msgid ""
+"When the feature has been enabled, mark mails with already found matches by "
+"clicking the button called Categorize."
+msgstr ""
+"Når indstillingen er slået til har du også mulighed for at kategorisere alle "
+"mails med tidligere fundne resultater, ved at trykke på knappen \"Kategorisér"
+"\"."
+
+#: reportapp/templates/manual.html:225
+msgid ""
+"Enabling this feature also adds a False positive category to Outlook. Mails "
+"marked with this category will no longer be seen as a match by OSdatascanner."
+msgstr ""
+"Aktivering af kategorisering tilføjer også kategorien \"OS2datascanner false "
+"positive\" til Outlook. Sættes denne kategori på en mail, vil mailen "
+"fremover ikke optræde som et match i OSdatascanner."
+
+#: reportapp/templates/manual.html:230
 msgid ""
 "Here you can find answers to questions frequently asked by other users of "
 "OSdatascanner."
@@ -1400,7 +1740,7 @@ msgstr ""
 "Her kan du finde svar på de oftest stillede spørgsmål af andre brugere af "
 "OSdatascanner."
 
-#: reportapp/templates/manual.html:196
+#: reportapp/templates/manual.html:234
 msgid ""
 "For security reasons, OSdatascanner cannot interact with your files or "
 "emails in any way. For this reason, you must manually delete or handle the "
@@ -1412,7 +1752,7 @@ msgstr ""
 "eller på anden måde håndtere den matchede fil. 'Håndtér'-knappen i "
 "OSdatascanner fjerner kun matchet fra oversigten."
 
-#: reportapp/templates/manual.html:199
+#: reportapp/templates/manual.html:237
 msgid ""
 "You can manually access the file or email by pressing the 'copy'- or 'open'-"
 "buttons below the name of the match."
@@ -1420,7 +1760,7 @@ msgstr ""
 "Du kan manuelt tilgå filen eller e-mailen ved at trykke på 'kopier'- eller "
 "'åben'-knapperne under navnet på matchet."
 
-#: reportapp/templates/manual.html:204
+#: reportapp/templates/manual.html:242
 msgid ""
 "OSdatascanner is not located on your computer, but on an external server. "
 "You are accessing that server through your browser."
@@ -1428,7 +1768,7 @@ msgstr ""
 "OSdatascanner befinder sig ikke på din computer, men på en ekstern server. "
 "Du tilgår denne server gennem din browser."
 
-#: reportapp/templates/manual.html:207
+#: reportapp/templates/manual.html:245
 msgid ""
 "For security reasons, modern browsers are not allowed to open a file on your "
 "computer. This also prevents OSdatascanner from doing the same."
@@ -1436,7 +1776,7 @@ msgstr ""
 "Af sikkerhedsårsager har moderne browsere ikke adgang til, at åbne filer på "
 "din computer. Dette forhindrer også OSdatascanner i det samme."
 
-#: reportapp/templates/manual.html:210
+#: reportapp/templates/manual.html:248
 msgid ""
 "To find the file, which a match has been found in, click the 'Copy Folder' "
 "button on the match, then open your pathfinder on your computer, and paste "
@@ -1446,31 +1786,21 @@ msgstr ""
 "mappe'-knappen ved matchet. Derefter åbner du stifinderen på din computer, "
 "og indsætter indholdet af din udklipsholder."
 
-#: reportapp/templates/manual.html:216
+#: reportapp/templates/manual.html:254
 msgid ""
 "To categorize emails in your Outlook client, you must toggle the setting "
-"\"Categorize emails\" on your "
+"\"Categorize emails\" on your <a href=\"%(my-account)s\">profile page</a>. "
+"See more information in <a href=\"#categorize\">the manual</a>."
 msgstr ""
 "For at kategorisere emails i din Outlook-klient, skal du slå indstillingen "
 "\"Kategorisér emails\" på din "
 
-#: reportapp/templates/manual.html:216 reportapp/templates/manual.html:219
-msgid "profile page"
-msgstr "profilside"
-
-#: reportapp/templates/manual.html:216
-msgid "See more information in"
-msgstr "Se mere information i"
-
-#: reportapp/templates/manual.html:216
-msgid "the manual"
-msgstr "håndbogen"
-
-#: reportapp/templates/manual.html:219
+#: reportapp/templates/manual.html:257
 msgid ""
 "If the setting is already on, future matches will categorize the "
 "corresponding email in your Outlook client. To categorize the previously "
-"matched emails, you must use the \"Categorize\" function on your "
+"matched emails, you must use the \"Categorize\" function on your <a href="
+"\"%(my-account)s\">profile page "
 msgstr ""
 "Hvis indstillingen allerede er slået til, vil fremtidige matches "
 "kategorisere den tilsvarende email i din Outlook-klient. For at kategorisere "
@@ -1544,19 +1874,19 @@ msgstr "ikke håndteret"
 
 #: reportapp/views/statistics_views.py:225
 msgid "other source"
-msgstr "anden kilde"
+msgstr "Datakilder"
 
 #: reportapp/views/statistics_views.py:226
 msgid "web scan"
-msgstr "webscan"
+msgstr "Webscan"
 
 #: reportapp/views/statistics_views.py:227
 msgid "file scan"
-msgstr "filscan"
+msgstr "Filscan"
 
 #: reportapp/views/statistics_views.py:228
 msgid "mail scan"
-msgstr "mailscan"
+msgstr "Mailscan"
 
 #: reportapp/views/statistics_views.py:229
 msgid "Teams scan"
@@ -1564,7 +1894,7 @@ msgstr "Teams-scan"
 
 #: reportapp/views/statistics_views.py:230
 msgid "calendar scan"
-msgstr "kalenderscan"
+msgstr "Kalender scan"
 
 #: reportapp/views/statistics_views.py:474
 msgid "Handled/Unhandled"
@@ -1819,6 +2149,11 @@ msgstr ""
 
 #~ msgid "Total number of matches from other sources"
 #~ msgstr "Antal af matches fra andre kilder"
+
+#, fuzzy
+#~| msgid "My Overview"
+#~ msgid "My overview"
+#~ msgstr "Mit overblik"
 
 #~ msgid "Sensitivity legend"
 #~ msgstr "Følsomhedsoversigt"

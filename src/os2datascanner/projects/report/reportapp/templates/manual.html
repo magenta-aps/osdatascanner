@@ -1,8 +1,9 @@
-{%  load i18n %}
+{% load i18n %}
 {% load static %}
 {% include "components/common/scripts.html" %}
 {% include "components/common/header.html" %}
 {% include "components/common/banner.html" %}
+{% get_current_language as lang_code %}
 
 <script src="{% static 'js/manual/manualHighlighting.js' %} "></script>
 
@@ -16,28 +17,25 @@
       </a>
       <ul>
         <a href="#walkthrough">
-          <li>Gennemgang af brugergrænsefladen</li>
+          <li>{% trans "User Interface Walkthrough" %}</li>
         </a>
         <a href="#login">
-          <li>Sådan logger man ind</li>
+          <li>{% trans "How to Sign in" %}</li>
         </a>
         <a href="#handling">
-          <li>Håndtering af matches</li>
+          <li>{% trans "Handling Matches" %}</li>
         </a>
         {% if settings.ARCHIVE_TAB %}
           <a href="#archive">
-            <li>Arkiv</li>
+            <li>{% trans "Archive" %}</li>
           </a>
         {% endif %}
         <a href="#user_overview">
-          <li>Mit overblik</li>
-        </a>
-        <a href="#filtering">
-          <li>Filtreringsmulighed</li>
+          <li>{% trans "My Overview" %}</li>
         </a>
         {% if categorization %}
           <a href="#categorize">
-            <li>Kategorisering i Outlook</li>
+            <li>{% trans "Categorization in Outlook" %}</li>
           </a>
         {% endif %}
       </ul>
@@ -51,140 +49,126 @@
 
       <h1 id="manual" class="page-title">{% trans "Manual" %}</h1>
 
-      <h2 id="walkthrough">Gennemgang af brugergrænsefladen</h2>
+      <h2 id="walkthrough">{% trans "User Interface Walkthrough" %}</h2>
       <div id="figure-20" class="figure-container">
-        <a href="{% static 'manualimages/figur20.png' %}">
-          <img src="{% static 'manualimages/figur20.png' %}" />
+        <a href="{% static 'manualimages/figur20_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur20_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 20: Funktionsoversigt 1 - Rapportmodul</p>
+        <p>{% trans "Figure 20: Functional overview 1 - Report module" %}</p>
       </div>
       <div id="figure-21" class="figure-container">
-        <a href="{% static 'manualimages/figur21.png' %}">
-          <img src="{% static 'manualimages/figur21.png' %}" />
+        <a href="{% static 'manualimages/figur21_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur21_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 21: Funktionsoversigt 2 - Rapportmodul</p>
+        <p>{% trans "Figure 21: Functional overview 2 - Report module" %}</p>
       </div>
 
-      <h2 id="login">Sådan logger man ind</h2>
-      <p>Åbn browseren (eksempelvis Chrome, Edge eller Firefox) og gå ind på:</p>
+      <h2 id="login">{% trans "How to Sign in" %}</h2>
+      <p>{% trans "Open your browser (for instance Chrome, Edge, or Firefox) and go to:" %}</p>
       <p class="center-text">
-        <span class="example-link">https://<span class="org-name">organisationensnavn</span>.os2datascanner.dk</span>
+        <span class="example-link">https://<span class="org-name">{% trans "organizationname" %}</span>.os2datascanner.dk</span>
       </p>
       <p>
-        Vær opmærksom på, at der i stedet for “<span class="org-name">organisationensnavn</span>” skrives den del af linket til kundens hjemmeside, der står foran ".dk".
+        {% blocktrans %} Note that, instead of <span class="org-name">organizationname</span> the part of the customers link that comes before ".dk" should be input. {% endblocktrans %}
       </p>
-      <p>
-        Her vil man nu skulle logge ind, ved at indtaste det brugernavn og den adgangskode, der normalt bruges til systemerne.
-      </p>
-      <p>
-        Har brugeren fået udleveret et andet brugernavn og en anden adgangskode til OSdatascanner, er det  selvfølgelig  disse, der skal bruges.
-      </p>
-      <p>Ved tvivlsspørgsmål henvises til  nærmeste leder, projektmedarbejder eller superbruger.</p>
+      <p>{% trans "From here, sign in using the username and password usually used for these systems." %}</p>
+      <p>{% trans "If a different username and password has been provided, sign in using those instead." %}</p>
+      <p>{% trans "If questions arise refer to your nearest manager, co-worker, or superuser." %}</p>
       <p class="emphasized">
-        Er der forskellige logins for hvert program i organisationen, vil man møde denne side. Hvis man derimod - som i langt de fleste organisationer - har ét brugernavn og kodeord til alle programmer, vil det se anderledes ud på brugerens skærm.
+        {% trans "If different login information is provided for every program used in the organization, this screen will be displayed. If, like most other orgnizations, you're provided with one username and password for all programs, a different page will be displayed." %}
       </p>
       <div id="figure-22" class="figure-container">
-        <a href="{% static 'manualimages/figur22.png' %}">
-          <img src="{% static 'manualimages/figur22.png' %}" />
+        <a href="{% static 'manualimages/figur22_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur22_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 22: Login - Rapportmodul</p>
+        <p>{% trans "Figure 22: Sign in - Report module" %}</p>
       </div>
       <p>
-        Logger brugeren ind, vil vedkommende se de matches, som de har ansvaret for at håndtere. Fra rapportmodulet kan man så åbne de relevante filer for at undersøge matchene. Vær opmærksom på at ved åbning af filer fra et netværksdrev kan denne funktionalitet kræve ekstra opsætning.
+        {% trans "When signing in, all matches assigned to you will be displayed. From the report module, all relevant files can be opened and checked for matches. Note that, for this function to work on files from a network drive, some configurations have to be set." %}
       </p>
 
-      <h2 id="handling">Håndtering af matches</h2>
+      <h2 id="handling">{% trans "Handling Matches" %}</h2>
       <div id="figure-23" class="figure-container">
-        <a href="{% static 'manualimages/figur23.png' %}">
-          <img src="{% static 'manualimages/figur23.png' %}" />
+        <a href="{% static 'manualimages/figur23_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur23_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 23: Rapportmodul - Office365 mailscan</p>
+        <p>{% trans "Figure 23: Office365 mailscan - Report module" %}</p>
       </div>
       <p>
-        Hvis der er blevet oprettet et scannerjob af en cloud service, såsom et Web- eller Office365-scan, kan man åbne den relevante fil eller mail direkte fra rapportmodulet ved at trykke “Åbn”.
+        {% trans "Matches generated from scanners like Web- or Office365-scans on cloud services, can be opened from the report module." %}
       </p>
       <div id="figure-27" class="figure-container">
-        <a href="{% static 'manualimages/figur27.png' %}">
-          <img src="{% static 'manualimages/figur27.png' %}" />
+        <a href="{% static 'manualimages/figur27_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur27_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 27: Rapportmodul - Filscan</p>
+        <p>{% trans "Figure 27: Filescan - Report module" %}</p>
       </div>
       <p>
-        Hvis der er oprettet et scannerjob hvor dataen ligger on-premise, såsom et fil- eller Exchange-scan, kræves der som tidligere nævnt ekstra opsætning før filen/mailen kan åbnes.
-        Hvis dette ikke er en mulighed kan man trykke på "Kopiér sti" eller "kopiér sti til mappe" knappen, som kopiere stien til den fil eller mappe matchet ligger i.
+        {% trans "For matches generated from File- or Exchange-scans on an on-premise services to be opened, some configurations have to be set. If this isn't an option, the path to the file or folder where the match is found, can be copied from the report module." %}
       </p>
+      <p>{% trans "Matches found be the scanners have to be manually removed." %}</p>
       <p>
-        Når brugerne har fundet det match, som skal håndteres, skal man manuelt fjerne eller redigere det relevante match.
+        {% trans "This can be done by, opening the file, mail, or website and delete or edit the part marked as a match by the scanner." %}
       </p>
-      <p>
-        Eksempel: Hvis man har en fil, som giver et match, skal man åbne filen og fjerne eller redigere den del, som OSdatascanner har reageret på. Det samme gør sig gældende ved både mails og websites.
-      </p>
-      <p>
-        Når man manuelt har fjernet eller redigeret det pågældende match, skal dette markeres som håndteret i rapportmodulet. Det gøres ved at vælge “Håndtér”.
-      </p>
-      <h3>Håndtering af flere matches</h3>
-      <p>Hvis man vil håndtere flere matches på en gang, skal man:</p>
+      <p>{% trans "When this has been done, mark the match as handled in the report module." %}</p>
+      <h3>{% trans "Mass handling matches" %}</h3>
+      <p>{% trans "If you want to handle more than one match at a time, you have to: " %}</p>
       <ol>
         <li>
-          Markér afkrydsningsfelterne til venstre for resultaterne eller markér afkrydsningsfeltet øverst til venstre for at vælge alle resultaterne på den aktuelle side.
+          {% trans "Check the checkbox on each individual match you have handled, or check the top checkbox to select all matches on that page." %}
         </li>
-        <li>Klik på Markér som håndterede foroven.</li>
+        <li>{% trans "Click mark as handled at the top of the list." %}</li>
       </ol>
       <div id="figur-26" class="figure-container">
-        <a href="{% static 'manualimages/figur26.png' %}">
-          <img src="{% static 'manualimages/figur26.png' %}" />
+        <a href="{% static 'manualimages/figur26_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur26_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 26: Rapportmodul - Forside</p>
+        <p>{% trans "Figure 26: Homepage - Report module" %}</p>
       </div>
-      <p>Hvis filen/mailen er blevet slettet og en ny scanning køres, vil dataen håndteres automatisk.</p>
+      <p>
+        {% trans "If a file or mail has been deleted but not marked as handled in the report module, it will be done automatically when a new scan is run." %}
+      </p>
 
       {% if settings.ARCHIVE_TAB %}
-        <h2 id="archive">Arkiv</h2>
+        <h2 id="archive">{% trans "Archive" %}</h2>
         <p>
-          I “arkiv”-fanen kan du tilgå tidligere håndterede matches. Her kan status af hvert resultat også redigeres, f.eks. i tilfælde af fejlagtigt håndterede matches.
+          {% trans "On the archive tab all already handled matches are displayed. It's possible to revert a match marked as handled, in case of a mistake." %}
         </p>
         <div id="figure-24" class="figure-container">
-          <a href="{% static 'manualimages/figur24.png' %}">
-            <img src="{% static 'manualimages/figur24.png' %}" />
+          <a href="{% static 'manualimages/figur24_' %}{{ lang_code }}.png">
+            <img src="{% static 'manualimages/figur24_' %}{{ lang_code }}.png" />
           </a>
-          <p>Figur 24: Rapportmodul - Arkiv</p>
+          <p>{% trans "Figure 24: Archive - Report module" %}</p>
         </div>
       {% endif %}
 
-      <h2 id="user_overview">Mit overblik</h2>
-      <p>På "Mit overblik" fanen, kan du se en oversigt over antallet af uhåndterede matches per uge.</p>
+      <h2 id="user_overview">{% trans "My Overview" %}</h2>
+      <p>{% trans "On my overview, the amount of unhandled matches per week is displayed." %}</p>
       <p>
-        Det store tal, under hver uge, viser antallet af uhåndterede matches. Det røde tal indikere hvor mange matches der er blevet fundet i løbet af ugen og det grønne indikere hvor mange der er blevet håndteret.
+        {% trans "The large number under each week indicates unhandled matches in total. The red number indicates the amount of matches found in that week, and the green indicates how many have been handled." %}
       </p>
-      <p>Grafen til højre viser udviklingen af uhåndterede matches i løbet af det seneste år.</p>
+      <p>{% trans "The graph showcases the development of matches during the past year." %}</p>
       <div id="figur-25" class="figure-container">
-        <a href="{% static 'manualimages/figur25.png' %}">
-          <img src="{% static 'manualimages/figur25.png' %}" />
+        <a href="{% static 'manualimages/figur25_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur25_' %}{{ lang_code }}.png" />
         </a>
-        <p>Figur 25: Rapportmodul - Mit overblik</p>
+        <p>{% trans "Figure 25: My overview - Report module" %}</p>
       </div>
       <p>
-        Du skal være opmærksom på, at OSdatascanner løbende sender ny resultater til dig, mens scanneren kører, så det kan være en gode idé at holde øje med om der er tikket nye resultater ind.
+        {% trans "Note that, matches will be assigned to you over the course of a scan so keep an eye out for new matches to be handled." %}
       </p>
 
-      <h2 id="filtering">Filtreringsmulighed</h2>
-      <p>
-        I rapportmodulet er der også mulighed for at filtrere efter følsomheden på et match. Tryk på alle følsomheder og vælg den følsomhed, man gerne vil have vist.
-      </p>
-      <p>
-        Du skal være opmærksom på, at OSdatascanner løbende sender ny resultater til dig, mens scanneren kører, så det kan være en gode idé at holde øje med om der er tikket nye resultater ind.
-      </p>
-
+      {% url "account-me" as my-account %}
       {% if categorization %}
-        <h2 id="categorize">Kategorisering i Outlook</h2>
+        <h2 id="categorize">{% trans "Categorization in Outlook" %}</h2>
         <p>
-          Du har mulighed for at markere de mails, som der er fundet matches i, i din Outlook klient via OSdatascanner. For at slå denne indstilling til skal du tilgå din <a href="{% url "account-me" %}">profilside</a>, og sætte et flueben i indstillingen "Kategorisér emails". Fremtidige scanninger vil herefter automatisk tilføje kategorien "OS2datascanner match" til mails, hvori der findes matches.
+          {% blocktrans %} With OSdatascanner, it is possible to mark mails containing matches with a match-category in Outlook. To enable this feature, access your <a href="{{my-account}}">profile page</a> and check the box called Categorize emails. Now when a scan is run, mails containing matchs will aoutomatically be marked with a match category {% endblocktrans %}
         </p>
         <p>
-          Når indstillingen er slået til har du også mulighed for at kategorisere alle mails med tidligere fundne resultater, ved at trykke på knappen "Kategorisér".
+          {% trans "When the feature has been enabled, mark mails with already found matches by clicking the button called Categorize." %}
         </p>
         <p>
-          Aktivering af kategorisering tilføjer også kategorien "OS2datascanner false positive" til Outlook. Sættes denne kategori på en mail, vil mailen fremover ikke optræde som et match i OSdatascanner.
+          {% trans "Enabling this feature also adds a False positive category to Outlook. Mails marked with this category will no longer be seen as a match by OSdatascanner." %}
         </p>
       {% endif %}
 
@@ -213,10 +197,10 @@
       {% if categorization %}
         <h2 id="how_categorize">{% trans "Why are my emails not categorized in Outlook?" %}</h2>
         <p>
-          {% blocktrans %}To categorize emails in your Outlook client, you must toggle the setting "Categorize emails" on your {% endblocktrans %}<a href="{% url "account-me" %}">{% trans "profile page" %}</a>. {% trans "See more information in" %} <a href="{% url "guide" %}#categorize">{% trans "the manual" %}</a>.
+          {% blocktrans %}To categorize emails in your Outlook client, you must toggle the setting "Categorize emails" on your <a href="{{my-account}}">profile page</a>. See more information in <a href="#categorize">the manual</a>.{% endblocktrans %}
         </p>
         <p>
-          {% blocktrans %}If the setting is already on, future matches will categorize the corresponding email in your Outlook client. To categorize the previously matched emails, you must use the "Categorize" function on your {% endblocktrans %}<a href="{% url "account-me" %}">{% trans "profile page" %}</a>.
+          {% blocktrans %}If the setting is already on, future matches will categorize the corresponding email in your Outlook client. To categorize the previously matched emails, you must use the "Categorize" function on your <a href="{{my-account}}">profile page {% endblocktrans %}</a>.
         </p>
       {% endif %}
     </div>
