@@ -28,12 +28,17 @@
   - Attempting to create a remediator alias with a non-zero `_value` will throw
     an exception, if the assigned account is a universal remediator.
 
+- The default created instance of CPRRule has been converted to a CustomRule.
+  On existing installations, the rule is changed during migration.
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.
 
 - Reduced number of queries made in organizational unit list page by 
   prefetching the parent of each unit.
+
+- Old unused rule-models have been removed from the admin module.
 
 ### Bugfixes
 
@@ -229,8 +234,6 @@
 
 - The delete button, for Outlook e-mails on the reportmodule, has been moved
   and gotten a darker color.
-
-- Old unused rule-models have been removed from the admin module.
 
 ### Bugfixes
 
