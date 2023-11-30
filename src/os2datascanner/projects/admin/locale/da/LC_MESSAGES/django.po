@@ -2146,6 +2146,10 @@ msgstr "Der er ikke valgt nogen organisatoriske enheder"
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
+#: adminapp/views/exchangescanner_views.py:120
+msgid "The uploaded file does not appear to be a text file"
+msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
+
 #: adminapp/views/exchangescanner_views.py:207
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"

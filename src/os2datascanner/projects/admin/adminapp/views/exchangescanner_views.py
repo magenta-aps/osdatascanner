@@ -11,6 +11,7 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.views import View
@@ -27,7 +28,8 @@ from .scanner_views import (
     ScannerList,
     ScannerCleanupStaleAccounts)
 from ..serializers import OrganizationalUnitSerializer
-from ..models.scannerjobs.exchangescanner import ExchangeScanner
+from ..models.scannerjobs.exchangescanner import (
+        ExchangeScanner, get_users_from_file)
 from ...core.models import Feature
 from ...organizations.models import OrganizationalUnit
 
@@ -189,7 +191,7 @@ class ExchangeScannerRun(ScannerRun):
     model = ExchangeScanner
 
 
-def validate_userlist_or_org_units(form):
+def validate_userlist_or_org_units(form):  # noqa CCR001
     """Validates whether the form has either a userlist or organizational units.
     Also checks that the formatting of the userlist is valid.
     NB : must be called after initialize form. """
@@ -198,8 +200,16 @@ def validate_userlist_or_org_units(form):
         form.add_error('org_unit', _("No organizational units has been selected"))
         form.add_error('userlist', _("No userlist has been selected"))
     if userlist := form.cleaned_data.get('userlist'):
-        users = (u.decode("utf-8").strip() for u in userlist if u.strip())
         userlist_errors = set()
+
+        users = []
+        try:
+            users = get_users_from_file(userlist)
+        except UnicodeDecodeError:
+            userlist_errors.add((
+                "userlist",
+                _("The uploaded file does not appear to be a text file")))
+
         for user in users:
             if "@" in user:
                 userlist_errors.add((
