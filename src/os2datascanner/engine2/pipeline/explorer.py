@@ -104,7 +104,15 @@ def message_received_raw(body, channel, source_manager):  # noqa
                 yield ("os2ds_conversions",
                        messages.ConversionMessage(
                             scan_spec, handle, progress).to_json_object())
-                handle_count += 1
+                handle_count += 1  # here, does handle_count make any sense?
+
+                # here, If explorer dies between these yields, one extra mail will be sent
+
+                yield ("os2ds_status", messages.StatusMessage(  # here, what should be yielded?
+                        scan_tag=scan_tag,
+                        total_objects=1,
+                        message=exception_message,
+                        status_is_error=exception_message != "").to_json_object())
             else:
                 # Check if the handle should be excluded.
                 if is_handle_relevant(handle, scan_spec.filter_rule):
@@ -151,9 +159,10 @@ def message_received_raw(body, channel, source_manager):  # noqa
             it.close()
         yield ("os2ds_status", messages.StatusMessage(
                 scan_tag=scan_tag,
-                total_objects=handle_count, new_sources=source_count,
+                total_objects=0, new_sources=source_count,  # here, total_objects be 0 or None?
                 message=exception_message,
-                status_is_error=exception_message != "").to_json_object())
+                status_is_error=exception_message != "",
+                done=True).to_json_object())
 
 
 if __name__ == "__main__":

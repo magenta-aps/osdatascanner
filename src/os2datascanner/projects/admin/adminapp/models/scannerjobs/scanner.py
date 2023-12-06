@@ -638,7 +638,7 @@ class AbstractScanStatus(models.Model):
     )
 
     @property
-    def stage(self) -> int:
+    def stage(self) -> int:  # here, check if this is still correct
         # Workers have not begun scanning any objects yet
         if self.fraction_scanned is None:
             if self.explored_sources >= 0 and self.fraction_explored < 1.0:
@@ -656,11 +656,11 @@ class AbstractScanStatus(models.Model):
         return ScanStage.SCANNING
 
     @property
-    def finished(self) -> bool:
+    def finished(self) -> bool:  # here, check if this is still correct
         return self.fraction_explored == 1.0 and self.fraction_scanned == 1.0
 
     @property
-    def fraction_explored(self) -> float | None:
+    def fraction_explored(self) -> float | None:  # here, check if this is still correct
         """Returns the fraction of the sources in this scan that has been
         explored, or None if this is not yet computable.
 
@@ -676,7 +676,7 @@ class AbstractScanStatus(models.Model):
             return None
 
     @property
-    def fraction_scanned(self) -> float | None:
+    def fraction_scanned(self) -> float | None:  # here, check if this is still correct
         """Returns the fraction of this scan that has been scanned, or None if
         this is not yet computable.
 

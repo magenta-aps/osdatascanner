@@ -455,6 +455,8 @@ class StatusMessage(NamedTuple):
     object_type: Optional[str] = None
     matches_found: Optional[int] = None
 
+    done: Optional[bool] = None  # here, better name
+
     def to_json_object(self):
         return {
             "scan_tag": self.scan_tag.to_json_object(),
@@ -466,7 +468,9 @@ class StatusMessage(NamedTuple):
             "matches_found": self.matches_found,
 
             "object_size": self.object_size,
-            "object_type": self.object_type
+            "object_type": self.object_type,
+
+            "done": self.done,
         }
 
     @staticmethod
@@ -479,7 +483,8 @@ class StatusMessage(NamedTuple):
                 new_sources=obj.get("new_sources"),
                 matches_found=obj.get("matches_found"),
                 object_size=obj.get("object_size"),
-                object_type=obj.get("object_type"))
+                object_type=obj.get("object_type"),
+                done=obj.get("done"))
 
     _deep_replace = _deep_replace
 

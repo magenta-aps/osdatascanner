@@ -26,7 +26,7 @@ SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
                   "Messages through ScanStatus collector")
 
 
-def status_message_received_raw(body):
+def status_message_received_raw(body):  # noqa: CCR001, too high cognitive complexity
     """A status message for a scannerjob is created in Scanner.run().
     Therefore, this method can focus merely on updating the ScanStatus object."""
     message = messages.StatusMessage.from_json_object(body)
@@ -47,7 +47,7 @@ def status_message_received_raw(body):
     # Queryset is evaluated immediately with .first() to lock the database entry.
     locked_qs.first()
 
-    if message.total_objects is not None:
+    if message.total_objects is not None:  # here, check for finished in another way
         # An explorer has finished exploring a Source
         locked_qs.update(
                 message=message.message,
@@ -55,7 +55,7 @@ def status_message_received_raw(body):
                 status_is_error=message.status_is_error,
                 total_objects=F('total_objects') + message.total_objects,
                 total_sources=F('total_sources') + (message.new_sources or 0),
-                explored_sources=F('explored_sources') + 1)
+                explored_sources=F('explored_sources') + 1 if message.done else 0)
 
     elif message.object_size is not None and message.object_type is not None:
         # A worker has finished processing a Handle
@@ -73,11 +73,12 @@ def status_message_received_raw(body):
     snapshot_param = settings.SNAPSHOT_PARAMETER
     scan_status = locked_qs.first()
     if scan_status:
+        # here, n_total is now changing more often. Does this introduce problems?
         n_total = scan_status.total_objects
         if n_total and n_total > 0:
             # Calculate a frequency for how often to take a snapshot.
             # n_total must be at least 2 for this to work.
-            frequency = n_total * math.log(snapshot_param, max(n_total, 2))
+            frequency = n_total * math.log(snapshot_param, max(n_total, 2))  # here, see line 76
             # Decide whether it is time to take a snapshot.
             take_snap = scan_status.scanned_objects % max(1, math.floor(frequency))
             if take_snap == 0:
