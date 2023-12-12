@@ -104,8 +104,6 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
             case 'remediator-check':
                 acc = self.get_object()
                 if request.POST.get('remediator-check', False) == 'on':
-                    # Delete all other remediator aliases for the account
-                    Alias.objects.filter(account=acc, _alias_type=AliasType.REMEDIATOR).delete()
                     # Create a universal remediator alias
                     Alias.objects.create(account=acc, _alias_type=AliasType.REMEDIATOR, _value=0)
                 else:
