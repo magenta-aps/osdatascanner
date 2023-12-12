@@ -1,8 +1,9 @@
-{%  load i18n %}
+{% load i18n %}
 {% load static %}
 {% include "components/common/scripts.html" %}
 {% include "components/common/header.html" %}
 {% include "components/common/banner.html" %}
+{% get_current_language as lang_code %}
 
 <script src="{% static 'js/manual/manualHighlighting.js' %} "></script>
 
@@ -50,15 +51,69 @@
 
       <h2 id="walkthrough">{% trans "User Interface Walkthrough" %}</h2>
       <div id="figure-20" class="figure-container">
-        <a href="{% static 'manualimages/figur20.png' %}">
-          <img src="{% static 'manualimages/figur20.png' %}" />
+        <div class="info-box-wrapper">
+          <div class="info-box">
+            <h4>{% trans "Results" %}</h4>
+            <p>{% trans "The results table presents files, documents, domains etc. containing sensitive data." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Filter: Scan" %}</h4>
+            <p>{% trans "Finds all results assigned to the user from selected scannerjob." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Filter: Sensitivity" %}</h4>
+            <p>{% trans "Finds results with the selected category - critical, problem, warning, notification." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Filter: Source Type" %}</h4>
+            <p>{% trans "Finds all results with the selected source." %}</p>
+          </div>
+        </div>
+        <a href="{% static 'manualimages/figur20_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur20_' %}{{ lang_code }}.png" />
         </a>
+        <div class="info-box-wrapper">
+          <div class="info-box">
+            <h4>{% trans "Name" %}</h4>
+            <p>{% trans "Refers to the name of the file or mail the match was found in." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Matches" %}</h4>
+            <p>{% trans "Indicates how many matches were found in the file or mail." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Resource age" %}</h4>
+            <p>{% trans "Indicates when the resource was created." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Source" %}</h4>
+            <p>{% trans "Indicates what source type a match was found in." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Path" %}</h4>
+            <p>{% trans "Indicates where a match was found." %}</p>
+          </div>
+        </div>
         <p>{% trans "Figure 20: Functional overview 1 - Reportmodule" %}</p>
       </div>
       <div id="figure-21" class="figure-container">
-        <a href="{% static 'manualimages/figur21.png' %}">
-          <img src="{% static 'manualimages/figur21.png' %}" />
+        <a href="{% static 'manualimages/figur21_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur21_' %}{{ lang_code }}.png" />
         </a>
+        <div class="info-box-wrapper">
+          <div class="info-box">
+            <h4>{% trans "Anonymous match" %}</h4>
+            <p>{% trans "Presents the censored match found by the datascanner." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Context" %}</h4>
+            <p>{% trans "Displays the context the match was found in." %}</p>
+          </div>
+          <div class="info-box">
+            <h4>{% trans "Probability" %}</h4>
+            <p>{% trans "Displays the probability for the match to be genuine and not a false positive." %}</p>
+          </div>
+        </div>
         <p>{% trans "Figure 21: Functional overview 2 - Reportmodule" %}</p>
       </div>
 
@@ -77,8 +132,8 @@
         {% trans "If different login information is provided for every program used in the organization, this screen will be displayed. If, like most other orgnizations, you're provided with one username and password for all programs, a different page will be displayed." %}
       </p>
       <div id="figure-22" class="figure-container">
-        <a href="{% static 'manualimages/figur22.png' %}">
-          <img src="{% static 'manualimages/figur22.png' %}" />
+        <a href="{% static 'manualimages/figur22_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur22_' %}{{ lang_code }}.png" />
         </a>
         <p>{% trans "Figure 22: Sign in - Reportmodule" %}</p>
       </div>
@@ -88,8 +143,8 @@
 
       <h2 id="handling">{% trans "Handling Matches" %}</h2>
       <div id="figure-23" class="figure-container">
-        <a href="{% static 'manualimages/figur23.png' %}">
-          <img src="{% static 'manualimages/figur23.png' %}" />
+        <a href="{% static 'manualimages/figur23_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur23_' %}{{ lang_code }}.png" />
         </a>
         <p>{% trans "Figure 23: Office365 mailscan - Reportmodule" %}</p>
       </div>
@@ -97,8 +152,8 @@
         {% trans "Matches generated from scanners like Web- or Office365-scans on cloud services, can be opened from the reportmodule." %}
       </p>
       <div id="figure-27" class="figure-container">
-        <a href="{% static 'manualimages/figur27.png' %}">
-          <img src="{% static 'manualimages/figur27.png' %}" />
+        <a href="{% static 'manualimages/figur27_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur27_' %}{{ lang_code }}.png" />
         </a>
         <p>{% trans "Figure 27: Filescan - Reportmodule" %}</p>
       </div>
@@ -119,8 +174,8 @@
         <li>{% trans "Click mark as handled at the top of the list." %}</li>
       </ol>
       <div id="figur-26" class="figure-container">
-        <a href="{% static 'manualimages/figur26.png' %}">
-          <img src="{% static 'manualimages/figur26.png' %}" />
+        <a href="{% static 'manualimages/figur26_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur26_' %}{{ lang_code }}.png" />
         </a>
         <p>{% trans "Figure 26: Homepage - Reportmodule" %}</p>
       </div>
@@ -134,8 +189,8 @@
           {% trans "On the archive tab all already handled matches are displayed. It's possible to revert a match marked as handled, incase of a mistake." %}
         </p>
         <div id="figure-24" class="figure-container">
-          <a href="{% static 'manualimages/figur24.png' %}">
-            <img src="{% static 'manualimages/figur24.png' %}" />
+          <a href="{% static 'manualimages/figur24_' %}{{ lang_code }}.png">
+            <img src="{% static 'manualimages/figur24_' %}{{ lang_code }}.png" />
           </a>
           <p>{% trans "Figure 24: Archive - Reportmodule" %}</p>
         </div>
@@ -148,8 +203,8 @@
       </p>
       <p>{% trans "The graph showcases the development of matches during the past year." %}</p>
       <div id="figur-25" class="figure-container">
-        <a href="{% static 'manualimages/figur25.png' %}">
-          <img src="{% static 'manualimages/figur25.png' %}" />
+        <a href="{% static 'manualimages/figur25_' %}{{ lang_code }}.png">
+          <img src="{% static 'manualimages/figur25_' %}{{ lang_code }}.png" />
         </a>
         <p>{% trans "Figure 25: My overview - Reportmodule" %}</p>
       </div>

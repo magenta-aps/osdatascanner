@@ -108,6 +108,27 @@
         box-shadow: var(--box-shadow-default);
       }
     }
+
+    .info-box-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+      margin-bottom: 1rem;
+    }
+
+    .info-box {
+      background-color: var(--color-primary);
+      border-radius: var(--border-radius-info);
+      color: var(--color-text-white);
+      position: relative;
+      padding: 0.5rem;
+      margin: 5px;
+      width: calc(100% / 7.5);
+
+      p {
+        color: var(--color-text-white) !important;
+      }
+    }
   }
 
   h2.highlighted,
