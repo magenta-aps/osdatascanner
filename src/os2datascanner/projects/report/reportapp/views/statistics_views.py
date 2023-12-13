@@ -387,8 +387,6 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         else:
             qs = Account.objects.none()
 
-        self.employee_count = qs.count()
-
         if search_field := self.request.GET.get('search_field', None):
             qs = qs.filter(
                 Q(first_name__icontains=search_field) |
@@ -396,6 +394,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(username__istartswith=search_field))
 
         qs = self.order_employees(qs)
+
+        self.employee_count = qs.count()
 
         return qs
 
