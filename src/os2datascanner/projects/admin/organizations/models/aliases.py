@@ -29,7 +29,7 @@ class AliasManager(models.Manager):
             Alias.objects.filter(
                 account=kwargs.get('account'),
                 _alias_type=AliasType.REMEDIATOR).delete()
-            super().create(**kwargs)
+            return super().create(**kwargs)
         # If the account is being designated as a remediator of a specific job ...
         elif kwargs.get('_alias_type') == AliasType.REMEDIATOR and kwargs.get('_value') != 0:
             # ... raise an exception if the account is already a universal remediator.
@@ -43,7 +43,9 @@ class AliasManager(models.Manager):
                     "Assigning the account as a remediator for a specific "
                     "scannerjob is not allowed!")
             else:
-                super().create(**kwargs)
+                return super().create(**kwargs)
+        else:
+            return super().create(**kwargs)
 
 
 class Alias(Core_Alias, Imported, Broadcasted):

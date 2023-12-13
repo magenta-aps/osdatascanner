@@ -102,7 +102,8 @@
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 
-    <a href="{% url "accounts" organization.slug %}" class="link-color">{% trans "accounts"|capfirst %}</a>
+    <a href="{% url "accounts" account.organization.slug %}"
+       class="link-color">{% trans "accounts"|capfirst %}</a>
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 

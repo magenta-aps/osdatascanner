@@ -1,17 +1,15 @@
-from django.shortcuts import get_object_or_404
 from django.db.models import Q, Count, Prefetch
-from django.http import Http404
-
 
 from ...adminapp.views.views import RestrictedListView
-from ..models import OrganizationalUnit, Organization, Account, Position
-from ...core.models import Feature, Administrator
+from ..models import OrganizationalUnit, Account, Position
+from ...core.models import Feature
 from ...adminapp.views.scanner_views import EmptyPagePaginator
+from ..utils import ClientAdminMixin
 
 from os2datascanner.core_organizational_structure.models.position import Role
 
 
-class OrganizationalUnitListView(RestrictedListView):
+class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
     model = OrganizationalUnit
     template_name = 'organizations/orgunit_list.html'
     paginator_class = EmptyPagePaginator
@@ -50,17 +48,6 @@ class OrganizationalUnitListView(RestrictedListView):
                 )
 
         return qs
-
-    def setup(self, request, *args, **kwargs):
-        org = get_object_or_404(Organization, slug=kwargs['org_slug'])
-        kwargs['org'] = org
-        if request.user.is_superuser or Administrator.objects.filter(
-                user=request.user, client=org.client).exists():
-            return super().setup(request, *args, **kwargs)
-        else:
-            raise Http404(
-                "Organization not found."
-                )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

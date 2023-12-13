@@ -21,8 +21,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(delete_other_remediator_aliases, reverse_code=migrations.RunPython.noop),
-        migrations.AddConstraint(
-            model_name='alias',
-            constraint=models.UniqueConstraint(condition=models.Q(('_alias_type', 'remediator'), ('_value', 0)), fields=('account', '_alias_type'), name='organizations_universal_remediator_constraint'),
-        ),
     ]

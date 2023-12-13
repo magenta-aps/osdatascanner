@@ -15,13 +15,9 @@ def delete_other_remediator_aliases(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0021_organization_msgraph_write_permissions'),
+        ('organizations', '0022_tab_access_verbose_name'),
     ]
 
     operations = [
         migrations.RunPython(delete_other_remediator_aliases, reverse_code=migrations.RunPython.noop),
-        migrations.AddConstraint(
-            model_name='alias',
-            constraint=models.UniqueConstraint(condition=models.Q(('_alias_type', 'remediator'), ('_value', 0)), fields=('account', '_alias_type'), name='organizations_universal_remediator_constraint'),
-        ),
     ]

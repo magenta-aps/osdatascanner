@@ -5,7 +5,7 @@
 
 {% block content %}
 
-  {% include "components/common/breadcrumb.html" with page="account" %}
+  <div class="content-header">{% include "components/common/breadcrumb.html" with page="account" %}</div>
 
   <h1 class="userprofile-text">{% trans "Account" %}</h1>
 
@@ -121,49 +121,48 @@
                       hx-select=".content"
                       hx-trigger="click"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                      hx-vals='{"account": "{{ account.uuid }}", "rem-remediator": "{{ scanner.pk }}"}'
+                      hx-vals='{"rem-remediator": "{{ scanner.pk }}"}'
                       hx-confirm="{% trans "Are you sure you want to remove" %} {{ scanner.name }}?">
-                    {{ scanner.name }}
-                  </li>
-                {% endfor %}
-                {% if scanners %}
-                  <li class="add_remediator">
-                    <button type="button" class="add_button button button--small">
-                      <svg class="icon">
-                        <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-                      </svg>
-                    </button>
-                    <select class="select_options"
-                            name="add-remediator"
-                            hidden
-                            hx-post=""
-                            hx-swap="outerHTML"
-                            hx-target=".content"
-                            hx-select=".content"
-                            hx-trigger="change"
-                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                            hx-vals='{"account": "{{ account.pk }}"}'>
-                      <option value="">{% trans "Choose scannerjob" %}</option>
-                      {% for scanner in scanners %}<option value="{{ scanner.pk }}">{{ scanner.name }}</option>{% endfor %}
-                    </select>
-                  </li>
-                {% endif %}
-              </ul>
-            </td>
+                    <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                    <!-- djlint:off -->{{ scanner.name }}</li><!--djlint:on-->
+                  {% endfor %}
+                  {% if scanners %}
+                    <li class="add_remediator">
+                      <button type="button" class="add_button button button--small">
+                        <svg class="icon">
+                          <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                        </svg>
+                      </button>
+                      <select class="select_options"
+                              name="add-remediator"
+                              hidden
+                              hx-post=""
+                              hx-swap="outerHTML"
+                              hx-target=".content"
+                              hx-select=".content"
+                              hx-trigger="change"
+                              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                        <option value="">{% trans "Choose scannerjob" %}</option>
+                        {% for scanner in scanners %}<option value="{{ scanner.pk }}">{{ scanner.name }}</option>{% endfor %}
+                      </select>
+                    </li>
+                  {% endif %}
+                </ul>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <h2>{% trans "Login Information" %}</h2>
+      <table class="userprofile-table login-info">
+        <tbody>
+          <tr>
+            <td>{% trans "User since" %}</td>
+            <td>{{ user.date_joined }}</td>
           </tr>
-        {% endif %}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
 
-    <h2>{% trans "Login Information" %}</h2>
-    <table class="userprofile-table login-info">
-      <tbody>
-        <tr>
-          <td>{% trans "User since" %}</td>
-          <td>{{ user.date_joined }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-{% endblock content %}
+  {% endblock content %}

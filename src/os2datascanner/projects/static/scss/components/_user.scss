@@ -5,6 +5,7 @@
 
   &.user-image {
     vertical-align: top;
+    margin-left: 3rem;
   }
 
   h2 {
@@ -14,10 +15,6 @@
     &:first-of-type {
       margin-top: 0.7rem;
     }
-  }
-
-  &:first-of-type {
-    margin-left: 3rem;
   }
 
 }

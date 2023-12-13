@@ -449,28 +449,41 @@ class ScannerBase(object):
 
         return super().form_valid(form)
 
-
-class ScannerCreate(ScannerBase, RestrictedCreateView):
-    """View for creating a new scannerjob."""
+    def create_remediator_aliases(self, request):
+        remediator_uuids = request.POST.getlist('remediators')
+        if self.object:
+            # Delete old remediators from this scanner, if they are no longer
+            # specified in the form.
+            Alias.objects.filter(
+                _alias_type=AliasType.REMEDIATOR,
+                _value=self.object.pk).exclude(
+                account__uuid__in=remediator_uuids).delete()
+        # Create new remediator aliases
+        for remediator_uuid in remediator_uuids:
+            Alias.objects.get_or_create(
+                account=Account.objects.get(uuid=remediator_uuid),
+                _alias_type=AliasType.REMEDIATOR,
+                _value=self.object.pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+        if self.object:
+            context["remediators"] = self.object.get_remediators()
         context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
             Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
         context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
             aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
         return context
 
+
+class ScannerCreate(ScannerBase, RestrictedCreateView):
+    """View for creating a new scannerjob."""
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        remediator_uuids = request.POST.getlist('remediators')
-        for remediator_uuid in remediator_uuids:
-            Alias.objects.get_or_create(
-                account=Account.objects.get(uuid=remediator_uuid),
-                _alias_type=AliasType.REMEDIATOR,
-                _value=self.object.pk)
+        self.create_remediator_aliases(request)
         return response
 
 
@@ -527,29 +540,9 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
                 return super().form_invalid(form)
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = UserWrapper(self.request.user)
-        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
-        context["remediators"] = self.object.get_remediators()
-        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
-            Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
-        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
-            aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
-        return context
-
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        remediator_uuids = request.POST.getlist('remediators')
-        Alias.objects.filter(
-            _alias_type=AliasType.REMEDIATOR,
-            _value=self.object.pk).exclude(
-            account__uuid__in=remediator_uuids).delete()
-        for remediator_uuid in remediator_uuids:
-            Alias.objects.get_or_create(
-                account=Account.objects.get(uuid=remediator_uuid),
-                _alias_type=AliasType.REMEDIATOR,
-                _value=self.object.pk)
+        self.create_remediator_aliases(request)
         return response
 
 
@@ -565,21 +558,15 @@ class ScannerDelete(RestrictedDeleteView):
 class ScannerCopy(ScannerBase, RestrictedCreateView):
     """Creates a copy of an existing scanner. """
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = UserWrapper(self.request.user)
-        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
-        context["remediators"] = self.object.get_remediators()
-        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
-            Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
-        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
-            aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
-        return context
-
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        self.create_remediator_aliases(request)
+        return response
 
     def get_initial(self):
         initial = super().get_initial()
