@@ -32,7 +32,10 @@ def relate_matches_to_user(user, value, alias_type):
     """
     Relates all relevant matches to the user through its aliases.
     """
-    aliases = Alias.objects.filter(user=user, _value=value, _alias_type=alias_type)
+    if alias_type == AliasType.EMAIL:
+        aliases = Alias.objects.filter(user=user, _value__iexact=value, _alias_type=alias_type)
+    else:
+        aliases = Alias.objects.filter(user=user, _value=value, _alias_type=alias_type)
 
     if not aliases:
         alias = Alias.objects.create(user=user, _value=value, _alias_type=alias_type)
@@ -41,7 +44,7 @@ def relate_matches_to_user(user, value, alias_type):
     elif aliases:
         # A user shouldn't have duplicated aliases... This is solely to prevent SSO from
         # failing in case one does - and delete duplicates.
-        alias = Alias.objects.filter(user=user, _value=value, _alias_type=alias_type).first()
+        alias = aliases.first()
 
         if aliases.count() > 1:
             aliases.exclude(pk=alias.pk).delete()

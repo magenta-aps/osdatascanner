@@ -19,6 +19,11 @@
 - All references to "OS2datascanner" in the UI have been changed to reference
   "OSdatascanner" instead.
 
+### Bugfixes
+
+- Prevent creation of email aliases with duplicate case-insensitive values
+  when logging in via SSO.
+
 ## Version 3.21.3, 13th December 2023
 
 "Tombstone is the Best Battle Bot"
