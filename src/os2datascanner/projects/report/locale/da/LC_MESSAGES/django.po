@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-15 10:04+0100\n"
+"POT-Creation-Date: 2023-12-15 14:04+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -283,9 +283,9 @@ msgid ""
 "it by consulting the manual or FAQ? You can contact Magenta ApS by clicking "
 "this button."
 msgstr ""
-"Oplever du problemer med OSdatascanner, og har du ikke haft held med at "
-"løse dem ved at læse håndbogen eller FAQ'en? Du kan kontakte Magenta ApS ved "
-"at klikke her."
+"Oplever du problemer med OSdatascanner, og har du ikke haft held med at løse "
+"dem ved at læse håndbogen eller FAQ'en? Du kan kontakte Magenta ApS ved at "
+"klikke her."
 
 #: reportapp/templates/components/common/support_button.html:11
 msgid "Contact Magenta"
@@ -328,9 +328,9 @@ msgid ""
 "it by consulting the manual or FAQ? You can contact your IT department by "
 "clicking this button."
 msgstr ""
-"Oplever du problemer med OSdatascanner, og har du ikke haft held med at "
-"løse dem ved at læse håndbogen eller FAQ'en? Du kan kontakte din IT-afdeling "
-"ved at klikke her."
+"Oplever du problemer med OSdatascanner, og har du ikke haft held med at løse "
+"dem ved at læse håndbogen eller FAQ'en? Du kan kontakte din IT-afdeling ved "
+"at klikke her."
 
 #: reportapp/templates/components/common/support_button.html:65
 msgid "Consult the manual to find instructions for using OSdatascanner."
@@ -1536,7 +1536,7 @@ msgstr "Slettede OSdatascanner False Positive kategorien succesfuldt!"
 msgid "Couldn't delete false positive category!"
 msgstr "Kunne ikke slette falsk positiv kategori!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:72
+#: reportapp/views/utilities/msgraph_utilities.py:74
 #, python-brace-format
 msgid ""
 "Couldn't create category! Please make sure category {category_name} doesn't "
@@ -1545,43 +1545,43 @@ msgstr ""
 "Kunne ikke oprette kategori! Tjek venligst at kategorien {category_name} "
 "ikke allerede eksisterer i Outlook. Fejlkode: {status_code}"
 
-#: reportapp/views/utilities/msgraph_utilities.py:122
+#: reportapp/views/utilities/msgraph_utilities.py:124
 #, python-brace-format
 msgid "Couldn't update category! Code: {status_code}"
 msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
 
-#: reportapp/views/utilities/msgraph_utilities.py:164
+#: reportapp/views/utilities/msgraph_utilities.py:166
 #, python-brace-format
 msgid "Couldn't delete category! Code: {status_code}"
 msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
 
-#: reportapp/views/utilities/msgraph_utilities.py:284
+#: reportapp/views/utilities/msgraph_utilities.py:286
 #, python-brace-format
 msgid "Not allowed! You tried to delete an email belonging to {owner}!"
 msgstr "Ikke tilladt! Du har forsøgt at slette en email tilhørende {owner}!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:320
+#: reportapp/views/utilities/msgraph_utilities.py:322
 #, python-brace-format
 msgid "Couldn't delete email! Code: {status_code}"
 msgstr "Kunne ikke slette email! Fejlkode: {status_code}"
 
-#: reportapp/views/utilities/msgraph_utilities.py:341
+#: reportapp/views/utilities/msgraph_utilities.py:343
 msgid "System configuration does not allow mail deletion."
 msgstr "Systemindstillingerne tillader ikke email sletning."
 
-#: reportapp/views/utilities/msgraph_utilities.py:345
+#: reportapp/views/utilities/msgraph_utilities.py:347
 msgid "System configuration is missing Azure-application credentials. "
 msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
 
-#: reportapp/views/utilities/msgraph_utilities.py:350
+#: reportapp/views/utilities/msgraph_utilities.py:352
 msgid "Your organization does not allow this operation."
 msgstr "Din organisation tillader ikke denne handling."
 
-#: reportapp/views/utilities/msgraph_utilities.py:365
+#: reportapp/views/utilities/msgraph_utilities.py:367
 msgid "Could not find your Microsoft tenant!"
 msgstr "Kunne ikke finde din Microsoft tenant!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:382
+#: reportapp/views/utilities/msgraph_utilities.py:384
 msgid "You currently have no Outlook reports. Can't create categories!"
 msgstr ""
 "Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
