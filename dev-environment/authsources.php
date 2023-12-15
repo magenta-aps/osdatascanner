@@ -59,6 +59,13 @@ $config = array(
             'last_name' => 'regelmotor',
             'sid' => 'S-DIG',
         ),
+        'dev:dev' => array(
+            'email' => 'dev@example.org',
+            'username' => 'dev',
+            'first_name' => '',
+            'last_name' => '',
+            'sid' => 'S-DIG',
+        ),
     ),
 
 );
