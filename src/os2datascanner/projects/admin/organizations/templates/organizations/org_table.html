@@ -13,7 +13,7 @@
     <div class="aside">
       <h1 class="page-title">{% trans 'organizations for'|capfirst %} {{ client }}</h1>
       <div class="btn">
-        <a class="button button--cta"
+        <a class="button buttonx--cta-buttonx"
            href="{% url 'add-organization-for' client_id=client.pk %}"
            title="{% trans 'Add new organization' %}">
           <svg class="icon icon--white">
@@ -73,25 +73,23 @@
                     {% if not organization.importservice %}
                       <a href="{% url 'add-ldap' org_id=organization.pk %}"
                          id="button-add-configuration"
+                         title="{% trans 'Edit LDAP configuration' %}"
                          type="button"
-                         class="button button--transparent">
-                        <i id="library_add"
-                           title="{% trans "Add LDAP configuration" %}"
-                           class="material-icons">library_add</i>
+                         class="button buttonx--outline-buttonx buttonx--icon-buttonx">
+                        {% include "../components/svg-icons/library_add_check.svg" %}
                       </a>
                     {% else %}
                       <a href="{% url 'edit-ldap' pk=organization.pk %}"
                          id="button-add-configuration"
+                         title="{% trans 'Edit LDAP configuration' %}"
                          type="button"
-                         class="button button--transparent">
-                        <i id="library_add_check"
-                           title="{% trans "Edit LDAP configuration" %}"
-                           class="material-icons">library_add_check</i>
+                         class="button buttonx--outline-buttonx buttonx--icon-buttonx">
+                        {% include "../components/svg-icons/library_add_check.svg" %}
                       </a>
                       <a href="{% url 'import-ldap' pk=organization.pk %}"
                          type="button"
                          title="{% trans 'sync'|capfirst %}"
-                         class="button button--transparent button--transparent--text btn-text"
+                         class="button btn-text buttonx--outline-buttonx buttonx--text-buttonx"
                          data-sync-for="{{ organization.pk }}"
                          hx-get=""
                          hx-trigger="keyup"
@@ -139,17 +137,16 @@
                     {% if not organization.importservice %}
                       <a href="{% url 'add-os2mo' org_id=organization.pk %}"
                          id="button-add-os2mo-configuration"
+                         title="{% trans 'Add OS2mo configuration' %}"
                          type="button"
-                         class="button button--transparent">
-                        <i id="library_add"
-                           title="{% trans "Add OS2mo configuration" %}"
-                           class="material-icons">library_add</i>
+                         class="button buttonx--outline-buttonx buttonx--icon-buttonx">
+                        {% include "../components/svg-icons/library_add_check.svg" %}
                       </a>
                     {% else %}
                       <a href="{% url 'import-os2mo' pk=organization.pk %}"
                          type="button"
                          title="{% trans 'sync'|capfirst %}"
-                         class="button button--transparent button--transparent--text btn-text"
+                         class="button btn-text buttonx--outline-buttonx buttonx--text-buttonx"
                          data-sync-for="{{ organization.pk }}"
                          hx-get=""
                          hx-trigger="keyup"
@@ -198,35 +195,32 @@
                       {% if not tenant_id %}
                         <a href="{% url 'add-msgraph' org_id=organization.pk %}"
                            id="button-add-msgraph-configuration"
+                           title="{% trans 'Add Microsoft Graph configuration' %}"
                            type="button"
-                           class="button button--transparent">
-                          <i id="library_add"
-                             title="{% trans 'Add Microsoft Graph configuration' %}"
-                             class="material-icons">library_add</i>
+                           class="button buttonx--outline-buttonx buttonx--icon-buttonx">
+                          {% include "../components/svg-icons/library_add_check.svg" %}
                         </a>
                       {% else %}
                         <a href="{% url 'add-msgraph' org_id=organization.pk tenant_id=tenant_id %}"
                            id="button-add-msgraph-configuration"
+                           title="{% trans 'Add Microsoft Graph configuration' %}"
                            type="button"
-                           class="button button--transparent">
-                          <i id="library_add"
-                             title="{% trans 'Add Microsoft Graph configuration' %}"
-                             class="material-icons">library_add</i>
+                           class="button buttonx--outline-buttonx buttonx--icon-buttonx">
+                          {% include "../components/svg-icons/library_add_check.svg" %}
                         </a>
                       {% endif %}
                     {% else %}
                       <a href="{% url 'edit-msgraph' pk=organization.pk %}"
                          id="button-add-msgraph-configuration"
+                         title="{% trans 'Edit Microsoft Graph configuration' %}"
                          type="button"
-                         class="button button--transparent">
-                        <i id="library_add_check"
-                           title="{% trans 'Edit Microsoft Graph configuration' %}"
-                           class="material-icons">library_add_check</i>
+                         class="button buttonx--outline-buttonx buttonx--icon-buttonx">
+                        {% include "../components/svg-icons/library_add_check.svg" %}
                       </a>
                       <a href="{% url 'import-msgraph' pk=organization.pk %}"
                          type="button"
                          title="{% trans 'sync'|capfirst %}"
-                         class="button button--transparent button--transparent--text btn-text"
+                         class="button btn-text buttonx--outline-buttonx buttonx--text-buttonx"
                          data-sync-for="{{ organization.pk }}"
                          hx-get=""
                          hx-trigger="keyup"
@@ -271,7 +265,7 @@
               <td class="datatable__column--actions">
                 {% if FEATURES.ORG_STRUCTURE in client.enabled_features %}
                   <a href="{% url 'orgunit-list' organization.slug %}"
-                     class="button button--small button--grey"
+                     class="button buttonx buttonx--icon-buttonx"
                      title="{% trans 'View organizational units.' %}">
                     {% include "../components/svg-icons/org.svg" %}
                   </a>
@@ -281,7 +275,7 @@
                     <a href="#delete-org-blocked"
                        data-modal="modal:open"
                        data-src="{% url 'org_delete_block' slug=organization.slug %}"
-                       class="button button--small button--grey"
+                       class="button buttonx buttonx--icon-buttonx"
                        title="{% trans 'Delete' %}">
                       <svg class="icon">
                         <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
@@ -293,7 +287,7 @@
                       {% csrf_token %}
                       {{ form.as_p }}
                       <button type="submit"
-                              class="button button--small button--grey"
+                              class="button buttonx buttonx--icon-buttonx"
                               onclick="return confirm('{% trans "Do you really want to delete this organization?" %}\n\n{{ organization.name }}\n\n{% trans "This will delete all associated import- and scannerjobs. The action cannot be reversed" %}')"
                               title="{% trans 'Delete' %}">
                         <svg class="icon">
