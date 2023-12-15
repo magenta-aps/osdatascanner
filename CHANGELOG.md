@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
 
