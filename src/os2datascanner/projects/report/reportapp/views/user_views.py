@@ -100,8 +100,8 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                                                                              match_colour))
                         acc_ol_settings.match_colour = match_colour
                         acc_ol_settings.match_category_uuid = match_resp.json().get("id")
-                        success_message = _("Successfully created OS2datascanner Match category!")
-                        logger.info(f"OS2datascanner Match category created for: {account}")
+                        success_message = _("Successfully created OSdatascanner Match category!")
+                        logger.info(f"OSdatascanner Match category created for: {account}")
                         messages.add_message(
                             request,
                             messages.SUCCESS,
@@ -123,9 +123,9 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                             AccountOutlookSetting.OutlookCategoryColour(false_positive_colour))
                         acc_ol_settings.false_positive_colour = false_positive_colour
                         acc_ol_settings.false_positive_category_uuid = false_p_resp.json().get("id")
-                        success_message = _("Successfully created OS2datascanner False Positive "
+                        success_message = _("Successfully created OSdatascanner False Positive "
                                             "category!")
-                        logger.info(f"OS2datascanner False Positive category created for: "
+                        logger.info(f"OSdatascanner False Positive category created for: "
                                     f"{account}")
                         messages.add_message(
                             request,
@@ -152,7 +152,7 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
 
                         acc_ol_settings.match_colour = (AccountOutlookSetting.
                                                         OutlookCategoryColour(match_colour))
-                        success_message = _("Successfully updated OS2datascanner Match colour! ")
+                        success_message = _("Successfully updated OSdatascanner Match colour! ")
                         messages.add_message(
                             request,
                             messages.SUCCESS,
@@ -177,7 +177,7 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                         acc_ol_settings.false_positive_colour = (AccountOutlookSetting.
                                                                  OutlookCategoryColour(
                                                                      false_positive_colour))
-                        success_message = _("Successfully updated OS2datascanner False Positive "
+                        success_message = _("Successfully updated OSdatascanner False Positive "
                                             "colour! ")
                         messages.add_message(
                             request,
@@ -201,7 +201,7 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                                                         acc_ol_settings.match_category_uuid
                                                         )
                     acc_ol_settings.match_category_uuid = None
-                    success_message = _("Successfully deleted OS2datascanner Match category!")
+                    success_message = _("Successfully deleted OSdatascanner Match category!")
                     messages.add_message(
                         request,
                         messages.SUCCESS,
@@ -221,7 +221,7 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                                                         acc_ol_settings.false_positive_category_uuid
                                                         )
                     acc_ol_settings.false_positive_category_uuid = None
-                    success_message = _("Successfully deleted OS2datascanner False Positive "
+                    success_message = _("Successfully deleted OSdatascanner False Positive "
                                         "category!")
                     messages.add_message(
                         request,

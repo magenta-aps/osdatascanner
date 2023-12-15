@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-15 09:26+0100\n"
+"POT-Creation-Date: 2023-12-15 10:04+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -279,11 +279,11 @@ msgstr "OSdatascanner version"
 
 #: reportapp/templates/components/common/support_button.html:10
 msgid ""
-"Are you experiencing issues with OS2datascanner, and have no luck resolving "
+"Are you experiencing issues with OSdatascanner, and have no luck resolving "
 "it by consulting the manual or FAQ? You can contact Magenta ApS by clicking "
 "this button."
 msgstr ""
-"Oplever du problemer med OS2datascanner, og har du ikke haft held med at "
+"Oplever du problemer med OSdatascanner, og har du ikke haft held med at "
 "løse dem ved at læse håndbogen eller FAQ'en? Du kan kontakte Magenta ApS ved "
 "at klikke her."
 
@@ -308,8 +308,8 @@ msgstr "Kontakt DPO"
 
 #: reportapp/templates/components/common/support_button.html:24
 #: reportapp/templates/components/common/support_button.html:39
-msgid "Question about OS2datascanner"
-msgstr "Spørgsmål angående OS2datascanner"
+msgid "Question about OSdatascanner"
+msgstr "Spørgsmål angående OSdatascanner"
 
 #: reportapp/templates/components/common/support_button.html:43
 #: reportapp/templates/components/common/support_button.html:52
@@ -318,23 +318,23 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #: reportapp/templates/components/common/support_button.html:48
-msgid "Issue with OS2datascanner"
-msgstr "Problem med OS2datascanner."
+msgid "Issue with OSdatascanner"
+msgstr "Problem med OSdatascanner."
 
 #: reportapp/templates/components/common/support_button.html:51
 #: reportapp/templates/components/common/support_button.html:58
 msgid ""
-"Are you experiencing issues with OS2datascanner, and have no luck resolving "
+"Are you experiencing issues with OSdatascanner, and have no luck resolving "
 "it by consulting the manual or FAQ? You can contact your IT department by "
 "clicking this button."
 msgstr ""
-"Oplever du problemer med OS2datascanner, og har du ikke haft held med at "
+"Oplever du problemer med OSdatascanner, og har du ikke haft held med at "
 "løse dem ved at læse håndbogen eller FAQ'en? Du kan kontakte din IT-afdeling "
 "ved at klikke her."
 
 #: reportapp/templates/components/common/support_button.html:65
-msgid "Consult the manual to find instructions for using OS2datascanner."
-msgstr "Læs håndbogen for at finde instruktioner til brugen af OS2datascanner."
+msgid "Consult the manual to find instructions for using OSdatascanner."
+msgstr "Læs håndbogen for at finde instruktioner til brugen af OSdatascanner."
 
 #: reportapp/templates/components/common/support_button.html:65
 #: reportapp/templates/manual.html:15 reportapp/templates/manual.html:52
@@ -578,11 +578,11 @@ msgstr "Inkludér resultater, der er under 30 dage gamle"
 #: reportapp/templates/components/reports/match.html:136
 #: reportapp/templates/components/reports/match.html:178
 msgid ""
-"OS2datascanner will not delete results from the system that was scanned. "
-"Marking a result as handled will only remove the result from OS2datascanner."
+"OSdatascanner will not delete results from the system that was scanned. "
+"Marking a result as handled will only remove the result from OSdatascanner."
 msgstr ""
-"OS2datascanner sletter ikke resultater fra systemet der blev scannet.\n"
-"Resultatet markeres udelukkende som håndteret i OS2datascanner."
+"OSdatascanner sletter ikke resultater fra systemet der blev scannet.\n"
+"Resultatet markeres udelukkende som håndteret i OSdatascanner."
 
 #: reportapp/templates/components/reports/handle_match.html:11
 #: reportapp/templates/components/reports/handle_match.html:55
@@ -627,11 +627,11 @@ msgstr "Sletter markede emails fra din mailboks"
 
 #: reportapp/templates/components/reports/handle_match.html:70
 msgid ""
-"You are about to delete checked mails from your mailbox. OS2datascanner "
+"You are about to delete checked mails from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
 msgstr ""
 "Du er ved at slette markerede emails fra din mailboks. Denne handling kan "
-"ikke fortrydes i OS2datascanner. Er du sikker?"
+"ikke fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/handle_match.html:73
 msgid "Delete marked emails"
@@ -659,11 +659,11 @@ msgstr "Sletter email fra din mailboks"
 
 #: reportapp/templates/components/reports/match.html:64
 msgid ""
-"You are about to delete selected email from your mailbox. OS2datascanner "
+"You are about to delete selected email from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
 msgstr ""
 "Du er ved at slette valgte email fra din mailboks. Denne handling kan ikke "
-"fortrydes i OS2datascanner. Er du sikker?"
+"fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html:65
 msgid "Delete"
@@ -712,9 +712,9 @@ msgstr "Der opstod en midlertidig fejl under sidste tjek af dette match"
 
 #: reportapp/templates/components/reports/match.html:229
 msgid ""
-"OS2datascanner will automatically check this match again as part of the next "
+"OSdatascanner will automatically check this match again as part of the next "
 "scan"
-msgstr "OS2datascanner genbesøger dette match automatisk under næste scan"
+msgstr "OSdatascanner genbesøger dette match automatisk under næste scan"
 
 #: reportapp/templates/components/reports/match.html:233
 msgid "Show/hide technical details of the error"
@@ -1332,22 +1332,22 @@ msgstr "Ofte stillede spørgsmål"
 #: reportapp/templates/manual.html:192
 msgid ""
 "Here you can find answers to questions frequently asked by other users of "
-"OS2datascanner."
+"OSdatascanner."
 msgstr ""
 "Her kan du finde svar på de oftest stillede spørgsmål af andre brugere af "
-"OS2datascanner."
+"OSdatascanner."
 
 #: reportapp/templates/manual.html:196
 msgid ""
-"For security reasons, OS2datascanner cannot interact with your files or "
+"For security reasons, OSdatascanner cannot interact with your files or "
 "emails in any way. For this reason, you must manually delete or handle the "
-"matched file. Pressing the 'handle'-button in OS2datascanner only removes "
-"the match from the overview."
+"matched file. Pressing the 'handle'-button in OSdatascanner only removes the "
+"match from the overview."
 msgstr ""
-"Af sikkerhedsårsager kan OS2datascanner ikke interagere med dine filer eller "
+"Af sikkerhedsårsager kan OSdatascanner ikke interagere med dine filer eller "
 "e-mails på nogen måde. Af denne grund er det nødvendigt manuelt at slette "
 "eller på anden måde håndtere den matchede fil. 'Håndtér'-knappen i "
-"OS2datascanner fjerner kun matchet fra oversigten."
+"OSdatascanner fjerner kun matchet fra oversigten."
 
 #: reportapp/templates/manual.html:199
 msgid ""
@@ -1359,19 +1359,19 @@ msgstr ""
 
 #: reportapp/templates/manual.html:204
 msgid ""
-"OS2datascanner is not located on your computer, but on an external server. "
+"OSdatascanner is not located on your computer, but on an external server. "
 "You are accessing that server through your browser."
 msgstr ""
-"OS2datascanner befinder sig ikke på din computer, men på en ekstern server. "
+"OSdatascanner befinder sig ikke på din computer, men på en ekstern server. "
 "Du tilgår denne server gennem din browser."
 
 #: reportapp/templates/manual.html:207
 msgid ""
 "For security reasons, modern browsers are not allowed to open a file on your "
-"computer. This also prevents OS2datascanner from doing the same."
+"computer. This also prevents OSdatascanner from doing the same."
 msgstr ""
 "Af sikkerhedsårsager har moderne browsere ikke adgang til, at åbne filer på "
-"din computer. Dette forhindrer også OS2datascanner i det samme."
+"din computer. Dette forhindrer også OSdatascanner i det samme."
 
 #: reportapp/templates/manual.html:210
 msgid ""
@@ -1497,40 +1497,40 @@ msgid "Successfully categorized your emails!"
 msgstr "Kategoriserede dine emails succesfuldt!"
 
 #: reportapp/views/user_views.py:103
-msgid "Successfully created OS2datascanner Match category!"
-msgstr "Oprettede OS2datascanner Match kategorien succesfuldt!"
+msgid "Successfully created OSdatascanner Match category!"
+msgstr "Oprettede OSdatascanner Match kategorien succesfuldt!"
 
 #: reportapp/views/user_views.py:126
-msgid "Successfully created OS2datascanner False Positive category!"
-msgstr "Oprettede OS2datascanner False Positive kategorien succesfuldt!"
+msgid "Successfully created OSdatascanner False Positive category!"
+msgstr "Oprettede OSdatascanner False Positive kategorien succesfuldt!"
 
 #: reportapp/views/user_views.py:155
-msgid "Successfully updated OS2datascanner Match colour! "
-msgstr "Opdaterede OS2datascanner Match kategorien succesfuldt!"
+msgid "Successfully updated OSdatascanner Match colour! "
+msgstr "Opdaterede OSdatascanner Match kategorien succesfuldt!"
 
 #: reportapp/views/user_views.py:162
 msgid "Couldn't update match category colour!"
 msgstr "Kunne ikke opdatere match kategori farve!"
 
 #: reportapp/views/user_views.py:180
-msgid "Successfully updated OS2datascanner False Positive colour! "
-msgstr "Opdaterede OS2datascanner False Positive kategorien succesfuldt!"
+msgid "Successfully updated OSdatascanner False Positive colour! "
+msgstr "Opdaterede OSdatascanner False Positive kategorien succesfuldt!"
 
 #: reportapp/views/user_views.py:188
 msgid "Couldn't update false positive category colour!"
 msgstr "Kunne ikke opdatere falsk positiv kategori farve!"
 
 #: reportapp/views/user_views.py:204
-msgid "Successfully deleted OS2datascanner Match category!"
-msgstr "Slettede OS2datascanner Match kategorien succesfuldt!"
+msgid "Successfully deleted OSdatascanner Match category!"
+msgstr "Slettede OSdatascanner Match kategorien succesfuldt!"
 
 #: reportapp/views/user_views.py:211
 msgid "Couldn't delete match category!"
 msgstr "Kunne ikke slette match kategori!"
 
 #: reportapp/views/user_views.py:224
-msgid "Successfully deleted OS2datascanner False Positive category!"
-msgstr "Slettede OS2datascanner False Positive kategorien succesfuldt!"
+msgid "Successfully deleted OSdatascanner False Positive category!"
+msgstr "Slettede OSdatascanner False Positive kategorien succesfuldt!"
 
 #: reportapp/views/user_views.py:232
 msgid "Couldn't delete false positive category!"
