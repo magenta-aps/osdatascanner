@@ -105,7 +105,7 @@ class LDAPConfig(Exported, ImportService):
         help_text=_(
             "Distinguished name for the (top) OU in which to search for "
             "users. Groups present under this OU will not necessarily be "
-            "imported, as OS2datascanner reconstructs groups based on users' "
+            "imported, as OSdatascanner reconstructs groups based on users' "
             "group memberships."
         ),
         verbose_name=_('DN for users (OU)'),

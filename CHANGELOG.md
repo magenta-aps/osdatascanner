@@ -15,6 +15,9 @@
 
 - Mail notifications will now reference "OSdatascanner" instead of 
   "OS2datascanner".
+  
+- All references to "OS2datascanner" in the UI have been changed to reference
+  "OSdatascanner" instead.
 
 ## Version 3.21.3, 13th December 2023
 

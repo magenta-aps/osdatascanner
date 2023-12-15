@@ -77,7 +77,7 @@
         Her vil man nu skulle logge ind, ved at indtaste det brugernavn og den adgangskode, der normalt bruges til systemerne.
       </p>
       <p>
-        Har brugeren fået udleveret et andet brugernavn og en anden adgangskode til OS2datascanner, er det  selvfølgelig  disse, der skal bruges.
+        Har brugeren fået udleveret et andet brugernavn og en anden adgangskode til OSdatascanner, er det  selvfølgelig  disse, der skal bruges.
       </p>
       <p>Ved tvivlsspørgsmål henvises til  nærmeste leder, projektmedarbejder eller superbruger.</p>
       <p class="emphasized">
@@ -117,7 +117,7 @@
         Når brugerne har fundet det match, som skal håndteres, skal man manuelt fjerne eller redigere det relevante match.
       </p>
       <p>
-        Eksempel: Hvis man har en fil, som giver et match, skal man åbne filen og fjerne eller redigere den del, som OS2datascanner har reageret på. Det samme gør sig gældende ved både mails og websites.
+        Eksempel: Hvis man har en fil, som giver et match, skal man åbne filen og fjerne eller redigere den del, som OSdatascanner har reageret på. Det samme gør sig gældende ved både mails og websites.
       </p>
       <p>
         Når man manuelt har fjernet eller redigeret det pågældende match, skal dette markeres som håndteret i rapportmodulet. Det gøres ved at vælge “Håndtér”.
@@ -164,7 +164,7 @@
         <p>Figur 25: Rapportmodul - Mit overblik</p>
       </div>
       <p>
-        Du skal være opmærksom på, at OS2datascanner løbende sender ny resultater til dig, mens scanneren kører, så det kan være en gode idé at holde øje med om der er tikket nye resultater ind.
+        Du skal være opmærksom på, at OSdatascanner løbende sender ny resultater til dig, mens scanneren kører, så det kan være en gode idé at holde øje med om der er tikket nye resultater ind.
       </p>
 
       <h2 id="filtering">Filtreringsmulighed</h2>
@@ -172,28 +172,28 @@
         I rapportmodulet er der også mulighed for at filtrere efter følsomheden på et match. Tryk på alle følsomheder og vælg den følsomhed, man gerne vil have vist.
       </p>
       <p>
-        Du skal være opmærksom på, at OS2datascanner løbende sender ny resultater til dig, mens scanneren kører, så det kan være en gode idé at holde øje med om der er tikket nye resultater ind.
+        Du skal være opmærksom på, at OSdatascanner løbende sender ny resultater til dig, mens scanneren kører, så det kan være en gode idé at holde øje med om der er tikket nye resultater ind.
       </p>
 
       {% if categorization %}
         <h2 id="categorize">Kategorisering i Outlook</h2>
         <p>
-          Du har mulighed for at markere de mails, som der er fundet matches i, i din Outlook klient via OS2datascanner. For at slå denne indstilling til skal du tilgå din <a href="{% url "account-me" %}">profilside</a>, og sætte et flueben i indstillingen "Kategorisér emails". Fremtidige scanninger vil herefter automatisk tilføje kategorien "OS2datascanner match" til mails, hvori der findes matches.
+          Du har mulighed for at markere de mails, som der er fundet matches i, i din Outlook klient via OSdatascanner. For at slå denne indstilling til skal du tilgå din <a href="{% url "account-me" %}">profilside</a>, og sætte et flueben i indstillingen "Kategorisér emails". Fremtidige scanninger vil herefter automatisk tilføje kategorien "OS2datascanner match" til mails, hvori der findes matches.
         </p>
         <p>
           Når indstillingen er slået til har du også mulighed for at kategorisere alle mails med tidligere fundne resultater, ved at trykke på knappen "Kategorisér".
         </p>
         <p>
-          Aktivering af kategorisering tilføjer også kategorien "OS2datascanner false positive" til Outlook. Sættes denne kategori på en mail, vil mailen fremover ikke optræde som et match i OS2datascanner.
+          Aktivering af kategorisering tilføjer også kategorien "OS2datascanner false positive" til Outlook. Sættes denne kategori på en mail, vil mailen fremover ikke optræde som et match i OSdatascanner.
         </p>
       {% endif %}
 
       <h1 id="FAQ">{% trans "Frequently Asked Questions" %}</h1>
-      <p>{% trans "Here you can find answers to questions frequently asked by other users of OS2datascanner." %}</p>
+      <p>{% trans "Here you can find answers to questions frequently asked by other users of OSdatascanner." %}</p>
 
       <h2 id="handle_delete">{% trans "Why doesn't 'handle' delete my file or email?" %}</h2>
       <p>
-        {% trans "For security reasons, OS2datascanner cannot interact with your files or emails in any way. For this reason, you must manually delete or handle the matched file. Pressing the 'handle'-button in OS2datascanner only removes the match from the overview." %}
+        {% trans "For security reasons, OSdatascanner cannot interact with your files or emails in any way. For this reason, you must manually delete or handle the matched file. Pressing the 'handle'-button in OSdatascanner only removes the match from the overview." %}
       </p>
       <p>
         {% trans "You can manually access the file or email by pressing the 'copy'- or 'open'-buttons below the name of the match." %}
@@ -201,10 +201,10 @@
 
       <h2 id="open_file">{% trans "Why can't I open file scan matches?" %}</h2>
       <p>
-        {% trans "OS2datascanner is not located on your computer, but on an external server. You are accessing that server through your browser." %}
+        {% trans "OSdatascanner is not located on your computer, but on an external server. You are accessing that server through your browser." %}
       </p>
       <p>
-        {% trans "For security reasons, modern browsers are not allowed to open a file on your computer. This also prevents OS2datascanner from doing the same." %}
+        {% trans "For security reasons, modern browsers are not allowed to open a file on your computer. This also prevents OSdatascanner from doing the same." %}
       </p>
       <p>
         {% trans "To find the file, which a match has been found in, click the 'Copy Folder' button on the match, then open your pathfinder on your computer, and paste in the content of your clipboard." %}

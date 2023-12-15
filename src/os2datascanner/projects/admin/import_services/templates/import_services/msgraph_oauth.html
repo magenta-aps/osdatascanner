@@ -14,11 +14,11 @@
   </div>
 
   <p>
-    {% trans "The source of this organization is in the cloud and an external service must allow OS2datascanner to access it's content." %}
+    {% trans "The source of this organization is in the cloud and an external service must allow OSdatascanner to access it's content." %}
     {% if auth_endpoint %}
       {% if error %}
         <p>
-          {% trans "The service refused to grant OS2datascanner the necessary rights:" %}
+          {% trans "The service refused to grant OSdatascanner the necessary rights:" %}
           <pre class="alert alert--danger">{{ error_description }}</pre>
           <p>
             {% trans "Click the button below to try again." %}
@@ -35,7 +35,7 @@
           </p>
           <p>{% trans "You will be forwarded to the creation form after the service has issued the necessary rights." %}</p>
         {% else %}
-          <p>{% trans "The information pointing to the OS2datascanner system for this service is missing." %}</p>
+          <p>{% trans "The information pointing to the OSdatascanner system for this service is missing." %}</p>
         {% endif %}
 
       {% endblock %}

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-15 09:23+0100\n"
+"POT-Creation-Date: 2023-12-15 10:04+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1168,10 +1168,10 @@ msgstr "Scannerjobbet er i gang!"
 
 #: adminapp/templates/components/scanner/scanner_cleanup_response.html:22
 msgid ""
-"OS2datascanner was not able to delete the results from the stale accounts, "
+"OSdatascanner was not able to delete the results from the stale accounts, "
 "since the scannerjob is currently running. Try again later."
 msgstr ""
-"OS2datascanner kunne ikke slette resultaterne tilhørende de frakoblede "
+"OSdatascanner kunne ikke slette resultaterne tilhørende de frakoblede "
 "konti, da scannerjobbet i øjeblikket er i gang. Prøv igen senere."
 
 #: adminapp/templates/components/scanner/scanner_cleanup_response.html:24
@@ -1192,11 +1192,11 @@ msgstr "Ryd op i frakoblede konti"
 
 #: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:21
 msgid ""
-"OS2datascanner has registered, that some users, which were previously "
-"scanned with this scanner job, are no longer covered. These accounts will no "
-"longer be scanned by the scanner job."
+"OSdatascanner has registered, that some users, which were previously scanned "
+"with this scanner job, are no longer covered. These accounts will no longer "
+"be scanned by the scanner job."
 msgstr ""
-"OS2datascanner har registreret, at nogle brugere, som tidligere er blevet "
+"OSdatascanner har registreret, at nogle brugere, som tidligere er blevet "
 "scannet af dette scannerjob, ikke længere er tilknyttet scannerjobbet. Disse "
 "konti vil ikke længere blive scannet af dette scannerjob."
 
@@ -1372,10 +1372,10 @@ msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 #: adminapp/templates/components/scanner/scanner_no_client_credentials.html:18
 msgid ""
 "To use this data source, credentials for SBSYS must be set up in "
-"OS2datascanner. These credentials are not currently in the system."
+"OSdatascanner. These credentials are not currently in the system."
 msgstr ""
 "For at benytte denne datakilde skal der opsættes credentials til SBSYS i "
-"OS2datascanner. Disse credentials findes på nuværende tidspunkt ikke i "
+"OSdatascanner. Disse credentials findes på nuværende tidspunkt ikke i "
 "systemet."
 
 #: adminapp/templates/components/scanner/scanner_run.html:21
@@ -2318,15 +2318,15 @@ msgstr "Konfigurér Microsoft Graph"
 
 #: grants/templates/grants/grant_start.html:27
 msgid ""
-"To use this service, you must allow OS2datascanner access to its content."
+"To use this service, you must allow OSdatascanner access to its content."
 msgstr ""
-"For at benytte denne tjeneste skal du tillade OS2datascanner adgang til "
+"For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
 "tjenestens indhold."
 
 #: grants/templates/grants/grant_start.html:31
 #: import_services/templates/import_services/msgraph_oauth.html:21
-msgid "The service refused to grant OS2datascanner the necessary rights:"
-msgstr "Tjenesten nægtede at give OS2datascanner de nødvendige rettigheder:"
+msgid "The service refused to grant OSdatascanner the necessary rights:"
+msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
 
 #: grants/templates/grants/grant_start.html:34
 #: import_services/templates/import_services/msgraph_oauth.html:24
@@ -2355,10 +2355,10 @@ msgstr ""
 #: grants/templates/grants/grant_start.html:48
 #: import_services/templates/import_services/msgraph_oauth.html:38
 msgid ""
-"The information pointing to the OS2datascanner system for this service is "
+"The information pointing to the OSdatascanner system for this service is "
 "missing."
 msgstr ""
-"De informationer, der peger OS2datascanner-systemet på denne tjeneste, "
+"De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
 "mangler."
 
 #: import_services/models/exported_mixin.py:42
@@ -2523,12 +2523,12 @@ msgstr "forbindelses-URL"
 #: import_services/models/ldap_configuration.py:106
 msgid ""
 "Distinguished name for the (top) OU in which to search for users. Groups "
-"present under this OU will not necessarily be imported, as OS2datascanner "
+"present under this OU will not necessarily be imported, as OSdatascanner "
 "reconstructs groups based on users' group memberships."
 msgstr ""
 "'Distinguished name' for den (øverste) OU, hvor der skal søges efter "
 "brugere. Grupper under denne OU bliver ikke nødvendigvis importeret, da "
-"OS2datascanner opbygger grupper ud fra brugernes gruppemedlemskab."
+"OSdatascanner opbygger grupper ud fra brugernes gruppemedlemskab."
 
 #: import_services/models/ldap_configuration.py:111
 msgid "DN for users (OU)"
@@ -2661,10 +2661,10 @@ msgstr "gem Microsoft Graph konfiguration"
 #: import_services/templates/import_services/msgraph_oauth.html:17
 msgid ""
 "The source of this organization is in the cloud and an external service must "
-"allow OS2datascanner to access it's content."
+"allow OSdatascanner to access it's content."
 msgstr ""
 "Denne organisationsstruktur ligger i skyen, og en eksterne tjeneste skal "
-"tillade OS2datascanner adgang til dens indhold."
+"tillade OSdatascanner adgang til dens indhold."
 
 #: import_services/templates/import_services/os2mo_edit.html:15
 msgid "connect to OS2mo"
