@@ -25,7 +25,7 @@
           <h1 class="page-title">{% trans "Scannerjob" %}</h1>
  
           <div class="btn">
-            <a class="button button--cta"
+            <a class="button buttonx buttonx--cta-buttonx"
                href="/{{ view.type }}scanners/add/"
                title="{% trans 'Add scannerjob' %}">
               <svg class="icon icon--white">
@@ -139,7 +139,7 @@
                       <a href="#run-scanner-modal"
                          data-modal="modal:open"
                          data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
-                         class="button button--small button--grey"
+                         class="button buttonx buttonx--icon-buttonx"
                          title="{% trans 'Run' %}">
                         <svg class="icon">
                           <use xlink:href="/static/svg/symbol-defs.svg#icon-play"></use>
@@ -147,7 +147,7 @@
                       </a>
 
                       <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
-                         class="button button--small button--grey"
+                         class="button buttonx buttonx--icon-buttonx"
                          title="{% trans 'Edit' %}">
                         <svg class="icon">
                           <use xlink:href="/static/svg/symbol-defs.svg#icon-pencil"></use>
@@ -155,7 +155,7 @@
                       </a>
 
                       <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
-                         class="button button--small button--grey"
+                         class="button buttonx buttonx--icon-buttonx"
                          title="Kopiér">
                         <svg class="icon">
                           <use xlink:href="/static/svg/symbol-defs.svg#icon-copy"></use>
@@ -169,7 +169,7 @@
                           {% csrf_token %}
                           {{ form.as_p }}
                           <button type="submit"
-                                  class="button button--small button--grey"
+                                  class="button buttonx buttonx--icon-buttonx"
                                   onclick="return confirm('{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "The action cannot be reversed" %}')"
                                   title="{% trans 'Delete' %}">
                             <svg class="icon">
