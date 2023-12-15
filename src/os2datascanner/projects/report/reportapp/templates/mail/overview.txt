@@ -2,7 +2,7 @@
 
 Dear {{ full_name }},
 There are currently {{ user_alias_bound_results }} results in
-the OS2datascanner system which are associated with you and require your attention.
+the OSdatascanner system which are associated with you and require your attention.
 
 {% if superadmin_bound_results or remediator_bound_results %}
     Additional results are tied to you because of your roles within the system:
@@ -16,10 +16,10 @@ the OS2datascanner system which are associated with you and require your attenti
 
 Total results: {{ total_result_count }}
 
-Log into OS2datascanner with your organisation account for further details.
+Log into OSdatascanner with your organisation account for further details.
     {{ report_login_url }}
 Kind regards,
-the OS2datascanner system
+the OSdatascanner system
 {% if institution %}
 (on behalf of {{ institution }})
 {% endif %}

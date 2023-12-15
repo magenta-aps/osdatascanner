@@ -255,7 +255,7 @@ class Command(BaseCommand):
         self.stdout.write(f"User email detected: {email}")
 
         msg = EmailMultiAlternatives(
-            "Der ligger uhåndterede resultater i OS2datascanner",
+            "Der ligger uhåndterede resultater i OSdatascanner",
             self.txt_mail_template.render(context),
             settings.DEFAULT_FROM_EMAIL,
             [email])

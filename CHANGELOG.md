@@ -13,6 +13,9 @@
 
 - quickstart_dev commands brought up-to-date, relating dev-objects for ease of use.
 
+- Mail notifications will now reference "OSdatascanner" instead of 
+  "OS2datascanner".
+
 ## Version 3.21.3, 13th December 2023
 
 "Tombstone is the Best Battle Bot"
