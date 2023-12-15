@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-13 14:12+0100\n"
+"POT-Creation-Date: 2023-12-15 09:23+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1664,10 +1664,10 @@ msgstr "Hej %(full_name)s"
 #: adminapp/templates/mail/finished_scannerjob.html:37
 #, python-format
 msgid ""
-"For your information, your OS2datascanner-scan @ <strong>%(scanner_name)s</"
+"For your information, your OSdatascanner-scan @ <strong>%(scanner_name)s</"
 "strong> has just finished."
 msgstr ""
-"Til orientering er dit OS2datascanner-scan @ <strong>%(scanner_name)s</"
+"Til orientering er dit OSdatascanner-scan @ <strong>%(scanner_name)s</"
 "strong> lige kørt færdigt."
 
 #: adminapp/templates/mail/finished_scannerjob.html:40
@@ -1694,15 +1694,15 @@ msgstr ""
 #: adminapp/templates/mail/finished_scannerjob.html:49
 #, python-format
 msgid ""
-"<a href=\"%(admin_login_url)s\">Log into OS2datascanner with your "
+"<a href=\"%(admin_login_url)s\">Log into OSdatascanner with your "
 "organisation account</a> for further details."
 msgstr ""
-"<a href=\"%(admin_login_url)s\">Log på OS2datascanner med din "
+"<a href=\"%(admin_login_url)s\">Log på OSdatascanner med din "
 "organisationskonto</a> for at se detajlerne."
 
 #: adminapp/templates/mail/finished_scannerjob.html:52
-msgid "Kind regards,<br>the OS2datascanner system"
-msgstr "Med venlig hilsen<br>OS2datascanner-systemet"
+msgid "Kind regards,<br>the OSdatascanner system"
+msgstr "Med venlig hilsen<br>OSdatascanner-systemet"
 
 #: adminapp/templates/mail/finished_scannerjob.html:54
 #, python-format
@@ -1722,11 +1722,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"For your information, your OS2datascanner-scan @ %(scanner_name)s has just "
+"For your information, your OSdatascanner-scan @ %(scanner_name)s has just "
 "finished.\n"
 msgstr ""
 "\n"
-"Til orientering er dit OS2datascanner-scan @ %(scanner_name)s lige kørt "
+"Til orientering er dit OSdatascanner-scan @ %(scanner_name)s lige kørt "
 "færdigt.\n"
 
 #: adminapp/templates/mail/finished_scannerjob.txt:14
@@ -1741,20 +1741,20 @@ msgstr ""
 #: adminapp/templates/mail/finished_scannerjob.txt:19
 msgid ""
 "\n"
-"Log into OS2datascanner with your organisation account for further details.\n"
+"Log into OSdatascanner with your organisation account for further details.\n"
 msgstr ""
 "\n"
-"Log på OS2datascanner med din organisationskonto for at se detajlerne.\n"
+"Log på OSdatascanner med din organisationskonto for at se detajlerne.\n"
 
 #: adminapp/templates/mail/finished_scannerjob.txt:26
 msgid ""
 "\n"
 "Kind regards,\n"
-"the OS2datascanner system\n"
+"the OSdatascanner system\n"
 msgstr ""
 "\n"
 "Med venlig hilsen\n"
-"OS2datascanner-systemet\n"
+"OSdatascanner-systemet\n"
 
 #: adminapp/templates/mail/finished_scannerjob.txt:31
 #, python-format

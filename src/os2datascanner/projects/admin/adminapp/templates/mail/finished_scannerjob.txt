@@ -5,7 +5,7 @@ Hello {{ full_name }},
 {% endblocktrans %}
 
 {% blocktrans %}
-For your information, your OS2datascanner-scan @ {{ scanner_name }} has just finished.
+For your information, your OSdatascanner-scan @ {{ scanner_name }} has just finished.
 {% endblocktrans %}
 
 {{ total_objects }}{% trans " objects were scanned - " %}{{ object_size|filesizeformat }}{% trans " in total - in " %}{{ completion_time }}.
@@ -17,7 +17,7 @@ For your information, your OS2datascanner-scan @ {{ scanner_name }} has just fin
 {% endif %}
 
 {% blocktrans %}
-Log into OS2datascanner with your organisation account for further details.
+Log into OSdatascanner with your organisation account for further details.
 {% endblocktrans %}
 
     {{ admin_login_url }}
@@ -25,7 +25,7 @@ Log into OS2datascanner with your organisation account for further details.
 
 {% blocktrans %}
 Kind regards,
-the OS2datascanner system
+the OSdatascanner system
 {% endblocktrans %}
 {% if institution %}
 {% blocktrans %}

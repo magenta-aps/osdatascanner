@@ -34,7 +34,7 @@
   <body>
     <p>{% blocktrans %}Hello {{ full_name }},{% endblocktrans %}</p>
     <p>
-      {% blocktrans %}For your information, your OS2datascanner-scan @ <strong>{{ scanner_name }}</strong> has just finished.{% endblocktrans %}
+      {% blocktrans %}For your information, your OSdatascanner-scan @ <strong>{{ scanner_name }}</strong> has just finished.{% endblocktrans %}
     </p>
     <p>
       <strong>{{ total_objects }}</strong>{% trans " objects were scanned - " %} <strong>{{ object_size|filesizeformat }}</strong>
@@ -46,10 +46,10 @@
       {% endif %}
     </p>
     <p>
-      {% blocktrans %}<a href="{{ admin_login_url }}">Log into OS2datascanner with your organisation account</a> for further details.{% endblocktrans %}
+      {% blocktrans %}<a href="{{ admin_login_url }}">Log into OSdatascanner with your organisation account</a> for further details.{% endblocktrans %}
     </p>
     <p>
-      {% blocktrans %}Kind regards,<br>the OS2datascanner system{% endblocktrans %}
+      {% blocktrans %}Kind regards,<br>the OSdatascanner system{% endblocktrans %}
       {% if institution %}
         {% blocktrans %}(on behalf of {{ institution }}){% endblocktrans %}
       {% endif %}
