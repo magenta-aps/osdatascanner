@@ -26,8 +26,10 @@ class OutlookCategoryName(Enum):
     """ Enum used to set Outlook category names """
     # Don't translate these - it'll give you proxy objects which aren't serializable,
     # and we need to be able to trust their values.
-    Match = "OSdatascanner Match"
-    FalsePositive = "OSdatascanner False Positive"
+    # TODO: We need to rename these to reflect the new name "OSdatascanner"
+    # but this will break functionality with the customers already using it.
+    Match = "OS2datascanner Match"
+    FalsePositive = "OS2datascanner False Positive"
 
 
 def create_outlook_category_for_account(account: Account,
