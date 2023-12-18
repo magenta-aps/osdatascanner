@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-15 14:04+0100\n"
+"POT-Creation-Date: 2023-12-18 14:13+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1377,7 +1377,6 @@ msgid "Finds all results assigned to the user from selected scannerjob."
 msgstr "Viser resultater filtreret efter scannerjob."
 
 #: reportapp/templates/manual.html:64
-#| msgid "Sensitivity"
 msgid "Filter: Sensitivity"
 msgstr "Filter: Følsomhed"
 
@@ -1385,10 +1384,11 @@ msgstr "Filter: Følsomhed"
 msgid ""
 "Finds results with the selected category - critical, problem, warning, "
 "notification."
-msgstr "Viser resultater der indeholder en valgt følsomhed - kritisk, problem, advarsel, notifikation."
+msgstr ""
+"Viser resultater der indeholder en valgt følsomhed - kritisk, problem, "
+"advarsel, notifikation."
 
 #: reportapp/templates/manual.html:68
-#| msgid "Source Type"
 msgid "Filter: Source Type"
 msgstr "Filter: Kildetype"
 
@@ -1438,8 +1438,7 @@ msgstr "Viser konteksten matchet blev fundet i."
 msgid ""
 "Displays the probability for the match to be genuine and not a false "
 "positive."
-msgstr ""
-"Viser sandsynligheden for at matchet er ægte og ikke et falsk positiv."
+msgstr "Viser sandsynligheden for at matchet er ægte og ikke et falsk positiv."
 
 #: reportapp/templates/manual.html:117
 msgid "Figure 21: Functional overview 2 - Reportmodule"
@@ -1479,7 +1478,7 @@ msgid ""
 "instead."
 msgstr ""
 "Har brugeren fået udleveret et andet brugernavn og en anden adgangskode til "
-"OS2datascanner, er det selvfølgelig disse, der skal bruges. "
+"OSdatascanner, er det selvfølgelig disse, der skal bruges. "
 
 #: reportapp/templates/manual.html:130
 msgid ""
@@ -1558,7 +1557,7 @@ msgid ""
 "the part marked as a match by the scanner."
 msgstr ""
 "Eksempel: Hvis man har en fil, som giver et match, skal man åbne filen og "
-"fjerne eller redigere den del, som OS2datascanner har reageret på. Det samme "
+"fjerne eller redigere den del, som OSdatascanner har reageret på. Det samme "
 "gør sig gældende ved både mails og websites."
 
 #: reportapp/templates/manual.html:167
@@ -1644,21 +1643,17 @@ msgid ""
 "Note that, matches will be assigned to you over the course of a scan so keep "
 "an eye out for new matches to be handled."
 msgstr ""
-"Du skal være opmærksom på, at OS2datascanner løbende sender ny resultater "
-"til dig, mens scanneren kører, så det kan være en gode idé at holde øje med "
-"om der er tikket nye resultater ind."
+"Du skal være opmærksom på, at OSdatascanner løbende sender ny resultater til "
+"dig, mens scanneren kører, så det kan være en gode idé at holde øje med om "
+"der er tikket nye resultater ind."
 
 #: reportapp/templates/manual.html:218
-#, fuzzy
-#| msgid ""
-#| "With the datascanner, it is possible to mark mail containing matches with "
-#| "a match-category in Outlook. To enable this feature, access your "
 msgid ""
-"With the datascanner, it is possible to mark mails containing matches with a "
+"With OSdatascanner, it is possible to mark mails containing matches with a "
 "match-category in Outlook. To enable this feature, access your "
 msgstr ""
 "Du har mulighed for at markere de mails, som der er fundet matches i, i din "
-"Outlook klient via OS2datascanner. For at slå denne indstilling til skal du "
+"Outlook klient via OSdatascanner. For at slå denne indstilling til skal du "
 "tilgå din "
 
 #: reportapp/templates/manual.html:218 reportapp/templates/manual.html:253
@@ -1672,7 +1667,7 @@ msgid ""
 "containing matchs will aoutomatically be marked with a match category"
 msgstr ""
 " og sætte et flueben i indstillingen \"Kategorisér emails\". Fremtidige "
-"scanninger vil herefter automatisk tilføje kategorien \"OS2datascanner match"
+"scanninger vil herefter automatisk tilføje kategorien \"OSdatascanner match"
 "\" til mails, hvori der findes matches."
 
 #: reportapp/templates/manual.html:221
@@ -1687,12 +1682,11 @@ msgstr ""
 #: reportapp/templates/manual.html:224
 msgid ""
 "Enabling this feature also adds a False positive category to Outlook. Mails "
-"marked with this category will no longer be seen as a match by the "
-"datascanner."
+"marked with this category will no longer be seen as a match by OSdatascanner."
 msgstr ""
 "Aktivering af kategorisering tilføjer også kategorien \"OS2datascanner false "
 "positive\" til Outlook. Sættes denne kategori på en mail, vil mailen "
-"fremover ikke optræde som et match i OS2datascanner."
+"fremover ikke optræde som et match i OSdatascanner."
 
 #: reportapp/templates/manual.html:229
 msgid ""
@@ -1711,13 +1705,8 @@ msgid ""
 msgstr ""
 "Af sikkerhedsårsager kan OSdatascanner ikke interagere med dine filer eller "
 "e-mails på nogen måde. Af denne grund er det nødvendigt manuelt at slette "
-<<<<<<< HEAD
 "eller på anden måde håndtere den matchede fil. 'Håndtér'-knappen i "
 "OSdatascanner fjerner kun matchet fra oversigten."
-=======
-"eller på anden måde håndtere den matchede fil. \"Håndtér\"-knappen i "
-"OS2datascanner fjerner kun matchet fra oversigten."
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 
 #: reportapp/templates/manual.html:236
 msgid ""
@@ -1829,43 +1818,19 @@ msgstr "Brugeren har ikke en konto."
 msgid "An organizational unit with the UUID '{0}' was not found."
 msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
 
-<<<<<<< HEAD
 #: reportapp/views/statistics_views.py:198
-=======
-#: reportapp/views/statistics_views.py:196
-#, fuzzy
-#| msgid "Data sources"
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 msgid "other source"
 msgstr "Datakilder"
 
-<<<<<<< HEAD
 #: reportapp/views/statistics_views.py:199
-=======
-#: reportapp/views/statistics_views.py:197
-#, fuzzy
-#| msgid "Webscan"
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 msgid "web scan"
 msgstr "Webscan"
 
-<<<<<<< HEAD
 #: reportapp/views/statistics_views.py:200
-=======
-#: reportapp/views/statistics_views.py:198
-#, fuzzy
-#| msgid "Filescan"
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 msgid "file scan"
 msgstr "Filscan"
 
-<<<<<<< HEAD
 #: reportapp/views/statistics_views.py:201
-=======
-#: reportapp/views/statistics_views.py:199
-#, fuzzy
-#| msgid "Mailscan"
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 msgid "mail scan"
 msgstr "Mailscan"
 
@@ -1873,21 +1838,11 @@ msgstr "Mailscan"
 msgid "Teams scan"
 msgstr "Teams-scan"
 
-<<<<<<< HEAD
 #: reportapp/views/statistics_views.py:203
-=======
-#: reportapp/views/statistics_views.py:201
-#, fuzzy
-#| msgid "Calendar scan"
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 msgid "calendar scan"
 msgstr "Kalender scan"
 
-<<<<<<< HEAD
 #: reportapp/views/statistics_views.py:525
-=======
-#: reportapp/views/statistics_views.py:523
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 #, python-brace-format
 msgid "You deleted all results from {0} associated with {1}."
 msgstr "Du har slettet alle resultater fra {0} tilknyttet {1}."
@@ -1986,7 +1941,6 @@ msgid "You currently have no Outlook reports. Can't create categories!"
 msgstr ""
 "Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
 
-<<<<<<< HEAD
 #~ msgid "Organizational unit distribution"
 #~ msgstr "Fordeling på organisatoriske enheder"
 
@@ -2015,8 +1969,6 @@ msgstr ""
 #~ msgid "Results from"
 #~ msgstr "Resultater fra"
 
-=======
->>>>>>> 1a3be3892 ([#58391]Translate manual in reportmodule)
 #~ msgid "Mail results"
 #~ msgstr "Mailresultater"
 
@@ -2066,9 +2018,6 @@ msgstr ""
 #~| msgid "My Overview"
 #~ msgid "My overview"
 #~ msgstr "Mit overblik"
-
-#~ msgid "Only DPOs and superusers have access to the DPO overview."
-#~ msgstr "Kun DPOer og superbrugere har adgang til DPO-overblikket."
 
 #~ msgid "Sensitivity legend"
 #~ msgstr "Følsomhedsoversigt"
