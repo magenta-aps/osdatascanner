@@ -26,11 +26,23 @@ class OrganizationalUnitListView(RestrictedListView):
 
         qs = qs.filter(organization=org)
 
+        roles = self.request.GET.get("roles")
+
+        show_empty = self.request.GET.get("show_empty", "off") == "on"
+
+        if roles and roles != "all":
+            if roles == "both":
+                qs = qs.filter(Q(positions__role=Role.DPO) | Q(positions__role=Role.MANAGER))
+            elif roles == "none":
+                qs = qs.filter(Q(positions__isnull=True))
+                show_empty = True
+            else:
+                qs = qs.filter(Q(positions__role=roles))
+
         if search_field := self.request.GET.get("search_field", ""):
             qs = qs.filter(Q(name__icontains=search_field) |
                            Q(parent__name__icontains=search_field))
 
-        show_empty = self.request.GET.get("show_empty", "off") == "on"
         if not show_empty:
             qs = qs.exclude(positions=None)
 
@@ -74,6 +86,7 @@ class OrganizationalUnitListView(RestrictedListView):
         context['show_empty'] = self.request.GET.get('show_empty', 'off') == 'on'
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
+        context['roles'] = Role.choices
         return context
 
     def get_paginate_by(self, queryset):

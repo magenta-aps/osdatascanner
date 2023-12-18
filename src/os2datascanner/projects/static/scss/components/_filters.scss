@@ -65,6 +65,22 @@
   }
 }
 
+.orgunit_input_container {
+  width: 100%;
+  display: flex; 
+  justify-content: space-around; 
+  align-items: center; 
+}
+
+.orgunit_input_wrapper {
+  margin-right: 2rem;
+
+  &.dropdown {
+    margin-right: 0;
+    margin-left: auto;
+  }
+}
+
 .errorlog_filtering_wrapper {
   display: flex;
   align-items: center;
