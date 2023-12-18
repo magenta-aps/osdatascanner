@@ -116,7 +116,7 @@ class MSGraphFileScanner(MSGraphScanner):
             default=True, verbose_name='Scan alle OneDrive-drev')
 
     def get_type(self):
-        return 'msgraph-file'
+        return 'msgraph-files'
 
     def get_absolute_url(self):
         """Get the absolute URL for scanners."""
