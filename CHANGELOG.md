@@ -39,6 +39,10 @@
     previously connected rules in a wrapping OR-rule. This should preserve
     functionality if the scanner is run.
 
+- It is now possible to sort the org units in the org tree in admin. The main 
+  use is, that the user can choose to sort for org units with managers, DPO's,
+  or either.
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.
