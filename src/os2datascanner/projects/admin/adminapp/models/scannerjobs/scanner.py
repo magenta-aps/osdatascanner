@@ -49,7 +49,7 @@ from .scanner_helpers import (  # noqa (interface backwards compatibility)
         ScanStatus, CoveredAccount, ScheduledCheckup, ScanStatusSnapshot)
 from ..rules.rule import Rule
 from ..authentication import Authentication
-
+from ....organizations.models.aliases import AliasType
 
 logger = structlog.get_logger(__name__)
 base_dir = os.path.dirname(
@@ -155,6 +155,16 @@ class Scanner(models.Model):
             blank=True, through=CoveredAccount,
             verbose_name=_('covered accounts'),
             related_name='covered_by_scanner')
+
+    def get_covered_account_last_modified_msgraph(self) -> dict:
+        """ Iterates this scannerjob's covered accounts, looks
+        for their email aliases (as that's what used for scanning Office 365 accounts)
+        and creates a dictionary with their specific last modified date. """
+        d = {}
+        for cva in self.coveredaccount_set.all():
+            for alias in cva.account.aliases.filter(_alias_type=AliasType.EMAIL):
+                d[alias.value] = LastModifiedRule(cva.scan_status.start_time).to_json_object()
+        return d
 
     def verify(self) -> bool:
         """Method documentation"""
@@ -286,7 +296,7 @@ class Scanner(models.Model):
                   for r in self.rules.all().select_subclasses()])
 
         prerules = []
-        if not force and self.do_last_modified_check:
+        if not force and self.do_last_modified_check and not self.covered_accounts.exists():
             last = self.get_last_successful_run_at()
             if last:
                 prerules.append(LastModifiedRule(last))
@@ -335,7 +345,8 @@ class Scanner(models.Model):
 
         return messages.ScanSpecMessage(
                 scan_tag=scan_tag, rule=rule, configuration=configuration,
-                filter_rule=filter_rule, source=None, progress=None)
+                filter_rule=filter_rule, source=None, progress=None,
+                last_modified_for_path={})
 
     def _add_sources(
             self, spec_template: messages.ScanSpecMessage,
@@ -345,10 +356,13 @@ class Scanner(models.Model):
         puts them into the provided outbox list. Returns the number of sources
         added."""
         source_count = 0
+        lm_for_path = self.get_covered_account_last_modified_msgraph()
         for source in self.generate_sources():
             outbox.append((
                 settings.AMQP_PIPELINE_TARGET,
-                spec_template._replace(source=source)))
+                spec_template._replace(source=source,
+                                       last_modified_for_path=lm_for_path)
+            ))
             source_count += 1
         return source_count
 
@@ -449,10 +463,6 @@ class Scanner(models.Model):
         if source_count == 0 and checkup_count == 0:
             raise ValueError(f"nothing to do for {self}")
 
-        # Synchronize the 'covered_accounts'-field with accounts, which are
-        # about to be scanned.
-        self.sync_covered_accounts()
-
         self.save()
 
         # Use the name of an appropriate organization as queue_suffix for
@@ -460,10 +470,14 @@ class Scanner(models.Model):
         queue_suffix = self.organization.name
 
         # Create a model object to track the status of this scan...
-        ScanStatus.objects.create(
+        new_status = ScanStatus.objects.create(
                 scanner=self, scan_tag=scan_tag.to_json_object(),
                 last_modified=scan_tag.time, total_sources=source_count,
                 total_objects=checkup_count)
+
+        # Synchronize the 'covered_accounts'-field with accounts, which are
+        # about to be scanned.
+        self.sync_covered_accounts(new_status)
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(
@@ -511,19 +525,32 @@ class Scanner(models.Model):
         if self.org_unit.exists():
             return Account.objects.filter(units__in=self.org_unit.all())
         else:
-            return Account.objects.all()
+            # We can't assume that everyone is covered, but we can conclude
+            # that we can't know who's covered. (Scan might use a user-list file)
+            return Account.objects.none()
 
     def get_new_covered_accounts(self):
         """Return all accounts, which will be scanned by this scannerjob on the
         next scan, but are not present in the 'covered_accounts'-field."""
         return self.get_covered_accounts().difference(self.covered_accounts.all())
 
-    def sync_covered_accounts(self):
-        """Adds the accounts, which have not previously been scanned by this
-        scanner, but will be scanned if run now, to the 'covered_accounts'-
-        field."""
-        return self.covered_accounts.add(*self.get_new_covered_accounts())
+    def sync_covered_accounts(self, scan_status: ScanStatus):
+        """Updates or creates CoveredAccount relations for accounts covered
+        by current run of scannerjob.
+        I.e. connects a scannerjob, an account and a scanner status
+        """
 
+        cva = self.get_covered_accounts()
+        # Update existing, that are still covered.
+        CoveredAccount.objects.filter(account__in=cva, scanner=self).update(scan_status=scan_status)
+
+        # Create new entries for newcomers
+        CoveredAccount.objects.bulk_create(
+            [CoveredAccount(account=account, scanner=self, scan_status=scan_status) for
+             account in cva.exclude(pk__in=self.covered_accounts.all())]
+        )
+
+    # TODO: Rethink what this means, now that we're keeping data for the sake of last modified
     def get_stale_accounts(self):
         """Return all accounts, which are included in the scanner's
         'covered_accounts' field, but are not associated with any org units

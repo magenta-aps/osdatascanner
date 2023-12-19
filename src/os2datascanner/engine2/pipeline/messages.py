@@ -189,6 +189,7 @@ class ScanSpecMessage(NamedTuple):
     configuration: dict
     progress: ProgressFragment
     filter_rule: Rule
+    last_modified_for_path: dict = {}
 
     def to_json_object(self):
         return {
@@ -200,7 +201,8 @@ class ScanSpecMessage(NamedTuple):
                 self.filter_rule.to_json_object()
                 if self.filter_rule else None),
             "progress": (
-                    self.progress.to_json_object() if self.progress else None)
+                    self.progress.to_json_object() if self.progress else None),
+            "last_modified_for_path": self.last_modified_for_path or {}
         }
 
     @classmethod
@@ -224,7 +226,9 @@ class ScanSpecMessage(NamedTuple):
                 progress=(
                     ProgressFragment.from_json_object(progress_fragment)
                     if progress_fragment
-                    else None))
+                    else None),
+                last_modified_for_path=obj.get("last_modified_for_path", {})
+        )
 
     _deep_replace = _deep_replace
 

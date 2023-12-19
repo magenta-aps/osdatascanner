@@ -322,3 +322,5 @@ class CoveredAccount(models.Model):
             'os2datascanner.Scanner', null=False, on_delete=models.CASCADE)
     account = models.ForeignKey(
             'organizations.Account', null=False, on_delete=models.CASCADE)
+    scan_status = models.ForeignKey(
+        ScanStatus, null=False, on_delete=models.CASCADE)

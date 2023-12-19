@@ -1,3 +1,5 @@
+from ..rules.last_modified import LastModifiedRule
+from ..rules.logical import AndRule
 from .. import settings
 from ..model.core import Source, UnknownSchemeError, DeserialisationError
 from ..model.core.errors import (ModelException,
@@ -111,8 +113,17 @@ def message_received_raw(body, channel, source_manager):  # noqa
                     # This Handle is a thin wrapper around an independent Source.
                     # Construct that Source and enqueue it for further exploration
                     new_source = Source.from_handle(handle)
+
+                    # Check if we're running with a source specific last modified date and adjust
+                    new_lm_rule = None
+                    if new_source.handle.relative_path in scan_spec.last_modified_for_path:
+                        new_lm_rule = LastModifiedRule.from_json_object(
+                            scan_spec.last_modified_for_path.get(new_source.handle.relative_path))
+
                     yield ("os2ds_scan_specs", scan_spec._replace(
-                        source=new_source).to_json_object())
+                        source=new_source,
+                        rule=AndRule(new_lm_rule, scan_spec.rule) if new_lm_rule else scan_spec.rule
+                    ).to_json_object())
                     source_count = (source_count or 0) + 1
                 else:
                     log.info("handle excluded", handle=handle)
