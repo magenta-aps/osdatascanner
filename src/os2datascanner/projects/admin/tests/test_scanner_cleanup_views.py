@@ -1,3 +1,5 @@
+from datetime import datetime
+from dateutil.tz import gettz
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, RequestFactory
@@ -11,6 +13,9 @@ from os2datascanner.projects.admin.organizations.models import (
 from os2datascanner.projects.admin.core.models import Administrator, Client
 from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
+
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
+    ScanStatus, CoveredAccount)
 
 
 class CleanupScannerViewTests(TestCase):
@@ -36,14 +41,24 @@ class CleanupScannerViewTests(TestCase):
 
         self.scanner = Scanner.objects.create(
             name="Fake scanner", organization=self.org, rule=self.rule)
+        self.scan_status = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=self.scanner
+        )
 
         orgunit = OrganizationalUnit.objects.create(name="Fake Unit", organization=self.org)
 
         hansi = Account.objects.create(username="Hansi", organization=self.org)
-        fritz = Account.objects.create(username="Fritz", organization=self.org)
-        günther = Account.objects.create(username="Günther", organization=self.org)
+        Account.objects.create(username="Fritz", organization=self.org)
+        Account.objects.create(username="Günther", organization=self.org)
 
-        self.scanner.covered_accounts.add(hansi, fritz, günther)
+        CoveredAccount.objects.bulk_create(
+            [CoveredAccount(account=account,
+                            scanner=self.scanner,
+                            scan_status=self.scan_status) for
+             account in Account.objects.all()]
+        )
+
         hansi.units.add(orgunit)
 
     def tearDown(self):
