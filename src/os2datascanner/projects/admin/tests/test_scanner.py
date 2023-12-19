@@ -1,7 +1,10 @@
+from datetime import datetime
+from dateutil.tz import gettz
 from django.test import RequestFactory, TestCase
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 
+from ..adminapp.models.scannerjobs.scanner_helpers import ScanStatus, CoveredAccount
 from os2datascanner.engine2.model.derived import mail
 from os2datascanner.engine2.model.msgraph import mail as graph_mail
 
@@ -142,6 +145,9 @@ class ScannerTest(TestCase):
         correctly."""
         # Creating some test objects...
         scanner = Scanner.objects.create(name="Scanner", organization=self.org)
+        scan_status = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=scanner)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=Organization.objects.first())
         hansi = Account.objects.create(username="Hansi", organization=self.org)
@@ -150,7 +156,7 @@ class ScannerTest(TestCase):
         Account.objects.create(username="Günther", organization=self.org)
         Account.objects.create(username="Fritz", organization=self.org)
 
-        scanner.sync_covered_accounts()
+        scanner.sync_covered_accounts(scan_status)
 
         self.assertEqual(
             scanner.covered_accounts.count(),
@@ -169,6 +175,9 @@ class ScannerTest(TestCase):
         of the organizational units on the scanner."""
         # Creating some test objects...
         scanner = Scanner.objects.create(name="Scanner", organization=self.org)
+        scan_status = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=scanner)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=self.org)
         hansi = Account.objects.create(username="Hansi", organization=self.org)
@@ -178,7 +187,13 @@ class ScannerTest(TestCase):
         fritz = Account.objects.create(username="Fritz", organization=self.org)
         hansi.units.add(unit)
         scanner.org_unit.add(unit)
-        scanner.covered_accounts.add(hansi, günther, fritz)
+
+        CoveredAccount.objects.bulk_create(
+            [CoveredAccount(account=account,
+                            scanner=scanner,
+                            scan_status=scan_status) for
+             account in Account.objects.all()]
+        )
 
         stale_accounts = scanner.get_stale_accounts()
 
@@ -201,6 +216,9 @@ class ScannerTest(TestCase):
         scanner through an organizational unit."""
         # Creating some test objects...
         scanner = Scanner.objects.create(name="Scanner", organization=self.org)
+        scan_status = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=scanner)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=self.org)
         hansi = Account.objects.create(username="Hansi", organization=self.org)
@@ -210,7 +228,12 @@ class ScannerTest(TestCase):
         fritz = Account.objects.create(username="Fritz", organization=self.org)
         hansi.units.add(unit)
         scanner.org_unit.add(unit)
-        scanner.covered_accounts.add(hansi, günther, fritz)
+        CoveredAccount.objects.bulk_create(
+            [CoveredAccount(account=account,
+                            scanner=scanner,
+                            scan_status=scan_status) for
+             account in Account.objects.all()]
+        )
 
         scanner.remove_stale_accounts()
 

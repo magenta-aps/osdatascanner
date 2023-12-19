@@ -92,6 +92,7 @@ obj = {
         "fællesskaber", name="MagentaTestRule1", sensitivity=Twensitivity.NOTICE
     ).to_json_object(),
     "configuration": {"skip_mime_types": ["image/*"]},
+    'last_modified_for_path': {},
     "filter_rule": None,
     "progress": None,
 }

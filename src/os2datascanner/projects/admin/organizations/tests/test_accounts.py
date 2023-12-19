@@ -1,5 +1,7 @@
+from datetime import datetime
 from django.test import TestCase
-
+from dateutil.tz import gettz
+from ...adminapp.models.scannerjobs.scanner_helpers import ScanStatus, CoveredAccount
 from ..models import OrganizationalUnit, Organization, Account
 from ...adminapp.models.scannerjobs.scanner import Scanner
 
@@ -17,8 +19,16 @@ class AccountMethodTests(TestCase):
             name="Unit2", organization=org)
         self.scanner1 = Scanner.objects.create(
             name="Hansi & Günther", organization=org)
+        self.status1 = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=self.scanner1
+        )
         self.scanner2 = Scanner.objects.create(
             name="Hansi", organization=org)
+        self.status2 = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=self.scanner2
+        )
         self.hansi = Account.objects.create(username="Hansi", organization=org)
         self.günther = Account.objects.create(username="Günther", organization=org)
         self.fritz = Account.objects.create(username="Fritz", organization=org)
@@ -36,8 +46,15 @@ class AccountMethodTests(TestCase):
         # scanners. Fritz is not covered in any way.
         self.scanner1.org_unit.add(self.unit1)
         self.scanner2.org_unit.add(self.unit2)
-        self.scanner1.covered_accounts.add(self.hansi, self.günther)
-        self.scanner2.covered_accounts.add(self.hansi, self.günther)
+
+        CoveredAccount.objects.create(account=self.hansi, scanner=self.scanner1,
+                                      scan_status=self.status1)
+        CoveredAccount.objects.create(account=self.günther, scanner=self.scanner1,
+                                      scan_status=self.status1)
+        CoveredAccount.objects.create(account=self.hansi, scanner=self.scanner2,
+                                      scan_status=self.status2)
+        CoveredAccount.objects.create(account=self.günther, scanner=self.scanner2,
+                                      scan_status=self.status2)
 
         # Hansi has not been dropped, and should get an empty queryset here.
         hansi_dropped = self.hansi.get_stale_scanners()

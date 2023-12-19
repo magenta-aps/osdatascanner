@@ -1,3 +1,5 @@
+from datetime import datetime
+from dateutil.tz import gettz
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, RequestFactory
@@ -9,6 +11,9 @@ from os2datascanner.projects.admin.adminapp.views.scanner_views import ScannerCl
 from os2datascanner.projects.admin.organizations.models import (
     Account, Organization, OrganizationalUnit)
 from os2datascanner.projects.admin.core.models import Administrator, Client
+
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
+    ScanStatus, CoveredAccount)
 
 
 class CleanupScannerViewTests(TestCase):
@@ -22,14 +27,24 @@ class CleanupScannerViewTests(TestCase):
 
         org = Organization.objects.first()
         self.scanner = Scanner.objects.create(name="Fake scanner", organization=org)
+        self.scan_status = ScanStatus.objects.create(
+            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scanner=self.scanner
+        )
 
         orgunit = OrganizationalUnit.objects.create(name="Fake Unit", organization=org)
 
         hansi = Account.objects.create(username="Hansi", organization=org)
-        fritz = Account.objects.create(username="Fritz", organization=org)
-        günther = Account.objects.create(username="Günther", organization=org)
+        Account.objects.create(username="Fritz", organization=org)
+        Account.objects.create(username="Günther", organization=org)
 
-        self.scanner.covered_accounts.add(hansi, fritz, günther)
+        CoveredAccount.objects.bulk_create(
+            [CoveredAccount(account=account,
+                            scanner=self.scanner,
+                            scan_status=self.scan_status) for
+             account in Account.objects.all()]
+        )
+
         hansi.units.add(orgunit)
 
     def test_cleanup_view_regular_user(self):
