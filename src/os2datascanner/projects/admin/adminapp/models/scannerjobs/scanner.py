@@ -45,12 +45,10 @@ from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.pipeline.headers import get_exchange, get_headers
 from mptt.models import TreeManyToManyField
 
-
 from ..rules import Rule
 from .scanner_helpers import (  # noqa (interface backwards compatibility)
         ScanStatus, CoveredAccount, ScheduledCheckup, ScanStatusSnapshot)
 from ..authentication import Authentication
-
 
 logger = structlog.get_logger(__name__)
 base_dir = os.path.dirname(
@@ -287,7 +285,7 @@ class Scanner(models.Model):
         rule = self.rule.customrule.make_engine2_rule()
 
         prerules = []
-        if not force and self.do_last_modified_check:
+        if not force and self.do_last_modified_check and not self.covered_accounts.exists():
             last = self.get_last_successful_run_at()
             if last:
                 prerules.append(LastModifiedRule(last))
@@ -337,6 +335,10 @@ class Scanner(models.Model):
                 scan_tag=scan_tag, rule=rule, configuration=configuration,
                 filter_rule=filter_rule, source=None, progress=None)
 
+    @property
+    def _supports_account_annotations(self) -> bool:
+        return hasattr(self, "generate_sources_with_accounts")
+
     def _add_sources(
             self, spec_template: messages.ScanSpecMessage,
             outbox: list) -> int:
@@ -345,11 +347,29 @@ class Scanner(models.Model):
         puts them into the provided outbox list. Returns the number of sources
         added."""
         source_count = 0
-        for source in self.generate_sources():
-            outbox.append((
-                settings.AMQP_PIPELINE_TARGET,
-                spec_template._replace(source=source)))
-            source_count += 1
+        if self._supports_account_annotations:
+            # CoveredAccount-aware scanner!
+            # TODO: If an account has more than one Alias, we'll try to scan both.
+            # This is an issue when it comes to service accounts/shared mailboxes.
+            for account, source in self.generate_sources_with_accounts():
+                rule = spec_template.rule
+                if cva := CoveredAccount.objects.filter(account=account, scanner=self).first():
+                    last_scanned_at = cva.scan_status.start_time
+                    # Make a custom LastModifiedRule for this user
+                    rule = AndRule(LastModifiedRule(last_scanned_at), rule)
+                outbox.append((
+                    settings.AMQP_PIPELINE_TARGET,
+                    spec_template._replace(source=source, rule=rule)))
+                source_count += 1
+            return source_count
+        else:
+            # Not CoveredAccount-aware scanner.
+            for source in self.generate_sources():
+                outbox.append((
+                    settings.AMQP_PIPELINE_TARGET,
+                    spec_template._replace(source=source)
+                ))
+                source_count += 1
         return source_count
 
     def _add_checkups(
@@ -449,10 +469,6 @@ class Scanner(models.Model):
         if source_count == 0 and checkup_count == 0:
             raise ValueError(f"nothing to do for {self}")
 
-        # Synchronize the 'covered_accounts'-field with accounts, which are
-        # about to be scanned.
-        self.sync_covered_accounts()
-
         self.save()
 
         # Use the name of an appropriate organization as queue_suffix for
@@ -460,10 +476,14 @@ class Scanner(models.Model):
         queue_suffix = self.organization.name
 
         # Create a model object to track the status of this scan...
-        ScanStatus.objects.create(
+        new_status = ScanStatus.objects.create(
                 scanner=self, scan_tag=scan_tag.to_json_object(),
                 last_modified=scan_tag.time, total_sources=source_count,
                 total_objects=checkup_count)
+
+        # Synchronize the 'covered_accounts'-field with accounts, which are
+        # about to be scanned.
+        self.sync_covered_accounts(new_status)
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(
@@ -507,23 +527,40 @@ class Scanner(models.Model):
         """Return all accounts which would be scanned by this scannerjob, if
         run at this moment."""
         # Avoid circular import
-        from os2datascanner.projects.admin.organizations.models import Account
+        from os2datascanner.projects.admin.organizations.models import Account, OrganizationalUnit
         if self.org_unit.exists():
             return Account.objects.filter(units__in=self.org_unit.all())
+        elif self._supports_account_annotations:
+            return Account.objects.filter(
+                units__in=OrganizationalUnit.objects.filter(organization=self.organization))
         else:
-            return Account.objects.all()
+            # We can't assume that everyone is covered, but we can conclude
+            # that we can't know who's covered. (Scan might use a user-list file)
+            return Account.objects.none()
 
     def get_new_covered_accounts(self):
         """Return all accounts, which will be scanned by this scannerjob on the
         next scan, but are not present in the 'covered_accounts'-field."""
         return self.get_covered_accounts().difference(self.covered_accounts.all())
 
-    def sync_covered_accounts(self):
-        """Adds the accounts, which have not previously been scanned by this
-        scanner, but will be scanned if run now, to the 'covered_accounts'-
-        field."""
-        return self.covered_accounts.add(*self.get_new_covered_accounts())
+    def sync_covered_accounts(self, scan_status: ScanStatus):
+        """Updates or creates CoveredAccount relations for accounts covered
+        by current run of scannerjob.
+        I.e. connects a scannerjob, an account and a scanner status
+        """
 
+        cva = self.get_covered_accounts()
+        # Update existing, that are still covered.
+        CoveredAccount.objects.filter(account__in=cva, scanner=self).update(scan_status=scan_status)
+
+        # Create new entries for newcomers
+        CoveredAccount.objects.bulk_create(
+            [CoveredAccount(account=account, scanner=self, scan_status=scan_status) for
+             account in self.get_new_covered_accounts()],
+            ignore_conflicts=True
+        )
+
+    # TODO: Rethink what this means, now that we're keeping data for the sake of last modified
     def get_stale_accounts(self):
         """Return all accounts, which are included in the scanner's
         'covered_accounts' field, but are not associated with any org units

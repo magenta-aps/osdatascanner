@@ -14,6 +14,7 @@ from .utilities import MSGraphSource, warn_on_httperror, MailFSBuilder
 logger = logging.getLogger(__name__)
 
 
+# TODO: This probably shouldn't be a thing, but has complicated consequences to remove?
 class MSGraphMailSource(MSGraphSource):
     type_label = "msgraph-mail"
 

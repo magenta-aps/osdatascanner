@@ -91,14 +91,17 @@ class MSGraphDriveHandle(Handle):
     type_label = "msgraph-drive"
     resource_type = MSGraphDriveResource
 
-    def __init__(self, source, path, folder_name, owner_name):
+    def __init__(self, source, path, folder_name, owner_name, *, user_account=None):
         super().__init__(source, path)
         self._folder_name = folder_name
         self._owner_name = owner_name
+        self._user_account = user_account
 
     @property
     def presentation_name(self):
-        if self._owner_name:
+        if self._user_account:
+            return f"{self._user_account}'s files"
+        elif self._owner_name:
             return "\"{0}\" (owned by {1})".format(
                     self._folder_name, self._owner_name)
         else:
@@ -113,21 +116,23 @@ class MSGraphDriveHandle(Handle):
 
     def censor(self):
         return MSGraphDriveHandle(self.source.censor(), self.relative_path,
-                                  self._folder_name, self._owner_name)
+                                  self._folder_name, self._owner_name,
+                                  user_account=self._user_account)
 
     def to_json_object(self):
-        return dict(
-            **super().to_json_object(),
-            folder_name=self._folder_name,
-            owner_name=self._owner_name,
-        )
+        return super().to_json_object() | {
+            "folder_name": self._folder_name,
+            "owner_name": self._owner_name,
+            "user_account": self._user_account,
+        }
 
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
         return MSGraphDriveHandle(
                 Source.from_json_object(obj["source"]), obj["path"],
-                obj["folder_name"], obj["owner_name"])
+                obj["folder_name"], obj["owner_name"],
+                user_account=obj.get("user_account"))
 
 
 @Source.mime_handler(DUMMY_MIME)
@@ -136,6 +141,16 @@ class MSGraphDriveSource(DerivedSource):
 
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
+
+    @property
+    def _drive_path(self):
+        if drive_id := self.handle.relative_path:
+            return f"drives/{drive_id}"
+        elif user_principal_name := self.handle._user_account:
+            return f"users/{user_principal_name}/drive"
+        else:
+            raise ValueError("Object didn't contain any driveId or UPN!:"
+                             f" {self.to_json_object()}")
 
     def handles(self, sm):
 
@@ -147,15 +162,12 @@ class MSGraphDriveSource(DerivedSource):
                     yield MSGraphFileHandle(
                             self, "/".join([] + components + [name]), weblink=web_url)
                 elif "folder" in obj:
+                    folder_id: str = obj["id"]
                     subfolder = sm.open(self).get(
-                            "/drives/{0}/items/{1}/children".format(
-                                    self.handle.relative_path,
-                                    obj["id"])).json()
+                            f"{self._drive_path}/items/{folder_id}/children").json()
                     yield from _explore_folder(
                             components + [name], subfolder["value"])
-        root = sm.open(self).get(
-                "drives/{0}/root/children".format(
-                        self.handle.relative_path)).json()["value"]
+        root = sm.open(self).get(f"{self._drive_path}/root/children").json()["value"]
         yield from _explore_folder([], root)
 
 
@@ -173,9 +185,7 @@ class MSGraphFileResource(FileResource):
 
     def check(self) -> bool:
         try:
-            self._get_cookie().get("drives/{0}/root:/{1}".format(
-                self.handle.source.handle.relative_path,
-                self.handle.relative_path))
+            self._get_cookie().get(self.make_object_path())
             return True
         except HTTPError as ex:
             if ex.response.status_code in (404, 410,):
@@ -183,9 +193,8 @@ class MSGraphFileResource(FileResource):
             raise
 
     def make_object_path(self):
-        return "drives/{0}/root:/{1}".format(
-                self.handle.source.handle.relative_path,
-                self.handle.relative_path)
+        drive_path: str = self.handle.source._drive_path
+        return f"{drive_path}/root:/{self.handle.relative_path}"
 
     def get_file_metadata(self):
         if not self._metadata:
