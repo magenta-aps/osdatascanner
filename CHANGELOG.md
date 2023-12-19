@@ -1,5 +1,11 @@
 # Changelog
 
+"Somehow The Changelog Returned!"
+
+### Bugfixes
+
+- Delete button on scan status tab now matches the other delete buttons.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
