@@ -4,9 +4,9 @@ from .rule import Rule, Sensitivity
 from .regex import RegexRule
 
 sick_leave_regex = (r"(jeg har feber)|(er indlagt)|(blevet indlagt)"
-                    r"|(kræft)|(sygedag)|(tarm)|(Under the weather)"
-                    r"|(Maveproblemer)|(Ikke på toppen)|(skadestue)"
-                    r"|(hospitalet)")
+                    r"|(\b[^(be|af)]kræft[^(er|else)]\b)|(sygedag)|(tarm)"
+                    r"|(\bUnder the weather\b)|(\bMaveproblemer\b)|(Ikke på toppen)"
+                    r"|(skadestue)|(hospitalet\b)")
 
 
 class SickLeaveRule(RegexRule):
