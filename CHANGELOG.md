@@ -2,9 +2,15 @@
 
 ## Next release
 
+"Midnight Mania"
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.
+
+### Bugfixes
+
+- Scannerjobs planned for 23:45 are now able to be automatically run.
 
 ## Version 3.21.4, 15th December 2023
 

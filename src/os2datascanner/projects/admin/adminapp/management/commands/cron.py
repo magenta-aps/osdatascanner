@@ -30,6 +30,16 @@ logger = logging.getLogger(__name__)
 
 def should_scanner_start(scanner, current_qhr, next_qhr, now=False):
     qhr_start, qhr_end = (current_qhr.time(), next_qhr.time())
+
+    # Is midnight the beginning or the end of a day? After digging for long, this turns
+    # out to be a recurring hot debate in Python. Should there be support for the 24th hour?
+    # Well. There currently isn't.
+    # Luckily, we don't really need to care much for that degree of precision.
+    # But, we do need special handling to avoid a timespan of (23:45-00:00] as 00:00
+    # would be interpreted as the beginning of current day.
+    # For now, we'll just dial back a minute if end hour is falsey, i.e. 0.
+    qhr_end = qhr_end if qhr_end.hour else datetime.time(hour=23, minute=59)
+
     start = False
     match (scanner.schedule_date, scanner.schedule_time):
         case (datetime.date() as d, datetime.time() as t) \
