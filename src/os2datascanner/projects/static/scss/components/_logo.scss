@@ -1,19 +1,33 @@
 .logo {
   height: var(--size-logo-height);
   width: var(--size-logo-width);
+
+  svg {
+    height: var(--size-logo-height);
+    max-height: 100%;
+    max-width: 100%;
+    min-width: calc(var(--size-logo-width) / 2);
+    display: block;
+
+    // Position both svgs on top of each other
+    grid-column: 1;
+    grid-row: 1;
+
+    &#logo-hover {
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+  }
+
+  &:hover svg#logo-hover {
+    opacity: 1;
+  }
+
 }
 
 .logo > a {
-  display: block;
+  display: grid;
   height: 100%;
-}
-
-.logo svg {
-  height: var(--size-logo-height);
-  max-height: 100%;
-  display: block;
-  max-width: 100%;
-  min-width: calc(var(--size-logo-width) / 2);
 }
 
 .logo .cls-1 {

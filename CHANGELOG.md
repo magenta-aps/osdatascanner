@@ -1,5 +1,11 @@
 # Changelog
 
+## Next release
+
+### General improvements
+
+- The logo is now highlighted when the user hovers the mouse over it.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
