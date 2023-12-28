@@ -49,6 +49,9 @@ class OrganizationalUnitListView(RestrictedListView):
                     to_attr='dpos')
                 )
 
+        # Prefetch parents to save one query per unit
+        qs = qs.prefetch_related('parent')
+
         return qs
 
     def setup(self, request, *args, **kwargs):

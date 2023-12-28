@@ -8,6 +8,9 @@
 
 - The logo is now highlighted when the user hovers the mouse over it.
 
+- Reduced number of queries made in organizational unit list page by 
+  prefetching the parent of each unit.
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
