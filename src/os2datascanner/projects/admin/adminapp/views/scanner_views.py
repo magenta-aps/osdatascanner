@@ -22,7 +22,7 @@ from django.conf import settings
 from pika.exceptions import AMQPError
 import structlog
 
-from django.forms import ModelMultipleChoiceField, TypedChoiceField
+from django.forms import ModelMultipleChoiceField
 
 from os2datascanner.projects.admin.organizations.models import (
     Organization, Account, Alias)
@@ -32,7 +32,7 @@ from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
     CSVExportMixin
 from ..models.authentication import Authentication
-from ..models.rules import Rule
+from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.usererrorlog import UserErrorLog
 from ..utils import CleanMessage
@@ -390,15 +390,19 @@ class ScannerBase(object):
         form.fields['organization'].queryset = org_qs
         form.fields['organization'].empty_label = None
 
+        allowed_rules = CustomRule.objects.filter(
+            Q(organization__in=org_qs) | Q(organization__isnull=True))
+
         form.fields["rules"] = ModelMultipleChoiceField(
-            Rule.objects.all(),
+            allowed_rules,
             validators=ModelMultipleChoiceField.default_validators,
             )
 
-        form.fields["exclusion_rules"] = TypedChoiceField(
-            choices=((r.pk, r.name) for r in Rule.objects.all()),
+        form.fields["exclusion_rules"] = ModelMultipleChoiceField(
+            allowed_rules,
+            validators=ModelMultipleChoiceField.default_validators,
             required=False
-            )
+        )
 
         return form
 

@@ -58,6 +58,8 @@
 
 - Matches from MS File scans are now correctly shown as such, instead of as
   matches from MS Teams scans in the report module.
+  
+- Exclusion rules can once again be chosen on the scanner forms in the UI.
 
 ## Version 3.21.4, 15th December 2023
 
