@@ -12,6 +12,8 @@
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
 
+- The handle dropdown is no longer hidden in the parent datatable overflow.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
