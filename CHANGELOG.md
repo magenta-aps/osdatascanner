@@ -41,6 +41,8 @@
 
 - The total number of employees shown in the leader overview is now counted
   correctly.
+  
+- The handle dropdown is no longer hidden in the parent datatable overflow.
 
 ## Version 3.21.4, 15th December 2023
 
