@@ -111,6 +111,7 @@ class ExchangeScannerViewsTest(TestCase):
         exchange_rule = Rule.objects.create(
             organization=magenta_org,
             name="cool rule",
+            pk=101
         )
 
         exchange_scan = ExchangeScanner.objects.create(
@@ -377,7 +378,7 @@ class ExchangeScannerViewsTest(TestCase):
             'username': 'dummy',
             'password': 'super_secret',
             'userlist': userlist,
-            'rules': 1
+            'rules': 101
         })
 
         context = response.context
@@ -386,4 +387,4 @@ class ExchangeScannerViewsTest(TestCase):
         # context. If it is correctly formatted, the form will not exist.
         userlist_is_valid = form is None
 
-        self.assertEqual(userlist_is_valid, valid)
+        self.assertEqual(userlist_is_valid, valid, f"A form was found: {form}")
