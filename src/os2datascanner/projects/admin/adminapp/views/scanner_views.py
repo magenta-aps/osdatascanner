@@ -451,6 +451,8 @@ class ScannerBase(object):
 
     def create_remediator_aliases(self, request):
         remediator_uuids = request.POST.getlist('remediators')
+        # It is possible to not have an object at this point, eq. if the
+        # CreateView form is invalid. In that case, we don't do anything.
         if self.object:
             # Delete old remediators from this scanner, if they are no longer
             # specified in the form.
@@ -458,12 +460,12 @@ class ScannerBase(object):
                 _alias_type=AliasType.REMEDIATOR,
                 _value=self.object.pk).exclude(
                 account__uuid__in=remediator_uuids).delete()
-        # Create new remediator aliases
-        for remediator_uuid in remediator_uuids:
-            Alias.objects.get_or_create(
-                account=Account.objects.get(uuid=remediator_uuid),
-                _alias_type=AliasType.REMEDIATOR,
-                _value=self.object.pk)
+            # Create new remediator aliases
+            for remediator_uuid in remediator_uuids:
+                Alias.objects.get_or_create(
+                    account=Account.objects.get(uuid=remediator_uuid),
+                    _alias_type=AliasType.REMEDIATOR,
+                    _value=self.object.pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
