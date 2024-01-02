@@ -80,14 +80,6 @@
   <h2>{% trans "User Rights" %}</h2>
   <table class="userprofile-table user-rights">
     <tbody>
-      <tr>
-        <td>{% trans "Roles" %}</td>
-        <td>
-          <ul>
-            {% for role in user_roles %}<li>{{ role|capfirst }}</li>{% endfor %}
-          </ul>
-        </td>
-      </tr>
       {% if user.is_active %}
         <tr>
           <td>{% trans "Active" %}</td>

@@ -39,6 +39,7 @@
           $("#{{ form.sitemap_url.auto_id }}_container").hide();
         }
       });
+      $('.remediator_select2').select2();
     })
   })(jQuery);
 
@@ -157,6 +158,7 @@
             {% if form.validation_status %}
               {% include "components/scanner/scanner_form_select_option_field.html" with field=form.validation_status %}
             {% endif %}
+
           </fieldset>
         </section>
 
@@ -679,6 +681,44 @@
           </div>
         </fieldset>
       </section>
+
+      {% if possible_remediators or universal_remediators %}
+        <section class="data-form">
+          <fieldset = class="form__fieldset">
+            <h3>{% trans "Remediators" %}</h3>
+            {% if possible_remediators %}
+              <div id="scanner_remediators_container" class="dropdown-group form__group">
+                <label for="scanner_remediators">{% trans "Remediators" %}</label>
+                <div class="dropdown">
+                  <select multiple
+                          name="remediators"
+                          id="remediators"
+                          class="remediator_select2">
+                    {% for account in possible_remediators %}
+                      <option value="{{ account.uuid }}"
+                              {% if account in remediators %}selected{% endif %}>{{ account.get_full_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <span class="form__help-text">{% trans "If any matches from the scanner job cannot be delegated to a specific user, the remediator(s) will see the results in their report module instead." %}</span>
+            {% endif %}
+            {% if universal_remediators %}
+              <div id="scanner_universal_remediators_container"
+                   class="form__group dropdown-group">
+                <label>{% trans "Universal remediators" %}</label>
+                <div class="account_links">
+                  {% for remediator in universal_remediators %}
+                    <a href="{% url "account" remediator.organization.slug remediator.uuid %}"
+                       class="account_link">{{ remediator.get_full_name }}</a>
+                  {% endfor %}
+                </div>
+              </div>
+              <span class="form__help-text">{% trans "Universal remediators are automatically assigned as remediators for all scanner jobs." %}</span>
+            {% endif %}
+          </fieldset>
+        </section>
+      {% endif %}
 
       {% include "components/rules/rule_selector.html" with rules=form.rules is_required=True selector_id="rules" component_title="Add rule" changed_id="changed_rules" %}
 

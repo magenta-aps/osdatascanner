@@ -14,7 +14,7 @@
 from json import dumps
 
 from django.db import transaction
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Subquery, Q
 from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from django.shortcuts import render
@@ -24,7 +24,8 @@ import structlog
 
 from django.forms import ModelMultipleChoiceField, TypedChoiceField
 
-from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.organizations.models import (
+    Organization, Account, Alias)
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .views import RestrictedListView, RestrictedCreateView, \
@@ -35,6 +36,7 @@ from ..models.rules.rule import Rule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.usererrorlog import UserErrorLog
 from ..utils import CleanMessage
+from ...organizations.models.aliases import AliasType
 from django.utils.translation import gettext_lazy as _
 
 from channels.layers import get_channel_layer
@@ -131,7 +133,7 @@ class StatusOverview(StatusBase):
             elif htmx_trigger == "status_table_poll":
                 return "components/scanstatus/scan_status_table.html"
         else:
-            return"scan_status.html"
+            return "scan_status.html"
 
 
 class StatusCompleted(StatusBase):
@@ -447,9 +449,44 @@ class ScannerBase(object):
 
         return super().form_valid(form)
 
+    def create_remediator_aliases(self, request):
+        remediator_uuids = request.POST.getlist('remediators')
+        # It is possible to not have an object at this point, eq. if the
+        # CreateView form is invalid. In that case, we don't do anything.
+        if self.object:
+            # Delete old remediators from this scanner, if they are no longer
+            # specified in the form.
+            Alias.objects.filter(
+                _alias_type=AliasType.REMEDIATOR,
+                _value=self.object.pk).exclude(
+                account__uuid__in=remediator_uuids).delete()
+            # Create new remediator aliases
+            for remediator_uuid in remediator_uuids:
+                Alias.objects.get_or_create(
+                    account=Account.objects.get(uuid=remediator_uuid),
+                    _alias_type=AliasType.REMEDIATOR,
+                    _value=self.object.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = UserWrapper(self.request.user)
+        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+        if self.object:
+            context["remediators"] = self.object.get_remediators()
+        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
+            Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
+            aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+        return context
+
 
 class ScannerCreate(ScannerBase, RestrictedCreateView):
     """View for creating a new scannerjob."""
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        self.create_remediator_aliases(request)
+        return response
 
 
 class ScannerUpdate(ScannerBase, RestrictedUpdateView):
@@ -505,6 +542,11 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
                 return super().form_invalid(form)
         return super().form_valid(form)
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        self.create_remediator_aliases(request)
+        return response
+
 
 class ScannerDelete(RestrictedDeleteView):
     def get_form(self, form_class=None):
@@ -522,6 +564,11 @@ class ScannerCopy(ScannerBase, RestrictedCreateView):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        self.create_remediator_aliases(request)
+        return response
 
     def get_initial(self):
         initial = super().get_initial()

@@ -2,12 +2,16 @@ import logging
 from itertools import chain
 from django.apps import apps
 from django.db import transaction
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.core_organizational_structure.utils import get_serializer
 from .models import (Account, Alias, Position, OrganizationalUnit)
 from ..import_services.models.imported_mixin import Imported
 from ..organizations.models.broadcasted_mixin import Broadcasted
 from ..organizations.models.organization import Organization
+from ..core.models.administrator import Administrator
 from ..organizations.broadcast_bulk_events import (BulkCreateEvent, BulkUpdateEvent,
                                                    BulkDeleteEvent)
 from ..organizations.publish import publish_events
@@ -73,7 +77,7 @@ def update_and_serialize(manager, instances):
                  f"{instances}")
     properties = set()
     serializer = get_serializer(manager.model)
-    for _, props in instances:
+    for __, props in instances:
         properties |= set(props)
     logger.debug(f"found properties: {properties}")
 
@@ -152,3 +156,29 @@ def prepare_and_publish(
         logger.info("Database operations complete")
         logger.info("Publishing events..")
         publish_events(event)
+
+
+def user_allowed(user, org_slug):
+    """Checks that the user is allowed to see content for the given org slug,
+    and returns the Organization object."""
+    org = get_object_or_404(Organization, slug=org_slug)
+    allowed = user.is_authenticated and (
+                user.is_superuser or Administrator.objects.filter(
+                    user=user, client=org.client).exists())
+    return org, allowed
+
+
+class ClientAdminMixin:
+    """Mixin for making sure, that the requesting user is either an admin for
+    the client, for which they are requesting data, or is a superuser."""
+
+    def setup(self, request, *args, **kwargs):
+        org, allowed = user_allowed(request.user, kwargs['org_slug'])
+        # Add the organization to the kwargs for future use.
+        kwargs['org'] = org
+        if allowed:
+            return super().setup(request, *args, **kwargs)
+        else:
+            raise Http404(
+                _("Account not found.")
+                )

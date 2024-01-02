@@ -490,7 +490,8 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
                 matches=DocumentReport.objects.filter(
                         number_of_matches__gte=1,
                         resolution_status__isnull=True
-                    ))
+                    ),
+                only_personal=True)
             .order_by(
                 "scanner_job_pk"
             ).values(
@@ -520,7 +521,8 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
             matches=DocumentReport.objects.filter(
                 scanner_job_pk=scannerjob_pk,
                 resolution_status__isnull=True,
-                number_of_matches__gte=1))
+                number_of_matches__gte=1),
+            only_personal=True)
 
         response_string = _('You deleted all results from {0} associated with {1}.'.format(
                 scannerjob_name, account.get_full_name()))
@@ -578,7 +580,7 @@ class EmployeeView(LoginRequiredMixin, DetailView):
 # Logic separated to function to allow usability in send_notifications.py
 
 
-def filter_inapplicable_matches(user, matches, account=None):
+def filter_inapplicable_matches(user, matches, account=None, only_personal=False):
     """ Filters matches by organization
     and role. """
 
@@ -594,7 +596,7 @@ def filter_inapplicable_matches(user, matches, account=None):
         if account:
             matches = matches.filter(organization=account.organization)
 
-    if user.is_superuser:
+    if not only_personal and user.is_superuser:
         hidden_matches = matches.filter(only_notify_superadmin=True)
         user_matches = matches.filter(
             alias_relation__in=user.aliases.exclude(_alias_type=AliasType.REMEDIATOR),
@@ -606,7 +608,7 @@ def filter_inapplicable_matches(user, matches, account=None):
             alias_relation__in=user.aliases.exclude(_alias_type=AliasType.REMEDIATOR),
             only_notify_superadmin=False)
 
-    if user.account.is_remediator:
+    if not only_personal and user.account.is_remediator:
         matches = matches.filter(
             alias_relation__in=user.aliases.all(),
             only_notify_superadmin=False)

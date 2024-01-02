@@ -1,0 +1,168 @@
+{% extends "organizations/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ account.get_full_name }}{% endblock %}
+
+{% block content %}
+
+  <div class="content-header">{% include "components/common/breadcrumb.html" with page="account" %}</div>
+
+  <h1 class="userprofile-text">{% trans "Account" %}</h1>
+
+  <div class="userprofile-content-wrapper user-image">
+    <span class="user__avatar_verybig">
+      {% if account.image %}
+        <img class="userprofile-image" src="{{ account.image }}">
+      {% else %}
+        <i id="account_circle" class="material-icons">account_circle</i>
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="userprofile-content-wrapper user-tables">
+    <h2>{% trans "Account information" %}</h2>
+    <table class="userprofile-table account-info">
+      <tbody>
+        <tr>
+          <td>{% trans "Name" %}</td>
+          <td>{{ account.get_full_name }}</td>
+        </tr>
+        <tr>
+          <td>{% trans "Username" %}</td>
+          <td>{{ account.username }}</td>
+        </tr>
+        <tr>
+          <td>{% trans "E-mail" %}</td>
+          <td>{{ account.email }}</td>
+        </tr>
+        <tr>
+          <td>{% trans "Organization" %}</td>
+          <td>
+            {% if account.organization %}{{ account.organization }}{% endif %}
+          </td>
+        </tr>
+        {% if account.is_manager %}
+          <tr>
+            <td>{% trans "Manager for" %}</td>
+            <td>
+              <ul>
+                {% for unit in account.get_managed_units %}<li>{{ unit.name }}</li>{% endfor %}
+              </ul>
+            </td>
+          </tr>
+        {% endif %}
+        {% if account.is_dpo %}
+          <tr>
+            <td>{% trans "DPO for" %}</td>
+            <td>
+              <ul>
+                {% for unit in account.get_dpo_units %}<li>{{ unit.name }}</li>{% endfor %}
+              </ul>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <h2>{% trans "User Rights" %}</h2>
+    <table class="userprofile-table user-rights">
+      <tbody>
+        {% if account.is_superuser %}
+          <tr>
+            <td>{% trans "Superuser" %}</td>
+            <td>
+              <span class="checkmark true">
+                {% include "components/svg-icons/check_circle_full.svg" %}
+                <span class="width">{% trans "Yes" %}</span>
+              </span>
+            </td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td>{% trans "Aliases" %}</td>
+          <td>
+            <ul>
+              {% for alias in aliases %}<li>{{ alias.value }} ({{ alias.alias_type }})</li>{% endfor %}
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>{% trans "Universal remediator" %}</td>
+          <td class="ds-checkbox">
+            <input type="checkbox"
+                   name="remediator-check"
+                   id="remediator-check"
+                   autocomplete="off"
+                   hx-post=""
+                   hx-trigger="change"
+                   hx-swap="outerHTML"
+                   hx-target=".content"
+                   hx-select=".content"
+                   hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                   hx-include='#remediator-check'
+                   {% if account.universal_remediator %}checked{% endif %}>
+            <label for="remediator-check"
+                   title="{% trans "By checking this box, the current user will be assigned as a remediator of all scannerjobs." %}">
+            </label>
+          </td>
+        </tr>
+        {% if not account.universal_remediator %}
+          <tr>
+            <td>{% trans "Remediator for" %}</td>
+            <td>
+              <ul>
+                {% for scanner in remediator_for_scanners %}
+                  <li class="dynamic_li"
+                      title="{% trans "Click to remove" %} {{ scanner.name }}."
+                      name="rem-remediator"
+                      hx-post=""
+                      hx-swap="outerHTML"
+                      hx-target=".content"
+                      hx-select=".content"
+                      hx-trigger="click"
+                      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                      hx-vals='{"rem-remediator": "{{ scanner.pk }}"}'
+                      hx-confirm="{% trans "Are you sure you want to remove" %} {{ scanner.name }}?">
+                    <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                    <!-- djlint:off -->{{ scanner.name }}</li><!--djlint:on-->
+                  {% endfor %}
+                  {% if scanners %}
+                    <li class="add_remediator">
+                      <button type="button" class="add_button button button--small">
+                        <svg class="icon">
+                          <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                        </svg>
+                      </button>
+                      <select class="select_options"
+                              name="add-remediator"
+                              hidden
+                              hx-post=""
+                              hx-swap="outerHTML"
+                              hx-target=".content"
+                              hx-select=".content"
+                              hx-trigger="change"
+                              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                        <option value="">{% trans "Choose scannerjob" %}</option>
+                        {% for scanner in scanners %}<option value="{{ scanner.pk }}">{{ scanner.name }}</option>{% endfor %}
+                      </select>
+                    </li>
+                  {% endif %}
+                </ul>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <h2>{% trans "Login Information" %}</h2>
+      <table class="userprofile-table login-info">
+        <tbody>
+          <tr>
+            <td>{% trans "User since" %}</td>
+            <td>{{ user.date_joined }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  {% endblock content %}
