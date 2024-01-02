@@ -178,7 +178,7 @@ class Command(BaseCommand):
 
         print("\n# [other]")
         print_settings("ENABLE_MINISCAN", "MINISCAN_REQUIRES_LOGIN",
-                       "MINISCAN_FILE_SIZE_LIMIT")
+                       "MINISCAN_FILE_SIZE_LIMIT", "DATA_UPLOAD_MAX_NUMBER_FIELDS")
 
         print("\n//ENVIRONMENT VARIABLES//")
 

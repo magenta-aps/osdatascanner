@@ -8,6 +8,10 @@
 
 - The logo is now highlighted when the user hovers the mouse over it.
 
+- Add the Django setting "DATA_UPLOAD_MAX_NUMBER_FIELDS" to the configuration
+  file, to allow some clients to send more fields in GET and POST requests than
+  the default 1000.
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.

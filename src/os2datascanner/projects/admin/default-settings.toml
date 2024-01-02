@@ -86,6 +86,9 @@ TEST_OUTPUT_DESCRIPTIONS = true
 TEST_OUTPUT_VERBOSE = true
 # TEST_OUTPUT_FILE_NAME is set under dirs
 
+# [requests]
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
 # [installation]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -152,6 +155,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # Add settings here to make them accessible from templates
 SETTINGS_EXPORT = [
     'DEBUG',
+    'DATA_UPLOAD_MAX_NUMBER_FIELDS',
     'ENABLE_FILESCAN',
     'ENABLE_EXCHANGESCAN',
     'ENABLE_WEBSCAN',
