@@ -4,6 +4,30 @@
 
 "Midnight Mania"
 
+### New in this release
+
+- Improved UI for accounts in the admin module.
+
+  - From the "Organizations"-tab, a list of accounts for an organization can be
+    accessed through a button on the table.
+
+  - Each account now has an overview page in the admin module. This page also
+    lists the scanner jobs for which the account is a remediator, and whether
+    or not the user is a universal remediator. These assignments can also be
+    edited from this page.
+
+- It is now possible to assign remediators to a specific scannerjob when
+  creating, updating or copying a scanner job.
+
+- The Alias object manager now has some additional functionality:
+
+  - Creating a remediator alias with `_value=0`, a "universal remediator 
+    alias", will result in all other remediator aliases for that account being
+    deleted.
+
+  - Attempting to create a remediator alias with a non-zero `_value` will throw
+    an exception, if the assigned account is a universal remediator.
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.

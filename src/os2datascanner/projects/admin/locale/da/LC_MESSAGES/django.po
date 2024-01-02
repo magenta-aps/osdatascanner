@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-28 11:26+0100\n"
+"POT-Creation-Date: 2024-01-02 13:20+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -711,9 +711,9 @@ msgstr "Opret ny regel"
 #: adminapp/templates/components/common/breadcrumb.html:85
 #: adminapp/templates/components/common/breadcrumb.html:93
 #: adminapp/templates/components/common/breadcrumb.html:101
-#: adminapp/templates/components/common/breadcrumb.html:113
-#: adminapp/templates/components/common/breadcrumb.html:125
-#: adminapp/templates/components/common/breadcrumb.html:137
+#: adminapp/templates/components/common/breadcrumb.html:114
+#: adminapp/templates/components/common/breadcrumb.html:126
+#: adminapp/templates/components/common/breadcrumb.html:138
 #: adminapp/templates/components/navigation/navigation.html:48
 #: organizations/apps.py:8
 #: organizations/templates/organizations/org_list.html:7
@@ -738,33 +738,33 @@ msgid "organizational hierarchy"
 msgstr "organisatorisk struktur"
 
 #: adminapp/templates/components/common/breadcrumb.html:97
-#: adminapp/templates/components/common/breadcrumb.html:105
+#: adminapp/templates/components/common/breadcrumb.html:106
 #: organizations/templates/organizations/account_list.html:5
 #: organizations/templates/organizations/orgunit_list.html:73
 msgid "accounts"
 msgstr "konti"
 
-#: adminapp/templates/components/common/breadcrumb.html:118
+#: adminapp/templates/components/common/breadcrumb.html:119
 msgid "add LDAP configuration"
 msgstr "tilføj LDAP-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:120
+#: adminapp/templates/components/common/breadcrumb.html:121
 msgid "update LDAP configuration"
 msgstr "opdatér LDAP-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:130
+#: adminapp/templates/components/common/breadcrumb.html:131
 msgid "add MS Graph configuration"
 msgstr "Tilføj Microsoft Graph konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:132
+#: adminapp/templates/components/common/breadcrumb.html:133
 msgid "update MS Graph configuration"
 msgstr "opdatér Microsoft Graph konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:142
+#: adminapp/templates/components/common/breadcrumb.html:143
 msgid "add OS2mo configuration"
 msgstr "tilføj OS2mo-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:144
+#: adminapp/templates/components/common/breadcrumb.html:145
 msgid "update OS2mo configuration"
 msgstr "opdatér OS2mo-konfiguration"
 
@@ -2131,7 +2131,7 @@ msgstr "Scan tidspunkt"
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:539
+#: adminapp/views/scanner_views.py:541
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
@@ -2741,6 +2741,10 @@ msgstr "Menu-adgang"
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
 
+#: organizations/models/account.py:55
+msgid "Deleted scanner {pk}"
+msgstr "Slettet scanner {pk}"
+
 #: organizations/models/organization.py:58
 msgid "slug"
 msgstr "slug"
@@ -2805,15 +2809,15 @@ msgstr "Klik for at fjerne"
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
-#: organizations/templates/organizations/account_detail.html:146
+#: organizations/templates/organizations/account_detail.html:145
 msgid "Choose scannerjob"
 msgstr "Vælg scannerjob"
 
-#: organizations/templates/organizations/account_detail.html:158
+#: organizations/templates/organizations/account_detail.html:157
 msgid "Login Information"
 msgstr "Kontooplysninger"
 
-#: organizations/templates/organizations/account_detail.html:162
+#: organizations/templates/organizations/account_detail.html:161
 msgid "User since"
 msgstr "Bruger siden"
 
@@ -2821,11 +2825,11 @@ msgstr "Bruger siden"
 msgid "accounts for"
 msgstr "konti for"
 
-#: organizations/templates/organizations/account_list.html:37
+#: organizations/templates/organizations/account_list.html:38
 msgid "Search for account"
 msgstr "Søg efter konto"
 
-#: organizations/templates/organizations/account_list.html:67
+#: organizations/templates/organizations/account_list.html:68
 msgid "No accounts found!"
 msgstr "Ingen konti fundet"
 

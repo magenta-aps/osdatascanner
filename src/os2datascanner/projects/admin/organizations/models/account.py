@@ -13,6 +13,7 @@
 #
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
 from os2datascanner.core_organizational_structure.models import \
     AccountSerializer as Core_AccountSerializer
@@ -48,6 +49,11 @@ class Account(Core_Account, Imported, Broadcasted):
         scanner_pks = list(self.aliases.filter(_alias_type=AliasType.REMEDIATOR)
                                        .values_list('_value', flat=True))
         scanners = list(Scanner.objects.filter(pk__in=scanner_pks).values('name', 'pk'))
+        print([scanner['pk'] for scanner in scanners])
+        # Don't forget about deleted scanners!
+        for pk in scanner_pks:
+            if int(pk) not in [int(scanner['pk']) for scanner in scanners]:
+                scanners.append({'name': _(f'Deleted scanner {pk}'), 'pk': pk})
         return scanners
 
 
