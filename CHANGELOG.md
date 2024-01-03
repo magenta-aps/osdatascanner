@@ -36,6 +36,9 @@
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
 
+- The total number of employees shown in the leader overview is now counted
+  correctly.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
