@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      {% if rules %}
+      {% if customrule_list %}
         <div class="datatable-wrapper card xl"
              role="region"
              tabindex="0"
@@ -128,14 +128,12 @@
         <table class="datatable">
           <colgroup>
             <col class="datatable__column--name" />
-            <col class="datatable__column--org" />
             <col class="datatable__column--info" />
             <col class="datatable__column--sensitivity" />
           </colgroup>
           <thead>
             <tr>
               <th class="datatable__column--name">{% trans "Name" %}</th>
-              <th class="datatable__column--org">{% trans "Organization" %}</th>
               <th class="datatable__column--info">{% trans "Description" %}</th>
               <th class="datatable__column--sensitivity">{% trans "Sensitivity" %}</th>
             </tr>
@@ -145,7 +143,6 @@
             {% for rule in systemrule_list %}
               <tr tabindex="0">
                 <td class="datatable__column--name">{{ rule.name }}</td>
-                <td class="datatable__column--org">{{ rule.organization }}</td>
                 <td class="datatable__column--info">{{ rule.description }}</td>
                 <td class="datatable__column--sensitivity">
                   <span class="flex">

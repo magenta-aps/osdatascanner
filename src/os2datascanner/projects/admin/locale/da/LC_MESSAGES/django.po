@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adminapp/admin.py:94
+#: adminapp/admin.py:83
 msgid "Rule cannot be compiled by scanner"
 msgstr "Reglen kan ikke kompileres af scanneren"
 
-#: adminapp/admin.py:98
+#: adminapp/admin.py:87
 msgid "CPR rule should not be used more than once"
 msgstr "CPR-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:102
+#: adminapp/admin.py:91
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:158
+#: adminapp/admin.py:142
 msgid "An errorlog cannot both be new and removed"
 msgstr "En fejlbesked kan ikke både være ny og fjernet"
 
-#: adminapp/admin.py:197
+#: adminapp/admin.py:181
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:201
+#: adminapp/admin.py:185
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -48,47 +48,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:206
+#: adminapp/admin.py:190
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:210
+#: adminapp/admin.py:194
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:213
+#: adminapp/admin.py:197
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:217
+#: adminapp/admin.py:201
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:220
+#: adminapp/admin.py:204
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:224
+#: adminapp/admin.py:208
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:242
+#: adminapp/admin.py:226
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:246
+#: adminapp/admin.py:230
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers løst-status til True"
 
-#: adminapp/admin.py:249
+#: adminapp/admin.py:233
 msgid "Change resolved-status to False"
 msgstr "Sæt løst-status til False"
 
-#: adminapp/admin.py:253
+#: adminapp/admin.py:237
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers løst-status til True"
@@ -110,7 +110,7 @@ msgstr "slå sidst ændret-funktion fra for alt i dette scan"
 msgid "no scanner job exists with id {id}"
 msgstr "intet scannerjob findes med id {id}"
 
-#: adminapp/models/apikey.py:16 adminapp/models/rules/rule.py:47
+#: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
 #: adminapp/models/scannerjobs/scanner.py:84 adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:66
@@ -143,26 +143,26 @@ msgstr "Brugerdomæne"
 msgid "Login method"
 msgstr "Login metode"
 
-#: adminapp/models/rules/customrule.py:31
-#: adminapp/templates/components/rules/customrule_form.html:64
-#: adminapp/templates/components/rules/regexrule_form.html:135
-msgid "Rule"
-msgstr "Regel"
-
-#: adminapp/models/rules/rule.py:40 adminapp/models/scannerjobs/scanner.py:77
+#: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:77
 #: core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:44
 #: organizations/templates/organizations/orgunit_list.html:72
 msgid "name"
 msgstr "navn"
 
-#: adminapp/models/rules/rule.py:53
+#: adminapp/models/rules.py:53
 msgid "description"
 msgstr "Beskrivelse"
 
-#: adminapp/models/rules/rule.py:59
+#: adminapp/models/rules.py:59
 msgid "sensitivity"
 msgstr "Følsomhed"
+
+#: adminapp/models/rules.py:90
+#: adminapp/templates/components/rules/customrule_form.html:64
+#: adminapp/templates/components/rules/regexrule_form.html:135
+msgid "Rule"
+msgstr "Regel"
 
 #: adminapp/models/scannerjobs/analysisscanner.py:63
 msgid "Mime type"
@@ -521,20 +521,20 @@ msgid "e-mail header"
 msgstr "e-mail header"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:35
+msgid "passport"
+msgstr "pas"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:36
 msgid "Experimental"
 msgstr "Eksperimentel"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:36
+#: adminapp/templates/components/admin_widgets/rule_builder.html:37
 msgid "CPR-nr. (Turbo)"
 msgstr "CPR-nr. (Turbo)"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:37
+#: adminapp/templates/components/admin_widgets/rule_builder.html:38
 msgid "health information (Turbo)"
 msgstr "helbredsinformation (Turbo)"
-
-#: adminapp/templates/components/admin_widgets/rule_builder.html:38
-msgid "passport"
-msgstr "pas"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:45
 #: adminapp/templates/components/admin_widgets/rule_builder.html:86
@@ -1945,7 +1945,7 @@ msgstr "Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/rules.html:116
 msgid "No rules added yet"
-msgstr "Der er endnu ikke tilføjet nogen regler"
+msgstr "Der er endnu ikke tilføjet nogle regler"
 
 #: adminapp/templates/rules.html:121 adminapp/templates/rules.html:127
 msgid "System rules"
@@ -2104,13 +2104,13 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:77
+#: adminapp/views/rule_views.py:74
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:79
+#: adminapp/views/rule_views.py:76
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
@@ -2135,11 +2135,11 @@ msgstr "Scannerjob"
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/views.py:211 import_services/models/exported_mixin.py:31
+#: adminapp/views/views.py:202 import_services/models/exported_mixin.py:31
 msgid "created"
 msgstr "oprettet"
 
-#: adminapp/views/views.py:211
+#: adminapp/views/views.py:202
 msgid "saved"
 msgstr "gemt"
 

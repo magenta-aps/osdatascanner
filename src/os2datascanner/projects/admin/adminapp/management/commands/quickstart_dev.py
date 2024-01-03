@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from recurrence import Recurrence
+
 from ....organizations.broadcast_bulk_events import BulkCreateEvent
 from ....organizations.publish import publish_events
 from os2datascanner.projects.admin.adminapp.models.authentication import (
@@ -16,8 +17,8 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner impor
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import (
     WebScanner,
 )
-from os2datascanner.projects.admin.adminapp.models.rules.cprrule import (
-    CPRRule,
+from os2datascanner.projects.admin.adminapp.models.rules import (
+    CustomRule,
 )
 from os2datascanner.projects.admin.organizations.models.account import (
     Account,
@@ -25,6 +26,23 @@ from os2datascanner.projects.admin.organizations.models.account import (
 from os2datascanner.projects.admin.organizations.models.organization import (
     Organization, OrganizationSerializer
 )
+from os2datascanner.projects.admin.core.models.client import Client
+
+
+def get_default_org_and_cprrule():
+    """
+    Retrieves the default organization along with an instance
+    of the CPR rule for the dev environment.
+    """
+
+    default_org = Organization.objects.first()
+
+    cpr = CustomRule.objects.filter(
+        name="CPR regel",
+        description="Denne regel finder alle gyldige CPR numre.",
+        ).first()
+
+    return default_org, cpr
 
 
 class Command(BaseCommand):
@@ -53,6 +71,10 @@ class Command(BaseCommand):
         web_name = "Local nginx"
         web_url = "http://nginx/"
 
+        # Create development client and organization
+        client, _ = Client.objects.get_or_create(name="Development Client")
+        Organization.objects.get_or_create(name="OSdatascanner", client=client)
+
         self.stdout.write("Synchronizing Organization to Report module ...")
         creation_dict = {"Organization": OrganizationSerializer(
             Organization.objects.all(), many=True).data,
@@ -77,7 +99,8 @@ class Command(BaseCommand):
             self.stdout.write("Superuser dev/dev already exists!")
 
         self.stdout.write("Creating & synchronizing corresponding dev Account")
-        org = Organization.objects.first()
+        org, cpr = get_default_org_and_cprrule()
+        print("org:", org)
         account, c = Account.objects.get_or_create(
             username=username,
             first_name="dev",
@@ -89,6 +112,14 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Account dev created successfully!"))
         else:
             self.stdout.write("Account for dev already exists!")
+
+        self.stdout.write("Synchronizing Organization to Report module")
+        creation_dict = {"Organization": OrganizationSerializer(
+            Organization.objects.all(), many=True).data}
+        event = BulkCreateEvent(creation_dict)
+        publish_events([event])
+        self.stdout.write(self.style.SUCCESS(f"Sent Organization create message!:"
+                                             f" \n {creation_dict}"))
 
         self.stdout.write("Creating file scanner for samba share")
         recurrence = Recurrence()
@@ -107,7 +138,6 @@ class Command(BaseCommand):
             auth.save()
             share.authentication = auth
             share.save()
-            cpr = CPRRule.objects.first()
             share.rules.set([cpr])
             self.stdout.write(self.style.SUCCESS("Samba share file scanner created successfully!"))
         else:
@@ -124,7 +154,6 @@ class Command(BaseCommand):
             download_sitemap=False,
         )
         if created:
-            cpr = CPRRule.objects.first()
             webscanner.rules.set([cpr])
             self.stdout.write(self.style.SUCCESS("Webscanner created successfully!"))
         else:

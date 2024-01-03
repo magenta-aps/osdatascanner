@@ -18,19 +18,33 @@ class CleanupScannerViewTests(TestCase):
 
         self.user = get_user_model().objects.create(username="Fake user")
 
-        self.client = Client.objects.first()
+        self.client = Client.objects.create(
+            name="OS2datascanner Test",
+            contact_email="info@magenta-aps.dk",
+            contact_phone="+45 3336 9696")
 
-        org = Organization.objects.first()
-        self.scanner = Scanner.objects.create(name="Fake scanner", organization=org)
+        self.org = Organization.objects.create(
+            name="OS2datascanner Test",
+            contact_email="info@magenta-aps.dk",
+            contact_phone="+45 3336 9696",
+            client_id=self.client.uuid,
+            slug="os2datascanner-test")
 
-        orgunit = OrganizationalUnit.objects.create(name="Fake Unit", organization=org)
+        self.scanner = Scanner.objects.create(name="Fake scanner", organization=self.org)
 
-        hansi = Account.objects.create(username="Hansi", organization=org)
-        fritz = Account.objects.create(username="Fritz", organization=org)
-        günther = Account.objects.create(username="Günther", organization=org)
+        orgunit = OrganizationalUnit.objects.create(name="Fake Unit", organization=self.org)
+
+        hansi = Account.objects.create(username="Hansi", organization=self.org)
+        fritz = Account.objects.create(username="Fritz", organization=self.org)
+        günther = Account.objects.create(username="Günther", organization=self.org)
 
         self.scanner.covered_accounts.add(hansi, fritz, günther)
         hansi.units.add(orgunit)
+
+    def tearDown(self):
+        self.scanner.delete()
+        self.org.delete()
+        self.client.delete()
 
     def test_cleanup_view_regular_user(self):
         """Only an admin for the organization should be able to initialize a
