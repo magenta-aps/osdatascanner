@@ -45,7 +45,7 @@ class Command(BaseCommand):
             "-c", "--create",
             default=False,
             action="store_true",
-            help="Create a new Client and Organization in the admin module and"
+            help="Create a new Client and Organization in the admin module and "
                  "synchronize created Organization to the report module."
         )
 

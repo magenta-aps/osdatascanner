@@ -129,7 +129,7 @@ STATICFILES_DIRS = [
 ]
 ICON_SPRITE_URL = "/static/svg/symbol-defs.svg"
 LOGIN_REDIRECT_URL = "/"
-NOTIFICATION_INSTITUTION = ""
+NOTIFICATION_INSTITUTION = "DUMMY"
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
