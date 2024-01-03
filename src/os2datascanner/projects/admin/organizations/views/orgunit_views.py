@@ -47,6 +47,9 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
                     to_attr='dpos')
                 )
 
+        # Prefetch parents to save one query per unit
+        qs = qs.prefetch_related('parent')
+
         return qs
 
     def get_context_data(self, **kwargs):
