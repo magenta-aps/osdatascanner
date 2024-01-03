@@ -1945,7 +1945,7 @@ msgstr "Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/rules.html:116
 msgid "No rules added yet"
-msgstr "Der er endnu ikke tilføjet nogen regler"
+msgstr "Der er endnu ikke tilføjet nogle regler"
 
 #: adminapp/templates/rules.html:121 adminapp/templates/rules.html:127
 msgid "System rules"

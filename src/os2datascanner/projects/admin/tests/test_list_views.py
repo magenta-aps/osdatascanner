@@ -8,7 +8,7 @@ from django.utils.text import slugify
 
 from ..adminapp.views.webscanner_views import WebScannerList
 from ..adminapp.models.scannerjobs.webscanner import WebScanner
-from ..adminapp.models.rules import Rule
+from ..adminapp.models.rules import CustomRule
 from ..adminapp.views.rule_views import RuleList
 from ..adminapp.views.scanner_views import StatusOverview
 from ..adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
@@ -51,16 +51,18 @@ class ListViewsTest(TestCase):
             validation_status=WebScanner.VALID,
             download_sitemap=False,
         )
-        Rule.objects.create(name="Ny regel",
-                            organization=Organization.objects.get(
-                                uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
-                            description="Helt ny regel",
-                            )
-        Rule.objects.create(name="Ny regel 2",
-                            organization=Organization.objects.get(
-                                uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0"),
-                            description="Helt ny regel 2",
-                            )
+        CustomRule.objects.create(name="Ny regel",
+                                  organization=Organization.objects.get(
+                                      uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
+                                  description="Helt ny regel",
+                                  _rule="{}"
+                                  )
+        CustomRule.objects.create(name="Ny regel 2",
+                                  organization=Organization.objects.get(
+                                      uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0"),
+                                  description="Helt ny regel 2",
+                                  _rule="{}"
+                                  )
         ScanStatus.objects.create(
             scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
             scanner=Scanner.objects.get(name="Magenta")

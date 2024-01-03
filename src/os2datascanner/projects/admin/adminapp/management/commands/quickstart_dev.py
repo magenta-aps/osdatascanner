@@ -26,6 +26,7 @@ from os2datascanner.projects.admin.organizations.models.account import (
 from os2datascanner.projects.admin.organizations.models.organization import (
     Organization, OrganizationSerializer
 )
+from os2datascanner.projects.admin.core.models.client import Client
 
 
 def get_default_org_and_cprrule():
@@ -70,6 +71,10 @@ class Command(BaseCommand):
         web_name = "Local nginx"
         web_url = "http://nginx/"
 
+        # Create development client and organization
+        client, _ = Client.objects.get_or_create(name="Development Client")
+        Organization.objects.get_or_create(name="OSdatascanner", client=client)
+
         self.stdout.write("Synchronizing Organization to Report module ...")
         creation_dict = {"Organization": OrganizationSerializer(
             Organization.objects.all(), many=True).data,
@@ -94,7 +99,8 @@ class Command(BaseCommand):
             self.stdout.write("Superuser dev/dev already exists!")
 
         self.stdout.write("Creating & synchronizing corresponding dev Account")
-        org = Organization.objects.first()
+        org, cpr = get_default_org_and_cprrule()
+        print("org:", org)
         account, c = Account.objects.get_or_create(
             username=username,
             first_name="dev",
@@ -108,7 +114,6 @@ class Command(BaseCommand):
             self.stdout.write("Account for dev already exists!")
 
         self.stdout.write("Synchronizing Organization to Report module")
-        org, cpr = get_default_org_and_cprrule()
         creation_dict = {"Organization": OrganizationSerializer(
             Organization.objects.all(), many=True).data}
         event = BulkCreateEvent(creation_dict)
