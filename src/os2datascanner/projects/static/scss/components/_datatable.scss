@@ -5,7 +5,10 @@
 .datatable-wrapper {
   clear: both;
   height: inherit;
-  overflow-y: scroll;
+
+  &.scrollable {
+    overflow-y: scroll;
+  }
 
   &.sm,
   &.md,
