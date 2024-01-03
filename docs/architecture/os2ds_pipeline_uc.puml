@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+
+rectangle OS2datascanner {
+        usecase UC1 as "UC1: Systemadministratoren
+        fortryder sit scan"
+
+        usecase UC2 as "UC2: Flere kunder
+        på en instans"
+
+        usecase UC3 as "UC3: Flere kræfter til de tunge"
+        usecase UC4 as "UC4: Individuel (kunde-baseret)
+        konfiguration af
+        scannermotorens stages"
+        usecase UC5 as "UC5: Samtidig (Concurrent)
+        afvikling af flere
+        scannerjobs"
+}
+
+actor Systemadministrator as admin
+actor "Deployment Ansvarlig" as devops
+
+admin -left-> UC1
+devops -left-> UC2
+devops --> UC3
+admin --> UC4
+devops --> UC4
+admin --> UC5
+
+UC4 .> UC3 : extends
+UC2 .> UC5 : includes
+@enduml

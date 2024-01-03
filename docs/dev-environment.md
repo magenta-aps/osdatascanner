@@ -274,6 +274,27 @@ workaround is to not count matches found on the landing page. (landing_page.matc
 -   `mailhog`: a SMTP-server for testing purposes.
     web interface available at `http://localhost:8025/`.
 
+### Using header exchanges and `queue_suffix` for parallel execution
+
+A **worker** process can either be "owned" by an organisation or serve all organisations.
+Having **worker** processes that are owned by different organisations, allows the engine
+to run multiple scanner jobs in parallel (one pr. organisation). To use this feature,
+you can either start a **worker** with the `--queue-suffix` flag:
+
+```sh
+python3 run_stage.py worker --queue-suffix <name_of_organisation>
+```
+
+OR set the `QUEUE_SUFFIX` environment variable like this (inherits from host):
+
+```sh
+# in bash
+export QUEUE_SUFFIX = '<name_of_organisation>'
+docker-compose up -d --build worker
+```
+
+Note that, if all workers belong to organisation A and you start a scanner job belonging
+to organisation B, then no data will be scanned as no workers are available.
 
 ### profiles
 

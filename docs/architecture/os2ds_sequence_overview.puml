@@ -1,0 +1,117 @@
+@startuml
+actor admin_user
+
+participant admin
+
+database admin_db
+
+participant checkup_collector as cc
+participant status_collector as sc
+participant explorer
+participant worker
+participant exporter
+
+queue RabbitMQ as mq
+
+participant event_collector as ec
+participant result_collector as rc
+
+database report_db
+
+participant report
+
+actor report_user
+
+
+
+=== Scanner Job startup == 
+
+admin_user -> admin : Start Scanner job
+activate admin
+        admin -> mq : os2ds_scan_specs(scan_spec)
+        admin --> admin_user : Scanner job started
+deactivate admin
+
+=== Exploration stage ==
+
+loop os2ds_scan_specs is not empty
+        explorer -> mq : consume(os2ds_scan_specs)
+        activate explorer
+                explorer -> explorer : message_received_raw(body, channel, source_manager)
+        deactivate explorer
+end
+
+=== Worker stage ==
+
+worker -> worker : message_received_raw(body, channel, source_manager)
+activate worker
+        worker -> mq : consume(os2ds_conversions)
+        alt processor 
+                worker -> worker : processor_handler(conversions_message)
+        else explorer 
+                worker -> worker : explorer_handler(scan_spec_message)
+        else matcher
+                worker -> worker : match_handler(representations_message)
+        else tagger
+                worker -> worker : tagger_handler(handles_message)
+        end
+        worker -> mq : os2ds_status(status_message)
+deactivate worker
+
+=== Exporter Stage ==
+
+exporter -> exporter : message_received_raw(body, channel, source_manager)
+activate exporter
+        exporter -> mq : consume(os2ds_metadata, os2ds_matches, os2ds_problems)
+        exporter -> exporter : handle_message(body)
+        alt message is defined
+                exporter -> exporter : censor_outgoing_message(message) 
+                exporter -> mq : os2ds_results(result_body)
+        end
+deactivate exporter
+
+=== Collector Stages ==
+
+== Checkup Collector ==
+
+cc -> cc : checkup_message_received_raw(body)
+activate cc
+        cc -> mq : consume(os2ds_checkups)
+        cc -> cc : update_scheduled_checkup(handle, matches, problem, scan_time, scanner)
+deactivate cc
+
+== Status Collector ==
+
+sc -> sc : status_message_received_raw(body)
+activate sc
+        sc -> mq : consume(os2ds_status)
+        sc -> admin_db : update_scanner_status(ScanStatus, scanner, body)
+deactivate sc
+
+== Event Collector ==
+
+ec -> ec : event_message_received_raw(body)
+activate ec
+        ec -> mq : consume(os2ds_event)
+        ec -> report_db : update_document_report(DocumentReport, account, scanner)
+deactivate ec
+
+== Result Collector ==
+
+rc -> rc : result_message_received_raw(body)
+activate rc
+        rc -> mq : consume(os2ds_event)
+        rc -> rc : handle_message(tag, body)
+        rc -> report_db : update_or_create(DocumentReport)
+deactivate rc
+
+=== Scanner job complete ==
+
+report_user -> report : Check for matches
+activate report
+        report -> report_db : get(DocumentReport) 
+        report_db -> report : document_reports
+        report -> report_user : present matches
+deactivate report
+
+@enduml

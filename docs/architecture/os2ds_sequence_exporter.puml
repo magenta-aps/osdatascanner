@@ -1,0 +1,26 @@
+@startuml
+participant exporter
+queue RabbitMQ as mq
+
+
+=== Exporter Stage ==
+
+exporter -> exporter : message_received_raw(body, channel, source_manager)
+activate exporter
+        loop os2ds_matches & os2ds_metadata & os2ds_problems are not empty
+                alt body is metadata_message
+                        exporter -> exporter : MetadataMessage(body)
+                else body is matches_message
+                        exporter -> exporter : MatchesMessage(body)
+                else body is problem_message
+                        exporter -> exporter : ProblemMessage(body)
+                end
+
+                alt message is defined
+                        exporter -> exporter : censor_outgoing_message(message) 
+                        exporter -> mq : os2ds_results(result_body)
+                end
+        end
+deactivate exporter
+
+@enduml

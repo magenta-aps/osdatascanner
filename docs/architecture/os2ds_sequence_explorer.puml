@@ -1,0 +1,27 @@
+@startuml
+participant explorer
+queue RabbitMQ as mq
+
+=== Exploration stage ==
+
+loop os2ds_scan_specs is not empty
+        explorer -> mq : consume(os2ds_scan_specs)
+        activate explorer
+                return scan_spec message
+                
+                explorer -> explorer : message_received_raw(body, channel, source_manager)
+                activate explorer
+                        alt successful conversion
+                                explorer -> mq : os2ds_conversions(scan_spec, handle, progress)
+                        else nested source
+                                explorer -> mq : os2ds_scan_specs(scan_spec)
+                        else failed conversion
+                                explorer -> mq : os2ds_problems(problem_message)
+                        end
+                        explorer -> mq : os2ds_status(status_message)
+                        
+                deactivate explorer
+        deactivate explorer
+end
+
+@enduml

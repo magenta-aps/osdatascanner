@@ -1,0 +1,45 @@
+@startuml
+database admin_db
+participant status_collector as sc
+queue RabbitMQ as mq
+
+
+== Status Collector ==
+
+sc -> sc : status_message_received_raw(body)
+activate sc
+        sc -> sc : StatusMessage(body)
+
+        alt scanner exists
+                sc -> admin_db : get(Scanner)
+                admin_db -> sc : scanner
+        else scanner does not exist
+                sc -> sc : log()
+        end
+
+        sc -> admin_db : select_for_update(ScanStatus, scanner, body)
+        admin_db -> sc : locked_qs
+
+        alt message has object count
+                sc -> admin_db : update(locked_qs, message, total_objects, total_sources)
+        else message has object size and type
+                sc -> admin_db : update(locked_qs, message, scanned_size, scanned_objects)
+        end
+
+        alt message has found matches
+                sc -> admin_db : update(locked_qs, matches_found)
+        end 
+
+        alt locked_qs has scan_status
+                alt should take snapshot
+                        sc -> admin_db : create(ScanStatusSnapshot, scan_status, time_stamp, total_sources, explored_sources total_objects, scanned_objects, scanned_size)
+                end
+
+                alt scanner job is finished
+                        sc -> sc : send_mail_upon_completion(scanner, scan_status)
+                end
+        end
+deactivate sc
+
+
+@enduml

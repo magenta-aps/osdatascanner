@@ -1,0 +1,58 @@
+@startuml
+database admin_db
+participant checkup_collector as cc
+queue RabbitMQ as mq
+
+
+== Checkup Collector ==
+
+cc -> cc : checkup_message_received_raw(body)
+activate cc
+        alt body contains problem_message
+               cc -> cc : ProblemMessage(body) 
+        else body contains matches_message
+               cc -> cc : MatchesMessage(body) 
+        end
+
+        alt scanner & scan_status exists
+                cc -> admin_db : get(scanner)
+                admin_db -> cc : scanner
+                cc -> admin_db : get(scan_status)
+                admin_db -> cc : scan_status
+        else scanner does not exist
+        else scan_status does not exist
+                cc -> cc : CommandMessage(scan_tag)
+                cc -> mq : broadcast(msg)
+        end
+
+        cc -> cc : update_scheduled_checkup(handle, matches, problem, scan_time, scanner)
+        activate cc
+                cc -> admin_db : select_for_update(ScheduledCheckup, scanner)
+                admin_db -> cc : locked_qs
+
+                alt locked_qs contains checkup object
+                        alt message is matches_message
+                                alt no matches
+                                        alt rule is LastModifiedRule
+                                                cc -> admin_db : locked_qs.update()
+                                        else checkup no longer necessary
+                                                cc -> admin_db : locked_qs.delete()
+                                        end
+                                else found matches
+                                        cc -> admin_db : locked_qs.update()
+                                end
+                        else message is problem_message
+                                alt object is missing
+                                        cc -> admin_db : locked_qs.delete()
+                                end
+                        end
+                else no existing checkup object
+                        cc -> admin_db : update_or_create(ScheduledCheckup, handle, scanner)
+                        alt message is problem_message
+                                cc -> cc : create_usererrorlog(problem)
+                        end
+                end
+        deactivate cc
+deactivate cc
+
+@enduml
