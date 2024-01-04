@@ -40,6 +40,8 @@
 
 - Old unused rule-models have been removed from the admin module.
 
+- Office 365 mailscanner now also excludes "conflicts" folder when opting out "Scan syncissues folder"
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
