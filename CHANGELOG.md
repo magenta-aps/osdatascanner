@@ -49,6 +49,9 @@
   
 - The handle dropdown is no longer hidden in the parent datatable overflow.
 
+- Remediators no longer need to be superusers to see the remediator-tab in the
+  report module.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
