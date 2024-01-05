@@ -144,21 +144,18 @@ class MSGraphMailAccountSource(DerivedSource):
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
 
-    def handles(self, sm):
-        pn = self.handle.relative_path
-        ps = engine2_settings.model["msgraph"]["page_size"]
-        builder = MailFSBuilder(self, sm, pn)
-        query = f"users/{pn}/messages?$select=id,subject,webLink,parentFolderId&$top={ps}"
+    def _append_msgraph_filters(self, pn, query, sm,
+                                scan_deleted_items, scan_sync_issues):
         filters = []
-
         # The base query gets everything, including the deleted and syncissues folders,
-        # but don't always want this.
+        # but we don't always want this.
         # That's why we filter them away from the base query,
-        # meaning we check whether or not to filter away a folder,
-        # not whether or not to include a folder.
+        # meaning we check whether to filter away a folder,
+        # not whether to include a folder.
         # The following logic is therefore reversed, and skips the steps if they are set to
         # true in the user-frontend
-        if not self.handle.source.scan_deleted_items_folder:
+
+        if not scan_deleted_items:
             # Find folder id of deleted post for given mail account
 
             del_post_folder_id = sm.open(self).get(
@@ -166,8 +163,7 @@ class MSGraphMailAccountSource(DerivedSource):
 
             # Exclude deleted post by issuing a 'not equal to' (ne) filter query
             filters.append(f"parentFolderId ne '{del_post_folder_id}'")
-
-        if not self.handle.source.scan_syncissues_folder:
+        if not scan_sync_issues:
             # Find folder id of syncissues for given mail account
             # The syncissues folder is not guaranteed to be present, and requires a check
             try:
@@ -178,13 +174,33 @@ class MSGraphMailAccountSource(DerivedSource):
             except Exception:
                 logger.warning("Syncissues folder does not exist", exc_info=True)
 
+            # We've seen examples of conflicts being SyncIssues/Conflicts, but don't actually
+            # know if one can exist without the other, so side with caution here.
+            try:
+                conflicts_folder_id = sm.open(self).get(
+                    f"users/{pn}/mailFolders/conflicts?$select=id").json().get("id")
+
+                filters.append(f"parentFolderId ne '{conflicts_folder_id}'")
+            except Exception:
+                logger.warning("Conflicts folder does not exist", exc_info=True)
+
         if filters:
             query += f"&$filter={' and '.join(filters)}"
+        return query
 
-        # If there is no syncissues folder, and we do want the deleted mail folder,
-        # we can potentially hit filters without having declared the result variable.
+    def handles(self, sm):
+        pn = self.handle.relative_path
+        ps = engine2_settings.model["msgraph"]["page_size"]
+        builder = MailFSBuilder(self, sm, pn)
+        query = f"users/{pn}/messages?$select=id,subject,webLink,parentFolderId&$top={ps}"
+        scan_deleted_items = self.handle.source.scan_deleted_items_folder
+        scan_sync_issues = self.handle.source.scan_syncissues_folder
+
+        # Sort out filters for our query string.
+        query = self._append_msgraph_filters(pn, query, sm,
+                                             scan_deleted_items, scan_sync_issues)
+
         result = sm.open(self).get(query).json()
-
         yield from (self._wrap(msg, builder) for msg in result["value"])
         # We want to get all emails for given account
         # This key takes us to the next page and is only present
