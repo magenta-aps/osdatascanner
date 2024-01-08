@@ -128,10 +128,10 @@ class Scanner(models.Model):
                                blank=True
                                )
 
-    rules = models.ManyToManyField(Rule,
-                                   blank=True,
-                                   verbose_name=_('rules'),
-                                   related_name='scanners')
+    rule = models.ForeignKey(Rule,
+                             verbose_name=_('rules'),
+                             related_name='scanners',
+                             on_delete=models.PROTECT)
 
     VALID = 1
     INVALID = 0
@@ -151,10 +151,12 @@ class Scanner(models.Model):
                                             default=INVALID,
                                             verbose_name=_('validation status'))
 
-    exclusion_rules = models.ManyToManyField(Rule,
-                                             blank=True,
-                                             verbose_name=_('exclusion rules'),
-                                             related_name='scanners_ex_rules')
+    exclusion_rule = models.ForeignKey(Rule,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name=_('exclusion rule'),
+                                       related_name='scanners_ex_rule',
+                                       on_delete=models.PROTECT)
 
     covered_accounts = models.ManyToManyField('organizations.Account',
                                               blank=True,

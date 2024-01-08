@@ -137,9 +137,9 @@ class Command(BaseCommand):
                 has_scanners = True
                 print("\nScanners (regular rules):")
                 [print(f"· {scanner.name} ({scanner.pk})") for scanner in scanners]
-            if ex_scanners := rule.scanners_ex_rules.all():
+            if ex_scanners := rule.scanners_ex_rule.all():
                 has_scanners = True
-                print("\nScanner (exclusion rules):")
+                print("\nScanners (exclusion rules):")
                 [print(f"· {scanner.name} ({scanner.pk})") for scanner in ex_scanners]
             if not has_scanners:
                 print("\nNo connected scanners.")

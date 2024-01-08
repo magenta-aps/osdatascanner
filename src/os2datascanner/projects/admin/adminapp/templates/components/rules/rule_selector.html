@@ -9,7 +9,7 @@ the use to choose one of the available rules.
 The component depends on the following variables which must be
 set using a `with`-statement when including it in other templates:
 
-- `rules`: the queryset containing the available rules.
+- `rule`: the queryset containing the available rules.
 - `is_required`: toggles on required for the <select> form.
 - `selector_id`: the id tag of the rule <select> form for identification.
 - `component_title`: Title of the data form section.
@@ -29,11 +29,10 @@ set using a `with`-statement when including it in other templates:
                     id="{{ selector_id }}_id"
                     class="select-rules-selector"
                     {% if is_required %}required{% endif %}>
-              <option value="" data-rule-id="">{% trans "-- Please select a rule below --" %}</option>
               {% for rule_value, rule_tag in rules.field.choices %}
                 <option value="{{ rule_value }}"
                         data-rule-id="{{ rule_value }}"
-                        {% if rule_value in rules.value %}selected{% endif %}>{{ rule_tag }}</option>
+                        {% if rule_value == rules.value %}selected{% endif %}>{{ rule_tag }}</option>
               {% endfor %}
             </select>
             <input type="hidden" id="{{ selector_id }}_input" name="{{ selector_id }}">

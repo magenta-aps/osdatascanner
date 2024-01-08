@@ -41,10 +41,10 @@ class WebScannerCreate(ScannerCreate):
 
     model = WebScanner
     type = 'web'
-    fields = ['name', 'schedule', 'url', 'exclusion_rules',
+    fields = ['name', 'schedule', 'url', 'exclusion_rule',
               'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
               'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
-              'rules', 'organization', 'exclude_urls', 'reduce_communication',
+              'rule', 'organization', 'exclude_urls', 'reduce_communication',
               'keep_false_positives']
 
     def get_form(self, form_class=None):
@@ -76,10 +76,10 @@ class WebScannerCopy(ScannerCopy):
 
     model = WebScanner
     type = 'web'
-    fields = ['name', 'schedule', 'url', 'exclusion_rules',
+    fields = ['name', 'schedule', 'url', 'exclusion_rule',
               'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
               'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
-              'rules', 'organization', 'exclude_urls', 'reduce_communication',
+              'rule', 'organization', 'exclude_urls', 'reduce_communication',
               'keep_false_positives']
 
 
@@ -88,10 +88,10 @@ class WebScannerUpdate(ScannerUpdate):
 
     model = WebScanner
     type = 'web'
-    fields = ['name', 'schedule', 'url', 'exclusion_rules',
+    fields = ['name', 'schedule', 'url', 'exclusion_rule',
               'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
               'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
-              'rules', 'organization', 'exclude_urls', 'reduce_communication',
+              'rule', 'organization', 'exclude_urls', 'reduce_communication',
               'keep_false_positives']
 
     def form_valid(self, form):

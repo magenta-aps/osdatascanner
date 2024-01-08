@@ -22,7 +22,7 @@ from django.conf import settings
 from pika.exceptions import AMQPError
 import structlog
 
-from django.forms import ModelMultipleChoiceField
+from django.forms import ModelMultipleChoiceField, ModelChoiceField
 
 from os2datascanner.projects.admin.organizations.models import (
     Organization, Account, Alias)
@@ -393,12 +393,12 @@ class ScannerBase(object):
         allowed_rules = CustomRule.objects.filter(
             Q(organization__in=org_qs) | Q(organization__isnull=True))
 
-        form.fields["rules"] = ModelMultipleChoiceField(
+        form.fields["rule"] = ModelChoiceField(
             allowed_rules,
             validators=ModelMultipleChoiceField.default_validators,
             )
 
-        form.fields["exclusion_rules"] = ModelMultipleChoiceField(
+        form.fields["exclusion_rule"] = ModelChoiceField(
             allowed_rules,
             validators=ModelMultipleChoiceField.default_validators,
             required=False
@@ -420,7 +420,7 @@ class ScannerBase(object):
         return fields
 
     def filter_queryset(self, form, organization):
-        for field_name in ['rules', 'exclusion_rules']:
+        for field_name in ['rule', 'exclusion_rule']:
             queryset = form.fields[field_name].queryset
             queryset = queryset.filter(organization=organization)
             form.fields[field_name].queryset = queryset
@@ -497,7 +497,7 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
     """View for editing an existing scannerjob."""
     edit = True
     old_url = ''
-    old_rules = None
+    old_rule = None
     old_user = ''
 
     def get_form(self, form_class=None):
@@ -519,7 +519,7 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
                 and hasattr(self.object.authentication, "username")):
             self.old_user = self.object.authentication.username
         # Store the existing rules selected in the scannerjob
-        self.old_rules = self.object.rules.get_queryset()
+        self.old_rule = self.object.rule
 
         return form
 
@@ -603,7 +603,7 @@ class ScannerAskRun(RestrictedDetailView):
         if self.object.validation_status is Scanner.INVALID:
             ok = False
             error_message = Scanner.NOT_VALIDATED
-        elif not self.object.rules.all():
+        elif not self.object.rule:
             ok = False
             error_message = Scanner.HAS_NO_RULES
         elif last_status and not last_status.finished:
