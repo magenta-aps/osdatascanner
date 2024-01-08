@@ -7,6 +7,8 @@ from django.core.management.base import CommandError
 from ..core.models.client import Client
 from ..adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
 from ..organizations.models import Account, Organization
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 
 class CleanAccountResultsTests(TestCase):
@@ -23,10 +25,13 @@ class CleanAccountResultsTests(TestCase):
             contact_phone="+45 3336 9696",
             client_id=self.client.uuid,
             slug="os2datascanner-test")
+        self.rule = CustomRule.objects.create(**dummy_rule_dict)
 
     def tearDown(self):
         self.org.delete()
         self.client.delete()
+        Scanner.objects.all().delete()
+        self.rule.delete()
 
     def call_command(self, *args, **kwargs):
         err = StringIO()
@@ -44,7 +49,7 @@ class CleanAccountResultsTests(TestCase):
         """Calling the command with an invalid username should raise a
         CommandError."""
 
-        scanner = Scanner.objects.create(name="SomeScanner")
+        scanner = Scanner.objects.create(name="SomeScanner", rule=self.rule)
 
         self.assertRaises(
             CommandError,
@@ -76,7 +81,7 @@ class CleanAccountResultsTests(TestCase):
             organization=self.org)
         scanner = Scanner.objects.create(
             name="SomeScanner",
-            organization=self.org)
+            organization=self.org, rule=self.rule)
         ScanStatus.objects.create(scanner=scanner,
                                   scan_tag=scanner._construct_scan_tag().to_json_object())
 

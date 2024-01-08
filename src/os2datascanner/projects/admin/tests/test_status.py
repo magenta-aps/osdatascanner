@@ -9,8 +9,11 @@ from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.organizations.models.organization import Organization
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import (
         Scanner, ScanStatus)
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
 
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
+
+from .test_utilities import dummy_rule_dict
 
 
 def record_status(status):
@@ -29,9 +32,10 @@ class StatusTest(TestCase):
             slug=slugify("Magenta"),
             client=client1,
         )
+        self.rule = CustomRule.objects.create(**dummy_rule_dict)
         self.scanner = Scanner.objects.create(
                 name="Do unspecified action(s)(?)",
-                organization=self.organization)
+                organization=self.organization, rule=self.rule)
 
     def test_estimates(self):
         ss = ScanStatus(

@@ -37,12 +37,12 @@ class GmailScannerCreate(ScannerCreate):
         'schedule',
         'service_account_file_gmail',
         'user_emails_gmail',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
         'keep_false_positives',
         'only_notify_superadmin',
-        'rules',
+        'rule',
         'organization',
     ]
 
@@ -60,12 +60,12 @@ class GmailScannerUpdate(ScannerUpdate):
         'schedule',
         'service_account_file_gmail',
         'user_emails_gmail',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
         'keep_false_positives',
         'only_notify_superadmin',
-        'rules',
+        'rule',
         'organization',
     ]
 
@@ -97,11 +97,11 @@ class GmailScannerCopy(ScannerCopy):
         'schedule',
         'service_account_file_gmail',
         'user_emails_gmail',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
         'only_notify_superadmin',
-        'rules',
+        'rule',
         'organization',
     ]
 

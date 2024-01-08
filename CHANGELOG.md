@@ -31,6 +31,14 @@
 - The default created instance of CPRRule has been converted to a CustomRule.
   On existing installations, the rule is changed during migration.
 
+- The "rules" and "exclusion_rules" ManyToManyFields on the Scanner model have
+  been replaced by the "rule" and "exclusion_rule" ForeignKey-fields.
+
+  - Existing scanners with multiple rules on either removed field will be
+    supplied with an automatically generated rule, which combines the
+    previously connected rules in a wrapping OR-rule. This should preserve
+    functionality if the scanner is run.
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.

@@ -27,6 +27,8 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Sc
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner import FileScanner
 from os2datascanner.projects.admin.adminapp.validate import validate_domain
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 
 class ScannerTest(TestCase):
@@ -54,6 +56,8 @@ class ScannerTest(TestCase):
             username="testuser",
             password="hemmeligt",)
 
+        self.rule = CustomRule.objects.create(**dummy_rule_dict)
+
         Administrator.objects.create(
             user=self.test_user,
             client=client1,)
@@ -62,7 +66,7 @@ class ScannerTest(TestCase):
             url="http://www.example.com/",
             name="invalid webscanner",
             validation_status=Scanner.INVALID,
-            organization=self.magenta)
+            organization=self.magenta, rule=self.rule)
 
     def test_unvalidated_scannerjob_cannot_be_started(self):
         """This test method is sufficient for all types of scanners."""
@@ -83,7 +87,7 @@ class ScannerTest(TestCase):
                 url="http://www.example.com/",
                 validation_method=validation_method,
                 organization=self.example,
-                pk=2
+                pk=2, rule=self.rule
             )
             webscanner.save()
             self.assertFalse(validate_domain(webscanner))
@@ -95,7 +99,7 @@ class ScannerTest(TestCase):
                 unc="//ORG/SIKKERSRV",
                 organization=self.magenta,
                 authentication=authentication,
-                alias="K")
+                alias="K", rule=self.rule)
 
         source_generator = scanner.generate_sources()
         engine2_source = next(source_generator)

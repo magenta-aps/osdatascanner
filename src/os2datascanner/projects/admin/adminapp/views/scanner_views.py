@@ -377,7 +377,7 @@ class ScannerBase(object):
     def get_form(self, form_class=None):
         """Get the form for the view.
 
-        Querysets used for choices in the 'domains' and 'rules' fields
+        Querysets used for choices in the 'domains' and 'rule' fields
         will be limited by the user's organization unless the user is a
         superuser.
         """
@@ -503,7 +503,7 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
     def get_form(self, form_class=None):
         """Get the form for the view.
 
-        Querysets used for choices in the 'domains' and 'rules' fields
+        Querysets used for choices in the 'domains' and 'rule' fields
         will be limited by the user's organization unless the user is a
         superuser.
         """

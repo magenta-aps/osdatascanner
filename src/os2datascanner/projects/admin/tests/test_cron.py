@@ -3,6 +3,8 @@ import datetime
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 from os2datascanner.projects.admin.adminapp.management.commands.cron import should_scanner_start
 
@@ -12,7 +14,9 @@ class TestCron:
 
     @classmethod
     def setup_method(cls):
-        cls.scanner_daily = Scanner.objects.create(name="test", schedule="RRULE:FREQ=DAILY;")
+        rule = CustomRule.objects.create(**dummy_rule_dict)
+        cls.scanner_daily = Scanner.objects.create(
+            name="test", schedule="RRULE:FREQ=DAILY;", rule=rule)
 
     def test_schedule_time_19_00(self, monkeypatch):
         # Arrange

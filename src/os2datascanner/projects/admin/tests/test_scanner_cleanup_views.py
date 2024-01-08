@@ -9,6 +9,8 @@ from os2datascanner.projects.admin.adminapp.views.scanner_views import ScannerCl
 from os2datascanner.projects.admin.organizations.models import (
     Account, Organization, OrganizationalUnit)
 from os2datascanner.projects.admin.core.models import Administrator, Client
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 
 class CleanupScannerViewTests(TestCase):
@@ -30,7 +32,10 @@ class CleanupScannerViewTests(TestCase):
             client_id=self.client.uuid,
             slug="os2datascanner-test")
 
-        self.scanner = Scanner.objects.create(name="Fake scanner", organization=self.org)
+        self.rule = CustomRule.objects.create(**dummy_rule_dict)
+
+        self.scanner = Scanner.objects.create(
+            name="Fake scanner", organization=self.org, rule=self.rule)
 
         orgunit = OrganizationalUnit.objects.create(name="Fake Unit", organization=self.org)
 

@@ -114,12 +114,12 @@ class _MSGraphMailCreate(ScannerCreate):
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_last_modified_check',
         'keep_false_positives',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
-        'rules',
+        'rule',
         'organization',
      ]
 
@@ -143,12 +143,12 @@ class MSGraphMailUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_last_modified_check',
         'keep_false_positives',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
-        'rules',
+        'rule',
         'organization',
      ]
 
@@ -177,11 +177,11 @@ class MSGraphMailCopy(ScannerCopy):
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_last_modified_check',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
-        'rules',
+        'rule',
         'organization',
      ]
 
@@ -230,9 +230,9 @@ class _MSGraphFileCreate(ScannerCreate):
     model = MSGraphFileScanner
     type = 'msgraph-file'
     fields = ['name', 'schedule', 'grant',
-              'org_unit', 'exclusion_rules', 'only_notify_superadmin',
+              'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', ]
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -249,8 +249,8 @@ class MSGraphFileUpdate(ScannerUpdate):
     type = 'msgraph-filescanners'
     fields = ['name', 'schedule', 'grant', 'org_unit',
               'scan_site_drives', 'scan_user_drives',
-              'do_ocr', 'only_notify_superadmin', 'exclusion_rules',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
+              'do_last_modified_check', 'rule', 'organization', ]
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -271,9 +271,9 @@ class MSGraphFileCopy(ScannerCopy):
     model = MSGraphFileScanner
     type = 'msgraph-file'
     fields = ['name', 'schedule', 'grant',
-              'org_unit', 'exclusion_rules', 'only_notify_superadmin',
+              'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', ]
 
 
 class MSGraphFileAskRun(ScannerAskRun):
@@ -320,8 +320,8 @@ class _MSGraphCalendarCreate(ScannerCreate):
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
-              'do_ocr', 'org_unit', 'exclusion_rules',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_ocr', 'org_unit', 'exclusion_rule',
+              'do_last_modified_check', 'rule', 'organization', ]
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -337,8 +337,8 @@ class MSGraphCalendarUpdate(ScannerUpdate):
     model = MSGraphCalendarScanner
     type = 'msgraph-calendarscanners'
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
-              'do_ocr', 'org_unit', 'exclusion_rules',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_ocr', 'org_unit', 'exclusion_rule',
+              'do_last_modified_check', 'rule', 'organization', ]
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -360,8 +360,8 @@ class MSGraphCalendarCopy(ScannerCopy):
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
-              'do_ocr', 'org_unit', 'exclusion_rules',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_ocr', 'org_unit', 'exclusion_rule',
+              'do_last_modified_check', 'rule', 'organization', ]
 
 
 class MSGraphCalendarAskRun(ScannerAskRun):
@@ -403,8 +403,8 @@ class _MSGraphTeamsFileCreate(ScannerCreate):
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-file'
     fields = ['name', 'schedule', 'grant',
-              'exclusion_rules', 'only_notify_superadmin',
-              'do_ocr', 'do_last_modified_check', 'rules',
+              'exclusion_rule', 'only_notify_superadmin',
+              'do_ocr', 'do_last_modified_check', 'rule',
               'organization', ]
 
     def get_form(self, form_class=None):
@@ -421,8 +421,8 @@ class MSGraphTeamsFileUpdate(ScannerUpdate):
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-filescanners'
     fields = ['name', 'schedule', 'grant',
-              'do_ocr', 'only_notify_superadmin', 'exclusion_rules',
-              'do_last_modified_check', 'rules', 'organization', ]
+              'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
+              'do_last_modified_check', 'rule', 'organization', ]
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -443,8 +443,8 @@ class MSGraphTeamsFileCopy(ScannerCopy):
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-file'
     fields = ['name', 'schedule', 'grant',
-              'exclusion_rules', 'only_notify_superadmin',
-              'do_ocr', 'do_last_modified_check', 'rules',
+              'exclusion_rule', 'only_notify_superadmin',
+              'do_ocr', 'do_last_modified_check', 'rule',
               'organization', ]
 
 

@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='scanner',
             name='rule',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, related_name='scanners', to='os2datascanner.rule', verbose_name='rules'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='scanners', to='os2datascanner.rule', verbose_name='rule'),
             preserve_default=False,
         )
     ]

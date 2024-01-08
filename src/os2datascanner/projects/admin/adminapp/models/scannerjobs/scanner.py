@@ -129,7 +129,7 @@ class Scanner(models.Model):
                                )
 
     rule = models.ForeignKey(Rule,
-                             verbose_name=_('rules'),
+                             verbose_name=_('rule'),
                              related_name='scanners',
                              on_delete=models.PROTECT)
 
@@ -288,9 +288,7 @@ class Scanner(models.Model):
     def _construct_rule(self, force: bool) -> Rule:
         """Builds an object that represents the rules configured for this
         scanner."""
-        rule = OrRule.make(
-                *[r.make_engine2_rule()
-                  for r in self.rules.all().select_subclasses()])
+        rule = self.rule.customrule.make_engine2_rule()
 
         prerules = []
         if not force and self.do_last_modified_check:
@@ -323,9 +321,8 @@ class Scanner(models.Model):
 
     def _construct_filter_rule(self) -> Rule:
         try:
-            return OrRule.make(
-                *[er.make_engine2_rule()
-                  for er in self.exclusion_rules.all().select_subclasses()])
+            return self.exclusion_rule.customrule.make_engine2_rule()\
+                if self.exclusion_rule else None
         except ValueError:
             pass
         return None

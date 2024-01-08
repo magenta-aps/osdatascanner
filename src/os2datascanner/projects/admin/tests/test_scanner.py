@@ -27,6 +27,7 @@ from os2datascanner.projects.admin.organizations.models.organizational_unit \
     import OrganizationalUnit
 from os2datascanner.projects.admin.organizations.models.account \
     import Account
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 
 User = get_user_model()
@@ -51,18 +52,21 @@ class ScannerTest(TestCase):
             client=client2,)
 
         # create scanners
+        dummy_rule = CustomRule.objects.create(**dummy_rule_dict)
         magenta_scanner = WebScanner(
             name="Magenta",
             url="http://magenta.dk",
             organization=magenta_org,
             validation_status=WebScanner.VALID,
             download_sitemap=False,
+            rule=dummy_rule
         )
         theydontwantyouto_scanner = WebScanner(
             name="TheyDontWantYouTo",
             url="http://theydontwantyou.to",
             organization=theydontwantyouto_org,
             download_sitemap=False,
+            rule=dummy_rule
         )
         magenta_scanner.save()
         theydontwantyouto_scanner.save()
@@ -83,7 +87,7 @@ class ScannerTest(TestCase):
                 reg1, reg2, reg3).to_json_object(),
         )
 
-        magenta_scanner.rules.add(tr_set1)
+        magenta_scanner.rule = tr_set1
         magenta_scanner.save()
 
     def setUp(self) -> None:
@@ -95,6 +99,7 @@ class ScannerTest(TestCase):
             password='top_secret'
         )
         self.org = Organization.objects.first()
+        self.dummy_rule = CustomRule.objects.get(name=dummy_rule_dict.get("name"))
 
     def test_superuser_can_validate_scannerjob(self):
         self.user.is_superuser = True
@@ -121,7 +126,10 @@ class ScannerTest(TestCase):
         """Make sure that synchronizing covered accounts on the Scanner works
         correctly."""
         # Creating some test objects...
-        scanner = Scanner.objects.create(name="Scanner", organization=self.org)
+        scanner = Scanner.objects.create(
+            name="Scanner",
+            organization=self.org,
+            rule=self.dummy_rule)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=Organization.objects.first())
         hansi = Account.objects.create(username="Hansi", organization=self.org)
@@ -148,7 +156,10 @@ class ScannerTest(TestCase):
         in the 'covered_accounts'-field of the scanner, but are not in any
         of the organizational units on the scanner."""
         # Creating some test objects...
-        scanner = Scanner.objects.create(name="Scanner", organization=self.org)
+        scanner = Scanner.objects.create(
+            name="Scanner",
+            organization=self.org,
+            rule=self.dummy_rule)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=self.org)
         hansi = Account.objects.create(username="Hansi", organization=self.org)
@@ -180,7 +191,10 @@ class ScannerTest(TestCase):
         the 'covered_accounts'-field, which are no longer associated with the
         scanner through an organizational unit."""
         # Creating some test objects...
-        scanner = Scanner.objects.create(name="Scanner", organization=self.org)
+        scanner = Scanner.objects.create(
+            name="Scanner",
+            organization=self.org,
+            rule=self.dummy_rule)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=self.org)
         hansi = Account.objects.create(username="Hansi", organization=self.org)
@@ -224,7 +238,7 @@ class ScannerTest(TestCase):
         scanner = MSGraphMailScanner.objects.create(
                 organization=org,
                 name="Test Department",
-                grant=grant)
+                grant=grant, rule=self.dummy_rule)
         cpr_rule = CustomRule.objects.create(
             name="Test CPR rule",
             description="A rule for testing CPR in admin",
@@ -232,7 +246,7 @@ class ScannerTest(TestCase):
             organization=org,
             _rule=CPRRule().to_json_object(),
             )
-        scanner.rules.add(cpr_rule)
+        scanner.rule = cpr_rule
 
         top_source = list(scanner.generate_sources())[0]
         account_handle = graph_mail.MSGraphMailAccountHandle(

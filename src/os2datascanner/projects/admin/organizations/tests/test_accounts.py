@@ -3,6 +3,8 @@ from django.test import TestCase
 from ...core.models.client import Client
 from ..models import OrganizationalUnit, Organization, Account
 from ...adminapp.models.scannerjobs.scanner import Scanner
+from ...adminapp.models.rules import CustomRule
+from ...tests.test_utilities import dummy_rule_dict
 
 
 class AccountMethodTests(TestCase):
@@ -21,15 +23,18 @@ class AccountMethodTests(TestCase):
             client_id=self.client.uuid,
             slug="os2datascanner-test")
 
+        # Create dummy rule for the sake of the tests
+        self.rule = CustomRule.objects.create(**dummy_rule_dict)
+
         # Create objects
         self.unit1 = OrganizationalUnit.objects.create(
             name="Unit1", organization=self.org)
         self.unit2 = OrganizationalUnit.objects.create(
             name="Unit2", organization=self.org)
         self.scanner1 = Scanner.objects.create(
-            name="Hansi & Günther", organization=self.org)
+            name="Hansi & Günther", organization=self.org, rule=self.rule)
         self.scanner2 = Scanner.objects.create(
-            name="Hansi", organization=self.org)
+            name="Hansi", organization=self.org, rule=self.rule)
         self.hansi = Account.objects.create(username="Hansi", organization=self.org)
         self.günther = Account.objects.create(username="Günther", organization=self.org)
         self.fritz = Account.objects.create(username="Fritz", organization=self.org)
@@ -52,6 +57,8 @@ class AccountMethodTests(TestCase):
 
         self.org.delete()
         self.client.delete()
+
+        self.rule.delete()
 
     def test_get_stale_scanners(self):
         """Make sure, that accounts can correctly identify, when they have
