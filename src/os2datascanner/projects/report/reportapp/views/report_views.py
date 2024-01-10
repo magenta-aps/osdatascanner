@@ -181,7 +181,7 @@ class ReportView(LoginRequiredMixin, ListView):
                 total=Count('scanner_job_pk')
                 ).values(
                     'scanner_job_name', 'total', 'filtered_total', 'scanner_job_pk'
-                )
+                ).order_by('scanner_job_name')
 
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
