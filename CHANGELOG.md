@@ -54,6 +54,9 @@
 - Remediators no longer need to be superusers to see the remediator-tab in the
   report module.
 
+- Matches from MS File scans are now correctly shown as such, instead of as
+  matches from MS Teams scans in the report module.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"

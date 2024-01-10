@@ -70,7 +70,7 @@ def find_type_label(handle):
                 handle = handle.source.handle
             else:
                 break
-        return handle.type_label
+        return handle.source.type_label
     else:
         return None
 
@@ -89,9 +89,9 @@ def find_svg_icon(type_label):
 @register.simple_tag
 def find_scan_type(type_label):
     match type_label:
-        case "smbc" | "dropbox" | "googledrive" | "msgraph-file":
+        case "smbc" | "dropbox" | "googledrive" | "msgraph-files":
             return _("File")
-        case "msgraph-drive":
+        case "msgraph-teams-files":
             return _("MS Teams file")
         case "ews":
             return _("Exchange Mail")
