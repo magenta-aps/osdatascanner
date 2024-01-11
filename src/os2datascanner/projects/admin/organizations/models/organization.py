@@ -20,6 +20,7 @@ from os2datascanner.core_organizational_structure.models import \
     OrganizationSerializer as Core_OrganizationSerializer
 from .broadcasted_mixin import Broadcasted
 
+
 from os2datascanner.core_organizational_structure.models import Organization as Core_Organization
 
 # Codes sourced from https://www.thesauruslex.com/typo/eng/enghtml.htm

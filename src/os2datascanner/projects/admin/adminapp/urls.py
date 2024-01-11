@@ -14,6 +14,7 @@
 """URL mappings."""
 
 import django.contrib.auth.views
+from django.conf.urls.static import static
 from django.urls import re_path
 from django.http import HttpResponse
 from django.views.i18n import JavaScriptCatalog
@@ -387,7 +388,7 @@ urlpatterns = [
         Tag:       {__tag__}<br/>
         Branch:    {__branch__}
         """)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.ENABLE_MINISCAN:
     urlpatterns.extend([

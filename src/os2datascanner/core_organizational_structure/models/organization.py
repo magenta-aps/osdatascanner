@@ -11,6 +11,7 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from django.db.models import ImageField
 from recurrence.fields import RecurrenceField
 from uuid import uuid4
 
@@ -18,7 +19,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, EmailValidator
-
+from drf_extra_fields.fields import Base64ImageField
 from ..serializer import BaseSerializer
 
 
@@ -93,7 +94,8 @@ class Organization(models.Model):
         default="RRULE:FREQ=WEEKLY;BYDAY=FR",
         verbose_name=_('Email notification interval')
     )
-
+    email_header_banner = ImageField(null=True, blank=True,
+                                     verbose_name=_("Email header banner"))
     # Outlook settings
     outlook_delete_email_permission = models.BooleanField(
         default=False,
@@ -208,10 +210,14 @@ class Organization(models.Model):
 
 
 class OrganizationSerializer(BaseSerializer):
+    # Override to set represent_in_base64=True for serialization.
+    email_header_banner = Base64ImageField(required=False,
+                                           represent_in_base64=True)
+
     class Meta:
         fields = ['pk', 'name', 'contact_email', 'contact_phone',
                   'email_notification_schedule', 'leadertab_access', 'dpotab_access',
                   'show_support_button', 'support_contact_method', 'support_name',
                   'support_value', 'dpo_contact_method', 'dpo_name', 'dpo_value',
                   'outlook_delete_email_permission', 'outlook_categorize_email_permission',
-                  'onedrive_delete_permission']
+                  'onedrive_delete_permission', 'email_header_banner']

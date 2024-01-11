@@ -12,8 +12,7 @@
   <div class="aside">
     <h1>{{ object.name }}</h1>
   </div>
- 
-  <form class="form" role="form" method="post">
+  <form class="form" role="form" method="post" enctype='multipart/form-data'>
     {% csrf_token %}
     <section class="data-form">
       <fieldset class="form__fieldset">
@@ -141,6 +140,12 @@
               </div>
 
             </div>
+          </div>
+
+
+          <div class="form__row__item">
+            <label for="{{ form.email_header_banner.id_for_label }}">{{ form.email_header_banner.label }}</label>
+            {{ form.email_header_banner }}
           </div>
 
           <div class="form__row">

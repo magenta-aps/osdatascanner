@@ -212,6 +212,7 @@ services:
       - frontend-bundles:/code/src/os2datascanner/projects/static/dist/
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
+      - ./src/os2datascanner/projects/report/media:/code/uploads/report
       # used for assertion signage see dev-environment/report/dev-settings.toml
       #- ./ssl/signing.crt:/etc/ssl/certs/signing.crt:ro
       #- ./ssl/signing.key:/etc/ssl/certs/signing.key:ro
@@ -239,6 +240,7 @@ services:
     volumes:
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
+      - ./src/os2datascanner/projects/report/media:/code/uploads/report
     depends_on: *report_dependencies
 
   report_result_collector:

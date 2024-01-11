@@ -67,7 +67,8 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--header-banner",
-            metavar="IMAGE_FILE",
+            default=True,
+            action="store_true",
             help="Embed the specified image at the top of the email"
         )
         parser.add_argument(
@@ -98,10 +99,11 @@ class Command(BaseCommand):
 
                 image_name = None
                 image_content = None
-                if header_banner:
-                    with open(header_banner, "rb") as fp:
+                if header_banner and org.email_header_banner:
+                    path = org.email_header_banner.path
+                    with open(path, "rb") as fp:
                         image_content = fp.read()
-                    image_name = basename(header_banner)
+                    image_name = basename(path)
 
                 self.shared_context = {
                     "image_name": image_name,
@@ -263,7 +265,7 @@ class Command(BaseCommand):
 
         if image_name and image_content:
             mime_image = MIMEImage(image_content)
-            mime_image.add_header("Content-Location", image_name)
+            mime_image.add_header('Content-ID', f'<{image_name}>')
             msg.attach(mime_image)
 
         return msg

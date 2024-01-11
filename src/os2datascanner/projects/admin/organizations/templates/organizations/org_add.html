@@ -13,7 +13,7 @@
     <h1>{% trans 'add organization'|capfirst %}</h1>
   </div>
 
-  <form class="form" role="form" method="post">
+  <form class="form" role="form" method="post" enctype='multipart/form-data'>
     {% csrf_token %}
     <section class="data-form">
       <fieldset class="form__fieldset">
