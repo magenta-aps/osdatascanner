@@ -42,6 +42,8 @@
 
 - Office 365 mailscanner now also excludes "conflicts" folder when opting out "Scan syncissues folder"
 
+- Scannerjob filter in the report module is now alphabetically sorted.
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
