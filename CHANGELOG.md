@@ -80,6 +80,7 @@
     - .th-flex-container handles layout for table headers with multiple children 
       (primarily those with "sort by" funtionality).
 
+- quickstart_dev now also makes the dev account a universal remediator.
 
 ### Bugfixes
 
