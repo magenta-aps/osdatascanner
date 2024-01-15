@@ -125,12 +125,6 @@ function drawLine(data, ctxName) {
 		lineChartValues.push(data[i][1]);
 	}
 
-	// Adds empty values in front of both arrays (for styling purposes)
-	lineChartLabels.unshift("");
-	lineChartLabels.push("");
-	lineChartValues.unshift(null);
-	lineChartValues.push(null);
-
 	var lineChartCtx = document.querySelector("#line_chart_" + ctxName).getContext('2d');
 	charts.push(makeLineChart(lineChartLabels, lineChartValues, lineChartCtx));
 }

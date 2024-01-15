@@ -82,7 +82,7 @@ function drawCharts() {
 
   // New and unhandled matches by month
   drawBar(newMatchesByMonth, 'new_matches_by_month');
-  drawBar(unhandledMatchesByMonth, 'unhandled_matches');
+  drawLine(unhandledMatchesByMonth, 'unhandled_matches');
 }
 
 
