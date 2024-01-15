@@ -69,6 +69,8 @@
   
 - Exclusion rules can once again be chosen on the scanner forms in the UI.
 
+- Aliases created through Single Sign-On are now properly tied to the Account object as well.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"

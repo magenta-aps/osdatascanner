@@ -28,17 +28,20 @@ def convert_context_to_email_body(request):
     return body
 
 
-def relate_matches_to_user(user, value, alias_type):
+def relate_matches_to_user(user, account, value, alias_type):
     """
     Relates all relevant matches to the user through its aliases.
     """
     if alias_type == AliasType.EMAIL:
-        aliases = Alias.objects.filter(user=user, _value__iexact=value, _alias_type=alias_type)
+        aliases = Alias.objects.filter(user=user, account=account,
+                                       _value__iexact=value, _alias_type=alias_type)
     else:
-        aliases = Alias.objects.filter(user=user, _value=value, _alias_type=alias_type)
+        aliases = Alias.objects.filter(user=user, account=account,
+                                       _value=value, _alias_type=alias_type)
 
     if not aliases:
-        alias = Alias.objects.create(user=user, _value=value, _alias_type=alias_type)
+        alias = Alias.objects.create(user=user, account=account,
+                                     _value=value, _alias_type=alias_type)
         create_alias_and_match_relations(alias)
 
     elif aliases:
@@ -107,23 +110,23 @@ def get_or_create_user_aliases(user_data):  # noqa: D401
 
     # When the user signs in with SSO, create an account if one does not exist.
     # This only works if there is only one organization in the database.
-    account = Account.objects.filter(user=user)
+    account = Account.objects.filter(user=user).first()
     if not account:
         if Organization.objects.count() == 1:
             related_org = Organization.objects.first()
         else:
             raise RuntimeError("Was not able to determine correct Organization for the user!")
-        Account.objects.create(
+        account = Account.objects.create(
                 organization=related_org,
                 username=user.username,
                 first_name=user.first_name,
                 last_name=user.last_name)
 
     if email:
-        relate_matches_to_user(user, email, AliasType.EMAIL)
+        relate_matches_to_user(user, account, email, AliasType.EMAIL)
 
     if sid:
-        relate_matches_to_user(user, sid, AliasType.SID)
+        relate_matches_to_user(user, account, sid, AliasType.SID)
 
 
 def user_is(roles, role_cls):
