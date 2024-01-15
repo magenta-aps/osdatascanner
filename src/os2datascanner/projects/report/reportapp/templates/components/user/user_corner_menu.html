@@ -8,13 +8,7 @@
 
 <div class="user">
  
-  <span class="user__avatar">
-    {% if request.user.account.image %}
-      <img src="{{ request.user.account.image }}">
-    {% else %}
-      <i id="account_circle" class="material-icons">account_circle</i>
-    {% endif %}
-  </span>
+  <span class="user__avatar">{% include "components/user/account_image.html" with account=request.user.account %}</span>
  
 
   <div class="user_menu">
@@ -27,11 +21,7 @@
     <div class="user-content" id="userMenu">
       <div>
         <span class="user__avatar_big">
-          {% if request.user.account.image %}
-            <img src="{{ request.user.account.image }}">
-          {% else %}
-            <i id="account_circle" class="material-icons">account_circle</i>
-          {% endif %}
+          {% include "components/user/account_image.html" with account=request.user.account %}
         </span>
         <span class="user__name--bold">{{ request.user }}</span>
       </div>
