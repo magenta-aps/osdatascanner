@@ -11,7 +11,7 @@ Examples:
 /label ~trivial
 /milestone %"Next Release"
 <!-- Other recommended quick actions (remove # to apply):
-#/request_review @af @jkh @tha @jdk @rkk @nsn @sos @asl
+#/request_review @af @jkh @jdk @rkk @nsn @sos @asl @ap @mfm
 #/label ~bug
 #/label ~feature
 
