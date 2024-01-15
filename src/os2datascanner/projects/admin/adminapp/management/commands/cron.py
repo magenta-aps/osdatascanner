@@ -28,7 +28,11 @@ from ...models.scannerjobs.scanner import Scanner, ScanStatus
 logger = logging.getLogger(__name__)
 
 
-def should_scanner_start(scanner, current_qhr, next_qhr, now=False):
+def should_scanner_start(scanner: Scanner,
+                         current_qhr: datetime.datetime,
+                         next_qhr: datetime.datetime,
+                         now: bool = False):
+
     qhr_start, qhr_end = (current_qhr.time(), next_qhr.time())
 
     # Is midnight the beginning or the end of a day? After digging for long, this turns
@@ -103,8 +107,11 @@ class Command(BaseCommand):
 
         # Loop through all scanners
         for scanner in Scanner.objects.exclude(schedule="").select_subclasses():
-            start = should_scanner_start(self.current_qhr, self.next_qhr,
-                                         scanner, now)
+
+            start = should_scanner_start(scanner=scanner,
+                                         current_qhr=self.current_qhr,
+                                         next_qhr=self.next_qhr,
+                                         now=now)
 
             if start:
                 # In principle, we should start this scanner now. Check that
