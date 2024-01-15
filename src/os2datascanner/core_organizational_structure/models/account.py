@@ -118,8 +118,8 @@ class Account(models.Model):
 
     @cached_property
     def initials_color(self):
-        colors = ['#fbf8cc', '#fde4cf', '#ffcfd2', '#f1c0e8', '#cfbaf0',
-                  '#a3c4f3', '#90dbf4', '#8eecf5', '#98f5e1', '#b9fbc0']
+        colors = ['#BA7EBB', '#A161AE', '#B69DC9', '#7E6FA8', '#9D9EC9',
+                  '#309D9D', '#60C6C3', '#75CFBE', '#53C193', '#309D82']
 
         return colors[int(self.pk) % 10]
 
