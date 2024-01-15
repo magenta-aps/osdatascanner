@@ -133,6 +133,14 @@ h1.userprofile-text {
   height: var(--size-logo-height);
   width: var(--size-logo-height);
 
+  .account_initials {
+    height: 1.7rem;
+    width: 1.7rem;
+    margin:0.15rem;
+    font-size: 1rem;
+    line-height: 1.7rem;
+  }
+
   .material-icons {
     fill: #fff;
     font-size: var(--size-logo-height);
@@ -144,13 +152,20 @@ h1.userprofile-text {
     object-fit: cover;
     border-radius: 50%;
   }
+
 }
 
 .user__avatar_big {
   border-radius: 50%;
   margin-right: 1rem;
-  height: 3.5rem;
-  width: 3.5rem;
+
+  .account_initials {
+    height: 3rem;
+    width: 3rem;
+    margin:0.25rem;
+    font-size: 1.76rem;
+    line-height: 3rem;
+  }
 
   .material-icons {
     fill: #fff;
@@ -170,8 +185,14 @@ h1.userprofile-text {
 .user__avatar_verybig {
   border-radius: 50%;
   margin-right: 1rem;
-  height: 10rem;
-  width: 10rem;
+
+  .account_initials {
+    height: 8.5rem;
+    width: 8.5rem;
+    margin:0.75rem;
+    font-size: 5rem;
+    line-height: 8.5rem;
+  }
 
   .material-icons {
     color: var(--color-text-secondary);
@@ -227,7 +248,7 @@ h1.userprofile-text {
   }
 
   .user-content a,
-  .user-content div {
+  .user-content >div {
     display: flex;
     align-items: center;
     padding: 12px 16px;
@@ -262,4 +283,11 @@ h1.userprofile-text {
     color: #e24e4e;
     font-weight: 600;
   }
+}
+
+.account_initials {
+  color: var(--color-text-white);
+  border-radius: 50%;
+  text-align: center;
+  font-family: monospace;
 }

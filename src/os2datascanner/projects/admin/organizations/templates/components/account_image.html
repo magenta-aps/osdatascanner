@@ -1,0 +1,8 @@
+{% if account.image %}
+  <img class="userprofile-image" src="{{ account.image }}">
+{% elif account.initials %}
+  <div style="background-color: {{ account.initials_color }}"
+       class="account_initials">{{ account.initials }}</div>
+{% else %}
+  <i id="account_circle" class="material-icons">account_circle</i>
+{% endif %}
