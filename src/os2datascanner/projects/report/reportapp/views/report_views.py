@@ -27,7 +27,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import View, ListView, DetailView
 
 from os2datascanner.utils.system_utilities import time_now
