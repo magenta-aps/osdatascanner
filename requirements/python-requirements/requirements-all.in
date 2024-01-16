@@ -73,7 +73,7 @@ unittest-xml-reporting
 
 # Django
 ipython
-Django==3.2.23
+Django==4.0.10
 django-model-utils
 django-mptt
 django-prometheus
