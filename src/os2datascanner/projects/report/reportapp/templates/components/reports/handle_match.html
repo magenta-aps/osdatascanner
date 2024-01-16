@@ -48,7 +48,7 @@
             hx-swap="none"
             hx-trigger="click"
             hx-push-url="false"
-            hx-vals='{"action": {% if "/archive" in request.path %}None{% else %}"0"{% endif % }}'
+            {% if "/archive" in request.path %} hx-vals='{"action":None}' {% else %} hx-vals='{"action":"0"}' {% endif %}
             {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans 'You are about to handle the marked results. This action does not change the files, that the results are about. Please do not handle a result before action has been manually taken to the file.' %}" {% endif %}>
       <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>
         {% if "/archive/" in request.path %}
