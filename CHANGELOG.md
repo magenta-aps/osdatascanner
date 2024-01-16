@@ -56,6 +56,8 @@
 
 - Scannerjob filter in the report module is now alphabetically sorted.
 
+- Button elements have been optimized for future development. 
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
