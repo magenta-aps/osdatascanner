@@ -1,4 +1,5 @@
 import pytest
+from django.db import IntegrityError
 
 from ...organizations.models import Organization, Account, Alias, AliasType
 from ..utils import get_or_create_user_aliases
@@ -79,3 +80,41 @@ class TestUtils:
 
         # Assert
         assert self.user_sam.aliases.count() == 2
+
+    def test_existing_aliases_only_related_to_user(self, saml_user_data):
+        # Arrange
+        Alias.objects.create(
+            user=self.user_sam,
+            _alias_type=AliasType.SID,
+            _value="S-DIG"
+        )
+        Alias.objects.create(
+            user=self.user_sam,
+            _alias_type=AliasType.EMAIL,
+            _value="sam_single@saml.com"
+        )
+
+        # Act
+        get_or_create_user_aliases(saml_user_data)
+
+        # Assert
+        # These aliases should now be connected to the Account object as well.
+        # I.e. there should only be two aliases; not four
+        assert self.user_sam.aliases.count() == 2
+
+    def test_existing_aliases_only_related_to_account(self, saml_user_data):
+        # This isn't possible due to DB constraints - Should raise IntegrityError
+        with pytest.raises(IntegrityError):  # "Assert"
+            # Arrange
+            Alias.objects.create(
+                account=self.account_sam,
+                _alias_type=AliasType.SID,
+                _value="S-DIG"
+            )
+            Alias.objects.create(
+                acccount=self.account_sam,
+                _alias_type=AliasType.EMAIL,
+                _value="sam_single@saml.com"
+            )
+            # Act
+            get_or_create_user_aliases(saml_user_data)
