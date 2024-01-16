@@ -8,9 +8,9 @@
 
 {% block scripts %}
   <script src="{% static 'js/modals/redirectFromModal.js' %}"></script>
-  <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
+  <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
   <script src="{% static '3rdparty/htmx.min.js' %}"></script>
-  <script src="{% static "js/index.js" %}"></script>
+  <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -22,7 +22,10 @@
       </h3>
       <span class="icon">{% include "components/svg-icons/scan_warning.svg" %}</span>
       <button onclick="redirectFromModal('/status')"
-              class="button button--cta button--large">{% trans "Go to scanner status" %}</button>
+              class="button button--cta-button"
+              type="button"
+              aria-label="{% trans 'Go to scanner status' %}"
+              title="{% trans 'Go to scanner status' %}">{% trans "Go to scanner status" %}</button>
     </div>
   </div>
 {% endblock %}

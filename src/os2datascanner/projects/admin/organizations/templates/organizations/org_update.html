@@ -21,13 +21,20 @@
       </fieldset>
     </section>
 
-    <div class="form__group last-btn">
-      <button type="submit" class="button button--cta" name="save">{% trans "update organization"|capfirst %}</button>
+    <div class="content-footer">
+      <div class="form__group">
+        <button type="submit"
+                class="button button--cta-button"
+                aria-label="{% trans 'update organization'|capfirst %}"
+                title="{% trans 'update organization'|capfirst %}"
+                name="save">{% trans "update organization"|capfirst %}</button>
+      </div>
     </div>
-    <script src="{% static "js/modals/snackBars.js" %}"></script>
+
+    <script src="{% static 'js/modals/snackBars.js' %}"></script>
   </form>
 
-  <script src="{% static "js/organization/organizationForm.js" %}"></script>
+  <script src="{% static 'js/organization/organizationForm.js' %}"></script>
 
   <!--
         TODO: add boxes with user and unit counts here (dependent on feature flag)

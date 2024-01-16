@@ -51,19 +51,19 @@
                   <tr class="table-topbar topbar-stick sticky">
                     <th colspan="7">
                       {% include "components/scanstatus/resolve_status.html" %}
-                      <div class="view-options button-group">
+                      <div class="view-options">
                         <button type="button"
-                                class="button button--has-icon"
+                                class="button button--icon-text-button"
                                 name="status-resolved-all"
+                                aria-label="{% trans 'Delete all' %} {% trans 'Completed scans'|lower %}"
+                                title="{% trans 'Delete all' %} {% trans 'Completed scans'|lower %}"
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-trigger="click"
                                 hx-target=".content"
                                 hx-select=".content"
                                 hx-confirm="{% trans 'You are about to delete' %} {{ page_obj.paginator.count }}{% trans ' scan status data. This action cannot be reverted. Are you sure?' %}">
-                          <svg class="icon">
-                            <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
-                          </svg>
+                          <i id="delete_forever" class="material-icons">delete_forever</i>
                           <span>{% trans "Delete all" %}</span>
                         </button>
                       </div>
@@ -74,9 +74,9 @@
                   <th class="datatable__column--checkbox">
                     <div class="ds-checkbox">
                       <input id="select-all" type="checkbox">
-                      <label for="select-all" title="{% trans "Select all" %}">
-                        <span class="screen-reader-only">{% trans 'Select all results' %}</span>
-                      </label>
+                      <label for="select-all"
+                             aria-label="{% trans 'Select all results' %}"
+                             title="{% trans 'Select all results' %}"></label>
                     </div>
                   </th>
                   <th class="datatable__column--name">{% trans "Scannerjob" %}</th>
@@ -102,9 +102,9 @@
                                  name="table-checkbox"
                                  class="datatable-checkbox"
                                  data-report-pk="{{ status.pk|unlocalize }}">
-                          <label for="table-checkbox-{{ status.pk|unlocalize }}">
-                            <span class="screen-reader-only">{% trans "Select result" %}</span>
-                          </label>
+                          <label for="table-checkbox-{{ status.pk|unlocalize }}"
+                                 aria-label="{% trans 'Select result' %}"
+                                 title="{% trans 'Select result' %}"></label>
                         </div>
                       </td>
                       <td class="datatable__column--name">{{ status.scanner.name }}</td>
@@ -142,10 +142,12 @@
                     </td>
                     {% if user.is_superuser %}
                       <td class="datatable__column--delete">
-                        <div class="action-wrapper">
+                        <div class="action-wrapper button-group">
                           <button type="button"
-                                  class="button"
+                                  class="button button--icon-button"
                                   name="status-resolved"
+                                  aria-label="{% trans 'Delete' %} {% trans 'scannerjob'|lower %}"
+                                  title="{% trans 'Delete' %} {% trans 'scannerjob'|lower %}"
                                   hx-post=""
                                   hx-swap="outerHTML"
                                   hx-trigger="click"
@@ -153,14 +155,13 @@
                                   hx-vals='{"pk": "{{ status.pk|unlocalize }}"}'
                                   hx-indicator="closest tr"
                                   hx-select=".content">
-                            <svg class="icon">
-                              <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
-                            </svg>
+                            <i id="delete_forever" class="material-icons">delete_forever</i>
                           </button>
-                          <button class="timelines-expand button button-caret button--has-icon"
+                          <button class="timelines-expand button button--caret-button"
+                                  aria-label="{% trans 'Show/hide timeline' %}"
                                   title="{% trans 'Show/hide timeline' %}"
                                   type="button">
-                            <i class="material-icons" aria-hidden="true">expand_more</i>
+                            <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
                           </button>
                         </div>
                       </td>

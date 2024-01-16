@@ -26,8 +26,10 @@
           {% trans "scan will be performed as soon as possible." %}
         </h3>
 
-        <button onclick="redirectFromModal('/status')"
-                class="button button--cta button--large">{% trans "Take me to scanner status" %}</button>
+        <a onclick="redirectFromModal('/status')"
+           class="button button--cta-button"
+           aria-label="{% trans 'Take me to scanner status' %}"
+           title="{% trans 'Take me to scanner status' %}">{% trans "Take me to scanner status" %}</a>
       </div>
 
       <div class="detail-content">
