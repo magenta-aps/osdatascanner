@@ -33,11 +33,9 @@ def relate_matches_to_user(user, account, value, alias_type):
     Relates all relevant matches to the user through its aliases.
     """
     if alias_type == AliasType.EMAIL:
-        aliases = Alias.objects.filter(user=user, account=account,
-                                       _value__iexact=value, _alias_type=alias_type)
+        aliases = Alias.objects.filter(user=user, _value__iexact=value, _alias_type=alias_type)
     else:
-        aliases = Alias.objects.filter(user=user, account=account,
-                                       _value=value, _alias_type=alias_type)
+        aliases = Alias.objects.filter(user=user, _value=value, _alias_type=alias_type)
 
     if not aliases:
         alias = Alias.objects.create(user=user, account=account,
@@ -52,6 +50,7 @@ def relate_matches_to_user(user, account, value, alias_type):
         if aliases.count() > 1:
             aliases.exclude(pk=alias.pk).delete()
 
+        aliases.update(account=account)
         create_alias_and_match_relations(alias)
 
 
