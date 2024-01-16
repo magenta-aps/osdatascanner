@@ -109,12 +109,10 @@ class Account(models.Model):
 
     @cached_property
     def initials(self):
-        if self.first_name and self.last_name:
-            return f"{self.first_name[0]}{self.last_name[0]}".upper()
-        elif self.first_name:
-            return f"{self.first_name[0]}".upper()
-        else:
-            return None
+        initials = ""
+        initials += self.first_name[0].capitalize() if self.first_name else ""
+        initials += self.last_name[0].capitalize() if self.last_name else ""
+        return initials if initials else None
 
     @cached_property
     def initials_color(self):

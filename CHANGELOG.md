@@ -2,6 +2,10 @@
 
 ## New Release
 
+### New in this release
+
+- Account image placeholders are now the user's initials on a colored background.
+
 ### General improvements
 
 - Recurrence widget has been styled to better match the rest of the system.
