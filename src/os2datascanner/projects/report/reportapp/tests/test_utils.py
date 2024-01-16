@@ -118,3 +118,23 @@ class TestUtils:
             )
             # Act
             get_or_create_user_aliases(saml_user_data)
+
+    def test_user_and_user_acccount_alias_exists_will_clean_up(self, saml_user_data):
+        # Arrange
+        #  We could potentially see a situation, where both the aliases
+        #  Alias(user=A, account=A.account) and Alias(user=A) exist.
+        Alias.objects.create(
+            user=self.user_sam,
+            account=self.account_sam,
+            _alias_type=AliasType.SID,
+            _value="S-DIG"
+        )
+        Alias.objects.create(
+            user=self.user_sam,
+            _alias_type=AliasType.SID,
+            _value="S-DIG"
+        )
+        # Act
+        get_or_create_user_aliases(saml_user_data)
+        # Assert
+        assert Alias.objects.filter(_alias_type=AliasType.SID).count() == 1
