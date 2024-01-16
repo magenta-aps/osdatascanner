@@ -7,7 +7,10 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", yLabel = "") {
 			labels: xdata,
 			datasets: [{
 				data: ydata,
-				fill: 0,
+				fill: {
+					target: 'origin',
+					above: 'rgba(33, 117, 156, 0.5)'
+				},
 				pointRadius: 0,
 				pointHitRadius: 20,
 				borderWidth: 4,
@@ -59,6 +62,7 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", yLabel = "") {
 	
 				},
 				y: {
+					beginAtZero: true,
 					title: {
 						display: yLabel !== "",
 						text: yLabel,
@@ -68,7 +72,6 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", yLabel = "") {
 						display: false
 					},
 					ticks: {
-						beginAtZero: true,
 						fontSize: 14,
 						stepSize: stepSizeFunction(ydata, 2),
 					},
