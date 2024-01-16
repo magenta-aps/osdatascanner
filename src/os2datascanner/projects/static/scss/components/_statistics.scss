@@ -431,10 +431,11 @@
 }
 
 .status_wrapper {
-	padding: 0.25rem 0.5rem;
+	padding: 0.5rem 1rem;
 	width: fit-content;
+	max-height: 2.125rem;
 	font-weight: bold;
-	border-radius: 3px;
+	border-radius: 50px;
 
 	&[data-status="0"] {
 		background-color: var(--color-status-good);

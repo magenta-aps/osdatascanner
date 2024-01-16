@@ -143,7 +143,7 @@ pre code {
   padding: 0;
 }
 
-.screen-reader-only {
+.screen-reader-only { // This can be removed if we use 'aria-label="{whatever screen reader text you want}"' on the html tag instead - same functionality, less code
   border: 0;
   clip: rect(1px, 1px, 1px, 1px);
   clip-path: inset(50%);

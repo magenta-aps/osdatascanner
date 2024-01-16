@@ -106,6 +106,7 @@
 
   .last-opened {
     opacity: .6;
+    margin-top: 0.5rem;
   }
 
   &.disabled {
@@ -359,20 +360,6 @@
       form {
         display: inline-block;
       }
-
-      .action-wrapper {
-        display: inline;
-        flex-wrap: wrap;
-        margin: -.25rem 0 0 -.25rem;
-
-        .button {
-          margin: .25rem 0 0 .25rem;
-        }
-
-        >* {
-          flex: 0 1 auto; // be explicit for IE11s sake
-        }
-      }
     }
 
     &--leader-actions {
@@ -574,6 +561,11 @@
 .datatable .column-headings th,
 .datatable .topbar-stick th {
   position: static; // override aggressive position: relative; on * in _base.scss
+
+  .th-flex-container {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .datatable .column-headings {
@@ -676,6 +668,10 @@
   align-items: center;
   margin-top: .5rem;
 
+  > *:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+
   &--icon {
     margin-top: -.25rem;
   }
@@ -705,15 +701,6 @@
   svg {
     height: 100%;
     width: auto;
-  }
-
-  .btn-text {
-    color: var(--color-text-main);
-    font-weight: 400;
-
-    &:hover {
-      color: var(--color-text-main);
-    }
   }
 
   .text {
