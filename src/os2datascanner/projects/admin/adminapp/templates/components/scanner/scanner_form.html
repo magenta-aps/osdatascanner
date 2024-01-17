@@ -720,11 +720,11 @@
         </section>
       {% endif %}
 
-      {% include "components/rules/rule_selector.html" with rules=form.rules is_required=True selector_id="rules" component_title="Add rule" changed_id="changed_rules" %}
+      {% include "components/rules/rule_selector.html" with rules=form.rule is_required=True selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
 
       {% if settings.EXCLUSION_RULES %}
 
-        {% include "components/rules/rule_selector.html" with rules=form.exclusion_rules selector_id="exclusion_rules" component_title="Add exclusion rule" changed_id="changed_exclusion_rules" %}
+        {% include "components/rules/rule_selector.html" with rules=form.exclusion_rule selector_id="exclusion_rule" component_title="Add exclusion rule" changed_id="changed_exclusion_rule" %}
 
       {% endif %}
 

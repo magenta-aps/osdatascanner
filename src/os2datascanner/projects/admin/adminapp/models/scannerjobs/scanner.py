@@ -128,10 +128,10 @@ class Scanner(models.Model):
                                blank=True
                                )
 
-    rules = models.ManyToManyField(Rule,
-                                   blank=True,
-                                   verbose_name=_('rules'),
-                                   related_name='scanners')
+    rule = models.ForeignKey(Rule,
+                             verbose_name=_('rule'),
+                             related_name='scanners',
+                             on_delete=models.PROTECT)
 
     VALID = 1
     INVALID = 0
@@ -151,10 +151,12 @@ class Scanner(models.Model):
                                             default=INVALID,
                                             verbose_name=_('validation status'))
 
-    exclusion_rules = models.ManyToManyField(Rule,
-                                             blank=True,
-                                             verbose_name=_('exclusion rules'),
-                                             related_name='scanners_ex_rules')
+    exclusion_rule = models.ForeignKey(Rule,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name=_('exclusion rule'),
+                                       related_name='scanners_ex_rule',
+                                       on_delete=models.PROTECT)
 
     covered_accounts = models.ManyToManyField('organizations.Account',
                                               blank=True,
@@ -286,9 +288,7 @@ class Scanner(models.Model):
     def _construct_rule(self, force: bool) -> Rule:
         """Builds an object that represents the rules configured for this
         scanner."""
-        rule = OrRule.make(
-                *[r.make_engine2_rule()
-                  for r in self.rules.all().select_subclasses()])
+        rule = self.rule.customrule.make_engine2_rule()
 
         prerules = []
         if not force and self.do_last_modified_check:
@@ -321,9 +321,8 @@ class Scanner(models.Model):
 
     def _construct_filter_rule(self) -> Rule:
         try:
-            return OrRule.make(
-                *[er.make_engine2_rule()
-                  for er in self.exclusion_rules.all().select_subclasses()])
+            return self.exclusion_rule.customrule.make_engine2_rule()\
+                if self.exclusion_rule else None
         except ValueError:
             pass
         return None

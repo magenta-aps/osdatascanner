@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from ..adminapp.models.rules import Rule
+from ..adminapp.models.rules import CustomRule
 from ..adminapp.models.authentication import Authentication
 from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
 from ..adminapp.views.exchangescanner_views import (
@@ -16,6 +16,7 @@ from ..core.models.client import Client
 from ..organizations.models import OrganizationalUnit, Account, Alias
 from ..organizations.models.aliases import AliasType
 from ..organizations.models.organization import Organization
+from .test_utilities import dummy_rule_dict
 
 
 class ExchangeScannerViewsTest(TestCase):
@@ -108,9 +109,10 @@ class ExchangeScannerViewsTest(TestCase):
             domain="ThisIsMyExchangeDomain",
         )
 
-        exchange_rule = Rule.objects.create(
+        exchange_rule = CustomRule.objects.create(
             organization=magenta_org,
             name="cool rule",
+            pk=101, _rule=dummy_rule_dict['_rule']
         )
 
         exchange_scan = ExchangeScanner.objects.create(
@@ -121,8 +123,8 @@ class ExchangeScannerViewsTest(TestCase):
             userlist=SimpleUploadedFile("dummy.txt", b"aleph\nalex\nfred"),
             service_endpoint="exchangeendpoint",
             authentication=scanner_auth_obj,
+            rule=exchange_rule
         )
-        exchange_scan.rules.set([exchange_rule])
         exchange_scan.org_unit.set([test_org_unit0, test_org_unit1])
 
         def generate_file():
@@ -148,6 +150,7 @@ class ExchangeScannerViewsTest(TestCase):
             validation_status=ExchangeScanner.VALID,
             service_endpoint="exchangeendpoint",
             authentication=scanner_auth_obj_2,
+            rule=exchange_rule
         )
 
         benny_account.units.add(test_org_unit1)
@@ -377,7 +380,7 @@ class ExchangeScannerViewsTest(TestCase):
             'username': 'dummy',
             'password': 'super_secret',
             'userlist': userlist,
-            'rules': 1
+            'rule': 101
         })
 
         context = response.context
@@ -386,4 +389,4 @@ class ExchangeScannerViewsTest(TestCase):
         # context. If it is correctly formatted, the form will not exist.
         userlist_is_valid = form is None
 
-        self.assertEqual(userlist_is_valid, valid)
+        self.assertEqual(userlist_is_valid, valid, f"A form was found: {form}")

@@ -37,12 +37,12 @@ class GoogleDriveScannerCreate(ScannerCreate):
         'schedule',
         'service_account_file',
         'user_emails',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
         'keep_false_positives',
         'only_notify_superadmin',
-        'rules',
+        'rule',
         'organization',
     ]
 
@@ -60,12 +60,12 @@ class GoogleDriveScannerUpdate(ScannerUpdate):
         'schedule',
         'service_account_file',
         'user_emails',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
         'keep_false_positives',
         'only_notify_superadmin',
-        'rules',
+        'rule',
         'organization',
     ]
 
@@ -96,11 +96,11 @@ class GoogleDriveScannerCopy(ScannerCopy):
         'schedule',
         'service_account_file',
         'user_emails',
-        'exclusion_rules',
+        'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
         'only_notify_superadmin',
-        'rules',
+        'rule',
         'organization',
     ]
 

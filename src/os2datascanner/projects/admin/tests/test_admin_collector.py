@@ -18,6 +18,8 @@ from ..adminapp.management.commands.status_collector import status_message_recei
 from ..adminapp.models.usererrorlog import UserErrorLog, translation_table
 from ..adminapp.models.scannerjobs.scanner import ScheduledCheckup, ScanStatus, \
     Scanner
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 time0 = "2020-10-28T13:51:49+01:00"
 time1 = "2020-10-28T14:21:27+01:00"
@@ -145,7 +147,8 @@ class PipelineCollectorTests(TestCase):
     def test_scan_status_update(self, _, scan_status_object, expected_total_objects,
                                 expected_message, expected_is_error,
                                 expected_scanned_objects, expected_scanned_size):
-        scanner = Scanner.objects.create(name="dummy")
+        rule = CustomRule.objects.create(**dummy_rule_dict)
+        scanner = Scanner.objects.create(name="dummy", rule=rule)
         scan_status_object = scan_status_object._deep_replace(
                 scan_tag__scanner__pk=scanner.pk)
         ScanStatus.objects.create(
@@ -222,7 +225,8 @@ class PipelineCollectorTests(TestCase):
     def test_hints_removed(self):
         """Hints should be removed from a WebHandle when one is received by the
         checkup collector."""
-        scanner = Scanner.objects.create(name="Dummy test web scanner")
+        rule = CustomRule.objects.create(**dummy_rule_dict)
+        scanner = Scanner.objects.create(name="Dummy test web scanner", rule=rule)
         wmo = web_matches._deep_replace(
                 scan_spec__scan_tag__scanner__pk=scanner.pk)
 

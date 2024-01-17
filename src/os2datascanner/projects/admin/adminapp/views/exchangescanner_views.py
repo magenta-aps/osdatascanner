@@ -75,8 +75,8 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     """Create a exchange scanner view."""
 
     model = ExchangeScanner
-    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rules', 'do_ocr',
-              'do_last_modified_check', 'rules', 'userlist', 'only_notify_superadmin',
+    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
+              'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
     type = 'exchange'
 
@@ -102,8 +102,8 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
     """Create a new copy of an existing ExchangeScanner"""
 
     model = ExchangeScanner
-    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rules', 'do_ocr',
-              'do_last_modified_check', 'rules', 'userlist', 'only_notify_superadmin',
+    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
+              'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
     type = 'exchange'
 
@@ -132,8 +132,8 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     """Update a scanner view."""
 
     model = ExchangeScanner
-    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rules', 'do_ocr',
-              'do_last_modified_check', 'rules', 'userlist', 'only_notify_superadmin',
+    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
+              'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit']
     type = 'exchange'
 

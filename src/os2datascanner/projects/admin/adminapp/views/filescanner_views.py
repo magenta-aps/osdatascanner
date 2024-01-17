@@ -40,7 +40,7 @@ class FileScannerCreate(ScannerCreate):
         'name',
         'schedule',
         'unc',
-        'exclusion_rules',
+        'exclusion_rule',
         'alias',
         'do_ocr',
         'do_last_modified_check',
@@ -48,7 +48,7 @@ class FileScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'skip_super_hidden',
         'unc_is_home_root',
-        'rules',
+        'rule',
         'organization',
         ]
 
@@ -74,7 +74,7 @@ class FileScannerUpdate(ScannerUpdate):
         'name',
         'schedule',
         'unc',
-        'exclusion_rules',
+        'exclusion_rule',
         'alias',
         'do_ocr',
         'do_last_modified_check',
@@ -82,7 +82,7 @@ class FileScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'skip_super_hidden',
         'unc_is_home_root',
-        'rules',
+        'rule',
         'organization',
         ]
 
@@ -134,14 +134,14 @@ class FileScannerCopy(ScannerCopy):
         'name',
         'schedule',
         'unc',
-        'exclusion_rules',
+        'exclusion_rule',
         'alias',
         'do_ocr',
         'do_last_modified_check',
         'only_notify_superadmin',
         'skip_super_hidden',
         'unc_is_home_root',
-        'rules',
+        'rule',
         'organization',
         ]
 

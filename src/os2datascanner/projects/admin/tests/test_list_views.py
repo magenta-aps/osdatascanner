@@ -15,6 +15,7 @@ from ..adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
 from ..core.models import Client, Administrator
 from ..organizations.models import Organization
 from ..organizations.views import OrganizationListView
+from .test_utilities import dummy_rule_dict
 
 
 class ListViewsTest(TestCase):
@@ -35,13 +36,14 @@ class ListViewsTest(TestCase):
             uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0",
             client=client2,
         )
+        dummy_rule = CustomRule.objects.create(**dummy_rule_dict)
         WebScanner.objects.create(
             name="Magenta",
             url="http://magenta.dk",
             organization=Organization.objects.get(
                 uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
             validation_status=WebScanner.VALID,
-            download_sitemap=False,
+            download_sitemap=False, rule=dummy_rule
         )
         WebScanner.objects.create(
             name="TheyDontWantYouTo",
@@ -50,6 +52,7 @@ class ListViewsTest(TestCase):
                 uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0"),
             validation_status=WebScanner.VALID,
             download_sitemap=False,
+            rule=dummy_rule
         )
         CustomRule.objects.create(name="Ny regel",
                                   organization=Organization.objects.get(
@@ -99,7 +102,7 @@ class ListViewsTest(TestCase):
         self.user.is_superuser = True
         qs = self.listview_get_queryset(path, list_type)
         if isinstance(list_type, RuleList):
-            self.assertEqual(len(qs), 3)
+            self.assertEqual(len(qs), 4)
         elif isinstance(list_type, OrganizationListView):
             self.assertEqual(len(qs), 2)
         else:
