@@ -7,6 +7,7 @@ from django.test import RequestFactory, TestCase
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.conf import settings
 
 from os2datascanner.engine2.model.ews import (
         EWSMailHandle, EWSAccountSource)
@@ -19,7 +20,8 @@ from ...report.organizations.models import (
     Account, Organization, OrganizationalUnit, Position, Alias)
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.views.statistics_views import (
-        UserStatisticsPageView, LeaderStatisticsPageView, DPOStatisticsPageView)
+        UserStatisticsPageView, LeaderStatisticsPageView,
+        DPOStatisticsPageView, DPOStatisticsCSVView)
 from ..reportapp.utils import iterate_queryset_in_batches, create_alias_and_match_relations
 
 from .generate_test_data import record_match, record_metadata
@@ -394,6 +396,8 @@ class StatisticsPageViewTest(TestCase):
         create_alias_and_match_relations(self.yvonne_alias)
         create_alias_and_match_relations(self.benny_alias)
 
+        settings.DPO_CSV_EXPORT = True
+
     def test_own_userstatisticspage_without_privileges(self):
         """A User with an Account can see their personal statistics."""
         response = self.get_user_statisticspage_response(user=self.benny)
@@ -464,10 +468,10 @@ class StatisticsPageViewTest(TestCase):
         test_date = dateutil.parser.parse("2020-11-28T14:21:59+05:00")
 
         self.assertListEqual(view.count_new_matches_by_month(test_date),
-                             [['Dec', 0], ['Jan', 0], ['Feb', 0],
-                              ['Mar', 0], ['Apr', 0], ['May', 0],
-                              ['Jun', 0], ['Jul', 0], ['Aug', 0],
-                              ['Sep', 1], ['Oct', 2], ['Nov', 4]])
+                             [['Dec 2019', 0], ['Jan 2020', 0], ['Feb 2020', 0],
+                              ['Mar 2020', 0], ['Apr 2020', 0], ['May 2020', 0],
+                              ['Jun 2020', 0], ['Jul 2020', 0], ['Aug 2020', 0],
+                              ['Sep 2020', 1], ['Oct 2020', 2], ['Nov 2020', 4]])
 
         # Reset to old values
         reset_timestamps(original_timestamps)
@@ -485,10 +489,10 @@ class StatisticsPageViewTest(TestCase):
         test_date = dateutil.parser.parse("2021-09-28T14:21:59+05:00")
 
         self.assertListEqual(view.count_new_matches_by_month(test_date),
-                             [['Oct', 2], ['Nov', 4], ['Dec', 0],
-                              ['Jan', 0], ['Feb', 0], ['Mar', 0],
-                              ['Apr', 0], ['May', 0], ['Jun', 0],
-                              ['Jul', 0], ['Aug', 0], ['Sep', 0]])
+                             [['Oct 2020', 2], ['Nov 2020', 4], ['Dec 2020', 0],
+                              ['Jan 2021', 0], ['Feb 2021', 0], ['Mar 2021', 0],
+                              ['Apr 2021', 0], ['May 2021', 0], ['Jun 2021', 0],
+                              ['Jul 2021', 0], ['Aug 2021', 0], ['Sep 2021', 0]])
 
         # Reset to old values
         reset_timestamps(original_timestamps)
@@ -507,10 +511,10 @@ class StatisticsPageViewTest(TestCase):
         test_date = dateutil.parser.parse("2021-4-28T14:21:59+05:00")
 
         self.assertListEqual(view.count_unhandled_matches_by_month(test_date),
-                             [['May', 0], ['Jun', 0], ['Jul', 0],
-                              ['Aug', 0], ['Sep', 1], ['Oct', 3],
-                              ['Nov', 7], ['Dec', 7], ['Jan', 7],
-                              ['Feb', 7], ['Mar', 0], ['Apr', 0]])
+                             [['May 2020', 0], ['Jun 2020', 0], ['Jul 2020', 0],
+                              ['Aug 2020', 0], ['Sep 2020', 1], ['Oct 2020', 3],
+                              ['Nov 2020', 7], ['Dec 2020', 7], ['Jan 2021', 7],
+                              ['Feb 2021', 7], ['Mar 2021', 0], ['Apr 2021', 0]])
 
         # Resets back to old values
         reset_timestamps(original_created_timestamps, 'created_timestamp')
@@ -581,6 +585,97 @@ class StatisticsPageViewTest(TestCase):
 
         self.assertEqual(response.context_data.get('match_data').get('unhandled'), 0)
 
+    def test_dpo_with_access_to_csv_export(self):
+        """A dpo should be able to export data from their own orgunit."""
+        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
+
+        self.egon_account.units.add(self.olsen_banden)
+        self.benny_account.units.add(self.olsen_banden)
+
+        response = self.get_dpo_statistics_csv_response(
+            self.egon, params=f'?orgunit={str(self.olsen_banden.uuid)}')
+        _line1, _line2, unhandled, *_ = response.streaming_content
+
+        self.assertEqual(str(unhandled), "b'unhandled,4\\r\\n'")
+
+    def test_dpo_without_access_to_csv_export(self):
+        """A dpo shouldn't be able to export data from another orgunit."""
+
+        kun_egon = OrganizationalUnit.objects.create(
+            name='Kun Egon',
+            organization=self.org)
+        self.egon_account.units.add(kun_egon, self.olsen_banden)
+        Position.objects.create(account=self.egon_account, unit=kun_egon, role=Role.DPO)
+
+        with self.assertRaises(OrganizationalUnit.DoesNotExist):
+            self.get_dpo_statistics_csv_response(
+                self.egon, params=f'?orgunit={str(self.olsen_banden.uuid)}')
+
+    def test_csv_export_without_privileges(self):
+        """A user with no privileges should not be able to export dpo data,
+        and should instead be redirected to main page."""
+
+        response = self.get_dpo_statistics_csv_response(self.benny)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_csv_export_feature_flag(self):
+        """When the feature flag DPO_CSV_EXPORT is off,
+        a user should be met with PermissionDenied."""
+
+        settings.DPO_CSV_EXPORT = False
+
+        with self.assertRaises(PermissionDenied):
+            self.get_dpo_statistics_csv_response(self.egon)
+
+    def test_csv_export_single_scannerjob(self):
+        """Exporting data from a single scannerjob, should only yield data from that scannerjob."""
+
+        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
+
+        response = self.get_dpo_statistics_csv_response(self.egon, params='?scannerjob=11')
+        _line1, _line2, unhandled, *_ = response.streaming_content
+
+        self.assertEqual(str(unhandled), "b'unhandled,2\\r\\n'",
+                         "Data contains more than 2 matches")
+
+    def test_csv_export_scannerjob_and_orgunit_filter(self):
+        """Exporting data from an orgunit and scannerjob, should only contain relevant data."""
+
+        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
+
+        response = self.get_dpo_statistics_csv_response(
+            self.egon, params=f"?scannerjob=11&orgunit={str(self.olsen_banden.uuid)}")
+        _line1, _line2, unhandled, *_ = response.streaming_content
+
+        self.assertEqual(str(unhandled), "b'unhandled,1\\r\\n'")
+
+    def test_superuser_export_entire_organization(self):
+        """A superuser should be able to export data for their entire organization."""
+        self.egon.is_superuser = True
+
+        explicit = self.get_dpo_statistics_csv_response(self.egon, params="?orgunit=all")
+        implicit = self.get_dpo_statistics_csv_response(self.egon)
+
+        _line1, _line2, unhandled_ex, *_ = explicit.streaming_content
+        _line1, _line2, unhandled_im, *_ = implicit.streaming_content
+
+        self.assertEqual(str(unhandled_ex), "b'unhandled,7\\r\\n'")
+        self.assertEqual(str(unhandled_im), "b'unhandled,7\\r\\n'")
+
+    def test_dpo_export_entire_organization(self):
+        """A dpo should be able to export data for their entire organization."""
+        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
+
+        explicit = self.get_dpo_statistics_csv_response(self.egon, params="?orgunit=all")
+        implicit = self.get_dpo_statistics_csv_response(self.egon)
+
+        _line1, _line2, unhandled_ex, *_ = explicit.streaming_content
+        _line1, _line2, unhandled_im, *_ = implicit.streaming_content
+
+        self.assertEqual(str(unhandled_ex), "b'unhandled,7\\r\\n'")
+        self.assertEqual(str(unhandled_im), "b'unhandled,7\\r\\n'")
+
     # StatisticsPageView()
     def get_statisticspage_object(self):
         # XXX: we don't use request for anything! Is this deliberate?
@@ -611,6 +706,11 @@ class StatisticsPageViewTest(TestCase):
         request = self.factory.get(reverse('statistics-dpo') + params)
         request.user = user
         return DPOStatisticsPageView.as_view()(request, **kwargs)
+
+    def get_dpo_statistics_csv_response(self, user, params='', **kwargs):
+        request = self.factory.get(reverse('statistics-dpo-export') + params)
+        request.user = user
+        return DPOStatisticsCSVView.as_view()(request, **kwargs)
 
 
 # Helper functions

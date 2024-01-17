@@ -6,6 +6,10 @@
 
 - Scannerjobs can now be searched from a search field in the scanner list.
 
+- Data from the DPO statistics page can be exported 
+  by adding "csv/" to the url (ie. statistics/dpo/csv/).
+  This feature is disabled by default with settings.DPO_CSV_EXPORT
+
 ### General improvements
 
 - The user list files given to the Exchange mail scanner can now be in an

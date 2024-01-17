@@ -23,6 +23,7 @@ SAML2_ENABLED = false
 HANDLE_DROPDOWN = false
 ALLOW_CONTACT_MAGENTA = false
 ARCHIVE_TAB = true
+DPO_CSV_EXPORT = false
 
 # [msgraph]
 MSGRAPH_ALLOW_WRITE = false
