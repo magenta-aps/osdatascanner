@@ -71,6 +71,10 @@
 
 - Aliases created through Single Sign-On are now properly tied to the Account object as well.
 
+- Clicking an "add_button" in the organizational unit list page or the account
+  detail page in the admin module will now correctly hide the button and show
+  the select dropdown.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"

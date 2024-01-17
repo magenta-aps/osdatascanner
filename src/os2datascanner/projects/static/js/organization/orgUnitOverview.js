@@ -1,55 +1,16 @@
 
-function showChildren(ul, toggleButton) {
-  toggleButton.classList.toggle("up");
-  let buttonOpen = toggleButton.classList.contains("up");
-  ul.hidden = !buttonOpen;
-}
-
-function showParent(el) {
-  if (!el.parentNode.classList.contains("root")) {
-    const parentUl = el.parentNode;
-    parentUl.hidden = false;
-    const parentLi = parentUl.parentNode;
-    parentLi.classList.add("up");
-    showParent(parentLi);
-  }
-}
-
-function revealHighlighted(content) {
-  const highlighted = content.querySelectorAll(".highlighted");
-  for (let el of highlighted) {
-    showParent(el);
-  }
-}
-
-function setExpandButtons(buttons) {
-  buttons.forEach(element => {
-    element.querySelector(".orgunit_name").addEventListener("click", function (e) {
-      let targ = e.target.parentNode;
-      let ul = targ.querySelector(".children");
-      showChildren(ul, targ);
-    });
-  });
-}
-
 function setAddButtons(buttons) {
   buttons.forEach(element => {
-    element.addEventListener("click", function (e) {
-      let targ = e.target;
-      let selectField = targ.parentNode.querySelector(".select_options");
-      targ.style.display = "none";
+    element.addEventListener("click", function () {
+      let selectField = element.parentNode.querySelector(".select_options");
+      element.style.display = "none";
       selectField.hidden = false;
     });
   });
 }
 
 htmx.onLoad(function (content) {
-  let expandButtons = content.querySelectorAll(".has_children");
-  if (content.classList.contains("has_children")) {
-    expandButtons = [content];
-  }
   let addButtons = content.querySelectorAll(".add_button");
-  setExpandButtons(expandButtons);
   setAddButtons(addButtons);
 
   revealHighlighted(content);
