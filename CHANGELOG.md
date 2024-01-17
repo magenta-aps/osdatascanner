@@ -69,6 +69,8 @@
   
 - Exclusion rules can once again be chosen on the scanner forms in the UI.
 
+- Added missing option for turning on/off 'keep_false_positives' when copying a scannerjob.
+
 - Aliases created through Single Sign-On are now properly tied to the Account object as well.
 
 - Clicking an "add_button" in the organizational unit list page or the account
