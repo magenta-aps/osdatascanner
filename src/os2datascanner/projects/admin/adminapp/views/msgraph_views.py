@@ -179,6 +179,7 @@ class MSGraphMailCopy(ScannerCopy):
         'org_unit',
         'exclusion_rule',
         'do_last_modified_check',
+        'keep_false_positives',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
         'rule',

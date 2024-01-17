@@ -99,6 +99,7 @@ class GoogleDriveScannerCopy(ScannerCopy):
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
+        'keep_false_positives',
         'only_notify_superadmin',
         'rule',
         'organization',
