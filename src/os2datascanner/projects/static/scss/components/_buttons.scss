@@ -74,8 +74,12 @@
       background-color: var(--color-primary-dark);
     }
 
-    &.button--icon-text-button { // Only applies both classes are added
+    &.button--icon-text-button { // Only applies when both classes are added
       max-height: fit-content !important;
+
+      svg {
+        margin-right: 0.25rem;
+      }
 
       svg.button__plus-icon {
         height: 1rem !important;
@@ -155,7 +159,8 @@
   }
 
   &--rounded-button { // We don't use this anywhere, but it's a part of the design guide, so it gets to stay for now.
-    border-radius: 50%;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
   }
 
   // ***** Style classes that handles layout depending on the button content *****

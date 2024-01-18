@@ -29,5 +29,9 @@ nav:
     - Microsoft Azure: azure/azure-setup-guide.md
   - Operations:
     - Role, Special roles and Alias: roles.md
-  - Reusable components: reusable-components.md
-  - Release notes: changelog.md
+  - Other:
+    - Reusable components: reusable-components.md
+    - Release notes: changelog.md
+  - Frontend documentation:
+    - Buttons: frontend/buttons/buttons.md
+    - Icons: frontend/icons.md
