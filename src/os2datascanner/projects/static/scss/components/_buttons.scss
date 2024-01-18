@@ -175,11 +175,20 @@
       pointer-events: none;
     }
 
-    svg { // Currently this only applies to the org icon (../components/svg-icons/org.svg)
+    svg { // Currently this applies to (../components/svg-icons/org.svg), (../components/svg-icons/people.svg), and (/static/svg/symbol-defs.svg#icon-plus)
       fill: currentColor;
+    }
+
+    svg:not(.icon-plus) { // Currently this applies to (../components/svg-icons/org.svg), and (../components/svg-icons/people.svg)
       margin: 0.125rem;
       width: 1.25rem !important;
       height: 1.25rem !important;
+    }
+
+    svg.icon-plus { // (/static/svg/symbol-defs.svg#icon-plus)
+      margin: 0.25rem;
+      width: 1rem !important;
+      height: 1rem !important;
     }
   }
 
@@ -226,10 +235,8 @@
 .button-group { // ***** Handles groups of buttons (surprice, surprice) and might need a refactoring (or at least a better name) at a later time *****
   display: flex;
   align-items: center;
-
-  > *:not(:first-child) {
-    margin-left: 0.5rem;
-  }
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .toggle { // ***** This is only used on the "probability" radio button on the Report module *****

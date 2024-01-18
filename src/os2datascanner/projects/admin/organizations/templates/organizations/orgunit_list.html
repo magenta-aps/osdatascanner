@@ -176,7 +176,7 @@
                   <ul>
                     {% for dpo_pos in orgunit.dpos %}
                       <li class="dynamic_li"
-                          title="{% trans "Click to remove" %} {{ dpo_pos.account.get_full_name }} {% trans "as manager of" %} {{ orgunit }}."
+                          title="{% trans 'Click to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
                           hx-post=""
                           hx-swap="outerHTML"
                           hx-target="#orgunit__{{ orgunit.pk }}"

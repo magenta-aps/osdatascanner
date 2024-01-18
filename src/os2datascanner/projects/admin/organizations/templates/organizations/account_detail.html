@@ -102,7 +102,7 @@
                    hx-include='#remediator-check'
                    {% if account.universal_remediator %}checked{% endif %}>
             <label for="remediator-check"
-                   title="{% trans "By checking this box, the current user will be assigned as a remediator of all scannerjobs." %}">
+                   title="{% trans 'By checking this box, the current user will be assigned as a remediator of all scannerjobs.' %}">
             </label>
           </td>
         </tr>
@@ -113,7 +113,7 @@
               <ul>
                 {% for scanner in remediator_for_scanners %}
                   <li class="dynamic_li"
-                      title="{% trans "Click to remove" %} {{ scanner.name }}."
+                      title="{% trans 'Click to remove' %} {{ scanner.name }}."
                       name="rem-remediator"
                       hx-post=""
                       hx-swap="outerHTML"
@@ -122,14 +122,17 @@
                       hx-trigger="click"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                       hx-vals='{"rem-remediator": "{{ scanner.pk }}"}'
-                      hx-confirm="{% trans "Are you sure you want to remove" %} {{ scanner.name }}?">
+                      hx-confirm="{% trans 'Are you sure you want to remove' %} {{ scanner.name }}?">
                     <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
                     <!-- djlint:off -->{{ scanner.name }}</li><!--djlint:on-->
                   {% endfor %}
                   {% if scanners %}
                     <li class="add_remediator">
-                      <button type="button" class="add_button button button--small">
-                        <svg class="icon">
+                      <button type="button"
+                              class="add_button button button--icon-button"
+                              aria-label="{% trans 'Click here to add a new remediator' %}"
+                              title="{% trans 'Add remediator' %}">
+                        <svg class="icon icon-plus">
                           <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
                         </svg>
                       </button>
