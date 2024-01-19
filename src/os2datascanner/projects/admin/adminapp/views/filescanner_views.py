@@ -138,6 +138,7 @@ class FileScannerCopy(ScannerCopy):
         'alias',
         'do_ocr',
         'do_last_modified_check',
+        'keep_false_positives',
         'only_notify_superadmin',
         'skip_super_hidden',
         'unc_is_home_root',
