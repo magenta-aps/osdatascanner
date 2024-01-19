@@ -24,13 +24,17 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
 
         qs = qs.filter(organization=org)
 
+        show_empty = self.request.GET.get("show_empty", "off") == "on"
+        self.roles = self.request.GET.getlist("roles") or Role.values
+
+        if show_empty:
+            qs = qs.filter(Q(positions=None) | Q(positions__role__in=self.roles))
+        else:
+            qs = qs.filter(positions__role__in=self.roles).exclude(positions=None)
+
         if search_field := self.request.GET.get("search_field", ""):
             qs = qs.filter(Q(name__icontains=search_field) |
                            Q(parent__name__icontains=search_field))
-
-        show_empty = self.request.GET.get("show_empty", "off") == "on"
-        if not show_empty:
-            qs = qs.exclude(positions=None)
 
         # Prefetch related manager and dpo accounts, as well as number of
         # associated accounts. Saves 3 queries per OU.
@@ -64,6 +68,8 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
         context['show_empty'] = self.request.GET.get('show_empty', 'off') == 'on'
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
+        context['roles'] = Role.choices
+        context['checked_roles'] = self.roles
         return context
 
     def get_paginate_by(self, queryset):

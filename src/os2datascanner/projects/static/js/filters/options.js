@@ -31,6 +31,17 @@ function setCheckEvent() { // jshint ignore:line
   }
 }
 
+function toggleOptionbox() { // jshint ignore:line
+  let filterButton = document.getElementById("org_structure_filter_options");
+  filterButton.style.display = (filterButton.style.display === "none") ? "block" : "none";
+}
+
+function toggleCheckbox(e, checkboxId) { // jshint ignore:line
+  e.preventDefault();
+  let checkbox = document.getElementById(checkboxId);
+  checkbox.checked = !checkbox.checked;
+}
+
 function disableDistributeButton() {
   const distributeSelect = document.getElementById('distribute-to');
   let chosenOptions = [];

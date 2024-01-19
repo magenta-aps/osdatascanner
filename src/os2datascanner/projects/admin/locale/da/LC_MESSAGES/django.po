@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-02 13:20+0100\n"
+"POT-Creation-Date: 2024-01-15 12:11+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -146,7 +146,7 @@ msgstr "Login metode"
 #: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:77
 #: core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:44
-#: organizations/templates/organizations/orgunit_list.html:72
+#: organizations/templates/organizations/orgunit_list.html:125
 msgid "name"
 msgstr "navn"
 
@@ -521,20 +521,20 @@ msgid "e-mail header"
 msgstr "e-mail header"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:35
-msgid "passport"
-msgstr "pas"
-
-#: adminapp/templates/components/admin_widgets/rule_builder.html:36
 msgid "Experimental"
 msgstr "Eksperimentel"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:37
+#: adminapp/templates/components/admin_widgets/rule_builder.html:36
 msgid "CPR-nr. (Turbo)"
 msgstr "CPR-nr. (Turbo)"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:38
+#: adminapp/templates/components/admin_widgets/rule_builder.html:37
 msgid "health information (Turbo)"
 msgstr "helbredsinformation (Turbo)"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:38
+msgid "passport"
+msgstr "pas"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:45
 #: adminapp/templates/components/admin_widgets/rule_builder.html:86
@@ -740,7 +740,7 @@ msgstr "organisatorisk struktur"
 #: adminapp/templates/components/common/breadcrumb.html:97
 #: adminapp/templates/components/common/breadcrumb.html:106
 #: organizations/templates/organizations/account_list.html:5
-#: organizations/templates/organizations/orgunit_list.html:73
+#: organizations/templates/organizations/orgunit_list.html:126
 msgid "accounts"
 msgstr "konti"
 
@@ -958,7 +958,7 @@ msgstr "Ønsker du virkelig at slette?"
 
 #: adminapp/templates/components/rules/cprrule_confirm_delete.html:17
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:21
-#: adminapp/templates/rules.html:208 adminapp/templates/scanners.html:121
+#: adminapp/templates/rules.html:205 adminapp/templates/scanners.html:121
 #: adminapp/templates/scanners.html:133
 msgid "No"
 msgstr "Nej"
@@ -1020,17 +1020,17 @@ msgstr ""
 "Ønsker du virkelig at slette denne regel? Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:13
-#: adminapp/templates/rules.html:197
+#: adminapp/templates/rules.html:194
 msgid "Please note that this rule is currently included in"
 msgstr "Bemærk venligst at denne regel i øjeblikket indgår i"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:14
-#: adminapp/templates/rules.html:199
+#: adminapp/templates/rules.html:196
 msgid "scannerjob and"
 msgstr "scannerjob og"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:15
-#: adminapp/templates/rules.html:200
+#: adminapp/templates/rules.html:197
 msgid "reports."
 msgstr "rapporter."
 
@@ -1318,7 +1318,7 @@ msgstr "vælg brugere fra"
 #: adminapp/templates/components/scanner/scanner_form.html:490
 #: adminapp/templates/components/scanner/scanner_form.html:592
 #: import_services/models/ldap_configuration.py:38
-#: organizations/templates/organizations/orgunit_list.html:59
+#: organizations/templates/organizations/orgunit_list.html:112
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
@@ -1908,22 +1908,21 @@ msgstr "Indlæs en regel fra listen"
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html:49 adminapp/templates/rules.html:137
+#: adminapp/templates/rules.html:49 adminapp/templates/rules.html:136
 #: organizations/templates/organizations/account_detail.html:27
 msgid "Name"
 msgstr "Navn"
 
-#: adminapp/templates/rules.html:50 adminapp/templates/rules.html:138
-#: adminapp/templates/scanners.html:63
+#: adminapp/templates/rules.html:50 adminapp/templates/scanners.html:63
 #: organizations/templates/organizations/account_detail.html:39
 msgid "Organization"
 msgstr "Organisation"
 
-#: adminapp/templates/rules.html:51 adminapp/templates/rules.html:139
+#: adminapp/templates/rules.html:51 adminapp/templates/rules.html:137
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: adminapp/templates/rules.html:52 adminapp/templates/rules.html:140
+#: adminapp/templates/rules.html:52 adminapp/templates/rules.html:138
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
@@ -1951,19 +1950,19 @@ msgstr "Der er endnu ikke tilføjet nogle regler"
 msgid "System rules"
 msgstr "Systemregler"
 
-#: adminapp/templates/rules.html:174 adminapp/templates/rules.html:185
+#: adminapp/templates/rules.html:171 adminapp/templates/rules.html:182
 msgid "Delete rule"
 msgstr "Slet regel"
 
-#: adminapp/templates/rules.html:193
+#: adminapp/templates/rules.html:190
 msgid "Do you want to delete"
 msgstr "Ønsker du at slette"
 
-#: adminapp/templates/rules.html:194
+#: adminapp/templates/rules.html:191
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:205 adminapp/templates/scanners.html:112
+#: adminapp/templates/rules.html:202 adminapp/templates/scanners.html:112
 #: organizations/templates/organizations/account_detail.html:76
 msgid "Yes"
 msgstr "Ja"
@@ -2113,11 +2112,6 @@ msgstr ""
 #: adminapp/views/rule_views.py:76
 msgid "Formatting error"
 msgstr "Formateringsfejl"
-
-#: adminapp/views/rule_views.py:133 adminapp/views/rule_views.py:245
-#: adminapp/views/rule_views.py:252
-msgid "Expression"
-msgstr "Udtryk"
 
 #: adminapp/views/scanner_views.py:67
 msgid "The page does not exist"
@@ -2741,7 +2735,8 @@ msgstr "Menu-adgang"
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
 
-#: organizations/models/account.py:55
+#: organizations/models/account.py:56
+#, python-brace-format
 msgid "Deleted scanner {pk}"
 msgstr "Slettet scanner {pk}"
 
@@ -2798,14 +2793,14 @@ msgid "Remediator for"
 msgstr "Oprydder for"
 
 #: organizations/templates/organizations/account_detail.html:116
-#: organizations/templates/organizations/orgunit_list.html:93
-#: organizations/templates/organizations/orgunit_list.html:131
+#: organizations/templates/organizations/orgunit_list.html:146
+#: organizations/templates/organizations/orgunit_list.html:184
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:125
-#: organizations/templates/organizations/orgunit_list.html:100
-#: organizations/templates/organizations/orgunit_list.html:138
+#: organizations/templates/organizations/orgunit_list.html:153
+#: organizations/templates/organizations/orgunit_list.html:191
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
@@ -2943,49 +2938,62 @@ msgstr "der er ikke tilføjet nogen organisationer"
 msgid "organizational hierarchy for"
 msgstr "organisatorisk struktur for"
 
-#: organizations/templates/organizations/orgunit_list.html:39
+#: organizations/templates/organizations/orgunit_list.html:40
 msgid "Search for organizational unit"
 msgstr "Søg efter organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:50
+#: organizations/templates/organizations/orgunit_list.html:48
+#: organizations/templates/organizations/orgunit_list.html:99
+msgid "filter"
+msgstr "Filtrér"
+
+#: organizations/templates/organizations/orgunit_list.html:63
+msgid "Show organizational units:"
+msgstr "Vis organisatoriske enheder:"
+
+#: organizations/templates/organizations/orgunit_list.html:74
+msgid "with "
+msgstr "med"
+
+#: organizations/templates/organizations/orgunit_list.html:89
 msgid "Show empty units"
 msgstr "Vis tomme enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:74
+#: organizations/templates/organizations/orgunit_list.html:127
 msgid "managers"
 msgstr "ledere"
 
-#: organizations/templates/organizations/orgunit_list.html:75
+#: organizations/templates/organizations/orgunit_list.html:128
 msgid "DPOs"
 msgstr "DPOer"
 
-#: organizations/templates/organizations/orgunit_list.html:87
+#: organizations/templates/organizations/orgunit_list.html:140
 msgid "accounts associated."
 msgstr "konti tilknyttet"
 
-#: organizations/templates/organizations/orgunit_list.html:93
-#: organizations/templates/organizations/orgunit_list.html:100
-#: organizations/templates/organizations/orgunit_list.html:131
+#: organizations/templates/organizations/orgunit_list.html:146
+#: organizations/templates/organizations/orgunit_list.html:153
+#: organizations/templates/organizations/orgunit_list.html:184
 msgid "as manager of"
 msgstr "som leder af"
 
-#: organizations/templates/organizations/orgunit_list.html:119
+#: organizations/templates/organizations/orgunit_list.html:172
 msgid "Choose new manager"
 msgstr "Vælg ny leder"
 
-#: organizations/templates/organizations/orgunit_list.html:138
+#: organizations/templates/organizations/orgunit_list.html:191
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:158
+#: organizations/templates/organizations/orgunit_list.html:211
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
 
-#: organizations/templates/organizations/orgunit_list.html:169
+#: organizations/templates/organizations/orgunit_list.html:222
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:177
+#: organizations/templates/organizations/orgunit_list.html:230
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
@@ -3089,9 +3097,6 @@ msgstr "Konto ikke fundet."
 
 #~ msgid "parent unit"
 #~ msgstr "overordnet enhed"
-
-#~ msgid "employee"
-#~ msgstr "medarbejder"
 
 #~ msgid "data protection officer"
 #~ msgstr "data protection officer"
