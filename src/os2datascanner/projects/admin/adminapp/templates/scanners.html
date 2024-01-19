@@ -25,10 +25,11 @@
           <h1 class="page-title">{% trans "Scannerjob" %}</h1>
  
           <div class="btn">
-            <a class="button button--cta"
-               href="/{{ view.type }}scanners/add/"
+            <a href="/{{ view.type }}scanners/add/"
+               class="button button--cta-button button--icon-text-button"
+               aria-label="{% trans 'Add scannerjob' %}"
                title="{% trans 'Add scannerjob' %}">
-              <svg class="icon icon--white">
+              <svg class="icon button__plus-icon">
                 <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
               </svg>
               <span>{% trans "Add scannerjob" %}</span>
@@ -135,31 +136,28 @@
  
 
                   <td class="scanner-actions datatable__column--actions">
-                    <div class="action-wrapper">
+                    <div class="action-wrapper button-group">
                       <a href="#run-scanner-modal"
                          data-modal="modal:open"
                          data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
-                         class="button button--small button--grey"
-                         title="{% trans 'Run' %}">
-                        <svg class="icon">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-play"></use>
-                        </svg>
+                         class="button button--icon-button"
+                         aria-label="{% trans 'Run' %} {% trans 'scanner' %}"
+                         title="{% trans 'Run' %} {% trans 'scanner' %}">
+                        <i id="play_arrow" class="material-icons">play_arrow</i>
                       </a>
 
                       <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
-                         class="button button--small button--grey"
-                         title="{% trans 'Edit' %}">
-                        <svg class="icon">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-pencil"></use>
-                        </svg>
+                         class="button button--icon-button"
+                         aria-label="{% trans 'Edit' %} {% trans 'scanner' %}"
+                         title="{% trans 'Edit' %} {% trans 'scanner' %}">
+                        <i id="edit" class="material-icons">edit</i>
                       </a>
 
                       <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
-                         class="button button--small button--grey"
-                         title="Kopiér">
-                        <svg class="icon">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-copy"></use>
-                        </svg>
+                         class="button button--icon-button"
+                         aria-label="Kopiér {% trans 'scanner' %}"
+                         title="Kopiér {% trans 'scanner' %}">
+                        <i id="copy_all" class="material-icons">copy_all</i>
                       </a>
 
                       {% if not scanner.scans %}
@@ -169,12 +167,11 @@
                           {% csrf_token %}
                           {{ form.as_p }}
                           <button type="submit"
-                                  class="button button--small button--grey"
-                                  onclick="return confirm('{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "The action cannot be reversed" %}')"
-                                  title="{% trans 'Delete' %}">
-                            <svg class="icon">
-                              <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
-                            </svg>
+                                  class="button button--icon-button"
+                                  onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
+                                  aria-label="{% trans 'Delete' %} {% trans 'scanner' %}"
+                                  title="{% trans 'Delete' %} {% trans 'scanner' %}">
+                            <i id="delete_forever" class="material-icons">delete_forever</i>
                           </button>
                         </form>
                       {% endif %}

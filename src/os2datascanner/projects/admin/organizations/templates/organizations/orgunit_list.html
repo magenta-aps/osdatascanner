@@ -24,7 +24,7 @@
       <form name="orgunit_filters"
             id="orgunit_filters"
             class="orgunit_filtering_wrapper"
-            hx-get="{% url "orgunit-list" organization.slug %}"
+            hx-get="{% url 'orgunit-list' organization.slug %}"
             hx-trigger="keyup delay:200ms from:#search_field"
             hx-swap="outerHTML"
             hx-select=".orgunit-list"
@@ -36,7 +36,7 @@
             <input type="search"
                    name="search_field"
                    id="search_field"
-                   placeholder="{% trans "Search for organizational unit" %}"
+                   placeholder="{% trans 'Search for organizational unit' %}"
                    value="{{ request.GET.search_field }}"
                    autocomplete="off" />
           </div>
@@ -54,7 +54,7 @@
                  style="display: none">
               <div class="filter-container-options">
                 {% comment %}
-                Added hidden value, to show all roles the first time the user visits the page, despite all unchecked boxes
+                  Added hidden value, to show all roles the first time the user visits the page, despite all unchecked boxes
                 {% endcomment %}
                 <input type="hidden" name="roles" value="_" />
                 <ul>
@@ -138,22 +138,20 @@
                       <ul>
                         {% for manager_pos in orgunit.managers %}
                           <li class="dynamic_li"
-                              title="{% trans "Click to remove" %} {{ manager_pos.account.get_full_name }} {% trans "as manager of" %} {{ orgunit }}."
+                              title="{% trans 'Click to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
                               hx-post=""
                               hx-swap="outerHTML"
                               hx-target="#orgunit__{{ orgunit.pk }}"
                               hx-select="#orgunit__{{ orgunit.pk }}"
                               hx-trigger="click"
                               hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-manager": "{{ manager_pos.account.uuid }}"}'
-                              hx-confirm="{% trans "Are you sure you want to remove" %} {{ manager_pos.account.get_full_name }} {% trans "as manager of" %} {{ orgunit }}?">
+                              hx-confirm="{% trans 'Are you sure you want to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}?">
                             <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
                             <!-- djlint:off -->{{ manager_pos.account.get_full_name }}</li><!-- djlint:on -->
                           {% endfor %}
                           <li class="add_manager">
-                            <button type="button" class="add_button button button--small">
-                              <svg class="icon">
-                                <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-                              </svg>
+                            <button type="button" class="add_button button button--icon-button">
+                              <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
                             </button>
                             <select class="select_options"
                                     name="add-manager"
@@ -171,30 +169,26 @@
 
                         </ul>
                       </td>
-
                       <td class="datatable__column--dpos orgunit_managers">
                         <ul>
                           {% for dpo_pos in orgunit.dpos %}
-                            <li class="manager_li"
-                                title="{% trans "Click to remove" %} {{ dpo_pos.account.get_full_name }} {% trans "as manager of" %} {{ orgunit }}."
+                            <li class="dynamic_li"
+                                title="{% trans 'Click to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-target="#orgunit__{{ orgunit.pk }}"
                                 hx-select="#orgunit__{{ orgunit.pk }}"
                                 hx-trigger="click"
                                 hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-dpo": "{{ dpo_pos.account.uuid }}"}'
-                                hx-confirm="{% trans "Are you sure you want to remove" %} {{ dpo_pos.account.get_full_name }} {% trans "as DPO of" %} {{ orgunit }}?">
-                              <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-                              <!-- djlint:off -->{{ dpo_pos.account.get_full_name }}</li><!-- djlint:on -->
+                                hx-confirm="{% trans 'Are you sure you want to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as DPO of' %} {{ orgunit }}?">
+                              {{ dpo_pos.account.get_full_name }}
                             </li>
                           {% endfor %}
                           <li class="add_dpo">
-                            <button type="button" class="add_manager_button button button--small">
-                              <svg class="icon">
-                                <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-                              </svg>
+                            <button type="button" class="add_button button button--icon-button">
+                              <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
                             </button>
-                            <select class="select_manager"
+                            <select class="select_options"
                                     name="add-dpo"
                                     hidden
                                     hx-post=""
@@ -207,7 +201,6 @@
                               {% for account in accounts %}<option value="{{ account.uuid }}">{{ account.get_full_name }}</option>{% endfor %}
                             </select>
                           </li>
-
                         </ul>
                       </td>
                     </tr>

@@ -22,27 +22,23 @@
     {% csrf_token %}
 	
     <section class="data-form">
- 
       <fieldset class="form__fieldset">
-	
         <div class="form__group">
           {% for field in form %}
             {% include 'import_services/msgraph_import_field_snippet.html' %}
           {% endfor %}
-	
         </div>
- 
       </fieldset>
-	
     </section>
 	
-    <div class="form__group last-btn">
- 
-      <button type="submit" class="button button--cta" name="save">
-        {% trans "save Microsoft Graph configuration"|capfirst %}
- 
-      </button>
-	
+    <div class="content-footer">
+      <div class="form__group">
+        <button type="submit"
+                class="button button--cta-button"
+                aria-label="{% trans 'save Microsoft Graph configuration'|capfirst %}"
+                title="{% trans 'save Microsoft Graph configuration'|capfirst %}"
+                name="save">{% trans "save Microsoft Graph configuration"|capfirst %}</button>
+      </div>
     </div>
   </form>
 

@@ -21,8 +21,14 @@
       </div>
     </section>
 
-    <div class="form__group last-btn">
-      <button type="submit" class="button button--cta" name="save">{% trans "save OS2mo configuration"|capfirst %}</button>
+    <div class="content-footer">
+      <div class="form__group">
+        <button type="submit"
+                class="button button--cta-button"
+                aria-label="{% trans 'save OS2mo configuration'|capfirst %}"
+                title="{% trans 'save OS2mo configuration'|capfirst %}"
+                name="save">{% trans "save OS2mo configuration"|capfirst %}</button>
+      </div>
     </div>
   </form>
 {% endblock %}

@@ -56,6 +56,31 @@
 
 - Scannerjob filter in the report module is now alphabetically sorted.
 
+- All button elements have been refactored to optimize future development:
+
+  - The primary stylesheet (_buttons.scss) have been updated to reflect styles 
+    from the current design guide. The new classes are now all named according 
+    to BEM and are now (hopefully) more developer-intuitive. There are descriptive 
+    comments throughout the document to help with the transition.
+
+  - All button elements now have aria-labels and titles with appropriate content. 
+    A proper runthrough of the content at a later time, will be neccessary.
+
+  - Some buttons now have more user-intuitive icons i.e. buttons with "delete" 
+    funtionality now have a "trashcan" icon instead of an "x"
+
+  - Generally all button elements are now constructed in a similar and recognisable 
+    manner that will improve developer-legibility.
+
+  - Two utility classes have been added (.button-group and .th-flex-container).
+
+    - .button-group handles layout when we group multiple buttons inside the same 
+      parent element
+
+    - .th-flex-container handles layout for table headers with multiple children 
+      (primarily those with "sort by" funtionality).
+
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.

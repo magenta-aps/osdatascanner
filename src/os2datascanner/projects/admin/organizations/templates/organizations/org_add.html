@@ -21,11 +21,12 @@
       </fieldset>
     </section>
     <div class="content-footer">
-      <div class="form__group last-btn">
+      <div class="form__group">
         <button type="submit"
-                class="button button--cta"
+                class="button button--cta-button"
                 name="save"
-                value="{% trans 'create new organization'|capfirst %}">
+                aria-label="{% trans 'create new organization'|capfirst %}"
+                title="{% trans 'create new organization'|capfirst %}">
           {% trans "create new organization"|capfirst %}
         </button>
       </div>

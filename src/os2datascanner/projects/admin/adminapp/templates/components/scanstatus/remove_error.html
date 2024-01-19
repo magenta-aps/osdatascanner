@@ -3,8 +3,9 @@
 
 <div class="checkbox-button-wrapper">
   <button type="button"
-          class="button table-checkbox__action button--has-icon"
+          class="table-checkbox__action button button--icon-text-button check"
           disabled
+          aria-label="{% blocktrans %}Remove selected scan data{% endblocktrans %}"
           title="{% blocktrans %}Remove selected scan data{% endblocktrans %}"
           hx-post=""
           hx-swap="outerHTML"
@@ -14,7 +15,8 @@
           hx-include="[id='table_checkboxes']"
           hx-confirm="{% trans 'You are about to remove the selected logs. This action cannot be reverted. Are you sure?' %}"
           name="remove_selected">
-    <i class="material-icons text-secondary" aria-hidden="true">close</i> <span>{% trans "Remove selected" %}</span>
+    <span class="button__clear-icon">{% include "../svg-icons/clear.svg" %}</span>
+    <span>{% trans "Remove selected" %}</span>
   </button>
   <span class="selected-cb">
     <span class="num-selected">0</span> {% trans "of" %} {{ object_list|length }} {% trans "selected" %}

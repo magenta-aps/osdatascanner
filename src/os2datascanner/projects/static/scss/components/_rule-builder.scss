@@ -35,20 +35,10 @@
 
   .destroyer,
   .inserter {
-    text-align: center;
-    vertical-align: center;
     height: 2rem;
     width: 2rem;
-    border: none;
-    color: currentColor;
-    transition: var(--transition-default);
-    transition-property: background-color;
-    cursor: pointer;
-    border-radius: var(--border-radius-button);
     margin: 0.2rem;
   }
-
-
 }
 
 .watcher {

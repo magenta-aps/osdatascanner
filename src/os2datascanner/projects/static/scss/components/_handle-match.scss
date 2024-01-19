@@ -1,5 +1,6 @@
 .view-options {
   clear: both;
+  display: flex;
 
   @media (min-width: $break-sm) {
     padding-top: 1rem;
@@ -44,21 +45,11 @@
   float: left;
 
   button {
-    margin-left: 0;
-    border: none;
-    border-radius: var(--border-radius-button);
-    font-size: 1rem;
-    line-height: 1;
-    padding: 1em 0.5em;
+    border-color: var(--color-primary-dark);
     text-decoration: none;
     word-break: normal;
     cursor: pointer;
     background-color: var(--color-primary-dark);
-
-    @media (min-width: $break-lg) {
-      padding: 0.5em;
-      height: 2rem;
-    }
 
     &,
     .text-secondary {
@@ -96,10 +87,6 @@
     font-weight: normal;
     color: var(--color-text-secondary);
   }
-}
-
-.matches-handle {
-  min-width: 7.8rem;
 }
 
 .status-resolve {

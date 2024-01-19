@@ -48,20 +48,26 @@
         {% endwith %}
       </div>
       <div class="flex">
-        <a type="button"
-           id="button-connection"
-           class="flex button button--cta button--cta--connection"
-           name="button-connection">
+        <button type="button"
+                id="button-connection"
+                class="button button--cta-button"
+                name="button-connection"
+                aria-label="{% trans 'test connection'|capfirst %}"
+                title="{% trans 'test connection'|capfirst %}">
           <i id="sync" class="material-icons">sync</i>
           <span class="con-text">{% trans "test connection"|capfirst %}</span>
-        </a>
+        </button>
         <div class="response">
           <span class="response-icon response-icon--success"
                 style="display: none"
-                id="responseSuccessCon"><i id="check" class="material-icons">check</i></span>
+                id="responseSuccessCon">
+            <i id="check" class="material-icons">check</i>
+          </span>
           <span class="response-icon response-icon--error"
                 style="display: none"
-                id="responseErrorCon"><i id="error" class="material-icons">error</i></span>
+                id="responseErrorCon">
+            <i id="error" class="material-icons">error</i>
+          </span>
           <span class="response-text" id="responseConnection"></span>
         </div>
       </div>
@@ -71,20 +77,26 @@
         {% endif %}
       {% endfor %}
       <div class="flex">
-        <a type="button"
-           id="button-auth"
-           class="flex button button--cta button--cta--connection"
-           name="button-auth">
+        <button type="button"
+                id="button-auth"
+                class="button button--cta-button"
+                name="button-auth"
+                aria-label="{% trans 'test connection'|capfirst %}"
+                title="{% trans 'test connection'|capfirst %}">
           <i id="sync" class="material-icons">sync</i>
           <span class="con-text">{% trans "test authentication"|capfirst %}</span>
-        </a>
+        </button>
         <div class="response">
           <span class="response-icon response-icon--success"
                 style="display: none"
-                id="responseSuccessAuth"><i id="check" class="material-icons">check</i></span>
+                id="responseSuccessAuth">
+            <i id="check" class="material-icons">check</i>
+          </span>
           <span class="response-icon response-icon--error"
                 style="display: none"
-                id="responseErrorAuth"><i id="error" class="material-icons">error</i></span>
+                id="responseErrorAuth">
+            <i id="error" class="material-icons">error</i>
+          </span>
           <span class="response-text" id="responseAuth"></span>
         </div>
       </div>
@@ -109,17 +121,13 @@
         {% endfor %}
         <input class="user-class-input" id="userClass" type="text" name="userClass" />
       </div>
-      <button id="btnUserClass"
-              type="button"
-              class="flex button button--small button--grey button--grey--icon button--grey--transparent">
-        <span class="items">
-          <span>
-            <i id="add"
-               title="{% trans 'user attributes'|capfirst %}"
-               class="material-icons">add</i>
-          </span>
-          <span class="text">{% trans "add user attributes"|capfirst %}</span>
-        </span>
+      <button type="button"
+              id="btnUserClass"
+              class="button button--icon-text-button button--outline-button"
+              aria-label="{% trans 'user attributes'|capfirst %}"
+              title="{% trans 'user attributes'|capfirst %}">
+        <i id="add" class="material-icons">add</i>
+        <span>{% trans "add user attributes"|capfirst %}</span>
       </button>
     </section>
 
@@ -132,8 +140,15 @@
       {% endfor %}
     </section>
 
-    <div class="form__group last-btn">
-      <button type="submit" class="button button--cta" name="save">{% trans "save LDAP configuration"|capfirst %}</button>
+    <div class="content-footer">
+      <div class="form__group">
+        <button type="submit"
+                class="button button--cta-button"
+                aria-label="{% trans 'save LDAP configuration'|capfirst %}"
+                title="{% trans 'save LDAP configuration'|capfirst %}"
+                name="save">{% trans "save LDAP configuration"|capfirst %}</button>
+      </div>
     </div>
+
   </form>
 {% endblock %}

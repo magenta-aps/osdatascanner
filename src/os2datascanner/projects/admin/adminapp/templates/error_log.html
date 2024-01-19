@@ -29,7 +29,7 @@
             id="errorlog_filters"
             class="errorlog_filtering_wrapper"
             onsubmit="return false"
-            hx-get="{% url "error-log" %}"
+            hx-get="{% url 'error-log' %}"
             hx-trigger="keyup delay:200ms from:#search_field, search from:#search_field, change from:#show_seen"
             hx-swap="outerHTML"
             hx-include="[id='dropdown_options']"
@@ -39,7 +39,7 @@
           <input type="search"
                  name="search_field"
                  id="search_field"
-                 placeholder="{% trans "Search for error message" %}"
+                 placeholder="{% trans 'Search for error message' %}"
                  value="{{ request.GET.search_field }}"
                  autocomplete="off" />
         </div>
@@ -61,7 +61,7 @@
         <div class="datatable-wrapper card error_content"
              role="region"
              tabindex="0"
-             aria-label="{% trans "Error Log" %}">
+             aria-label="{% trans 'Error Log' %}">
           <form id="table_checkboxes">
             <table class="datatable">
               <colgroup>
@@ -79,36 +79,40 @@
                     <div class="view-options button-group">
                       {% if new_error_logs > 0 %}
                         <button type="button"
-                                class="button"
+                                class="button button--icon-text-button"
                                 name="see_all"
+                                aria-label="{% trans 'Mark all as seen' %}"
+                                title="{% trans 'Mark all as seen' %}"
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-trigger="click"
                                 hx-target=".content"
                                 hx-select=".content"
-                                hx-confirm="{% trans "You are about to mark all error log messages as seen. This action cannot be reverted. Are you sure?" %}">
+                                hx-confirm="{% trans 'You are about to mark all error log messages as seen. This action cannot be reverted. Are you sure?' %}">
                           <span>{% trans "Mark all as seen" %}</span>
                         </button>
                       {% endif %}
                       <button type="button"
-                              class="button button--has-icon"
+                              class="button button--icon-text-button"
                               name="remove_all"
+                              aria-label="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
+                              title="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
                               hx-post=""
                               hx-swap="outerHTML"
                               hx-trigger="click"
                               hx-target=".content"
                               hx-select=".content"
-                              hx-confirm="{% trans "You are about to remove" %} {{ page_obj.paginator.count }}{% trans " error logs. This action cannot be reverted. Are you sure?" %}">
-                        <svg class="icon">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
-                        </svg>
+                              hx-confirm="{% trans 'You are about to remove' %} {{ page_obj.paginator.count }}{% trans ' error logs. This action cannot be reverted. Are you sure?' %}">
+                        <i id="delete_forever" class="material-icons">delete_forever</i>
                         <span>{% trans "Remove all" %}</span>
                       </button>
-                      <a class="button button--has-icon"
-                         title="{% trans "Export to CSV" %}"
-                         href='{% url "export-error-log" %}'>
-                        <span class="material-icons">file_download</span>
-                      {% trans "Export to CSV" %}</a>
+                      <a href='{% url "export-error-log" %}'
+                         class="button button--icon-text-button"
+                         aria-label="{% trans 'Export to CSV' %}"
+                         title="{% trans 'Export to CSV' %}">
+                        <i id="file_download" class="material-icons" aria-hidden="true">file_download</i>
+                        <span>{% trans "Export to CSV" %}</span>
+                      </a>
                     </div>
                   </th>
                 </tr>
@@ -116,68 +120,78 @@
                   <th class="datatable__column--checkbox">
                     <div class="ds-checkbox">
                       <input id="select-all" type="checkbox">
-                      <label for="select-all" title="{% trans "Select all" %}">
-                        <span class="screen-reader-only">{% trans 'Select all results' %}</span>
-                      </label>
+                      <label for="select-all"
+                             aria-label="{% trans 'Select all results' %}"
+                             title="{% trans 'Select all results' %}"></label>
                     </div>
                   </th>
                   <th class="datatable__column--automatic">
-                    <label for="error-caret">
-                      <span>{% trans "Error" %}</span>
-                    </label>
-                    <button type="button"
-                            name="error_message"
-                            id="error-caret"
-                            class="order-by button button-caret button--has-icon{% if order_by == 'error_message' and order == 'descending' %} up{% endif %}"
-                            value="{% if order_by == 'error_message' and order == 'descending' %}ascending{% else %}descending{% endif %}"
-                            hx-get="{% url "error-log" %}"
-                            hx-swap="outerHTML"
-                            hx-trigger="click delay:100ms"
-                            hx-include="[id='dropdown_options'], [id='errorlog_filters']"
-                            hx-target=".error_content"
-                            hx-select=".error_content">
-                      <i class="material-icons" aria-hidden="true">expand_more</i>
-                    </button>
+                    <div class="th-flex-container">
+                      <label for="error-caret">
+                        <span>{% trans "Error" %}</span>
+                      </label>
+                      <button type="button"
+                              name="error_message"
+                              id="error-caret"
+                              aria-label="{% trans 'Sort table by' %} {% trans 'error type' %}"
+                              title="{% trans 'Sort table by' %} {% trans 'error type' %}"
+                              class="order-by button button--caret-button{% if order_by == 'error_message' and order == 'descending' %} up{% endif %}"
+                              value="{% if order_by == 'error_message' and order == 'descending' %}ascending{% else %}descending{% endif %}"
+                              hx-get="{% url 'error-log' %}"
+                              hx-swap="outerHTML"
+                              hx-trigger="click delay:100ms"
+                              hx-include="[id='dropdown_options'], [id='errorlog_filters']"
+                              hx-target=".error_content"
+                              hx-select=".error_content">
+                        <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                      </button>
+                    </div>
                   </th>
                   <th class="datatable__column--starttime">
-                    {% trans "Started" %}
-                    <button type="button"
-                            name="scan_status"
-                            id="scan-caret"
-                            class="order-by button button-caret button--has-icon{% if order_by == 'scan_status' and order == 'descending' %} up{% endif %}"
-                            value="{% if order_by == 'scan_status' and order == 'descending' %}ascending{% else %}descending{% endif %}"
-                            hx-get="{% url "error-log" %}"
-                            hx-swap="outerHTML"
-                            hx-trigger="click delay:100ms"
-                            hx-include="[id='dropdown_options'], [id='errorlog_filters']"
-                            hx-target=".error_content"
-                            hx-select=".error_content">
-                      <i class="material-icons" aria-hidden="true">expand_more</i>
-                    </button>
+                    <div class="th-flex-container">
+                      <label for="scan-caret">{% trans "Started" %}</label>
+                      <button type="button"
+                              name="scan_status"
+                              id="scan-caret"
+                              aria-label="{% trans 'Sort table by' %} {% trans 'start time' %}"
+                              title="{% trans 'Sort table by' %} {% trans 'start time' %}"
+                              class="order-by button button--caret-button{% if order_by == 'scan_status' and order == 'descending' %} up{% endif %}"
+                              value="{% if order_by == 'scan_status' and order == 'descending' %}ascending{% else %}descending{% endif %}"
+                              hx-get="{% url 'error-log' %}"
+                              hx-swap="outerHTML"
+                              hx-trigger="click delay:100ms"
+                              hx-include="[id='dropdown_options'], [id='errorlog_filters']"
+                              hx-target=".error_content"
+                              hx-select=".error_content">
+                        <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                      </button>
+                    </div>
                   </th>
                   <th class="datatable__column--path">
-                    <label for="path-caret">
-                      <span>{% trans "Path" %}</span>
-                    </label>
-                    <button type="button"
-                            name="path"
-                            id="path-caret"
-                            class="order-by button button-caret button--has-icon{% if order_by == 'path' and order == 'descending' %} up{% endif %}"
-                            value="{% if order_by == 'path' and order == 'descending' %}ascending{% else %}descending{% endif %}"
-                            hx-get="{% url "error-log" %}"
-                            hx-swap="outerHTML"
-                            hx-trigger="click delay:100ms"
-                            hx-include="[id='dropdown_options'], [id='errorlog_filters']"
-                            hx-target=".error_content"
-                            hx-select=".error_content">
-                      <i class="material-icons" aria-hidden="true">expand_more</i>
+                    <div class="th-flex-container">
+                      <label for="path-caret">
+                        <span>{% trans "Path" %}</span>
+                      </label>
+                      <button type="button"
+                              name="path"
+                              id="path-caret"
+                              aria-label="{% trans 'Sort table by' %} {% trans 'path name' %}"
+                              title="{% trans 'Sort table by' %} {% trans 'path name' %}"
+                              class="order-by button button--caret-button{% if order_by == 'path' and order == 'descending' %} up{% endif %}"
+                              value="{% if order_by == 'path' and order == 'descending' %}ascending{% else %}descending{% endif %}"
+                              hx-get="{% url 'error-log' %}"
+                              hx-swap="outerHTML"
+                              hx-trigger="click delay:100ms"
+                              hx-include="[id='dropdown_options'], [id='errorlog_filters']"
+                              hx-target=".error_content"
+                              hx-select=".error_content">
+                        <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
  
-                    </button>
+                      </button>
+                    </div>
                   </th>
                   <th class="datatable__column--scan">
-                    <label for="scan-caret">
-                      <span>{% trans "Scan" %}</span>
-                    </label>
+                    <span>{% trans "Scan" %}</span>
                   </th>
                   <th class="datatable__column--actions">{% trans "Actions" %}</th>
                 </tr>
@@ -194,9 +208,9 @@
                                name="table-checkbox"
                                class="datatable-checkbox"
                                data-report-pk="{{ error_log.pk|unlocalize }}">
-                        <label for="table-checkbox-{{ error_log.pk|unlocalize }}">
-                          <span class="screen-reader-only">{% trans "Select results" %}</span>
-                        </label>
+                        <label for="table-checkbox-{{ error_log.pk|unlocalize }}"
+                               aria-label="{% trans 'Select results' %}"
+                               title="{% trans 'Select results' %}"></label>
                       </div>
                     </td>
                     <td class="datatable__column--name">
@@ -214,9 +228,9 @@
                   <td class="datatable__column--path">{{ error_log.path }}</td>
                   <td class="datatable__column--automatic">{{ error_log.scan_status.scanner.name }}</td>
                   <td class="datatable__column--actions">
-                    <div class="action-wrapper">
+                    <div class="action-wrapper button-group">
                       <button type="button"
-                              class="button"
+                              class="button button--icon-button"
                               name="remove_errorlog"
                               hx-post=""
                               hx-swap="outerHTML"
@@ -224,21 +238,23 @@
                               hx-target=".content"
                               hx-select=".content"
                               hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
-                              hx-indicator="closest tr">
-                        <svg class="icon">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
-                        </svg>
+                              hx-indicator="closest tr"
+                              aria-label="{% trans 'Delete permanently' %}"
+                              title="{% trans 'Delete' %} {% trans 'error log' %}">
+                        <i id="delete_forever" class="material-icons">delete_forever</i>
                       </button>
                       {% if error_log.is_new %}
                         <button type="button"
-                                class="button"
+                                class="button button--text-button"
                                 name="see_errorlog"
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-trigger="click"
                                 hx-target=".content"
                                 hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
-                                hx-select=".content">{% trans "Mark as seen" %}</button>
+                                hx-select=".content"
+                                aria-label="{% trans 'Mark as seen' %}"
+                                title="{% trans 'Mark as seen' %}">{% trans "Mark as seen" %}</button>
                       {% endif %}
                     </div>
                   </td>

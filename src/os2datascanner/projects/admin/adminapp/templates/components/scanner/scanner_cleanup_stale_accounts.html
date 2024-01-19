@@ -6,9 +6,9 @@
 {% block rendertype %}iframe-modal{% endblock %}
 
 {% block scripts %}
-  <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
+  <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
   <script src="{% static '3rdparty/htmx.min.js' %}"></script>
-  <script src="{% static "js/index.js" %}"></script>
+  <script src="{% static 'js/index.js' %}"></script>
   <script src="{% static 'js/scannerjob/cleanupStaleAccountsCheckmarks.js' %}"></script>
 {% endblock %}
 
@@ -36,15 +36,19 @@
         </ul>
 
         <div class="button-wrapper">
-          <button class="button button--cta button--large"
+          <button type="button"
+                  class="button button--cta-button"
                   name="cleanup-button"
-                  type="button"
+                  aria-label="{% trans 'Clean' %}"
+                  title="{% trans 'Clean' %}"
                   hx-post="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
                   hx-trigger="click"
                   hx-include="#cleanup-accounts-form"
                   hx-swap="outerHTML"
                   hx-target=".cleanup-container"
-                  hx-select=".cleanup-container">{% trans "Clean" %}</button>
+                  hx-select=".cleanup-container">
+            <span>{% trans "Clean" %}</span>
+          </button>
         </div>
       </form>
     </div>

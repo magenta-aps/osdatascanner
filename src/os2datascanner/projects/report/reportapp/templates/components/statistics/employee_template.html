@@ -20,21 +20,26 @@
     <div class="status_wrapper" data-status="{{ employee.match_status }}">{{ employee.status }}</div>
   </td>
   <td class="datatable__column--leader-actions">
-    <div class="action_wrapper">
-      <a class="button"
-         href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}">{% trans "Send notification" %}</a>
-      <button class="overview-expand button button-caret button--has-icon"
-              title="{% trans 'Show/hide overview' %}"
-              type="button">
-        <i class="material-icons" aria-hidden="true">expand_more</i>
-      </button>
+    <div class="action-wrapper">
+      <div class="button-group">
+        <a href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}"
+           class="button button--text-button"
+           aria-label="{% trans 'Send notification to' %} {{ employee.get_full_name }}"
+           title="{% trans 'Send notification to' %} {{ employee.get_full_name }}">{% trans "Send notification" %}</a>
+        <button type="button"
+                class="overview-expand button button--icon-button button--caret-button"
+                aria-label="{% trans 'Show/hide overview' %}"
+                title="{% trans 'Show/hide overview' %}">
+          <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+        </button>
+      </div>
     </div>
   </td>
 </tr>
 <tr class="user-overview" hidden>
   <td colspan="4">
     <div class="overview_wrapper"
-         hx-get="{% url "statistics-user-id" employee.uuid %}"
+         hx-get="{% url 'statistics-user-id' employee.uuid %}"
          hx-trigger="intersect"
          hx-swap="outerHTML"
          hx-target="this"

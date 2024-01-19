@@ -19,10 +19,11 @@
           <h1 class="page-title">{% trans "Rules" %}</h1>
  
           <div class="btn">
-            <a class="button button--cta"
-               href="{% url "customrule_add" %}"
+            <a class="button button--cta-button button--icon-text-button"
+               href="{% url 'customrule_add' %}"
+               aria-label="{% trans 'Add rule' %}"
                title="{% trans 'Add rule' %}">
-              <svg class="icon icon--white">
+              <svg class="icon button__plus-icon">
                 <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
               </svg>
               <span>{% trans "Add rule" %}</span>
@@ -66,25 +67,23 @@
                     </span>
                   </td>
                   <td class="datatable__column--actions">
-                    <div class="action-wrapper">
+                    <div class="action-wrapper button-group">
                       <a href="{% url 'customrule_update' rule.pk %}"
-                         class="button button--small button--grey"
-                         title="{% trans 'Edit' %}">
-                        <svg class="icon">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-pencil"></use>
-                        </svg>
+                         class="button button--icon-button"
+                         aria-label="{% trans 'Edit' %} {# {% trans 'rule' %} #}"
+                         title="{% trans 'Edit' %} {# {% trans 'rule' %} #}">
+                        <i id="edit" class="material-icons">edit</i>
                       </a>
 
-                      <form action="{% url "customrule_delete" rule.pk %}" method="post">
+                      <form action="{% url 'customrule_delete' rule.pk %}" method="post">
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button type="submit"
-                                class="button button--small button--grey"
-                                onclick="return confirm('{% trans "Do you really want to delete this rule?" %}\n\n{{ rule.name }}\n\n{% trans "The action cannot be reversed" %}')"
+                                class="button button--icon-button"
+                                onclick="return confirm(`{% trans 'Do you really want to delete this rule?' %}\n\n{{ rule.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
+                                aria-label="{% trans 'Delete' %}"
                                 title="{% trans 'Delete' %}">
-                          <svg class="icon">
-                            <use xlink:href="/static/svg/symbol-defs.svg#icon-cross"></use>
-                          </svg>
+                          <i id="delete_forever" class="material-icons">delete_forever</i>
                         </button>
                       </form>
                     </div>
@@ -198,10 +197,9 @@
         </p>
 
         <div class="form__group">
-          <button class="button button--cta button--small btn btn-default"
-                  type="submit">{% trans "Yes" %}</button>
-          <button class="button button--cta button--small btn btn-default"
-                  type="button"
+          <button type="submit" class="button button--cta-button btn">{% trans "Yes" %}</button>
+          <button type="button"
+                  class="button button--cta-button btn"
                   data-modal="modal:close">{% trans "No" %}</button>
         </div>
       </form>

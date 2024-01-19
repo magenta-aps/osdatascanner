@@ -38,8 +38,9 @@
               <p>
                 <a href="{{ auth_endpoint }}"
                    id="button-authenticate"
-                   type="button"
-                   class="button button--cta button--small btn btn-default">
+                   class="button button--cta-button btn"
+                   aria-label="{% trans 'Continue to' %} {{ service_name }}"
+                   title="{% trans 'Continue to' %} {{ service_name }}">
                   {% trans "Continue to" %} {{ service_name }}
                 </a>
               </p>

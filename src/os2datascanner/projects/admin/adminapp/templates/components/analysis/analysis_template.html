@@ -41,17 +41,17 @@
         </div>
       </div>
       <div class="content-body">
-        <a
-          href="#run-analysis-modal" {# This needs creation, backend not ready #}
-          data-modal="modal:open"
-          data-src="/webscanners/{{ selected_scanner.first.pk }}/askrun/"
-          class="button button--small button--grey"
-          title="{% trans 'Run analysis scan' %}">
-          <svg class="icon">
-            <use xlink:href="/static/svg/symbol-defs.svg#icon-play"></use>
-          </svg>
-          {% trans 'Run analysis scan' %}
-        </a>
+        <div class="button-group">
+          <a href="#run-analysis-modal" {# This needs creation, backend not ready #}
+            data-modal="modal:open"
+            data-src="/webscanners/{{ selected_scanner.first.pk }}/askrun/"
+            class="button button--icon-text-button"
+            aria-label="{% trans 'Run analysis scan' %}"
+            title="{% trans 'Run analysis scan' %}">
+            <i id="play_arrow" class="material-icons">play_arrow</i>
+            <span>{% trans 'Run analysis scan' %}</span>
+          </a>
+        </div>
       </div>
 
       <div class="charts-container-box">

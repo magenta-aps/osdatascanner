@@ -169,7 +169,7 @@
                 <div class="col-sm-offset-2 col-sm-10">
                   <button id="button-add-expression"
                           type="button"
-                          class="flex button button--grey button--grey--icon button--small">
+                          class="flex button button--icon-button">
                     <span class="items">
                       <span>
                         <i id="add"
@@ -250,8 +250,16 @@
           </fieldset>
         </section>
 
-        <div class="form__group last-btn">
-          <button type="submit" class="button button--cta" name="save">{% trans "Save changes" %}</button>
+        <div class="content-footer">
+          <div class="form__group">
+            <button type="submit"
+                    class="button button--cta-button"
+                    aria-label="{% trans 'Save changes' %}"
+                    title="{% trans 'Save changes' %}"
+                    name="save">
+              <span>{% trans "Save changes" %}</span>
+            </button>
+          </div>
         </div>
       </form>
     </div>
