@@ -31,8 +31,8 @@ function setCheckEvent() { // jshint ignore:line
   }
 }
 
-function toggleOptionbox() { // jshint ignore:line
-  let filterButton = document.getElementById("org_structure_filter_options");
+function toggleOptionbox(toggleElement) { // jshint ignore:line
+  let filterButton = document.getElementById(toggleElement);
   filterButton.style.display = (filterButton.style.display === "none") ? "block" : "none";
 }
 
@@ -40,6 +40,20 @@ function toggleCheckbox(e, checkboxId) { // jshint ignore:line
   e.preventDefault();
   let checkbox = document.getElementById(checkboxId);
   checkbox.checked = !checkbox.checked;
+}
+
+function hideOptions(toggleElement) { // jshint ignore:line
+  const options = ["sensitivity", "source_type"];
+  const toggleElem = document.getElementById(toggleElement);
+
+  for (const option of options) {
+    const checkbox = document.getElementById(option + "_checkbox");
+    const filterElem = document.getElementById(option + "_filter");
+    
+    filterElem.hidden = !checkbox.checked;
+  }
+
+  toggleElem.style.display = "none";
 }
 
 function disableDistributeButton() {
