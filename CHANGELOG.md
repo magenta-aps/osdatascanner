@@ -82,6 +82,9 @@
 
 - quickstart_dev now also makes the dev account a universal remediator.
 
+- The `diagnostics`-command in the report module now identifies aliases with
+  mismatched accounts and users (i.e. users and accounts with differing usernames.)
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.

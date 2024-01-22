@@ -73,21 +73,23 @@ class Command(BaseCommand):
             "_alias_type").order_by().annotate(count=Count("_alias_type"))
         # We have to make new querysets here, as annotating with Count
         # Will always give "0" if the counted field is null.
-        aliases_with_no_user = aliases.filter(user__isnull=True).values("pk")
         aliases_with_no_account = aliases.filter(account__isnull=True).values("pk")
+        aliases_with_mismatched_account_user = aliases.exclude(
+            user__username=F("account__username"))
 
         nl = '\n  '
         print(
             f"Found a total of {aliases.count()} aliases: \n  "
             f"{nl.join([f'''{a['_alias_type']}: {a['count']}''' for a in alias_types])}")
 
-        if aliases_with_no_user:
-            print(f"Found {len(aliases_with_no_user)} aliases with no user:",
-                  ", ".join([str(d['pk']) for d in aliases_with_no_user]))
-
         if aliases_with_no_account:
             print(f"Found {len(aliases_with_no_account)} aliases with no account:",
                   ", ".join([str(d['pk']) for d in aliases_with_no_account]))
+
+        if aliases_with_mismatched_account_user:
+            print(f"Found {len(aliases_with_mismatched_account_user)} aliases "
+                  "with mismatched accounts and users:",
+                  ", ".join([str(d['pk']) for d in aliases_with_mismatched_account_user]))
 
     def diagnose_problems(self):
         print("\n\n>> Running diagnostics on problems ...")
