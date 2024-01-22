@@ -23,6 +23,9 @@ from os2datascanner.projects.admin.adminapp.models.rules import (
 from os2datascanner.projects.admin.organizations.models.account import (
     Account,
 )
+from os2datascanner.projects.admin.organizations.models.aliases import (
+    Alias, AliasType,
+)
 from os2datascanner.projects.admin.organizations.models.organization import (
     Organization, OrganizationSerializer
 )
@@ -112,6 +115,17 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Account dev created successfully!"))
         else:
             self.stdout.write("Account for dev already exists!")
+
+        alias, c2 = Alias.objects.get_or_create(
+            account=account,
+            _alias_type=AliasType.REMEDIATOR,
+            _value="0",
+        )
+        if c2:
+            self.stdout.write(self.style.SUCCESS("Remediator alias for account dev "
+                                                 "created successfully!"))
+        else:
+            self.stdout.write("Remediator alias for account dev already exists!")
 
         self.stdout.write("Synchronizing Organization to Report module")
         creation_dict = {"Organization": OrganizationSerializer(
