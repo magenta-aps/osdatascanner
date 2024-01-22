@@ -65,6 +65,19 @@ no_equivalent_mapped_site = {
         "http://a.www.localhost:64346/",
     ],
 }
+mapped_site_with_images = {
+    "source": WebSource(
+        "http://localhost:64346/", sitemap="http://localhost:64346/sitemap_images.xml"
+    ),
+    "handles": [
+        "http://localhost:64346/",
+        "http://localhost:64346/forside.html",
+        "http://localhost:64346/image.jpg",
+        "http://localhost:64346/another_image.jpg",
+        "http://localhost:64346/underside.html",
+        "http://localhost:64346/happy_cat.jpg",
+    ],
+}
 indexed_mapped_site = {
     "source": WebSource(
         "http://localhost:64346/", sitemap="http://localhost:64346/sitemap_index.xml"
@@ -492,6 +505,18 @@ class Engine2HTTPExplorationTest(Engine2HTTPSetup, unittest.TestCase):
             presentation_urls,
             mapped_site["handles"],
             "embedded site with sitemap should have 3 handles",
+        )
+
+    def test_exploration_sitemap_images(self):
+        "Use sitemap with images and no scraping"
+
+        with SourceManager() as sm:
+            presentation_urls = [
+                h.presentation_url for h in mapped_site_with_images["source"].handles(sm)]
+        self.assertCountEqual(
+            presentation_urls,
+            mapped_site_with_images["handles"],
+            "embedded site with sitemap should have 5 handles"
         )
 
     def test_exploration_site_wrong_subdomain(self):

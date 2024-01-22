@@ -10,6 +10,8 @@
 - The list of dates containing CPR numbers violating the Modulo-11 check, have been synced 
   with the list from the CPR office.
 
+- Sitemap-based webscans now also support sitemap-images
+
 ## Version 3.22.1, 2nd February 2024
 
 This minor bugfix release fixes a potential crash in one of the migrations
