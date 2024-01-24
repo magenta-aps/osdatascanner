@@ -80,7 +80,8 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
+              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
+              'grant']
     type = 'exchange'
 
     def get_success_url(self):
@@ -109,7 +110,8 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
+              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
+              'grant']
     type = 'exchange'
 
     def get_form(self, form_class=None):
@@ -141,7 +143,8 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
+              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
+              'grant']
     type = 'exchange'
 
     def get_success_url(self):

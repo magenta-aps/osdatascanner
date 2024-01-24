@@ -34,6 +34,9 @@ class ExchangeScannerTests(TestCase):
         es = ExchangeScanner.objects.create(name="ul_format_test", rule=rule)
 
         es.authentication = Authentication()
+        es.authentication.username = "admin"
+        es.authentication.set_password("swordfish")
+
         es.userlist = userlist_file
         self.assertCountEqual(
                 (source._user for source in es.generate_sources()),

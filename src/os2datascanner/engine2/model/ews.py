@@ -71,6 +71,7 @@ class EWSAccountSource(Source):
 
     eq_properties = (
             "_domain", "_server", "_user",
+            "_admin_user", "_admin_password",
             "_client_id", "_tenant_id", "_client_secret")
 
     def __init__(
