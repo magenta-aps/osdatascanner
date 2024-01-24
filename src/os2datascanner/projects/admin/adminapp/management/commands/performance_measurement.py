@@ -75,7 +75,8 @@ class Command(BaseCommand):
         )
         if created:
             cpr = CPRRule.objects.first()
-            webscanner.rules.set([cpr])
+            webscanner.rule = cpr
+            webscanner.save()
             self.stdout.write(self.style.SUCCESS(scan_url))
         start = time.process_time()
 

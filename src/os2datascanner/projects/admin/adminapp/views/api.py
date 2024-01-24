@@ -57,7 +57,7 @@ def get_scanner_1(key, body):
             "message": "scanner {0} does not exist".format(pk)
         }
 
-    rule_generator = (r.make_engine2_rule() for r in scanner.rules.all().select_subclasses())
+    rule_generator = scanner.rule.make_engine2_rule()
     return {
         "status": "ok",
         "name": scanner.name,

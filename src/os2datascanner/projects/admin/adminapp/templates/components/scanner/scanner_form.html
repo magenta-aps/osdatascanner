@@ -541,7 +541,7 @@
               <!-- Available Employees widget -->
               <!-- <p class="information">Vælg kun medarbejdere, som du ønsker at tilføje til scannerjobbet.</p>
 
-          <div id="{% if view.edit %}messageColorId{% endif %}" class="form__group{% if form.rules.errors %} has-error{% endif %}">
+          <div id="{% if view.edit %}messageColorId{% endif %}" class="form__group{% if form.rule.errors %} has-error{% endif %}">
             <div class="select-employees">
 
               <ul id="available_employees" class="select-employees__available">
@@ -726,11 +726,11 @@
           </section>
         {% endif %}
 
-        {% include "components/rules/rule_selector.html" with rules=form.rules is_required=True selector_id="rules" component_title="Add rule" changed_id="changed_rules" %}
+        {% include "components/rules/rule_selector.html" with rule=form.rule is_required=True selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
 
         {% if settings.EXCLUSION_RULES %}
 
-          {% include "components/rules/rule_selector.html" with rules=form.exclusion_rules selector_id="exclusion_rules" component_title="Add exclusion rule" changed_id="changed_exclusion_rules" %}
+          {% include "components/rules/rule_selector.html" with rule=form.exclusion_rule selector_id="exclusion_rule" component_title="Add exclusion rule" changed_id="changed_exclusion_rule" %}
 
         {% endif %}
 
