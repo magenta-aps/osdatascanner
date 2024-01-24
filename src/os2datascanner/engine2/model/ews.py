@@ -3,8 +3,8 @@ from typing import Iterator
 from urllib.parse import urlsplit, quote
 from contextlib import contextmanager
 from exchangelib import (
-    Folder, Account, Message, Credentials, IMPERSONATION,
-    Configuration, ExtendedProperty)
+        Folder, OAUTH2, Account, Message, Identity, Credentials, Configuration,
+        IMPERSONATION, ExtendedProperty, OAuth2Credentials)
 from exchangelib.errors import (
         ErrorServerBusy, ErrorItemNotFound, ErrorNonExistentMailbox)
 from exchangelib.protocol import BaseProtocol
@@ -69,14 +69,49 @@ class InsensitiveDict(dict):
 class EWSAccountSource(Source):
     type_label = "ews"
 
-    eq_properties = ("_domain", "_server", "_user")
+    eq_properties = (
+            "_domain", "_server", "_user",
+            "_client_id", "_tenant_id", "_client_secret")
 
-    def __init__(self, domain, server, admin_user, admin_password, user):
+    def __init__(
+            self, domain, server, admin_user, admin_password, user,
+            client_id=None, tenant_id=None, client_secret=None):
         self._domain = domain
-        self._server = server
-        self._admin_user = admin_user
-        self._admin_password = admin_password
+        self._server = (
+                server if client_secret is None
+                # If we have a Microsoft Graph client, then ignore the server
+                # field and hard-code the Office 365 endpoint
+                else OFFICE_365_ENDPOINT)
         self._user = user
+
+        self._admin_user = admin_user or None
+        self._admin_password = admin_password or None
+
+        self._client_id = client_id
+        self._tenant_id = tenant_id
+        self._client_secret = client_secret
+
+    def _make_credentials(self):
+        match (self._admin_password, self._client_secret):
+            case (None, None):
+                raise ValueError(
+                        "no authentification details available (are you"
+                        " trying to open a censored EWSAccountSource?)")
+            case (str() as s, None) if s:
+                return Credentials(
+                        username=self._admin_user,
+                        password=self._admin_password)
+            case (None, str() as s) if s:
+                return OAuth2Credentials(
+                        client_id=self._client_id,
+                        client_secret=self._client_secret,
+                        tenant_id=self._tenant_id,
+                        identity=Identity(
+                                primary_smtp_address=self.address))
+            case _:
+                raise ValueError(
+                        "EWSAccountSource expects either a service account"
+                        " or a Microsoft Graph client, but not both")
 
     @property
     def user(self):
@@ -91,18 +126,25 @@ class EWSAccountSource(Source):
         return "{0}@{1}".format(self.user, self.domain)
 
     def _generate_state(self, sm):
-        service_account = Credentials(
-                username=self._admin_user, password=self._admin_password)
-        config = Configuration(
-                service_endpoint=self._server,
-                credentials=service_account if self._server else None)
-
-        account = Account(
-                primary_smtp_address=self.address,
-                credentials=service_account,
-                config=config,
-                autodiscover=not bool(self._server),
-                access_type=IMPERSONATION)
+        match self._make_credentials():
+            case Credentials() as c:
+                account = Account(
+                        primary_smtp_address=self.address,
+                        credentials=c,
+                        config=Configuration(
+                                service_endpoint=self._server,
+                                credentials=c if self._server else None),
+                        autodiscover=not bool(self._server),
+                        access_type=IMPERSONATION)
+            case OAuth2Credentials() as c:
+                account = Account(
+                        primary_smtp_address=self.address,
+                        config=Configuration(
+                                service_endpoint=self._server,
+                                credentials=c,
+                                auth_type=OAUTH2))
+            case _:
+                raise ValueError("Couldn't make an Account object")
 
         try:
             yield account
@@ -114,7 +156,8 @@ class EWSAccountSource(Source):
 
     def censor(self):
         return EWSAccountSource(
-                self._domain, self._server, None, None, self._user)
+                self._domain, self._server, None, None, self._user,
+                self._client_id, self._tenant_id, None)
 
     @classmethod
     def _relevant_folders(cls, account: Account) -> Iterator[Folder]:
@@ -151,14 +194,17 @@ class EWSAccountSource(Source):
         yield from relevant_mails(self._relevant_folders(account))
 
     def to_json_object(self):
-        return dict(
-            **super().to_json_object(),
-            domain=self._domain,
-            server=self._server,
-            admin_user=self._admin_user,
-            admin_password=self._admin_password,
-            user=self._user,
-        )
+        return super().to_json_object() | {
+            "domain": self._domain,
+            "server": self._server,
+            "admin_user": self._admin_user,
+            "admin_password": self._admin_password,
+            "user": self._user,
+
+            "client_id": self._client_id,
+            "tenant_id": self._tenant_id,
+            "client_secret": self._client_secret
+        }
 
     @staticmethod
     def from_url(url):
@@ -177,7 +223,11 @@ class EWSAccountSource(Source):
     def from_json_object(obj):
         return EWSAccountSource(
                 obj["domain"], obj["server"], obj["admin_user"],
-                obj["admin_password"], obj["user"])
+                obj["admin_password"], obj["user"],
+
+                client_id=obj.get("client_id"),
+                tenant_id=obj.get("tenant_id"),
+                client_secret=obj.get("client_secret"))
 
 
 class EWSMailResource(FileResource):
