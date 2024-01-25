@@ -9,36 +9,50 @@ var inputValues = document.querySelectorAll('.user-class-input');
 var hiddenInput = document.getElementsByName('user_obj_classes')[0];
 
 // add new input field
-var addInput = function() {
-    counter += 1;
-    var input = document.createElement("input");
-    input.id = 'userClass' + counter;
-    input.type = 'text';
-    input.name = 'userClass'+ counter;
-    input.className = 'user-class-input';
-    div.appendChild(input);
-    div.appendChild(removeUserClass(input, div));
-    addUserClassInput(input);
+var addInput = function () {
+  counter += 1;
 
+  // flex container for input field + remove button
+  var inputButtonContainer = document.createElement("div");
+  inputButtonContainer.id = "container" + counter;
+  inputButtonContainer.className = "flex";
+
+  // input field
+  var input = document.createElement("input");
+  input.id = "userClass" + counter;
+  input.type = "text";
+  input.name = "userClass" + counter;
+  input.className = "user-class-input";
+
+  // place input + button inside flex container
+  inputButtonContainer.appendChild(input);
+  inputButtonContainer.appendChild(
+    removeUserClass(input, inputButtonContainer)
+  );
+  addUserClassInput(input);
+
+  div.appendChild(inputButtonContainer);
 };
-btnUserClass.addEventListener('click', function() {
+btnUserClass.addEventListener(
+  "click",
+  function () {
     addInput();
-}.bind(this));
+  }.bind(this)
+);
 
 // remove button
 function removeUserClass(element, parent) {
-    var btnRemove = document.createElement("button");
-    btnRemove.addEventListener('click', function() {
-        parent.removeChild(element);
-        parent.removeChild(this);
-        updateTagList();
-    });
-    btnRemove.id = 'removeUserClass' + counter;
-    btnRemove.type = 'button';
-    btnRemove.name = 'removeUserClass'+ counter;
-    btnRemove.textContent = 'Fjern';
-    btnRemove.className += 'button button--danger';
-    return btnRemove;
+  var btnRemove = document.createElement("button");
+  btnRemove.addEventListener("click", function () {
+    parent.parentNode.removeChild(parent);
+    updateTagList();
+  });
+  btnRemove.id = "removeUserClass" + counter;
+  btnRemove.type = "button";
+  btnRemove.name = "removeUserClass" + counter;
+  btnRemove.textContent = "Fjern";
+  btnRemove.className += "button button--transparent-button";
+  return btnRemove;
 }
 
 // update tag list on change
