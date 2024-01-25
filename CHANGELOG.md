@@ -56,6 +56,8 @@
 
 - Scannerjob filter in the report module is now alphabetically sorted.
 
+- Added management command initial_setup for setting up client, organization and superuser.
+
 - All button elements have been refactored to optimize future development:
 
   - The primary stylesheet (_buttons.scss) have been updated to reflect styles 

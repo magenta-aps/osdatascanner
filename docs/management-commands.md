@@ -40,6 +40,29 @@ To execute this command run:
 `docker-compose exec admin python manage.py list_scannerjobs`
 
 
+### `initial_setup`
+
+This command is used to set up an initial client, organization, and superuser.
+The client and organization can be given a name using `--client-name` and `--org-name`
+respectively, and if no name is given, they will take the name from `settings.NOTIFICATION_INSTITUTION`.
+The name of the user and corresponding account can be set with `--username`. "os" is the default value for username.
+
+If a client, organization, or user with the given name already exists, the command will fail, 
+and you will have to call it again with unused names.
+
+The available arguments are:
+
+* `--phone <phone number>`, sets client contact phone number
+* `--email <email adress>`, sets client contact email adress
+* `--username <username>`, sets username for created user and corresponding account. Default: "os"
+* `--client-name <client name>`, sets name of created client
+* `--org-name <organization name>`, sets name of created organization
+* `--password <password>`, sets password for superuser
+
+The corresponding command in the Report module needs to be run after this
+to update the created user for use in the Report module.
+
+
 ### `quickstart_dev`
 
 This command is only intended for getting a developer environment
@@ -137,6 +160,18 @@ Provided a PK of a scanner job finds associated document reports and lists:
 
 To execute this command run:
 `docker-compose exec report python manage.py scannerjob_info <PK>`
+
+
+### `initial_setup`
+
+This command should only be used _after_ running the corresponding command in the admin module.
+
+This command updates the user created by running `initial_setup` in the admin module.
+
+The available arguments are:
+
+* `--username <username>`, `<username>` must be the same username used in the admin module
+* `--password <password>`, sets the password of the superuser
 
 
 ### `quickstart_dev`
