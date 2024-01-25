@@ -62,6 +62,10 @@ the _APIs my organization uses_ tab...
 
 ![... and then grant the application permission "full_access_as_app".](azure-ews-2.png)
 
+Once you've done that, you can visit the special URL `/grants/msgraph/request/`
+to begin the authentication flow to make OSdatascanner aware of your Azure
+tenant.
+
 [comment:] # ## Filesystem scans
 
 ## Google Workspace
