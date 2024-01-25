@@ -16,6 +16,8 @@
 
   - Accessed through the account detail page.
 
+- Added support for configuring an SID mapper for LDAP import jobs.
+
 ### General improvements
 
 - The user list files given to the Exchange mail scanner can now be in an
