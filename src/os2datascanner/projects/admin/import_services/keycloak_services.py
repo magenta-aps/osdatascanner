@@ -101,14 +101,15 @@ def request_create_component(realm, token, payload):
     return requests.post(url, data=json.dumps(payload), headers=headers)
 
 
-def request_update_component(realm, token, payload, config_id):
+def request_update_component(realm, token, payload, component_id):
     """TODO:"""
     url = (settings.KEYCLOAK_BASE_URL +
-           f'/auth/admin/realms/{realm}/components/{config_id}')
+           f'/auth/admin/realms/{realm}/components/{component_id}')
     headers = {
         'Authorization': f'bearer {token}',
         'Content-Type': 'application/json;charset=utf-8',
     }
+
     return requests.put(url, data=json.dumps(payload), headers=headers)
 
 
@@ -253,4 +254,44 @@ def create_member_of_attribute_mapper(realm, token, provider_id):
         "parentId": f"{provider_id}"
     }
 
+    return requests.post(url, data=json.dumps(payload), headers=headers)
+
+
+def create_sid_attribute_mapper(realm, token, provider_id, ldap_sid_attribute):
+
+    url = (settings.KEYCLOAK_BASE_URL +
+           f'/auth/admin/realms/{realm}/components'
+           )
+
+    headers = {
+        'Authorization': f'bearer {token}',
+        'Content-Type': 'application/json;charset=utf-8',
+    }
+
+    payload = {
+        "config": {
+            "user.model.attribute": [
+                "objectSid"
+            ],
+            "ldap.attribute": [
+                f"{ldap_sid_attribute}"
+            ],
+            "read.only": [
+                "true"
+            ],
+            "always.read.value.from.ldap": [
+                "true"
+            ],
+            "is.mandatory.in.ldap": [
+                "false"
+            ],
+            "is.binary.attribute": [
+                "false"
+            ]
+        },
+        "name": "objectSid",
+        "providerId": "user-attribute-ldap-mapper",
+        "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
+        "parentId": f"{provider_id}"
+    }
     return requests.post(url, data=json.dumps(payload), headers=headers)

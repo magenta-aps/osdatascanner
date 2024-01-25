@@ -1,6 +1,8 @@
+import base64
+import logging
+import struct
 from typing import Tuple, Sequence
 from django.db import transaction
-import logging
 from os2datascanner.utils.ldap import RDN, LDAPNode
 from .utils import group_into, set_imported_fields, create_and_serialize, update_and_serialize, \
     delete_and_listify
@@ -14,10 +16,10 @@ from .models import (Alias, Account, Position,
                      Organization, OrganizationalUnit)
 from .models.aliases import AliasType
 
-
 logger = logging.getLogger(__name__)
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
+SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
 
 
 def keycloak_dn_selector(d):
@@ -117,6 +119,30 @@ def _node_to_iid(path: Sequence[RDN], node: LDAPNode) -> str:
         return RDN.sequence_to_dn(path)
     else:  # The node is a user
         return node.properties["attributes"]["LDAP_ENTRY_DN"][0]
+
+
+def _convert_sid(sid):
+    # We'll need it in bytes first.
+    b_sid = base64.decodebytes(sid.encode())
+
+    def __convert_binary_sid_to_str(binary_sid):
+        # This code is sourced from:
+        # noqa: https://stackoverflow.com/questions/33188413/python-code-to-convert-from-objectsid-to-sid-representation
+        # We could also install samba and use its functionality.
+        version = struct.unpack('B', binary_sid[0:1])[0]
+        # I do not know how to treat version != 1 (it does not exist yet)
+        assert version == 1, version
+        length = struct.unpack('B', binary_sid[1:2])[0]
+        authority = struct.unpack(b'>Q', b'\x00\x00' + binary_sid[2:8])[0]
+        string = 'S-%d-%d' % (version, authority)
+        binary = binary_sid[8:]
+        assert len(binary) == 4 * length
+        for i in range(length):
+            value = struct.unpack('<L', binary[4*i:4*(i+1)])[0]
+            string += '-%d' % value
+        return string
+
+    return __convert_binary_sid_to_str(b_sid)
 
 
 @suppress_signals.wrap
@@ -309,7 +335,16 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
 
     for iid, (remote_node, account) in changed_accounts.items():
         mail_address = remote_node.properties.get("email")
+
+        # SID is hidden a level further down, we'll have to unpack...
+        object_sid = None
+        sid_attr = remote_node.properties.get("attributes", {}).get("objectSid")
+        if sid_attr:
+            object_sid = _convert_sid(sid_attr[0])
+
         imported_id = f"{account.imported_id}{EMAIL_ALIAS_IMPORTED_ID_SUFFIX}"
+        imported_id_sid = f"{account.imported_id}{SID_ALIAS_IMPORTED_ID_SUFFIX}"
+
         # The user has an email. Create or update if necessary
         if mail_address:
             try:
@@ -335,6 +370,31 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
             to_delete.extend(Alias.objects.filter(account=account,
                                                   imported=True,
                                                   _alias_type=AliasType.EMAIL))
+        # The user has an SID. Create or update if necessary
+        if object_sid:
+            try:
+                alias = Alias.objects.get(
+                    imported_id=imported_id_sid,
+                    account=account,
+                    _alias_type=AliasType.SID)
+                for attr_name, expected in (("_value", object_sid),):
+                    if getattr(alias, attr_name) != expected:
+                        setattr(alias, attr_name, expected)
+                        to_update.append((alias, (attr_name,)))
+            except Alias.DoesNotExist:
+                alias = Alias(
+                    imported_id=imported_id_sid,
+                    account=account,
+                    _alias_type=AliasType.SID,
+                    _value=object_sid
+                )
+                if alias not in to_add:
+                    to_add.append(alias)
+        elif not object_sid:
+            # The user no longer has an SID - delete previously imported ones
+            to_delete.extend(Alias.objects.filter(account=account,
+                                                  imported=True,
+                                                  _alias_type=AliasType.SID))
 
         # Update the other properties of the account
         for attr_name, expected in (
