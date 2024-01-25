@@ -123,6 +123,10 @@ allowing last modified timestamps to be on an account basis.
 
 - Updated button classes on LDAP import to match the rest of the app.
 
+- The Exchange scanner can now find matches in emails that don't have receipt
+  headers (because they haven't technically been received) -- that is, emails
+  in the "Sent Post", "Drafts" or "Outbox" folders.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"

@@ -1,4 +1,5 @@
 from io import BytesIO
+from typing import Iterator
 from urllib.parse import urlsplit, quote
 from contextlib import contextmanager
 from exchangelib import (
@@ -115,31 +116,39 @@ class EWSAccountSource(Source):
         return EWSAccountSource(
                 self._domain, self._server, None, None, self._user)
 
-    def handles(self, sm):  # noqa: CCR001, E501 too high cognitive complexity
-        account = sm.open(self)
+    @classmethod
+    def _relevant_folders(cls, account: Account) -> Iterator[Folder]:
+        for container in account.msg_folder_root.walk():
+            if (container.folder_class != "IPF.Note"
+                    or container.total_count == 0):
+                continue
+            yield container
 
-        def relevant_folders():
-            for container in account.msg_folder_root.walk():
-                if (container.folder_class != "IPF.Note"
-                        or container.total_count == 0):
-                    continue
-                yield container
+    @classmethod
+    def _relevant_mails(cls, folder: Folder, *fields) -> Iterator[Message]:
+        queryset = folder.all()
+        if fields:
+            queryset = queryset.only("entry_id", *fields)
+        # A "relevant" mail is anything that we can understand as a Message
+        # and that has had an Outlook entry ID assigned
+        yield from (
+                mail for mail in queryset
+                if isinstance(mail, Message) and hasattr(mail, "entry_id"))
+
+    def handles(self, sm) -> Iterator['EWSMailHandle']:
+        account = sm.open(self)
 
         def relevant_mails(relevant_folders):
             for folder in relevant_folders:
-                for mail in (m
-                             for m in folder.all().only("id", "headers", "entry_id")
-                             if isinstance(m, Message) and hasattr(m, "entry_id")):
-                    headers = _dictify_headers(mail.headers)
-                    if headers:
-                        yield EWSMailHandle(
-                            self,
-                            "{0}.{1}".format(folder.id, mail.id),
-                            headers.get("subject", "(no subject)"),
-                            folder.name,
-                            mail.entry_id.hex())
+                for mail in self._relevant_mails(folder, "id", "subject"):
+                    yield EWSMailHandle(
+                        self,
+                        "{0}.{1}".format(folder.id, mail.id),
+                        mail.subject or "(no subject)",
+                        folder.name,
+                        mail.entry_id.hex())
 
-        yield from relevant_mails(relevant_folders())
+        yield from relevant_mails(self._relevant_folders(account))
 
     def to_json_object(self):
         return dict(
