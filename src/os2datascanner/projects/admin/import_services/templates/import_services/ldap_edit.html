@@ -50,7 +50,7 @@
       <div class="flex">
         <button type="button"
                 id="button-connection"
-                class="button button--cta-button"
+                class="button button--icon-text-button"
                 name="button-connection"
                 aria-label="{% trans 'test connection'|capfirst %}"
                 title="{% trans 'test connection'|capfirst %}">
@@ -79,7 +79,7 @@
       <div class="flex">
         <button type="button"
                 id="button-auth"
-                class="button button--cta-button"
+                class="button button--icon-text-button"
                 name="button-auth"
                 aria-label="{% trans 'test connection'|capfirst %}"
                 title="{% trans 'test connection'|capfirst %}">
@@ -121,14 +121,17 @@
         {% endfor %}
         <input class="user-class-input" id="userClass" type="text" name="userClass" />
       </div>
-      <button type="button"
-              id="btnUserClass"
-              class="button button--icon-text-button button--outline-button"
-              aria-label="{% trans 'user attributes'|capfirst %}"
-              title="{% trans 'user attributes'|capfirst %}">
-        <i id="add" class="material-icons">add</i>
-        <span>{% trans "add user attributes"|capfirst %}</span>
-      </button>
+      <div class="flex">
+        <button type="button"
+                id="btnUserClass"
+                class="button button--icon-text-button"
+                aria-label="{% trans 'user attributes'|capfirst %}"
+                title="{% trans 'user attributes'|capfirst %}">
+          <i id="add" class="material-icons">add</i>
+          <span>{% trans "add user attributes"|capfirst %}</span>
+        </button>
+      </div>
+
     </section>
 
     <section class="data-form">
