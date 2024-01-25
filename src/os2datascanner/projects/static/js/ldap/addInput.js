@@ -1,24 +1,23 @@
 // add input field for user class object
-
-var btnUserClass = document.querySelector('#btnUserClass');
-var counter = 1;
-var div = document.getElementById('userObjClass');
-var taglist = [];
-var firstInput = document.querySelector('#userClass');
-var inputValues = document.querySelectorAll('.user-class-input');
-var hiddenInput = document.getElementsByName('user_obj_classes')[0];
+let btnUserClass = document.querySelector("#btnUserClass");
+let counter = 1;
+let div = document.getElementById("userObjClass");
+let taglist = [];
+let firstInput = document.querySelector("#userClass");
+let inputValues = document.querySelectorAll(".user-class-input");
+let hiddenInput = document.getElementsByName("user_obj_classes")[0];
 
 // add new input field
-var addInput = function () {
+let addInput = function () {
   counter += 1;
 
   // flex container for input field + remove button
-  var inputButtonContainer = document.createElement("div");
+  let inputButtonContainer = document.createElement("div");
   inputButtonContainer.id = "container" + counter;
   inputButtonContainer.className = "flex";
 
   // input field
-  var input = document.createElement("input");
+  let input = document.createElement("input");
   input.id = "userClass" + counter;
   input.type = "text";
   input.name = "userClass" + counter;
@@ -42,7 +41,7 @@ btnUserClass.addEventListener(
 
 // remove button
 function removeUserClass(element, parent) {
-  var btnRemove = document.createElement("button");
+  let btnRemove = document.createElement("button");
   btnRemove.addEventListener("click", function () {
     parent.parentNode.removeChild(parent);
     updateTagList();

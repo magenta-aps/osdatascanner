@@ -115,6 +115,8 @@
 
 - Added missing option for turning on/off 'keep_false_positives' when copying a scannerjob.
 
+- Updated button classes on LDAP import to match the rest of the app.
+
 ## Version 3.21.4, 15th December 2023
 
 "Don't Crash, Bandicoot"
