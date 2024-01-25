@@ -33,15 +33,10 @@
   align-content: center;
   font-size: .8rem;
 
-  .response-text {
-    display: flex;
-    margin-top: -.75rem;
-  }
-
   .response-icon {
-    display: flex;
-    margin: 0 .25rem .75rem 0;
+    margin: 0 0.25rem 0 0;
     font-size: .8rem;
+    height: 1.5rem;
 
     &--error {
       color: var(--color-error);
