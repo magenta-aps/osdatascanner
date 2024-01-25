@@ -21,7 +21,7 @@ set using a `with`-statement when including it in other templates:
   <fieldset class="form__fieldset">
     <h3 {% if is_required %}class="required-form"{% endif %}>{% trans component_title %}</h3>
     <div id="{% if view.edit %}{{ changed_id }}_message_color{% endif %}"
-         class="form__group{% if rules.errors %} has-error{% endif %}">
+         class="form__group{% if rule.errors %} has-error{% endif %}">
       <div class="select-rules">
         <div class="select-rules__available">
           <div class="dropdown">
@@ -29,10 +29,10 @@ set using a `with`-statement when including it in other templates:
                     id="{{ selector_id }}_id"
                     class="select-rules-selector"
                     {% if is_required %}required{% endif %}>
-              {% for rule_value, rule_tag in rules.field.choices %}
+              {% for rule_value, rule_tag in rule.field.choices %}
                 <option value="{{ rule_value }}"
                         data-rule-id="{{ rule_value }}"
-                        {% if rule_value == rules.value %}selected{% endif %}>{{ rule_tag }}</option>
+                        {% if rule_value == rule.value %}selected{% endif %}>{{ rule_tag }}</option>
               {% endfor %}
             </select>
             <input type="hidden" id="{{ selector_id }}_input" name="{{ selector_id }}">
@@ -45,7 +45,7 @@ set using a `with`-statement when including it in other templates:
           </div>
         {% endif %}
 
-        {% if rules.errors %}{{ rules.errors }}{% endif %}
+        {% if rule.errors %}{{ rule.errors }}{% endif %}
       </div>
     </div>
   </fieldset>

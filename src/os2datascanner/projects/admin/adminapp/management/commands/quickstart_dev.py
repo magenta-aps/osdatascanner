@@ -145,6 +145,7 @@ class Command(BaseCommand):
             do_last_modified_check=False,
             organization=org,
             schedule=recurrence,
+            rule=cpr,
         )
         if created:
             auth = Authentication(username=smb_user)
@@ -152,7 +153,6 @@ class Command(BaseCommand):
             auth.save()
             share.authentication = auth
             share.save()
-            share.rules.set([cpr])
             self.stdout.write(self.style.SUCCESS("Samba share file scanner created successfully!"))
         else:
             self.stdout.write("Samba share file scanner already exists!")
@@ -166,9 +166,9 @@ class Command(BaseCommand):
             organization=org,
             schedule=recurrence,
             download_sitemap=False,
+            rule=cpr,
         )
         if created:
-            webscanner.rules.set([cpr])
             self.stdout.write(self.style.SUCCESS("Webscanner created successfully!"))
         else:
             self.stdout.write("Webscanner already exists!")
