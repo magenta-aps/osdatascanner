@@ -1,23 +1,23 @@
 # Buttons
 
-Here you can find a guide on how to construct a button for DataScanner anno Jan'24.
+Here you can find a guide on how to construct a button for OSdatascanner anno Jan'24.
 
 ## When to use `<button>` VS. `<a>`
 
 - Use `<button>` when the button should:
-    - Submit a form
-    - Trigger one or more JavaScript functions
-    - Toggle/interact with elements on the same page (ie. open a modal or a dropdown menu)
+    - Submit a form.
+    - Trigger one or more JavaScript functions.
+    - Toggle or interact with objects on the same page (e.g., open a modal or a dropdown menu).
 - Use `<a>` when the button should:
-    - Work as navigation-UI to another page
-    - Link to a different place on the same page
-    - Start a download or link to files ie. PDFs
+    - Serve as a navigation UI to another page.
+    - Link to a different place on the same page.
+    - Start a download or link to files (e.g., PDFs).
 
-``` html
-A good rule of thumb for using <a> tags for UI elements: 
+***
 
-                    Is it a link to anything? > No? > Use <button> instead.
-```
+> A good rule of thumb for using `<a>` tags for UI objects: 
+> 
+> Is it a link to anything? > No? > Use `<button>` instead.
 
 ***
 
@@ -25,24 +25,22 @@ A good rule of thumb for using <a> tags for UI elements:
 
 | HTML Tag      | Attribute     | Reason                                                                            |
 | :-----------: | :-----------: | --------------------------------------------------------------------------------- |
-| *any*         | `class`       | Styling - All buttons need to at least have the `.button` class                   |
-| *any*         | `aria-label`  | Accessibility - This is the text a screenreader would read out loud               |
-| *any*         | `title`       | Toolhint - This is what will be displayed on hover                                |
-| `<button>`    | `type`        | Functionality - Defines button behavior in forms + prevents unintended actions    |
-| `<a>`         | `href`        | Navigation - Specifies the link's destination URL                                 |
+| *any*         | `class`       | Styling - All buttons should have at least the .button class.                     |
+| *any*         | `aria-label`  | Accessibility - This text is read aloud by screenreaders.                         |
+| *any*         | `title`       | Toolhint - Displays on hover to elaborate on function.                            |
+| `<button>`    | `type`        | Functionality - Defines button behavior in forms and prevents unintended actions. |
+| `<a>`         | `href`        | Navigation - Specifies the destination URL for the link.                          |
 
 
-### Semantic structure - *good habits*
+### Semantic structure
 
-To avoid forgetting any of the required attributes, it's a good habit to write them first. 
-It's easier for people who aren't experts on your amazing code if the *purpose* is the first thing listed (*type/href*).
-
-Besides this, it's a good habit to envelop button text strings with `<span>` tags or similar. 
+To ensure all required attributes are included, list them first. 
+This is especially helpful for those less familiar with your code, as it prioritizes the element's purpose (type/href).
 
 ``` html
 <button type="button"
         class="button button--outline-button button--icon-text-button"
-        aria-label="decsriptive text that makes sense for a user with visual impairment"
+        aria-label="descriptive text that makes sense for a user with visual impairment"
         title="text that elaborates on function (i.e. toolhint)"
         <!-- other attributes -->
         >
@@ -54,7 +52,7 @@ Besides this, it's a good habit to envelop button text strings with `<span>` tag
 ``` html
 <a href="../relative_path/to_whereever/this_should/link_to/"
    class="button button--outline-button button--icon-text-button"
-   aria-label="decsriptive text that makes sense for a user with visual impairment"
+   aria-label="descriptive text that makes sense for a user with visual impairment"
    title="text that elaborates on function (i.e. toolhint)"
    <!-- other attributes -->
    >
@@ -63,22 +61,25 @@ Besides this, it's a good habit to envelop button text strings with `<span>` tag
 </a>
 ``` 
 
-Both of these blocks would be rendered *exactly* the same way in a browser- the only difference is funtionality.
+These blocks render identically in a browser; the only difference is their functionality.
 
----
+Additionally, wrapping text strings with `<span>` tags or similar is considered good practice: 
 
+> It is benifitial for targeted styling and JavaScript interaction, improving accessibility by allowing screen readers to interpret text more effectively, and ensuring maintainability and modularity in web development.
+>
+> This practice enables precise styling adjustments and script interactions for specific text segments without affecting the entire element, thereby enhancing both the functionality and the accessibility of web content.
+
+***
 
 ## Button styling - a developer guide
 
-All button related style classes have been constructed with the naming convention [BEM] [1] as foundation. The class are descriptive (*the degree of description could be considered overkill by some*) and should make it easy to identify, when navigating unfamiliar code. 
+All button style classes follow the [BEM] [1] (Block, Element, Modifier) naming convention for easy identification and navigation within unfamiliar code.
 
 ### Intro to `_buttons.SCSS`
 
-The document is layed out so it accomodates all types of styling that we currently use in DataScanner. We primarily use
+The document accommodates all current styling types used in OSdatascanner. It includes content-based style classes (*like icon, icon+text, and text*) which handle box-model related styles e.g., for buttons nested inside table cells.
 
-There are a few content-bases style classes, (*icon, icon+text, and text*) that handles box-model related styles i.e. for buttons nested inside table cells.
-
-You can see what class combinations to use when in the overview below. 
+Here's an overview of class combinations and their uses:
 
 ### Class list
 
@@ -100,18 +101,35 @@ You can see what class combinations to use when in the overview below.
 
 ### Multiple buttons in same UI block
 
-Place them inside a `<div>` container and give it the class `.button-group`.
+Place them inside a `<div>` container (if they're not already) and give it the class `.button-group` like so:
 
-``` SCSS
-.button-group {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+``` html
+<div class="button-group other_class">
+    <a href="#action1"
+       class="button button--icon-button"
+       aria-label="descriptive text"
+       title="toolhint"
+       <!-- other attributes -->
+       >
+        <i id="icon_name" class="material-icons">icon_name</i>
+    </a>
+    <button type="button"
+            class="button button--icon-button"
+            aria-label="descriptive text"
+            title="toolhint"
+            <!-- other attributes -->
+            >
+        <i id="icon_name" class="material-icons">icon_name</i>
+    </button>
+
+    <!-- Additional buttons can be added similarly -->
+
+</div>
 ```
 
-This handles relative layout between n-amount of button related elements inside of it and will match most usecases for button groups in DataScanner.
+
+
+This arrangement handles the relative layout of multiple button-related objects and suits most use cases for button groups in OSdatascanner.
 
 <!-- LINKS -->
 [1]: https://css-tricks.com/using-sass-control-scope-bem-naming/ "A guide to using BEM with SCSS"
