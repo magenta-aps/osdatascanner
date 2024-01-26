@@ -65,7 +65,7 @@ These blocks render identically in a browser; the only difference is their funct
 
 Additionally, wrapping text strings with `<span>` tags or similar is considered good practice: 
 
-> It is benifitial for targeted styling and JavaScript interaction, improving accessibility by allowing screen readers to interpret text more effectively, and ensuring maintainability and modularity in web development.
+> It is benificial for targeted styling and JavaScript interaction, improving accessibility by allowing screen readers to interpret text more effectively, and ensuring maintainability and modularity in web development.
 >
 > This practice enables precise styling adjustments and script interactions for specific text segments without affecting the entire element, thereby enhancing both the functionality and the accessibility of web content.
 
