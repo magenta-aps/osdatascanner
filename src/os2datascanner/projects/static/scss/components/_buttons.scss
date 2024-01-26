@@ -224,6 +224,17 @@
     }
   }
 
+  &--deletion-button {
+    background-color: var(--color-critical);
+    color: var(--color-text-white);
+    border: var(--btn-border-default) transparent;
+
+    &:hover:not([disabled]),
+    &:focus:not([disabled]) {
+      color: var(--color-text-main);
+    }
+  }
+
   // ***** Icon specific code *****
   .material-icons#play_arrow {
     transform: translateX(-0.063rem); // adjusts the perceived optical balance of the play icon
