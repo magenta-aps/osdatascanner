@@ -236,15 +236,15 @@ class LDAPConfig(Exported, ImportService):
             }
         }
 
-    def get_mapper_payload_dict(self):
+    def get_mapper_payload_dict(self, parent_id=None, ldap_sid_attribute=None):
         return {
             "name": "objectSid",
             "providerId": "user-attribute-ldap-mapper",
             "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
-            "parentId": str(self.pk),
+            "parentId": parent_id if parent_id else str(self.pk),
             "config": {
                 "ldap.attribute": [
-                    self.object_sid_attribute
+                    ldap_sid_attribute if ldap_sid_attribute else self.object_sid_attribute
                 ],
                 "is.mandatory.in.ldap": [
                     "false"

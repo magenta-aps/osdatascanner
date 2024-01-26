@@ -151,7 +151,7 @@ def _keycloak_creation(config_instance):
     # Create a memberOf attribute mapper on the LDAP user federation in Keycloak upon creation
     get_token_first(create_member_of_attribute_mapper, realm.pk, payload["id"])
     res = get_token_first(create_sid_attribute_mapper, realm.pk,
-                          payload["id"], config_instance.object_sid_attribute)
+                          payload["id"], config_instance)
     if res.ok:
         # Keycloak returns an empty body upon creation, so we'll fish the id from headers.
         loc = res.headers.get("Location")
