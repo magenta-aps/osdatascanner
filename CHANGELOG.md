@@ -43,6 +43,9 @@
   use is, that the user can choose to sort for org units with managers, DPO's,
   or either.
 
+- Updated ReadTheDocs with a new section on button object implementation, 
+  covering usage guidelines, accessibility attributes, and styling best practices.
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.
