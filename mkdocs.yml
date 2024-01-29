@@ -31,6 +31,7 @@ nav:
     - Role, Special roles and Alias: roles.md
   - Frontend documentation:
     - Buttons: frontend/buttons/buttons.md
+    - Icons: frontend/icons.md
   - Other:
     - Reusable components: reusable-components.md
     - Release notes: changelog.md
