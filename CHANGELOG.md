@@ -105,6 +105,9 @@ allowing last modified timestamps to be on an account basis.
 - The `diagnostics`-command in the report module now identifies aliases with
   mismatched accounts and users (i.e. users and accounts with differing usernames.)
 
+- The list of dates containing CPR numbers violating the Modulo-11 check, have been synced 
+  with the list from the CPR office.
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
