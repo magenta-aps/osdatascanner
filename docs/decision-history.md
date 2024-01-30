@@ -18,7 +18,7 @@ false positives, and often stem from real-world cases.
 The CPR rule matches 10-digit numbers through a regular expression. These 
 numbers are allowed to be separated at specific places by specific symbols: 
 The first six digits may not be separated. Digit 6 and digit 7 may be 
-separated by a space, a tabulation, or on of the symbols `-` (with spaces on 
+separated by a space, a tabulation, or one of the symbols `-` (with spaces on 
 either side), `/`,  or `.`. The last 4 digits must not be separated.
 
 In addition, CPRRule has a few validation options.
@@ -27,21 +27,26 @@ In addition, CPRRule has a few validation options.
 
 Danish CPR-numbers issued before the 1st of October 2007 calculate their last 
 digit by the ["Modulus-11"-method] [1]. CPR-numbers from some dates are 
-[exempt from this check] [2].
+[exempt from this check] [2]. This exception is considered in OSdatascanners 
+modulus-11 check, and exempted numbers are considered valid CPR-numbers.
 
-This validation is implemented as a first, simple way of making sure, that any 
-found 10-digit number is a real and valid Danish CPR-number.
+This validation serves as an initial method to ensure that any 10-digit number 
+identified is indeed a legitimate and valid Danish CPR-number.
 
 #### Probability check
 
-The CPRRule can also calculate a probability for the CPR-number. This will 
-never return a probability of 0, but will only estimate valid CPR-numbers, 
-which could be real.
-
-The check works by calculating all valid CPR-numbers for the birth date of the 
+The CPRRule can also calculate a probability for the CPR-number. The check 
+works by calculating all valid CPR-numbers for the birth date of the 
 checked number, and finding the index of the checked number in the sequence of 
-all valid numbers. Since numbers are generated sequentially, the later numbers 
-are less likely to be in use than the early numbers in the sequence.
+all valid numbers.
+
+Since numbers are generated sequentially, the later numbers 
+are less likely to be in use than the earlier numbers in the sequence. If the
+CPR-number is not valid for the given birth date of the number, the probability
+is zero.
+
+If the birth date of the CPR-number is in the future at the time of checking,
+the probability will always be zero.
 
 The check was [implemented] [3] in order for the report module to be able to 
 show the most likely CPR matches in the UI first.
@@ -67,7 +72,7 @@ its contained numbers to register as a match, based on a few rules:
 1. The number of valid CPR-numbers in the bin make up at least 15% of all 
 numbers in the bin.
 
-2. The number of valid CPR-numbers in at least one neighbour bin make up at 
+2. The number of valid CPR-numbers in at least one neighbouring bin make up at 
 least 15% of the numbers in that bin.
 
 If both of these requirements are not met, the valid CPR-numbers in those bins 
@@ -112,14 +117,16 @@ If the immediate context, within 3 words, of the match contains an unbalanced
 amount of delimiters, that is either `()`, `[]`, `{}`, `<>`, `<? ?>`, `<% %>`, 
 or `/* */`, the match will be invalidated.
 
-Why? I don't know.
+This check is implemented based on false positives identified by a specific
+client.
 
 ##### Surrounding symbols
 
 If one of the symbols `+`, `-`, `!`, `#`, or `%` are within 3 words of the 
 matched number, the match will be invalidated.
 
-Decision still to be dug out of historic discussions ...
+This check is implemented based on false positives identified by a specific
+client.
 
 ##### Surrounding numbers
 
@@ -157,6 +164,45 @@ register to save a temporary dump when a scan is run, which we can then refer
 to during scans.
 
 
+### NameRule
+
+OSdatascanners name rule is made to match names belonging to people. The basic 
+regular exression looks for up to five instances, and at least two, of 
+individual names, which are each identified as up to two "simple names" 
+connected by a hyphen. A simple name is a word consisting of an upper case 
+letter, then either nothing more, a period or only lower case letters.
+
+The first instance of these individual names are identified as the first name, 
+the last instance is the last name, and each other instance in between are 
+middle names.
+
+#### Compare to list of names
+
+The rule compares to a list of all first names and last names in Denmark from
+2014. If the found first and last names are present in the lists, the match 
+probability is 100%, otherwise, if only one of the found names is present in
+the lists, the match probability is 50%.
+
+#### Expansive search
+
+As an optional setting, the rule can expand its search. After identifying full
+names, the rule will aggressively search for strings that could potentially be
+part of a name (including individual capital letters). Any matches found in this
+expansive search have a probability of 10%.
+
+Previously, this was default behaviour, but resulted in so many false positives
+that the rule was effectively unusable.
+
+
+### AddressRule
+
+OSdatascanner can scan for addresses with the built-in AddressRule. This rule
+matches Danish addresses by the rules specified [here] [7].
+
+#### Compare to list of addresses
+
+For validation, matched streets are compared to a list of Danish street names.
+The found street names must be contained in this list for the rule to match.
 
 
 
@@ -164,10 +210,12 @@ to during scans.
 
 [2]: https://cpr.dk/cpr-systemet/personnumre-uden-kontrolciffer-modulus-11-kontrol "CPR-numbers exempt from modulus-11 check."
 
-[3]: https://redmine.magenta.dk/issues/34360 "Ticket about implementing probability check in CPRRule."
+[3]: https://redmine.magenta.dk/issues/34360 "[For Internal Use] Ticket about implementing probability check in CPRRule."
 
-[4]: https://redmine.magenta.dk/issues/56007 "Ticket about implementing bin check in CPRRule."
+[4]: https://redmine.magenta.dk/issues/56007 "[For Internal Use] Ticket about implementing bin check in CPRRule."
 
-[5]: https://redmine.magenta.dk/issues/45892 "Ticket about extending the blacklisted expressions in CPRRule."
+[5]: https://redmine.magenta.dk/issues/45892 "[For Internal Use] Ticket about extending the blacklisted expressions in CPRRule."
 
-[6]: https://redmine.magenta.dk/issues/58526 "Ticket for adding exception list to CPRRule."
+[6]: https://redmine.magenta.dk/issues/58526 "[For Internal Use] Ticket for adding exception list to CPRRule."
+
+[7]: https://danmarksadresser.dk/regler-og-vejledning/adresser/ "Description of the construction of Danish addresses."

@@ -29,6 +29,8 @@
 - Filtering options in the report module can now be hidden or shown with the 
   new "filter"-menu.
 
+- Added documentation for the decision history for rule validation methods.
+
 ## Bugfixes
 
 - Monthly progress in dpo module is now calculated as difference between
