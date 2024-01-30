@@ -46,6 +46,9 @@
 - Updated ReadTheDocs with a new section on button object implementation, 
   covering usage guidelines, accessibility attributes, and styling best practices.
 
+- Last modified for Organizational Unit based scanners is now managed through 'CoveredAccount',
+allowing last modified timestamps to be on an account basis.
+
 ### General improvements
 
 - The logo is now highlighted when the user hovers the mouse over it.
