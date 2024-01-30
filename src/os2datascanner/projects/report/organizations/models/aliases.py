@@ -13,7 +13,7 @@
 #
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from functools import reduce
@@ -55,6 +55,17 @@ class AliasManager(models.Manager):
     def get_queryset(self):
         return AliasQuerySet(self.model, using=self._db, hints=self._hints)
 
+    def create(self, **kwargs):
+        user = kwargs.get('user')
+        account = kwargs.get('account')
+        if account and user == account.user:
+            super().create(**kwargs)
+        else:
+            raise IntegrityError(
+                "You are trying to create an alias related to a User and an "
+                "Account object related to two different people. This is not "
+                "allowed!")
+
 
 class Alias(Core_Alias):
     """ Core logic lives in the core_organizational_structure app. """
@@ -88,6 +99,15 @@ class Alias(Core_Alias):
             type=self.alias_type.label,
             value=self.value,
         )
+
+    def save(self, *args, **kwargs):
+        if self.user == self.account.user:
+            super().save(*args, **kwargs)
+        else:
+            raise IntegrityError(
+                "You are trying to save an alias related to a User and an "
+                "Account object related to two different people. This is not "
+                "allowed!")
 
 
 class AliasBulkSerializer(BaseBulkSerializer):
