@@ -19,9 +19,13 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.engine2.model.msgraph.mail import MSGraphMailSource
-from os2datascanner.engine2.model.msgraph.files import MSGraphFilesSource
-from os2datascanner.engine2.model.msgraph.calendar import MSGraphCalendarSource
+from os2datascanner.engine2.model.msgraph.mail import (MSGraphMailSource, MSGraphMailAccountSource,
+                                                       MSGraphMailAccountHandle)
+from os2datascanner.engine2.model.msgraph.files import (MSGraphFilesSource, MSGraphDriveSource,
+                                                        MSGraphDriveHandle)
+from os2datascanner.engine2.model.msgraph.calendar import (MSGraphCalendarSource,
+                                                           MSGraphCalendarAccountSource,
+                                                           MSGraphCalendarAccountHandle)
 from os2datascanner.engine2.model.msgraph.teams import MSGraphTeamsFilesSource
 
 from ....organizations.models.aliases import AliasType
@@ -85,28 +89,22 @@ class MSGraphMailScanner(MSGraphScanner):
         """Get the absolute URL for scanners."""
         return '/msgraph-mailscanners/'
 
-    def generate_sources(self):  # noqa
-        if not self.org_unit.exists():
-            # If no organizational units have been selected
-            # yield one source.
-            yield MSGraphMailSource(
+    def generate_sources(self):
+        yield from (source for _, source in self.generate_sources_with_accounts())
+
+    def generate_sources_with_accounts(self):  # noqa
+        base_source = MSGraphMailSource(
                 client_id=settings.MSGRAPH_APP_ID,
                 tenant_id=str(self.grant.tenant_id),
                 client_secret=settings.MSGRAPH_CLIENT_SECRET,
                 scan_deleted_items_folder=self.scan_deleted_items_folder,
                 scan_syncissues_folder=self.scan_syncissues_folder
             )
-        else:
-            # Otherwise yield a source for every user
-            # in the selected organizational unit(s).
-            yield MSGraphMailSource(
-                client_id=settings.MSGRAPH_APP_ID,
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=settings.MSGRAPH_CLIENT_SECRET,
-                userlist=_create_user_list(self.org_unit),
-                scan_deleted_items_folder=self.scan_deleted_items_folder,
-                scan_syncissues_folder=self.scan_syncissues_folder
-            )
+        for account in self.get_covered_accounts():
+            for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
+                user_mail_address: str = alias.value
+                yield (account, MSGraphMailAccountSource(
+                    MSGraphMailAccountHandle(base_source, user_mail_address)))
 
 
 class MSGraphFileScanner(MSGraphScanner):
@@ -122,28 +120,33 @@ class MSGraphFileScanner(MSGraphScanner):
         """Get the absolute URL for scanners."""
         return '/msgraph-filescanners/'
 
-    def generate_sources(self):  # noqa
-        if not self.org_unit.exists():
-            # If no organizational units have been selected
-            # yield one source.
-            yield MSGraphFilesSource(
-                client_id=settings.MSGRAPH_APP_ID,
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=settings.MSGRAPH_CLIENT_SECRET,
-                site_drives=self.scan_site_drives,
-                user_drives=self.scan_user_drives
-            )
-        else:
-            # Otherwise yield a source for every user
-            # in the selected organizational unit(s).
-            yield MSGraphFilesSource(
-                client_id=settings.MSGRAPH_APP_ID,
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=settings.MSGRAPH_CLIENT_SECRET,
-                site_drives=self.scan_site_drives,
-                user_drives=self.scan_user_drives,
-                userlist=_create_user_list(self.org_unit),
-            )
+    def generate_sources(self):
+        yield from (source for _, source in self.generate_sources_with_accounts())
+
+    def generate_sources_with_accounts(self):  # noqa
+        base_source = MSGraphFilesSource(
+            client_id=settings.MSGRAPH_APP_ID,
+            tenant_id=str(self.grant.tenant_id),
+            client_secret=settings.MSGRAPH_CLIENT_SECRET,
+            site_drives=self.scan_site_drives,
+            user_drives=False,
+        )
+        if self.scan_site_drives:
+            # TODO: files in a SharePoint drive do actually have an owner...
+            yield None, base_source
+        if self.scan_user_drives:
+            for account in self.get_covered_accounts():
+                for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
+                    user_mail_address: str = alias.value
+                    yield (account, MSGraphDriveSource(
+                        MSGraphDriveHandle(
+                            base_source,
+                            None,  # don't need a drive ID when we specify user_account
+                            None,  # ... or a folder name :D
+                            None,  # or a human name 🤨
+                            user_account=user_mail_address
+                        )
+                    ))
 
 
 class MSGraphCalendarScanner(MSGraphScanner):
@@ -156,24 +159,20 @@ class MSGraphCalendarScanner(MSGraphScanner):
         """Get the absolute URL for scanners."""
         return '/msgraph-calendarscanners/'
 
-    def generate_sources(self):  # noqa
-        if not self.org_unit.exists():
-            # If no organizational units have been selected
-            # yield one source.
-            yield MSGraphCalendarSource(
+    def generate_sources(self):
+        yield from (source for _, source in self.generate_sources_with_accounts())
+
+    def generate_sources_with_accounts(self):  # noqa
+        base_source = MSGraphCalendarSource(
                 client_id=settings.MSGRAPH_APP_ID,
                 tenant_id=str(self.grant.tenant_id),
                 client_secret=settings.MSGRAPH_CLIENT_SECRET,
             )
-        else:
-            # Otherwise yield a source for every user
-            # in the selected organizational unit(s).
-            yield MSGraphCalendarSource(
-                client_id=settings.MSGRAPH_APP_ID,
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=settings.MSGRAPH_CLIENT_SECRET,
-                userlist=_create_user_list(self.org_unit)
-            )
+        for account in self.get_covered_accounts():
+            for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
+                user_mail_address: str = alias.value
+                yield (account, MSGraphCalendarAccountSource(
+                    MSGraphCalendarAccountHandle(base_source, user_mail_address)))
 
 
 class MSGraphTeamsFileScanner(MSGraphScanner):
@@ -192,6 +191,7 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
         """Get the absolute URL for scanners."""
         return '/msgraph-teams-filescanners/'
 
+    # TODO: Expand with generate_sources_with_accounts logic if possible.
     def generate_sources(self):
 
         yield MSGraphTeamsFilesSource(

@@ -23,6 +23,7 @@ from os2datascanner.engine2.rules.rule import Rule
 
 from .models.authentication import Authentication
 from .models.apikey import APIKey
+from .models.scannerjobs.scanner_helpers import CoveredAccount
 from .models.usererrorlog import UserErrorLog
 from .models.rules import CustomRule
 from .models.scannerjobs.scanner import (ScanStatus,
@@ -125,6 +126,11 @@ class ScannerAdmin(admin.ModelAdmin):
             self.exclude = ('org_unit', )
 
         return super().get_fields(request, obj=obj)
+
+
+@admin.register(CoveredAccount)
+class CoveredAccountAdmin(admin.ModelAdmin):
+    list_display = ('account', 'scanner', 'scan_status')
 
 
 @admin.register(ScheduledCheckup)

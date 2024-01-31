@@ -18,7 +18,6 @@ from os2datascanner.core_organizational_structure.models import Account as Core_
 from os2datascanner.core_organizational_structure.models import \
     AccountSerializer as Core_AccountSerializer
 from os2datascanner.projects.admin.import_services.models import Imported
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 
 from .broadcasted_mixin import Broadcasted
 
@@ -45,6 +44,7 @@ class Account(Core_Account, Imported, Broadcasted):
 
         # Avoid circular import
         from .aliases import AliasType
+        from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 
         scanner_pks = list(self.aliases.filter(_alias_type=AliasType.REMEDIATOR)
                                        .values_list('_value', flat=True))

@@ -1,10 +1,11 @@
 from django.test import TestCase
-
 from ...core.models.client import Client
+from ...adminapp.models.scannerjobs.scanner_helpers import ScanStatus, CoveredAccount
 from ..models import OrganizationalUnit, Organization, Account
 from ...adminapp.models.scannerjobs.scanner import Scanner
 from ...adminapp.models.rules import CustomRule
 from ...tests.test_utilities import dummy_rule_dict
+from os2datascanner.utils.system_utilities import time_now
 
 
 class AccountMethodTests(TestCase):
@@ -38,6 +39,15 @@ class AccountMethodTests(TestCase):
         self.hansi = Account.objects.create(username="Hansi", organization=self.org)
         self.günther = Account.objects.create(username="Günther", organization=self.org)
         self.fritz = Account.objects.create(username="Fritz", organization=self.org)
+        # Avoid having an identical timestamps
+        self.status1 = ScanStatus.objects.create(
+            scan_tag={"time": time_now().replace(hour=11).isoformat()},
+            scanner=self.scanner1
+        )
+        self.status2 = ScanStatus.objects.create(
+            scan_tag={"time": time_now().replace(hour=12).isoformat()},
+            scanner=self.scanner2
+        )
 
         # Assign accounts to a unit
         self.unit1.account_set.add(self.hansi, self.günther)
@@ -69,8 +79,15 @@ class AccountMethodTests(TestCase):
         # scanners. Fritz is not covered in any way.
         self.scanner1.org_unit.add(self.unit1)
         self.scanner2.org_unit.add(self.unit2)
-        self.scanner1.covered_accounts.add(self.hansi, self.günther)
-        self.scanner2.covered_accounts.add(self.hansi, self.günther)
+
+        CoveredAccount.objects.create(account=self.hansi, scanner=self.scanner1,
+                                      scan_status=self.status1)
+        CoveredAccount.objects.create(account=self.günther, scanner=self.scanner1,
+                                      scan_status=self.status1)
+        CoveredAccount.objects.create(account=self.hansi, scanner=self.scanner2,
+                                      scan_status=self.status2)
+        CoveredAccount.objects.create(account=self.günther, scanner=self.scanner2,
+                                      scan_status=self.status2)
 
         # Hansi has not been dropped, and should get an empty queryset here.
         hansi_dropped = self.hansi.get_stale_scanners()

@@ -23,6 +23,7 @@ from exchangelib.errors import ErrorNonExistentMailbox
 from os2datascanner.engine2.model.ews import EWSAccountSource
 from os2datascanner.engine2.model.core import SourceManager
 
+from ....organizations.models.account import Account
 from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
 from .scanner import Scanner
@@ -66,44 +67,45 @@ class ExchangeScanner(Scanner):
         """Get the absolute URL for scanners."""
         return "/exchangescanners/"
 
-    def generate_sources(self):  # noqa: CCR001, too high cognitive complexity
-        user_list = ()
-        # org_unit check as you cannot do both simultaneously
+    def get_covered_accounts(self):
+        # A Scanner that uses a userlist file shouldn't have a populated
+        # covered_accounts field, so return QuerySet.none() in that case
         if self.userlist and not self.org_unit.exists():
+            return Account.objects.none()
+        else:
+            return super().get_covered_accounts()
+
+    def generate_sources(self):
+        yield from (source for _, source in self.generate_sources_with_accounts())
+
+    def generate_sources_with_accounts(self):
+
+        def _make_source(user):
+            return EWSAccountSource(
+                    domain=self.mail_domain.lstrip("@"),
+                    server=self.service_endpoint or None,
+                    admin_user=self.authentication.username,
+                    admin_password=self.authentication.get_password(),
+                    user=user)
+
+        if (covered_accounts := self.get_covered_accounts()).exists():
+            for account in covered_accounts:
+                # Only try to scan mail addresses that belong to the domain
+                # associated with this scanner
+                for alias in account.aliases.filter(
+                        _alias_type=AliasType.EMAIL,
+                        _value__iendswith=self.mail_domain):
+                    user_mail_address: str = alias.value
+                    local_part = user_mail_address.split("@", maxsplit=1)[0]
+                    yield (account, _make_source(local_part))
+        elif self.userlist:
             user_list = (
                 u.decode("utf-8").strip() for u in self.userlist if u.strip()
             )
-        # org_unit should only exist if chosen and then be used,
-        # but a user_list is allowed to co-exist.
-        elif self.org_unit.exists():
-            # Create a set so that emails can only occur once.
-            user_list = set()
-            # loop over all units incl children
-            for organizational_unit in self.org_unit.all():
-                for position in organizational_unit.positions.all():
-                    addresses = position.account.aliases.filter(
-                        _alias_type=AliasType.EMAIL.value
-                    )
-                    if not addresses:
-                        logger.info(
-                            f"user {position.account.username} has no email alias "
-                            "connected"
-                        )
-                    else:
-                        for alias in addresses:
-                            address = alias.value
-                            if address.endswith(self.mail_domain):
-                                user_list.add(address.split("@", maxsplit=1)[0])
-
-        for u in user_list:
-            logger.info(f"submitting scan for user {u}")
-            yield EWSAccountSource(
-                domain=self.mail_domain.lstrip("@"),
-                server=self.service_endpoint or None,
-                admin_user=self.authentication.username,
-                admin_password=self.authentication.get_password(),
-                user=u,
-            )
+            for u in user_list:
+                yield (None, _make_source(u))
+        else:
+            raise ValueError("No users available")
 
     def verify(self) -> bool:
         for account in self.generate_sources():
