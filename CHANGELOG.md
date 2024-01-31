@@ -107,6 +107,9 @@ allowing last modified timestamps to be on an account basis.
 
 - Matches from MS File scans are now correctly shown as such, instead of as
   matches from MS Teams scans in the report module.
+
+- The source types labels from the three Microsoft Office sources now have a 
+  shared syntax: "Office 365 Mail/File/Calendar".
   
 - Exclusion rules can once again be chosen on the scanner forms in the UI.
 
