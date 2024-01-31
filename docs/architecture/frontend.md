@@ -79,14 +79,8 @@ Admin and Report app use the "Inter" font.
 
 ## Icons
 
-There are several icon styles and frameworks in use:
-
-* [Google Material Icons](https://fonts.google.com/icons) is self-hosted—see [src/os2datascanner/projects/static/fonts/materialicons](src/os2datascanner/projects/static/fonts/materialicons) and the accompanying CSS file.
-* Admin app has [Glyphicons](https://www.glyphicons.com/sets/halflings/).
-  These are most likely a leftover from the webscanner incarnation of the project. They may still be in use, however.
-* Both Report and Admin apps hide a set of SVG icon files in their respective
-  `templates/components/svg-icons/` folders.
-* A small set of SVG icon files are available in the shared static files in `src/os2datascanner/projects/static/svg`
+Admin and Report app use [Google's Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons) and in some cases custom SVG icons. 
+For more info see the icon guide [here](../frontend/icons.md)
 
 
 ## Build & package management

@@ -1,4 +1,4 @@
-# Icons
+# Icon Guide
 
 Types of icons used in OSdatascanner:
 

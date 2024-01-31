@@ -1,4 +1,4 @@
-# Buttons
+# Button Guide
 
 Here you can find a guide on how to construct a button for OSdatascanner anno Jan'24.
 
