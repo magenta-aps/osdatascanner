@@ -29,7 +29,7 @@ nav:
     - Microsoft Azure: azure/azure-setup-guide.md
   - Operations:
     - Role, Special roles and Alias: roles.md
-  - Frontend documentation:
+  - Frontend Guides:
     - Buttons: frontend/buttons/buttons.md
     - Icons: frontend/icons.md
   - Other:
