@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 def setup_user(username, password):
     user = User.objects.get(username=username)
     user.is_staff = True
+    user.is_superuser = True
     user.set_password(password)
     user.save()
     return user
