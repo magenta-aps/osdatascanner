@@ -17,7 +17,6 @@ nav:
     - The model: engine2.md
     - The rule engine: rules.md
   - Security Architecture: architecture/security.md
-  - Frontend Architecture: architecture/frontend.md
   - Scan API: api.md
   - Accessing the Microsoft Graph API with graphiti: graphiti.md
   - Deployment:
@@ -29,9 +28,11 @@ nav:
     - Microsoft Azure: azure/azure-setup-guide.md
   - Operations:
     - Role, Special roles and Alias: roles.md
-  - Frontend Guides:
-    - Buttons: frontend/buttons/buttons.md
-    - Icons: frontend/icons.md
+  - Frontend:
+    - Frontend Architecture: architecture/frontend.md
+    - Frontend Guides:
+      - Buttons: frontend/buttons/buttons.md
+      - Icons: frontend/icons.md
   - Other:
     - Reusable components: reusable-components.md
     - Release notes: changelog.md
