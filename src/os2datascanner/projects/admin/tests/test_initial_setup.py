@@ -71,6 +71,12 @@ class TestInitialSetup:
         user = User.objects.get(username="user")
         assert user.is_staff
 
+    def test_account_is_super(self):
+        self.call_command(username="account")
+
+        account = Account.objects.get(username="account")
+        assert account.is_superuser
+
     def test_all_arguments(self):
         try:
             self.call_command(client_name="client", org_name="org", email="test@example.net",
