@@ -1,8 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.22.0, 1st February 2024
 
-"Midnight Mania"
+"King Fred the Quiet"
 
 ### New in this release
 
