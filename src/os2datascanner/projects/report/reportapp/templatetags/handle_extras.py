@@ -89,8 +89,10 @@ def find_svg_icon(type_label):
 @register.simple_tag
 def find_scan_type(type_label):
     match type_label:
-        case "smbc" | "dropbox" | "googledrive" | "msgraph-files":
+        case "smbc" | "dropbox" | "googledrive":
             return _("File")
+        case "msgraph-files":
+            return _("Office 365 File")
         case "msgraph-teams-files":
             return _("MS Teams file")
         case "ews":
@@ -101,6 +103,8 @@ def find_scan_type(type_label):
             return _("Office 365 Mail")
         case "web":
             return _("Web")
+        case "msgraph-calendar":
+            return _("Office 365 Calendar")
         case _:
             return _("Unrecognized scan type")
 
