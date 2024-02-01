@@ -109,6 +109,8 @@ class Command(BaseCommand):
 
         self.stdout.write("Creating & synchronizing corresponding Account")
         account = Account.objects.create(username=username, organization=org)
+        account.is_superuser = True
+        account.save()
         self.stdout.write(self.style.SUCCESS("Account created successfully!"))
 
         self.stdout.write("Synchronizing Organization and Account to Report module ...")
