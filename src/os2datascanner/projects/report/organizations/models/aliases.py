@@ -11,6 +11,8 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+import structlog
+
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.db import models, transaction, IntegrityError
@@ -24,6 +26,8 @@ from os2datascanner.core_organizational_structure.models import \
 from os2datascanner.core_organizational_structure.models.aliases import AliasType, \
     validate_regex_SID  # noqa
 from ..seralizer import BaseBulkSerializer
+
+logger = structlog.get_logger(__name__)
 
 
 class AliasQuerySet(models.query.QuerySet):
@@ -50,6 +54,22 @@ class AliasQuerySet(models.query.QuerySet):
                 create_aliases(dr)
             return rv
 
+    def update(self, **kwargs):
+        if 'account' not in kwargs.keys() and 'user' not in kwargs.keys():
+            super().update(**kwargs)
+        elif 'account' in kwargs.keys():
+            if self.exclude(user__account=kwargs.get('account')).exists():
+                raise IntegrityError(
+                    "You are not allowed to change the account relation of an "
+                    "existing alias to another account than the related user's "
+                    "account.")
+        elif 'user' in kwargs.keys():
+            if self.exclude(account__user=kwargs.get('user')).exists():
+                raise IntegrityError(
+                    "You are not allowed to change the user relation of an "
+                    "existing alias to another user than the related account's "
+                    "user.")
+
 
 class AliasManager(models.Manager):
     def get_queryset(self):
@@ -65,6 +85,19 @@ class AliasManager(models.Manager):
                 "You are trying to create an alias related to a User and an "
                 "Account object related to two different people. This is not "
                 "allowed!")
+
+    def bulk_create(self, objs, **kwargs):
+        allowed_objs = []
+        for alias in objs:
+            if alias.account == alias.user.account:
+                allowed_objs.append(alias)
+            else:
+                logger.warning(
+                    "An alias sent to the bulk_create-method is "
+                    f"related to the account {alias.account} and the user "
+                    f"{alias.user}! Aliases must be related to accounts and "
+                    "users, which are also related! The alias was not created.")
+        super().bulk_create(allowed_objs, **kwargs)
 
 
 class Alias(Core_Alias):
