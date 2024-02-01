@@ -12,6 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 import structlog
+import traceback
 
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
@@ -56,19 +57,23 @@ class AliasQuerySet(models.query.QuerySet):
 
     def update(self, **kwargs):
         if 'account' not in kwargs.keys() and 'user' not in kwargs.keys():
-            super().update(**kwargs)
+            return super().update(**kwargs)
         elif 'account' in kwargs.keys():
             if self.exclude(user__account=kwargs.get('account')).exists():
                 raise IntegrityError(
-                    "You are not allowed to change the account relation of an "
-                    "existing alias to another account than the related user's "
-                    "account.")
+                    "Attempted to update the account of aliases with the "
+                    "Alias.objects.update method, but some aliases are related "
+                    f"to another user than '{kwargs.get('account').user}'. "
+                    "Aliases must be related to users and accounts, which are "
+                    "also related.")
         elif 'user' in kwargs.keys():
             if self.exclude(account__user=kwargs.get('user')).exists():
                 raise IntegrityError(
-                    "You are not allowed to change the user relation of an "
-                    "existing alias to another user than the related account's "
-                    "user.")
+                    "Attempted to update the user of aliases with the "
+                    "Alias.objects.update method, but some aliases are related "
+                    f"to another account than '{kwargs.get('user').account}'. "
+                    "Aliases must be related to users and accounts, which are "
+                    "also related.")
 
 
 class AliasManager(models.Manager):
@@ -79,25 +84,33 @@ class AliasManager(models.Manager):
         user = kwargs.get('user')
         account = kwargs.get('account')
         if account and user == account.user:
-            super().create(**kwargs)
+            return super().create(**kwargs)
         else:
             raise IntegrityError(
-                "You are trying to create an alias related to a User and an "
-                "Account object related to two different people. This is not "
-                "allowed!")
+                "Attempted to create an alias with the Alias.create method "
+                f"related to the user '{user}' and the account '{account}'. "
+                "Aliases must be related to a user and account, which are also "
+                f"related.")
 
-    def bulk_create(self, objs, **kwargs):
+    def bulk_create(self, objs, ignore_conflicts: bool = False, **kwargs):
         allowed_objs = []
         for alias in objs:
             if alias.account == alias.user.account:
                 allowed_objs.append(alias)
+            elif not ignore_conflicts:
+                raise IntegrityError(
+                    "An alias sent to the bulk_create-method is "
+                    f"related to the account {alias.account} and the user "
+                    f"{alias.user}! Aliases must be related to accounts and "
+                    "users, which are also related! No aliases were created.")
             else:
                 logger.warning(
                     "An alias sent to the bulk_create-method is "
                     f"related to the account {alias.account} and the user "
                     f"{alias.user}! Aliases must be related to accounts and "
                     "users, which are also related! The alias was not created.")
-        super().bulk_create(allowed_objs, **kwargs)
+                traceback.print_stack()
+        return super().bulk_create(allowed_objs, ignore_conflicts=ignore_conflicts, **kwargs)
 
 
 class Alias(Core_Alias):
@@ -133,14 +146,18 @@ class Alias(Core_Alias):
             value=self.value,
         )
 
-    def save(self, *args, **kwargs):
-        if self.user == self.account.user:
+    def save(self, *args, prevent_mismatch: bool = True, **kwargs):
+        if not prevent_mismatch:
+            # This is only for testing purposes!
+            super().save(*args, **kwargs)
+        elif self.account and self.user == self.account.user:
             super().save(*args, **kwargs)
         else:
             raise IntegrityError(
-                "You are trying to save an alias related to a User and an "
-                "Account object related to two different people. This is not "
-                "allowed!")
+                "Attempted to create an alias with the Alias.create method "
+                f"related to the user '{self.user}' and the account '{self.account}'. "
+                "Aliases must be related to a user and account, which are also "
+                f"related.")
 
 
 class AliasBulkSerializer(BaseBulkSerializer):
