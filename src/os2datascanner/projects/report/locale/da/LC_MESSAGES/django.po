@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-02 13:20+0100\n"
+"POT-Creation-Date: 2024-02-01 14:04+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -218,6 +218,8 @@ msgid "sort key"
 msgstr "sortér efter"
 
 #: reportapp/models/documentreport.py:61
+#: reportapp/templates/components/reports/match_table.html:98
+#: reportapp/templates/components/reports/match_table.html:99
 msgid "name"
 msgstr "navn"
 
@@ -415,12 +417,14 @@ msgid "per page"
 msgstr "pr. side"
 
 #: reportapp/templates/components/pagination/pagination.html:10
+#: reportapp/templates/components/statistics/user_overview_template.html:69
+#: reportapp/templates/components/statistics/user_overview_template.html:70
 #: reportapp/templates/content.html:10
 msgid "results"
 msgstr "resultater"
 
 #: reportapp/templates/components/pagination/pagination.html:10
-#: reportapp/templates/components/reports/handle_match.html:79
+#: reportapp/templates/components/reports/handle_match.html:82
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:118
 msgid "of"
 msgstr "af"
@@ -557,7 +561,9 @@ msgid "All resolution statuses"
 msgstr "Alle håndteringsstatusser"
 
 #: reportapp/templates/components/reports/filters.html:149
-#: reportapp/templates/components/reports/match_table.html:68
+#: reportapp/templates/components/reports/match_table.html:76
+#: reportapp/templates/components/reports/match_table.html:80
+#: reportapp/templates/components/reports/match_table.html:81
 msgid "Resource age"
 msgstr "Kildealder"
 
@@ -574,24 +580,31 @@ msgid "Include results, that are less than 30 days old"
 msgstr "Inkludér resultater, der er under 30 dage gamle"
 
 #: reportapp/templates/components/reports/handle_match.html:10
-#: reportapp/templates/components/reports/handle_match.html:43
-#: reportapp/templates/components/reports/match.html:136
-#: reportapp/templates/components/reports/match.html:178
-msgid ""
-"OSdatascanner will not delete results from the system that was scanned. "
-"Marking a result as handled will only remove the result from OSdatascanner."
-msgstr ""
-"OSdatascanner sletter ikke resultater fra systemet der blev scannet.\n"
-"Resultatet markeres udelukkende som håndteret i OSdatascanner."
+#: reportapp/templates/components/reports/handle_match.html:11
+#: reportapp/templates/components/reports/handle_match.html:44
+#: reportapp/templates/components/reports/handle_match.html:45
+msgid "handle matches"
+msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html:11
-#: reportapp/templates/components/reports/handle_match.html:55
+#: reportapp/templates/components/reports/handle_match.html:45
+#: reportapp/templates/components/reports/match.html:137
+#: reportapp/templates/components/reports/match.html:183
+msgid ""
+"OS2datascanner will not delete results from the system that was scanned. "
+"Marking a result as handled will only remove the result from OS2datascanner."
+msgstr ""
+"OS2datascanner sletter ikke resultater fra systemet der blev scannet. "
+"Resultatet markeres udelukkende som håndteret i OS2datascanner."
+
+#: reportapp/templates/components/reports/handle_match.html:12
+#: reportapp/templates/components/reports/handle_match.html:57
 msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
-#: reportapp/templates/components/reports/handle_match.html:18
-#: reportapp/templates/components/reports/match.html:141
-#: reportapp/templates/components/reports/match.html:186
+#: reportapp/templates/components/reports/handle_match.html:19
+#: reportapp/templates/components/reports/match.html:146
+#: reportapp/templates/components/reports/match.html:191
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -601,13 +614,13 @@ msgstr ""
 "filen, som resultatet handler om. Håndtér venligst ikke et resultat, før du "
 "manuelt har gjort noget ved filen."
 
-#: reportapp/templates/components/reports/handle_match.html:25
-#: reportapp/templates/components/reports/match.html:147
-#: reportapp/templates/components/reports/match.html:173
+#: reportapp/templates/components/reports/handle_match.html:26
+#: reportapp/templates/components/reports/match.html:152
+#: reportapp/templates/components/reports/match.html:178
 msgid "Revert"
 msgstr "Fortryd"
 
-#: reportapp/templates/components/reports/handle_match.html:49
+#: reportapp/templates/components/reports/handle_match.html:52
 msgid ""
 "You are about to handle the marked results. This action does not change the "
 "files, that the results are about. Please do not handle a result before "
@@ -617,15 +630,16 @@ msgstr ""
 "filerne, som resultaterne handler om. Håndtér venligst ikke et resultat, før "
 "du manuelt har gjort noget ved filen."
 
-#: reportapp/templates/components/reports/handle_match.html:53
+#: reportapp/templates/components/reports/handle_match.html:55
 msgid "Mark as unhandled"
 msgstr "Markér som uhåndterede"
 
-#: reportapp/templates/components/reports/handle_match.html:65
+#: reportapp/templates/components/reports/handle_match.html:67
+#: reportapp/templates/components/reports/handle_match.html:68
 msgid "Deletes checked emails from your mailbox"
 msgstr "Sletter markede emails fra din mailboks"
 
-#: reportapp/templates/components/reports/handle_match.html:70
+#: reportapp/templates/components/reports/handle_match.html:73
 msgid ""
 "You are about to delete checked mails from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -633,15 +647,16 @@ msgstr ""
 "Du er ved at slette markerede emails fra din mailboks. Denne handling kan "
 "ikke fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/handle_match.html:73
+#: reportapp/templates/components/reports/handle_match.html:76
 msgid "Delete marked emails"
 msgstr "Slet markerede emails"
 
-#: reportapp/templates/components/reports/handle_match.html:79
+#: reportapp/templates/components/reports/handle_match.html:82
 msgid "selected"
 msgstr "valgt"
 
 #: reportapp/templates/components/reports/match.html:18
+#: reportapp/templates/components/reports/match.html:19
 msgid "Select result"
 msgstr "Vælg resultat"
 
@@ -666,6 +681,8 @@ msgstr ""
 "fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html:65
+#: reportapp/templates/components/statistics/user_overview_template.html:69
+#: reportapp/templates/components/statistics/user_overview_template.html:70
 msgid "Delete"
 msgstr "Slet"
 
@@ -685,38 +702,38 @@ msgstr "Kopiér sti"
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:137
-#: reportapp/templates/components/reports/match.html:188
+#: reportapp/templates/components/reports/match.html:138
+#: reportapp/templates/components/reports/match.html:193
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/reports/match.html:192
+#: reportapp/templates/components/reports/match.html:200
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:207
+#: reportapp/templates/components/reports/match.html:215
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:208
+#: reportapp/templates/components/reports/match.html:216
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:209
+#: reportapp/templates/components/reports/match.html:217
 msgid "Probability"
 msgstr "Sandsynlighed"
 
-#: reportapp/templates/components/reports/match.html:227
+#: reportapp/templates/components/reports/match.html:235
 msgid "A temporary error occurred during the latest check of this match"
 msgstr "Der opstod en midlertidig fejl under sidste tjek af dette match"
 
-#: reportapp/templates/components/reports/match.html:229
+#: reportapp/templates/components/reports/match.html:237
 msgid ""
 "OSdatascanner will automatically check this match again as part of the next "
 "scan"
 msgstr "OSdatascanner genbesøger dette match automatisk under næste scan"
 
-#: reportapp/templates/components/reports/match.html:233
+#: reportapp/templates/components/reports/match.html:243
 msgid "Show/hide technical details of the error"
 msgstr "Vis/skjul tekniske detaljer om fejlen"
 
@@ -730,38 +747,58 @@ msgid "Show match probability"
 msgstr "Vis sandsynlighed"
 
 #: reportapp/templates/components/reports/match_table.html:38
+#: reportapp/templates/components/reports/match_table.html:39
+#: reportapp/templates/components/reports/match_table.html:40
 msgid "Show/hide all matches"
 msgstr "Vis/skjul alle matches"
 
-#: reportapp/templates/components/reports/match_table.html:48
+#: reportapp/templates/components/reports/match_table.html:51
+#: reportapp/templates/components/reports/match_table.html:52
 msgid "Select all results"
 msgstr "Vælg alle resultater"
 
-#: reportapp/templates/components/reports/match_table.html:52
+#: reportapp/templates/components/reports/match_table.html:55
 #: reportapp/templates/components/user/user_content.html:22
 msgid "Name"
 msgstr "Navn"
 
-#: reportapp/templates/components/reports/match_table.html:56
-#: reportapp/templates/components/statistics/leader_statistics_template.html:88
+#: reportapp/templates/components/reports/match_table.html:60
+#: reportapp/templates/components/reports/match_table.html:64
+#: reportapp/templates/components/reports/match_table.html:65
+#: reportapp/templates/components/statistics/leader_statistics_template.html:91
 msgid "Matches"
 msgstr "Matches"
 
-#: reportapp/templates/components/reports/match_table.html:78
+#: reportapp/templates/components/reports/match_table.html:64
+#: reportapp/templates/components/reports/match_table.html:65
+#: reportapp/templates/components/reports/match_table.html:80
+#: reportapp/templates/components/reports/match_table.html:81
+#: reportapp/templates/components/reports/match_table.html:98
+#: reportapp/templates/components/reports/match_table.html:99
+#: reportapp/templates/components/reports/match_table.html:113
+#: reportapp/templates/components/reports/match_table.html:114
+msgid "Sort table by"
+msgstr "Sortér tabel efter"
+
+#: reportapp/templates/components/reports/match_table.html:89
 msgid "Source"
 msgstr "Kilde"
 
-#: reportapp/templates/components/reports/match_table.html:80
+#: reportapp/templates/components/reports/match_table.html:92
+#: reportapp/templates/components/reports/match_table.html:98
+#: reportapp/templates/components/reports/match_table.html:99
 msgid "Path"
 msgstr "Sti"
 
-#: reportapp/templates/components/reports/match_table.html:95
-#: reportapp/templates/components/statistics/leader_statistics_template.html:100
+#: reportapp/templates/components/reports/match_table.html:110
+#: reportapp/templates/components/reports/match_table.html:113
+#: reportapp/templates/components/reports/match_table.html:114
+#: reportapp/templates/components/statistics/leader_statistics_template.html:105
 msgid "Status"
 msgstr "Status"
 
-#: reportapp/templates/components/reports/match_table.html:105
-#: reportapp/templates/components/statistics/leader_statistics_template.html:114
+#: reportapp/templates/components/reports/match_table.html:125
+#: reportapp/templates/components/statistics/leader_statistics_template.html:121
 msgid "Actions"
 msgstr "Handlinger"
 
@@ -858,11 +895,17 @@ msgstr ""
 msgid "withheld"
 msgstr "tilbageholdt"
 
-#: reportapp/templates/components/statistics/employee_template.html:25
+#: reportapp/templates/components/statistics/employee_template.html:27
+#: reportapp/templates/components/statistics/employee_template.html:28
+msgid "Send notification to"
+msgstr "Send påmindelse til"
+
+#: reportapp/templates/components/statistics/employee_template.html:28
 msgid "Send notification"
 msgstr "Send påmindelse"
 
-#: reportapp/templates/components/statistics/employee_template.html:27
+#: reportapp/templates/components/statistics/employee_template.html:31
+#: reportapp/templates/components/statistics/employee_template.html:32
 msgid "Show/hide overview"
 msgstr "Vis/skjul overblik"
 
@@ -882,11 +925,11 @@ msgstr "Organisatoriske enheder"
 msgid "Search for employee"
 msgstr "Søg efter medarbejder"
 
-#: reportapp/templates/components/statistics/leader_statistics_template.html:77
+#: reportapp/templates/components/statistics/leader_statistics_template.html:78
 msgid "Employee"
 msgstr "Medarbejder"
 
-#: reportapp/templates/components/statistics/leader_statistics_template.html:101
+#: reportapp/templates/components/statistics/leader_statistics_template.html:107
 #, python-format
 msgid ""
 "The status of each user is determined by how many matches that user has, and "
@@ -899,11 +942,11 @@ msgstr ""
 "“Færdig”-statussen har ingen resultater. En bruger med “Accepteret” har "
 "håndteret mindst 75%% af sine seneste resultater."
 
-#: reportapp/templates/components/statistics/leader_statistics_template.html:127
+#: reportapp/templates/components/statistics/leader_statistics_template.html:134
 msgid "Loading employee ..."
 msgstr "Indlæser medarbejder ..."
 
-#: reportapp/templates/components/statistics/leader_statistics_template.html:132
+#: reportapp/templates/components/statistics/leader_statistics_template.html:139
 msgid "No employees found."
 msgstr "Ingen medarbejdere fundet."
 
@@ -962,29 +1005,23 @@ msgstr "Resultater håndteret i løbet af uge"
 msgid "Number of unhandled results per scanner job"
 msgstr "Antal uhåndterede resultater pr. scannerjob"
 
-#: reportapp/templates/components/statistics/user_overview_template.html:74
+#: reportapp/templates/components/statistics/user_overview_template.html:76
 msgid "You are about to delete all results from the scannerjob"
 msgstr "Du er ved at slette alle resultater fra scannerjobbet"
 
-#: reportapp/templates/components/statistics/user_overview_template.html:74
+#: reportapp/templates/components/statistics/user_overview_template.html:76
 msgid "associated with the user"
 msgstr "tilknyttet brugeren"
 
-#: reportapp/templates/components/statistics/user_overview_template.html:74
-#: reportapp/templates/components/user/login.html:15
-#: reportapp/templates/components/user/user_content.html:26
-msgid "Username"
-msgstr "Brugernavn"
-
-#: reportapp/templates/components/statistics/user_overview_template.html:74
+#: reportapp/templates/components/statistics/user_overview_template.html:76
 msgid "Are you sure? This action cannot be reversed."
 msgstr "Er du sikker? Denne handling kan ikke fortrydes."
 
-#: reportapp/templates/components/statistics/user_overview_template.html:88
+#: reportapp/templates/components/statistics/user_overview_template.html:90
 msgid "Development chart"
 msgstr "Udviklingsgraf"
 
-#: reportapp/templates/components/statistics/user_overview_template.html:91
+#: reportapp/templates/components/statistics/user_overview_template.html:95
 msgid ""
 "Chart of the change in the amount of the user's unhandled matches over the "
 "past year on a weekly basis."
@@ -995,6 +1032,11 @@ msgstr ""
 #: reportapp/templates/components/user/login.html:10
 msgid "report module"
 msgstr "rapportmodulet"
+
+#: reportapp/templates/components/user/login.html:15
+#: reportapp/templates/components/user/user_content.html:26
+msgid "Username"
+msgstr "Brugernavn"
 
 #: reportapp/templates/components/user/login.html:26
 #: reportapp/templates/components/user/user_content.html:136
@@ -1165,7 +1207,16 @@ msgstr "Uddel matches til brugere fra"
 msgid "Search Scannerjob"
 msgstr "Søg scannerjob"
 
-#: reportapp/templates/content.html:43
+#: reportapp/templates/content.html:43 reportapp/templates/content.html:44
+#: reportapp/templates/content.html:53
+msgid "Distribute"
+msgstr "Uddel"
+
+#: reportapp/templates/content.html:43 reportapp/templates/content.html:44
+msgid "matches"
+msgstr "matches"
+
+#: reportapp/templates/content.html:46
 msgid ""
 "Are you sure you want to distribute matches to the users? This action cannot "
 "be reverted."
@@ -1173,11 +1224,7 @@ msgstr ""
 "Er du sikker på, at du vil dele matches ud til brugerne? Denne handling kan "
 "ikke fortrydes."
 
-#: reportapp/templates/content.html:49
-msgid "Distribute"
-msgstr "Uddel"
-
-#: reportapp/templates/content.html:59
+#: reportapp/templates/content.html:64
 msgid "No results were found"
 msgstr "Der er ingen resultater"
 
@@ -1414,26 +1461,34 @@ msgid "File"
 msgstr "Fil"
 
 #: reportapp/templatetags/handle_extras.py:95
+msgid "Office 365 File"
+msgstr "Office 365 Fil"
+
+#: reportapp/templatetags/handle_extras.py:97
 msgid "MS Teams file"
 msgstr "MS Teams fil"
 
-#: reportapp/templatetags/handle_extras.py:97
+#: reportapp/templatetags/handle_extras.py:99
 msgid "Exchange Mail"
 msgstr "Exchange mail"
 
-#: reportapp/templatetags/handle_extras.py:99
+#: reportapp/templatetags/handle_extras.py:101
 msgid "Gmail"
 msgstr "Gmail"
 
-#: reportapp/templatetags/handle_extras.py:101
+#: reportapp/templatetags/handle_extras.py:103
 msgid "Office 365 Mail"
 msgstr "Office 365 Mail"
 
-#: reportapp/templatetags/handle_extras.py:103
+#: reportapp/templatetags/handle_extras.py:105
 msgid "Web"
 msgstr "Hjemmeside"
 
-#: reportapp/templatetags/handle_extras.py:105
+#: reportapp/templatetags/handle_extras.py:107
+msgid "Office 365 Calendar"
+msgstr "Office 365 Kalender"
+
+#: reportapp/templatetags/handle_extras.py:109
 msgid "Unrecognized scan type"
 msgstr "Uidentificerbar scan type"
 
@@ -1732,19 +1787,8 @@ msgstr ""
 #~ "Du har slettet alle {account.first_name or account.username}s resultater "
 #~ "fra {scannerjob_name}."
 
-#~ msgid ""
-#~ "OS2datascanner will not delete results from the system that was scanned.\n"
-#~ "Marking a result as handled will only remove the result from "
-#~ "OS2datascanner."
-#~ msgstr ""
-#~ "OS2datascanner sletter ikke resultater fra systemet der blev scannet.\n"
-#~ "Resultatet markeres udelukkende som håndteret i OS2datascanner."
-
 #~ msgid "Leader statistics"
 #~ msgstr "Lederstatistik"
-
-#~ msgid "matches"
-#~ msgstr "matches"
 
 #~ msgid "Not assigned"
 #~ msgstr "Ikke tildelt"
