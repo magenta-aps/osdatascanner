@@ -75,7 +75,7 @@ class Command(BaseCommand):
         # Will always give "0" if the counted field is null.
         aliases_with_no_account = aliases.filter(account__isnull=True).values("pk")
         aliases_with_mismatched_account_user = aliases.exclude(
-            user__username=F("account__username"))
+            user=F("account__user")).values('pk')
 
         nl = '\n  '
         print(
