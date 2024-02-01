@@ -233,7 +233,7 @@ class _MSGraphFileCreate(ScannerCreate):
     fields = ['name', 'schedule', 'grant',
               'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -251,7 +251,7 @@ class MSGraphFileUpdate(ScannerUpdate):
     fields = ['name', 'schedule', 'grant', 'org_unit',
               'scan_site_drives', 'scan_user_drives',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -274,7 +274,7 @@ class MSGraphFileCopy(ScannerCopy):
     fields = ['name', 'schedule', 'grant',
               'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
 
 class MSGraphFileAskRun(ScannerAskRun):
@@ -322,7 +322,7 @@ class _MSGraphCalendarCreate(ScannerCreate):
     type = 'msgraph-calendar'
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -339,7 +339,7 @@ class MSGraphCalendarUpdate(ScannerUpdate):
     type = 'msgraph-calendarscanners'
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -362,7 +362,7 @@ class MSGraphCalendarCopy(ScannerCopy):
     type = 'msgraph-calendar'
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
 
 class MSGraphCalendarAskRun(ScannerAskRun):
@@ -406,7 +406,7 @@ class _MSGraphTeamsFileCreate(ScannerCreate):
     fields = ['name', 'schedule', 'grant',
               'exclusion_rule', 'only_notify_superadmin',
               'do_ocr', 'do_last_modified_check', 'rule',
-              'organization', ]
+              'organization', 'keep_false_positives']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -423,7 +423,7 @@ class MSGraphTeamsFileUpdate(ScannerUpdate):
     type = 'msgraph-teams-filescanners'
     fields = ['name', 'schedule', 'grant',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
-              'do_last_modified_check', 'rule', 'organization', ]
+              'do_last_modified_check', 'rule', 'organization', 'keep_false_positives']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -446,7 +446,7 @@ class MSGraphTeamsFileCopy(ScannerCopy):
     fields = ['name', 'schedule', 'grant',
               'exclusion_rule', 'only_notify_superadmin',
               'do_ocr', 'do_last_modified_check', 'rule',
-              'organization', ]
+              'organization', 'keep_false_positives']
 
 
 class MSGraphTeamsFileAskRun(ScannerAskRun):
