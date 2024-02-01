@@ -69,7 +69,7 @@
                              id="{{ role.0 }}_checkbox"
                              {% if role.0 in checked_roles %}checked{% endif %}
                              autocomplete="off">
-                      <label for="{{ role.0 }}_checkbox">{% trans "with "|capfirst %}{{ role.1 }}</label>
+                      <label for="{{ role.0 }}_checkbox">{% trans "with "|capfirst %} {{ role.1 }}</label>
                       <button class="checkbox_button"
                               id="{{ role.0 }}_checkbox_button"
                               onclick="toggleCheckbox(event, '{{ role.0 }}_checkbox')">
