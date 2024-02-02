@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 3.22.1, 2nd February 2024
+
+This minor bugfix release fixes a potential crash in one of the migrations
+added in connection with the changes to the Last-Modified function.
+
 ## Version 3.22.0, 1st February 2024
 
 "King Fred the Quiet"
