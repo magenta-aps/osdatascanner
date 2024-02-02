@@ -14,6 +14,7 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( http://www.os2web.dk/ )
 import os
+import chardet
 import logging
 
 from django.db import models
@@ -29,6 +30,17 @@ from ...utils import upload_path_exchange_users
 from .scanner import Scanner
 
 logger = logging.getLogger(__name__)
+
+
+def get_users_from_file(userlist):
+    content = userlist.read()
+    ed = chardet.detect(content)
+    if not (encoding := ed["encoding"]):
+        raise UnicodeDecodeError
+    else:
+        return [stripped_line
+                for line in content.decode(encoding).split("\n")
+                if (stripped_line := line.strip())]
 
 
 class ExchangeScanner(Scanner):
@@ -99,9 +111,7 @@ class ExchangeScanner(Scanner):
                     local_part = user_mail_address.split("@", maxsplit=1)[0]
                     yield (account, _make_source(local_part))
         elif self.userlist:
-            user_list = (
-                u.decode("utf-8").strip() for u in self.userlist if u.strip()
-            )
+            user_list = get_users_from_file(self.userlist)
             for u in user_list:
                 yield (None, _make_source(u))
         else:

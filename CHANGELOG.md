@@ -1,5 +1,12 @@
 # Changelog
 
+## Next Release
+
+### General improvements
+
+- The user list files given to the Exchange mail scanner can now be in an
+  arbitrary character set.
+
 ## Version 3.22.1, 2nd February 2024
 
 This minor bugfix release fixes a potential crash in one of the migrations
