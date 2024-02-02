@@ -2,6 +2,10 @@
 
 ## Next Release
 
+### New in this release
+
+- Scannerjobs can now be searched from a search field in the scanner list.
+
 ### General improvements
 
 - The user list files given to the Exchange mail scanner can now be in an

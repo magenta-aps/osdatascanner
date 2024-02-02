@@ -370,6 +370,12 @@ class ScannerList(RestrictedListView):
     template_name = 'scanners.html'
     context_object_name = 'scanner_list'
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if search_field := self.request.GET.get('search_field'):
+            qs = qs.filter(name__icontains=search_field)
+        return qs
+
 
 class ScannerBase(object):
     template_name = 'components/scanner/scanner_form.html'
