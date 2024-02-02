@@ -4,6 +4,11 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def drop_broken_covered_accounts(apps, schema_editor) -> None:
+    CoveredAccount = apps.get_model("os2datascanner", "CoveredAccount")
+    CoveredAccount.objects.filter(scan_status__isnull=True).delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -11,6 +16,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(drop_broken_covered_accounts,
+                             reverse_code=migrations.RunPython.noop),
         migrations.AlterField(
             model_name='coveredaccount',
             name='scan_status',
