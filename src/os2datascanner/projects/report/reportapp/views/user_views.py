@@ -20,7 +20,7 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
 from django import forms
-from django.db.models import Q
+from django.db.models import Count
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
@@ -38,7 +38,7 @@ class AccountOutlookSettingForm(forms.ModelForm):
 
     class Meta:
         model = AccountOutlookSetting
-        fields = ['categorize_email', 'match_colour', 'false_positive_colour']
+        fields = ['categorize_email']
         widgets = {
             'categorize_email': forms.CheckboxInput(
                 attrs={'class': "some-neat-css"}  # TODO: example here for how to style
@@ -107,10 +107,11 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                     OutlookCategorizeChoices.ORG_LEVEL):
 
                 # and a category is missing
-                if outl_setting.filter(
-                        Q(match_category_uuid__isnull=True) |
-                        Q(false_positive_category_uuid__isnull=True)
-                ):
+                # TODO: We only check if there is 1 or less categories, not what type of
+                # categories there are ...
+                if outl_setting.annotate(
+                        categories=Count("outlook_categories")).filter(
+                        categories__lte=1):
                     # Create/Verify that categories are populated
                     message = outl_setting.populate_setting()
                     messages.add_message(
@@ -122,12 +123,12 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
 
                 # Else, we can assume that we're updating.
                 # Check if one of the colours are changed
-                if outl_setting_change := outl_setting.exclude(
-                        Q(match_colour=match_colour) &
-                        Q(false_positive_colour=false_positive_colour)
-                ):
+                if (outl_setting.false_positive_category.category_colour
+                        != false_positive_colour) or (
+                        outl_setting.match_category.category_colour
+                        != match_colour):
 
-                    message = outl_setting_change.update_colour(match_colour, false_positive_colour)
+                    message = outl_setting.update_colour(match_colour, false_positive_colour)
                     messages.add_message(
                         request,
                         messages.SUCCESS,

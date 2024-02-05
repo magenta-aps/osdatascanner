@@ -3,7 +3,7 @@ import structlog
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
@@ -67,9 +67,9 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     return None
 
         # Only objects that don't have either a match or fp category are relevant for inspection.
-        qs = self.filter(
-            Q(match_category_uuid__isnull=True) | Q(false_positive_category_uuid__isnull=True)
-        )
+        # TODO: We only check if there is 1 or less categories, not what type of
+        # categories there are ...
+        qs = self.annotate(categories=Count("outlook_categories")).filter(categories__lte=1)
 
         with requests.Session() as session:
             gc = self._initiate_graphcaller(session)
@@ -77,19 +77,29 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
             for outl_setting in qs:
                 # TODO: ENUM use should be refactored to support name change.
-                if not outl_setting.match_category_uuid:
+                if not outl_setting.match_category:
                     match_uuid = _create_category(outl_setting.account.email,
                                                   OutlookCategoryName.Match.value,
-                                                  outl_setting.match_colour)
-                    outl_setting.match_category_uuid = match_uuid
+                                                  OutlookCategory.OutlookCategoryColour.DarkRed)
+                    OutlookCategory.objects.create(
+                            category_name=OutlookCategoryName.Match.value,
+                            category_colour=OutlookCategory.OutlookCategoryColour.DarkRed,
+                            category_uuid=match_uuid,
+                            name=OutlookCategory.OutlookCategoryNames.MATCH,
+                            account_outlook_setting=outl_setting)
                     if match_uuid:
                         created_category_count += 1
 
-                if not outl_setting.false_positive_category_uuid:
+                if not outl_setting.false_positive_category:
                     fp_uuid = _create_category(outl_setting.account.email,
                                                OutlookCategoryName.FalsePositive.value,
-                                               outl_setting.false_positive_colour)
-                    outl_setting.false_positive_category_uuid = fp_uuid
+                                               OutlookCategory.OutlookCategoryColour.DarkGreen)
+                    OutlookCategory.objects.create(
+                            category_name=OutlookCategoryName.FalsePositive.value,
+                            category_colour=OutlookCategory.OutlookCategoryColour.DarkGreen,
+                            category_uuid=fp_uuid,
+                            name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE,
+                            account_outlook_setting=outl_setting)
                     if fp_uuid:
                         created_category_count += 1
 
@@ -156,20 +166,20 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             updated_category_count = 0
             for outl_setting in self:
                 try:
-                    if outl_setting.match_colour != match_colour:
+                    if outl_setting.match_category.category_colour != match_colour:
                         match_resp = gc.update_category_colour(
                             outl_setting.account.email,
-                            outl_setting.match_category_uuid,
+                            outl_setting.match_category.category_uuid,
                             match_colour)
 
                         if match_resp.ok:
                             logger.info(f"Updated Match colour to {match_colour}!")
                             updated_category_count += 1
 
-                    if outl_setting.false_positive_colour != fp_colour:
+                    if outl_setting.false_positive_category.category_colour != fp_colour:
                         fp_resp = gc.update_category_colour(
                             outl_setting.account.email,
-                            outl_setting.false_positive_category_uuid,
+                            outl_setting.false_positive_category.category_uuid,
                             fp_colour)
 
                         if fp_resp.ok:
@@ -180,7 +190,12 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     logger.warning(f"Couldn't update colour! Got response: {ex.response}")
 
             # Update database
-            self.update(match_colour=match_colour, false_positive_colour=fp_colour)
+            OutlookCategory.objects.filter(
+                name=OutlookCategory.OutlookCategoryNames.MATCH).update(
+                category_colour=match_colour)
+            OutlookCategory.objects.filter(
+                name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE).update(
+                category_colour=fp_colour)
             return _(f"Updated {updated_category_count} categories!")
 
     def delete_categories(self) -> str:
@@ -192,7 +207,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                 try:
                     delete_match_category_response = gc.delete_category(
                         outl_setting.account.email,
-                        outl_setting.match_category_uuid)
+                        outl_setting.match_category.category_uuid)
                     if delete_match_category_response.ok:
                         logger.info(f"Successfully deleted Match "
                                     f"Outlook Category for {outl_setting.account}! ")
@@ -200,7 +215,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
                     delete_fp_response = gc.delete_category(
                         outl_setting.account.email,
-                        outl_setting.false_positive_category_uuid)
+                        outl_setting.false_positive_category.category_uuid)
                     if delete_fp_response.ok:
                         logger.info(f"Successfully deleted False Positive "
                                     f"Outlook Category for {outl_setting.account}! ")
@@ -210,9 +225,8 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     logger.warning(f"Couldn't delete category! Got response: {ex.response}")
 
             # Update database
-            self.update(categorize_email=False,
-                        match_category_uuid=None,
-                        false_positive_category_uuid=None)
+            self.update(categorize_email=False)
+            OutlookCategory.objects.filter(account_outlook_setting__in=self).delete()
             return _(f"Deleted {deleted_category_count} categories!")
 
     def bulk_create(self, objs, **kwargs):
@@ -229,6 +243,33 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
 
 class AccountOutlookSetting(models.Model):
+
+    objects = AccountOutlookSettingQuerySet.as_manager()
+
+    account = models.OneToOneField(Account,
+                                   on_delete=models.CASCADE,
+                                   related_name="outlook_settings")
+
+    categorize_email = models.BooleanField(default=False,
+                                           verbose_name=_("Categorize emails"))
+
+    @property
+    def match_category(self):
+        try:
+            return self.outlook_categories.get(name=OutlookCategory.OutlookCategoryNames.MATCH)
+        except OutlookCategory.DoesNotExist:
+            return None
+
+    @property
+    def false_positive_category(self):
+        try:
+            return self.outlook_categories.get(
+                name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE)
+        except OutlookCategory.DoesNotExist:
+            return None
+
+
+class OutlookCategory(models.Model):
     class OutlookCategoryColour(models.TextChoices):
         # Available colour presets are defined here:
         # https://learn.microsoft.com/en-us/graph/api/resources/outlookcategory?view=graph-rest-1.0#properties
@@ -258,34 +299,42 @@ class AccountOutlookSetting(models.Model):
         DarkPurple = "Preset23", _("Dark Purple")
         DarkCranberry = "Preset24", _("Dark Cranberry")
 
-    objects = AccountOutlookSettingQuerySet.as_manager()
-
-    account = models.OneToOneField(Account,
-                                   on_delete=models.CASCADE,
-                                   related_name="outlook_settings")
-
-    categorize_email = models.BooleanField(default=False,
-                                           verbose_name=_("Categorize emails"))
+    account_outlook_setting = models.ForeignKey(
+        AccountOutlookSetting,
+        verbose_name=_("account Outlook setting"),
+        related_name="outlook_categories",
+        on_delete=models.CASCADE,
+        null=False)
 
     # UUID from MSGraph category creation
     # We'll only ever need it in str format, so no need for UUID field.
-    match_category_uuid = models.CharField(max_length=36,
-                                           null=True,
-                                           blank=True,
-                                           )
+    category_uuid = models.CharField(max_length=36,
+                                     null=True,
+                                     blank=True,
+                                     verbose_name=_("category UUID")
+                                     )
 
-    match_colour = models.CharField(max_length=10,
-                                    choices=OutlookCategoryColour.choices,
-                                    verbose_name=_("Category colour for matches"),
-                                    default=OutlookCategoryColour.DarkRed,
-                                    )
+    category_name = models.CharField(
+        max_length=256,
+        verbose_name=_("category name"),
+        default="OSdatascanner Match",
+        null=False,
+        blank=False)
 
-    false_positive_category_uuid = models.CharField(max_length=36,
-                                                    null=True,
-                                                    blank=True,
-                                                    )
+    category_colour = models.CharField(
+        max_length=10,
+        choices=OutlookCategoryColour.choices,
+        verbose_name=_("category colour"),
+        default=OutlookCategoryColour.DarkRed)
 
-    false_positive_colour = models.CharField(max_length=10,
-                                             choices=OutlookCategoryColour.choices,
-                                             verbose_name=_("Category colour for false positives"),
-                                             default=OutlookCategoryColour.DarkGreen)
+    class OutlookCategoryNames(models.TextChoices):
+        MATCH = "match", _("match")
+        FALSE_POSITIVE = "false_positive", _("false positive")
+
+    name = models.CharField(
+        max_length=20,
+        verbose_name=_("name"),
+        choices=OutlookCategoryNames.choices,
+        default=OutlookCategoryNames.MATCH,
+        null=False,
+        blank=False)

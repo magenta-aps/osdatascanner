@@ -1991,47 +1991,47 @@ msgstr ""
 "Din organisation har konfigureret denne indstilling for dig. Ændring er ikke "
 "tilladt."
 
-#: reportapp/views/utilities/msgraph_utilities.py:36
+#: reportapp/views/utilities/msgraph_utilities.py:37
 msgid "System configuration is missing Azure-application credentials. "
 msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
 
-#: reportapp/views/utilities/msgraph_utilities.py:55
+#: reportapp/views/utilities/msgraph_utilities.py:56
 msgid "Your organization does not allow this operation."
 msgstr "Din organisation tillader ikke denne handling."
 
-#: reportapp/views/utilities/msgraph_utilities.py:103
+#: reportapp/views/utilities/msgraph_utilities.py:104
 msgid "System configuration does not allow mail deletion."
 msgstr "Systemindstillingerne tillader ikke email sletning."
 
-#: reportapp/views/utilities/msgraph_utilities.py:111
+#: reportapp/views/utilities/msgraph_utilities.py:112
 #, python-brace-format
 msgid "Not allowed! You tried to delete an email belonging to {owner}!"
 msgstr "Ikke tilladt! Du har forsøgt at slette en email tilhørende {owner}!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:149
+#: reportapp/views/utilities/msgraph_utilities.py:150
 #, python-brace-format
 msgid "Couldn't delete email! Code: {status_code}"
 msgstr "Kunne ikke slette email! Fejlkode: {status_code}"
 
-#: reportapp/views/utilities/msgraph_utilities.py:176
+#: reportapp/views/utilities/msgraph_utilities.py:177
 msgid "Could not find your Microsoft tenant!"
 msgstr "Kunne ikke finde din Microsoft tenant!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:194
+#: reportapp/views/utilities/msgraph_utilities.py:195
 msgid "You currently have no Outlook reports. Can't create categories!"
 msgstr ""
 "Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:220
+#: reportapp/views/utilities/msgraph_utilities.py:221
 msgid "System configuration does not allow file deletion."
 msgstr "Systemindstillingerne tillader ikke fil sletning."
 
-#: reportapp/views/utilities/msgraph_utilities.py:228
+#: reportapp/views/utilities/msgraph_utilities.py:229
 #, python-brace-format
 msgid "Not allowed! You tried to delete a file belonging to {owner}!"
 msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:260
+#: reportapp/views/utilities/msgraph_utilities.py:261
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
@@ -2050,8 +2050,34 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgid "Unhandled results"
 #~ msgstr "Uhåndterede resultater"
 
-#~ msgid "New results"
-#~ msgstr "Nye resultater"
+#~ msgid "Successfully created {category} category!"
+#~ msgstr "Oprettede {category} kategorien succesfuldt!"
+
+#~ msgid "Successfully updated {category} colour!"
+#~ msgstr "Opdaterede {category} kategorien succesfuldt!"
+
+#~ msgid "Couldn't update match category colour!"
+#~ msgstr "Kunne ikke opdatere match kategori farve!"
+
+#~ msgid "Couldn't update false positive category colour!"
+#~ msgstr "Kunne ikke opdatere falsk positiv kategori farve!"
+
+#~ msgid "Successfully deleted {category} category!"
+#~ msgstr "Slettede {category} kategorien succesfuldt!"
+
+#~ msgid "Couldn't delete match category!"
+#~ msgstr "Kunne ikke slette match kategori!"
+
+#~ msgid "Couldn't delete false positive category!"
+#~ msgstr "Kunne ikke slette falsk positiv kategori!"
+
+#, python-brace-format
+#~ msgid "Couldn't update category! Code: {status_code}"
+#~ msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
+
+#, python-brace-format
+#~ msgid "Couldn't delete category! Code: {status_code}"
+#~ msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
 
 #~ msgid "Delete OneDrive files"
 #~ msgstr "Slet OneDrive filer"
@@ -2078,26 +2104,14 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgid "Successfully updated OSdatascanner Match colour! "
 #~ msgstr "Opdaterede OSdatascanner Match kategorien succesfuldt!"
 
-#~ msgid "Couldn't update match category colour!"
-#~ msgstr "Kunne ikke opdatere match kategori farve!"
-
 #~ msgid "Successfully updated OSdatascanner False Positive colour! "
 #~ msgstr "Opdaterede OSdatascanner False Positive kategorien succesfuldt!"
-
-#~ msgid "Couldn't update false positive category colour!"
-#~ msgstr "Kunne ikke opdatere falsk positiv kategori farve!"
 
 #~ msgid "Successfully deleted OSdatascanner Match category!"
 #~ msgstr "Slettede OSdatascanner Match kategorien succesfuldt!"
 
-#~ msgid "Couldn't delete match category!"
-#~ msgstr "Kunne ikke slette match kategori!"
-
 #~ msgid "Successfully deleted OSdatascanner False Positive category!"
 #~ msgstr "Slettede OSdatascanner False Positive kategorien succesfuldt!"
-
-#~ msgid "Couldn't delete false positive category!"
-#~ msgstr "Kunne ikke slette falsk positiv kategori!"
 
 #, python-brace-format
 #~ msgid ""
@@ -2106,14 +2120,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgstr ""
 #~ "Kunne ikke oprette kategori! Tjek venligst at kategorien {category_name} "
 #~ "ikke allerede eksisterer i Outlook. Fejlkode: {status_code}"
-
-#, python-brace-format
-#~ msgid "Couldn't update category! Code: {status_code}"
-#~ msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
-
-#, python-brace-format
-#~ msgid "Couldn't delete category! Code: {status_code}"
-#~ msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
 
 #~ msgid "Roles"
 #~ msgstr "Roller"

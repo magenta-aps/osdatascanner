@@ -225,6 +225,10 @@
 
 - Existing ScheduledCheckups are no longer duplicated when a setting on a
   scanner is changed, followed by a scan.
+  
+### General improvements
+
+- bla bla
 
 - The selected rule on scannerjobs no longer resets to default value on re-render.
 

@@ -4,7 +4,7 @@ from io import BytesIO
 import requests
 from requests.models import Response
 
-from ..models import AccountOutlookSetting
+from ..models import AccountOutlookSetting, OutlookCategory
 from ..models.account_outlook_setting import AccountOutlookSettingQuerySet
 from ..models.organization import Organization, OutlookCategorizeChoices
 from ..models.account import Account
@@ -88,9 +88,9 @@ class TestAccountOutlookSetting:
 
         # Assert
         self.base_account.refresh_from_db()
-        assert (self.base_account.outlook_settings.match_category_uuid ==
+        assert (self.base_account.outlook_settings.match_category.category_uuid ==
                 "a_very_real_category_id")
-        assert (self.base_account.outlook_settings.false_positive_category_uuid ==
+        assert (self.base_account.outlook_settings.false_positive_category.category_uuid ==
                 "a_very_real_category_id")
 
     def test_populate_setting_identifies_existing_categories(self, monkeypatch, mock_graphcaller):
@@ -115,10 +115,10 @@ class TestAccountOutlookSetting:
         # Assert - ID's should be populated
         self.base_account.refresh_from_db()
         assert (self.base_account.
-                outlook_settings.match_category_uuid == (
+                outlook_settings.match_category.category_uuid == (
                     "d60ae84c-93b3-45f6-bb74" "-51ad35d09730"))
         assert (self.base_account
-                .outlook_settings.false_positive_category_uuid == (
+                .outlook_settings.false_positive_category.category_uuid == (
                     "ad76143b-5180""-4751-8079""-1f1d3f11b38b")
                 )
 
@@ -134,9 +134,9 @@ class TestAccountOutlookSetting:
 
         # Assert
         self.base_account.refresh_from_db()
-        assert (self.base_account.outlook_settings.match_category_uuid ==
+        assert (self.base_account.outlook_settings.match_category.category_uuid ==
                 "a_very_real_category_id")
-        assert (self.base_account.outlook_settings.false_positive_category_uuid ==
+        assert (self.base_account.outlook_settings.false_positive_category.category_uuid ==
                 "a_very_real_category_id")
 
     def test_bulk_create_doesnt_populate_with_no_permission(self, mock_graphcaller):
@@ -151,8 +151,8 @@ class TestAccountOutlookSetting:
 
         # Assert
         self.base_account.refresh_from_db()
-        assert self.base_account.outlook_settings.match_category_uuid is None
-        assert self.base_account.outlook_settings.false_positive_category_uuid is None
+        assert self.base_account.outlook_settings.match_category is None
+        assert self.base_account.outlook_settings.false_positive_category is None
 
     def test_bulk_create_doesnt_populate_with_ind_level(self, mock_graphcaller):
         # Arrange
@@ -166,26 +166,31 @@ class TestAccountOutlookSetting:
 
         # Assert
         self.base_account.refresh_from_db()
-        assert self.base_account.outlook_settings.match_category_uuid is None
-        assert self.base_account.outlook_settings.false_positive_category_uuid is None
+        assert self.base_account.outlook_settings.match_category is None
+        assert self.base_account.outlook_settings.false_positive_category is None
 
     def test_update_colour_identifies_colour_changes(self):
         pass
 
     def test_delete_categories_removes_uuids_on_ok_response(self, mock_graphcaller):
         # Arrange
-        AccountOutlookSetting.objects.create(account=self.base_account,
-                                             categorize_email=True,
-                                             match_category_uuid="123",
-                                             false_positive_category_uuid="1234")
+        setting = AccountOutlookSetting.objects.create(
+                                    account=self.base_account,
+                                    categorize_email=True)
+        OutlookCategory.objects.create(category_uuid="123",
+                                       name=OutlookCategory.OutlookCategoryNames.MATCH,
+                                       account_outlook_setting=setting)
+        OutlookCategory.objects.create(category_uuid="1234",
+                                       name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE,
+                                       account_outlook_setting=setting)
+
         # Act
         AccountOutlookSetting.objects.filter(account=self.base_account).delete_categories()
 
         # Assert
         assert AccountOutlookSetting.objects.filter(account=self.base_account,
                                                     categorize_email=False,
-                                                    match_category_uuid=None,
-                                                    false_positive_category_uuid=None
+                                                    outlook_categories__isnull=True
                                                     ).count() == 1
 
     # # Account Model #
@@ -200,8 +205,9 @@ class TestAccountOutlookSetting:
                                      organization=self.organization)
 
         # Assert
-        assert acc.outlook_settings.match_category_uuid == "a_very_real_category_id"
-        assert acc.outlook_settings.false_positive_category_uuid == "a_very_real_category_id"
+        assert acc.outlook_settings.match_category.category_uuid == "a_very_real_category_id"
+        assert acc.outlook_settings.false_positive_category.category_uuid == \
+            "a_very_real_category_id"
 
     def test_account_bulk_create_triggers_account_outlook_setting(self, mock_graphcaller):
         # Act
@@ -218,19 +224,23 @@ class TestAccountOutlookSetting:
         )
 
         # Assert
-        assert AccountOutlookSetting.objects.filter(
-            account__username="carol",
-            categorize_email=True,
-            match_category_uuid="a_very_real_category_id",
-            false_positive_category_uuid="a_very_real_category_id"
-        ).count() == 1
+        assert OutlookCategory.objects.filter(
+            account_outlook_setting__account__username="carol",
+            account_outlook_setting__categorize_email=True,
+            category_uuid="a_very_real_category_id"
+        ).count() == 2
 
     def test_account_delete_removes_outlook_setting(self):
         # Arrange
         # Create an AccountOutlookSetting object
-        AccountOutlookSetting.objects.create(account=self.base_account,
-                                             match_category_uuid="123",
-                                             false_positive_category_uuid="1234")
+        setting = AccountOutlookSetting.objects.create(account=self.base_account)
+        OutlookCategory.objects.create(category_uuid="123",
+                                       name=OutlookCategory.OutlookCategoryNames.MATCH,
+                                       account_outlook_setting=setting)
+        OutlookCategory.objects.create(category_uuid="1234",
+                                       name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE,
+                                       account_outlook_setting=setting)
+
         # Act
         self.base_account.delete()
 
@@ -249,10 +259,9 @@ class TestAccountOutlookSetting:
             ["outlook_categorize_email_permission"])
 
         # Assert
-        assert AccountOutlookSetting.objects.filter(
-            account__organization=self.organization,
-            match_category_uuid="a_very_real_category_id",
-            false_positive_category_uuid="a_very_real_category_id").count() == 1
+        assert OutlookCategory.objects.filter(
+            account_outlook_setting__account__organization=self.organization,
+            category_uuid="a_very_real_category_id").count() == 2
 
     def test_organization_bulk_update_ind_level_dont_trigger_account_outlook_setting(
             self, mock_graphcaller):
