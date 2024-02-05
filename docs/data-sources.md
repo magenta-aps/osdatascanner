@@ -134,8 +134,10 @@ When using a sitemap, OS2datascanner will emit the specified root page and the
 files enumerated in the sitemap, _and nothing else_. Crawling is disabled when
 using a sitemap, which can provide better performance.
 
-OS2datascanner does not yet support [Google's image extensions](https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps)
-to the sitemap schema: only those links present in a `<loc />` tag are emitted.
+Starting with release 3.22.2, OS2datascanner also supports
+[Google's image extensions](https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps) to the sitemap schema. Earlier releases
+do not support the extensions: only those links present in a `<loc />` tag are
+emitted.
 
 OS2datascanner trusts the hints provided by a sitemap over the information
 provided by HTTP headers: if the `<lastmod />` element contains a last

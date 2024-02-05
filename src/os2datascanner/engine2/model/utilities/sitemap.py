@@ -32,6 +32,7 @@ def _xp(e, path: str) -> List[str]:
             path,
             namespaces={
                "sitemap": "http://www.sitemaps.org/schemas/sitemap/0.9",
+               "sitemap-image": "http://www.google.com/schemas/sitemap-image/1.1",
                "hints": "https://ns.magenta.dk/schemas/sitemap-hints/0.1"
             })
 
@@ -93,6 +94,16 @@ def process_sitemap_url(  # noqa: CCR001, E501 too high cognitive complexity
                     hints["content_type"] = content_type.strip()
 
                 yield (loc, hints)
+
+                # Next, iterate over any images contained in the <url />
+                # element and yield their addresses. Image sitemaps
+                # do not seem to support separate modification dates
+                # for the images, so we just return {"fresh": True}.
+                image_hints = {"fresh": True}
+
+                for image in _xp(url, "sitemap-image:image/sitemap-image:loc/text()"):
+                    image_loc = image.strip()
+                    yield (image_loc, image_hints)
             logger.debug("done processing", lines=_i, sitemap=base_url)
         elif _xp(root, "/sitemap:sitemapindex") and allow_sitemap:
             # This appears to be a sitemap index: iterate over all of the valid
