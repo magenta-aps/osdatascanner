@@ -172,12 +172,12 @@ class ClientAdminMixin:
     """Mixin for making sure, that the requesting user is either an admin for
     the client, for which they are requesting data, or is a superuser."""
 
-    def setup(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         org, allowed = user_allowed(request.user, kwargs['org_slug'])
         # Add the organization to the kwargs for future use.
-        kwargs['org'] = org
+        self.kwargs['org'] = org
         if allowed:
-            return super().setup(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         else:
             raise Http404(
                 _("Account not found.")
