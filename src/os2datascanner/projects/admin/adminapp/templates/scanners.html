@@ -31,11 +31,12 @@
                    placeholder="{% trans 'Search for scanner' %}"
                    value="{{ request.GET.search_field }}"
                    autocomplete="off"
-                   hx-get=""
+                   hx-get="{{ request.path }}"
                    hx-target=".search-target"
                    hx-select=".search-target"
                    hx-swap="outerHTML"
-                   hx-trigger="keyup delay:200ms"
+                   hx-push-url="true"
+                   hx-trigger="keyup delay:200ms, search"
                    hx-include="#scanner_search_field" />
           </div>
  
