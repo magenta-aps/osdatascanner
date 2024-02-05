@@ -3,10 +3,11 @@ from datetime import date
 
 
 # Updated list of dates with CPR numbers violating the Modulo-11 check. (Last
-# synchronised with the CPR Office's list on January 28, 2021.)
+# synchronised with the CPR Office's list on January 29, 2024.)
 # Source: https://cpr.dk/cpr-systemet/personnumre-uden-kontrolciffer-modulus-11-kontrol/
 CPR_EXCEPTION_DATES = {
     date(1960, 1, 1),
+    date(1962, 1, 1),
     date(1964, 1, 1),
     date(1965, 1, 1),
     date(1966, 1, 1),
@@ -19,6 +20,7 @@ CPR_EXCEPTION_DATES = {
     date(1980, 1, 1),
     date(1981, 1, 1),
     date(1982, 1, 1),
+    date(1983, 1, 1),
     date(1984, 1, 1),
     date(1985, 1, 1),
     date(1986, 1, 1),

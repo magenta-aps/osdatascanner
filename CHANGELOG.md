@@ -7,6 +7,9 @@
 - The user list files given to the Exchange mail scanner can now be in an
   arbitrary character set.
 
+- The list of dates containing CPR numbers violating the Modulo-11 check, have been synced 
+  with the list from the CPR office.
+
 ## Version 3.22.1, 2nd February 2024
 
 This minor bugfix release fixes a potential crash in one of the migrations
