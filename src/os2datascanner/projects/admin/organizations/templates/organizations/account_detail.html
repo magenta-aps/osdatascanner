@@ -100,7 +100,7 @@
             <ul>
               {% for alias in other_aliases %}
                 <li class="dynamic_li"
-                    title="{% trans 'Click to remove' %} {{ scanner.name }}."
+                    title="{% trans 'Click to remove' %} {{ alias }}."
                     hx-post="{% url "delete-alias" account.organization.slug account.uuid alias.uuid %}"
                     hx-swap="outerHTML"
                     hx-target=".content"
@@ -211,5 +211,7 @@
             </tbody>
           </table>
         </div>
+
+        {% include "components/modals/snackbar.html" %}
 
       {% endblock content %}

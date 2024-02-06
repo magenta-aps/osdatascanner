@@ -1,7 +1,10 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, CreateView, DeleteView
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 
 from ..models import Account, Alias
 from ..models.aliases import AliasType
@@ -119,7 +122,7 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
 
 class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
     model = Alias
-    template_name = "organizations/alias_create.html"
+    template_name = "components/modals/alias_create.html"
     fields = ('_alias_type', '_value')
 
     def get_context_data(self, **kwargs):
@@ -128,9 +131,22 @@ class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
         context["account"] = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form: ModelForm):
         form.instance.account = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
+        try:
+            form.instance.value = form.cleaned_data['_value']
+        except ValidationError as e:
+            messages.error(self.request, e.message)
+            return self.form_invalid(form)
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return HttpResponseRedirect(
+            reverse_lazy(
+                'account',
+                kwargs={
+                    'org_slug': self.kwargs.get('org').slug,
+                    'pk': self.kwargs.get('acc_uuid')}))
 
     def get_success_url(self):
         return reverse_lazy(

@@ -9,6 +9,12 @@
 - Data from the DPO statistics page can be exported 
   by adding "csv/" to the url (ie. statistics/dpo/csv/).
   This feature is disabled by default with settings.DPO_CSV_EXPORT
+  
+- User interface added in the admin module for creating and deleting aliases.
+
+  - Imported aliases cannot be altered this way.
+
+  - Accessed through the account detail page.
 
 ### General improvements
 
