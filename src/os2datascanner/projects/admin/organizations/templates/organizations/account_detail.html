@@ -78,94 +78,140 @@
             </td>
           </tr>
         {% endif %}
-        <tr>
-          <td>{% trans "Aliases" %}</td>
-          <td>
-            <ul>
-              {% for alias in aliases %}<li>{{ alias.value }} ({{ alias.alias_type }})</li>{% endfor %}
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <td>{% trans "Universal remediator" %}</td>
-          <td class="ds-checkbox">
-            <input type="checkbox"
-                   name="remediator-check"
-                   id="remediator-check"
-                   autocomplete="off"
-                   hx-post=""
-                   hx-trigger="change"
-                   hx-swap="outerHTML"
-                   hx-target=".content"
-                   hx-select=".content"
-                   hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                   hx-include='#remediator-check'
-                   {% if account.universal_remediator %}checked{% endif %}>
-            <label for="remediator-check"
-                   title="{% trans 'By checking this box, the current user will be assigned as a remediator of all scannerjobs.' %}">
-            </label>
-          </td>
-        </tr>
-        {% if not account.universal_remediator %}
+        {% if imported_aliases %}
           <tr>
-            <td>{% trans "Remediator for" %}</td>
+            <td>{% trans "Imported aliases" %}</td>
             <td>
               <ul>
-                {% for scanner in remediator_for_scanners %}
-                  <li class="dynamic_li"
-                      title="{% trans 'Click to remove' %} {{ scanner.name }}."
-                      name="rem-remediator"
-                      hx-post=""
-                      hx-swap="outerHTML"
-                      hx-target=".content"
-                      hx-select=".content"
-                      hx-trigger="click"
-                      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                      hx-vals='{"rem-remediator": "{{ scanner.pk }}"}'
-                      hx-confirm="{% trans 'Are you sure you want to remove' %} {{ scanner.name }}?">
-                    <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-                    <!-- djlint:off -->{{ scanner.name }}</li><!--djlint:on-->
-                  {% endfor %}
-                  {% if scanners %}
-                    <li class="add_remediator">
-                      <button type="button"
-                              class="add_button button button--icon-button"
-                              aria-label="{% trans 'Click here to add a new remediator' %}"
-                              title="{% trans 'Add remediator' %}">
-                        <svg class="icon icon-plus">
-                          <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-                        </svg>
-                      </button>
-                      <select class="select_options"
-                              name="add-remediator"
-                              hidden
-                              hx-post=""
-                              hx-swap="outerHTML"
-                              hx-target=".content"
-                              hx-select=".content"
-                              hx-trigger="change"
-                              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-                        <option value="">{% trans "Choose scannerjob" %}</option>
-                        {% for scanner in scanners %}<option value="{{ scanner.pk }}">{{ scanner.name }}</option>{% endfor %}
-                      </select>
-                    </li>
-                  {% endif %}
-                </ul>
+                {% for alias in imported_aliases %}<li>{{ alias.value }} ({{ alias.alias_type }})</li>{% endfor %}
+              </ul>
+            </td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td>
+            {% if imported_aliases %}
+              {% trans "Other aliases" %}
+            {% else %}
+              {% trans "Aliases" %}
+            {% endif %}
+          </td>
+          <td>
+            <ul>
+              {% for alias in other_aliases %}
+                <li class="dynamic_li"
+                    title="{% trans 'Click to remove' %} {{ alias }}."
+                    hx-post="{% url "delete-alias" account.organization.slug account.uuid alias.uuid %}"
+                    hx-swap="outerHTML"
+                    hx-target=".content"
+                    hx-select=".content"
+                    hx-trigger="click"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    hx-confirm="{% trans 'Are you sure you want to remove' %} {{ alias }}?">
+                  <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                  <!-- djlint:off -->{{ alias.value }} ({{ alias.alias_type }})</li><!--djlint:on-->
+                {% endfor %}
+                <li class="add_alias">
+                  <button type="button"
+                          class="button button--icon-button"
+                          aria-label="{% trans 'Click here to add a new alias' %}"
+                          title="{% trans 'Add alias' %}"
+                          onclick="document.getElementById('add-alias-modal').showModal()">
+                    <svg class="icon icon-plus">
+                      <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                    </svg>
+                  </button>
+                  <dialog class="modal-dialog" id="add-alias-modal">
+                    <div hx-get="{% url "create-alias" account.organization.slug account.uuid %}"
+                         hx-swap="outerHTML"
+                         hx-trigger="intersect"
+                         hx-target="this"></div>
+                  </dialog>
+                </li>
               </td>
             </tr>
-          {% endif %}
-        </tbody>
-      </table>
+            <tr>
+              <td>{% trans "Universal remediator" %}</td>
+              <td class="ds-checkbox">
+                <input type="checkbox"
+                       name="remediator-check"
+                       id="remediator-check"
+                       autocomplete="off"
+                       hx-post=""
+                       hx-trigger="change"
+                       hx-swap="outerHTML"
+                       hx-target=".content"
+                       hx-select=".content"
+                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                       hx-include='#remediator-check'
+                       {% if account.universal_remediator %}checked{% endif %}>
+                <label for="remediator-check"
+                       title="{% trans 'By checking this box, the current user will be assigned as a remediator of all scannerjobs.' %}">
+                </label>
+              </td>
+            </tr>
+            {% if not account.universal_remediator %}
+              <tr>
+                <td>{% trans "Remediator for" %}</td>
+                <td>
+                  <ul>
+                    {% for scanner in remediator_for_scanners %}
+                      <li class="dynamic_li"
+                          title="{% trans 'Click to remove' %} {{ scanner.name }}."
+                          name="rem-remediator"
+                          hx-post=""
+                          hx-swap="outerHTML"
+                          hx-target=".content"
+                          hx-select=".content"
+                          hx-trigger="click"
+                          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                          hx-vals='{"rem-remediator": "{{ scanner.pk }}"}'
+                          hx-confirm="{% trans 'Are you sure you want to remove' %} {{ scanner.name }}?">
+                        <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                        <!-- djlint:off -->{{ scanner.name }}</li><!--djlint:on-->
+                      {% endfor %}
+                      {% if scanners %}
+                        <li class="add_remediator">
+                          <button type="button"
+                                  class="add_button button button--icon-button"
+                                  aria-label="{% trans 'Click here to add a new remediator' %}"
+                                  title="{% trans 'Add remediator' %}">
+                            <svg class="icon icon-plus">
+                              <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                            </svg>
+                          </button>
+                          <select class="select_options"
+                                  name="add-remediator"
+                                  hidden
+                                  hx-post=""
+                                  hx-swap="outerHTML"
+                                  hx-target=".content"
+                                  hx-select=".content"
+                                  hx-trigger="change"
+                                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                            <option value="">{% trans "Choose scannerjob" %}</option>
+                            {% for scanner in scanners %}<option value="{{ scanner.pk }}">{{ scanner.name }}</option>{% endfor %}
+                          </select>
+                        </li>
+                      {% endif %}
+                    </ul>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
 
-      <h2>{% trans "Login Information" %}</h2>
-      <table class="userprofile-table login-info">
-        <tbody>
-          <tr>
-            <td>{% trans "User since" %}</td>
-            <td>{{ user.date_joined }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          <h2>{% trans "Login Information" %}</h2>
+          <table class="userprofile-table login-info">
+            <tbody>
+              <tr>
+                <td>{% trans "User since" %}</td>
+                <td>{{ user.date_joined }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-  {% endblock content %}
+        {% include "components/modals/snackbar.html" %}
+
+      {% endblock content %}

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-02 13:59+0100\n"
+"POT-Creation-Date: 2024-02-06 10:29+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2845,6 +2845,27 @@ msgstr "Slettet scanner {pk}"
 msgid "slug"
 msgstr "slug"
 
+#: organizations/templates/components/modals/alias_create.html:8
+msgid "Alias type"
+msgstr "Aliastype"
+
+#: organizations/templates/components/modals/alias_create.html:11
+#: organizations/templates/organizations/org_table.html:46
+msgid "email"
+msgstr "e-mail"
+
+#: organizations/templates/components/modals/alias_create.html:12
+msgid "generic"
+msgstr "generisk"
+
+#: organizations/templates/components/modals/alias_create.html:17
+msgid "Value"
+msgstr "Værdi"
+
+#: organizations/templates/components/modals/alias_create.html:24
+msgid "Create"
+msgstr "Opret"
+
 #: organizations/templates/organizations/account_detail.html:10
 msgid "Account"
 msgstr "Konto"
@@ -2873,15 +2894,45 @@ msgstr "Brugerrettigheder"
 msgid "Superuser"
 msgstr "Superbruger"
 
-#: organizations/templates/organizations/account_detail.html:82
+#: organizations/templates/organizations/account_detail.html:83
+msgid "Imported aliases"
+msgstr "Importerede aliasser"
+
+#: organizations/templates/organizations/account_detail.html:94
+msgid "Other aliases"
+msgstr "Andre aliasser"
+
+#: organizations/templates/organizations/account_detail.html:96
 msgid "Aliases"
 msgstr "Aliasser"
 
-#: organizations/templates/organizations/account_detail.html:90
+#: organizations/templates/organizations/account_detail.html:103
+#: organizations/templates/organizations/account_detail.html:160
+#: organizations/templates/organizations/orgunit_list.html:142
+#: organizations/templates/organizations/orgunit_list.html:177
+msgid "Click to remove"
+msgstr "Klik for at fjerne"
+
+#: organizations/templates/organizations/account_detail.html:110
+#: organizations/templates/organizations/account_detail.html:169
+#: organizations/templates/organizations/orgunit_list.html:149
+#: organizations/templates/organizations/orgunit_list.html:184
+msgid "Are you sure you want to remove"
+msgstr "Er du sikker på, at du vil fjerne"
+
+#: organizations/templates/organizations/account_detail.html:117
+msgid "Click here to add a new alias"
+msgstr "Klik her for at tilføje et nyt alias"
+
+#: organizations/templates/organizations/account_detail.html:118
+msgid "Add alias"
+msgstr "Tilføj alias"
+
+#: organizations/templates/organizations/account_detail.html:134
 msgid "Universal remediator"
 msgstr "Universel oprydder"
 
-#: organizations/templates/organizations/account_detail.html:105
+#: organizations/templates/organizations/account_detail.html:149
 msgid ""
 "By checking this box, the current user will be assigned as a remediator of "
 "all scannerjobs."
@@ -2889,39 +2940,27 @@ msgstr ""
 "Ved at markere dette felt vil brugeren blive tildelt rollen som oprydder for "
 "alle scannerjob."
 
-#: organizations/templates/organizations/account_detail.html:111
+#: organizations/templates/organizations/account_detail.html:155
 msgid "Remediator for"
 msgstr "Oprydder for"
 
-#: organizations/templates/organizations/account_detail.html:116
-#: organizations/templates/organizations/orgunit_list.html:142
-#: organizations/templates/organizations/orgunit_list.html:177
-msgid "Click to remove"
-msgstr "Klik for at fjerne"
-
-#: organizations/templates/organizations/account_detail.html:125
-#: organizations/templates/organizations/orgunit_list.html:149
-#: organizations/templates/organizations/orgunit_list.html:184
-msgid "Are you sure you want to remove"
-msgstr "Er du sikker på, at du vil fjerne"
-
-#: organizations/templates/organizations/account_detail.html:133
+#: organizations/templates/organizations/account_detail.html:177
 msgid "Click here to add a new remediator"
 msgstr "Klik her for at tilføje en ny oprydder"
 
-#: organizations/templates/organizations/account_detail.html:134
+#: organizations/templates/organizations/account_detail.html:178
 msgid "Add remediator"
 msgstr "Tilføj oprydder"
 
-#: organizations/templates/organizations/account_detail.html:148
+#: organizations/templates/organizations/account_detail.html:192
 msgid "Choose scannerjob"
 msgstr "Vælg scannerjob"
 
-#: organizations/templates/organizations/account_detail.html:160
+#: organizations/templates/organizations/account_detail.html:204
 msgid "Login Information"
 msgstr "Kontooplysninger"
 
-#: organizations/templates/organizations/account_detail.html:164
+#: organizations/templates/organizations/account_detail.html:208
 msgid "User since"
 msgstr "Bruger siden"
 
@@ -2969,10 +3008,6 @@ msgstr "organisationer for"
 #: organizations/templates/organizations/org_table.html:23
 msgid "Add new organization"
 msgstr "Tilføj ny organisation"
-
-#: organizations/templates/organizations/org_table.html:46
-msgid "email"
-msgstr "e-mail"
 
 #: organizations/templates/organizations/org_table.html:47
 msgid "phone"
@@ -3196,17 +3231,8 @@ msgstr "Konto ikke fundet."
 #~ msgid "SID"
 #~ msgstr "SID"
 
-#~ msgid "generic"
-#~ msgstr "generisk"
-
 #~ msgid "alias ID"
 #~ msgstr "alias ID"
-
-#~ msgid "value"
-#~ msgstr "værdi"
-
-#~ msgid "alias"
-#~ msgstr "alias"
 
 #, python-brace-format
 #~ msgid "Alias ({type}) for {account_user}: {value}"

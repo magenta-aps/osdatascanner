@@ -1,6 +1,10 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView
-from django.http import Http404
+from django.views.generic import DetailView, CreateView, DeleteView
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 
 from ..models import Account, Alias
 from ..models.aliases import AliasType
@@ -65,7 +69,10 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["aliases"] = self.object.aliases.exclude(_alias_type=AliasType.REMEDIATOR)
+        context["imported_aliases"] = self.object.aliases.exclude(
+            _alias_type=AliasType.REMEDIATOR).filter(imported=True)
+        context["other_aliases"] = self.object.aliases.exclude(
+            _alias_type=AliasType.REMEDIATOR).filter(imported=False)
         context["remediator_for_scanners"] = self.object.get_remediator_scanners()
         existing_pks = [scanner.get('pk') for scanner in context["remediator_for_scanners"]]
         context["scanners"] = list(Scanner.objects.filter(organization=self.kwargs['org'])
@@ -111,3 +118,50 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
                                      account_id=acc).delete()
 
         return self.get(request, *args, **kwargs)
+
+
+class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
+    model = Alias
+    template_name = "components/modals/alias_create.html"
+    fields = ('_alias_type', '_value')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["organization"] = self.kwargs['org']
+        context["account"] = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
+        return context
+
+    def form_valid(self, form: ModelForm):
+        form.instance.account = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
+        try:
+            form.instance.value = form.cleaned_data['_value']
+        except ValidationError as e:
+            messages.error(self.request, e.message)
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return HttpResponseRedirect(
+            reverse_lazy(
+                'account',
+                kwargs={
+                    'org_slug': self.kwargs.get('org').slug,
+                    'pk': self.kwargs.get('acc_uuid')}))
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'account',
+            kwargs={
+                'org_slug': self.kwargs.get('org_slug'),
+                'pk': self.kwargs.get('acc_uuid')})
+
+
+class AliasDeleteView(LoginRequiredMixin, ClientAdminMixin, DeleteView):
+    model = Alias
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'account',
+            kwargs={
+                'org_slug': self.kwargs.get('org_slug'),
+                'pk': self.kwargs.get('acc_uuid')})

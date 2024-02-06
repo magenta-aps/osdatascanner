@@ -220,3 +220,29 @@
     transform: scaleY(1.0);
   }
 }
+
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  height: 15rem;
+  max-height: calc(100vh - 2rem);
+  max-width: 20rem;
+  width: calc(100% - 2rem);
+  z-index: var(--z-index-modal);
+  border-radius: var(--border-radius-widget);
+  border: none;
+
+  >form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  button {
+    margin-top: 1rem;
+  }
+}

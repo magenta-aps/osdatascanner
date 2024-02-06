@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<form class="form"
+      action="{% url "create-alias" organization.slug account.uuid %}"
+      method="post">
+  {% csrf_token %}
+  <div id="id__alias_type_container" class="dropdown__group form__group">
+    <label class="required-form" for="id__alias_type">{% trans "Alias type" %}</label>
+    <div class="dropdown">
+      <select id="id__alias_type" name="_alias_type">
+        <option value="email">{% trans "email" %}</option>
+        <option value="generic">{% trans "generic" %}</option>
+      </select>
+    </div>
+  </div>
+  <div id="id__value_container" class="form__group">
+    <label class="required-form" for="id__value">{% trans "Value" %}</label>
+    <input id="id__value"
+           name="_value"
+           type="text"
+           class="form-control"
+           maxlength="256" />
+  </div>
+  <button class="button button--cta-button" type="submit">{% trans "Create" %}</button>
+</form>
