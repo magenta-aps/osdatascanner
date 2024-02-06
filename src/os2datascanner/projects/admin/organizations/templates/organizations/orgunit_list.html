@@ -41,9 +41,9 @@
                    autocomplete="off" />
           </div>
           <div class="org_unit_filter_button">
-            <button class="filter-button expand"
+            <button class="filter-button filter-button--org_unit expand"
                     type="button"
-                    onclick="toggleOptionbox()">
+                    onclick="toggleOptionbox('org_structure_filter_options')">
               <span>{% trans "filter"|capfirst %}</span>
               <svg class="icon">
                 <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
@@ -52,7 +52,7 @@
             <div id="org_structure_filter_options"
                  class="filter-container"
                  style="display: none">
-              <div class="filter-container-options">
+              <div class="filter-container-options filter-container-options--org_unit">
                 {% comment %}
                   Added hidden value, to show all roles the first time the user visits the page, despite all unchecked boxes
                 {% endcomment %}
