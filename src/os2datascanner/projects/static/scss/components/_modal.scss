@@ -226,23 +226,45 @@
   top: 50%;
   left: 50%;
   transform: translateY(-50%) translateX(-50%);
-  height: 15rem;
+  min-height: 15rem;
   max-height: calc(100vh - 2rem);
-  max-width: 20rem;
+  max-width: 24rem;
   width: calc(100% - 2rem);
   z-index: var(--z-index-modal);
   border-radius: var(--border-radius-widget);
   border: none;
 
   >form {
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
+    // gap: 1rem; // ***** This should be the standard when the form style sheet has been refactored *****
+    height: 100%;
+    padding: 1.75rem 1.75rem;
+    padding: 2rem 2.25rem;
 
-  button {
-    margin-top: 1rem;
+    >* {
+      width: 100%;
+    }
+
+    .modal__form__title {
+      padding-bottom: 1rem; // ***** This can be removed after the form style sheet has been refactored *****
+      >h2 {
+        margin: 0;
+      }
+    }
+
+    .modal__form__actions {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 0.5rem; // ***** This will guarantee appropriate spacing if there's more than one button *****
+      padding-top: 1rem; // ***** This can be removed after the form style sheet has been refactored *****
+    
+      >* {
+        width: inherit; // ***** This will guarantee appropriate sizing (full width) even if there's more than one button *****
+      }
+    }
   }
 }
