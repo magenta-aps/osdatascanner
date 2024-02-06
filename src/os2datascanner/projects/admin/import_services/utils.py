@@ -118,31 +118,8 @@ def start_os2mo_import(os2mo_conf: OS2moConfiguration):
 
 
 def construct_dict_from_scanners_stale_accounts() -> dict:
-    """Returns a dict in the correct configuration for packaging in a
-    CleanMessage:
-    {
-        <scanner_pk_1>: {
-            uuids: [
-                <uuid_1>,
-                <uuid_2>
-            ],
-            usernames: [
-                <username_1>,
-                <username_2>
-            ]
-        },
-        <scanner_pk_2>: {
-            uuids: [
-                <uuid_1>,
-                <uuid_3>
-            ],
-            usernames: [
-                <username_1>,
-                <username_3>
-            ]
-        }
-    }
-    """
+    """Builds a CleanMessage cleanup dict for all stale accounts across all
+    scanners. (See CleanMessage.send for more details.)"""
     all_scanners = Scanner.objects.all()
     scanners_accounts_dict = {}
 
@@ -150,19 +127,13 @@ def construct_dict_from_scanners_stale_accounts() -> dict:
         if scanner.statuses.last() and not scanner.statuses.last().finished:
             logger.info(f"Scanner “{scanner.name}” is currently running.")
         else:
-            stale_accounts = scanner.compute_stale_accounts()
-
-            if stale_accounts:
-
-                usernames = [account.username for account in stale_accounts]
-
+            if stale_accounts := scanner.compute_stale_accounts():
+                acc_dict = CleanMessage.make_account_dict(stale_accounts)
+                scanners_accounts_dict[scanner.pk] = acc_dict
                 logger.info(
-                    f"Cleaning up accounts: {', '.join(usernames)} for scanner: {scanner}.")
-
-                scanners_accounts_dict[scanner.pk] = {
-                    "uuids": [str(account.uuid) for account in stale_accounts],
-                    "usernames": usernames
-                }
+                        "Cleaning up accounts:"
+                        f" {', '.join(acc_dict['usernames'])}"
+                        f" for scanner: {scanner}.")
 
     return scanners_accounts_dict
 
@@ -172,6 +143,9 @@ def post_import_cleanup() -> None:
     initiates cleanup of all accounts, which will no longer be covered by
     future scans, but have been in the past."""
 
+    from ..adminapp.models.scannerjobs.scanner_helpers import (  # noqa
+            CoveredAccount)
+
     if settings.AUTOMATIC_IMPORT_CLEANUP:
 
         logger.info("Performing post import cleanup...")
@@ -179,5 +153,9 @@ def post_import_cleanup() -> None:
         scanners_accounts_dict = construct_dict_from_scanners_stale_accounts()
 
         CleanMessage.send(scanners_accounts_dict, publisher="post_import")
+        for pk, acc_dict in scanners_accounts_dict.items():
+            CoveredAccount.objects.filter(
+                    scanner_id=pk,
+                    account_id__in=acc_dict["uuids"]).delete()
 
         logger.info("Post import cleanup message sent to report module!")
