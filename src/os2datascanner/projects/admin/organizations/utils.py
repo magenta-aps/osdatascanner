@@ -66,9 +66,12 @@ def create_and_serialize(manager, instances):
     """Provided a model manager and a list of serialized instances,
      bulk creates and returns instances in a serialized fashion."""
     serializer = get_serializer(manager.model)
-    manager.bulk_create(instances)
+    created_instances = manager.bulk_create(instances)
     if hasattr(manager, "rebuild"):
         manager.rebuild()
+        for instance in created_instances:
+            instance.refresh_from_db(fields=['lft', 'rght', 'tree_id', 'level'])
+        instances = created_instances
     return serializer(instances, many=True).data
 
 
