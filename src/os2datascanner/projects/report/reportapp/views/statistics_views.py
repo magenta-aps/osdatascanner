@@ -19,7 +19,6 @@ import structlog
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 from calendar import month_abbr
-from collections import deque
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -31,6 +30,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView, DetailView, ListView
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.conf import settings
 
 from os2datascanner.core_organizational_structure.models.position import Role
 
@@ -38,6 +38,7 @@ from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
 from ...organizations.models.aliases import AliasType
 from ...organizations.models.organizational_unit import OrganizationalUnit
+from ....utils.view_mixins import CSVExportMixin
 from .report_views import EmptyPagePaginator
 
 
@@ -101,7 +102,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return response
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, number_of_months=12, **kwargs):
         context = super().get_context_data(**kwargs)
         today = timezone.now()
 
@@ -130,9 +131,11 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
          self.created_month,
          self.resolved_month) = self.make_data_structures(self.matches)
 
-        context['unhandled_matches_by_month'] = self.count_unhandled_matches_by_month(today)
+        context['unhandled_matches_by_month'] = \
+            self.count_unhandled_matches_by_month(today, num_months=number_of_months)
 
-        context['new_matches_by_month'] = self.count_new_matches_by_month(today)
+        context['new_matches_by_month'] = \
+            self.count_new_matches_by_month(today, num_months=number_of_months)
 
         # This is removed, until we make some structural changes, which should
         # prevent clients from having stupid amounts of organizational data.
@@ -240,7 +243,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return match_data, source_type, resolution_status, created_month, resolved_month
 
-    def count_unhandled_matches_by_month(self, current_date):
+    def count_unhandled_matches_by_month(self, current_date, num_months=12):
         """Counts new matches and resolved matches by month for the last year,
         rotates the current month to the end of the list, inserts and subtracts using the counts
         and then makes a running total"""
@@ -280,47 +283,56 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 yield month_start, total
 
         total_of_months = 0
-        for _month_start, total in list(_make_running_total())[-12:]:
+        for _month_start, total in list(_make_running_total())[-num_months:]:
             total_of_months += total
 
+        # If there are no matches, return empty list
         if total_of_months == 0:
             return []
 
-        return [[month_abbr[month_start.month], total]
-                for month_start, total in list(_make_running_total())[-12:]]
+        return [[month_abbr[month_start.month] + " " + str(month_start.year), total]
+                for month_start, total in list(_make_running_total())[-num_months:]]
 
-    def count_new_matches_by_month(self, current_date):
+    def count_new_matches_by_month(self, current_date, num_months=12):
         """Counts matches by months for the last year
         and rotates them by the current month"""
-        a_year_ago = current_date - timedelta(days=365)
 
         matches_by_month = sort_by_keys(self.created_month)
 
-        # We only want data from the last 12 months
-        cutoff_day = (a_year_ago.replace(day=1) + relativedelta(months=1)).date()
+        # We only want data from the last <num_months> months
+        cutoff_day = ((current_date - relativedelta(months=num_months-1)).replace(day=1)).date()
         earlier_months = [month for month in matches_by_month.keys() if month < cutoff_day]
         for month in earlier_months:
             del matches_by_month[month]
 
-        # Generator with the months as integers and the total
-        matches_by_month_gen = ((month.month, total)
-                                for month, total in matches_by_month.items())
+        a_year_ago: date = (
+                current_date - timedelta(days=365)).date().replace(day=1)
 
-        values_by_month = [0] * 12
-        total_of_months = 0
-        for month_id, total in matches_by_month_gen:
-            values_by_month[month_id - 1] += total
-            total_of_months += total
+        if self.matches.exists():
+            earliest_month = min(
+                    key
+                    for key in matches_by_month.keys())
+            # The range of the graph should be at least a year
+            earliest_month = min(earliest_month, a_year_ago)
+        else:
+            # ... even if we don't have /any/ data at all
+            earliest_month = a_year_ago
+        number_of_months = 1 + month_delta(earliest_month, current_date)
 
-        if total_of_months == 0:
+        # This series needs to have a slot for every month, not just those in
+        # which something actually happened
+        matches_by_month: dict[date, int] = {
+                (month := earliest_month + relativedelta(months=k)): matches_by_month.get(month, 0)
+                for k in range(number_of_months)}
+
+        # If there are no matches, return empty list
+        if not any(total > 0 for total in matches_by_month.values()):
             return []
 
-        labelled_values_by_month = deque(
-                list(k) for k in zip(month_abbr[1:], values_by_month))
-        # Rotates the current month to index 11
-        labelled_values_by_month.rotate(-current_date.month)
+        labelled_values_by_month = list([month_abbr[month.month] + " " + str(month.year), total]
+                                        for month, total in matches_by_month.items())
 
-        return list(labelled_values_by_month)
+        return labelled_values_by_month[-num_months:]
 
     def count_match_status_by_org_unit(self):
 
@@ -384,6 +396,81 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         _, source_type, *_ = self.make_data_structures(new_matches)
 
         return source_type
+
+
+class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
+    exported_filename = 'osdatascanner_dpo_statistics'
+
+    def get(self, request, *args, **kwargs):
+        if not settings.DPO_CSV_EXPORT:
+            raise PermissionDenied
+
+        # Filters matches and orgunits that shouldn't be accessible
+        DPOStatisticsPageView.get(self, request, *args, **kwargs)
+
+        # Adds scannername and orgunit to name of csv file
+        scanner = None
+        if (scanner_pk := request.GET.get('scannerjob')) and scanner_pk != 'all':
+            scanner = DocumentReport.objects.filter(scanner_job_pk=scanner_pk).first()
+        self.exported_filename += f"_scannerjob_{scanner.scanner_job_name}" if scanner else ''
+
+        orgunit = None
+        if (orgunit_id := request.GET.get('orgunit')) and orgunit_id != 'all':
+            orgunit = self.user_units.get(uuid=orgunit_id)
+        self.exported_filename += f"_orgunit_{orgunit.name}" if orgunit else ''
+
+        # Gets Respone from CSVExportMixin
+        response = super().get(request)
+
+        return response
+
+    def stream_queryset(self, rows):
+        # Overwrites CSVExportMixin.stream_queryset
+        self.prepare_stream()
+
+        for row in rows:
+            yield self.writer.writerow(row)
+
+    def get_rows(self):
+        # Since this isn't a ListView, the data isn't a queryset.
+        # So CSVExportMixin.get_rows is overwritten,
+        # and instead we unpack get_context_data manually
+        context_data = self.get_context_data(number_of_months=100)
+        rows = []
+
+        rows.append(["Total Matches", ""])
+        for (key, value) in context_data["match_data"].items():
+            rows.append([key, value])
+        rows.append(["", ""])
+
+        rows.append(["Matches by source", ""])
+        for (_source, dict) in context_data["source_types"].items():
+            if dict["count"]:
+                rows.append([dict["label"], dict["count"]])
+        rows.append(["", ""])
+
+        rows.append(["Matches by resolution status", ""])
+        for (_status, dict) in context_data["resolution_status"].items():
+            rows.append([dict["label"], dict["count"]])
+        rows.append(["", ""])
+
+        earlier_month = False
+        rows.append(["Unhandled matches by month", ""])
+        for [month, count] in context_data["unhandled_matches_by_month"]:
+            if earlier_month or count:  # Only add month if it, or an earlier month, has matches
+                earlier_month = True
+                rows.append([month, count])
+        rows.append(["", ""])
+
+        earlier_month = False
+        rows.append(["New matches by month", ""])
+        for [month, count] in context_data["new_matches_by_month"]:
+            if earlier_month or count:  # Only add month if it, or an earlier month, has matches
+                earlier_month = True
+                rows.append([month, count])
+        rows.append(["", ""])
+
+        return rows
 
 
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):

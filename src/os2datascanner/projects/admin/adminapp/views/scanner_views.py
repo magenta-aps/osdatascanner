@@ -29,14 +29,14 @@ from os2datascanner.projects.admin.organizations.models import (
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .views import RestrictedListView, RestrictedCreateView, \
-    RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
-    CSVExportMixin
+    RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView
 from ..models.authentication import Authentication
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.usererrorlog import UserErrorLog
 from ..utils import CleanMessage
 from ...organizations.models.aliases import AliasType
+from ....utils.view_mixins import CSVExportMixin
 from django.utils.translation import gettext_lazy as _
 
 from channels.layers import get_channel_layer

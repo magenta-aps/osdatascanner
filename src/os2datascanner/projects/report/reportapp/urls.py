@@ -13,7 +13,7 @@ from .views.api import JSONAPIView
 from .views.saml import metadata
 from .views.misc_views import LogoutPageView
 from .views.statistics_views import (
-    LeaderStatisticsPageView, DPOStatisticsPageView, UserStatisticsPageView,
+    LeaderStatisticsPageView, DPOStatisticsPageView, DPOStatisticsCSVView, UserStatisticsPageView,
     EmployeeView)
 from .views.report_views import (
     UserReportView, UserArchiveView, RemediatorView, RemediatorArchiveView,
@@ -38,6 +38,7 @@ urlpatterns = [
          name="outlook-category-settings"),
     re_path(r'^statistics/leader/$', LeaderStatisticsPageView.as_view(), name='statistics-leader'),
     re_path(r'^statistics/dpo/$', DPOStatisticsPageView.as_view(), name='statistics-dpo'),
+    re_path(r'^statistics/dpo/csv/$', DPOStatisticsCSVView.as_view(), name='statistics-dpo-export'),
     path('statistics/user/', UserStatisticsPageView.as_view(),
          name='statistics-user-me'),
     path('statistics/user/<uuid:pk>', UserStatisticsPageView.as_view(),
