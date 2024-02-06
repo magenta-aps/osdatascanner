@@ -680,7 +680,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
         if request.headers.get('HX-Trigger-Name') == "cleanup-button":
 
             if not self.scanner_running:
-                stale_accounts = self.object.get_stale_accounts()
+                stale_accounts = self.object.compute_stale_accounts()
 
                 # Manually constructing this, since 'stale_accounts' can no
                 # longer be filtered, due to the 'difference' method already
@@ -694,7 +694,6 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
                     "usernames": [acc.username for acc in accounts_to_clean]
                 }}
                 CleanMessage.send(clean_dict, publisher="UI-manual")
-                self.object.remove_stale_accounts(accounts_to_clean)
 
             return render(
                 request,

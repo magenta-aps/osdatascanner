@@ -150,7 +150,7 @@ def construct_dict_from_scanners_stale_accounts() -> dict:
         if scanner.statuses.last() and not scanner.statuses.last().finished:
             logger.info(f"Scanner “{scanner.name}” is currently running.")
         else:
-            stale_accounts = scanner.get_stale_accounts()
+            stale_accounts = scanner.compute_stale_accounts()
 
             if stale_accounts:
 

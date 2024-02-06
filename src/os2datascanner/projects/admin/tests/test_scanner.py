@@ -1,3 +1,4 @@
+from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 from os2datascanner.projects.admin.organizations.models.account \
     import Account
@@ -28,8 +29,6 @@ from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 from django.test import RequestFactory, TestCase
 from unittest import skip
-from dateutil.tz import gettz
-from datetime import datetime
 
 User = get_user_model()
 
@@ -132,7 +131,7 @@ class ScannerTest(TestCase):
             organization=self.org,
             rule=self.dummy_rule)
         scan_status = ScanStatus.objects.create(
-            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scan_tag={"time": time_now().isoformat()},
             scanner=scanner)
         unit = OrganizationalUnit.objects.create(
             name="Unit", organization=Organization.objects.first())
@@ -142,20 +141,24 @@ class ScannerTest(TestCase):
         Account.objects.create(username="Günther", organization=self.org)
         Account.objects.create(username="Fritz", organization=self.org)
 
-        scanner.sync_covered_accounts(scan_status)
+        scanner.record_covered_accounts(scan_status)
+
+        covered_accounts = Account.objects.filter(
+                pk__in=CoveredAccount.objects.filter(
+                        scanner=scanner).values_list("account_id", flat=True))
 
         self.assertEqual(
-            scanner.covered_accounts.count(),
+            covered_accounts.count(),
             1,
-            f"Found {scanner.covered_accounts.count()} accounts "
+            f"Found {covered_accounts.count()} accounts "
             "in covered_accounts-field, but only expected 1.")
         self.assertEqual(
-            scanner.covered_accounts.first(),
+            covered_accounts.first(),
             hansi,
             "Wrong account found in covered_accounts! Found "
-            f"{scanner.covered_accounts.first} but expected {hansi}.")
+            f"{covered_accounts.first()} but expected {hansi}.")
 
-    def test_get_stale_accounts(self):
+    def test_compute_stale_accounts(self):
         """The get_stale_account-method should return all accounts, which are
         in the 'covered_accounts'-field of the scanner, but are not in any
         of the organizational units on the scanner."""
@@ -164,27 +167,26 @@ class ScannerTest(TestCase):
             name="Scanner",
             organization=self.org,
             rule=self.dummy_rule)
+        everybody = OrganizationalUnit.objects.create(
+            name="Everybody", organization=self.org)
+        somebody = OrganizationalUnit.objects.create(
+            name="Somebody", organization=self.org)
+        hansi, günther, fritz = (
+                Account.objects.create(username=u, organization=self.org)
+                for u in ("Hansi", "Günther", "Fritz"))
+        for person in (hansi, günther, fritz):
+            person.units.add(everybody)
+        hansi.units.add(somebody)
+
         scan_status = ScanStatus.objects.create(
-            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scan_tag={"time": time_now().isoformat()},
             scanner=scanner)
-        unit = OrganizationalUnit.objects.create(
-            name="Unit", organization=self.org)
-        hansi = Account.objects.create(username="Hansi", organization=self.org)
-        günther = Account.objects.create(
-            username="Günther",
-            organization=self.org)
-        fritz = Account.objects.create(username="Fritz", organization=self.org)
-        hansi.units.add(unit)
-        scanner.org_unit.add(unit)
 
-        CoveredAccount.objects.bulk_create(
-            [CoveredAccount(account=account,
-                            scanner=scanner,
-                            scan_status=scan_status) for
-             account in Account.objects.all()]
-        )
+        scanner.org_unit.add(somebody, everybody)
+        scanner.record_covered_accounts(scan_status)
+        scanner.org_unit.remove(everybody)  # Now only Hansi is covered
 
-        stale_accounts = scanner.get_stale_accounts()
+        stale_accounts = scanner.compute_stale_accounts()
 
         self.assertEqual(
             stale_accounts.count(),
@@ -193,54 +195,11 @@ class ScannerTest(TestCase):
         self.assertIn(
             günther,
             stale_accounts,
-            f"Account: {günther} not found in get_stale_accounts as expected.")
+            f"Account: {günther} not found in compute_stale_accounts as expected.")
         self.assertIn(
             fritz,
             stale_accounts,
-            f"Account: {fritz} not found in get_stale_accounts as expected.")
-
-    def test_remove_stale_accounts(self):
-        """The 'remove_stale_accounts'-method should remove all accounts from
-        the 'covered_accounts'-field, which are no longer associated with the
-        scanner through an organizational unit."""
-        # Creating some test objects...
-        scanner = Scanner.objects.create(
-            name="Scanner",
-            organization=self.org,
-            rule=self.dummy_rule)
-        scan_status = ScanStatus.objects.create(
-            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
-            scanner=scanner)
-        unit = OrganizationalUnit.objects.create(
-            name="Unit", organization=self.org)
-        hansi = Account.objects.create(username="Hansi", organization=self.org)
-        günther = Account.objects.create(
-            username="Günther",
-            organization=self.org)
-        fritz = Account.objects.create(username="Fritz", organization=self.org)
-        hansi.units.add(unit)
-        scanner.org_unit.add(unit)
-        CoveredAccount.objects.bulk_create(
-            [CoveredAccount(account=account,
-                            scanner=scanner,
-                            scan_status=scan_status) for
-             account in Account.objects.all()]
-        )
-
-        scanner.remove_stale_accounts()
-
-        self.assertEqual(scanner.get_stale_accounts().count(), 0,
-                         "Found stale accounts, when none should be left after removal.")
-        self.assertNotIn(
-            günther,
-            scanner.covered_accounts.all(),
-            f"Account {günther} still present in covered_accounts, when it should be removed.")
-        self.assertNotIn(
-            fritz,
-            scanner.covered_accounts.all(),
-            f"Account {fritz} still present in covered_accounts, when it should be removed.")
-        self.assertIn(hansi, scanner.covered_accounts.all(),
-                      f"Account {hansi} not present in covered_accounts as expected.")
+            f"Account: {fritz} not found in compute_stale_accounts as expected.")
 
     def get_webscannerupdate_view(self):
         request = self.factory.get('/')

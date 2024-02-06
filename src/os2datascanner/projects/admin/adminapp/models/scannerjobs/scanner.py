@@ -151,12 +151,6 @@ class Scanner(models.Model):
                                        related_name='scanners_ex_rule',
                                        on_delete=models.PROTECT)
 
-    covered_accounts = models.ManyToManyField(
-            'organizations.Account',
-            blank=True, through=CoveredAccount,
-            verbose_name=_('covered accounts'),
-            related_name='covered_by_scanner')
-
     def verify(self) -> bool:
         """Method documentation"""
         raise NotImplementedError("Scanner.verify")
@@ -285,7 +279,9 @@ class Scanner(models.Model):
         rule = self.rule.customrule.make_engine2_rule()
 
         prerules = []
-        if not force and self.do_last_modified_check and not self.covered_accounts.exists():
+        if (not force
+                and self.do_last_modified_check
+                and not self.compute_covered_accounts().exists()):
             last = self.get_last_successful_run_at()
             if last:
                 prerules.append(LastModifiedRule(last))
@@ -353,10 +349,23 @@ class Scanner(models.Model):
             # This is an issue when it comes to service accounts/shared mailboxes.
             for account, source in self.generate_sources_with_accounts():
                 rule = spec_template.rule
-                if cva := CoveredAccount.objects.filter(account=account, scanner=self).first():
-                    last_scanned_at = cva.scan_status.start_time
-                    # Make a custom LastModifiedRule for this user
-                    rule = AndRule(LastModifiedRule(last_scanned_at), rule)
+                try:
+                    cva = CoveredAccount.objects.filter(
+                            account=account, scanner=self).latest()
+                    # OK, this Account has been covered by this Scanner before,
+                    # so make a custom LastModifiedRule for them
+                    rule = AndRule.make(
+                            LastModifiedRule(cva.scan_status.start_time),
+                            rule)
+                    logger.info(
+                            f"{self}: account {account} last scanned at"
+                            f" {cva.scan_status.start_time}")
+                except CoveredAccount.DoesNotExist:
+                    # This Account is new to this Scanner, so do nothing -- the
+                    # default rule is fine
+                    logger.info(
+                            f"{self}: account {account} not previously"
+                            " scanned")
                 outbox.append((
                     settings.AMQP_PIPELINE_TARGET,
                     spec_template._replace(source=source, rule=rule)))
@@ -483,7 +492,7 @@ class Scanner(models.Model):
 
         # Synchronize the 'covered_accounts'-field with accounts, which are
         # about to be scanned.
-        self.sync_covered_accounts(new_status)
+        self.record_covered_accounts(new_status)
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(
@@ -523,11 +532,10 @@ class Scanner(models.Model):
         raise NotImplementedError("Scanner.generate_sources")
         yield from []
 
-    def get_covered_accounts(self):
+    def compute_covered_accounts(self):
         """Return all accounts which would be scanned by this scannerjob, if
         run at this moment."""
-        # Avoid circular import
-        from os2datascanner.projects.admin.organizations.models import Account, OrganizationalUnit
+        from os2datascanner.projects.admin.organizations.models import Account, OrganizationalUnit  # noqa: avoid circular import
         if self.org_unit.exists():
             return Account.objects.filter(units__in=self.org_unit.all())
         elif self._supports_account_annotations:
@@ -538,42 +546,29 @@ class Scanner(models.Model):
             # that we can't know who's covered. (Scan might use a user-list file)
             return Account.objects.none()
 
-    def get_new_covered_accounts(self):
-        """Return all accounts, which will be scanned by this scannerjob on the
-        next scan, but are not present in the 'covered_accounts'-field."""
-        return self.get_covered_accounts().difference(self.covered_accounts.all())
+    def compute_stale_accounts(self):
+        """Computes all accounts that have previously been included in this
+        scanner job, but which are no longer covered."""
+        from os2datascanner.projects.admin.organizations.models import Account  # noqa: avoid circular import
 
-    def sync_covered_accounts(self, scan_status: ScanStatus):
-        """Updates or creates CoveredAccount relations for accounts covered
+        all_caccs = CoveredAccount.objects.filter(scanner=self)
+        all_accs = Account.objects.filter(
+                pk__in=all_caccs.values_list("account_id", flat=True))
+        return all_accs.difference(self.compute_covered_accounts())
+
+    def record_covered_accounts(self, scan_status: ScanStatus):
+        """Creates CoveredAccount relations for accounts covered
         by current run of scannerjob.
         I.e. connects a scannerjob, an account and a scanner status
         """
-
-        cva = self.get_covered_accounts()
-        # Update existing, that are still covered.
-        CoveredAccount.objects.filter(account__in=cva, scanner=self).update(scan_status=scan_status)
-
-        # Create new entries for newcomers
-        CoveredAccount.objects.bulk_create(
-            [CoveredAccount(account=account, scanner=self, scan_status=scan_status) for
-             account in self.get_new_covered_accounts()],
-            ignore_conflicts=True
-        )
-
-    # TODO: Rethink what this means, now that we're keeping data for the sake of last modified
-    def get_stale_accounts(self):
-        """Return all accounts, which are included in the scanner's
-        'covered_accounts' field, but are not associated with any org units
-        linked to the scanner."""
-        return self.covered_accounts.all().difference(self.get_covered_accounts())
-
-    def remove_stale_accounts(self, accounts: list = None):
-        """Removes all stale accounts from the object's 'covered_accounts'
-        relation."""
-        if accounts:
-            self.covered_accounts.remove(*accounts)
-        else:
-            self.covered_accounts.remove(*self.get_stale_accounts())
+        objects = [
+            CoveredAccount(
+                    account=account, scanner=self, scan_status=scan_status)
+            for account in self.compute_covered_accounts()
+        ]
+        # ignore_conflicts shouldn't be needed here -- but it's harmless, so
+        # let's err on the side of letting the scan actually start
+        CoveredAccount.objects.bulk_create(objects, ignore_conflicts=True)
 
     def get_remediators(self):
         """Returns the accounts with a remediator-alias for this scannerjob.
