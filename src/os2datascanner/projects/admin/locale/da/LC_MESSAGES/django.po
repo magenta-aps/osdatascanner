@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-01 13:58+0100\n"
+"POT-Creation-Date: 2024-02-02 13:59+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -630,7 +630,7 @@ msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 #: adminapp/templates/components/navigation/navigation.html:17
 #: adminapp/templates/components/scanner/scan_completed.html:82
 #: adminapp/templates/components/scanstatus/scan_status_table.html:40
-#: adminapp/templates/scanners.html:25 adminapp/templates/scanners.html:50
+#: adminapp/templates/scanners.html:25 adminapp/templates/scanners.html:60
 msgid "Scannerjob"
 msgstr "Scannerjob"
 
@@ -964,8 +964,8 @@ msgstr "Ønsker du virkelig at slette?"
 
 #: adminapp/templates/components/rules/cprrule_confirm_delete.html:17
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:21
-#: adminapp/templates/rules.html:203 adminapp/templates/scanners.html:122
-#: adminapp/templates/scanners.html:134
+#: adminapp/templates/rules.html:203 adminapp/templates/scanners.html:132
+#: adminapp/templates/scanners.html:144
 msgid "No"
 msgstr "Nej"
 
@@ -1023,8 +1023,8 @@ msgstr "Gem ændringer"
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:84
-#: adminapp/templates/rules.html:85 adminapp/templates/scanners.html:172
-#: adminapp/templates/scanners.html:173
+#: adminapp/templates/rules.html:85 adminapp/templates/scanners.html:182
+#: adminapp/templates/scanners.html:183
 #: organizations/templates/organizations/org_table.html:292
 #: organizations/templates/organizations/org_table.html:293
 #: organizations/templates/organizations/org_table.html:304
@@ -1950,16 +1950,16 @@ msgid "Load rule"
 msgstr "Indlæs regel"
 
 #: adminapp/templates/miniscan.html:75 adminapp/templates/miniscan.html:76
-#: adminapp/templates/miniscan.html:77 adminapp/templates/scanners.html:144
-#: adminapp/templates/scanners.html:145
+#: adminapp/templates/miniscan.html:77 adminapp/templates/scanners.html:154
+#: adminapp/templates/scanners.html:155
 msgid "Run"
 msgstr "Kør"
 
 #: adminapp/templates/miniscan.html:75 adminapp/templates/miniscan.html:76
-#: adminapp/templates/scanners.html:144 adminapp/templates/scanners.html:145
-#: adminapp/templates/scanners.html:151 adminapp/templates/scanners.html:152
-#: adminapp/templates/scanners.html:158 adminapp/templates/scanners.html:159
-#: adminapp/templates/scanners.html:172 adminapp/templates/scanners.html:173
+#: adminapp/templates/scanners.html:154 adminapp/templates/scanners.html:155
+#: adminapp/templates/scanners.html:161 adminapp/templates/scanners.html:162
+#: adminapp/templates/scanners.html:168 adminapp/templates/scanners.html:169
+#: adminapp/templates/scanners.html:182 adminapp/templates/scanners.html:183
 msgid "scanner"
 msgstr "scanner"
 
@@ -1990,7 +1990,7 @@ msgstr "Tilføj regel"
 msgid "Name"
 msgstr "Navn"
 
-#: adminapp/templates/rules.html:51 adminapp/templates/scanners.html:64
+#: adminapp/templates/rules.html:51 adminapp/templates/scanners.html:74
 #: organizations/templates/organizations/account_detail.html:39
 msgid "Organization"
 msgstr "Organisation"
@@ -2003,12 +2003,12 @@ msgstr "Beskrivelse"
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/templates/rules.html:54 adminapp/templates/scanners.html:71
+#: adminapp/templates/rules.html:54 adminapp/templates/scanners.html:81
 msgid "Action"
 msgstr "Handling"
 
 #: adminapp/templates/rules.html:73 adminapp/templates/rules.html:74
-#: adminapp/templates/scanners.html:151 adminapp/templates/scanners.html:152
+#: adminapp/templates/scanners.html:161 adminapp/templates/scanners.html:162
 msgid "Edit"
 msgstr "Redigér"
 
@@ -2016,7 +2016,7 @@ msgstr "Redigér"
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:83 adminapp/templates/scanners.html:171
+#: adminapp/templates/rules.html:83 adminapp/templates/scanners.html:181
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
@@ -2040,33 +2040,37 @@ msgstr "Ønsker du at slette"
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:200 adminapp/templates/scanners.html:113
+#: adminapp/templates/rules.html:200 adminapp/templates/scanners.html:123
 #: organizations/templates/organizations/account_detail.html:76
 msgid "Yes"
 msgstr "Ja"
 
-#: adminapp/templates/scanners.html:30 adminapp/templates/scanners.html:31
-#: adminapp/templates/scanners.html:35
+#: adminapp/templates/scanners.html:31
+msgid "Search for scanner"
+msgstr "Søg efter scanner"
+
+#: adminapp/templates/scanners.html:40 adminapp/templates/scanners.html:41
+#: adminapp/templates/scanners.html:45
 msgid "Add scannerjob"
 msgstr "Tilføj scannerjob"
 
-#: adminapp/templates/scanners.html:62
+#: adminapp/templates/scanners.html:72
 msgid "Name/URL"
 msgstr "Navn/URL"
 
-#: adminapp/templates/scanners.html:67
+#: adminapp/templates/scanners.html:77
 msgid "Drive"
 msgstr "Drev"
 
-#: adminapp/templates/scanners.html:69
+#: adminapp/templates/scanners.html:79
 msgid "Approved"
 msgstr "Godkendt"
 
-#: adminapp/templates/scanners.html:70
+#: adminapp/templates/scanners.html:80
 msgid "Automatic"
 msgstr "Automatisk"
 
-#: adminapp/templates/scanners.html:87
+#: adminapp/templates/scanners.html:97
 msgid ""
 "The following users are no longer covered by this scannerjob, but have been "
 "scanned previously:"
@@ -2074,27 +2078,27 @@ msgstr ""
 "Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
 "blevet scannet:"
 
-#: adminapp/templates/scanners.html:88
+#: adminapp/templates/scanners.html:98
 msgid "Stale accounts"
 msgstr "Frakoblede konti"
 
-#: adminapp/templates/scanners.html:111
+#: adminapp/templates/scanners.html:121
 msgid "Is approved"
 msgstr "Er godkendt"
 
-#: adminapp/templates/scanners.html:119
+#: adminapp/templates/scanners.html:129
 msgid "Is not approved"
 msgstr "Er ikke godkendt"
 
-#: adminapp/templates/scanners.html:129
+#: adminapp/templates/scanners.html:139
 msgid "Next scan: "
 msgstr "Næste scan: "
 
-#: adminapp/templates/scanners.html:171
+#: adminapp/templates/scanners.html:181
 msgid "Do you really want to delete this scanner?"
 msgstr "Er du sikker på, at du vil slette denne scanner?"
 
-#: adminapp/templates/scanners.html:187
+#: adminapp/templates/scanners.html:197
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
@@ -2138,24 +2142,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:198
+#: adminapp/views/exchangescanner_views.py:200
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:199
+#: adminapp/views/exchangescanner_views.py:201
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:120
+#: adminapp/views/exchangescanner_views.py:211
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:207
+#: adminapp/views/exchangescanner_views.py:217
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:212
+#: adminapp/views/exchangescanner_views.py:222
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2163,17 +2167,17 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:224
+#: adminapp/views/exchangescanner_views.py:234
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:228
+#: adminapp/views/exchangescanner_views.py:238
 #: adminapp/views/filescanner_views.py:177
 #: organizations/templates/organizations/account_detail.html:31
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:233
+#: adminapp/views/exchangescanner_views.py:243
 #: adminapp/views/filescanner_views.py:178
 msgid "Password"
 msgstr "Adgangskode"
@@ -2208,7 +2212,7 @@ msgstr "Scan tidspunkt"
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:545
+#: adminapp/views/scanner_views.py:551
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 

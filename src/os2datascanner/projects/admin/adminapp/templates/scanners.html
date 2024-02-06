@@ -23,6 +23,22 @@
       <div class="content-header">
         <div class="aside">
           <h1 class="page-title">{% trans "Scannerjob" %}</h1>
+
+          <div id="scanner_search_field" class="search_field_wrapper">
+            <input type="search"
+                   name="search_field"
+                   id="search_field"
+                   placeholder="{% trans 'Search for scanner' %}"
+                   value="{{ request.GET.search_field }}"
+                   autocomplete="off"
+                   hx-get="{{ request.path }}"
+                   hx-target=".search-target"
+                   hx-select=".search-target"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-trigger="keyup delay:200ms, search"
+                   hx-include="#scanner_search_field" />
+          </div>
  
           <div class="btn">
             <a href="/{{ view.type }}scanners/add/"
@@ -39,7 +55,7 @@
       </div>
 
       {% if scanner_list %}
-        <div class="datatable-wrapper card {% if view.type == 'file' and user.is_superuser %}xl{% else %}lg{% endif %}"
+        <div class="datatable-wrapper card search-target {% if view.type == 'file' and user.is_superuser %}xl{% else %}lg{% endif %}"
              hx-get=""
              hx-swap="outerHTML"
              hx-target=".datatable-wrapper"
@@ -184,7 +200,7 @@
         </div>
 
       {% else %}
-        <p class="no-results">{% trans "No scannerjob added" %}</p>
+        <p class="no-results search-target">{% trans "No scannerjob added" %}</p>
       {% endif %}
     </div>
   </main>

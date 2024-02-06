@@ -5,6 +5,7 @@ from parameterized import parameterized
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import RequestFactory, TestCase
 from django.utils.text import slugify
+from django.urls import reverse_lazy
 
 from ..adminapp.views.webscanner_views import WebScannerList
 from ..adminapp.models.scannerjobs.webscanner import WebScanner
@@ -148,8 +149,32 @@ class ListViewsTest(TestCase):
             self.assertEqual(qs.first().organization.name, "IANA (example.com)")
         administrator.delete()
 
-    def listview_get_queryset(self, path, view):
-        request = self.factory.get(path)
+    def test_searching_for_scannerjobs(self):
+        # Arrange
+        self.user.is_superuser = True
+        self.user.save()
+        created_scanner = WebScanner.objects.create(
+            name="obscure name",
+            url="http://magenta.dk",
+            organization=Organization.objects.get(
+                uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
+            validation_status=WebScanner.VALID,
+            download_sitemap=False, rule=CustomRule.objects.first()
+        )
+
+        # Act
+        qs = self.listview_get_queryset(
+            reverse_lazy('webscanners'),
+            WebScannerList(),
+            request_kwargs={
+                'search_field': 'obscure'})
+
+        # Assert
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first(), created_scanner)
+
+    def listview_get_queryset(self, path, view, **kwargs):
+        request = self.factory.get(path, data=kwargs.get('request_kwargs'))
         request.user = self.user
         view.setup(request)
         return view.get_queryset()
