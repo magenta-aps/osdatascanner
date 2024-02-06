@@ -16,6 +16,11 @@
 
 - Sitemap-based webscans now also support sitemap-images
 
+## Bugfixes
+
+- Monthly progress in dpo module is now calculated as difference between
+  matches found and matches handled in the last 30 days.
+
 ## Version 3.22.1, 2nd February 2024
 
 This minor bugfix release fixes a potential crash in one of the migrations

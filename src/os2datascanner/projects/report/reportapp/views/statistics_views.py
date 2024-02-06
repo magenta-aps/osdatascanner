@@ -144,16 +144,17 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         #     context['matches_by_org_unit_handled'] = highest_handled_ou
         #     context['matches_by_org_unit_total'] = highest_total_ou
 
-        m_by_handled = self.count_matches_by_source_and_handled_status()
-        m_last_month = self.count_matches_by_source_since_last_month(today)
+        m_by_handled = self.count_unhandled_matches_by_source()
+        m_recently_handled = self.count_recently_handled_matches(today)
+        m_recently_created = self.count_recent_matches(today)
 
         context['matches_by_source_and_handled_status'] = m_by_handled
 
-        context['matches_by_source_since_last_month'] = m_last_month
-
         for src_type in ('mailscan', 'filescan', 'webscan', 'teamsscan', 'other'):
-            context[f'total_{src_type}_count'] = m_by_handled[src_type]['count'] - \
-                m_last_month[src_type]['count']
+            # The progress is calculated by subtracting the number of recently handled matches
+            # from the number of recently found matches
+            context[f'total_{src_type}_count'] = m_recently_created[src_type]['count'] \
+                - m_recently_handled[src_type]['count']
 
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
@@ -357,17 +358,30 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         return tuple(list(reversed(sort_OU(get_matches(mt), match_type=mt)[-10:]))
                      for mt in ("unhandled", "handled", "total"))
 
-    def count_matches_by_source_and_handled_status(self):
+    def count_unhandled_matches_by_source(self):
+        """Returns the number of unhandled matches for each source type."""
         current_matches = self.matches.filter(resolution_status__isnull=True)
         _, source_type, *_ = self.make_data_structures(current_matches)
 
         return source_type
 
-    def count_matches_by_source_since_last_month(self, current_date):
+    def count_recently_handled_matches(self, current_date):
+        """Returns the number of matches handled from the last 30 days for each source type."""
         a_month_ago = current_date - timedelta(days=30)
-        recent_matches = self.matches.filter(created_timestamp__lte=a_month_ago)
+        handled_matches = self.matches.filter(
+            resolution_status__isnull=False,
+            resolution_time__gte=a_month_ago)
 
-        _, source_type, *_ = self.make_data_structures(recent_matches)
+        _, source_type, *_ = self.make_data_structures(handled_matches)
+
+        return source_type
+
+    def count_recent_matches(self, current_date):
+        """Returns the number of matches found in the last 30 days for each source type."""
+        a_month_ago = current_date - timedelta(days=30)
+        new_matches = self.matches.filter(created_timestamp__gte=a_month_ago)
+
+        _, source_type, *_ = self.make_data_structures(new_matches)
 
         return source_type
 
