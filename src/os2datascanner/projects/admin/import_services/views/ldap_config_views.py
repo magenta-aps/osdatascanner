@@ -9,7 +9,7 @@ from django.views.generic.detail import DetailView
 
 from os2datascanner.projects.admin.import_services.keycloak_services import \
     add_ldap_conf, create_realm, request_update_component, \
-    get_token_first, create_member_of_attribute_mapper
+    get_token_first, create_member_of_attribute_mapper, create_sid_attribute_mapper
 from os2datascanner.projects.admin.organizations.models import Organization
 from os2datascanner.projects.admin.import_services.models import LDAPConfig, Realm
 from os2datascanner.projects.admin.import_services.utils import start_ldap_import
@@ -31,6 +31,7 @@ class LDAPEditForm(forms.ModelForm):
             'username_attribute',
             'rdn_attribute',
             'uuid_attribute',
+            'object_sid_attribute',
             'users_dn',
             'search_scope',
             'user_obj_classes',
@@ -78,6 +79,7 @@ class LDAPEditForm(forms.ModelForm):
             'username_attribute',
             'rdn_attribute',
             'uuid_attribute',
+            'object_sid_attribute'
         ]
         return fields
 
@@ -109,6 +111,7 @@ class LDAPAddView(LoginRequiredMixin, CreateView):
                 'rdn_attribute': "uid",
                 'uuid_attribute': "entryUUID",
                 'user_obj_classes': "inetOrgPerson, organizationalPerson",
+                'object_sid_attribute': "objectSid",
             },
         }
         return context
@@ -147,6 +150,14 @@ def _keycloak_creation(config_instance):
     # else add error-handling!
     # Create a memberOf attribute mapper on the LDAP user federation in Keycloak upon creation
     get_token_first(create_member_of_attribute_mapper, realm.pk, payload["id"])
+    res = get_token_first(create_sid_attribute_mapper, realm.pk,
+                          payload["id"], config_instance)
+    if res.ok:
+        # Keycloak returns an empty body upon creation, so we'll fish the id from headers.
+        loc = res.headers.get("Location")
+        mapper_uuid = loc.split("/")[-1]  # The UUID of the mapper should be the last thing.
+        config_instance.object_sid_mapper_uuid = mapper_uuid
+        config_instance.save()
 
 
 def _keycloak_update(config_instance):
@@ -155,6 +166,11 @@ def _keycloak_update(config_instance):
     payload = config_instance.get_payload_dict()
     args = [payload, pk]
     get_token_first(request_update_component, realm.pk, *args)
+    # Do the same for SID mapper - if one is set.
+    if config_instance.object_sid_mapper_uuid:
+        mapper_payload = config_instance.get_mapper_payload_dict()
+        mapper_args = [mapper_payload, config_instance.object_sid_mapper_uuid]
+        get_token_first(request_update_component, realm.pk, *mapper_args)
 
 
 class LDAPUpdateView(LoginRequiredMixin, UpdateView):

@@ -74,6 +74,19 @@ class LDAPConfig(Exported, ImportService):
         ),
         verbose_name=_('UUID LDAP attribute'),
     )
+    object_sid_attribute = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True,
+        help_text=_(
+            "Name of LDAP attribute, which stores the object security identifier. (SID) "
+            "Often this is stored as 'objectSid' or 'securityIdentifier'. "
+            "Without this attribute, OSdatascanner will not be able to identify the owner "
+            "of on-premise files."
+        ),
+        verbose_name=_("Object security identifier")
+    )
+    object_sid_mapper_uuid = models.UUIDField(blank=True, null=True)
     user_obj_classes = models.TextField(
         help_text=_(
             "All values of LDAP objectClass attribute for users in LDAP "
@@ -220,5 +233,33 @@ class LDAPConfig(Exported, ImportService):
                 "kerberosRealm": [],
                 "debug": ["false"],
                 "useKerberosForPasswordAuthentication": ["false"]
+            }
+        }
+
+    def get_mapper_payload_dict(self, parent_id=None, ldap_sid_attribute=None):
+        return {
+            "name": "objectSid",
+            "providerId": "user-attribute-ldap-mapper",
+            "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
+            "parentId": parent_id if parent_id else str(self.pk),
+            "config": {
+                "ldap.attribute": [
+                    ldap_sid_attribute if ldap_sid_attribute else self.object_sid_attribute
+                ],
+                "is.mandatory.in.ldap": [
+                    "false"
+                ],
+                "is.binary.attribute": [
+                    "true"
+                ],
+                "always.read.value.from.ldap": [
+                    "true"
+                ],
+                "read.only": [
+                    "true"
+                ],
+                "user.model.attribute": [
+                    "objectSid"
+                ]
             }
         }
