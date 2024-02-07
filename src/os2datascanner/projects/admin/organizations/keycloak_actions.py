@@ -125,22 +125,32 @@ def _convert_sid(sid):
     # We'll need it in bytes first.
     b_sid = base64.decodebytes(sid.encode())
 
+    if b_sid.startswith(b"S-1-"):
+        return b_sid.decode()  # Plaintext SID (from Samba?) Useful for openLDAP testing
+
     def __convert_binary_sid_to_str(binary_sid):
         # This code is sourced from:
         # noqa: https://stackoverflow.com/questions/33188413/python-code-to-convert-from-objectsid-to-sid-representation
         # We could also install samba and use its functionality.
         version = struct.unpack('B', binary_sid[0:1])[0]
         # I do not know how to treat version != 1 (it does not exist yet)
-        assert version == 1, version
-        length = struct.unpack('B', binary_sid[1:2])[0]
-        authority = struct.unpack(b'>Q', b'\x00\x00' + binary_sid[2:8])[0]
-        string = 'S-%d-%d' % (version, authority)
-        binary = binary_sid[8:]
-        assert len(binary) == 4 * length
-        for i in range(length):
-            value = struct.unpack('<L', binary[4*i:4*(i+1)])[0]
-            string += '-%d' % value
-        return string
+        try:
+            if not version == 1:
+                raise ValueError(f"Invalid version! {version}")
+            length = struct.unpack('B', binary_sid[1:2])[0]
+            authority = struct.unpack(b'>Q', b'\x00\x00' + binary_sid[2:8])[0]
+            string = 'S-%d-%d' % (version, authority)
+            binary = binary_sid[8:]
+            if not len(binary) == 4 * length:
+                raise ValueError(f"Invalid length of binary! {len(binary)}")
+            for i in range(length):
+                value = struct.unpack('<L', binary[4*i:4*(i+1)])[0]
+                string += '-%d' % value
+            return string
+        except ValueError as ve:
+            logger.exception(f"{ve} "
+                             f"Unable to process SID format! Will skip.")
+            return None
 
     return __convert_binary_sid_to_str(b_sid)
 
