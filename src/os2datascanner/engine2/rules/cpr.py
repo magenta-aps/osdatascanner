@@ -233,7 +233,6 @@ class CPRRule(RegexRule):
         """Estimate a probality (0-1) based on the context of the match
 
         Returns 0.0 if any of the following conditions are found
-        - pre-context ends with a variation of `p-nr`
         - There are unmatched delimiters, like () or {}
         - The CPR-nr is surrounded by a number that doesn't resembles a CPR
         - The word before or after is not either: lower-, title- or upper-case.

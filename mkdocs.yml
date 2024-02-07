@@ -19,6 +19,7 @@ nav:
   - Security Architecture: architecture/security.md
   - Scan API: api.md
   - Accessing the Microsoft Graph API with graphiti: graphiti.md
+  - Decision history: decision-history.md
   - Deployment:
     - Installation: installation.md
     - Docker: docker.md
