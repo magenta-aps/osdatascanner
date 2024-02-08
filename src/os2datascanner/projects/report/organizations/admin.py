@@ -34,8 +34,22 @@ class AliasAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
 
 @admin.register(Account)
 class AccountAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'organization', 'manager', 'uuid')
-    readonly_fields = ('username', 'first_name', 'last_name', 'organization', 'manager', 'uuid')
+    list_display = (
+        'username',
+        'first_name',
+        'last_name',
+        'organization',
+        'manager',
+        'uuid',
+        'email')
+    readonly_fields = (
+        'username',
+        'first_name',
+        'last_name',
+        'organization',
+        'manager',
+        'uuid',
+        'email')
 
 
 @admin.register(AccountOutlookSetting)

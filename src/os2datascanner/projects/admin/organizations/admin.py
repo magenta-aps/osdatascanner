@@ -64,13 +64,13 @@ class AccountAdmin(ImportedAdmin):
     #  At the time of writing units does not work
     fields = ('username', 'first_name', 'last_name',
               'organization', 'manager', 'imported_id', 'last_import',
-              'is_superuser'
+              'is_superuser', 'email'
               )
     list_display = ('username', 'first_name', 'last_name',
-                    'organization', 'last_import',
+                    'organization', 'last_import', 'email',
                     )
     search_fields = ('username', 'first_name', 'last_name',
-                     'organization__name',
+                     'organization__name', 'email',
                      )
     list_filter = (
         'organization',

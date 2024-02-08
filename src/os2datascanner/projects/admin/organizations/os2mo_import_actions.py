@@ -79,6 +79,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         username = member.get("user_key", None)
         first_name = member.get("givenname", "")
         last_name = member.get("surname", "")
+        email = member.get("email", "")
 
         if not username:
             logger.info(f'Object not a user or empty user key for user: {member}')
@@ -93,6 +94,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
                         ("username", username),
                         ("first_name", first_name),
                         ("last_name", last_name),
+                        ("email", email),
                 ):
                     if getattr(account, attr_name) != expected:
                         setattr(account, attr_name, expected)
@@ -105,6 +107,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
                     username=username,
                     first_name=first_name,
                     last_name=last_name,
+                    email=email,
                 )
                 to_add.append(account)
                 accounts[imported_id] = account

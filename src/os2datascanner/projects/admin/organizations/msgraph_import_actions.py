@@ -79,6 +79,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             first_name = member.get("givenName", "")
             last_name = member.get("surname", "")
             manager_info = member.get("manager")
+            email = member.get("email")
 
             account = accounts.get(imported_id)
             if account is None:
@@ -89,6 +90,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                             ("username", username),
                             ("first_name", first_name),
                             ("last_name", last_name),
+                            ("email", email),
                     ):
                         if getattr(account, attr_name) != expected:
                             setattr(account, attr_name, expected)
@@ -101,6 +103,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                         username=username,
                         first_name=first_name,
                         last_name=last_name,
+                        email=email,
                     )
                     to_add.append(account)
 
