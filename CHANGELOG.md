@@ -136,6 +136,9 @@ allowing last modified timestamps to be on an account basis.
 - The `diagnostics`-command in the report module now identifies aliases with
   mismatched accounts and users (i.e. users and accounts with differing usernames.)
 
+- Throw an IntegrityError when attempting to create an Alias related to an Account
+  and User, which have no connection.
+
 ### Bugfixes
 
 - Scannerjobs planned for 23:45 are now able to be automatically run.
