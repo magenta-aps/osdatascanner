@@ -282,7 +282,7 @@ class UserErrorLogView(RestrictedListView):
                 logger.warning(
                         "UserErrorLogView:"
                         f" ignoring unsupported sort key {sort_key}")
-                return qs
+                return qs.order_by('-pk')
 
             if order != "ascending":
                 sort_key = '-' + sort_key
