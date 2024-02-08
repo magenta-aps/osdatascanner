@@ -10,8 +10,8 @@
   font-size: 1rem;
 }
 
-label+.dropdown {
-  margin-top: .25rem;
+label+.dropdown, label+.input {
+  margin-top: .5rem;
 }
 
 /* style the selected item */

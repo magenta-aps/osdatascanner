@@ -239,7 +239,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    // gap: 1rem; // ***** This should be the standard when the form style sheet has been refactored *****
+    // gap: 1.5rem; // ***** This should be the standard when the form style sheet has been refactored *****
     height: 100%;
     padding: 1.75rem 1.75rem;
     padding: 2rem 2.25rem;
@@ -249,7 +249,7 @@
     }
 
     .modal__form__title {
-      padding-bottom: 1rem; // ***** This can be removed after the form style sheet has been refactored *****
+      padding-bottom: 1.5rem; // ***** This can be removed after the form style sheet has been refactored *****
       >h2 {
         margin: 0;
       }
@@ -260,7 +260,7 @@
       justify-content: center;
       align-items: stretch;
       gap: 0.5rem; // ***** This will guarantee appropriate spacing if there's more than one button *****
-      padding-top: 1rem; // ***** This can be removed after the form style sheet has been refactored *****
+      padding-top: 1.5rem; // ***** This can be removed after the form style sheet has been refactored *****
     
       >* {
         width: inherit; // ***** This will guarantee appropriate sizing (full width) even if there's more than one button *****
