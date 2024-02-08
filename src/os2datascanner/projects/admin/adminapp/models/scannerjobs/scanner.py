@@ -21,6 +21,7 @@
 import os
 from typing import Iterator
 import datetime
+from dateutil.tz import gettz
 import structlog
 
 from django.db import models
@@ -174,12 +175,26 @@ class Scanner(models.Model):
                 return date
         return None
 
+    # First possible start time
+    FIRST_START_TIME = datetime.time(hour=19, minute=0)
+    # Amount of quarter-hours that can be added to the start time
+    STARTTIME_QUARTERS = 5 * 4
+
     @property
-    def schedule_time(self):
-        """Returns the time for the next scheduled execution of this scanner,
-        if there is one."""
-        if self.schedule_date is not None:
-            return self.get_start_time()
+    def schedule_datetime(self) -> datetime.datetime | None:
+        """Returns the timestamp for the next scheduled execution of this
+        scanner, if there is one.
+
+        The current implementation of this method always returns a time between
+        7pm and midnight; this time is not configurable, but is derived from
+        the primary key of the scanner in an attempt to spread executions
+        out."""
+        if (schedule_date := self.schedule_date) is not None:
+            added_minutes = 15 * (self.pk % self.STARTTIME_QUARTERS)
+            return (datetime.datetime.combine(schedule_date,
+                                              self.FIRST_START_TIME,
+                                              tzinfo=gettz())
+                    + datetime.timedelta(minutes=added_minutes))
 
     # Run error messages
     HAS_NO_RULES = (
@@ -191,43 +206,6 @@ class Scanner(models.Model):
     ALREADY_RUNNING = (
         _("The scanner job could not be started because it is already running.")
     )
-
-    # First possible start time
-    FIRST_START_TIME = datetime.time(hour=19, minute=0)
-    # Amount of quarter-hours that can be added to the start time
-    STARTTIME_QUARTERS = 5 * 4
-
-    def get_start_time(self) -> datetime.time:
-        """Returns the time of day at which this scanner can be considered for
-        scheduled execution.
-
-        The current implementation of this method always returns a time between
-        7pm and midnight; this time is not configurable, but is derived from
-        the primary key of the scanner in an attempt to spread executions
-        out."""
-        # add (minutes|hours) in intervals of 15m depending on `pk`, so each
-        # scheduled job start at different times after 19h00m
-        added_minutes = 15 * (self.pk % self.STARTTIME_QUARTERS)
-        added_hours = int(added_minutes / 60)
-        added_minutes -= added_hours * 60
-        return self.FIRST_START_TIME.replace(
-            hour=self.FIRST_START_TIME.hour + added_hours,
-            minute=self.FIRST_START_TIME.minute + added_minutes
-        )
-
-    @classmethod
-    def modulo_for_starttime(cls, time):
-        """Convert a datetime.time object to the corresponding modulo value.
-
-        The modulo value can be used to search the database for scanners that
-        should be started at the given time by filtering a query with:
-            (WebScanner.pk % WebScanner.STARTTIME_QUARTERS) == <modulo_value>
-        """
-        if (time < cls.FIRST_START_TIME):
-            return None
-        hours = time.hour - cls.FIRST_START_TIME.hour
-        minutes = 60 * hours + time.minute - cls.FIRST_START_TIME.minute
-        return int(minutes / 15)
 
     @property
     def display_name(self):
