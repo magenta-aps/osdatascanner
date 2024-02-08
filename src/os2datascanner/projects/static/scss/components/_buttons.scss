@@ -85,6 +85,10 @@
         height: 1rem !important;
       }
     }
+
+    &.button--modal-ui { // Only applies when both classes are added
+      border-radius: var(--border-radius-button) !important;
+    }
   }
 
   &--outline-button  { // ***** "Secondary" button type *****

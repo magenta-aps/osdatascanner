@@ -1,25 +1,53 @@
+{% load static %}
 {% load i18n %}
 
+{% block scripts %}
+  <script src="{% static 'js/modals/alias_create.js' %}"></script>
+{% endblock %}
+
+
 <form class="form"
-      action="{% url "create-alias" organization.slug account.uuid %}"
+      action="{% url 'create-alias' organization.slug account.uuid %}"
       method="post">
   {% csrf_token %}
+
+  <div class="modal__form__title">
+    <h2>{% trans "Create a new alias for" %} {{ account.first_name }}</h2>
+  </div>
+ 
   <div id="id__alias_type_container" class="dropdown__group form__group">
     <label class="required-form" for="id__alias_type">{% trans "Alias type" %}</label>
     <div class="dropdown">
-      <select id="id__alias_type" name="_alias_type">
+      <select id="id__alias_type"
+              name="_alias_type"
+              onchange="validateAliasType()"
+              required>
+        <option value="">--{% trans "select" %}--</option>
         <option value="email">{% trans "email" %}</option>
         <option value="generic">{% trans "generic" %}</option>
       </select>
     </div>
   </div>
+ 
   <div id="id__value_container" class="form__group">
     <label class="required-form" for="id__value">{% trans "Value" %}</label>
     <input id="id__value"
            name="_value"
            type="text"
            class="form-control"
-           maxlength="256" />
+           maxlength="256"
+           required />
   </div>
-  <button class="button button--cta-button" type="submit">{% trans "Create" %}</button>
+ 
+  <div class="modal__form__actions">
+    <button type="button"
+            class="button button--outline-button button--modal-close"
+            aria-label="{% trans 'Close without saving' %}"
+            title="{% trans 'Close without saving' %}"
+            onclick="closeModal()">{% trans "Close" %}</button>
+    <button type="submit"
+            class="button button--cta-button button--modal-ui"
+            aria-label="{% trans 'Save and close' %}"
+            title="{% trans 'Save and close' %}">{% trans "Save" %}</button>
+  </div>
 </form>
