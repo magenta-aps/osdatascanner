@@ -125,9 +125,12 @@ class WebSource(Source):
         from ... import __version__
         with requests.Session() as session:
             session.headers.update(
-                {"User-Agent": f"OS2datascanner/{__version__}"
-                               f" ({session.headers['User-Agent']})"
-                               " (+https://os2datascanner.dk/agent)"}
+                {"User-Agent": f"OSdatascanner/{__version__}"
+                               # Honour our heritage (and hopefully also keep
+                               # this UA working for everybody who's previously
+                               # whitelisted "OS2datascanner")
+                               " (previously OS2datascanner)"
+                               " (+https://osdatascanner.dk/agent)"}
             )
             yield session
 
