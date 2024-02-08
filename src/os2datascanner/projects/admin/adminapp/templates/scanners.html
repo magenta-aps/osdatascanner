@@ -95,12 +95,12 @@
                   <td class="domain-url datatable__column--name">
                     <div>{{ scanner.name }}</div>
                     <div class="scanner-url">{{ scanner.url }}</div>
-                    {% if scanner.get_stale_accounts.exists %}
+                    {% if scanner.compute_stale_accounts.exists %}
                       <a class="button button--grey stale-accounts"
                          href="#cleanup-accounts-modal"
                          data-modal="modal:open"
                          data-src="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
-                         title="{% trans "The following users are no longer covered by this scannerjob, but have been scanned previously:" %} {{ scanner.get_stale_accounts|comma_separated_list }}">
+                         title="{% trans "The following users are no longer covered by this scannerjob, but have been scanned previously:" %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
                         <span class="material-icons">notification_important</span> {% trans "Stale accounts" %}
                       </a>
                     {% endif %}

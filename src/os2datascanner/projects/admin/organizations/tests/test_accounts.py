@@ -1,6 +1,6 @@
 from django.test import TestCase
 from ...core.models.client import Client
-from ...adminapp.models.scannerjobs.scanner_helpers import ScanStatus, CoveredAccount
+from ...adminapp.models.scannerjobs.scanner_helpers import ScanStatus
 from ..models import OrganizationalUnit, Organization, Account
 from ...adminapp.models.scannerjobs.scanner import Scanner
 from ...adminapp.models.rules import CustomRule
@@ -69,35 +69,3 @@ class AccountMethodTests(TestCase):
         self.client.delete()
 
         self.rule.delete()
-
-    def test_get_stale_scanners(self):
-        """Make sure, that accounts can correctly identify, when they have
-        been dropped from a scanner."""
-
-        # Hansi and Günther are both assigned to scanner1. Only Hansi is
-        # assigned to scanner2. Both are added to 'covered_accounts' of both
-        # scanners. Fritz is not covered in any way.
-        self.scanner1.org_unit.add(self.unit1)
-        self.scanner2.org_unit.add(self.unit2)
-
-        CoveredAccount.objects.create(account=self.hansi, scanner=self.scanner1,
-                                      scan_status=self.status1)
-        CoveredAccount.objects.create(account=self.günther, scanner=self.scanner1,
-                                      scan_status=self.status1)
-        CoveredAccount.objects.create(account=self.hansi, scanner=self.scanner2,
-                                      scan_status=self.status2)
-        CoveredAccount.objects.create(account=self.günther, scanner=self.scanner2,
-                                      scan_status=self.status2)
-
-        # Hansi has not been dropped, and should get an empty queryset here.
-        hansi_dropped = self.hansi.get_stale_scanners()
-        # Günther has been dropped from scanner2, and should see that here.
-        günther_dropped = self.günther.get_stale_scanners()
-        # Fritz has not been dropped, and should get an empty queryset here.
-        fritz_dropped = self.fritz.get_stale_scanners()
-
-        self.assertFalse(hansi_dropped.exists())
-        self.assertFalse(fritz_dropped.exists())
-        self.assertTrue(günther_dropped.exists())
-        self.assertEqual(günther_dropped.count(), 1)
-        self.assertEqual(günther_dropped.first(), self.scanner2)

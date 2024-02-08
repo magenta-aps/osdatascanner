@@ -79,13 +79,13 @@ class ExchangeScanner(Scanner):
         """Get the absolute URL for scanners."""
         return "/exchangescanners/"
 
-    def get_covered_accounts(self):
+    def compute_covered_accounts(self):
         # A Scanner that uses a userlist file shouldn't have a populated
         # covered_accounts field, so return QuerySet.none() in that case
         if self.userlist and not self.org_unit.exists():
             return Account.objects.none()
         else:
-            return super().get_covered_accounts()
+            return super().compute_covered_accounts()
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -100,7 +100,7 @@ class ExchangeScanner(Scanner):
                     admin_password=self.authentication.get_password(),
                     user=user)
 
-        if (covered_accounts := self.get_covered_accounts()).exists():
+        if (covered_accounts := self.compute_covered_accounts()).exists():
             for account in covered_accounts:
                 # Only try to scan mail addresses that belong to the domain
                 # associated with this scanner

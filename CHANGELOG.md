@@ -9,7 +9,7 @@
 - Data from the DPO statistics page can be exported 
   by adding "csv/" to the url (ie. statistics/dpo/csv/).
   This feature is disabled by default with settings.DPO_CSV_EXPORT
-  
+
 - User interface added in the admin module for creating and deleting aliases.
 
   - Imported aliases cannot be altered this way.
@@ -32,6 +32,10 @@
   new "filter"-menu.
 
 - Added documentation for the decision history for rule validation methods.
+
+- The enhanced Last-Modified function now maintains a history of which users
+  were included in which scans, allowing cutoff timestamps to be computed
+  much more accurately.
 
 ## Bugfixes
 

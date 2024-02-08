@@ -33,6 +33,7 @@ from .views import RestrictedListView, RestrictedCreateView, \
 from ..models.authentication import Authentication
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
+from ..models.scannerjobs.scanner_helpers import CoveredAccount
 from ..models.usererrorlog import UserErrorLog
 from ..utils import CleanMessage
 from ...organizations.models.aliases import AliasType
@@ -680,22 +681,29 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
         if request.headers.get('HX-Trigger-Name') == "cleanup-button":
 
             if not self.scanner_running:
-                stale_accounts = self.object.get_stale_accounts()
+                stale_accounts = self.object.compute_stale_accounts()
 
-                # Manually constructing this, since 'stale_accounts' can no
-                # longer be filtered, due to the 'difference' method already
-                # having been called on it.
-                accounts_to_clean = [
-                    acc for acc in stale_accounts if str(
-                        acc.uuid) in uuids_to_clean]
+                clean_dict = {
+                    self.object.pk: (
+                            acc_dict := CleanMessage.make_account_dict(
+                                    acc for acc in stale_accounts
+                                    if str(acc.uuid) in uuids_to_clean))
+                }
 
-                clean_dict = {self.object.pk: {
-                    "uuids": [str(acc.uuid) for acc in accounts_to_clean],
-                    "usernames": [acc.username for acc in accounts_to_clean]
-                }}
+                logger.info(
+                        "Cleaning up accounts:"
+                        f" {', '.join(acc_dict['usernames'])}"
+                        f" for scanner: {self.object}.")
+
                 CleanMessage.send(clean_dict, publisher="UI-manual")
-                self.object.remove_stale_accounts(accounts_to_clean)
 
+                # When we send CleanMessages, the report module deletes all of
+                # the matches associated with these accounts, but the admin
+                # system still knows about them; delete that knowledge to make
+                # sure we don't have uncovered periods
+                CoveredAccount.objects.filter(
+                        scanner=self.object,
+                        account_id__in=acc_dict["uuids"]).delete()
             return render(
                 request,
                 "components/scanner/scanner_cleanup_response.html",

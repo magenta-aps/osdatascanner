@@ -259,6 +259,8 @@ class ScanStatus(AbstractScanStatus):
                     name="ss_pc_lookup"),
         ]
 
+        get_latest_by = "scan_tag__time"
+
     def __str__(self):
         return f"{self.scanner}: {self.start_time}"
 
@@ -322,9 +324,17 @@ class CoveredAccount(models.Model):
             'os2datascanner.Scanner', null=False, on_delete=models.CASCADE)
     account = models.ForeignKey(
             'organizations.Account', null=False, on_delete=models.CASCADE)
-    scan_status = models.ForeignKey(ScanStatus, null=False, on_delete=models.CASCADE)
+    scan_status = models.ForeignKey(
+            ScanStatus, null=False, on_delete=models.CASCADE)
 
     class Meta:
-        constraints = [models.UniqueConstraint(
-                fields=['scanner', 'account'],
-                name='os2datascanner_scanner_c_scanner_id_account_id_ec9ff164_uniq')]
+        constraints = [
+            models.UniqueConstraint(
+                    fields=['scanner', 'account', 'scan_status'],
+                    name='%(app_label)s_%(class)s_no_exact_dupes'),
+        ]
+        # Ordering by scan tag start time lets you get the most recent
+        # CoveredAccount for a given Account/Scanner pair with
+        #
+        #     CoveredAccount.objects.filter(account=..., scanner=...).latest()
+        get_latest_by = "scan_status__scan_tag__time"

@@ -23,7 +23,7 @@
       <p>{% trans "Delete the report results for the following users:" %}</p>
       <form id="cleanup-accounts-form" name="cleanup-accounts-form">
         <ul>
-          {% for account in scanner.get_stale_accounts %}
+          {% for account in scanner.compute_stale_accounts %}
             <li>
               <input type="checkbox"
                      name="cleanup_account_uuid"

@@ -63,6 +63,16 @@ class CleanMessage(NamedTuple):
         }
 
     @staticmethod
+    def make_account_dict(accounts_) -> dict:
+        # Capture accounts_ as a list to allow any Iterable[Account] argument
+        # (a QuerySet, a generator, whatever)
+        accounts = list(accounts_)
+        return {
+            "uuids": [str(a.uuid) for a in accounts],
+            "usernames": [a.username for a in accounts]
+        }
+
+    @staticmethod
     def send(scanners_accounts_dict: dict, publisher="unknown"):
         """Expected structure:
         {

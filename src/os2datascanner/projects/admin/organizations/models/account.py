@@ -26,17 +26,6 @@ class Account(Core_Account, Imported, Broadcasted):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
 
-    def get_stale_scanners(self):
-        """Returns all scanners, which do not cover the account, but still
-        contains the account in its 'covered_accounts'-field."""
-
-        # Avoid circular import
-        from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
-        stale_scanners = Scanner.objects.filter(
-            covered_accounts=self).exclude(
-            org_unit__in=self.units.all())
-        return stale_scanners
-
     def get_remediator_scanners(self):
         """Returns a list of dicts of all scanners, which the user is
         specifically assigned remediator for. Each dict contains the name and

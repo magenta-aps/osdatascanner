@@ -100,7 +100,7 @@ class MSGraphMailScanner(MSGraphScanner):
                 scan_deleted_items_folder=self.scan_deleted_items_folder,
                 scan_syncissues_folder=self.scan_syncissues_folder
             )
-        for account in self.get_covered_accounts():
+        for account in self.compute_covered_accounts():
             for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
                 user_mail_address: str = alias.value
                 yield (account, MSGraphMailAccountSource(
@@ -135,7 +135,7 @@ class MSGraphFileScanner(MSGraphScanner):
             # TODO: files in a SharePoint drive do actually have an owner...
             yield None, base_source
         if self.scan_user_drives:
-            for account in self.get_covered_accounts():
+            for account in self.compute_covered_accounts():
                 for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
                     user_mail_address: str = alias.value
                     yield (account, MSGraphDriveSource(
@@ -168,7 +168,7 @@ class MSGraphCalendarScanner(MSGraphScanner):
                 tenant_id=str(self.grant.tenant_id),
                 client_secret=settings.MSGRAPH_CLIENT_SECRET,
             )
-        for account in self.get_covered_accounts():
+        for account in self.compute_covered_accounts():
             for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
                 user_mail_address: str = alias.value
                 yield (account, MSGraphCalendarAccountSource(
