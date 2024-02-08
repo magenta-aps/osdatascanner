@@ -20,10 +20,10 @@ class TestCron:
 
     def test_schedule_time_19_00(self, monkeypatch):
         # Arrange
-        monkeypatch.setattr(Scanner, "schedule_time", datetime.time(hour=19, minute=00))
+        time = time_now().replace(hour=19, minute=0)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
 
-        current_qhr = time_now().replace(hour=19, minute=00, second=0)
-        current_qhr = current_qhr.replace(minute=current_qhr.minute - current_qhr.minute % 15)
+        current_qhr = time
         next_qhr = current_qhr + datetime.timedelta(minutes=15)
 
         # Act
@@ -34,10 +34,10 @@ class TestCron:
 
     def test_schedule_time_20_15(self, monkeypatch):
         # Arrange
-        monkeypatch.setattr(Scanner, "schedule_time", datetime.time(hour=20, minute=15))
+        time = time_now().replace(hour=20, minute=15)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
 
-        current_qhr = time_now().replace(hour=20, minute=15, second=0)
-        current_qhr = current_qhr.replace(minute=current_qhr.minute - current_qhr.minute % 15)
+        current_qhr = time
         next_qhr = current_qhr + datetime.timedelta(minutes=15)
 
         # Act
@@ -48,10 +48,10 @@ class TestCron:
 
     def test_schedule_time_21_30(self, monkeypatch):
         # Arrange
-        monkeypatch.setattr(Scanner, "schedule_time", datetime.time(hour=21, minute=30))
+        time = time_now().replace(hour=21, minute=30)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
 
-        current_qhr = time_now().replace(hour=21, minute=30, second=0)
-        current_qhr = current_qhr.replace(minute=current_qhr.minute - current_qhr.minute % 15)
+        current_qhr = time
         next_qhr = current_qhr + datetime.timedelta(minutes=15)
 
         # Act
@@ -62,10 +62,10 @@ class TestCron:
 
     def test_schedule_time_23_45(self, monkeypatch):
         # Arrange
-        monkeypatch.setattr(Scanner, "schedule_time", datetime.time(hour=23, minute=45))
+        time = time_now().replace(hour=23, minute=45)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
 
-        current_qhr = time_now().replace(hour=23, minute=45, second=0)
-        current_qhr = current_qhr.replace(minute=current_qhr.minute - current_qhr.minute % 15)
+        current_qhr = time
         next_qhr = current_qhr + datetime.timedelta(minutes=15)
 
         # Act
@@ -74,12 +74,26 @@ class TestCron:
         # Assert
         assert start is True
 
+    def test_schedule_around_midnight(self, monkeypatch):
+        # Arrange
+        time = time_now().replace(hour=21, minute=15)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
+
+        current_qhr = time + datetime.timedelta(hours=3)
+        next_qhr = current_qhr + datetime.timedelta(minutes=15)
+
+        # Act
+        start = should_scanner_start(self.scanner_daily, current_qhr, next_qhr)
+
+        # Assert
+        assert start is False
+
     def test_schedule_time_now(self, monkeypatch):
         # Arrange
-        monkeypatch.setattr(Scanner, "schedule_time", datetime.time(hour=23, minute=00))
+        time = time_now().replace(hour=23, minute=00)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
 
-        current_qhr = time_now().replace(hour=19, minute=00, second=0)
-        current_qhr = current_qhr.replace(minute=current_qhr.minute - current_qhr.minute % 15)
+        current_qhr = time.replace(hour=19, minute=0, second=0)
         next_qhr = current_qhr + datetime.timedelta(minutes=15)
 
         # Act
@@ -90,10 +104,10 @@ class TestCron:
 
     def test_schedule_time_not_now(self, monkeypatch):
         # Arrange
-        monkeypatch.setattr(Scanner, "schedule_time", datetime.time(hour=20, minute=45))
+        time = time_now().replace(hour=20, minute=45)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
 
-        current_qhr = time_now().replace(hour=19, minute=00, second=0)
-        current_qhr = current_qhr.replace(minute=current_qhr.minute - current_qhr.minute % 15)
+        current_qhr = time.replace(hour=19, minute=00, second=0)
         next_qhr = current_qhr + datetime.timedelta(minutes=15)
 
         # Act

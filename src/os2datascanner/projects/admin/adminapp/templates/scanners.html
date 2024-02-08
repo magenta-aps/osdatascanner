@@ -140,11 +140,11 @@
                     {% endif %}
                   </td>
 
-                  {% if scanner.schedule_time %}
+                  {% if scanner.schedule_datetime %}
                     <td class="scanner-runtime datatable__column--automatic">
                       {% trans "Next scan: " %}
                       <br />
-                      {{ scanner.schedule_date|naturalday:"l j. F Y"|capfirst }}, {{ scanner.schedule_time }}
+                      <span title="{{ scanner.schedule_datetime }}">{{ scanner.schedule_datetime|naturaltime }}</span>
                     </td>
                   {% else %}
                     <td class="scanner-runtime datatable__column--automatic">{% trans "No" %}</td>

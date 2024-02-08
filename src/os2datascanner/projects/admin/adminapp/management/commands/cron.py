@@ -32,46 +32,9 @@ def should_scanner_start(scanner: Scanner,
                          current_qhr: datetime.datetime,
                          next_qhr: datetime.datetime,
                          now: bool = False):
-
-    qhr_start, qhr_end = (current_qhr.time(), next_qhr.time())
-
-    # Is midnight the beginning or the end of a day? After digging for long, this turns
-    # out to be a recurring hot debate in Python. Should there be support for the 24th hour?
-    # Well. There currently isn't.
-    # Luckily, we don't really need to care much for that degree of precision.
-    # But, we do need special handling to avoid a timespan of (23:45-00:00] as 00:00
-    # would be interpreted as the beginning of current day.
-    # For now, we'll just dial back a minute if end hour is falsey, i.e. 0.
-    qhr_end = qhr_end if qhr_end.hour else datetime.time(hour=23, minute=59)
-
-    start = False
-    match (scanner.schedule_date, scanner.schedule_time):
-        case (datetime.date() as d, datetime.time() as t) \
-                if d == current_qhr.date() and qhr_start <= t < qhr_end:
-            logger.info(
-                f"{scanner!r} is scheduled to run now, starting"
-                " it")
-            start = True
-        case (datetime.date() as d, datetime.time() as t) \
-                if d == current_qhr.date() and now:
-            logger.info(
-                f"{scanner!r} is scheduled to run today and"
-                " --now is set, starting it")
-            start = True
-        case (datetime.date() as d, datetime.time() as t) \
-                if d == current_qhr.date():
-            logger.debug(
-                f"{scanner!r} is scheduled to run today, but scan"
-                f" time {t} does not fall within [{qhr_start}, {qhr_end})")
-        case (datetime.date() as d, _):
-            logger.debug(
-                f"{scanner!r} is not scheduled to run today. Next"
-                f" scan date is {d}")
-        case (a, b):
-            logger.debug(
-                f"Not running {scanner!r} for some reason"
-                f" (a={a}, b={b})")
-    return start
+    schedule_datetime = scanner.schedule_datetime
+    return (schedule_datetime is not None
+            and (current_qhr <= schedule_datetime < next_qhr or now))
 
 
 class Command(BaseCommand):
