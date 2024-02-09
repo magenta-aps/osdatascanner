@@ -10,7 +10,25 @@ def html_processor(r, **kwargs):
         # This tells lxml to retrieve the page, locate the <body> tag then
         # extract and print all the text.
         try:
-            return str(html.parse(fp).xpath("//body")[0].text_content())
+            html_body = html.parse(fp).xpath("//body")[0]
+            for br in html_body.xpath("//br | //p | //div"):
+                # lxml represents loose text strings after inline elements by
+                # attaching them to the preceding element as a "tail":
+                #
+                # >>> (doc := html.fromstring("<p>one<br>two<br>three</p>"))
+                # <Element p at 0x7ff21c5aea20>
+                # >>> doc.text
+                # 'one'
+                # >>> (fc := doc.getchildren()[0])
+                # <Element br at 0x7ff21c5aeca0>
+                # >>> fc.tail
+                # 'two'
+                #
+                # We can add things to the tail ourselves to make the
+                # document's plain text representation nicer:
+                br.tail = f"\n {br.tail}" if br.tail else "\n"
+            content = html_body.text_content()
+            return str(content)
         except AssertionError:
             # fx. for a empty document we get
             # AssertionError: ElementTree not initialized, missing root

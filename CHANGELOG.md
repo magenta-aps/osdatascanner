@@ -49,6 +49,8 @@
 - The component that handles the scheduled execution of scans no longer runs
   extra scans between midnight and 1am.
 
+- HTML tags: br, p and div, are now replaced with newlines, when scanning HTML.
+
 ## Version 3.22.1, 2nd February 2024
 
 This minor bugfix release fixes a potential crash in one of the migrations
