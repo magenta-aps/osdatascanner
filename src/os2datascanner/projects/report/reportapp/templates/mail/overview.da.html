@@ -4,63 +4,55 @@
 <html>
   <head>
     <style>
+      table {
+        width: 100%;
+      }
 
-  td {
-    text-align: right;
-    padding-left: 1em;
-    padding-right: 1em;
-  }
-
-  .flex {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-  }
-
-  .width {
-    margin-top: .5rem;
-    margin-right: 1rem;
-    height: 1.2rem;
-    width: auto;
-  }
-
+      td {
+        text-align: left;
+        padding: 0.5rem 1rem;
+        height: 1.2rem;  
+      }
     </style>
   </head>
+
   <body>
     {% if image_name %}
       <p>
         <img src="{{ image_name }}">
       </p>
     {% endif %}
+
     <p>Hej {{ full_name }},</p>
     <p>
       Der ligger i øjeblikket <strong>{{ user_alias_bound_results }}</strong> resultater i
       OSdatascanner-systemet med direkte tilknytning til dig, der kræver din opmærksomhed.
     </p>
 
-    <table>
-      {% if superadmin_bound_results or remediator_bound_results %}
-        <thead>
-          Yderligere resultater er tildelt til dig på baggrund af dine roller i systemet:
-        </thead>
+    {% if superadmin_bound_results or remediator_bound_results %}
+      <table>
+        <tr>
+          <td>Yderligere resultater er tildelt til dig på baggrund af dine roller i systemet:</td>
+        </tr>
 
         {% if superadmin_bound_results %}
-          <tr class="flex">
-            <td class="width">
+          <tr>
+            <td>
               Tildelt pga. super-admin rolle: <strong>{{ superadmin_bound_results }}</strong>
             </td>
           </tr>
         {% endif %}
 
         {% if remediator_bound_results %}
-          <tr class="flex">
-            <td class="width">
+          <tr>
+            <td>
               Tildelt pga. oprydder rolle: <strong>{{ remediator_bound_results }}</strong>
             </td>
           </tr>
         {% endif %}
-      {% endif %}
-    </table>
+ 
+      </table>
+    {% endif %}
 
     <p>
       Resultater i alt: <strong>{{ total_result_count }}</strong>

@@ -51,6 +51,10 @@
 
 - HTML tags: br, p and div, are now replaced with newlines, when scanning HTML.
 
+- overview.html + overview.da.html (the html files handling the "match overview" email sent 
+  to users) have been mildly refactored. This will hopefully fix the rendering issues 
+  experienced by a number of users.
+
 ## Version 3.22.1, 2nd February 2024
 
 This minor bugfix release fixes a potential crash in one of the migrations
