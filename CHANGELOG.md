@@ -37,6 +37,10 @@
   were included in which scans, allowing cutoff timestamps to be computed
   much more accurately.
 
+- When operating as a web crawler, OSdatascanner's `User-Agent` no longer
+  mentions the underlying `python-requests` version, as this is often used
+  as a keyword in blacklists.
+
 ## Bugfixes
 
 - Monthly progress in dpo module is now calculated as difference between
