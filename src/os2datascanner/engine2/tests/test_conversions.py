@@ -1,5 +1,5 @@
+import pytest
 import os.path
-import unittest
 
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
@@ -7,67 +7,88 @@ from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.conversions.registry import convert
 
 
-here_path = os.path.dirname(__file__)
-image_handle = FilesystemHandle.make_handle(
-    os.path.join(here_path, "data/ocr/good/cpr.png")
-)
-html_handle = FilesystemHandle.make_handle(
-    os.path.join(here_path, "data/html/simple.html")
-)
-empty_handle = FilesystemHandle.make_handle(
-    os.path.join(here_path, "data/empty_file")
-)
+class TestEngine2Conversion:
+    @classmethod
+    def setup_method(cls):
+        sm = SourceManager()
 
-
-class Engine2ConversionTest(unittest.TestCase):
-    def setUp(self):
-        self._sm = SourceManager()
-
-        self._ir = image_handle.follow(self._sm)
-        self._hr = html_handle.follow(self._sm)
-        self._er = empty_handle.follow(self._sm)
-
-    def tearDown(self):
-        self._sm.clear()
-
-    def test_last_modified(self):
-        self.assertIsNotNone(
-            convert(self._ir, OutputType.LastModified))
-
-    def test_image_dimensions(self):
-        self.assertEqual(
-            convert(self._ir, OutputType.ImageDimensions),
-            (896, 896)
+        here_path = os.path.dirname(__file__)
+        image_handle = FilesystemHandle.make_handle(
+            os.path.join(here_path, "data/ocr/good/cpr.png")
+        )
+        html_handle = FilesystemHandle.make_handle(
+            os.path.join(here_path, "data/html/simple.html")
+        )
+        empty_handle = FilesystemHandle.make_handle(
+            os.path.join(here_path, "data/empty_file")
         )
 
+        cls._ir = image_handle.follow(sm)
+        cls._hr = html_handle.follow(sm)
+        cls._er = empty_handle.follow(sm)
+
+    def test_last_modified_image_handle_not_none(self):
+        # Arrange -> setup_method
+
+        # Act
+        converted = convert(self._ir, OutputType.LastModified)
+
+        # Assert
+        assert converted is not None
+
+    def test_image_dimensions(self):
+        # Arrange -> setup_method
+
+        # Act
+        converted = convert(self._ir, OutputType.ImageDimensions)
+
+        # Assert
+        assert converted == (896, 896)
+
     def test_fallback(self):
-        self.assertEqual(
-            convert(self._ir, OutputType.AlwaysTrue),
-            True)
+        # Arrange -> setup_method
+
+        # Act
+        converted = convert(self._ir, OutputType.AlwaysTrue)
+
+        # Assert
+        assert converted
 
     def test_dummy(self):
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             convert(self._ir, OutputType.NoConversions)
 
     def test_html(self):
-        self.assertEqual(
-            # f"{'':8}" insert 8 ' '(spaces)
-            f"\n{'':8}\n{'':12}"
-            "This is only a test."
-            f"\n{'':8}\n{'':12}\n{'':16}"
-            "There's one paragraph,"
-            f"\n{'':16}"
-            "and then there's the other"
-            f"\n{'':16}"
-            "paragraph."
-            f"\n{'':8}\n{'':4}",
-            convert(self._hr, OutputType.Text),
-            "converted HTML do not match the expected result",
-        )
+        # Arrange -> setup_method
+
+        # Act
+        converted = convert(self._hr, OutputType.Text)
+
+        # Assert
+        assert converted == ("\n"
+                             "        \n"
+                             "            This is only a test."
+                             "\n"
+                             "        "
+                             "\n"
+                             "\n            "
+                             "\n                "
+                             "There's one paragraph,"
+                             "\n                "
+                             "and then there's the other"
+                             "\n                "
+                             "paragraph."
+                             "\n        "
+                             "\n"
+                             "\n "
+                             "\n"
+                             "    ")
 
     def test_empty_html(self):
-        self.assertEqual(
-            convert(self._er, OutputType.Text, mime_override="text/html"),
-            None,
-            "empty HTML document did not produce empty conversion",
-        )
+        # Arrange -> setup_method
+
+        # Act
+        converted = convert(self._er, OutputType.Text, mime_override="text/html")
+
+        # Assert
+        assert converted is None
