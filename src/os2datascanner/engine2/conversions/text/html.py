@@ -10,7 +10,11 @@ def html_processor(r, **kwargs):
         # This tells lxml to retrieve the page, locate the <body> tag then
         # extract and print all the text.
         try:
-            return str(html.parse(fp).xpath("//body")[0].text_content())
+            html_body = html.parse(fp).xpath("//body")[0]
+            for br in html_body.xpath("//br | //p | //div"):
+                br.tail = f"\n {br.tail}" if br.tail else "\n"
+            content = html_body.text_content()
+            return str(content)
         except AssertionError:
             # fx. for a empty document we get
             # AssertionError: ElementTree not initialized, missing root
