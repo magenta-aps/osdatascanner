@@ -4,63 +4,55 @@
 <html>
   <head>
     <style>
+      table {
+        width: 100%;
+      }
 
-  td {
-    text-align: right;
-    padding-left: 1em;
-    padding-right: 1em;
-  }
-
-  .flex {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-  }
-
-  .width {
-    margin-top: .5rem;
-    margin-right: 1rem;
-    height: 1.2rem;
-    width: auto;
-  }
-
+      td {
+        text-align: left;
+        padding: 0.5rem 1rem;
+        height: 1.2rem;  
+      }
     </style>
   </head>
+
   <body>
     {% if image_name %}
       <p>
         <img src="{{ image_name }}">
       </p>
     {% endif %}
+
     <p>Dear {{ full_name }},</p>
     <p>
       There are currently <strong>{{ user_alias_bound_results }}</strong> results in
       the OSdatascanner system which are associated with you and require your attention.
     </p>
 
-    <table>
-      {% if superadmin_bound_results or remediator_bound_results %}
-        <thead>
-          Additional results are tied to you because of your roles within the system:
-        </thead>
+    {% if superadmin_bound_results or remediator_bound_results %}
+      <table>
+        <tr>
+          <td>Additional results are tied to you because of your roles within the system:</td>
+        </tr>
 
         {% if superadmin_bound_results %}
-          <tr class="flex">
-            <td class="width">
+          <tr>
+            <td>
               Super-admin delegated results:  <strong>{{ superadmin_bound_results }}</strong>
             </td>
           </tr>
         {% endif %}
 
         {% if remediator_bound_results %}
-          <tr class="flex">
-            <td class="width">
+          <tr>
+            <td>
               Remediator delegated results: <strong>{{ remediator_bound_results }}</strong>
             </td>
           </tr>
         {% endif %}
-      {% endif %}
-    </table>
+ 
+      </table>
+    {% endif %}
 
     <p>
       Total viewable results for you: <strong>{{ total_result_count }}</strong>
