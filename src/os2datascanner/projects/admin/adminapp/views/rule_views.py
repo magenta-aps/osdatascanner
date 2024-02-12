@@ -38,7 +38,7 @@ class RuleList(RestrictedListView):
         context = super().get_context_data()
 
         context["sensitivity"] = Sensitivity
-        context["systemrule_list"] = self.get_queryset().filter(organization__isnull=True)
+        context["systemrule_list"] = CustomRule.objects.filter(organization__isnull=True)
         context["customrule_list"] = self.get_queryset().filter(organization__isnull=False)
 
         return context
