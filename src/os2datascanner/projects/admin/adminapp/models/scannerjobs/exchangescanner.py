@@ -33,14 +33,19 @@ logger = logging.getLogger(__name__)
 
 
 def get_users_from_file(userlist):
-    content = userlist.read()
-    ed = chardet.detect(content)
-    if not (encoding := ed["encoding"]):
-        raise ValueError
-    else:
-        return [stripped_line
-                for line in content.decode(encoding).split("\n")
-                if (stripped_line := line.strip())]
+    position = userlist.tell()
+    try:
+        content = userlist.read()
+        ed = chardet.detect(content)
+        if not (encoding := ed["encoding"]):
+            raise ValueError
+        else:
+            return [stripped_line
+                    for line in content.decode(encoding).split("\n")
+                    if (stripped_line := line.strip())]
+    finally:
+        # Make sure we don't actually consume the bytes we read!
+        userlist.seek(position)
 
 
 class ExchangeScanner(Scanner):
