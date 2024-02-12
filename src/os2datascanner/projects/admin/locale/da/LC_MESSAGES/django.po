@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-08 14:35+0100\n"
+"POT-Creation-Date: 2024-02-12 15:14+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -111,7 +111,7 @@ msgid "no scanner job exists with id {id}"
 msgstr "intet scannerjob findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
-#: adminapp/models/scannerjobs/scanner.py:77 adminapp/models/usererrorlog.py:52
+#: adminapp/models/scannerjobs/scanner.py:78 adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:66
 #: import_services/models/realm.py:29
@@ -143,7 +143,7 @@ msgstr "Brugerdomæne"
 msgid "Login method"
 msgstr "Login metode"
 
-#: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:70
+#: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:71
 #: core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:45
 #: organizations/templates/organizations/orgunit_list.html:121
@@ -222,31 +222,31 @@ msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 msgid "check dead links"
 msgstr "tjek døde links"
 
-#: adminapp/models/scannerjobs/scanner.py:86
+#: adminapp/models/scannerjobs/scanner.py:87
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: adminapp/models/scannerjobs/scanner.py:93
+#: adminapp/models/scannerjobs/scanner.py:94
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
-#: adminapp/models/scannerjobs/scanner.py:98
+#: adminapp/models/scannerjobs/scanner.py:99
 msgid "scan images"
 msgstr "scan billeder"
 
-#: adminapp/models/scannerjobs/scanner.py:103
+#: adminapp/models/scannerjobs/scanner.py:104
 msgid "check date of last modification"
 msgstr "tjek dato for sidste ændring"
 
-#: adminapp/models/scannerjobs/scanner.py:108
+#: adminapp/models/scannerjobs/scanner.py:109
 msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
-#: adminapp/models/scannerjobs/scanner.py:113
+#: adminapp/models/scannerjobs/scanner.py:114
 msgid "keep false positives"
 msgstr "behold falske positive"
 
-#: adminapp/models/scannerjobs/scanner.py:114
+#: adminapp/models/scannerjobs/scanner.py:115
 msgid ""
 "Retain false positives in the report module, regardless of the current state "
 "of the matched sources."
@@ -254,40 +254,40 @@ msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
 
-#: adminapp/models/scannerjobs/scanner.py:125
+#: adminapp/models/scannerjobs/scanner.py:126
 msgid "rule"
 msgstr "regel"
 
-#: adminapp/models/scannerjobs/scanner.py:133
+#: adminapp/models/scannerjobs/scanner.py:134
 msgid "Unverified"
 msgstr "Ugyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:134
+#: adminapp/models/scannerjobs/scanner.py:135
 msgid "Verified"
 msgstr "Gyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:140
+#: adminapp/models/scannerjobs/scanner.py:141
 msgid "username"
 msgstr "brugernavn"
 
-#: adminapp/models/scannerjobs/scanner.py:145
+#: adminapp/models/scannerjobs/scanner.py:146
 msgid "validation status"
 msgstr "valideringstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:150
+#: adminapp/models/scannerjobs/scanner.py:151
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:186
+#: adminapp/models/scannerjobs/scanner.py:201
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:189
+#: adminapp/models/scannerjobs/scanner.py:204
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:192
+#: adminapp/models/scannerjobs/scanner.py:207
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
