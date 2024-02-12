@@ -36,7 +36,7 @@ def get_users_from_file(userlist):
     content = userlist.read()
     ed = chardet.detect(content)
     if not (encoding := ed["encoding"]):
-        raise UnicodeDecodeError
+        raise ValueError
     else:
         return [stripped_line
                 for line in content.decode(encoding).split("\n")
