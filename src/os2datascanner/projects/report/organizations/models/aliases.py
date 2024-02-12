@@ -56,24 +56,40 @@ class AliasQuerySet(models.query.QuerySet):
             return rv
 
     def update(self, **kwargs):
-        if 'account' not in kwargs.keys() and 'user' not in kwargs.keys():
-            return super().update(**kwargs)
+        if 'account_id' in kwargs.keys():
+            if self.exclude(user__account__uuid=kwargs.get('account_id')).exists():
+                raise IntegrityError(
+                    "Attempted to update the account of aliases with the "
+                    "Alias.objects.update method, but some aliases are related "
+                    "to another user than related to the account with id "
+                    f"'{kwargs.get('account_id')}'. Aliases must be related "
+                    "to users and accounts, which are also related.")
+        elif 'user_id' in kwargs.keys():
+            if self.exclude(account__user__pk=kwargs.get('user_id')).exists():
+                raise IntegrityError(
+                    "Attempted to update the user of aliases with the "
+                    "Alias.objects.update method, but some aliases are related "
+                    "to another account than related to the user with id "
+                    f"'{kwargs.get('user_id')}'. Aliases must be related to "
+                    "users and accounts, which are also related.")
         elif 'account' in kwargs.keys():
             if self.exclude(user__account=kwargs.get('account')).exists():
                 raise IntegrityError(
                     "Attempted to update the account of aliases with the "
                     "Alias.objects.update method, but some aliases are related "
-                    f"to another user than '{kwargs.get('account').user}'. "
-                    "Aliases must be related to users and accounts, which are "
-                    "also related.")
+                    "to another user than related to the account with id "
+                    f"'{kwargs.get('account')}'. Aliases must be related "
+                    "to users and accounts, which are also related.")
         elif 'user' in kwargs.keys():
             if self.exclude(account__user=kwargs.get('user')).exists():
                 raise IntegrityError(
                     "Attempted to update the user of aliases with the "
                     "Alias.objects.update method, but some aliases are related "
-                    f"to another account than '{kwargs.get('user').account}'. "
-                    "Aliases must be related to users and accounts, which are "
-                    "also related.")
+                    "to another account than related to the user with id "
+                    f"'{kwargs.get('user')}'. Aliases must be related to "
+                    "users and accounts, which are also related.")
+        else:
+            return super().update(**kwargs)
 
 
 class AliasManager(models.Manager):

@@ -177,6 +177,28 @@ class TestUtils:
             # Act
             Alias.objects.all().update(account=self.account_jack)
 
+    def test_updating_aliases_with_a_mismatched_account_with_ids(self):
+        # Arrange
+        Alias.objects.create(
+            user=self.user_sam,
+            account=self.account_sam,
+            _alias_type=AliasType.SID,
+            _value="S-DIG")
+        Alias.objects.create(
+            user=self.user_sam,
+            account=self.account_sam,
+            _alias_type=AliasType.EMAIL,
+            _value="sam@sam.sam")
+        Alias.objects.create(
+            user=self.user_jack,
+            account=self.account_jack,
+            _alias_type=AliasType.EMAIL,
+            _value="jack@samurai.co.uk")
+
+        with pytest.raises(IntegrityError):  # Assert
+            # Act
+            Alias.objects.all().update(account_id=self.account_jack.uuid)
+
     def test_bulk_creating_mismatched_aliases(self):
         # Arrange
         objs = [
