@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 12:54+0100\n"
+"POT-Creation-Date: 2024-02-12 15:14+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -168,11 +168,11 @@ msgstr "Kategori farve for matches"
 msgid "Category colour for false positives"
 msgstr "Kategori farve for falske positiver"
 
-#: organizations/models/aliases.py:63
+#: organizations/models/aliases.py:136
 msgid "user"
 msgstr "bruger"
 
-#: organizations/models/aliases.py:72
+#: organizations/models/aliases.py:145
 msgid "account"
 msgstr "konto"
 
