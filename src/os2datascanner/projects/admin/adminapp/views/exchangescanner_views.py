@@ -205,7 +205,7 @@ def validate_userlist_or_org_units(form):  # noqa CCR001
         users = []
         try:
             users = get_users_from_file(userlist)
-        except UnicodeDecodeError:
+        except ValueError:
             userlist_errors.add((
                 "userlist",
                 _("The uploaded file does not appear to be a text file")))
