@@ -19,7 +19,6 @@ from rest_framework.fields import UUIDField
 from django.db import models, transaction, IntegrityError
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-from functools import reduce
 
 from os2datascanner.core_organizational_structure.models import Alias as Core_Alias
 from os2datascanner.core_organizational_structure.models import \
@@ -33,11 +32,11 @@ logger = structlog.get_logger(__name__)
 
 class AliasQuerySet(models.query.QuerySet):
     def associated_report_keys(self):
-        return reduce(
-                models.query.QuerySet.union,
-                (alias.match_relation.all().values_list("pk", flat=True)
-                 for alias in self),
-                self.model.objects.none())
+        keys = self.model.objects.none()
+        for relations in (alias.match_relation.all().values_list("pk", flat=True)
+                          for alias in self):
+            keys = keys.union(relations)
+        return keys
 
     def delete(self):
         # Avoid circular import
