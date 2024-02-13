@@ -62,15 +62,15 @@ class AccountAdmin(ImportedAdmin):
 
     # TODO: Consider if 'units' is needed here?
     #  At the time of writing units does not work
-    fields = ('username', 'first_name', 'last_name',
+    fields = ('username', 'first_name', 'last_name', 'email',
               'organization', 'manager', 'imported_id', 'last_import',
-              'is_superuser', 'email'
+              'is_superuser',
               )
-    list_display = ('username', 'first_name', 'last_name',
-                    'organization', 'last_import', 'email',
+    list_display = ('username', 'first_name', 'last_name', 'email',
+                    'organization', 'last_import',
                     )
-    search_fields = ('username', 'first_name', 'last_name',
-                     'organization__name', 'email',
+    search_fields = ('username', 'first_name', 'last_name', 'email',
+                     'organization__name',
                      )
     list_filter = (
         'organization',

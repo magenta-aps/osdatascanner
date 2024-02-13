@@ -57,6 +57,11 @@ class Account(models.Model):
         blank=True,
         null=True,
     )
+    email = models.EmailField(
+        verbose_name=_('contact email'),
+        blank=True,
+        null=True,
+    )
     organization = models.ForeignKey(
         'organizations.Organization',
         on_delete=models.CASCADE,
@@ -77,11 +82,6 @@ class Account(models.Model):
     is_superuser = models.BooleanField(
         verbose_name=_('superuser_status'),
         default=False
-    )
-    email = models.EmailField(
-        verbose_name=_('contact email'),
-        blank=True,
-        null=True,
     )
 
     def get_managed_units(self):

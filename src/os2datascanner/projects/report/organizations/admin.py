@@ -38,18 +38,18 @@ class AccountAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
         'username',
         'first_name',
         'last_name',
+        'email',
         'organization',
         'manager',
-        'uuid',
-        'email')
+        'uuid',)
     readonly_fields = (
         'username',
         'first_name',
         'last_name',
+        'email',
         'organization',
         'manager',
-        'uuid',
-        'email')
+        'uuid',)
 
 
 @admin.register(AccountOutlookSetting)
