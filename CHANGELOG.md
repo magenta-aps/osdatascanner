@@ -1,5 +1,11 @@
 # Changelog
 
+## New Release
+
+### Bugfixes
+
+- Non-superusers in the admin module can now see system rules.
+
 ## Version 3.22.2, 12th February 2024
 
 "Unparalleled Spectacles"
