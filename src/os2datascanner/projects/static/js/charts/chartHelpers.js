@@ -95,7 +95,7 @@ function resetZoomHighest() {
   highestTotal.resetZoom();
 }
 function resetZoomDevelopment() {
-  let unhandledMatches = Chart.getChart('bar_chart_unhandled_matches');
+  let unhandledMatches = Chart.getChart('line_chart_unhandled_matches');
   let newMatches = Chart.getChart('bar_chart_new_matches_by_month');
   unhandledMatches.resetZoom();
   newMatches.resetZoom();

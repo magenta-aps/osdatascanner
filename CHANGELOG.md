@@ -92,6 +92,9 @@
 - Removed duplicate code from scanner_askrun template, and moved logic to views
   instead. The ScannerRun view has also been refactored to remove some unused
   logic.
+  
+- The unhandled matches graph in the DPO overview is now a line graph to
+  accurately represent a change in the number of matches over time.
 
 - A button has been added to the DPO statistics page allowing the users to 
   download the data as a csv-file.

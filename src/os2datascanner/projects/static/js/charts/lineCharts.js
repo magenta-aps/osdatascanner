@@ -1,6 +1,6 @@
 /* exported drawLine */
 
-function makeLineChart(xdata, ydata, chartElement, xLabel = "", yLabel = "") {
+function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, yLabel = "") {
 	const lineChart = new Chart(chartElement, {
 		type: 'line',
 		data: {
@@ -30,6 +30,25 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", yLabel = "") {
 					display: false
 				},
 				legend: false,
+				zoom: {
+					zoom: {
+						limits: {
+							x: {min: 'original'}
+						},
+						wheel: {
+							enabled: true,
+							modifierKey: 'shift'
+						},
+						drag: {
+							enabled: true,
+							threshold: 20,
+						},
+						pinch: {
+							enabled: true
+						},
+						mode: swapXY ? 'x' : 'y',
+					}
+				},
 			},
 			responsive: true,
 			maintainAspectRatio: false,
