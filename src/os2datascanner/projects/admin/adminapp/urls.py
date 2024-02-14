@@ -26,7 +26,6 @@ from os2datascanner.projects.admin import settings
 from .models.scannerjobs.dropboxscanner import DropboxScanner
 from .models.scannerjobs.exchangescanner import ExchangeScanner
 from .models.scannerjobs.filescanner import FileScanner
-from .models.scannerjobs.webscanner import WebScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.msgraph import (MSGraphMailScanner,
                                          MSGraphFileScanner,
@@ -76,7 +75,7 @@ from .views.scanner_views import (StatusOverview, StatusCompleted,
 from .views.webscanner_views import (WebScannerCreate, WebScannerUpdate,
                                      WebScannerDelete, WebScannerRun,
                                      WebScannerAskRun, WebScannerList,
-                                     WebScannerValidate, WebScannerCopy)
+                                     WebScannerCopy)
 
 from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphMailCreate, MSGraphMailUpdate,
@@ -143,14 +142,10 @@ urlpatterns = [
     re_path(r'^webscanners/add/$', WebScannerCreate.as_view(), name='webscanner_add'),
     re_path(r'^webscanners/(?P<pk>\d+)/delete/$', WebScannerDelete.as_view(),
             name='webscanner_delete'),
-    re_path(r'^webscanners/(?P<pk>\d+)/validate/$', WebScannerValidate.as_view(),
-            name='web_scanner_validate'),
     re_path(r'^webscanners/(?P<pk>\d+)/run/$', WebScannerRun.as_view(),
             name='webscanner_run'),
     re_path(r'^webscanners/(?P<pk>\d+)/askrun/$',
-            WebScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=WebScanner),
+            WebScannerAskRun.as_view(),
             name='webscanner_askrun'),
     re_path(r'^webscanners/(?P<pk>\d+)/$', WebScannerUpdate.as_view(),
             name='webscanner_update'),
