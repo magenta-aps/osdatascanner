@@ -80,6 +80,7 @@ class SbsysScannerDelete(ScannerDelete):
 class SbsysScannerAskRun(ScannerAskRun):
     """Prompts for confirmation before running scannerjob"""
     model = SbsysScanner
+    run_url_name = "sbsysscanner_run"
 
 
 class SbsysScannerRun(ScannerRun):

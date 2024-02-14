@@ -161,6 +161,7 @@ class FileScannerAskRun(ScannerAskRun):
     """Prompt for starting file scan, validate first."""
 
     model = FileScanner
+    run_url_name = "filescanner_run"
 
 
 class FileScannerRun(ScannerRun):

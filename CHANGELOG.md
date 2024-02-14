@@ -6,6 +6,10 @@
 
 - Recurrence widget has been styled to better match the rest of the system.
 
+- Removed duplicate code from scanner_askrun template, and moved logic to views
+  instead. The ScannerRun view has also been refactored to remove some unused
+  logic.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.

@@ -108,6 +108,7 @@ class DropboxScannerAskRun(ScannerAskRun):
     """Prompt for starting dropbox scan, validate first."""
 
     model = DropboxScanner
+    run_url_name = 'dropboxscanner_run'
 
 
 class DropboxScannerRun(ScannerRun):
