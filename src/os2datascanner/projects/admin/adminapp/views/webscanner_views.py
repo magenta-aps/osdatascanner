@@ -131,7 +131,6 @@ class WebScannerAskRun(ScannerAskRun):
     """Prompt for starting web scan, validate first."""
 
     model = WebScanner
-    template_name = 'components/scanner/scanner_ask_run.html'
     run_url_name = 'webscanner_run'
 
 

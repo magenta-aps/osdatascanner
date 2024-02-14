@@ -183,6 +183,7 @@ class ExchangeScannerAskRun(ScannerAskRun):
     """Prompt for starting exchange scan, validate first."""
 
     model = ExchangeScanner
+    run_url_name = 'exchangescanner_run'
 
 
 class ExchangeScannerRun(ScannerRun):

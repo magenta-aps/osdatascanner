@@ -24,7 +24,6 @@ from os2datascanner.projects.admin.adminapp.views.analysis_views import Analysis
 from os2datascanner.projects.admin import settings
 
 from .models.scannerjobs.dropboxscanner import DropboxScanner
-from .models.scannerjobs.exchangescanner import ExchangeScanner
 from .models.scannerjobs.filescanner import FileScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.msgraph import (MSGraphMailScanner,
@@ -128,10 +127,8 @@ urlpatterns = [
     re_path(r'^exchangescanners/(?P<pk>\d+)/run/$', ExchangeScannerRun.as_view(),
             name='exchangescanner_run'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/askrun/$',
-            ExchangeScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=ExchangeScanner),
-            name='scanner_askrun'),
+            ExchangeScannerAskRun.as_view(),
+            name='exchangescanner_askrun'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/copy/$', ExchangeScannerCopy.as_view(),
             name='exchangescanner_copy'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/cleanup_stale_accounts/$',

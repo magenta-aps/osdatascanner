@@ -603,6 +603,7 @@ class ScannerAskRun(RestrictedDetailView):
     """Base class for prompt before starting scan, validate first."""
     fields = []
     context_object_name = "scanner"
+    template_name = 'components/scanner/scanner_ask_run.html'
 
     def get_context_data(self, **kwargs):
         """Check that user is allowed to run this scanner."""
