@@ -2,6 +2,10 @@
 
 ## New Release
 
+### General improvements
+
+- Recurrence widget has been styled to better match the rest of the system.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.
