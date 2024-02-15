@@ -28,9 +28,14 @@
 
 - Unit tests have been added for sorting UserErrorLogs.
 
+- The layout of exported csv-files from the dpo-module, 
+  has been changed as to make data processing easier.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.
+
+- The month-labels of the graphs in the dpo-module, says "Maj", and "Okt", for Danish users.
 
 - The Alias-model no longer uses recursion to clean up connections to 
   DocumentReports.
