@@ -1,5 +1,6 @@
 :root {
   --datatable-cell-padding: 2em;
+  --color-warning-light: #FFEDB6;
 }
 
 .datatable-wrapper {
@@ -791,11 +792,12 @@
 
 [data-tooltip] {
   position: absolute;
-  font-size: .85rem;
-  padding: .25rem;
+  font-size: 0.85rem;
+  padding: 0.375rem 0.5rem;
   border: 1px solid rgba(0, 0, 0, .2);
   border-radius: var(--border-radius-button);
-  background-color: #f4f4f4;
+  background-color: var(--color-body-bg);
+  color: var(--color-text-secondary);
   box-shadow: var(--box-shadow-filter);
   width: auto;
   white-space: nowrap;
@@ -803,16 +805,72 @@
   cursor: text;
 }
 
-.datatable tr.short td {
-  padding-top: calc(var(--datatable-cell-padding) / 2);
-  padding-bottom: calc(var(--datatable-cell-padding) / 2);
-}
+// ***** POPOVERS *****
+  // Used to show error messages in tables (currently only used in the Report Module).
+  // Toolhint's more detailed and extensive cousin.
 
-.datatable tr.warning {
-  background-color: var(--color-warning);
-}
+.popover {
+  display: inline-block;
+  position: relative;
 
-.datatable tr.problem textarea[readonly=true] {
-  width: 100%;
-  padding: 1em;
+  &__icon {
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  &:hover &__container {
+    display: block;
+  }
+
+  &__container {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    transform: translate(3.25rem, -4rem);
+  }
+
+  &__content {
+    padding: 0.875rem;
+    min-width: 28rem;
+    border-radius: var(--border-radius-button);
+    box-shadow: var(--box-shadow-default);
+    background-color: var(--color-warning-light);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 30%;
+      left: -10px; // Position it to the left of the popover content
+      border-width: 6px 10px 6px 0;
+      border-style: solid;
+      border-color: transparent var(--color-warning-light) transparent transparent; // The second value is the color of the triangle
+    }
+  }
+
+  &__text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.25rem 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1rem;
+  }
+  
+  &__status {
+    font-weight: 600;
+  }
+
+  &__error-container {
+    padding: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, .2);
+    color: var(--color-text-main);
+    background-color: #f4f4f4;
+    background-color: var(--color-body-bg);
+  }
+
+  &__error-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.625rem;
+    font-weight: 200;
+  }
 }
