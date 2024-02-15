@@ -14,19 +14,23 @@ function handleTableCorners() {
 
 // Handle checkboxes
 function handleChecked() {
-  var numChecked = $("input[name='table-checkbox']:checked").length;
+  let numChecked = $("input[name='table-checkbox']:checked").length;
   $(".selected-cb .num-selected").text(numChecked);
   $(".table-checkbox__action").prop("disabled", !Boolean(numChecked));
 
-  $("input[name='table-checkbox']:not(:checked)").closest("tr").removeClass("highlighted");
-  $("input[name='table-checkbox']:checked").closest("tr").addClass("highlighted");
+  $("input[name='table-checkbox']:not(:checked)")
+    .closest("tr")
+    .removeClass("highlighted");
+  $("input[name='table-checkbox']:checked")
+    .closest("tr")
+    .addClass("highlighted");
 }
 
 // attach click handler to document to be prepared for the scenario
 // where we dynamically add more rows
 document.addEventListener("click", function (e) {
   let row;
-  var targ = e.target;
+  let targ = e.target;
 
   if (hasClass(targ, "matches-expand")) {
     // toggle the matches of a single row
@@ -36,11 +40,11 @@ document.addEventListener("click", function (e) {
 
   if (hasClass(targ, "matches-expand-all")) {
     // toggle the matches of all rows
-    var rows = document.querySelectorAll("tr[data-type]");
+    const rows = document.querySelectorAll("tr[data-type]");
     toggleMatchesList(rows, targ);
 
     // store the user's preference in window.localStorage
-    var preferenceExpand = hasClass(targ, "up") ? "expanded" : "collapsed";
+    const preferenceExpand = hasClass(targ, "up") ? "expanded" : "collapsed";
     setStorage("os2ds-prefers-expanded-results", preferenceExpand);
   }
 
@@ -53,31 +57,33 @@ document.addEventListener("click", function (e) {
   }
 
   if (hasClass(targ, "probability-toggle")) {
-    var isPressed = targ.getAttribute("aria-pressed") === "true";
+    const isPressed = targ.getAttribute("aria-pressed") === "true";
     if (isPressed) {
       targ.setAttribute("aria-pressed", "false");
     } else {
       targ.setAttribute("aria-pressed", "true");
     }
 
-    Array.prototype.forEach.call(document.querySelectorAll(".matches-list__column--probability"), function (col) {
-      if (isPressed) {
-        col.setAttribute("hidden", "");
-      } else {
-        col.removeAttribute("hidden");
+    Array.prototype.forEach.call(
+      document.querySelectorAll(".matches-list__column--probability"),
+      function (col) {
+        if (isPressed) {
+          col.setAttribute("hidden", "");
+        } else {
+          col.removeAttribute("hidden");
+        }
       }
-    });
+    );
 
     // store the user's preference in window.localStorage
-    var preferenceProbability = isPressed ? "hide" : "show";
+    const preferenceProbability = isPressed ? "hide" : "show";
     setStorage("os2ds-prefers-probability", preferenceProbability);
   }
 
   if (hasClass(targ, "order-by")) {
-    document.getElementById('order').value = targ.value;
-    document.getElementById('order_by').value = targ.name;
+    document.getElementById("order").value = targ.value;
+    document.getElementById("order_by").value = targ.name;
   }
-
 });
 
 // function to use localStorage
@@ -85,13 +91,16 @@ function setStorage(item, value) {
   try {
     window.localStorage.setItem(item, value);
   } catch (e) {
-    console.error("Could not save " + item + " with value " + value + " to localStorage", e);
+    console.error(
+      "Could not save " + item + " with value " + value + " to localStorage",
+      e
+    );
   }
 }
 
 // IE11 way of doing Element.closest
 function closestElement(elm, selector) {
-  var parent = elm;
+  let parent = elm;
   while (parent) {
     if (parent.matches(selector)) {
       break;
@@ -103,7 +112,7 @@ function closestElement(elm, selector) {
 
 function toggleMatchesList(objectRows, toggleButton) {
   toggleClass(toggleButton, "up");
-  var buttonOpen = hasClass(toggleButton, "up");
+  const buttonOpen = hasClass(toggleButton, "up");
 
   Array.prototype.forEach.call(objectRows, function (row) {
     var matchesList = row.nextElementSibling;
@@ -152,7 +161,7 @@ function removeClass(elm, className) {
 // IE11 way of doing elm.classList.contains
 function hasClass(elm, className) {
   classList = [];
-  if (typeof (elm.className) === "string") {
+  if (typeof elm.className === "string") {
     classList = elm.className ? elm.className.split(" ") : [];
   } else {
     classList = Array.from(elm.classList);
@@ -163,18 +172,21 @@ function hasClass(elm, className) {
 // show a tooltip based on an event and its target. Assumes a DOM structure
 // where event.target has a descendant [data-tooltip-text]
 function showTooltip(event) {
-  var wrapper = event.target;
-  var tooltipElm = wrapper.querySelector("[data-tooltip-text]");
-  var textWidth = tooltipElm.offsetWidth;
-  var wrapperStyle = getComputedStyle(wrapper);
-  var wrapperWidth = wrapper.offsetWidth - parseFloat(wrapperStyle.paddingLeft) - parseFloat(wrapperStyle.paddingRight);
+  let wrapper = event.target;
+  const tooltipElm = wrapper.querySelector("[data-tooltip-text]");
+  const textWidth = tooltipElm.offsetWidth;
+  const wrapperStyle = getComputedStyle(wrapper);
+  const wrapperWidth =
+    wrapper.offsetWidth -
+    parseFloat(wrapperStyle.paddingLeft) -
+    parseFloat(wrapperStyle.paddingRight);
 
   if (textWidth > wrapperWidth) {
     addClass(wrapper, "cursor-help");
-    var tip = document.createElement("div");
-    var rect = wrapper.getBoundingClientRect();
-    var x = Math.round(event.pageX - rect.left - window.scrollX);
-    var y = Math.round(event.pageY - rect.top - window.scrollY);
+    let tip = document.createElement("div");
+    const rect = wrapper.getBoundingClientRect();
+    const x = Math.round(event.pageX - rect.left - window.scrollX);
+    const y = Math.round(event.pageY - rect.top - window.scrollY);
     tip.innerText = tooltipElm.innerText;
     tip.setAttribute("data-tooltip", "");
     tip.setAttribute("style", "top:" + y + "px;left:" + x + "px;");
@@ -184,8 +196,8 @@ function showTooltip(event) {
 
 function hideTooltip(event) {
   // delete the [data-tooltip] element from the DOM
-  var targ = event.target;
-  var tooltip = document.querySelector("[data-tooltip]");
+  let targ = event.target;
+  const tooltip = document.querySelector("[data-tooltip]");
   if (tooltip) {
     targ.removeChild(tooltip);
   }
@@ -195,7 +207,9 @@ function hideTooltip(event) {
 
 function prepareTable() {
   // if user prefers to have all rows expanded, do that.
-  const prefersExpanded = window.localStorage.getItem("os2ds-prefers-expanded-results");
+  const prefersExpanded = window.localStorage.getItem(
+    "os2ds-prefers-expanded-results"
+  );
   if (prefersExpanded && prefersExpanded === "expanded") {
     document.querySelector(".matches-expand-all").click();
   }
@@ -206,7 +220,9 @@ function prepareTable() {
   $(".table-checkbox__action").prop("disabled", true);
 
   // if user prefers to see probability, do that.
-  const prefersProbability = window.localStorage.getItem("os2ds-prefers-probability");
+  const prefersProbability = window.localStorage.getItem(
+    "os2ds-prefers-probability"
+  );
   if (prefersProbability && prefersProbability === "show") {
     document.querySelector(".probability-toggle").click();
   }
@@ -220,21 +236,65 @@ function addTooltipListeners(element) {
   element.addEventListener("mouseleave", hideTooltip);
 }
 
+// Show a popover based on an event and its target
+function showPopover(event) {
+  let wrapper = event.target;
+  let popover = wrapper.nextElementSibling;
+
+  if (popover && !popover.classList.contains("popover")) {
+    popover = null; // Ensure that only elements with class 'popover' are considered
+  }
+
+  if (popover) {
+    popover.style.display = "block";
+  }
+}
+
+// Hide the popover
+function hidePopover(event) {
+  let wrapper = event.target;
+  let popover = wrapper.nextElementSibling;
+
+  if (popover && !popover.classList.contains("popover")) {
+    popover = null; // Ensure that only elements with class 'popover' are considered
+  }
+
+  if (popover) {
+    popover.style.display = "none";
+  }
+}
+
+// Add popover listeners
+function addPopoverListeners(element) {
+  element.addEventListener("mouseenter", showPopover);
+  element.addEventListener("mouseleave", hidePopover);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   prepareTable();
 
   htmx.onLoad(function (content) {
-
-    if (hasClass(content, 'page') || hasClass(content, 'datatable-wrapper') || hasClass(content, 'content')) {
-
+    if (
+      hasClass(content, "page") ||
+      hasClass(content, "datatable-wrapper") ||
+      hasClass(content, "content")
+    ) {
       prepareTable();
-      
-      var tooltips = document.querySelectorAll(".tooltip");
+
+      // Attach tooltip listeners
+      const tooltips = document.querySelectorAll(".tooltip");
       tooltips.forEach(addTooltipListeners);
+
+      // Attach popover listeners
+      const warningIcons = document.querySelectorAll(".popover__icon");
+      warningIcons.forEach(addPopoverListeners);
 
       // Listen for click on toggle checkbox
       $("#select-all").change(function () {
-        $("input[name='table-checkbox']").prop("checked", $(this).prop("checked"));
+        $("input[name='table-checkbox']").prop(
+          "checked",
+          $(this).prop("checked")
+        );
         handleChecked();
       });
 
@@ -242,10 +302,9 @@ document.addEventListener("DOMContentLoaded", function () {
       $("input[name='table-checkbox']").change(handleChecked);
 
       // Copy Path function
-      if (typeof ClipboardJS !== 'undefined') {
-        new ClipboardJS(document.querySelectorAll('[data-clipboard-text]'));
+      if (typeof ClipboardJS !== "undefined") {
+        new ClipboardJS(document.querySelectorAll("[data-clipboard-text]"));
       }
     }
-
   });
 });

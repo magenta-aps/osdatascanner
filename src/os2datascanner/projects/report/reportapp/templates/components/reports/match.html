@@ -76,6 +76,27 @@
                   </button>
                 </span>
               {% endif %}
+
+              {% if document_report.problem %}
+                <div class="popoper">
+                  <i id="warning" class="material-icons popover popover__icon">warning</i>
+                  <div class="popover popover__container">
+                    <div class="popover popover__content">
+                      <div class="popover popover__text-container">
+                        <span class="popoper popover__status">{% translate "No further action required" %}:</span>
+                        <div>
+                          <span class="popoper popover__title">{% translate "A temporary error occurred during the latest check of this match" %}. {% translate "OSdatascanner will automatically check this match again as part of the next scan" %}.</span>
+                          <span class="popoper popover__sub-title"></span>
+                        </div>
+                      </div>
+                      <div class="popover popover__error-container">
+                        <span class="popover popover__error-text">{{ document_report.problem.message }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+
             </div>
             {% if document_report.last_opened_time %}
               {% with document_report.last_opened_time|naturaltime as time_since %}
