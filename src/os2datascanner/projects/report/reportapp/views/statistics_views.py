@@ -483,6 +483,9 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
             row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
             row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
             row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
+<<<<<<< HEAD
+=======
+>>>>>>> 7b1c711f7 ([#59725] Restructure and translate dpo-csv)
 
         return rows
 
