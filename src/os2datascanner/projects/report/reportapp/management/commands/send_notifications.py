@@ -179,7 +179,7 @@ class Command(BaseCommand):
             # Recurrence field datetime is naive, which means we can't use an aware
             # datetime object.
             scheduled_next_date = org.email_notification_schedule.after(
-                datetime.datetime.now().replace(second=0)).date()
+                datetime.datetime.now().replace(second=0, microsecond=0), inc=True).date()
             # We can when we're only concerned with the date.
             today_date = time_now().date()
 
