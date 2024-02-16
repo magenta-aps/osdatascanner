@@ -1,12 +1,20 @@
 .stat_form {
 	display: flex;
-
-	div {
-		margin: 0 1rem;
-	}
+	gap: 2rem;
 
 	label {
 		font-weight: bold;
+	}
+
+	.form__buttons { // This is a temporary solution until the DPO page gets revamped. 
+		display: flex;
+		align-items: flex-end;
+		margin-left: -0.313rem; // Compensates for the "invisible" padding in the buttons and aligns the perceived distance between dropdowns and buttons
+		
+		>* { // Affects .button-group
+			height: 2.688rem; // Matches the height of the dropdown elements (43px)
+			padding: auto 0;
+		}
 	}
 }
 

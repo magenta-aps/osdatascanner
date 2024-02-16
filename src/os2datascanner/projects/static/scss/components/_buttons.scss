@@ -9,7 +9,10 @@
 
   // Focus styles
   --color-btn-focus: #BEDAEB;
-  --btn-focus-style: 4px solid; 
+  --btn-focus-style: 4px solid;
+  
+  // Used for the vertical <hr> dividing some button groups for ✨fancy✨ UI
+  --color-border-neutral: rgba(0, 0, 0, 0.1);
 }
 
 .button { // ***** Default button type *****
@@ -257,6 +260,16 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+
+  height: fit-content;
+
+  &__divider {
+    height: 2.125rem;
+    height: 1.25rem;
+    width: 2px;
+    border: none;
+    background-color: var(--color-border-neutral);
+  }
 }
 
 .toggle { // ***** This is only used on the "probability" radio button on the Report module *****
