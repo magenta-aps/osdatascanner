@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-12 15:14+0100\n"
+"POT-Creation-Date: 2024-02-16 13:34+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -427,7 +427,7 @@ msgstr "resultater"
 
 #: reportapp/templates/components/pagination/pagination.html:10
 #: reportapp/templates/components/reports/handle_match.html:82
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:118
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:130
 msgid "of"
 msgstr "af"
 
@@ -525,7 +525,6 @@ msgstr "Nulstil min adgangskode"
 #: reportapp/templates/components/reports/filters.html:64
 #: reportapp/templates/components/reports/filters.html:98
 #: reportapp/templates/components/reports/filters.html:131
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:71
 msgid "Clear"
 msgstr "Ryd"
 
@@ -812,48 +811,73 @@ msgstr "Organisatorisk enhed"
 msgid "All"
 msgstr "Alle"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:105
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:64
+msgid "Reset the DPO overview"
+msgstr "Nulstil DPO-overblikket"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:65
+msgid "Click here to reset the DPO overview"
+msgstr "Klik her for at nulstille DPO-overblikket"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:74
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:261
+msgid "Reset"
+msgstr "Nulstil"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:78
+msgid "Export DPO data as a csv-file"
+msgstr "Eksportér DPO-data som en csv-fil"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:79
+msgid "Click here to export DPO data as a csv-file"
+msgstr "Klik her for at eksportere DPO-data som en csv-fil"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:80
+msgid "Export CSV"
+msgstr "Eksportér CSV"
+
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:117
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:129
 msgid "Handled results"
 msgstr "Håndterede resultater"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:107
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:119
 msgid "The organizational unit's percentage of handled results"
 msgstr "Afdelingens procentvise andel af håndterede resultater"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:128
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:140
 msgid "Distribution of results"
 msgstr "Fordeling af resultater"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:130
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:142
 msgid "Results distributed by data sources"
 msgstr "Resultater fordelt på datakilder"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:133
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:145
 msgid "Results distributed by resolution statuses"
 msgstr "Resultater fordelt på håndteringsstatusser"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:138
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:150
 msgid "Data sources"
 msgstr "Datakilder"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:139
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:151
 msgid "Resolution statuses"
 msgstr "Håndteringsstatusser"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:228
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:240
 msgid "Development overview"
 msgstr "Udviklingsoverblik"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:230
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:242
 msgid "Unhandled results by month"
 msgstr "Antal uhåndterede resultater per måned"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:232
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:244
 msgid "New results by month"
 msgstr "Antal nye resultater per måned"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:242
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:254
 msgid ""
 "Hold and drag your mouse to zoom in on part of the graph. Hold shift while "
 "using the mouse wheel to manually zoom. Use the reset button to return the "
@@ -863,15 +887,11 @@ msgstr ""
 "zoome ind på. Hold shift inde, mens du scroller med musehjulet, for manuelt "
 "at styre zoom. Tryk på nulstil-knappen for at nulstille zoom."
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:249
-msgid "Reset"
-msgstr "Nulstil"
-
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:254
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:266
 msgid "Unhandled results"
 msgstr "Uhåndterede resultater"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:255
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:267
 msgid "New results"
 msgstr "Nye resultater"
 
