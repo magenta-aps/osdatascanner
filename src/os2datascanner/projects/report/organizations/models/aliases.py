@@ -34,10 +34,10 @@ logger = structlog.get_logger(__name__)
 class AliasQuerySet(models.query.QuerySet):
     def associated_report_keys(self):
         return reduce(
-                models.query.QuerySet.union,
-                (alias.match_relation.all().values_list("pk", flat=True)
-                 for alias in self),
-                self.model.objects.none())
+            lambda results, it: results | it,
+            (set(al.match_relation.values_list('pk', flat=True).iterator())
+                for al in self),
+            set())
 
     def delete(self):
         # Avoid circular import
