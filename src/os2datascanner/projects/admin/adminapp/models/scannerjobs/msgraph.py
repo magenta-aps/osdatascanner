@@ -98,7 +98,8 @@ class MSGraphMailScanner(MSGraphScanner):
                 tenant_id=str(self.grant.tenant_id),
                 client_secret=settings.MSGRAPH_CLIENT_SECRET,
                 scan_deleted_items_folder=self.scan_deleted_items_folder,
-                scan_syncissues_folder=self.scan_syncissues_folder
+                scan_syncissues_folder=self.scan_syncissues_folder,
+                skip_attachments=True
             )
         for account in self.compute_covered_accounts():
             for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):

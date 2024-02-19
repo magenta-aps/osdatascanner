@@ -23,6 +23,18 @@ class MailSource(DerivedSource):
             yield email.message_from_bytes(
                     fp.read(), policy=email.policy.default)
 
+    @classmethod
+    def _filename_from_part(cls, part):
+        filename = part.get_filename()
+        if part.is_attachment():
+            # "Why don't we just use sanitise_path here?", I hear you
+            # ask. The answer: because we actually know which bit is
+            # the filename and which bit is the MIME tree walk at this
+            # point, and that's the hard bit of the process
+            filename = get_safe_filename(filename)
+
+        return filename
+
     def handles(self, sm):  # noqa: CCR001
         def _process_message(path, part):
             if part.is_multipart():
@@ -37,15 +49,18 @@ class MailSource(DerivedSource):
                     for idx, part in enumerate(parts):
                         yield from _process_message(path + [str(idx)], part)
             else:
-                filename = part.get_filename()
-                if part.is_attachment():
-                    # "Why don't we just use sanitise_path here?", I hear you
-                    # ask. The answer: because we actually know which bit is
-                    # the filename and which bit is the MIME tree walk at this
-                    # point, and that's the hard bit of the process
-                    filename = get_safe_filename(filename)
-                full_path = "/".join(path + [filename or ''])
-                yield MailPartHandle(self, full_path, part.get_content_type())
+                filename = self._filename_from_part(part)
+
+                # Do not yield a handle for an attached file, if we want to
+                # skip attached files.
+                if part.is_attachment() and \
+                        hasattr(self.handle, 'scan_attachments') and \
+                        self.handle.scan_attachments is False:
+                    # Don't yield anything: We don't care about attached files!
+                    pass
+                else:
+                    full_path = "/".join(path + [filename or ''])
+                    yield MailPartHandle(self, full_path, part.get_content_type())
         yield from _process_message([], sm.open(self))
 
 
