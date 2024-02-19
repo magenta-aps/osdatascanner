@@ -191,6 +191,7 @@ class MSGraphMailAskRun(ScannerAskRun):
     """Prompts the user for confirmation before running a Microsoft Graph mail
     scanner job."""
     model = MSGraphMailScanner
+    run_url_name = "msgraphmailscanner_run"
 
 
 class MSGraphMailRun(ScannerRun):
@@ -281,6 +282,7 @@ class MSGraphFileAskRun(ScannerAskRun):
     """Prompts the user for confirmation before running a Microsoft Graph file
     scanner job."""
     model = MSGraphFileScanner
+    run_url_name = "msgraphfilescanner_run"
 
 
 class MSGraphFileRun(ScannerRun):
@@ -370,6 +372,7 @@ class MSGraphCalendarAskRun(ScannerAskRun):
     calendar scanner job."""
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
+    run_url_name = "msgraphcalendarscanner_run"
 
 
 class MSGraphCalendarRun(ScannerRun):
@@ -453,6 +456,7 @@ class MSGraphTeamsFileAskRun(ScannerAskRun):
     """Prompts the user for confirmation before running a Microsoft Graph file
     scanner job."""
     model = MSGraphTeamsFileScanner
+    run_url_name = "msgraphteamsfilescanner_run"
 
 
 class MSGraphTeamsFileRun(ScannerRun):

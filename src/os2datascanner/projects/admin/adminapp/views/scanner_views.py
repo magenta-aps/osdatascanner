@@ -19,6 +19,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
+from django.urls import reverse_lazy
 from pika.exceptions import AMQPError
 import structlog
 
@@ -601,6 +602,8 @@ class ScannerCopy(ScannerBase, RestrictedCreateView):
 class ScannerAskRun(RestrictedDetailView):
     """Base class for prompt before starting scan, validate first."""
     fields = []
+    context_object_name = "scanner"
+    template_name = 'components/scanner/scanner_ask_run.html'
 
     def get_context_data(self, **kwargs):
         """Check that user is allowed to run this scanner."""
@@ -624,7 +627,12 @@ class ScannerAskRun(RestrictedDetailView):
         if not ok:
             context['error_message'] = error_message
 
+        context["run_redirect"] = self.get_run_redirect()
+
         return context
+
+    def get_run_redirect(self):
+        return reverse_lazy(self.run_url_name, kwargs={'pk': self.kwargs.get('pk')})
 
 
 class ScannerRun(RestrictedDetailView):
@@ -634,17 +642,12 @@ class ScannerRun(RestrictedDetailView):
     template_name = 'components/scanner/scanner_run.html'
     model = Scanner
 
-    def __init__(self):
-        self.object = None
-
-    def get(self, request, *args, **kwargs):
-        """Handle a get request to the view."""
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
         try:
             context['scan_tag'] = dumps(
-                self.object.run(user=request.user), indent=2)
+                self.object.run(user=self.request.user), indent=2)
         except Exception as ex:
             logger.error("Error while starting ScannerRun", exc_info=True)
             error_type = type(ex).__name__
@@ -654,7 +657,7 @@ class ScannerRun(RestrictedDetailView):
                 context['engine2_error'] = f"Engine failure [{error_type}]."
                 context['engine2_error'] += ", ".join([str(e) for e in ex.args])
 
-        return self.render_to_response(context)
+        return context
 
 
 class ScannerCleanupStaleAccounts(RestrictedDetailView):

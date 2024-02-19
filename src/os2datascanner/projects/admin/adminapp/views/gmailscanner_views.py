@@ -116,6 +116,7 @@ class GmailScannerCopy(ScannerCopy):
 class GmailScannerAskRun(ScannerAskRun):
     """Prompt for starting gmail scan, validate first."""
     model = GmailScanner
+    run_url_name = "gmailscanner_run"
 
 
 class GmailScannerRun(ScannerRun):

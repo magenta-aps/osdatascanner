@@ -11,8 +11,9 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-from os2datascanner.projects.admin.adminapp.views.views import RestrictedDetailView
-from ..validate import validate_domain, get_validation_str
+from django.utils.translation import gettext_lazy as _
+
+from ..validate import get_validation_str
 from .scanner_views import (
     ScannerDelete,
     ScannerAskRun,
@@ -22,7 +23,6 @@ from .scanner_views import (
     ScannerCreate,
     ScannerList)
 from ..models.scannerjobs.webscanner import WebScanner
-from django.utils.translation import gettext_lazy as _
 
 
 def url_contains_spaces(form):
@@ -131,30 +131,10 @@ class WebScannerAskRun(ScannerAskRun):
     """Prompt for starting web scan, validate first."""
 
     model = WebScanner
+    run_url_name = 'webscanner_run'
 
 
 class WebScannerRun(ScannerRun):
     """View that handles starting of a web scanner run."""
 
     model = WebScanner
-
-
-class WebScannerValidate(RestrictedDetailView):
-    """View that handles validation of a domain."""
-
-    model = WebScanner
-
-    def get_context_data(self, **kwargs):
-        """Perform validation and populate the template context."""
-        context = super().get_context_data(**kwargs)
-        context['validation_status'] = self.object.validation_status
-        if not self.object.validation_status:
-            result = validate_domain(self.object)
-
-            if result:
-                self.object.validation_status = self.model.VALID
-                self.object.save()
-
-            context['validation_success'] = result
-
-        return context

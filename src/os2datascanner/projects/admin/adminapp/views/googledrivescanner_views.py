@@ -115,6 +115,7 @@ class GoogleDriveScannerCopy(ScannerCopy):
 class GoogleDriveScannerAskRun(ScannerAskRun):
     """Prompt for starting google drive scan, validate first."""
     model = GoogleDriveScanner
+    run_url_name = "googledrivescanner_run"
 
 
 class GoogleDriveScannerRun(ScannerRun):

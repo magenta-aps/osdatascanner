@@ -23,17 +23,6 @@ from os2datascanner.projects.admin.adminapp.views.analysis_views import Analysis
 
 from os2datascanner.projects.admin import settings
 
-from .models.scannerjobs.dropboxscanner import DropboxScanner
-from .models.scannerjobs.exchangescanner import ExchangeScanner
-from .models.scannerjobs.filescanner import FileScanner
-from .models.scannerjobs.webscanner import WebScanner
-from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
-from .models.scannerjobs.msgraph import (MSGraphMailScanner,
-                                         MSGraphFileScanner,
-                                         MSGraphCalendarScanner,
-                                         MSGraphTeamsFileScanner)
-from .models.scannerjobs.gmail import GmailScanner
-from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .views.api import JSONAPIView
 from .views.views import GuideView, DialogSuccess
 
@@ -76,7 +65,7 @@ from .views.scanner_views import (StatusOverview, StatusCompleted,
 from .views.webscanner_views import (WebScannerCreate, WebScannerUpdate,
                                      WebScannerDelete, WebScannerRun,
                                      WebScannerAskRun, WebScannerList,
-                                     WebScannerValidate, WebScannerCopy)
+                                     WebScannerCopy)
 
 from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphMailCreate, MSGraphMailUpdate,
@@ -129,10 +118,8 @@ urlpatterns = [
     re_path(r'^exchangescanners/(?P<pk>\d+)/run/$', ExchangeScannerRun.as_view(),
             name='exchangescanner_run'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/askrun/$',
-            ExchangeScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=ExchangeScanner),
-            name='scanner_askrun'),
+            ExchangeScannerAskRun.as_view(),
+            name='exchangescanner_askrun'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/copy/$', ExchangeScannerCopy.as_view(),
             name='exchangescanner_copy'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/cleanup_stale_accounts/$',
@@ -143,14 +130,10 @@ urlpatterns = [
     re_path(r'^webscanners/add/$', WebScannerCreate.as_view(), name='webscanner_add'),
     re_path(r'^webscanners/(?P<pk>\d+)/delete/$', WebScannerDelete.as_view(),
             name='webscanner_delete'),
-    re_path(r'^webscanners/(?P<pk>\d+)/validate/$', WebScannerValidate.as_view(),
-            name='web_scanner_validate'),
     re_path(r'^webscanners/(?P<pk>\d+)/run/$', WebScannerRun.as_view(),
             name='webscanner_run'),
     re_path(r'^webscanners/(?P<pk>\d+)/askrun/$',
-            WebScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=WebScanner),
+            WebScannerAskRun.as_view(),
             name='webscanner_askrun'),
     re_path(r'^webscanners/(?P<pk>\d+)/$', WebScannerUpdate.as_view(),
             name='webscanner_update'),
@@ -166,9 +149,7 @@ urlpatterns = [
     re_path(r'^filescanners/(?P<pk>\d+)/run/$', FileScannerRun.as_view(),
             name='filescanner_run'),
     re_path(r'^filescanners/(?P<pk>\d+)/askrun/$',
-            FileScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=FileScanner),
+            FileScannerAskRun.as_view(),
             name='filescanner_askrun'),
     re_path(r'^filescanners/(?P<pk>\d+)/copy/$',
             FileScannerCopy.as_view(),
@@ -184,9 +165,7 @@ urlpatterns = [
     re_path(r'^dropboxscanners/(?P<pk>\d+)/run/$', DropboxScannerRun.as_view(),
             name='dropboxscanner_run'),
     re_path(r'^dropboxscanners/(?P<pk>\d+)/askrun/$',
-            DropboxScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=DropboxScanner),
+            DropboxScannerAskRun.as_view(),
             name='dropboxscanner_askrun'),
 
     # Google Drive scanner URLs
@@ -201,9 +180,7 @@ urlpatterns = [
     re_path(r'^googledrivescanners/(?P<pk>\d+)/run/$', GoogleDriveScannerRun.as_view(),
             name='googledrivescanner_run'),
     re_path(r'^googledrivescanners/(?P<pk>\d+)/askrun/$',
-            GoogleDriveScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=GoogleDriveScanner),
+            GoogleDriveScannerAskRun.as_view(),
             name='googledrivescanner_askrun'),
     re_path(r'^googledrivescanners/(?P<pk>\d+)/copy/$', GoogleDriveScannerCopy.as_view(),
             name='googledrivescanner_copy'),
@@ -218,9 +195,7 @@ urlpatterns = [
     re_path(r'^gmailscanners/(?P<pk>\d+)/run/$', GmailScannerRun.as_view(),
             name='gmailscanner_run'),
     re_path(r'^gmailscanners/(?P<pk>\d+)/askrun/$',
-            GmailScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=GmailScanner),
+            GmailScannerAskRun.as_view(),
             name='gmailscanner_askrun'),
     re_path(r'^gmailscanners/(?P<pk>\d+)/copy/$',
             GmailScannerCopy.as_view(),
@@ -236,9 +211,7 @@ urlpatterns = [
     re_path(r'^sbsysscanners/(?P<pk>\d+)/run/$', SbsysScannerRun.as_view(),
             name='sbsysscanner_run'),
     re_path(r'^sbsysscanners/(?P<pk>\d+)/askrun/$',
-            SbsysScannerAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=SbsysScanner),
+            SbsysScannerAskRun.as_view(),
             name='sbsysscanner_askrun'),
 
     # OAuth-based data sources
@@ -261,9 +234,7 @@ urlpatterns = [
             MSGraphCalendarRun.as_view(),
             name='msgraphcalendarscanner_run'),
     re_path(r'^msgraph-calendarscanners/(?P<pk>\d+)/askrun/$',
-            MSGraphCalendarAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=MSGraphCalendarScanner),
+            MSGraphCalendarAskRun.as_view(),
             name='msgraphcalendarscanner_askrun'),
     re_path(r'^(msgraph-calendarscanners)/(\d+)/(created|saved)/$',
             DialogSuccess.as_view()),
@@ -294,9 +265,7 @@ urlpatterns = [
             MSGraphFileRun.as_view(),
             name='msgraphfilescanner_run'),
     re_path(r'^msgraph-filescanners/(?P<pk>\d+)/askrun/$',
-            MSGraphFileAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=MSGraphFileScanner),
+            MSGraphFileAskRun.as_view(),
             name='msgraphfilescanner_askrun'),
 
     re_path(r'^msgraph-mailscanners/$',
@@ -317,9 +286,7 @@ urlpatterns = [
             MSGraphMailRun.as_view(),
             name='msgraphmailscanner_run'),
     re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/askrun/$',
-            MSGraphMailAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=MSGraphMailScanner),
+            MSGraphMailAskRun.as_view(),
             name='msgraphmailscanner_askrun'),
     re_path(r'^(msgraph-mailscanners|msgraph-filescanners)/(\d+)/(created|saved)/$',
             DialogSuccess.as_view()),
@@ -342,9 +309,7 @@ urlpatterns = [
             MSGraphTeamsFileRun.as_view(),
             name='msgraphteamsfilescanner_run'),
     re_path(r'^msgraph-teams-filescanners/(?P<pk>\d+)/askrun/$',
-            MSGraphTeamsFileAskRun.as_view(
-                template_name='components/scanner/scanner_ask_run.html',
-                model=MSGraphTeamsFileScanner),
+            MSGraphTeamsFileAskRun.as_view(),
             name='msgraphteamsfilescanner_askrun'),
     re_path(r'^(msgraph-teams-filescanners|msgraph-filescanners)/(\d+)/(created|saved)/$',
             DialogSuccess.as_view()),
