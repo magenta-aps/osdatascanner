@@ -644,10 +644,11 @@ class ScannerRun(RestrictedDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        full_scan = self.request.GET.get("full", False) == "true"
 
         try:
             context['scan_tag'] = dumps(
-                self.object.run(user=self.request.user), indent=2)
+                self.object.run(user=self.request.user, force=full_scan), indent=2)
         except Exception as ex:
             logger.error("Error while starting ScannerRun", exc_info=True)
             error_type = type(ex).__name__

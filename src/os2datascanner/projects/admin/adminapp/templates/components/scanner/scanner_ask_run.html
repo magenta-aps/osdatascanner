@@ -26,6 +26,9 @@
         <p>
           <a href="{{ run_redirect }}"
              class="button button--cta-button run-scan-button">{% trans "Let's go!" %}</a>
+
+          <a href="{{ run_redirect }}?full=true"
+             class="button button--cta-button run-scan-button">{% trans "Full scan" %}</a>
  
           {#     Setting style=".." here is not best practice, but we want to still have the styling from #}
           {#      assigned classes when element is shown. Hidden will not work because display is set in css #}
