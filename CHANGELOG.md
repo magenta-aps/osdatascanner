@@ -10,6 +10,9 @@
   instead. The ScannerRun view has also been refactored to remove some unused
   logic.
 
+- A button has been added to the DPO statistics page allowing the users to 
+  download the data as a csv-file.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.
