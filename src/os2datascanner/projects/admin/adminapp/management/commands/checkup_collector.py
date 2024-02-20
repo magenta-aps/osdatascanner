@@ -140,7 +140,7 @@ def update_scheduled_checkup(handle, matches, problem, scan_time, scanner):  # n
         of=('self',)
     ).filter(
         scanner=scanner,
-        handle_representation=handle.to_json_object()
+        path=handle.crunch(hash=True)
     )
     # Queryset is evaluated immediately with .first() to lock the database entry.
     locked_qs.first()
@@ -197,7 +197,7 @@ def update_scheduled_checkup(handle, matches, problem, scan_time, scanner):  # n
         # An object with a transient problem or with real matches is an
         # object we'll want to check up on again later
         ScheduledCheckup.objects.update_or_create(
-                handle_representation=handle.to_json_object(),
+                path=handle.crunch(hash=True),
                 scanner=scanner,
                 # XXX: ideally we'd detect if a LastModifiedRule is the
                 # victim of a transient failure so that we can preserve
@@ -205,6 +205,7 @@ def update_scheduled_checkup(handle, matches, problem, scan_time, scanner):  # n
                 # we don't (yet) get enough information out of the
                 # pipeline for that
                 defaults={
+                    "handle_representation": handle.to_json_object(),
                     "interested_before": scan_time
                 })
         if problem and not problem.missing:
