@@ -622,6 +622,9 @@ class ScannerAskRun(RestrictedDetailView):
         else:
             ok = True
 
+        context["partial_scan"] = (self.object.do_last_modified_check and
+                                   self.object.statuses.exists())
+
         context["ok"] = ok
 
         if not ok:

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-20 07:30+0100\n"
+"POT-Creation-Date: 2024-02-21 08:48+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1161,7 +1161,7 @@ msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
 #: adminapp/templates/components/scanner/scanner_ask_run.html:22
-#: adminapp/templates/components/scanner/scanner_ask_run.html:46
+#: adminapp/templates/components/scanner/scanner_ask_run.html:54
 msgid "Run scanner"
 msgstr "Kør scanner"
 
@@ -1169,15 +1169,35 @@ msgstr "Kør scanner"
 msgid "Are you sure you want to start the scanner?"
 msgstr "Er du sikker på, at du vil starte scanneren?"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:28
-msgid "Let's go!"
-msgstr "Ja, kør"
+#: adminapp/templates/components/scanner/scanner_ask_run.html:30
+msgid ""
+"Perform a partial scan, ignoring all sources which have not changed since "
+"last scan."
+msgstr ""
+"Foretag en delvis scanning, hvor alle kilder, som ikke har ændret sig siden "
+"sidste scanning, ignoreres."
 
 #: adminapp/templates/components/scanner/scanner_ask_run.html:31
+msgid "Partial scan"
+msgstr "Delvist scan"
+
+#: adminapp/templates/components/scanner/scanner_ask_run.html:34
+msgid ""
+"Perform a full scan, scanning all sources irregardless if they were scanned "
+"previously."
+msgstr ""
+"Foretag en fuld scanning, hvor all kilder scannes, uanset om de er blevet "
+"scannet tidligere."
+
+#: adminapp/templates/components/scanner/scanner_ask_run.html:35
 msgid "Full scan"
 msgstr "Fuld scanning"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:37
+#: adminapp/templates/components/scanner/scanner_ask_run.html:38
+msgid "Let's go!"
+msgstr "Ja, kør"
+
+#: adminapp/templates/components/scanner/scanner_ask_run.html:45
 msgid "Waiting..."
 msgstr "Afventer..."
 
