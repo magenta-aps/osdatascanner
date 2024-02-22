@@ -51,15 +51,31 @@ class CleanMessage(NamedTuple):
     scanner pks are to be deleted."""
     time: timezone.datetime = None
     publisher: str = None
-    scanners_accounts_dict: dict = None
     event_type = "clean_document_reports"
 
     def to_json_object(self):
         return {
-            "scanners_accounts_dict": self.scanners_accounts_dict,
             "type": self.event_type,
             "time": timezone.datetime.strftime(self.time, "%m/%d/%Y, %H:%M:%S"),
             "publisher": self.publisher
+        }
+
+    @classmethod
+    def from_json_object(cls, obj):
+        msg = cls()
+        for attr, val in obj.items():
+            setattr(msg, attr, val)
+        return msg
+
+
+class CleanAccountsMessage(CleanMessage):
+    """"""
+
+    scanners_accounts_dict: dict = None
+
+    def to_json_object(self):
+        return super().to_json_object() | {
+            "scanners_accounts_dict": self.scanners_accounts_dict
         }
 
     @staticmethod
@@ -103,11 +119,3 @@ class CleanMessage(NamedTuple):
             time=timezone.now(),
             publisher=publisher)
         publish_events([message])
-
-    @staticmethod
-    def from_json_object(obj):
-        return CleanMessage(
-            scanners_accounts_dict=obj.get("scanners_accounts_dict"),
-            event_type=obj.get("type"),
-            time=timezone.datetime.strptime(obj.get("time"), "%m/%d/%Y, %H:%M:%S"),
-            publisher=obj.get("publisher"))

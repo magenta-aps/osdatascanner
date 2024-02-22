@@ -45,6 +45,7 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.pipeline.headers import get_exchange, get_headers
 from mptt.models import TreeManyToManyField
+from os2datascanner.projects.admin.adminapp.utils import CleanMessage
 
 from ..rules import Rule
 from .scanner_helpers import (  # noqa (interface backwards compatibility)
@@ -56,10 +57,26 @@ base_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 
+class ScannerQuerySet(models.query.QuerySet):
+    def delete(self):
+        from os2datascanner.projects.admin.organizations.models import Account
+
+        accounts = Account.objects.all()
+        account_dict = CleanMessage.make_account_dict(accounts)
+        scanners_accounts_dict = {pk[0]: account_dict for pk in self.values_list('pk')}
+        CleanMessage.send(scanners_accounts_dict, publisher="Scanner.delete()")
+        return super().delete()
+
+
+class ScannerManager(InheritanceManager):
+    def get_queryset(self):
+        return ScannerQuerySet(self.model, using=self._db, hints=self._hints)
+
+
 class Scanner(models.Model):
 
     """A scanner, i.e. a template for actual scanning jobs."""
-    objects = InheritanceManager()
+    objects = ScannerManager()
 
     linkable = False
 
