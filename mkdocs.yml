@@ -34,6 +34,7 @@ nav:
     - Frontend Guides:
       - Buttons: frontend/buttons/buttons.md
       - Icons: frontend/icons.md
+      - Components: frontend/components/utility.md
   - Other:
     - Reusable components: reusable-components.md
     - Release notes: changelog.md
