@@ -148,6 +148,17 @@ class WebSource(Source):
         self._extended_hints = extended_hints
         self._always_crawl = always_crawl
 
+    def __contains__(self, other):
+        # OSdatascanner considers that https://secure.example.com/b/c.txt is in
+        # http://example.com/, even though these two URLs technically wouldn't
+        # share a WebSource, so we need to reimplement this method in terms of
+        # our try_make_relative check
+        match other:
+            case WebHandle(_url=url):
+                return try_make_relative(self.url, url) is not None
+            case _:
+                return False
+
     def _generate_state(self, sm):
         from ... import __version__
         with requests.Session() as session:
