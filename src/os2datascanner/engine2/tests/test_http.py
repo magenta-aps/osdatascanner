@@ -78,6 +78,20 @@ mapped_site_with_images = {
         "http://localhost:64346/happy_cat.jpg",
     ],
 }
+secret_site_with_crawling = {
+    "source": WebSource(
+            "http://localhost:64346/",
+            sitemap="http://localhost:64346/secret_sitemap.xml",
+            always_crawl=True),
+    "handles": [
+        "http://localhost:64346/",
+        "http://localhost:64346/intet",
+        "http://localhost:64346/vstkom.png",
+        "http://localhost:64346/kontakt.html",
+        "http://localhost:64346/hemmeligheder.html",
+        "http://localhost:64346/hemmeligheder2.html",
+    ]
+}
 indexed_mapped_site = {
     "source": WebSource(
         "http://localhost:64346/", sitemap="http://localhost:64346/sitemap_index.xml"
@@ -505,6 +519,19 @@ class Engine2HTTPExplorationTest(Engine2HTTPSetup, unittest.TestCase):
             presentation_urls,
             mapped_site["handles"],
             "embedded site with sitemap should have 3 handles",
+        )
+
+    def test_exploration_sitemap_crawling(self):
+        "Use sitemap with crawling"
+
+        with SourceManager() as sm:
+            presentation_urls = [
+                    h.presentation_url
+                    for h in secret_site_with_crawling["source"].handles(sm)]
+        self.assertCountEqual(
+            presentation_urls,
+            secret_site_with_crawling["handles"],
+            "embedded site with sitemap should have 5 handles",
         )
 
     def test_exploration_sitemap_images(self):
