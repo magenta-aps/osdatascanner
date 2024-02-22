@@ -236,40 +236,6 @@ function addTooltipListeners(element) {
   element.addEventListener("mouseleave", hideTooltip);
 }
 
-// Show a popover based on an event and its target
-function showPopover(event) {
-  let wrapper = event.target;
-  let popover = wrapper.nextElementSibling;
-
-  if (popover && !popover.classList.contains("popover")) {
-    popover = null; // Ensure that only elements with class 'popover' are considered
-  }
-
-  if (popover) {
-    popover.style.display = "block";
-  }
-}
-
-// Hide the popover
-function hidePopover(event) {
-  let wrapper = event.target;
-  let popover = wrapper.nextElementSibling;
-
-  if (popover && !popover.classList.contains("popover")) {
-    popover = null; // Ensure that only elements with class 'popover' are considered
-  }
-
-  if (popover) {
-    popover.style.display = "none";
-  }
-}
-
-// Add popover listeners
-function addPopoverListeners(element) {
-  element.addEventListener("mouseenter", showPopover);
-  element.addEventListener("mouseleave", hidePopover);
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   prepareTable();
 
@@ -284,10 +250,6 @@ document.addEventListener("DOMContentLoaded", function () {
       // Attach tooltip listeners
       const tooltips = document.querySelectorAll(".tooltip");
       tooltips.forEach(addTooltipListeners);
-
-      // Attach popover listeners
-      const warningIcons = document.querySelectorAll(".popover__icon");
-      warningIcons.forEach(addPopoverListeners);
 
       // Listen for click on toggle checkbox
       $("#select-all").change(function () {

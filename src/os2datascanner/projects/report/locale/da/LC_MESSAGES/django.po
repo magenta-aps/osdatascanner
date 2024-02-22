@@ -4,6 +4,7 @@
 # OS2datascanner.
 # IBP <ibp@magenta.dk>, 2020.
 # b
+#: reportapp/views/report_views.py:253
 #, fuzzy
 msgid ""
 msgstr ""
@@ -1819,8 +1820,21 @@ msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/report_views.py:486 reportapp/views/report_views.py:511
-#: reportapp/views/report_views.py:531 reportapp/views/report_views.py:556
+#: reportapp/views/report_views.py:251
+msgid "No action required:"
+msgstr "Ingen handling påkrævet:"
+
+#: reportapp/views/report_views.py:252
+msgid ""
+"A temporary error occurred during the latest check of this result. "
+"OSdatascanner will automatically check this result again as part of the next "
+"scan."
+msgstr ""
+"Der opstod en midlertidig fejl under sidste tjek af dette resultat. "
+"OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
+"scan."
+
+#: reportapp/views/report_views.py:488 reportapp/views/report_views.py:519
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
@@ -2064,8 +2078,42 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
 
 #, python-brace-format
-#~ msgid "Couldn't delete category! Code: {status_code}"
-#~ msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
+msgid "Couldn't delete category! Code: {status_code}"
+msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
+
+#: reportapp/views/utilities/msgraph_utilities.py:286
+#, python-brace-format
+msgid "Not allowed! You tried to delete an email belonging to {owner}!"
+msgstr "Ikke tilladt! Du har forsøgt at slette en email tilhørende {owner}!"
+
+#: reportapp/views/utilities/msgraph_utilities.py:322
+#, python-brace-format
+msgid "Couldn't delete email! Code: {status_code}"
+msgstr "Kunne ikke slette email! Fejlkode: {status_code}"
+
+#: reportapp/views/utilities/msgraph_utilities.py:343
+msgid "System configuration does not allow mail deletion."
+msgstr "Systemindstillingerne tillader ikke email sletning."
+
+#: reportapp/views/utilities/msgraph_utilities.py:347
+msgid "System configuration is missing Azure-application credentials. "
+msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
+
+#: reportapp/views/utilities/msgraph_utilities.py:352
+msgid "Your organization does not allow this operation."
+msgstr "Din organisation tillader ikke denne handling."
+
+#: reportapp/views/utilities/msgraph_utilities.py:367
+msgid "Could not find your Microsoft tenant!"
+msgstr "Kunne ikke finde din Microsoft tenant!"
+
+#: reportapp/views/utilities/msgraph_utilities.py:384
+msgid "You currently have no Outlook reports. Can't create categories!"
+msgstr ""
+"Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
+
+#~ msgid "A temporary error occurred during the latest check of this result"
+#~ msgstr "Der opstod en midlertidig fejl under sidste tjek af dette resultat"
 
 #~ msgid "Roles"
 #~ msgstr "Roller"

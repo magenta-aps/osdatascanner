@@ -62,6 +62,9 @@ imported versus manually created objects.
 - Leader overview: when an orgunit is selected in the dropdown, all related 
   orgunit-children will also be displayed.
 
+- Error messages in the report module are now displayed with a warning triangle with the option 
+  to hover to see the error described in a popover (toolhint but bigger). 
+
 ### Bugfixes
 
 - Error messages found during the exploration of a data source now appear in
@@ -129,9 +132,6 @@ imported versus manually created objects.
 
 - Fewer large database queries are made in the dpo-module, increasing performance 
   when large amounts of DocumenReports exist.
-
-- Error messages in the report module are now displayed with a warning triangle with the option 
-  to hover to see the error described in a popover (toolhint but bigger). 
 
 - The Account model now has a email-field, 
   removing the reliance on Aliases when sending notifications.

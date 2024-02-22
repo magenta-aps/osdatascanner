@@ -1,0 +1,87 @@
+// ***** POPOVERS *****
+  // Used to show error messages in tables (currently only used in the Report Module).
+  // Toolhint's more detailed and extensive cousin.
+
+:root {
+  // Modal color themes:
+  --modal-color-theme-default: var(--color-primary-lightest);
+  --modal-color-theme-yellow: var(--color-warning-light);
+}
+
+
+.popover {
+  display: none;
+
+  &__wrapper {
+    position: absolute;
+    z-index: 9999;
+    transform: translate(0.5rem, -3rem);
+  }  
+    
+  &__content {
+    padding: 0.875rem;
+    min-width: 28rem;
+    border-radius: var(--border-radius-button);
+    box-shadow: var(--box-shadow-default);
+    background-color: var(--modal-color-theme-default);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 2.625rem;
+      left: -10px; // Position it to the left of the popover content
+      border-width: 6px 10px 6px 0;
+      border-style: solid;
+      border-color: transparent var(--modal-color-theme-default) transparent transparent; // The second value is the color of the arrow/pointer
+    }
+  }
+
+  &__text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.25rem 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1rem;
+  }
+  
+  &__status {
+    font-weight: 600;
+  }
+
+  &__error-container {
+    width: 100%;
+    padding: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, .2);
+    color: var(--color-text-main);
+    background-color: var(--color-body-bg);
+  }
+
+  &__error-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.625rem;
+    font-weight: 200;
+  }
+
+  // Modifier for the yellow theme
+  &--yellow {
+    .popover__content {
+      background-color: var(--modal-color-theme-yellow);
+
+      &::before {
+        border-color: transparent var(--modal-color-theme-yellow) transparent transparent;
+      }
+    }
+  }
+
+  // Add future themes here + add their var({ colour }) at the root with the other vars 
+}
+
+.popover__trigger-element {
+  cursor: help;
+  margin-left: 0.5rem;
+
+  &:hover + .popover {
+    display: block; // Show popover on hover
+  }
+}
