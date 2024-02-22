@@ -353,6 +353,17 @@ def handle_problem_message(scan_tag, result):
             # nothing associated with it. Nothing to do
             logger.debug("Problem message of no relevance. Throwing away.")
             pass
+        case (DocumentReport() as prev, messages.ProblemMessage(missing=True))\
+                if prev.number_of_matches == 0:
+            # A resource for which we only have a previous problem report has
+            # been deleted. No need to keep the report.
+            logger.debug(
+                "Resource deleted, no previous matches, report deleted",
+                report=previous_report,
+                handle=presentation,
+                msgtype="problem",
+            )
+            prev.delete()
         case (DocumentReport() as prev, messages.ProblemMessage(missing=True)) \
                 if not prev.resolution_status:
             # A resource for which we have some unresolved reports has been

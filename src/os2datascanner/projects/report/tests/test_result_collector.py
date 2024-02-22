@@ -296,6 +296,16 @@ class PipelineCollectorTests(TestCase):
                 start,
                 "resolution time not correctly updated")
 
+    def test_removal_problem(self):
+        """Deleting a file, which was previously the source of a problem but
+        not a match, should delete the previously created DocumentReport."""
+        problem_report = record_problem(transient_handle_error)
+        record_problem(deletion)
+
+        self.assertRaises(
+                DocumentReport.DoesNotExist,
+                problem_report.refresh_from_db)
+
     def test_transient_handle_errors(self):
         """Source types should be correctly extracted from Handle errors."""
         new = record_problem(transient_handle_error)

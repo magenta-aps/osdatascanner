@@ -8,6 +8,11 @@
 
 - The "Open folder" button is now also implemented for files hosted in
   OneDrive/SharePoint.
+  
+### General improvements
+
+- DocumentReports without matches are now deleted when the corresponding
+  source no longer exists.
 
 ### Bugfixes
 
