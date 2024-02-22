@@ -876,6 +876,12 @@ class Engine2HTTPSitemapTest(Engine2HTTPSetup, unittest.TestCase):
                 try_make_relative(base_url, new_url),
                 result)
 
+    @parameterized.expand(_relative_urls)
+    def test_contains(self, base_url, new_url, result):
+        self.assertEqual(
+                WebHandle.make_handle(new_url) in WebSource(base_url),
+                bool(result is not None))
+
 
 class Engine2HTTPResourceTest(Engine2HTTPSetup, unittest.TestCase):
     "Test resources by following handles"
