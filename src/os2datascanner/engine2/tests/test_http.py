@@ -227,7 +227,7 @@ source_with_path_mapped_site = {
         "http://localhost:64346/undermappe",
         sitemap="http://localhost:64346/sitemap_subpage.xml"),
     "handles": [
-        "http://localhost:64346/undermappe/",
+        "http://localhost:64346/undermappe",
         "http://localhost:64346/undermappe/index.html",
     ]
 }

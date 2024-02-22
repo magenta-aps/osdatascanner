@@ -79,26 +79,51 @@ def try_make_relative(base_url, new_url):
     Note that the returned base URL may not necessarily be the provided one. In
     particular, the domain of the base URL may be taken from the newly
     discovered one if they're judged to be equivalent."""
-    new_url_split = urlsplit(new_url)
-    url_split = urlsplit(base_url)
+    base_split = urlsplit(base_url)
+    new_split = urlsplit(new_url)
 
-    if (new_url_split.hostname == url_split.hostname and
-            new_url_split.path.startswith(url_split.path)):
-        # The two URLs have the same hostname, and the new URL's path starts
-        # with the base URL's. This is the easiest possible case
-        return (base_url, new_url.removeprefix(base_url))
-    elif (netloc_normalize(new_url_split.hostname) == url_split.hostname and
-            new_url_split.path.startswith(url_split.path)):
-        # The two URLs have different, but equivalent, hostnames, and the new
-        # URL's path starts wth the base URL's. Create a new base URL that
-        # combines the domain of the new URL with the path of the old base
-        base_url = urlunsplit((
-                new_url_split.scheme, new_url_split.netloc,
-                url_split.path, "", ""))
-        return (base_url, new_url.removeprefix(base_url))
-    else:
-        logger.debug("hostname outside current source", url=new_url)
+    if base_split.scheme == "" and base_split.netloc == "":
+        logger.warning(
+                "try_make_relative: attempting to fix up bare base URL",
+                base_url=base_url)
+        base_split = urlsplit("http://" + base_url)
+
+    if (base_split.scheme in ("", new_split.scheme)
+            # Allow http://example.com/ to link to https://example.com/, but
+            # not vice-versa
+            or new_split.scheme == base_split.scheme + "s"):
+        scheme = new_split.scheme
+    else:  # Schema mismatch
+        logger.debug(
+                "try_make_relative: scheme mismatch",
+                base_url=base_url, new_url=new_url)
         return None
+
+    n_n = netloc_normalize
+    if (base_split.netloc == new_split.netloc
+            or n_n(base_split.netloc) == n_n(new_split.netloc)):
+        netloc = new_split.netloc
+    else:
+        logger.debug(
+                "try_make_relative: netloc mismatch",
+                base_url=base_url, new_url=new_url)
+        return None
+
+    base_path = base_split.path
+    if not base_path.endswith("/"):
+        # Make sure that a base_url of example.com/l doesn't accept a new_url
+        # of example.com/lists
+        base_path += "/"
+    if new_split.path.startswith(base_path):
+        path = new_split.path.removeprefix(base_path)
+    else:
+        logger.debug(
+                "try_make_relative: leading path component mismatch",
+                base_url=base_url, new_url=new_url)
+        return None
+
+    return (urlunsplit((scheme, netloc, base_split.path, "", "")),
+            urlunsplit(("", "", path, new_split.query, "")))
 
 
 class WebSource(Source):
