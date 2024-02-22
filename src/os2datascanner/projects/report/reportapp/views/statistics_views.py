@@ -79,7 +79,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                             'resolved_month'
                         ).annotate(count=Count('source_type')).order_by()
 
-    def get(self, request, *args, **kwargs):
+    def _check_access(self, request):
         if self.request.user.account:
             # Only allow the user to see reports and units from their own
             # organization
@@ -96,6 +96,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 Q(positions__account=self.request.user.account)
                 & Q(positions__role=Role.DPO)
             ).order_by("name")
+
+    def get(self, request, *args, **kwargs):
+        self._check_access(request)
 
         response = super().get(request, *args, **kwargs)
 
@@ -404,8 +407,7 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         if not settings.DPO_CSV_EXPORT:
             raise PermissionDenied
 
-        # Filters matches and orgunits that shouldn't be accessible
-        DPOStatisticsPageView.get(self, request, *args, **kwargs)
+        self._check_access(request)
 
         # Adds scannername and orgunit to name of csv file
         scanner = None
@@ -481,7 +483,6 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
             row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
             row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
             row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
-            print(*row)
 
         return rows
 
