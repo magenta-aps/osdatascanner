@@ -11,10 +11,12 @@ from multiprocessing import Manager, Process
 from requests import exceptions as rexc
 from unittest import mock
 from urllib3.util import connection
+from parameterized import parameterized
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle, SourceManager
-from os2datascanner.engine2.model.http import (WebSource, WebHandle)
+from os2datascanner.engine2.model.http import (
+        WebHandle, WebSource, try_make_relative)
 from os2datascanner.engine2.model.utilities.crawler import (
         parse_html, make_outlinks)
 from os2datascanner.engine2.model.utilities.sitemap import (
@@ -809,6 +811,70 @@ class Engine2HTTPSitemapTest(Engine2HTTPSetup, unittest.TestCase):
 
         self.assertTrue(isinstance(context.exception, TypeError),
                         "wrong exceptionType")
+
+    _relative_urls = [
+        # Easy base cases: same domain, clearly correct paths
+        (
+            "https://example.com",
+            "https://example.com/resources.php3",
+            ("https://example.com", "resources.php3"),
+        ),
+        (
+            "https://example.com/data",
+            "https://example.com/data/file.png",
+            ("https://example.com/data", "file.png"),
+        ),
+
+        (
+            # Upgraded connection security is fine...
+            "http://example.com",
+            "https://example.com/resources.php3",
+            ("https://example.com", "resources.php3"),
+        ),
+        (
+            # ... but downgraded security isn't
+            "https://example.com",
+            "http://example.com/resources.php3",
+            None,
+        ),
+
+        # "Similar enough" domains are fine...
+        (
+            "http://example.com",
+            "https://secure.example.com/resources.php3",
+            ("https://secure.example.com", "resources.php3"),
+        ),
+        (
+            "http://www2.example.com/data",
+            "https://secure.example.com/data/file.png",
+            ("https://secure.example.com/data", "file.png"),
+        ),
+
+        # ... but they do have to /be/ similar enough
+        (
+            "https://secure.example.com/data",
+            "https://insecure.example.com/data/file.png",
+            None,
+        ),
+
+        # Base path fragments aren't just strings
+        (
+            "https://secure.example.com/resources",
+            "https://ww2.example.com/resources_available.php3",
+            None,
+        ),
+        (
+            "https://secure.example.com/resources",
+            "https://da.example.com/resources/index.php3",
+            ("https://da.example.com/resources", "index.php3"),
+        ),
+    ]
+
+    @parameterized.expand(_relative_urls)
+    def test_try_make_relative(self, base_url, new_url, result):
+        self.assertEqual(
+                try_make_relative(base_url, new_url),
+                result)
 
 
 class Engine2HTTPResourceTest(Engine2HTTPSetup, unittest.TestCase):
