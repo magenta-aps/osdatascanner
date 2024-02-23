@@ -141,7 +141,7 @@ class WebSource(Source):
         # details from netloc
         return self
 
-    def handles(self, sm):
+    def handles(self, sm):  # noqa: CCR001
         session = sm.open(self)
         wc = crawler.WebCrawler(
                 self._url, session=session, timeout=TIMEOUT, ttl=TTL,
