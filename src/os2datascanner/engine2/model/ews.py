@@ -295,12 +295,6 @@ class EWSMailHandle(Handle):
         return f'{domain}/{account}/' \
                f'{self._folder_name.removeprefix("/") or "(unknown folder)"}/{self._mail_subject}'
 
-    def censor(self):
-        return EWSMailHandle(
-                self.source.censor(), self.relative_path,
-                self._mail_subject, self._folder_name,
-                self._entry_id)
-
     def guess_type(self):
         return "message/rfc822"
 

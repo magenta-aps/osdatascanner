@@ -91,6 +91,3 @@ class ZipHandle(Handle):
     @property
     def presentation_place(self):
         return str(self.source.handle)
-
-    def censor(self):
-        return ZipHandle(self.source.censor(), self.relative_path)

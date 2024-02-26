@@ -390,11 +390,6 @@ class WebHandle(Handle):
         For a website the URL makes sense"""
         return self.presentation_url
 
-    def censor(self):
-        return WebHandle(
-                source=self.source.censor(), path=self.relative_path,
-                referrer=self.referrer, hints=self._hints)
-
     def to_json_object(self):
         return super().to_json_object() | {
             "hints": self._hints,

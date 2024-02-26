@@ -147,9 +147,6 @@ class GoogleDriveHandle(Handle):
         account, domain = self.source._user_email.split("@", 1)
         return f'{domain}/{account}/{self.relative_path}/{self._name}'
 
-    def censor(self):
-        return GoogleDriveHandle(self.source.censor(), relpath=self.relative_path, name=self._name)
-
     def to_json_object(self):
         return dict(**super().to_json_object(), name=self._name)
 

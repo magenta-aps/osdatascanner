@@ -88,9 +88,6 @@ class PDFPageHandle(Handle):
         "Return the file path of the document"
         return self.base_handle.sort_key
 
-    def censor(self):
-        return PDFPageHandle(self.source.censor(), self.relative_path)
-
     def guess_type(self):
         return PAGE_TYPE
 
@@ -157,9 +154,6 @@ class PDFObjectResource(FilesystemResource):
 class PDFObjectHandle(Handle):
     type_label = "pdf-object"
     resource_type = PDFObjectResource
-
-    def censor(self):
-        return PDFObjectHandle(self.source.censor(), self.relative_path)
 
     @property
     def sort_key(self):

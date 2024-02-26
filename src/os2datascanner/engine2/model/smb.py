@@ -150,9 +150,6 @@ class SMBHandle(Handle):
     def sort_key(self):
         return self.presentation.removesuffix("\\")
 
-    def censor(self):
-        return SMBHandle(self.source.censor(), self.relative_path)
-
 
 # Third form from https://www.iana.org/assignments/uri-schemes/prov/smb
 def make_smb_url(schema, unc, user, domain, password):

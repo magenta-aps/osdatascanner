@@ -194,7 +194,6 @@ class Handle(TypePropertyEquality, JSONSerialisable):
             break
         return h
 
-    @abstractmethod
     def censor(self):
         """Returns a Handle identical to this one but whose Source does not
         carry sensitive information like passwords or API keys. See the
@@ -203,6 +202,7 @@ class Handle(TypePropertyEquality, JSONSerialisable):
         As the Handle returned by this method is not useful for anything other
         than identifying an object, this method should normally only be used
         when transmitting a Handle to a less trusted context."""
+        return self.remap({self.source: self.source.censor()})
 
     def follow(self, sm):
         """Follows this Handle using the state in the StateManager @sm,

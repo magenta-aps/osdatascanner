@@ -123,9 +123,6 @@ class FilesystemHandle(Handle):
     def __str__(self):
         return str(self._full_path)
 
-    def censor(self):
-        return FilesystemHandle(self.source.censor(), self.relative_path)
-
     @classmethod
     def make_handle(cls, path, hints=None):
         """Given a local filesystem path, returns a FilesystemHandle pointing

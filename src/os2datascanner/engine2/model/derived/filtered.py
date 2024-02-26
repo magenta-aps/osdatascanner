@@ -114,6 +114,3 @@ class FilteredHandle(Handle):
     @property
     def sort_key(self):
         return self.base_handle.sort_key
-
-    def censor(self):
-        return FilteredHandle(self.source.censor(), self.relative_path)

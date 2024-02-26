@@ -145,10 +145,6 @@ class MailPartHandle(Handle):
         return (f"{self.presentation_name} (attached"
                 f" to {self.presentation_place})")
 
-    def censor(self):
-        return MailPartHandle(
-                self.source.censor(), self.relative_path, self._mime)
-
     def guess_type(self):
         if self._mime != "application/octet-stream":
             return self._mime

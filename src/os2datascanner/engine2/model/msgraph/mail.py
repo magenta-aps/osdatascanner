@@ -133,10 +133,6 @@ class MSGraphMailAccountHandle(Handle):
     def guess_type(self):
         return DUMMY_MIME
 
-    def censor(self):
-        return MSGraphMailAccountHandle(
-                self.source.censor(), self.relative_path)
-
 
 @Source.mime_handler(DUMMY_MIME)
 class MSGraphMailAccountSource(DerivedSource):
@@ -319,12 +315,6 @@ class MSGraphMailMessageHandle(Handle):
     @property
     def sort_key(self):
         return self.source.handle.sort_key + (f"{self._folder or ''}/{self._mail_subject}")
-
-    def censor(self):
-        return MSGraphMailMessageHandle(
-                self.source.censor(), self.relative_path,
-                self._mail_subject, self._weblink,
-                self._folder)
 
     def guess_type(self):
         return "message/rfc822"

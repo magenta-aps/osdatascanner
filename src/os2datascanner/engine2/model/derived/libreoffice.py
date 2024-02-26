@@ -212,9 +212,6 @@ class LibreOfficeObjectHandle(Handle):
     def presentation_place(self):
         return self.source.handle.presentation_place
 
-    def censor(self):
-        return LibreOfficeObjectHandle(self.source.censor(), self.relative_path)
-
     @property
     def sort_key(self):
         "Return the file path of the document"

@@ -114,9 +114,6 @@ class DataHandle(Handle):
     def __str__(self):
         return f"{self.presentation_name} {self.presentation_place}"
 
-    def censor(self):
-        return DataHandle(self.source.censor(), self.relative_path)
-
     def guess_type(self):
         return self.source.mime
 
