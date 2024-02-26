@@ -29,6 +29,9 @@
 
 - Individual iterations and dates can now be excluded when checkbox is toggled 
 
+- Automatic checkups of previously-visited files are once again correctly
+  handled for Microsoft Graph scans (and for all other similar scan types).
+
 ## Version 3.22.2, 12th February 2024
 
 "Unparalleled Spectacles"
