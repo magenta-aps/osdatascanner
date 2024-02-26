@@ -242,6 +242,12 @@ class Handle(TypePropertyEquality, JSONSerialisable):
     def remap(
             self,
             mapping: Mapping["msource.Source", "msource.Source"]) -> "Handle":
-        nc = copy(self)
-        nc._source = nc._source.remap(mapping)
-        return nc
+        remapped_source = self._source.remap(mapping)
+        if remapped_source is self._source:
+            # The remapping would do nothing, so there's no need to make a new
+            # object
+            return self
+        else:
+            nc = copy(self)
+            nc._source = remapped_source
+            return nc
