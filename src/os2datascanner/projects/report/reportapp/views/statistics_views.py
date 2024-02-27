@@ -241,7 +241,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 case {'source_type': 'msgraph-teams-files'}:
                     source_category = 'teamsscan'
                 case {'source_type': 'msgraph-calendar'}:
-                    source_category = 'calenderscan'
+                    source_category = 'calendarscan'
                 case _:
                     source_category = 'other'
 
