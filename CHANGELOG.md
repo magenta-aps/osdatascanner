@@ -20,6 +20,8 @@
 - The Alias-model no longer uses recursion to clean up connections to 
   DocumentReports.
 
+- Individual iterations and dates can now be excluded when checkbox is toggled 
+
 ## Version 3.22.2, 12th February 2024
 
 "Unparalleled Spectacles"

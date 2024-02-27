@@ -762,10 +762,11 @@ recurrence.widget.Panel.prototype = {
     }
 };
 
-
 recurrence.widget.RuleForm = function(panel, mode, rule, options) {
     this.init(panel, mode, rule, options);
 };
+
+let nextId = 0;
 recurrence.widget.RuleForm.prototype = {
     init: function(panel, mode, rule, options) {
         this.selected_freq = rule.freq;
@@ -801,13 +802,13 @@ recurrence.widget.RuleForm.prototype = {
                 'class': 'checkbox-inline',
                 'type': 'checkbox',
                 'name': 'mode',
-                'id': 'mode'
+                'id': 'mode' + nextId
             }
         );
         var mode_label = recurrence.widget.e(
             'label', {
                 'class': 'recurrence-label',
-                'for': 'mode'
+                'for': 'mode' + nextId
             },
             recurrence.display.labels.exclude_occurrences);
         var mode_container = recurrence.widget.e(
@@ -1046,6 +1047,8 @@ recurrence.widget.RuleForm.prototype = {
             until_date_selector.disable();
             recurrence.widget.add_class(until_count_container, 'disabled');
         }
+
+        nextId += 1;
 
         // core
 
@@ -1852,7 +1855,7 @@ recurrence.widget.DateForm.prototype = {
 
         var mode_checkbox = recurrence.widget.e(
             'input', {
-                'class': 'checkbox-inline', 'type': 'checkbox', 'name': 'mode', 'id': 'mode',
+                'class': 'checkbox-inline', 'type': 'checkbox', 'name': 'mode', 'id': 'mode' + nextId,
                 'onclick': function() {
                     if (this.checked) {
                         form.set_mode(recurrence.widget.EXCLUSION);
@@ -1866,10 +1869,12 @@ recurrence.widget.DateForm.prototype = {
             mode_checkbox.checked = true;
         }
         var mode_label = recurrence.widget.e(
-            'label', {'class': 'recurrence-label', 'for': 'mode'},
+            'label', {'class': 'recurrence-label', 'for': 'mode' + nextId},
             recurrence.display.labels.exclude_date);
         var mode_container = recurrence.widget.e(
             'div', {'class': 'ds-checkbox'}, [mode_checkbox, mode_label]);
+
+            nextId += 1;
 
         // date
 
