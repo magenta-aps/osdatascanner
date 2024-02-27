@@ -11,26 +11,53 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from django.db import models
 from rest_framework import serializers
 from os2datascanner.core_organizational_structure.models import Organization as Core_Organization
 from os2datascanner.core_organizational_structure.models import \
     OrganizationSerializer as Core_OrganizationSerializer
-from os2datascanner.core_organizational_structure.models import MSGraphWritePermissionChoices
+from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 
 from ..seralizer import BaseBulkSerializer
+
+
+class OrganizationManager(models.Manager):
+
+    def bulk_update(self, objects, fields, **kwargs):
+        # We _might_ need to do perform some extra steps here if
+        # we're dealing with user impacting organization updates.
+        # These should only ever be relevant on update, as an Organization is the basis of all.
+        for organization in objects:
+            for field_name in fields:
+                if field_name == "outlook_categorize_email_permission":
+                    outlook_categorize_email_permission = getattr(organization, field_name)
+                    if outlook_categorize_email_permission == OutlookCategorizeChoices.ORG_LEVEL:
+                        from ..models.account import Account
+                        accs_in_org = Account.objects.filter(organization=organization)
+
+                        # Make sure we have AccountOutlookSetting objects, which in this
+                        # case should have categorize_email set to True.
+                        # That will use bulk_create and AccountOutlookSetting will handle
+                        # the creation of categories and categorize existing.
+                        accs_in_org.create_account_outlook_setting(categorize_email=True)
+
+        return super().bulk_update(objects, fields, **kwargs)
 
 
 class Organization(Core_Organization):
     """ Core logic lives in the core_organizational_structure app. """
     serializer_class = None
+    # Set manager
+    objects = OrganizationManager()
 
     def has_categorize_permission(self) -> bool:
-        return bool(self.msgraph_write_permissions in (MSGraphWritePermissionChoices.CATEGORIZE,
-                                                       MSGraphWritePermissionChoices.ALL))
+        return bool(
+            self.outlook_categorize_email_permission in
+            (OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.INDIVIDUAL_LEVEL)
+        )
 
     def has_delete_permission(self) -> bool:
-        return bool(self.msgraph_write_permissions in (MSGraphWritePermissionChoices.DELETE,
-                                                       MSGraphWritePermissionChoices.ALL))
+        return self.outlook_delete_email_permission
 
 
 class OrganizationBulkSerializer(BaseBulkSerializer):

@@ -33,7 +33,8 @@ class OrganizationAdmin(admin.ModelAdmin):
             {
                 "fields": ('name', 'slug', 'client', 'contact_email',
                            'contact_phone', 'email_notification_schedule',
-                           'msgraph_write_permissions')
+                           'outlook_categorize_email_permission',
+                           'outlook_delete_email_permission')
             },
         ),
         (
@@ -51,7 +52,7 @@ class OrganizationAdmin(admin.ModelAdmin):
             }
         )
     ]
-    list_display = ('name', 'client', 'contact_email', 'contact_phone', 'msgraph_write_permissions')
+    list_display = ('name', 'client', 'contact_email', 'contact_phone',)
     search_fields = ('name', 'client__name')
 
 

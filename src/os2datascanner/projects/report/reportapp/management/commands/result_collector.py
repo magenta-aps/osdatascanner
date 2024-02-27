@@ -96,9 +96,8 @@ def owner_from_metadata(message: messages.MetadataMessage) -> str:
 
 
 def outlook_categorize_enabled(owner: str) -> bool:
-    """ Checks if categorize email is enabled for an account with an aliases with owner string
-     as value.
-    Returns True/False"""
+    """ Checks if categorize_email is enabled for an account with an alias corresponding to owner
+    value. Returns bool"""
     return bool(AccountOutlookSetting.objects.filter(account__aliases___value=owner,
                                                      categorize_email=True))
 

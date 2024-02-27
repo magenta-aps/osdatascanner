@@ -32,9 +32,10 @@ from os2datascanner.core_organizational_structure.models import Account as Core_
 from os2datascanner.core_organizational_structure.models import \
     AccountSerializer as Core_AccountSerializer
 from os2datascanner.core_organizational_structure.models.organization import \
-    StatisticsPageConfigChoices
+    StatisticsPageConfigChoices, OutlookCategorizeChoices
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from os2datascanner.utils.system_utilities import time_now
+
 
 from ..seralizer import BaseBulkSerializer, SelfRelatingField
 
@@ -47,11 +48,31 @@ class StatusChoices(models.IntegerChoices):
     BAD = 2, _("Not accepted")
 
 
+class AccountQuerySet(models.QuerySet):
+    def create_account_outlook_setting(self, categorize_email: bool = False):
+        """ Queryset method that'll create AccountOutlookSetting
+        objects for every Account in queryset, that currently has none.
+        """
+        from ..models.account_outlook_setting import AccountOutlookSetting
+        # Create AccountOutlook setting objects for those currently without.
+        accounts_with_no_outlook_settings = self.filter(outlook_settings__isnull=True)
+
+        return AccountOutlookSetting.objects.bulk_create(
+            [AccountOutlookSetting(account=account, categorize_email=categorize_email)
+             for
+             account in accounts_with_no_outlook_settings],
+            ignore_conflicts=False  # If this is true, we can't get the PK in the return value.
+        )
+
+
 class AccountManager(models.Manager):
     """ Account and User models come as a pair. AccountManager takes on the responsibility
     of creating User objects when Accounts are created.
     Unique to the report module.
     """
+
+    def get_queryset(self):
+        return AccountQuerySet(self.model, using=self._db, hints=self._hints)
 
     # TODO: Out-phase User in favor of Account
     # This is because User and Account co-exist, but a User doesn't have any unique identifier
@@ -70,6 +91,12 @@ class AccountManager(models.Manager):
         account = Account(**kwargs, user=user_obj)
         account.save()
 
+        if (account.organization.outlook_categorize_email_permission ==
+                OutlookCategorizeChoices.ORG_LEVEL):
+            acc_qs = Account.filter(pk=account.pk)
+            # Bulk creation of AccountOutlookSetting will then take care of the rest.
+            acc_qs.create_account_outlook_setting(categorize_email=True)
+
         return account
 
     # We must also delete the User object.
@@ -78,6 +105,7 @@ class AccountManager(models.Manager):
         return super().delete(*args, **kwargs)
 
     def bulk_create(self, objs, **kwargs):
+
         for account in objs:
             user_obj, created = User.objects.update_or_create(
                 username=account.username,
@@ -87,7 +115,17 @@ class AccountManager(models.Manager):
                     "is_superuser": account.is_superuser
                 })
             account.user = user_obj
-        return super().bulk_create(objs, **kwargs)
+
+        objects = super().bulk_create(objs, **kwargs)
+
+        accounts = Account.objects.filter(
+            pk__in=[obj.pk for obj in objects]
+        ).filter(
+            organization__outlook_categorize_email_permission=OutlookCategorizeChoices.ORG_LEVEL)
+
+        accounts.create_account_outlook_setting(categorize_email=True)
+
+        return objects
 
     def bulk_update(self, objs, fields, **kwargs):
         if any(field in ("username", "first_name", "last_name", "is_superuser")

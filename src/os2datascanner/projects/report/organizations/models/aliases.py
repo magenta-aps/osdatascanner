@@ -26,6 +26,7 @@ from os2datascanner.core_organizational_structure.models import \
     AliasSerializer as Core_AliasSerializer
 from os2datascanner.core_organizational_structure.models.aliases import AliasType, \
     validate_regex_SID  # noqa
+
 from ..seralizer import BaseBulkSerializer
 
 logger = structlog.get_logger(__name__)
@@ -109,6 +110,7 @@ class AliasManager(models.Manager):
                 f"related.")
 
     def bulk_create(self, objs, ignore_conflicts: bool = False, **kwargs):
+        from os2datascanner.projects.report.reportapp.utils import create_alias_and_match_relations
         allowed_objs = []
         for alias in objs:
             if alias.account == alias.user.account:
@@ -126,7 +128,35 @@ class AliasManager(models.Manager):
                     f"{alias.user}! Aliases must be related to accounts and "
                     "users, which are also related! The alias was not created.")
                 traceback.print_stack()
-        return super().bulk_create(allowed_objs, ignore_conflicts=ignore_conflicts, **kwargs)
+
+        # Sort out alias relations, based on created objects.
+        # Note, that this is intentionally placed AFTER we've iterated once above
+        # and created the objects. If it isn't we risk creating f.e. remediator aliases that
+        # will stick, even if the next object is the correct owner.
+        created_objects = super().bulk_create(
+            allowed_objs, ignore_conflicts=ignore_conflicts, **kwargs
+        )
+        for created_alias in created_objects:
+            create_alias_and_match_relations(created_alias)
+
+        # It's kind of unfortunate - but since we, of course, create Account objects before
+        # aliases, newly created accounts can't get their (if any) existing reports categorized
+        # through AccountOutlookSetting bulk_create, because their alias-match relation simply
+        # isn't established yet. Do something about that here...
+        from .account_outlook_setting import AccountOutlookSetting
+        from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
+
+        # Find the AccountOutlookSetting corresponding to alias.account & filter by org setting.
+        outl_settings = (
+            AccountOutlookSetting.objects.filter(
+                account__in=[obj.account for obj in created_objects]).filter(
+                account__organization__outlook_categorize_email_permission=OutlookCategorizeChoices.ORG_LEVEL)  # noqa: E501, can't make line shorter.
+
+        )
+        # That should mean we're good to categorize existing - categories should've been created.
+        outl_settings.categorize_existing()
+
+        return created_objects
 
 
 class Alias(Core_Alias):
