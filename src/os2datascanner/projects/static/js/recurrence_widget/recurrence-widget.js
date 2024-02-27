@@ -766,7 +766,7 @@ recurrence.widget.RuleForm = function(panel, mode, rule, options) {
     this.init(panel, mode, rule, options);
 };
 
-var nextId = 0;
+let nextId = 0;
 recurrence.widget.RuleForm.prototype = {
     init: function(panel, mode, rule, options) {
         this.selected_freq = rule.freq;
