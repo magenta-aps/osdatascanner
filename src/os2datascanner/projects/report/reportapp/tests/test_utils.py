@@ -21,7 +21,9 @@ class TestUtils:
 
     @classmethod
     def setup_method(cls):
-        org = Organization.objects.create(name="Test Organization")
+        org = Organization.objects.create(
+            name="Test Organization",
+            outlook_categorize_email_permission="NON")
         account_sam = Account.objects.create(username="Sam",
                                              first_name="Sam Single",
                                              last_name="Sign-On",

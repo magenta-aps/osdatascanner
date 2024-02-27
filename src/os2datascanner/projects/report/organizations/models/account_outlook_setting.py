@@ -27,6 +27,12 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             settings.MSGRAPH_TENANT_ID,
             settings.MSGRAPH_CLIENT_SECRET)
 
+    def _initiate_graphcaller(self, session) -> GraphCaller | None:
+        """ Returns a GraphCaller if queryset is populated, None if not."""
+        # We want to create the GraphCaller before iterating for reuse purposes,
+        # but we'll not want to create one, if we have an empty Queryset
+        return self.GraphCaller(self._make_token, session) if self else None
+
     def populate_setting(self):  # noqa: CCR001 Too complex
         def _create_category(owner, category_name, category_colour):
             try:
@@ -62,9 +68,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
         )
 
         with requests.Session() as session:
-            gc = self.GraphCaller(
-                self._make_token,
-                session)
+            gc = self._initiate_graphcaller(session)
 
             for outl_setting in qs:
                 # TODO: ENUM use should be refactored to support name change.
@@ -88,7 +92,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
         qs = self.select_related("account")
         with requests.Session() as session:
-            gc = self.GraphCaller(self._make_token, session)
+            gc = self._initiate_graphcaller(session)
 
             for outl_setting in qs:
                 doc_reps = []
@@ -131,7 +135,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
     def update_colour(self, match_colour, fp_colour):
         with requests.Session() as session:
-            gc = self.GraphCaller(self._make_token, session)
+            gc = self._initiate_graphcaller(session)
 
             for outl_setting in self:
                 try:
@@ -161,7 +165,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
     def delete_categories(self):
         with requests.Session() as session:
-            gc = self.GraphCaller(self._make_token, session)
+            gc = self._initiate_graphcaller(session)
             for outl_setting in self:
                 try:
                     delete_match_category_response = gc.delete_category(
