@@ -1,4 +1,7 @@
 from django.test import TestCase
+
+from parameterized import parameterized
+
 from ...core.models.client import Client
 from ...adminapp.models.scannerjobs.scanner_helpers import ScanStatus
 from ..models import OrganizationalUnit, Organization, Account
@@ -69,3 +72,17 @@ class AccountMethodTests(TestCase):
         self.client.delete()
 
         self.rule.delete()
+
+    @parameterized.expand([
+        (Account(username="superman", first_name="Clark", last_name="Kent"), "CK"),
+        (Account(username="robin", first_name="Robin"), "R"),
+        (Account(username="batman", last_name="Wayne"), "W"),
+        (Account(username="wonder_woman"), None)
+    ])
+    def test_initials(self, account, expected_initials):
+        """The 'initials'-method should return the first letter from the first
+        and the last name. If the account only has a first name, only one
+        letter should be returned. If the account has no names, None should be
+        returned."""
+
+        self.assertEqual(account.initials, expected_initials)

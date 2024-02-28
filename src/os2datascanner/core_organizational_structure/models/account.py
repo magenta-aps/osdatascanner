@@ -108,6 +108,20 @@ class Account(models.Model):
             else self.username
 
     @cached_property
+    def initials(self):
+        initials = ""
+        initials += self.first_name[0].capitalize() if self.first_name else ""
+        initials += self.last_name[0].capitalize() if self.last_name else ""
+        return initials if initials else None
+
+    @cached_property
+    def initials_color(self):
+        colors = ['#BA7EBB', '#A161AE', '#B69DC9', '#7E6FA8', '#9D9EC9',
+                  '#309D9D', '#60C6C3', '#75CFBE', '#53C193', '#309D82']
+
+        return colors[int(self.pk) % 10]
+
+    @cached_property
     def is_manager(self):
         return self.get_managed_units().exists()
 

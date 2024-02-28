@@ -5,13 +5,7 @@
 <h1 class="userprofile-text">{% trans "Account" %}</h1>
 
 <div class="userprofile-content-wrapper user-image">
-  <span class="user__avatar_verybig">
-    {% if account.image %}
-      <img class="userprofile-image" src="{{ account.image }}">
-    {% else %}
-      <i id="account_circle" class="material-icons">account_circle</i>
-    {% endif %}
-  </span>
+  <span class="user__avatar_verybig">{% include "components/user/account_image.html" with account=account %}</span>
 </div>
 
 <div class="userprofile-content-wrapper user-tables">
