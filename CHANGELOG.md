@@ -17,6 +17,9 @@
 - A button has been added to the DPO statistics page allowing the users to 
   download the data as a csv-file.
 
+- An option to run scannerjobs, with last modified enabled, as a full scan
+  has been implemented.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.

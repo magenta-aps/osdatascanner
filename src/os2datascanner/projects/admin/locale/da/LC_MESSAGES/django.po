@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-12 15:14+0100\n"
+"POT-Creation-Date: 2024-02-28 12:35+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -134,7 +134,7 @@ msgstr "Username"
 msgid "Initialization Vector"
 msgstr "Initaliserings vektor"
 
-#: adminapp/models/authentication.py:25 adminapp/views/filescanner_views.py:179
+#: adminapp/models/authentication.py:25 adminapp/views/filescanner_views.py:180
 msgid "User domain"
 msgstr "Brugerdomæne"
 
@@ -455,11 +455,11 @@ msgid "error logs"
 msgstr "fejlbeskeder"
 
 #: adminapp/models/usererrorlog.py:33 adminapp/templates/error_log.html:173
-#: adminapp/views/scanner_views.py:356
+#: adminapp/views/scanner_views.py:357
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:358
+#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:359
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -1160,30 +1160,43 @@ msgstr "Vis/skjul tidslinje"
 msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:23
-#: adminapp/templates/components/scanner/scanner_ask_run.html:76
+#: adminapp/templates/components/scanner/scanner_ask_run.html:22
+#: adminapp/templates/components/scanner/scanner_ask_run.html:52
 msgid "Run scanner"
 msgstr "Kør scanner"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:25
+#: adminapp/templates/components/scanner/scanner_ask_run.html:24
 msgid "Are you sure you want to start the scanner?"
 msgstr "Er du sikker på, at du vil starte scanneren?"
 
 #: adminapp/templates/components/scanner/scanner_ask_run.html:30
+msgid ""
+"Perform a standard scan, only scanning the changes since the previous scan."
+msgstr ""
+"Foretag et standard scan, hvor alt, som ikke har ændret sig siden sidste "
+"scanning, ignoreres."
+
+#: adminapp/templates/components/scanner/scanner_ask_run.html:30
+msgid "Standard scan"
+msgstr "Standard scan"
+
 #: adminapp/templates/components/scanner/scanner_ask_run.html:33
+msgid ""
+"Perform a thorough scan, scanning everything within the sources even if they "
+"were scanned previously."
+msgstr ""
+"Foretag en udførlig scanning, hvor alt indhold i kilderne scannes, uanset om "
+"det er blevet scannet tidligere."
+
+#: adminapp/templates/components/scanner/scanner_ask_run.html:33
+msgid "Thorough scan"
+msgstr "Udførligt scan"
+
 #: adminapp/templates/components/scanner/scanner_ask_run.html:36
-#: adminapp/templates/components/scanner/scanner_ask_run.html:39
-#: adminapp/templates/components/scanner/scanner_ask_run.html:42
-#: adminapp/templates/components/scanner/scanner_ask_run.html:45
-#: adminapp/templates/components/scanner/scanner_ask_run.html:48
-#: adminapp/templates/components/scanner/scanner_ask_run.html:51
-#: adminapp/templates/components/scanner/scanner_ask_run.html:54
-#: adminapp/templates/components/scanner/scanner_ask_run.html:57
-#: adminapp/templates/components/scanner/scanner_ask_run.html:60
 msgid "Let's go!"
 msgstr "Ja, kør"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:67
+#: adminapp/templates/components/scanner/scanner_ask_run.html:43
 msgid "Waiting..."
 msgstr "Afventer..."
 
@@ -2138,24 +2151,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:200
+#: adminapp/views/exchangescanner_views.py:201
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:201
+#: adminapp/views/exchangescanner_views.py:202
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:211
+#: adminapp/views/exchangescanner_views.py:212
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:217
+#: adminapp/views/exchangescanner_views.py:218
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:222
+#: adminapp/views/exchangescanner_views.py:223
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2163,26 +2176,26 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:234
+#: adminapp/views/exchangescanner_views.py:235
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:238
-#: adminapp/views/filescanner_views.py:177
+#: adminapp/views/exchangescanner_views.py:239
+#: adminapp/views/filescanner_views.py:178
 #: organizations/templates/organizations/account_detail.html:31
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:243
-#: adminapp/views/filescanner_views.py:178
+#: adminapp/views/exchangescanner_views.py:244
+#: adminapp/views/filescanner_views.py:179
 msgid "Password"
 msgstr "Adgangskode"
 
-#: adminapp/views/filescanner_views.py:176
+#: adminapp/views/filescanner_views.py:177
 msgid "e.g. //network-domain/top-folder"
 msgstr "f.eks. //network-domain/top-folder"
 
-#: adminapp/views/filescanner_views.py:180
+#: adminapp/views/filescanner_views.py:181
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
@@ -2196,19 +2209,19 @@ msgstr ""
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/scanner_views.py:68
+#: adminapp/views/scanner_views.py:69
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:355
+#: adminapp/views/scanner_views.py:356
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:357
+#: adminapp/views/scanner_views.py:358
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:552
+#: adminapp/views/scanner_views.py:553
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
@@ -3194,6 +3207,12 @@ msgstr "Navnet er allerede i brug."
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
+#~ msgid "Incremental scan"
+#~ msgstr "inkrementalt scan"
+
+#~ msgid "Full scan"
+#~ msgstr "Fuldt scan"
+
 #~ msgid "covered accounts"
 #~ msgstr "dækkede konti"
 
@@ -3208,9 +3227,6 @@ msgstr "Konto ikke fundet."
 
 #~ msgid "Add LDAP configuration"
 #~ msgstr "Tilføj LDAP-konfiguration"
-
-#~ msgid "All scanners"
-#~ msgstr "Alle scannere"
 
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"

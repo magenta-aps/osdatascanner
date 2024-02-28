@@ -24,9 +24,18 @@
         <h3>{% trans "Are you sure you want to start the scanner?" %}</h3>
 
         <p>
-          <a href="{{ run_redirect }}"
-             class="button button--cta-button run-scan-button">{% trans "Let's go!" %}</a>
- 
+          {% if partial_scan %}
+            <a href="{{ run_redirect }}"
+               class="button button--cta-button run-scan-button"
+               title="{% trans "Perform a standard scan, only scanning the changes since the previous scan." %}">{% trans "Standard scan" %}</a>
+            <a href="{{ run_redirect }}?full=true"
+               class="button button--cta-button run-scan-button"
+               title="{% trans "Perform a thorough scan, scanning everything within the sources even if they were scanned previously." %}">{% trans "Thorough scan" %}</a>
+          {% else %}
+            <a href="{{ run_redirect }}"
+               class="button button--cta-button run-scan-button">{% trans "Let's go!" %}</a>
+          {% endif %}
+
           {#     Setting style=".." here is not best practice, but we want to still have the styling from #}
           {#      assigned classes when element is shown. Hidden will not work because display is set in css #}
           <a id="waiting-scanner-run-btn"

@@ -27,10 +27,10 @@ htmx.onLoad(function (content) {
   });
   // Toggle visiblity of expandable rows, stop
 
-  // Hides the "Let's go" button when starting scans after a click
-  // to prevent users accidentally starting multiple.
+  // Hides the "Let's go", "Full scan", and "Partial scan" buttons when 
+  // starting scans after a click to prevent users accidentally starting multiple.
   $('.run-scan-button').on("click", function () {
-    $(this).hide();
+    $('.run-scan-button').hide();
     $("#waiting-scanner-run-btn").show();
   });
 
