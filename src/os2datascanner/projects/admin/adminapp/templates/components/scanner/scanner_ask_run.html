@@ -27,10 +27,10 @@
           {% if partial_scan %}
             <a href="{{ run_redirect }}"
                class="button button--cta-button run-scan-button"
-               title="{% trans "Perform a partial scan, ignoring all sources which have not changed since last scan." %}">{% trans "Partial scan" %}</a>
+               title="{% trans "Perform a standard scan, only scanning the changes since the previous scan." %}">{% trans "Standard scan" %}</a>
             <a href="{{ run_redirect }}?full=true"
                class="button button--cta-button run-scan-button"
-               title="{% trans "Perform a full scan, scanning all sources irregardless if they were scanned previously." %}">{% trans "Full scan" %}</a>
+               title="{% trans "Perform a thorough scan, scanning everything within the sources even if they were scanned previously." %}">{% trans "Thorough scan" %}</a>
           {% else %}
             <a href="{{ run_redirect }}"
                class="button button--cta-button run-scan-button">{% trans "Let's go!" %}</a>

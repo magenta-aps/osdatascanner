@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 08:48+0100\n"
+"POT-Creation-Date: 2024-02-28 12:35+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1161,7 +1161,7 @@ msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
 #: adminapp/templates/components/scanner/scanner_ask_run.html:22
-#: adminapp/templates/components/scanner/scanner_ask_run.html:54
+#: adminapp/templates/components/scanner/scanner_ask_run.html:52
 msgid "Run scanner"
 msgstr "Kør scanner"
 
@@ -1171,33 +1171,32 @@ msgstr "Er du sikker på, at du vil starte scanneren?"
 
 #: adminapp/templates/components/scanner/scanner_ask_run.html:30
 msgid ""
-"Perform a partial scan, ignoring all sources which have not changed since "
-"last scan."
+"Perform a standard scan, only scanning the changes since the previous scan."
 msgstr ""
-"Foretag en delvis scanning, hvor alle kilder, som ikke har ændret sig siden "
-"sidste scanning, ignoreres."
+"Foretag et standard scan, hvor alt, som ikke har ændret sig siden sidste "
+"scanning, ignoreres."
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:31
-msgid "Partial scan"
-msgstr "Delvist scan"
+#: adminapp/templates/components/scanner/scanner_ask_run.html:30
+msgid "Standard scan"
+msgstr "Standard scan"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:34
+#: adminapp/templates/components/scanner/scanner_ask_run.html:33
 msgid ""
-"Perform a full scan, scanning all sources irregardless if they were scanned "
-"previously."
+"Perform a thorough scan, scanning everything within the sources even if they "
+"were scanned previously."
 msgstr ""
-"Foretag en fuld scanning, hvor all kilder scannes, uanset om de er blevet "
-"scannet tidligere."
+"Foretag en udførlig scanning, hvor alt indhold i kilderne scannes, uanset om "
+"det er blevet scannet tidligere."
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:35
-msgid "Full scan"
-msgstr "Fuld scanning"
+#: adminapp/templates/components/scanner/scanner_ask_run.html:33
+msgid "Thorough scan"
+msgstr "Udførligt scan"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:38
+#: adminapp/templates/components/scanner/scanner_ask_run.html:36
 msgid "Let's go!"
 msgstr "Ja, kør"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:45
+#: adminapp/templates/components/scanner/scanner_ask_run.html:43
 msgid "Waiting..."
 msgstr "Afventer..."
 
@@ -3207,6 +3206,12 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:183
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Incremental scan"
+#~ msgstr "inkrementalt scan"
+
+#~ msgid "Full scan"
+#~ msgstr "Fuldt scan"
 
 #~ msgid "covered accounts"
 #~ msgstr "dækkede konti"
