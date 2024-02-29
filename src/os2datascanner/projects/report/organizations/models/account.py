@@ -93,7 +93,7 @@ class AccountManager(models.Manager):
 
         if (account.organization.outlook_categorize_email_permission ==
                 OutlookCategorizeChoices.ORG_LEVEL):
-            acc_qs = Account.filter(pk=account.pk)
+            acc_qs = Account.objects.filter(pk=account.pk)
             # Bulk creation of AccountOutlookSetting will then take care of the rest.
             acc_qs.create_account_outlook_setting(categorize_email=True)
 

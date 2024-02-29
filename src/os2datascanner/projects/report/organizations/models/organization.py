@@ -24,6 +24,7 @@ from ..seralizer import BaseBulkSerializer
 class OrganizationManager(models.Manager):
 
     def bulk_update(self, objects, fields, **kwargs):
+        updated = super().bulk_update(objects, fields, **kwargs)
         # We _might_ need to do perform some extra steps here if
         # we're dealing with user impacting organization updates.
         # These should only ever be relevant on update, as an Organization is the basis of all.
@@ -41,7 +42,7 @@ class OrganizationManager(models.Manager):
                         # the creation of categories and categorize existing.
                         accs_in_org.create_account_outlook_setting(categorize_email=True)
 
-        return super().bulk_update(objects, fields, **kwargs)
+        return updated
 
 
 class Organization(Core_Organization):

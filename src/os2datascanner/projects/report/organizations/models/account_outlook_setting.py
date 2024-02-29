@@ -62,7 +62,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     logger.warning(f"Couldn't create category! Got response: {ex.response}")
                     return None
 
-        # Only objects that don't have either a match or fp category is relevant for inspection.
+        # Only objects that don't have either a match or fp category are relevant for inspection.
         qs = self.filter(
             Q(match_category_uuid__isnull=True) | Q(false_positive_category_uuid__isnull=True)
         )
