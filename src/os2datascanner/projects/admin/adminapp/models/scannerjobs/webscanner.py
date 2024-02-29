@@ -71,6 +71,14 @@ class WebScanner(Scanner):
         verbose_name=_("sitemap url")
     )
 
+    always_crawl = models.BooleanField(
+        default=False,
+        verbose_name=_("crawl the sitemap's content"),
+        help_text=_(
+                "instead of just treating the sitemap as a complete list of"
+                " links, run the crawler on those links as well"),
+    )
+
     download_sitemap = models.BooleanField(
         default=True,
         verbose_name=_("download Sitemap from server")
@@ -170,7 +178,10 @@ class WebScanner(Scanner):
         return "/webscanners/"
 
     def generate_sources(self):
-        yield WebSource(self.root_url, sitemap=self.get_sitemap_url(),
-                        exclude=self.get_excluded_urls(),
-                        sitemap_trusted=self.reduce_communication,
-                        extended_hints=self.extended_hints)
+        yield WebSource(
+                self.root_url,
+                sitemap=self.get_sitemap_url(),
+                exclude=self.get_excluded_urls(),
+                sitemap_trusted=self.reduce_communication,
+                extended_hints=self.extended_hints,
+                always_crawl=self.always_crawl,)

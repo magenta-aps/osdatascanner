@@ -233,7 +233,10 @@
                 </div>
               {% endif %}
 
-                  {% if form.reduce_communication.errors %}{{ form.reduce_communication.errors }}{% endif %}
+              {% if form.always_crawl %}
+                <div id="{{ form.always_crawl.auto_id }}_container"
+                     class="form__group{% if form.always_crawl.errors %} has-error{% endif %}">
+                  {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.always_crawl %}
                 </div>
               {% endif %}
 

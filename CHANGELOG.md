@@ -20,6 +20,9 @@
 - An option to run scannerjobs, with last modified enabled, as a full scan
   has been implemented.
 
+- It is now possible to configure a web scan to use both the crawler and
+  sitemap functions at the same time.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.
