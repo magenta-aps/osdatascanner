@@ -108,7 +108,8 @@ class WebSource(Source):
     def __init__(
             self, url: str, sitemap: str = "", exclude=None,
             sitemap_trusted=False,
-            extended_hints=False):
+            extended_hints=False,
+            always_crawl=False,):
 
         if exclude is None:
             exclude = []
@@ -120,6 +121,7 @@ class WebSource(Source):
 
         self._sitemap_trusted = sitemap_trusted
         self._extended_hints = extended_hints
+        self._always_crawl = always_crawl
 
     def _generate_state(self, sm):
         from ... import __version__
@@ -139,7 +141,7 @@ class WebSource(Source):
         # details from netloc
         return self
 
-    def handles(self, sm):
+    def handles(self, sm):  # noqa: CCR001
         session = sm.open(self)
         wc = crawler.WebCrawler(
                 self._url, session=session, timeout=TIMEOUT, ttl=TTL,
@@ -153,7 +155,8 @@ class WebSource(Source):
             for (address, hints) in process_sitemap_url(self._sitemap):
                 if wc.is_crawlable(address):
                     wc.add(address, **hints)
-            wc.freeze()
+            if not self._always_crawl:
+                wc.freeze()
 
         for hints, url in wc.visit():
             referrer = hints.get("referrer")
@@ -189,6 +192,7 @@ class WebSource(Source):
             "exclude": self._exclude,
             "sitemap_trusted": self._sitemap_trusted,
             "extended_hints": self._extended_hints,
+            "always_crawl": self._always_crawl,
         }
 
     @staticmethod
@@ -200,6 +204,7 @@ class WebSource(Source):
             exclude=obj.get("exclude"),
             sitemap_trusted=obj.get("sitemap_trusted", False),
             extended_hints=obj.get("extended_hints", False),
+            always_crawl=obj.get("always_crawl", False),
         )
 
     @property
