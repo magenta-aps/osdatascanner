@@ -126,9 +126,6 @@ class SbsysHandle(Handle):
     def presentation_place(self):
         return "SBSYS"
 
-    def censor(self):
-        return SbsysHandle(self.source.censor(), self.relative_path)
-
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
@@ -179,9 +176,6 @@ class SbsysCaseHandle(Handle):
     @property
     def presentation_place(self):
         return str(self.source.handle)
-
-    def censor(self):
-        return SbsysCaseHandle(self.source.censor(), self.relative_path)
 
     @staticmethod
     @Handle.json_handler(type_label)

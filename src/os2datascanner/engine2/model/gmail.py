@@ -174,11 +174,6 @@ class GmailHandle(Handle):
         account, domain = self.source._user_email_gmail.split("@", 1)
         return f'{domain}/{account}/{self._mail_subject}'
 
-    def censor(self):
-        return GmailHandle(
-            self.source.censor(), self.relative_path,
-            self._mail_subject)
-
     def guess_type(self):
         return "message/rfc822"
 

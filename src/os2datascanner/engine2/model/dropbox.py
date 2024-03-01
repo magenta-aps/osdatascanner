@@ -134,10 +134,6 @@ class DropboxHandle(Handle):
         """
         return f'{self.email}/{self.relative_path}'
 
-    def censor(self):
-        return DropboxHandle(self.source.censor(),
-                             self.relative_path, self.email)
-
     def to_json_object(self):
         return dict(**super().to_json_object(), **{
             "email": self.email

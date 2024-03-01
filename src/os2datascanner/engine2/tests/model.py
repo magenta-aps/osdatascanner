@@ -58,9 +58,6 @@ class DummyHandle(Handle):
     type_label = "-test-dummy"
     resource_type = DummyResource
 
-    def censor(self):
-        return DummyHandle(self.source.censor(), self.relative_path)
-
     @property
     def presentation_name(self):
         return f"dummy no. {self.relative_path}"
@@ -102,6 +99,3 @@ class DummySubhandle(Handle):
     @property
     def presentation_place(self):
         return str(self.source.handle)
-
-    def censor(self):
-        return DummySubhandle(self.source.censor(), self.relative_path)

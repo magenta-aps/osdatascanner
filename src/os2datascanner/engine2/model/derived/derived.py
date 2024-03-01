@@ -35,4 +35,14 @@ class DerivedSource(Source):
                 return cls(Handle.from_json_object(obj["handle"]))
 
     def remap(self, mapping) -> Source:
-        return type(self)(self.handle.remap(mapping))
+        if self in mapping:
+            # This DerivedSource is directly identified in the mapping
+            return mapping.get(self)
+        else:
+            remapped_handle = self.handle.remap(mapping)
+            if remapped_handle is self.handle:
+                # The remapping would do nothing, so there's no need to make a
+                # new object
+                return self
+            else:
+                return type(self)(remapped_handle)

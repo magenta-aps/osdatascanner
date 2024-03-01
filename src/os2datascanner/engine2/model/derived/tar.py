@@ -82,6 +82,3 @@ class TarHandle(Handle):
     @property
     def sort_key(self):
         return self.source.handle.sort_key
-
-    def censor(self):
-        return TarHandle(self.source.censor(), self.relative_path)

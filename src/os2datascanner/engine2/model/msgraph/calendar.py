@@ -89,10 +89,6 @@ class MSGraphCalendarAccountHandle(Handle):
     def guess_type(self):
         return DUMMY_MIME
 
-    def censor(self):
-        return MSGraphCalendarAccountHandle(
-            self.source.censor(), self.relative_path)
-
 
 @Source.mime_handler(DUMMY_MIME)
 class MSGraphCalendarAccountSource(DerivedSource):
@@ -203,11 +199,6 @@ class MSGraphCalendarEventHandle(Handle):
     @property
     def presentation_url(self):
         return self._weblink
-
-    def censor(self):
-        return MSGraphCalendarEventHandle(
-            self.source.censor(), self.relative_path,
-            self._event_subject, self._weblink, self._start)
 
     def to_json_object(self):
         return dict(

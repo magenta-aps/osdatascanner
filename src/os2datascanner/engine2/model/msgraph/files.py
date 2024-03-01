@@ -114,11 +114,6 @@ class MSGraphDriveHandle(Handle):
     def guess_type(self):
         return DUMMY_MIME
 
-    def censor(self):
-        return MSGraphDriveHandle(self.source.censor(), self.relative_path,
-                                  self._folder_name, self._owner_name,
-                                  user_account=self._user_account)
-
     def to_json_object(self):
         return super().to_json_object() | {
             "folder_name": self._folder_name,
@@ -240,9 +235,6 @@ class MSGraphFileHandle(Handle):
             return f"{folder} (in {parent})"
         else:
             return parent
-
-    def censor(self):
-        return MSGraphFileHandle(self.source.censor(), self.relative_path, self._weblink)
 
     def to_json_object(self):
         return dict(

@@ -86,9 +86,6 @@ class SpreadsheetSheetHandle(Handle):
     def sort_key(self) -> str:
         return self.base_handle.sort_key
 
-    def censor(self):
-        return SpreadsheetSheetHandle(self.source.censor(), self.relative_path)
-
     def guess_type(self):
         return SHEET_TYPE
 
