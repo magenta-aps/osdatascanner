@@ -332,7 +332,11 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
                 account_positions[account] = []
 
             try:
-                Position.objects.get(account=account, unit=unit, imported=True)
+                Position.objects.get(
+                        # Use account.imported_id here and not iid to handle
+                        # the case above where the imported ID is changing
+                        account__imported_id=account.imported_id,
+                        unit=unit, imported=True)
             except Position.DoesNotExist:
                 position = Position(
                     imported=True,
