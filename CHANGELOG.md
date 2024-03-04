@@ -23,6 +23,9 @@
 - It is now possible to configure a web scan to use both the crawler and
   sitemap functions at the same time.
 
+- Error messages in the report module are now hidden by default. This 
+  configuration can be changed in the settings file.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.

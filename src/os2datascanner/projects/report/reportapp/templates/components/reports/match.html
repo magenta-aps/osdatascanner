@@ -224,7 +224,7 @@
         </table>
       </td>
     </tr>
-    {% if document_report.problem %}
+    {% if settings.ALLOW_SHOW_ERRORS and document_report.problem %}
       <tr class="warning short">
         <td>
           <i class="material-icons" aria-hidden="true">warning</i>

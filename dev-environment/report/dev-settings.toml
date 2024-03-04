@@ -10,6 +10,7 @@ SAML2_ENABLED = false
 HANDLE_DROPDOWN = true
 ALLOW_CONTACT_MAGENTA = true
 DPO_CSV_EXPORT = true
+ALLOW_SHOW_ERRORS = true
 
 # [site]
 # The URL of this site, used in links in emails and in the redirect URL for
