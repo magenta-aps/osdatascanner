@@ -24,14 +24,9 @@ class Source(TypePropertyEquality, JSONSerialisable):
 
     def __contains__(self, h: "mhandle.Handle") -> bool:
         """Test if a handle originated from this Source"""
-        while h:
-            if h.source == self:
-                return True
-            elif h.source.handle:
-                h = h.source.handle
-            else:
-                break
-        return False
+        return any(
+                h.source == self
+                for h in h.walk_up())
 
     @property
     @abstractmethod
