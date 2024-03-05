@@ -48,6 +48,9 @@
 - The web scanner logic that treats certain domain variants as equivalent is
   now much more robust.
 
+- The schedule checker in send_notifications has been made more precise,
+  which hopefully stops pipelines from breaking.
+
 ## Version 3.22.2, 12th February 2024
 
 "Unparalleled Spectacles"
