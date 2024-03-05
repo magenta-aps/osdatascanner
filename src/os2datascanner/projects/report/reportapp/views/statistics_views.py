@@ -21,7 +21,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q, Count, DateField, BooleanField, ExpressionWrapper
+from django.db.models import Q, Count, DateField, When, Case
 from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
@@ -54,10 +54,6 @@ def month_delta(series_start: date, here: date):
     return _months(here) - _months(series_start)
 
 
-def Condition(*args, **kwargs):
-    return ExpressionWrapper(Q(*args, **kwargs), output_field=BooleanField())
-
-
 class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
     context_object_name = "matches"  # object_list renamed to something more relevant
     template_name = "statistics.html"
@@ -73,8 +69,20 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         a_month_ago = today - timedelta(days=30)
 
         self.matches = DocumentReport.objects.filter(number_of_matches__gte=1).annotate(
-            created_recently=Condition(created_timestamp__gte=a_month_ago),
-            handled_recently=Condition(resolution_time__gte=a_month_ago),
+            created_recently=Case(
+                When(
+                    created_timestamp__gte=a_month_ago,
+                    then=True
+                ),
+                default=False
+            ),
+            handled_recently=Case(
+                When(
+                    resolution_time__gte=a_month_ago,
+                    then=True,
+                ),
+                default=False
+            ),
             created_month=TruncMonth('created_timestamp', output_field=DateField()),
             resolved_month=TruncMonth(
                         # If resolution_time isn't set on a report that has been
