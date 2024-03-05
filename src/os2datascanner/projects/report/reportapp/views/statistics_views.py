@@ -18,7 +18,6 @@ import structlog
 
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-from calendar import month_abbr
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -80,7 +79,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                             'resolved_month'
                         ).annotate(count=Count('source_type')).order_by()
 
-    def get(self, request, *args, **kwargs):
+    def _check_access(self, request):
         if self.request.user.account:
             # Only allow the user to see reports and units from their own
             # organization
@@ -97,6 +96,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 Q(positions__account=self.request.user.account)
                 & Q(positions__role=Role.DPO)
             ).order_by("name")
+
+    def get(self, request, *args, **kwargs):
+        self._check_access(request)
 
         response = super().get(request, *args, **kwargs)
 
@@ -405,8 +407,7 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         if not settings.DPO_CSV_EXPORT:
             raise PermissionDenied
 
-        # Filters matches and orgunits that shouldn't be accessible
-        DPOStatisticsPageView.get(self, request, *args, **kwargs)
+        self._check_access(request)
 
         # Adds scannername and orgunit to name of csv file
         scanner = None
@@ -431,44 +432,57 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         for row in rows:
             yield self.writer.writerow(row)
 
+    def unpack_context_data(self):
+        # Takes the data form get_context_data, and restructures it for use in get_rows
+        context_data = self.get_context_data(number_of_months=100)
+
+        match_data = [[key, value] for (key, value) in context_data["match_data"].items()]
+        source_types = [[values["label"], values["count"]]
+                        for (_source, values) in context_data["source_types"].items()]
+        resolution_status = [[values["label"], values["count"]]
+                             for (_status, values) in context_data["resolution_status"].items()]
+
+        monthly = []
+        earlier_month = False
+        for ([month_new, count_new], [month_unhandled, count_unhandled]) in zip(
+                context_data["new_matches_by_month"], context_data["unhandled_matches_by_month"]):
+            if (month_new != month_unhandled):
+                logger.warning(
+                    f"Unbalanced months in dpo-statisticsdata: {month_new} != {month_unhandled}")
+                break
+
+            if earlier_month or count_unhandled or count_new:
+                # Only add month if it, or an earlier month, has matches
+                earlier_month = True
+                monthly.append([month_new, count_unhandled, count_new])
+
+        return match_data, source_types, resolution_status, monthly
+
     def get_rows(self):
         # Since this isn't a ListView, the data isn't a queryset.
         # So CSVExportMixin.get_rows is overwritten,
         # and instead we unpack get_context_data manually
-        context_data = self.get_context_data(number_of_months=100)
+
+        match_data, source_types, resolutions, monthly = self.unpack_context_data()
+
         rows = []
+        row_i = -1
+        row = [_("Handled/Unhandled"), _("Matches by Handled/Unhandled"), _("Source Type"),
+               _("Matches by Source Type"), _("Resolution Status"),
+               _("Matches by Resolution Status"), _("Month"), _("Unhandled Matches by Month"),
+               _("New Matches by Month")]
 
-        rows.append(["Total Matches", ""])
-        for (key, value) in context_data["match_data"].items():
-            rows.append([key, value])
-        rows.append(["", ""])
+        # If latest row only contains empty cells, we're done
+        while any(value != "" for value in row):
+            rows.append(row)
+            row_i += 1
+            row = []
 
-        rows.append(["Matches by source", ""])
-        for (_source, dict) in context_data["source_types"].items():
-            if dict["count"]:
-                rows.append([dict["label"], dict["count"]])
-        rows.append(["", ""])
-
-        rows.append(["Matches by resolution status", ""])
-        for (_status, dict) in context_data["resolution_status"].items():
-            rows.append([dict["label"], dict["count"]])
-        rows.append(["", ""])
-
-        earlier_month = False
-        rows.append(["Unhandled matches by month", ""])
-        for [month, count] in context_data["unhandled_matches_by_month"]:
-            if earlier_month or count:  # Only add month if it, or an earlier month, has matches
-                earlier_month = True
-                rows.append([month, count])
-        rows.append(["", ""])
-
-        earlier_month = False
-        rows.append(["New matches by month", ""])
-        for [month, count] in context_data["new_matches_by_month"]:
-            if earlier_month or count:  # Only add month if it, or an earlier month, has matches
-                earlier_month = True
-                rows.append([month, count])
-        rows.append(["", ""])
+            # If a column doesn't contain any more data, make empty cells
+            row.extend(match_data[row_i]) if row_i < len(match_data) else row.extend(["", ""])
+            row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
+            row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
+            row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
 
         return rows
 
@@ -721,3 +735,8 @@ def filter_inapplicable_matches(user, matches, account=None, only_personal=False
 
 def sort_by_keys(d: dict) -> dict:
     return dict(sorted(d.items(), key=lambda t: t[0]))
+
+
+month_abbr = {1: _("Jan"), 2: _("Feb"), 3: _("Mar"), 4: _("Apr"),
+              5: _("May"), 6: _("Jun"), 7: _("Jul"), 8: _("Aug"),
+              9: _("Sep"), 10: _("Oct"), 11: _("Nov"), 12: _("Dec")}

@@ -546,6 +546,7 @@ msgid "All sensitivities"
 msgstr "Alle følsomheder"
 
 #: reportapp/templates/components/reports/filters.html:99
+#: reportapp/views/statistics_views.py:438
 msgid "Source Type"
 msgstr "Kildetype"
 
@@ -554,6 +555,7 @@ msgid "All source types"
 msgstr "Alle kildetyper"
 
 #: reportapp/templates/components/reports/filters.html:132
+#: reportapp/views/statistics_views.py:439
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
 
@@ -1518,43 +1520,119 @@ msgstr "Siden eksisterer ikke"
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/statistics_views.py:91
+#: reportapp/views/statistics_views.py:90
 msgid "The user does not have an account."
 msgstr "Brugeren har ikke en konto."
 
-#: reportapp/views/statistics_views.py:120
+#: reportapp/views/statistics_views.py:119
 #, python-brace-format
 msgid "An organizational unit with the UUID '{0}' was not found."
 msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
 
-#: reportapp/views/statistics_views.py:202
+#: reportapp/views/statistics_views.py:201
 msgid "other source"
 msgstr "anden kilde"
 
-#: reportapp/views/statistics_views.py:203
+#: reportapp/views/statistics_views.py:202
 msgid "web scan"
 msgstr "webscan"
 
-#: reportapp/views/statistics_views.py:204
+#: reportapp/views/statistics_views.py:203
 msgid "file scan"
 msgstr "filscan"
 
-#: reportapp/views/statistics_views.py:205
+#: reportapp/views/statistics_views.py:204
 msgid "mail scan"
 msgstr "mailscan"
 
-#: reportapp/views/statistics_views.py:206
+#: reportapp/views/statistics_views.py:205
 msgid "Teams scan"
 msgstr "Teams-scan"
 
-#: reportapp/views/statistics_views.py:207
+#: reportapp/views/statistics_views.py:206
 msgid "calendar scan"
 msgstr "kalenderscan"
 
-#: reportapp/views/statistics_views.py:628
+#: reportapp/views/statistics_views.py:438
+msgid "Handled/Unhandled"
+msgstr "Håndteret/Uhånderet"
+
+#: reportapp/views/statistics_views.py:438
+msgid "Matches by Handled/Unhandled"
+msgstr "Resultater fordelt på Håndteret/Uhånderet"
+
+#: reportapp/views/statistics_views.py:439
+msgid "Matches by Source Type"
+msgstr "Resultater fordelt på Kildetype"
+
+#: reportapp/views/statistics_views.py:440
+msgid "Matches by Resolution Status"
+msgstr "Resultater fordelt på Håndteringsstatus"
+
+#: reportapp/views/statistics_views.py:440
+msgid "Month"
+msgstr "Måned"
+
+#: reportapp/views/statistics_views.py:440
+msgid "Unhandled Matches by Month"
+msgstr "Uhåndterede Resultater per Måned"
+
+#: reportapp/views/statistics_views.py:441
+msgid "New Matches by Month"
+msgstr "Nye Resultater per Måned"
+
+#: reportapp/views/statistics_views.py:634
 #, python-brace-format
 msgid "You deleted all results from {0} associated with {1}."
 msgstr "Du har slettet alle resultater fra {0} tilknyttet {1}."
+
+#: reportapp/views/statistics_views.py:731
+msgid "Jan"
+msgstr "Jan"
+
+#: reportapp/views/statistics_views.py:731
+msgid "Feb"
+msgstr "Feb"
+
+#: reportapp/views/statistics_views.py:731
+msgid "Mar"
+msgstr "Mar"
+
+#: reportapp/views/statistics_views.py:731
+msgid "Apr"
+msgstr "Apr"
+
+#: reportapp/views/statistics_views.py:732
+msgid "May"
+msgstr "Maj"
+
+#: reportapp/views/statistics_views.py:732
+msgid "Jun"
+msgstr "Jun"
+
+#: reportapp/views/statistics_views.py:732
+msgid "Jul"
+msgstr "Jul"
+
+#: reportapp/views/statistics_views.py:732
+msgid "Aug"
+msgstr "Aug"
+
+#: reportapp/views/statistics_views.py:733
+msgid "Sep"
+msgstr "Sep"
+
+#: reportapp/views/statistics_views.py:733
+msgid "Oct"
+msgstr "Okt"
+
+#: reportapp/views/statistics_views.py:733
+msgid "Nov"
+msgstr "Nov"
+
+#: reportapp/views/statistics_views.py:733
+msgid "Dec"
+msgstr "Dec"
 
 #: reportapp/views/user_views.py:63
 msgid "Successfully categorized your emails!"

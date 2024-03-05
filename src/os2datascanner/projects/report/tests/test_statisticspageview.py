@@ -469,9 +469,9 @@ class StatisticsPageViewTest(TestCase):
 
         self.assertListEqual(view.count_new_matches_by_month(test_date),
                              [['Dec 2019', 0], ['Jan 2020', 0], ['Feb 2020', 0],
-                              ['Mar 2020', 0], ['Apr 2020', 0], ['May 2020', 0],
+                              ['Mar 2020', 0], ['Apr 2020', 0], ['Maj 2020', 0],
                               ['Jun 2020', 0], ['Jul 2020', 0], ['Aug 2020', 0],
-                              ['Sep 2020', 1], ['Oct 2020', 2], ['Nov 2020', 4]])
+                              ['Sep 2020', 1], ['Okt 2020', 2], ['Nov 2020', 4]])
 
         # Reset to old values
         reset_timestamps(original_timestamps)
@@ -489,9 +489,9 @@ class StatisticsPageViewTest(TestCase):
         test_date = dateutil.parser.parse("2021-09-28T14:21:59+05:00")
 
         self.assertListEqual(view.count_new_matches_by_month(test_date),
-                             [['Oct 2020', 2], ['Nov 2020', 4], ['Dec 2020', 0],
+                             [['Okt 2020', 2], ['Nov 2020', 4], ['Dec 2020', 0],
                               ['Jan 2021', 0], ['Feb 2021', 0], ['Mar 2021', 0],
-                              ['Apr 2021', 0], ['May 2021', 0], ['Jun 2021', 0],
+                              ['Apr 2021', 0], ['Maj 2021', 0], ['Jun 2021', 0],
                               ['Jul 2021', 0], ['Aug 2021', 0], ['Sep 2021', 0]])
 
         # Reset to old values
@@ -511,8 +511,8 @@ class StatisticsPageViewTest(TestCase):
         test_date = dateutil.parser.parse("2021-4-28T14:21:59+05:00")
 
         self.assertListEqual(view.count_unhandled_matches_by_month(test_date),
-                             [['May 2020', 0], ['Jun 2020', 0], ['Jul 2020', 0],
-                              ['Aug 2020', 0], ['Sep 2020', 1], ['Oct 2020', 3],
+                             [['Maj 2020', 0], ['Jun 2020', 0], ['Jul 2020', 0],
+                              ['Aug 2020', 0], ['Sep 2020', 1], ['Okt 2020', 3],
                               ['Nov 2020', 7], ['Dec 2020', 7], ['Jan 2021', 7],
                               ['Feb 2021', 7], ['Mar 2021', 0], ['Apr 2021', 0]])
 
@@ -594,9 +594,9 @@ class StatisticsPageViewTest(TestCase):
 
         response = self.get_dpo_statistics_csv_response(
             self.egon, params=f'?orgunit={str(self.olsen_banden.uuid)}')
-        _line1, _line2, unhandled, *_ = response.streaming_content
+        Headers, _line1, line2, *_ = response.streaming_content
 
-        self.assertEqual(str(unhandled), "b'unhandled,4\\r\\n'")
+        self.assertIn("unhandled,4", str(line2), "Data doesn't contain 2 matches")
 
     def test_dpo_without_access_to_csv_export(self):
         """A dpo shouldn't be able to export data from another orgunit."""
@@ -634,10 +634,9 @@ class StatisticsPageViewTest(TestCase):
         Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
 
         response = self.get_dpo_statistics_csv_response(self.egon, params='?scannerjob=11')
-        _line1, _line2, unhandled, *_ = response.streaming_content
+        Headers, _line1, line2, *_ = response.streaming_content
 
-        self.assertEqual(str(unhandled), "b'unhandled,2\\r\\n'",
-                         "Data contains more than 2 matches")
+        self.assertIn("unhandled,2", str(line2), "Data doesn't contain 2 matches")
 
     def test_csv_export_scannerjob_and_orgunit_filter(self):
         """Exporting data from an orgunit and scannerjob, should only contain relevant data."""
@@ -646,9 +645,9 @@ class StatisticsPageViewTest(TestCase):
 
         response = self.get_dpo_statistics_csv_response(
             self.egon, params=f"?scannerjob=11&orgunit={str(self.olsen_banden.uuid)}")
-        _line1, _line2, unhandled, *_ = response.streaming_content
+        Headers, _line1, line2, *_ = response.streaming_content
 
-        self.assertEqual(str(unhandled), "b'unhandled,1\\r\\n'")
+        self.assertIn("unhandled,1", str(line2), "Data doesn't contain 1 matches")
 
     def test_superuser_export_entire_organization(self):
         """A superuser should be able to export data for their entire organization."""
@@ -657,11 +656,11 @@ class StatisticsPageViewTest(TestCase):
         explicit = self.get_dpo_statistics_csv_response(self.egon, params="?orgunit=all")
         implicit = self.get_dpo_statistics_csv_response(self.egon)
 
-        _line1, _line2, unhandled_ex, *_ = explicit.streaming_content
-        _line1, _line2, unhandled_im, *_ = implicit.streaming_content
+        Headers, _line1, line2_ex, *_ = explicit.streaming_content
+        Headers, _line1, line2_im, *_ = implicit.streaming_content
 
-        self.assertEqual(str(unhandled_ex), "b'unhandled,7\\r\\n'")
-        self.assertEqual(str(unhandled_im), "b'unhandled,7\\r\\n'")
+        self.assertIn("unhandled,7", str(line2_ex))
+        self.assertIn("unhandled,7", str(line2_im))
 
     def test_dpo_export_entire_organization(self):
         """A dpo should be able to export data for their entire organization."""
@@ -670,11 +669,11 @@ class StatisticsPageViewTest(TestCase):
         explicit = self.get_dpo_statistics_csv_response(self.egon, params="?orgunit=all")
         implicit = self.get_dpo_statistics_csv_response(self.egon)
 
-        _line1, _line2, unhandled_ex, *_ = explicit.streaming_content
-        _line1, _line2, unhandled_im, *_ = implicit.streaming_content
+        Headers, _line1, line2_ex, *_ = explicit.streaming_content
+        Headers, _line1, line2_im, *_ = implicit.streaming_content
 
-        self.assertEqual(str(unhandled_ex), "b'unhandled,7\\r\\n'")
-        self.assertEqual(str(unhandled_im), "b'unhandled,7\\r\\n'")
+        self.assertIn("unhandled,7", str(line2_ex))
+        self.assertIn("unhandled,7", str(line2_im))
 
     # StatisticsPageView()
     def get_statisticspage_object(self):
