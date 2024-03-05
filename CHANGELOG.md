@@ -31,6 +31,9 @@
 - The layout of exported csv-files from the dpo-module, 
   has been changed as to make data processing easier.
 
+- Convenience shortcut buttons can now be displayed when running the report
+  module in development mode.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.

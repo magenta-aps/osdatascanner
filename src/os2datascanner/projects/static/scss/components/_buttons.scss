@@ -15,6 +15,10 @@
   --color-border-neutral: rgba(0, 0, 0, 0.1);
 }
 
+.__button {
+  display: none;
+}
+
 .button { // ***** Default button type *****
   // Layout
   display: inline-block;
@@ -250,6 +254,13 @@
   // ***** Icon specific code *****
   .material-icons#play_arrow {
     transform: translateX(-0.063rem); // adjusts the perceived optical balance of the play icon
+  }
+
+  &--debug {
+    background: repeating-linear-gradient(
+        45deg, #ddd7, #fdd7 10px, #f667 10px, #f667 20px);
+    border: 1px dashed var(--color-primary-dark);
+    font-style: italic;
   }
 }
 
