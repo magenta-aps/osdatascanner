@@ -26,6 +26,8 @@
 - Error messages in the report module are now hidden by default. This 
   configuration can be changed in the settings file.
 
+- Unit tests have been added for sorting UserErrorLogs.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.
@@ -87,7 +89,7 @@
 - Throw an IntegrityError when attempting to create an Alias related to an Account
   and User, which have no connection.
 
-## Bugfixes
+### Bugfixes
 
 - Monthly progress in dpo module is now calculated as difference between
   matches found and matches handled in the last 30 days.

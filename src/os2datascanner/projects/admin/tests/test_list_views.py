@@ -1,6 +1,7 @@
 from datetime import datetime
 from dateutil.tz import gettz
 from parameterized import parameterized
+from itertools import pairwise
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import RequestFactory, TestCase
@@ -11,8 +12,9 @@ from ..adminapp.views.webscanner_views import WebScannerList
 from ..adminapp.models.scannerjobs.webscanner import WebScanner
 from ..adminapp.models.rules import CustomRule
 from ..adminapp.views.rule_views import RuleList
-from ..adminapp.views.scanner_views import StatusOverview
+from ..adminapp.views.scanner_views import StatusOverview, UserErrorLogView
 from ..adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
+from ..adminapp.models.usererrorlog import UserErrorLog
 from ..core.models import Client, Administrator
 from ..organizations.models import Organization
 from ..organizations.views import OrganizationListView
@@ -24,14 +26,14 @@ class ListViewsTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         client1 = Client.objects.create(name="client1")
-        Organization.objects.create(
+        org1 = Organization.objects.create(
             name="Magenta",
             uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c",
             slug=slugify("Magenta"),
             client=client1,
         )
         client2 = Client.objects.create(name="client2")
-        Organization.objects.create(
+        org2 = Organization.objects.create(
             name="IANA (example.com)",
             slug=slugify("IANA (example.com)"),
             uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0",
@@ -67,13 +69,42 @@ class ListViewsTest(TestCase):
                                   description="Helt ny regel 2",
                                   _rule="{}"
                                   )
-        ScanStatus.objects.create(
+        status = ScanStatus.objects.create(
             scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
             scanner=Scanner.objects.get(name="Magenta")
         )
         ScanStatus.objects.create(
             scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
             scanner=Scanner.objects.get(name="TheyDontWantYouTo")
+        )
+
+        UserErrorLog.objects.create(
+            scan_status=status,
+            organization=org1,
+            path="The errors are here!",
+            error_message="Something went awry :(",
+            is_new=True
+        )
+        UserErrorLog.objects.create(
+            scan_status=status,
+            organization=org1,
+            path="The errors are here!",
+            error_message="ERROR ERROR ERROR",
+            is_new=True
+        )
+        UserErrorLog.objects.create(
+            scan_status=status,
+            organization=org2,
+            path="The errors are here!",
+            error_message="OH NOOOOO!",
+            is_new=True
+        )
+        UserErrorLog.objects.create(
+            scan_status=status,
+            organization=org2,
+            path="The errors are here!",
+            error_message="97 98 99 ... ... ... crashed",
+            is_new=True
         )
 
     def setUp(self) -> None:
@@ -89,6 +120,7 @@ class ListViewsTest(TestCase):
             ("RuleListViewTest", '/rules/', RuleList()),
             ("ScanStatusListViewTest", '/status/', StatusOverview()),
             ("OrganizationListViewTest", '/organizations/', OrganizationListView()),
+            ("UserErrorLogViewTest", '/error-log/', UserErrorLogView()),
         ]
         return params
 
@@ -106,6 +138,8 @@ class ListViewsTest(TestCase):
             self.assertEqual(len(qs), 4)
         elif isinstance(list_type, OrganizationListView):
             self.assertEqual(len(qs), 2)
+        elif isinstance(list_type, UserErrorLogView):
+            self.assertEqual(len(qs), 4)
         else:
             self.assertEqual(len(qs), 2)
 
@@ -121,7 +155,11 @@ class ListViewsTest(TestCase):
             client=Client.objects.get(name="client1")
         )
         qs = self.listview_get_queryset(path, list_type)
-        self.assertEqual(len(qs), 1)
+        if isinstance(list_type, UserErrorLogView):
+            self.assertEqual(len(qs), 2)
+        else:
+            self.assertEqual(len(qs), 1)
+
         if isinstance(list_type, StatusOverview):
             self.assertEqual(qs.first().scanner.organization.name, "Magenta")
         elif isinstance(list_type, OrganizationListView):
@@ -138,7 +176,11 @@ class ListViewsTest(TestCase):
             client=Client.objects.get(name="client2")
         )
         qs = self.listview_get_queryset(path, list_type)
-        self.assertEqual(len(qs), 1)
+        if isinstance(list_type, UserErrorLogView):
+            self.assertEqual(len(qs), 2)
+        else:
+            self.assertEqual(len(qs), 1)
+
         if isinstance(list_type, StatusOverview):
             self.assertEqual(qs.first().scanner.organization.name,
                              "IANA (example.com)")
@@ -172,6 +214,52 @@ class ListViewsTest(TestCase):
         # Assert
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs.first(), created_scanner)
+
+    def test_sort_usererrorlogs_default(self):
+        """By default, user error logs should be sorted by pk, descending."""
+        self.user.is_superuser = True
+        self.user.save()
+
+        qs = self.listview_get_queryset(
+            reverse_lazy('error-log'),
+            UserErrorLogView(),
+            request_kwargs={})
+
+        def is_sorted(a, b):
+            return a.pk >= b.pk
+
+        self.assertTrue(all(is_sorted(a, b) for (a, b) in pairwise(qs)))
+
+    def test_sort_usererrorlogs_with_param(self):
+        """User error logs can be sorted by giving parameters order_by and order."""
+        self.user.is_superuser = True
+        self.user.save()
+
+        qs = self.listview_get_queryset(
+            reverse_lazy('error-log'),
+            UserErrorLogView(),
+            request_kwargs={'order_by': 'error_message', 'order': 'ascending'})
+
+        def is_sorted(a, b):
+            return a.error_message <= b.error_message
+
+        self.assertTrue(all(is_sorted(a, b) for (a, b) in pairwise(qs)))
+
+    def test_sort_usererrorlogs_with_illegal_param(self):
+        """When given an illegal sorting paramter, user error logs are sorted in the default way,
+        pk descending."""
+        self.user.is_superuser = True
+        self.user.save()
+
+        qs = self.listview_get_queryset(
+            reverse_lazy('error-log'),
+            UserErrorLogView(),
+            request_kwargs={'order_by': 'organization'})
+
+        def is_sorted(a, b):
+            return a.pk >= b.pk
+
+        self.assertTrue(all(is_sorted(a, b) for (a, b) in pairwise(qs)))
 
     def listview_get_queryset(self, path, view, **kwargs):
         request = self.factory.get(path, data=kwargs.get('request_kwargs'))
