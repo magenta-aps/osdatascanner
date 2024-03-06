@@ -257,12 +257,16 @@ class Scanner(models.Model):
         rule = self.rule.customrule.make_engine2_rule()
 
         prerules = []
-        if (not force
-                and self.do_last_modified_check
-                and not self.compute_covered_accounts().exists()):
-            last = self.get_last_successful_run_at()
-            if last:
-                prerules.append(LastModifiedRule(last))
+        if not force and self.do_last_modified_check:
+            if self._supports_account_annotations:
+                # _add_sources will add a per-Source LastModifiedRule, so we
+                # don't need to do anything here
+                pass
+            else:
+                # Create a single LastModifiedRule for the whole scan
+                last = self.get_last_successful_run_at()
+                if last:
+                    prerules.append(LastModifiedRule(last))
 
         if self.do_ocr:
             # If we're doing OCR, then filter out any images smaller than
@@ -315,13 +319,15 @@ class Scanner(models.Model):
 
     def _add_sources(
             self, spec_template: messages.ScanSpecMessage,
-            outbox: list) -> int:
+            outbox: list, force: bool) -> int:
         """Creates scan specifications, based on the provided scan
         specification template, for every Source covered by this scanner, and
         puts them into the provided outbox list. Returns the number of sources
         added."""
         source_count = 0
-        if self._supports_account_annotations:
+        if (self.do_last_modified_check
+                and not force
+                and self._supports_account_annotations):
             # CoveredAccount-aware scanner!
             # TODO: If an account has more than one Alias, we'll try to scan both.
             # This is an issue when it comes to service accounts/shared mailboxes.
@@ -350,7 +356,9 @@ class Scanner(models.Model):
                 source_count += 1
             return source_count
         else:
-            # Not CoveredAccount-aware scanner.
+            # The scanner isn't CoveredAccount-aware, or we're running without
+            # the Last-Modified check. In either case, we just put Sources into
+            # the queue without fiddling around with the rule
             for source in self.generate_sources():
                 outbox.append((
                     settings.AMQP_PIPELINE_TARGET,
@@ -440,7 +448,7 @@ class Scanner(models.Model):
 
         source_count = 0
         if explore:
-            source_count = self._add_sources(spec_template, outbox)
+            source_count = self._add_sources(spec_template, outbox, force)
 
             if source_count == 0:
                 raise ValueError(f"{self} produced 0 explorable sources")
