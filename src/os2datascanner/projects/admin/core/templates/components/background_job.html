@@ -1,0 +1,39 @@
+{% load static %}
+{% load i18n %}
+
+{% with exec_state_value=job.exec_state.value %}
+
+<div class="response"
+    {% if exec_state_value == "waiting" or exec_state_value == "running" %}
+    hx-get="{% url 'background_job_status_widget' pk=job.pk %}"
+    hx-trigger="every 1s"
+    hx-swap="outerHTML"
+    {% endif %}>
+    {% with exec_state_value=job.exec_state.value %}
+      {% if exec_state_value == "finished" %}
+        <span class="response-icon response-icon--success">
+          <i class="material-icons">check</i>
+        </span>
+      {% elif exec_state_value == "failed" %}
+        <span class="response-icon response-icon--error">
+          <i class="material-icons">error</i>
+        </span>
+      {% elif exec_state_value == "waiting" or exec_state_value == "running" %}
+        <span class="response-icon response-icon--waiting">
+          <i class="material-icons">hourglass_top</i>
+        </span>
+      {% endif %}
+      {% if exec_state_value != "waiting" %}
+        <span class="response-text">
+          {% if exec_state_value == "finished" %}
+            {% trans 'last updated'|capfirst %},
+          {% else %}
+            {{ job.exec_state.label|capfirst }},
+          {% endif %}
+          {{ job.changed_at|date:'d-m-Y H:i' }}
+        </span>
+      {% endif %}
+    {% endwith %}
+</div>
+
+{% endwith %}
