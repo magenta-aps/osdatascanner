@@ -21,12 +21,12 @@
         </div>
         <div class="statistic_total_count">{{ source.count }}</div>
         <div>
-          {% if total_count < 0 %}
-            <p style="color:green;">{% localize %}{{ total_count }}{% endlocalize %}{% trans " the last 30 days" %}</p>
-          {% elif total_count > 0 %}
-            <p style="color:red;">+{% localize %}{{ total_count }}{% endlocalize %}{% trans " the last 30 days" %}</p>
+          {% if progress < 0 %}
+            <p style="color:green;">{% localize %}{{ progress }}{% endlocalize %}{% trans " the last 30 days" %}</p>
+          {% elif progress > 0 %}
+            <p style="color:red;">+{% localize %}{{ progress }}{% endlocalize %}{% trans " the last 30 days" %}</p>
           {% else %}
-            <p>{% localize %}{{ total_count }}{% endlocalize %}{% trans " the last 30 days" %}</p>
+            <p>{% localize %}{{ progress }}{% endlocalize %}{% trans " the last 30 days" %}</p>
           {% endif %}
         </div>
       </div>

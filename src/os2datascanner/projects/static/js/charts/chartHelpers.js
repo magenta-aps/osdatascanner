@@ -29,7 +29,7 @@ Chart.defaults.animation.duration = 1700;
 function drawCharts() {
   // json_script solution - Safe from in-page script execution
 
-  const sourceTypes = JSON.parse(document.getElementById('source_types').textContent);
+  const sourceTypes = JSON.parse(document.getElementById('total_by_source').textContent);
 
   const resolutionStatus = JSON.parse(document.getElementById('resolution_status').textContent);
 
@@ -53,8 +53,8 @@ function drawCharts() {
   };
 
   // Prepare data for doughnut chart
-  const totalHandledMatches = matchData.handled;
-  const totalMatches = matchData.handled + matchData.unhandled;
+  const totalHandledMatches = matchData.handled.count;
+  const totalMatches = matchData.handled.count + matchData.unhandled.count;
   var handledPercentage = totalHandledMatches / totalMatches * 100;
 
   // Percentage of handled matches

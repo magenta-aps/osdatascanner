@@ -21,7 +21,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q, Count, DateField
+from django.db.models import Q, Count, DateField, BooleanField, ExpressionWrapper
 from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
@@ -54,6 +54,10 @@ def month_delta(series_start: date, here: date):
     return _months(here) - _months(series_start)
 
 
+def Condition(*args, **kwargs):
+    return ExpressionWrapper(Q(*args, **kwargs), output_field=BooleanField())
+
+
 class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
     context_object_name = "matches"  # object_list renamed to something more relevant
     template_name = "statistics.html"
@@ -64,8 +68,13 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.matches = DocumentReport.objects.filter(
-            number_of_matches__gte=1).annotate(
+
+        today = timezone.now()
+        a_month_ago = today - timedelta(days=30)
+
+        self.matches = DocumentReport.objects.filter(number_of_matches__gte=1).annotate(
+            created_recently=Condition(created_timestamp__gte=a_month_ago),
+            handled_recently=Condition(resolution_time__gte=a_month_ago),
             created_month=TruncMonth('created_timestamp', output_field=DateField()),
             resolved_month=TruncMonth(
                         # If resolution_time isn't set on a report that has been
@@ -76,7 +85,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                             'resolution_status',
                             'source_type',
                             'created_month',
-                            'resolved_month'
+                            'resolved_month',
+                            'created_recently',
+                            'handled_recently',
                         ).annotate(count=Count('source_type')).order_by()
 
     def _check_access(self, request):
@@ -128,7 +139,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 "scanner_job_name", "scanner_job_pk").distinct()
 
         (context['match_data'],
-         context['source_types'],
+         source_type_data,
          context['resolution_status'],
          self.created_month,
          self.resolved_month) = self.make_data_structures(self.matches)
@@ -149,17 +160,19 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         #     context['matches_by_org_unit_handled'] = highest_handled_ou
         #     context['matches_by_org_unit_total'] = highest_total_ou
 
-        m_by_handled = self.count_unhandled_matches_by_source()
-        m_recently_handled = self.count_recently_handled_matches(today)
-        m_recently_created = self.count_recent_matches(today)
+        context['total_by_source'] = {}
+        context['unhandled_by_source'] = {}
 
-        context['matches_by_source_and_handled_status'] = m_by_handled
-
-        for src_type in ('mailscan', 'filescan', 'webscan', 'teamsscan', 'other'):
+        for src_type, values in source_type_data.items():
             # The progress is calculated by subtracting the number of recently handled matches
-            # from the number of recently found matches
-            context[f'total_{src_type}_count'] = m_recently_created[src_type]['count'] \
-                - m_recently_handled[src_type]['count']
+            # from the number of recently created matches
+            context[f'{src_type}_monthly_progress'] = \
+                values['created_recent'] - values['handled_recent']
+
+            context['total_by_source'][src_type] = {
+                'label': values['label'], 'count': values['total']}
+            context['unhandled_by_source'][src_type] = {
+                'label': values['label'], 'count': values['unhandled']}
 
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
@@ -192,58 +205,67 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         data into separate structures, which can then be used for statistical
         presentations."""
 
-        match_data = {
-            'handled': 0,
-            'unhandled': 0
+        handled_unhandled = {
+            'handled': {'count': 0, 'label': _('handled')},
+            'unhandled': {'count': 0, 'label': _('unhandled')},
         }
 
-        resolution_status = {choice.value: {"label": choice.label, "count": 0}
+        resolution_status = {choice.value: {'label': choice.label, 'count': 0}
                              for choice in DocumentReport.ResolutionChoices}
 
         source_type = {
-            'other': {'count': 0, 'label': _('other source')},
-            'webscan': {'count': 0, 'label': _('web scan')},
-            'filescan': {'count': 0, 'label': _('file scan')},
-            'mailscan': {'count': 0, 'label': _('mail scan')},
-            'teamsscan': {'count': 0, 'label': _('Teams scan')},
-            'calendarscan': {'count': 0, 'label': _('calendar scan')},
+            'other': {'label': _('other source')},
+            'webscan': {'label': _('web scan')},
+            'filescan': {'label': _('file scan')},
+            'mailscan': {'label': _('mail scan')},
+            'teamsscan': {'label': _('Teams scan')},
+            'calendarscan': {'label': _('calendar scan')},
         }
+        for key in source_type.keys():
+            for field in ['total', 'unhandled', 'created_recent', 'handled_recent']:
+                source_type[key][field] = 0
 
         created_month = {}
 
         resolved_month = {}
 
         for obj in matches:
+            count = obj.get('count', 0)
             match obj:
-                case {"source_type": "smb" | "smbc" | "msgraph-files" | "googledrive",
-                      "count": count}:
-                    source_type["filescan"]["count"] += count
-                case {"source_type": "web", "count": count}:
-                    source_type["webscan"]["count"] += count
-                case {"source_type": "ews" | "msgraph-mail" | "mail" | "gmail",
-                      "count": count}:
-                    source_type["mailscan"]["count"] += count
-                case {"source_type": "msgraph-teams-files", "count": count}:
-                    source_type["teamsscan"]["count"] += count
-                case {"source_type": "msgraph-calendar", "count": count}:
-                    source_type["calendarscan"]["count"] += count
-                case {"count": count}:
-                    source_type["other"]["count"] += count
+                case {'source_type': 'smb' | 'smbc' | 'msgraph-files' | 'googledrive'}:
+                    source_category = 'filescan'
+                case {'source_type': 'web'}:
+                    source_category = 'webscan'
+                case {'source_type': 'ews' | 'msgraph-mail' | 'mail' | 'gmail'}:
+                    source_category = 'mailscan'
+                case {'source_type': 'msgraph-teams-files'}:
+                    source_category = 'teamsscan'
+                case {'source_type': 'msgraph-calendar'}:
+                    source_category = 'calenderscan'
+                case _:
+                    source_category = 'other'
 
             status = obj.get('resolution_status')
             key = 'handled' if status is not None else 'unhandled'
-            count = obj.get("count", 0)
-            match_data[key] += count
+
+            source_type[source_category]['total'] += count
+            source_type[source_category]['unhandled'] += count if key == 'unhandled' else 0
+            source_type[source_category]['created_recent'] += count if obj.get(
+                'created_recently') else 0
+            source_type[source_category]['handled_recent'] += count if obj.get(
+                'handled_recently') else 0
+
             if status is not None:
-                resolution_status[status]["count"] += count
+                resolution_status[status]['count'] += count
+                month_resolved = obj['resolved_month']
+                resolved_month[month_resolved] = resolved_month.get(month_resolved, 0) + count
 
-            created_month[obj["created_month"]] = created_month.get(
-                obj["created_month"], 0) + obj["count"]
-            if obj["resolution_status"] is not None:
-                resolved_month[obj["resolved_month"]] = resolved_month.get(
-                    obj["resolved_month"], 0) + obj["count"]
+            handled_unhandled[key]['count'] += count
 
-        return match_data, source_type, resolution_status, created_month, resolved_month
+            month_created = obj['created_month']
+            created_month[month_created] = created_month.get(month_created, 0) + count
+
+        return handled_unhandled, source_type, resolution_status, created_month, resolved_month
 
     def count_unhandled_matches_by_month(self, current_date, num_months=12):
         """Counts new matches and resolved matches by month for the last year,
@@ -372,33 +394,6 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         return tuple(list(reversed(sort_OU(get_matches(mt), match_type=mt)[-10:]))
                      for mt in ("unhandled", "handled", "total"))
 
-    def count_unhandled_matches_by_source(self):
-        """Returns the number of unhandled matches for each source type."""
-        current_matches = self.matches.filter(resolution_status__isnull=True)
-        _, source_type, *_ = self.make_data_structures(current_matches)
-
-        return source_type
-
-    def count_recently_handled_matches(self, current_date):
-        """Returns the number of matches handled from the last 30 days for each source type."""
-        a_month_ago = current_date - timedelta(days=30)
-        handled_matches = self.matches.filter(
-            resolution_status__isnull=False,
-            resolution_time__gte=a_month_ago)
-
-        _, source_type, *_ = self.make_data_structures(handled_matches)
-
-        return source_type
-
-    def count_recent_matches(self, current_date):
-        """Returns the number of matches found in the last 30 days for each source type."""
-        a_month_ago = current_date - timedelta(days=30)
-        new_matches = self.matches.filter(created_timestamp__gte=a_month_ago)
-
-        _, source_type, *_ = self.make_data_structures(new_matches)
-
-        return source_type
-
 
 class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
     exported_filename = 'osdatascanner_dpo_statistics'
@@ -436,9 +431,10 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         # Takes the data form get_context_data, and restructures it for use in get_rows
         context_data = self.get_context_data(number_of_months=100)
 
-        match_data = [[key, value] for (key, value) in context_data["match_data"].items()]
+        match_data = [[values["label"], values["count"]]
+                      for (_key, values) in context_data["match_data"].items()]
         source_types = [[values["label"], values["count"]]
-                        for (_source, values) in context_data["source_types"].items()]
+                        for (_source, values) in context_data["total_by_source"].items()]
         resolution_status = [[values["label"], values["count"]]
                              for (_status, values) in context_data["resolution_status"].items()]
 
@@ -483,9 +479,6 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
             row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
             row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
             row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
-<<<<<<< HEAD
-=======
->>>>>>> 7b1c711f7 ([#59725] Restructure and translate dpo-csv)
 
         return rows
 

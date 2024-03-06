@@ -87,23 +87,23 @@
     <div class="statistic_total_container">
 
       <!-- Total matches - mail results -->
-      {% include "components/statistics/total_source_count.html" with source=matches_by_source_and_handled_status.mailscan total_count=total_mailscan_count %}
+      {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.mailscan progress=mailscan_monthly_progress %}
  
       <!-- Total matches - file results -->
-      {% include "components/statistics/total_source_count.html" with source=matches_by_source_and_handled_status.filescan total_count=total_filescan_count %}
+      {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.filescan progress=filescan_monthly_progress %}
 
       <!-- Total matches - website -->
-      {% include "components/statistics/total_source_count.html" with source=matches_by_source_and_handled_status.webscan total_count=total_webscan_count %}
+      {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.webscan progress=webscan_monthly_progress %}
 
       <!-- Total matches - Teams -->
-      {% include "components/statistics/total_source_count.html" with source=matches_by_source_and_handled_status.teamsscan total_count=total_teamsscan_count %}
+      {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.teamsscan progress=teamsscan_monthly_progress %}
 
       <!-- Total matches - Calendar -->
-      {% include "components/statistics/total_source_count.html" with source=matches_by_source_and_handled_status.calendarscan total_count=total_calendarscan_count %}
+      {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.calendarscan progress=calendarscan_monthly_progress %}
  
 
       <!-- Total matches - other sources -->
-      {% include "components/statistics/total_source_count.html" with source=matches_by_source_and_handled_status.other total_count=total_other_count %}
+      {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.other progress=other_monthly_progress %}
     </div>
   </div>
  
@@ -125,7 +125,7 @@
           </div>
           <div class="doughnut_info_box">
             <h4>{% trans "Handled results" %}</h4>
-            <p>{{ match_data.handled }} {% trans "of" %} {{ match_data.handled|add:match_data.unhandled }}</p>
+            <p>{{ match_data.handled.count }} {% trans "of" %} {{ match_data.handled.count|add:match_data.unhandled.count }}</p>
           </div>
         </div>
       </div>
@@ -278,7 +278,7 @@
   </div>
 
 
-  {{ source_types|json_script:"source_types" }}
+  {{ total_by_source|json_script:"total_by_source" }}
   {{ new_matches_by_month|json_script:"new_matches_by_month" }}
   {{ unhandled_matches_by_month|json_script:"unhandled_matches_by_month" }}
   {{ resolution_status|json_script:"resolution_status" }}

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import List, Tuple
 
 from django.core.exceptions import PermissionDenied
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -531,15 +531,15 @@ class StatisticsPageViewTest(TestCase):
 
         # There are 2 reports from scanner job 11
         self.assertEqual(response11.context_data.get('scannerjobs')[-1], "11")
-        self.assertEqual(response11.context_data.get('match_data').get('unhandled'), 2)
+        self.assertEqual(response11.context_data.get('match_data').get('unhandled').get('count'), 2)
 
         # There are 4 reports from scanner job 14
         self.assertEqual(response14.context_data.get('scannerjobs')[-1], "14")
-        self.assertEqual(response14.context_data.get('match_data').get('unhandled'), 4)
+        self.assertEqual(response14.context_data.get('match_data').get('unhandled').get('count'), 4)
 
         # There are 1 reports from scanner job 17
         self.assertEqual(response17.context_data.get('scannerjobs')[-1], "17")
-        self.assertEqual(response17.context_data.get('match_data').get('unhandled'), 1)
+        self.assertEqual(response17.context_data.get('match_data').get('unhandled').get('count'), 1)
 
     def test_filter_by_orgunit(self):
         """Filtering by organizational units should only return results from
@@ -563,11 +563,13 @@ class StatisticsPageViewTest(TestCase):
 
         self.assertEqual(response_ob.context_data.get('orgunits')
                          [-1], str(self.olsen_banden.uuid))
-        self.assertEqual(response_ob.context_data.get('match_data').get('unhandled'), 6)
+        self.assertEqual(response_ob.context_data.get(
+            'match_data').get('unhandled').get('count'), 6)
 
         self.assertEqual(response_ke.context_data.get('orgunits')
                          [-1], str(kun_egon.uuid))
-        self.assertEqual(response_ke.context_data.get('match_data').get('unhandled'), 2)
+        self.assertEqual(response_ke.context_data.get(
+            'match_data').get('unhandled').get('count'), 2)
 
     def test_access_from_different_organization(self):
         """A user should only be able to see results from their own organization."""
@@ -583,8 +585,9 @@ class StatisticsPageViewTest(TestCase):
 
         response = self.get_dpo_statisticspage_response(hulk)
 
-        self.assertEqual(response.context_data.get('match_data').get('unhandled'), 0)
+        self.assertEqual(response.context_data.get('match_data').get('unhandled').get('count'), 0)
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_dpo_with_access_to_csv_export(self):
         """A dpo should be able to export data from their own orgunit."""
         Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
@@ -628,6 +631,7 @@ class StatisticsPageViewTest(TestCase):
         with self.assertRaises(PermissionDenied):
             self.get_dpo_statistics_csv_response(self.egon)
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_csv_export_single_scannerjob(self):
         """Exporting data from a single scannerjob, should only yield data from that scannerjob."""
 
@@ -638,6 +642,7 @@ class StatisticsPageViewTest(TestCase):
 
         self.assertIn("unhandled,2", str(line2), "Data doesn't contain 2 matches")
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_csv_export_scannerjob_and_orgunit_filter(self):
         """Exporting data from an orgunit and scannerjob, should only contain relevant data."""
 
@@ -649,6 +654,7 @@ class StatisticsPageViewTest(TestCase):
 
         self.assertIn("unhandled,1", str(line2), "Data doesn't contain 1 matches")
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_superuser_export_entire_organization(self):
         """A superuser should be able to export data for their entire organization."""
         self.egon.is_superuser = True
@@ -662,6 +668,7 @@ class StatisticsPageViewTest(TestCase):
         self.assertIn("unhandled,7", str(line2_ex))
         self.assertIn("unhandled,7", str(line2_im))
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_dpo_export_entire_organization(self):
         """A dpo should be able to export data for their entire organization."""
         Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)

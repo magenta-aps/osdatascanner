@@ -34,6 +34,9 @@
 - Convenience shortcut buttons can now be displayed when running the report
   module in development mode.
 
+- Fewer large database queries are made in the dpo-module, increasing performance 
+  when large amounts of DocumenReports exist.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.
