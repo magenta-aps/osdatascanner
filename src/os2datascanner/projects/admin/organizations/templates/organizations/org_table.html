@@ -98,36 +98,9 @@
                                 hx-target=".org-table"
                                 hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
                         <div class="flex">
-                          <div class="response">
-                            {% if organization.realm.importjob %}
-                              {% with exec_state_value=organization.realm.importjob.first.exec_state.value %}
-                                {% if exec_state_value == "finished" %}
-                                  <span class="response-icon response-icon--success"
-                                        data-sync-for="{{ organization.pk }}"><i class="material-icons">check</i></span>
-                                {% elif exec_state_value == "failed" %}
-                                  <span class="response-icon response-icon--error"
-                                        data-sync-for="{{ organization.pk }}"><i class="material-icons">error</i></span>
-                                {% elif exec_state_value == "waiting" or exec_state_value == "running" %}
-                                  <span class="response-icon response-icon--waiting"
-                                        data-sync-for="{{ organization.pk }}"
-                                        hx-get=""
-                                        hx-trigger="every 1s"
-                                        hx-swap="outerHTML"
-                                        hx-target="#import_column__{{ organization.slug }}"
-                                        hx-select="#import_column__{{ organization.slug }}">
-                                    <i class="material-icons">hourglass_top</i></span>
-                                {% endif %}
-                                <span class="response-text" data-sync-for="{{ organization.pk }}">
-                                  {% if exec_state_value == "finished" %}
-                                    {% trans 'last updated'|capfirst %},
-                                  {% else %}
-                                    {{ organization.realm.importjob.first.exec_state.label|capfirst }},
-                                  {% endif %}
-                                  {{ organization.realm.importjob.first.changed_at|date:'d-m-Y H:i' }}
-                                </span>
-                              {% endwith %}
-                            {% endif %}
-                          </div>
+                          {% if organization.realm.importjob %}
+                            {% include "components/background_job.html" with job=organization.realm.importjob.first %}
+                          {% endif %}
                         </div>
                       {% endif %}
                     </div>
@@ -157,36 +130,9 @@
                                 hx-target=".org-table"
                                 hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
                         <div class="flex">
-                          <div class="response">
-                            {% if organization.os2moimport %}
-                              {% with exec_state_value=organization.os2moimport.first.exec_state.value %}
-                                {% if exec_state_value == "finished" %}
-                                  <span class="response-icon response-icon--success"
-                                        data-sync-for="{{ organization.pk }}"><i class="material-icons">check</i></span>
-                                {% elif exec_state_value == "failed" %}
-                                  <span class="response-icon response-icon--error"
-                                        data-sync-for="{{ organization.pk }}"><i class="material-icons">error</i></span>
-                                {% elif exec_state_value == "waiting" or exec_state_value == "running" %}
-                                  <span class="response-icon response-icon--waiting"
-                                        data-sync-for="{{ organization.pk }}"
-                                        hx-get=""
-                                        hx-trigger="every 1s"
-                                        hx-swap="outerHTML"
-                                        hx-target="#import_column__{{ organization.slug }}"
-                                        hx-select="#import_column__{{ organization.slug }}">
-                                    <i class="material-icons">hourglass_top</i></span>
-                                {% endif %}
-                                <span class="response-text" data-sync-for="{{ organization.pk }}">
-                                  {% if exec_state_value == "finished" %}
-                                    {% trans 'last updated'|capfirst %},
-                                  {% elif organization.os2moimport.first.exec_state.label %}
-                                    {{ organization.os2moimport.first.exec_state.label|capfirst }},
-                                  {% endif %}
-                                  {{ organization.os2moimport.first.changed_at|date:'d-m-Y H:i' }}
-                                </span>
-                              {% endwith %}
-                            {% endif %}
-                          </div>
+                          {% if organization.realm.os2moimport %}
+                            {% include "components/background_job.html" with job=organization.realm.os2moimport.first %}
+                          {% endif %}
                         </div>
                       {% endif %}
                     </div>
@@ -233,36 +179,9 @@
                                 hx-target=".org-table"
                                 hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
                         <div class="flex">
-                          <div class="response">
-                            {% if organization.msimport %}
-                              {% with exec_state_value=organization.msimport.first.exec_state.value %}
-                                {% if exec_state_value == "finished" %}
-                                  <span class="response-icon response-icon--success"
-                                        data-sync-for="{{ organization.pk }}"><i class="material-icons">check</i></span>
-                                {% elif exec_state_value == "failed" %}
-                                  <span class="response-icon response-icon--error"
-                                        data-sync-for="{{ organization.pk }}"><i class="material-icons">error</i></span>
-                                {% elif exec_state_value == "waiting" or exec_state_value == "running" %}
-                                  <span class="response-icon response-icon--waiting"
-                                        data-sync-for="{{ organization.pk }}"
-                                        hx-get=""
-                                        hx-trigger="every 1s"
-                                        hx-swap="outerHTML"
-                                        hx-target="#import_column__{{ organization.slug }}"
-                                        hx-select="#import_column__{{ organization.slug }}">
-                                    <i class="material-icons">hourglass_top</i></span>
-                                {% endif %}
-                                <span class="response-text" data-sync-for="{{ organization.pk }}">
-                                  {% if exec_state_value == "finished" %}
-                                    {% trans 'last updated'|capfirst %},
-                                  {% elif organization.msimport.first.exec_state.label %}
-                                    {{ organization.msimport.first.exec_state.label|capfirst }},
-                                  {% endif %}
-                                  {{ organization.msimport.first.changed_at|date:'d-m-Y H:i' }}
-                                </span>
-                              {% endwith %}
-                            {% endif %}
-                          </div>
+                          {% if organization.msimport %}
+                            {% include "components/background_job.html" with job=organization.msimport.first %}
+                          {% endif %}
                         </div>
                       {% endif %}
                     </div>
