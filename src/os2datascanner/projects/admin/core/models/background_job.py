@@ -64,23 +64,24 @@ class BackgroundJob(models.Model):
 
     @property
     def exec_state(self):
+        self.refresh_from_db()
         return JobState(self._exec_state)
 
     @exec_state.setter
     def exec_state(self, state: JobState):
-        self._exec_state = state.value
+        BackgroundJob.objects.filter(
+                pk=self.pk).update(_exec_state=state.value)
+        self.refresh_from_db()
 
     @transaction.atomic
     def cancel(self) -> bool:
-        """Requests that this job be terminated. (If execution has not yet
-        started, then the object will be deleted; otherwise, it will continue
-        to exist to provide status updates from the job runner.)"""
+        """Requests that this job be terminated. Returns True if the job has
+        been terminated, or False if it's awaiting termination."""
         if self.exec_state == JobState.WAITING:
-            self.delete()
-            return True
+            self.exec_state = JobState.CANCELLED
         elif self.exec_state == JobState.RUNNING:
-            self.update(_exec_state=JobState.CANCELLING.value)
-        return self.cancel_requested and self.exec_state == JobState.CANCELLED
+            self.exec_state = JobState.CANCELLING
+        return self.exec_state == JobState.CANCELLED
 
     @property
     def progress(self) -> Optional[float]:
