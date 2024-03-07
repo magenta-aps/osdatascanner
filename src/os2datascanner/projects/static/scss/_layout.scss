@@ -57,7 +57,7 @@ body {
   padding: 0;
 
   @media (min-width: $break-lg) {
-    padding: 5rem;
+    padding: var(--padding-content);
   }
 }
 
