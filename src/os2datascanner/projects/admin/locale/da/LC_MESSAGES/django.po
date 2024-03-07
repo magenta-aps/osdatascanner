@@ -217,7 +217,15 @@ msgstr "Scan synkroniseringsproblemer mappe"
 msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:184
+#: adminapp/models/scannerjobs/msgraph.py:87
+msgid "Scan attachments"
+msgstr "Scan vedhæftninger"
+
+#: adminapp/models/scannerjobs/msgraph.py:88
+msgid "Scan attached files"
+msgstr "Scan vedhæftede filer"
+
+#: adminapp/models/scannerjobs/msgraph.py:191
 #: adminapp/models/scannerjobs/webscanner.py:42
 msgid "check dead links"
 msgstr "tjek døde links"

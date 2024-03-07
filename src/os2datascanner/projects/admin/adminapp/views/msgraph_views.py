@@ -119,6 +119,7 @@ class _MSGraphMailCreate(ScannerCreate):
         'keep_false_positives',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
+        'scan_attachments',
         'rule',
         'organization',
      ]
@@ -148,6 +149,7 @@ class MSGraphMailUpdate(ScannerUpdate):
         'keep_false_positives',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
+        'scan_attachments',
         'rule',
         'organization',
      ]
@@ -182,6 +184,7 @@ class MSGraphMailCopy(ScannerCopy):
         'keep_false_positives',
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
+        'scan_attachments',
         'rule',
         'organization',
      ]

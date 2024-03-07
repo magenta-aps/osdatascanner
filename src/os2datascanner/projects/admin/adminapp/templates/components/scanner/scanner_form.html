@@ -569,12 +569,12 @@
             <h3>{% trans "Scanner settings" %}</h3>
             <div class="form__group">
               <div id="select_scan_rules_container">
-
                 {% if form.do_ocr %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.do_ocr %}
                   </div>
                 {% endif %}
+
                 {% if form.do_last_modified_check %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.do_last_modified_check %}
@@ -589,7 +589,6 @@
                 {% endif %}
  
                 {% if form.only_notify_superadmin %}
-	
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.only_notify_superadmin %}
                   </div>
@@ -597,16 +596,20 @@
                 {% endif %}
 
                 {% if form.scan_deleted_items_folder %}
-	
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_deleted_items_folder %}
                   </div>
                 {% endif %}
 
                 {% if form.scan_syncissues_folder %}
-	
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_syncissues_folder %}
+                  </div>
+                {% endif %}
+
+                {% if form.scan_attachments %}
+                  <div class="checkbox-group">
+                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_attachments %}
                   </div>
                 {% endif %}
 	
@@ -633,7 +636,6 @@
                     {% include "components/scanner/scanner_form_input_field.html" with field=form.exclude_urls placeholder=form.exclude_urls.field.widget.attrs.placeholder %}
                   </div>
                 {% endif %}
-
               </div>
             </div>
           </fieldset>

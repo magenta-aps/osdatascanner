@@ -27,11 +27,13 @@ class MSGraphMailSource(MSGraphSource):
             client_secret,
             scan_deleted_items_folder=True,
             scan_syncissues_folder=True,
+            scan_attachments=True,
             userlist=None):
         super().__init__(client_id, tenant_id, client_secret)
         self._userlist = userlist
         self._scan_deleted_items_folder = scan_deleted_items_folder
         self._scan_syncissues_folder = scan_syncissues_folder
+        self._scan_attachments = scan_attachments
 
     def handles(self, sm):  # noqa
         if self._userlist is None:
@@ -61,7 +63,8 @@ class MSGraphMailSource(MSGraphSource):
                 **super().to_json_object(),
                 userlist=list(self._userlist) if self._userlist is not None else None,
                 scan_deleted_items_folder=self.scan_deleted_items_folder,
-                scan_syncissues_folder=self.scan_syncissues_folder)
+                scan_syncissues_folder=self.scan_syncissues_folder,
+                scan_attachments=self.scan_attachments)
 
     @staticmethod
     @Source.json_handler(type_label)
@@ -73,12 +76,14 @@ class MSGraphMailSource(MSGraphSource):
                 client_secret=obj["client_secret"],
                 userlist=frozenset(userlist) if userlist is not None else None,
                 scan_deleted_items_folder=obj.get("scan_deleted_items_folder", True),
-                scan_syncissues_folder=obj.get("scan_syncissues_folder", True))
+                scan_syncissues_folder=obj.get("scan_syncissues_folder", True),
+                scan_attachments=obj.get("scan_attachments", True))
 
     def censor(self):
         return type(self)(self._client_id, self._tenant_id, None,
                           scan_deleted_items_folder=self.scan_deleted_items_folder,
-                          scan_syncissues_folder=self.scan_syncissues_folder)
+                          scan_syncissues_folder=self.scan_syncissues_folder,
+                          scan_attachments=self.scan_attachments)
 
     @property
     def scan_deleted_items_folder(self):
@@ -87,6 +92,10 @@ class MSGraphMailSource(MSGraphSource):
     @property
     def scan_syncissues_folder(self):
         return self._scan_syncissues_folder
+
+    @property
+    def scan_attachments(self):
+        return self._scan_attachments
 
 
 DUMMY_MIME = "application/vnd.os2.datascanner.graphmailaccount"
@@ -319,12 +328,16 @@ class MSGraphMailMessageHandle(Handle):
     def guess_type(self):
         return "message/rfc822"
 
+    @property
+    def scan_attachments(self):
+        return self.source.scan_attachments
+
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
             mail_subject=self._mail_subject,
             weblink=self._weblink,
-            folder=self._folder,
+            folder=self._folder
         )
 
     @staticmethod
