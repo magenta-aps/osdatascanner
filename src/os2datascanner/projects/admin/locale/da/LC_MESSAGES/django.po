@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-29 11:51+0100\n"
+"POT-Creation-Date: 2024-03-08 12:46+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -745,9 +745,9 @@ msgstr "tilføj organisation"
 
 #: adminapp/templates/components/common/breadcrumb.html:81
 #: organizations/templates/organizations/org_update.html:6
-#: organizations/templates/organizations/org_update.html:28
-#: organizations/templates/organizations/org_update.html:29
-#: organizations/templates/organizations/org_update.html:30
+#: organizations/templates/organizations/org_update.html:157
+#: organizations/templates/organizations/org_update.html:158
+#: organizations/templates/organizations/org_update.html:159
 msgid "update organization"
 msgstr "opdatér organisation"
 
@@ -2872,11 +2872,11 @@ msgstr ""
 msgid "return to organizations page"
 msgstr "vend tilbage til organisationer-siden"
 
-#: organizations/admin.py:40
+#: organizations/admin.py:41
 msgid "Tab access"
 msgstr "Menu-adgang"
 
-#: organizations/admin.py:46
+#: organizations/admin.py:47
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
 
@@ -3155,6 +3155,30 @@ msgstr ""
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
+#: organizations/templates/organizations/org_update.html:22
+msgid "General settings"
+msgstr "Generelle indstillinger"
+
+#: organizations/templates/organizations/org_update.html:41
+msgid "Tab settings"
+msgstr "Fane indstillinger"
+
+#: organizations/templates/organizations/org_update.html:55
+msgid "Support settings"
+msgstr "Support indstillinger"
+
+#: organizations/templates/organizations/org_update.html:85
+msgid "DPO settings"
+msgstr "DPO indstillinger"
+
+#: organizations/templates/organizations/org_update.html:104
+msgid "Outlook settings"
+msgstr "Outlook indstillinger"
+
+#: organizations/templates/organizations/org_update.html:128
+msgid "Allow deletion"
+msgstr "Tillad sletning"
+
 #: organizations/templates/organizations/orgunit_list.html:23
 msgid "organizational hierarchy for"
 msgstr "organisatorisk struktur for"
@@ -3218,8 +3242,8 @@ msgstr "Ingen organisatoriske enheder fundet ..."
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
-#: organizations/tests/test_org_views.py:130
-#: organizations/views/org_views.py:66
+#: organizations/tests/test_org_views.py:127
+#: organizations/views/org_views.py:65
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 

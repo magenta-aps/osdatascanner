@@ -11,7 +11,9 @@ from os2datascanner.projects.admin.adminapp.views.views import (
 from django.core.exceptions import PermissionDenied
 
 from os2datascanner.projects.admin.core.models import Client, Feature, Administrator
-from ..models import Organization
+from ..models.organization import Organization
+
+from django import forms
 
 import logging
 
@@ -90,6 +92,12 @@ class UpdateOrganizationView(RestrictedUpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+
+        outlook_field = form.fields['outlook_categorize_email_permission']
+        outlook_field.widget = forms.RadioSelect()
+        outlook_field.choices = Organization._meta.get_field(
+            'outlook_categorize_email_permission').choices
+
         form.required_css_class = 'required-form'
         # TODO: Overhaul styling of form: Dropdowns & Helptext
         # form.error_css_class = # TODO: add if relevant?
