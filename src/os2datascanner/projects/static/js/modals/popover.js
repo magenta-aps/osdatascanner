@@ -1,3 +1,12 @@
+// Add popover listeners
+function addPopoverListeners() {
+  const popoverTriggers = document.querySelectorAll(".popoverTrigger");
+  popoverTriggers.forEach(function (trigger) {
+    trigger.addEventListener("mouseenter", showPopover);
+    trigger.addEventListener("mouseleave", hidePopover);
+  });
+}
+
 // Show a popover based on an event and its target
 function showPopover(event) {
   let wrapper = event.target;
@@ -22,19 +31,7 @@ function hidePopover(event) {
   }
 }
 
-// Add popover listeners
-function addPopoverListeners() {
-  const popoverTriggers = document.querySelectorAll(".popoverTrigger");
-  popoverTriggers.forEach(function (trigger) {
-    trigger.addEventListener("mouseenter", showPopover);
-    trigger.addEventListener("mouseleave", hidePopover);
-  });
-}
-
 // Initialize popover functionality
-document.addEventListener("DOMContentLoaded", function () {
+htmx.onLoad(function () {
   addPopoverListeners();
 });
-
-// Export functions if needed in other scripts
-export { addPopoverListeners, showPopover, hidePopover };
