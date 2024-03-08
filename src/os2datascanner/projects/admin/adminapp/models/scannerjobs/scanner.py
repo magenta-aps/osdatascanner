@@ -523,10 +523,13 @@ class Scanner(models.Model):
         run at this moment."""
         from os2datascanner.projects.admin.organizations.models import Account, OrganizationalUnit  # noqa: avoid circular import
         if self.org_unit.exists():
-            return Account.objects.filter(units__in=self.org_unit.all())
-        elif self._supports_account_annotations:
             return Account.objects.filter(
-                units__in=OrganizationalUnit.objects.filter(organization=self.organization))
+                    units__in=self.org_unit.all()).distinct()
+        elif self._supports_account_annotations:
+            relevant_units = OrganizationalUnit.objects.filter(
+                    organization=self.organization)
+            return Account.objects.filter(
+                    units__in=relevant_units).distinct()
         else:
             # We can't assume that everyone is covered, but we can conclude
             # that we can't know who's covered. (Scan might use a user-list file)
