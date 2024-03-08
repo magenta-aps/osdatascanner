@@ -201,6 +201,82 @@ class ScannerTest(TestCase):
             stale_accounts,
             f"Account: {fritz} not found in compute_stale_accounts as expected.")
 
+    def test_compute_covered_accounts(self):
+        """When used with specific organisational units,
+        Scanner.compute_covered_accounts() returns each covered account
+        precisely once."""
+        # Creating some test objects...
+        scanner = Scanner.objects.create(
+            name="Scanner",
+            organization=self.org,
+            rule=self.dummy_rule)
+
+        one_guy = OrganizationalUnit.objects.create(
+            name="A Guy", organization=self.org)
+        other_guy = OrganizationalUnit.objects.create(
+            name="The Other Guy", organization=self.org)
+        guys = OrganizationalUnit.objects.create(
+            name="The Guys", organization=self.org)
+        team = OrganizationalUnit.objects.create(
+            name="The Team", organization=self.org)
+        gang = OrganizationalUnit.objects.create(
+            name="The Gang", organization=self.org)
+
+        hansi, günther, fritz, karlheinz = (
+                Account.objects.create(username=u, organization=self.org)
+                for u in ("Hansi", "Günther", "Fritz", "Karlheinz"))
+
+        for person in (hansi, günther, fritz):
+            person.units.add(guys)
+
+        hansi.units.add(one_guy)
+
+        for person in (hansi, fritz,):
+            person.units.add(team)
+
+        for person in (günther, hansi):
+            person.units.add(gang)
+
+        karlheinz.units.add(other_guy)
+
+        scanner.org_unit.add(guys, one_guy, team, gang)
+
+        print(scanner.compute_covered_accounts())
+        self.assertCountEqual(
+                scanner.compute_covered_accounts(),
+                {hansi, günther, fritz},
+                "account set mismatch")
+
+    def test_compute_all_covered_accounts(self):
+        """When used on a complete organisation,
+        Scanner.compute_covered_accounts() returns each account precisely
+        once."""
+        # Creating some test objects...
+        scanner = Scanner.objects.create(
+            name="Scanner",
+            organization=self.org,
+            rule=self.dummy_rule)
+        # Pretend this Scanner can associate Accounts with Sources
+        scanner.generate_sources_with_accounts = "doesn't really"
+
+        everybody = OrganizationalUnit.objects.create(
+            name="Everybody", organization=self.org)
+        everybody_as_well = OrganizationalUnit.objects.create(
+            name="Everybody as Well!", organization=self.org)
+
+        hansi, günther, fritz, karlheinz = (
+                Account.objects.create(username=u, organization=self.org)
+                for u in ("Hansi", "Günther", "Fritz", "Karlheinz"))
+
+        for person in (hansi, günther, fritz, karlheinz):
+            person.units.add(everybody, everybody_as_well)
+
+        print(scanner.compute_covered_accounts())
+        self.assertCountEqual(
+                scanner.compute_covered_accounts(),
+                {hansi, günther, fritz, karlheinz},
+                "account set mismatch")
+
     def get_webscannerupdate_view(self):
         request = self.factory.get('/')
         request.user = self.user
