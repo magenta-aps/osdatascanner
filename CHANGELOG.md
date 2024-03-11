@@ -60,6 +60,9 @@
 - The enhanced Last-Modified function can now be switched off for all scanner
   types.
 
+- Complex organisational structures no longer cause the system to enqueue
+  certain accounts to be scanned more than once.
+
 ## Version 3.22.2, 12th February 2024
 
 "Unparalleled Spectacles"
