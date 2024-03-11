@@ -25,22 +25,27 @@ class OrganizationManager(models.Manager):
 
     def bulk_update(self, objects, fields, **kwargs):
         updated = super().bulk_update(objects, fields, **kwargs)
+        from ..models.account import Account
         # We _might_ need to do perform some extra steps here if
         # we're dealing with user impacting organization updates.
         # These should only ever be relevant on update, as an Organization is the basis of all.
-        for organization in objects:
-            for field_name in fields:
-                if field_name == "outlook_categorize_email_permission":
-                    outlook_categorize_email_permission = getattr(organization, field_name)
-                    if outlook_categorize_email_permission == OutlookCategorizeChoices.ORG_LEVEL:
-                        from ..models.account import Account
-                        accs_in_org = Account.objects.filter(organization=organization)
+        if (field_name := "outlook_categorize_email_permission") in fields:
+            for organization in objects:
+                outlook_categorize_email_permission = getattr(organization, field_name)
+                accs_in_org = Account.objects.filter(organization=organization)
 
-                        # Make sure we have AccountOutlookSetting objects, which in this
-                        # case should have categorize_email set to True.
-                        # That will use bulk_create and AccountOutlookSetting will handle
-                        # the creation of categories and categorize existing.
-                        accs_in_org.create_account_outlook_setting(categorize_email=True)
+                if outlook_categorize_email_permission == OutlookCategorizeChoices.ORG_LEVEL:
+                    # Make sure we have AccountOutlookSetting objects, which in this
+                    # case should have categorize_email set to True.
+                    # That will use bulk_create and AccountOutlookSetting will handle
+                    # the creation of categories and categorize existing.
+                    accs_in_org.create_account_outlook_setting(categorize_email=True)
+                # Setting NONE, will 'soft' delete existing.
+                elif outlook_categorize_email_permission == OutlookCategorizeChoices.NONE:
+                    from ..models.account_outlook_setting import AccountOutlookSetting
+                    # We'll just go straight through AccountOutlookSetting in this case.
+                    AccountOutlookSetting.objects.filter(
+                        account__in=accs_in_org).delete_categories()
 
         return updated
 

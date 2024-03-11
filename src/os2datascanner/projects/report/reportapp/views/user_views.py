@@ -86,11 +86,10 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
 
         if htmx_trigger == "categorize_existing":
             # Call queryset method to sort that out
-            outl_setting.categorize_existing()
+            message = outl_setting.categorize_existing()
             # Messages and logging
-            success_message = _("Successfully categorized your emails!")
             logger.info(f"{account} categorized their emails manually")
-            messages.add_message(request, messages.SUCCESS, success_message)
+            messages.add_message(request, messages.SUCCESS, message)
 
         if request.POST.get("outlook_setting", False):  # We're doing stuff in the outlook settings
             categorize_check = request.POST.get("categorize_email", False) == "on"
@@ -108,31 +107,29 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                         Q(false_positive_category_uuid__isnull=True)
                 ):
                     # Create/Verify that categories are populated
-                    outl_setting.populate_setting()
-                    success_message = _("Successfully created OSdatascanner categories!")
-                    messages.add_message(request, messages.SUCCESS, success_message)
+                    message = outl_setting.populate_setting()
+                    messages.add_message(request, messages.SUCCESS, message)
 
                 # Else, we can assume that we're updating.
                 # Check if one of the colours are changed
-                if outl_setting_change := outl_setting.filter(
-                        ~Q(match_colour=match_colour) | ~Q(
-                            false_positive_colour=false_positive_colour)
+                if outl_setting_change := outl_setting.exclude(
+                        Q(match_colour=match_colour) &
+                        Q(false_positive_colour=false_positive_colour)
                 ):
-                    outl_setting_change.update_colour(match_colour, false_positive_colour)
-                    success_message = _("Updated category colours!")
+
+                    message = outl_setting_change.update_colour(match_colour, false_positive_colour)
                     messages.add_message(
                         request,
                         messages.SUCCESS,
-                        success_message
+                        message
                     )
             # Unchecking means disabling and will delete categories.
             elif not categorize_check:
-                outl_setting.delete_categories()
-                success_message = _("Successfully deleted OSdatascanner Match category!")
+                message = outl_setting.delete_categories()
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    success_message
+                    message
                 )
 
         # Used to make Django's messages framework and HTMX play ball.
@@ -168,6 +165,9 @@ class AccountView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         if settings.MSGRAPH_ALLOW_WRITE and self.object.organization.has_categorize_permission():
+            # Make sure Account has an AccountOutlookSetting object.
+            AccountOutlookSetting.objects.get_or_create(account=self.object)
+            # Include form in context etc.
             context["has_categorize_permission"] = True
             context["outlook_settings_form"] = AccountOutlookSettingForm(
                 instance=self.object.outlook_settings,

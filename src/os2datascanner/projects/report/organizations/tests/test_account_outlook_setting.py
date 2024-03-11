@@ -281,3 +281,35 @@ class TestAccountOutlookSetting:
         # Assert
         assert AccountOutlookSetting.objects.filter(
             account__organization=self.organization).count() == 0
+
+    def test_organization_bulk_update_none_removes_existing(self,
+                                                            mock_graphcaller):
+        # Arrange
+        Account.objects.bulk_create(
+            [
+                Account(
+                    username="todd",
+                    first_name="Todd",
+                    last_name="Rodriguez",
+                    organization=self.organization_org_level
+
+                )
+            ]
+        )
+
+        # Act
+        assert AccountOutlookSetting.objects.filter(
+            account__organization=self.organization_org_level,
+            categorize_email=True).count() == 1
+
+        self.organization_org_level.\
+            outlook_categorize_email_permission = OutlookCategorizeChoices.NONE
+
+        Organization.objects.bulk_update(
+            [self.organization_org_level],
+            ["outlook_categorize_email_permission"])
+
+        # Assert
+        assert AccountOutlookSetting.objects.filter(
+            account__organization=self.organization_org_level,
+            categorize_email=True).count() == 0

@@ -57,6 +57,12 @@ class AccountQuerySet(models.QuerySet):
         # Create AccountOutlook setting objects for those currently without.
         accounts_with_no_outlook_settings = self.filter(outlook_settings__isnull=True)
 
+        # But also handle those who have objects (they might not be populated)
+        outl_settings = AccountOutlookSetting.objects.filter(account__in=self)
+        outl_settings.populate_setting()
+        #  Trigger categorization of existing results
+        outl_settings.categorize_existing()
+
         return AccountOutlookSetting.objects.bulk_create(
             [AccountOutlookSetting(account=account, categorize_email=categorize_email)
              for

@@ -33,7 +33,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
         # but we'll not want to create one, if we have an empty Queryset
         return self.GraphCaller(self._make_token, session) if self else None
 
-    def populate_setting(self):  # noqa: CCR001 Too complex
+    def populate_setting(self) -> str:  # noqa: CCR001 Too complex
         def _create_category(owner, category_name, category_colour):
             try:
                 response = gc.create_outlook_category(
@@ -69,6 +69,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
         with requests.Session() as session:
             gc = self._initiate_graphcaller(session)
+            created_category_count = 0
 
             for outl_setting in qs:
                 # TODO: ENUM use should be refactored to support name change.
@@ -77,23 +78,31 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                                                   OutlookCategoryName.Match.value,
                                                   outl_setting.match_colour)
                     outl_setting.match_category_uuid = match_uuid
+                    if match_uuid:
+                        created_category_count += 1
+
                 if not outl_setting.false_positive_category_uuid:
                     fp_uuid = _create_category(outl_setting.account.username,
                                                OutlookCategoryName.FalsePositive.value,
                                                outl_setting.false_positive_colour)
                     outl_setting.false_positive_category_uuid = fp_uuid
+                    if fp_uuid:
+                        created_category_count += 1
 
                 # TODO: Perhaps convert to bulk updates
                 outl_setting.categorize_email = True
                 outl_setting.save()
                 logger.info(f"Saved {outl_setting}")
 
-    def categorize_existing(self):  # noqa: CCR001 Too complex
+            return _(f"Created {created_category_count} categories!")
+
+    def categorize_existing(self) -> str:  # noqa: CCR001 Too complex
 
         qs = self.select_related("account")
         with requests.Session() as session:
             gc = self._initiate_graphcaller(session)
-
+            categorized_count = 0
+            # TODO: does JSON-batching make sense here? (MSGraph API)
             for outl_setting in qs:
                 doc_reps = []
                 # TODO: this is weird.. having to encapsulate in try except to do a filter.
@@ -124,6 +133,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                             email_categories)
 
                         if categorize_email_response.ok:
+                            categorized_count += 1
                             logger.info(f"Successfully added category "
                                         f"{OutlookCategoryName.Match.value} to email for: "
                                         f"{outl_setting.account.username}!")
@@ -133,10 +143,12 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                         # The most likely scenario is just that the mail doesn't exist anymore.
                         logger.warning(f"Couldn't categorize email! Got response: {ex.response}")
 
-    def update_colour(self, match_colour, fp_colour):
+            return _(f"Successfully categorized {categorized_count} emails!")
+
+    def update_colour(self, match_colour, fp_colour) -> str:
         with requests.Session() as session:
             gc = self._initiate_graphcaller(session)
-
+            updated_category_count = 0
             for outl_setting in self:
                 try:
                     if outl_setting.match_colour != match_colour:
@@ -147,6 +159,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
                         if match_resp.ok:
                             logger.info(f"Updated Match colour to {match_colour}!")
+                            updated_category_count += 1
 
                     if outl_setting.false_positive_colour != fp_colour:
                         fp_resp = gc.update_category_colour(
@@ -156,16 +169,20 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
                         if fp_resp.ok:
                             logger.info(f"Updated False Positive colour to {fp_colour}!")
+                            updated_category_count += 1
 
                 except requests.HTTPError as ex:
                     logger.warning(f"Couldn't update colour! Got response: {ex.response}")
 
             # Update database
             self.update(match_colour=match_colour, false_positive_colour=fp_colour)
+            return _(f"Updated {updated_category_count} categories!")
 
-    def delete_categories(self):
+    def delete_categories(self) -> str:
         with requests.Session() as session:
             gc = self._initiate_graphcaller(session)
+            # TODO: does JSON-batching make sense here? (MSGraph API)
+            deleted_category_count = 0
             for outl_setting in self:
                 try:
                     delete_match_category_response = gc.delete_category(
@@ -174,6 +191,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     if delete_match_category_response.ok:
                         logger.info(f"Successfully deleted Match "
                                     f"Outlook Category for {outl_setting.account}! ")
+                        deleted_category_count += 1
 
                     delete_fp_response = gc.delete_category(
                         outl_setting.account.username,
@@ -181,6 +199,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     if delete_fp_response.ok:
                         logger.info(f"Successfully deleted False Positive "
                                     f"Outlook Category for {outl_setting.account}! ")
+                        deleted_category_count += 1
 
                 except requests.HTTPError as ex:
                     logger.warning(f"Couldn't delete category! Got response: {ex.response}")
@@ -189,6 +208,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             self.update(categorize_email=False,
                         match_category_uuid=None,
                         false_positive_category_uuid=None)
+            return _(f"Deleted {deleted_category_count} categories!")
 
     def bulk_create(self, objs, **kwargs):
         objects = super().bulk_create(objs, **kwargs)
