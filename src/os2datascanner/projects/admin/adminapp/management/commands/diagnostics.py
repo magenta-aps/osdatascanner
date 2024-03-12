@@ -46,12 +46,22 @@ class Command(BaseCommand):
         print("\n\n>> Running diagnostics on accounts ...")
         accounts = Account.objects.all()
         accounts_without_username = accounts.filter(username="").values("pk")
+        imported_accounts = accounts.filter(imported=True)
+        imported_accounts_no_positions = imported_accounts.filter(
+            positions__isnull=True).values("pk")
 
-        print(f"Found a total of {accounts.count()} accounts.")
+        print(
+            f"Found a total of {accounts.count()} accounts. "
+            f"{imported_accounts.count()} are imported.")
 
         if accounts_without_username:
             print(f"Found {len(accounts_without_username)} accounts without a username:", ", ".join(
-                [d["pk"] for d in accounts_without_username]))
+                [str(d["pk"]) for d in accounts_without_username]))
+
+        if imported_accounts_no_positions:
+            print(f"Found {len(imported_accounts_no_positions)} imported accounts without "
+                  "relation to an OrganizationalUnit:", ", ".join(
+                       [str(d["pk"]) for d in imported_accounts_no_positions]))
 
     def diagnose_aliases(self):
         print("\n\n>> Running diagnostics on aliases ...")
@@ -110,7 +120,9 @@ class Command(BaseCommand):
             print("  * Email:", org.contact_email)
             print("  * Phone:", org.contact_phone)
             print("  Settings:")
-            print("  * MSGraph Write Permissions:", org.get_msgraph_write_permissions_display())
+            print("  * Outlook delete email permission:", org.outlook_delete_email_permission)
+            print("  * Outlook categorize email permission:",
+                  org.get_outlook_categorize_email_permission_display())
             print("  * Leadertab access:", org.get_leadertab_access_display())
             print(
                 "  * DPO-tab access:",

@@ -42,6 +42,10 @@ and enforced from the admin module.
 
 - The Account model now has a email-field, 
   removing the reliance on Aliases when sending notifications.
+  
+- The diagnostics command in the admin module now presents all imported
+  accounts with no related Position. This is relevant since importing accounts
+  via LDAP depends on the account's relation to an Organizational Unit.
 
 ### Bugfixes
 
