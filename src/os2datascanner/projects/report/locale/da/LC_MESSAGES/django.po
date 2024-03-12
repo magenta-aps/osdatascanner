@@ -8,171 +8,190 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-22 14:56+0100\n"
+"POT-Creation-Date: 2024-03-12 09:23+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: organizations/models/account.py:45
+#: organizations/models/account.py:46
 msgid "Completed"
 msgstr "Færdig"
 
-#: organizations/models/account.py:46
+#: organizations/models/account.py:47
 msgid "Accepted"
 msgstr "Accepteret"
 
-#: organizations/models/account.py:47
+#: organizations/models/account.py:48
 msgid "Not accepted"
 msgstr "Ikke accepteret"
 
-#: organizations/models/account.py:129
+#: organizations/models/account.py:173
 msgid "User"
 msgstr "Bruger"
 
-#: organizations/models/account.py:132
+#: organizations/models/account.py:176
 msgid "Last handle"
 msgstr "Sidste håndtering"
 
-#: organizations/models/account.py:140
+#: organizations/models/account.py:184
 msgid "image"
 msgstr "billede"
 
-#: organizations/models/account.py:145
+#: organizations/models/account.py:189
 msgid "Number of matches"
 msgstr "Antal matches"
 
-#: organizations/models/account.py:150
+#: organizations/models/account.py:194
 msgid "Number of withheld matches"
 msgstr "Antal tilbageholdte matches"
 
-#: organizations/models/account.py:155
+#: organizations/models/account.py:199
 msgid "Number of handled matches"
 msgstr "Antal af håndterede matches"
 
-#: organizations/models/account.py:162
+#: organizations/models/account.py:206
 msgid "Contact person"
 msgstr "Kontaktperson"
 
-#: organizations/models/account_outlook_setting.py:11
+#: organizations/models/account_outlook_setting.py:97
+#, python-brace-format
+msgid "Created {created_category_count} categories!"
+msgstr "Oprettede {created_category_count} kategorier!"
+
+#: organizations/models/account_outlook_setting.py:146
+msgid "Successfully categorized {categorized_count} emails!"
+msgstr "Kategoriserede {categorized_count} emails succesfuldt!"
+
+#: organizations/models/account_outlook_setting.py:179
+#, python-brace-format
+msgid "Updated {updated_category_count} categories!"
+msgstr "Opdaterede {updated_category_count} kategorier!"
+
+#: organizations/models/account_outlook_setting.py:211
+#, python-brace-format
+msgid "Deleted {deleted_category_count} categories!"
+msgstr "Slettede {deleted_category_count} kategorier!"
+
+#: organizations/models/account_outlook_setting.py:230
 msgid "Red"
 msgstr "Rød"
 
-#: organizations/models/account_outlook_setting.py:12
+#: organizations/models/account_outlook_setting.py:231
 msgid "Orange"
 msgstr "Orange"
 
-#: organizations/models/account_outlook_setting.py:13
+#: organizations/models/account_outlook_setting.py:232
 msgid "Brown"
 msgstr "Brun"
 
-#: organizations/models/account_outlook_setting.py:14
+#: organizations/models/account_outlook_setting.py:233
 msgid "Yellow"
 msgstr "Gul"
 
-#: organizations/models/account_outlook_setting.py:15
+#: organizations/models/account_outlook_setting.py:234
 msgid "Green"
 msgstr "Grøn"
 
-#: organizations/models/account_outlook_setting.py:16
+#: organizations/models/account_outlook_setting.py:235
 msgid "Teal"
 msgstr "Blågrøn"
 
-#: organizations/models/account_outlook_setting.py:17
+#: organizations/models/account_outlook_setting.py:236
 msgid "Olive"
 msgstr "Oliven"
 
-#: organizations/models/account_outlook_setting.py:18
+#: organizations/models/account_outlook_setting.py:237
 msgid "Blue"
 msgstr "Blå"
 
-#: organizations/models/account_outlook_setting.py:19
+#: organizations/models/account_outlook_setting.py:238
 msgid "Purple"
 msgstr "Lilla"
 
-#: organizations/models/account_outlook_setting.py:20
+#: organizations/models/account_outlook_setting.py:239
 msgid "Cranberry"
 msgstr "Tranebær"
 
-#: organizations/models/account_outlook_setting.py:21
+#: organizations/models/account_outlook_setting.py:240
 msgid "Steel"
 msgstr "Stål"
 
-#: organizations/models/account_outlook_setting.py:22
+#: organizations/models/account_outlook_setting.py:241
 msgid "Dark Steel"
 msgstr "Mørk stål"
 
-#: organizations/models/account_outlook_setting.py:23
+#: organizations/models/account_outlook_setting.py:242
 msgid "Gray"
 msgstr "Grå"
 
-#: organizations/models/account_outlook_setting.py:24
+#: organizations/models/account_outlook_setting.py:243
 msgid "Dark Gray"
 msgstr "Mørkegrå"
 
-#: organizations/models/account_outlook_setting.py:25
+#: organizations/models/account_outlook_setting.py:244
 msgid "Black"
 msgstr "Sort"
 
-#: organizations/models/account_outlook_setting.py:26
+#: organizations/models/account_outlook_setting.py:245
 msgid "Dark Red"
 msgstr "Mørkerød"
 
-#: organizations/models/account_outlook_setting.py:27
+#: organizations/models/account_outlook_setting.py:246
 msgid "Dark Orange"
 msgstr "Mørkeorange"
 
-#: organizations/models/account_outlook_setting.py:28
+#: organizations/models/account_outlook_setting.py:247
 msgid "Dark Brown"
 msgstr "Mørkebrun"
 
-#: organizations/models/account_outlook_setting.py:29
+#: organizations/models/account_outlook_setting.py:248
 msgid "Dark Yellow"
 msgstr "Mørkegul"
 
-#: organizations/models/account_outlook_setting.py:30
+#: organizations/models/account_outlook_setting.py:249
 msgid "Dark Green"
 msgstr "Mørkegrøn"
 
-#: organizations/models/account_outlook_setting.py:31
+#: organizations/models/account_outlook_setting.py:250
 msgid "Dark Teal"
 msgstr "Mørk blågrøn"
 
-#: organizations/models/account_outlook_setting.py:32
+#: organizations/models/account_outlook_setting.py:251
 msgid "Dark Olive"
 msgstr "Mørk oliven"
 
-#: organizations/models/account_outlook_setting.py:33
+#: organizations/models/account_outlook_setting.py:252
 msgid "Dark Blue"
 msgstr "Mørkeblå"
 
-#: organizations/models/account_outlook_setting.py:34
+#: organizations/models/account_outlook_setting.py:253
 msgid "Dark Purple"
 msgstr "Mørkelilla"
 
-#: organizations/models/account_outlook_setting.py:35
+#: organizations/models/account_outlook_setting.py:254
 msgid "Dark Cranberry"
 msgstr "Mørk tranebær"
 
-#: organizations/models/account_outlook_setting.py:45
-#: reportapp/templates/components/user/outlook_category_settings.html:23
+#: organizations/models/account_outlook_setting.py:263
+#: reportapp/templates/components/user/outlook_category_settings.html:17
 msgid "Categorize emails"
 msgstr "Kategorisér emails"
 
-#: organizations/models/account_outlook_setting.py:56
+#: organizations/models/account_outlook_setting.py:274
 msgid "Category colour for matches"
 msgstr "Kategori farve for matches"
 
-#: organizations/models/account_outlook_setting.py:67
+#: organizations/models/account_outlook_setting.py:285
 msgid "Category colour for false positives"
 msgstr "Kategori farve for falske positiver"
 
-#: organizations/models/aliases.py:136
+#: organizations/models/aliases.py:166
 msgid "user"
 msgstr "bruger"
 
-#: organizations/models/aliases.py:145
+#: organizations/models/aliases.py:175
 msgid "account"
 msgstr "konto"
 
@@ -377,7 +396,7 @@ msgid "Personal"
 msgstr "Personlige"
 
 #: reportapp/templates/components/navigation/index_navigation.html:11
-#: reportapp/views/user_views.py:314
+#: reportapp/views/user_views.py:179
 msgid "Remediator"
 msgstr "Oprydder"
 
@@ -410,7 +429,7 @@ msgid "User profile"
 msgstr "Brugerprofil"
 
 #: reportapp/templates/components/navigation/navigation.html:64
-#: reportapp/templates/components/user/user_corner_menu.html:48
+#: reportapp/templates/components/user/user_corner_menu.html:38
 msgid "Logout"
 msgstr "Log ud"
 
@@ -546,7 +565,7 @@ msgid "All sensitivities"
 msgstr "Alle følsomheder"
 
 #: reportapp/templates/components/reports/filters.html:99
-#: reportapp/views/statistics_views.py:466
+#: reportapp/views/statistics_views.py:474
 msgid "Source Type"
 msgstr "Kildetype"
 
@@ -555,7 +574,7 @@ msgid "All source types"
 msgstr "Alle kildetyper"
 
 #: reportapp/templates/components/reports/filters.html:132
-#: reportapp/views/statistics_views.py:467
+#: reportapp/views/statistics_views.py:475
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
 
@@ -576,8 +595,8 @@ msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html:11
 #: reportapp/templates/components/reports/handle_match.html:45
-#: reportapp/templates/components/reports/match.html:137
-#: reportapp/templates/components/reports/match.html:183
+#: reportapp/templates/components/reports/match.html:140
+#: reportapp/templates/components/reports/match.html:186
 msgid ""
 "OS2datascanner will not delete results from the system that was scanned. "
 "Marking a result as handled will only remove the result from OS2datascanner."
@@ -591,8 +610,8 @@ msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
 #: reportapp/templates/components/reports/handle_match.html:19
-#: reportapp/templates/components/reports/match.html:146
-#: reportapp/templates/components/reports/match.html:191
+#: reportapp/templates/components/reports/match.html:149
+#: reportapp/templates/components/reports/match.html:194
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -603,8 +622,8 @@ msgstr ""
 "manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/reports/handle_match.html:26
-#: reportapp/templates/components/reports/match.html:152
-#: reportapp/templates/components/reports/match.html:178
+#: reportapp/templates/components/reports/match.html:155
+#: reportapp/templates/components/reports/match.html:181
 msgid "Revert"
 msgstr "Fortryd"
 
@@ -643,24 +662,24 @@ msgstr "Slet markerede emails"
 msgid "selected"
 msgstr "valgt"
 
-#: reportapp/templates/components/reports/match.html:18
-#: reportapp/templates/components/reports/match.html:19
+#: reportapp/templates/components/reports/match.html:15
+#: reportapp/templates/components/reports/match.html:16
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/reports/match.html:43
+#: reportapp/templates/components/reports/match.html:40
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/reports/match.html:50
+#: reportapp/templates/components/reports/match.html:47
 msgid "Open folder"
 msgstr "Åbn mappe"
 
-#: reportapp/templates/components/reports/match.html:58
+#: reportapp/templates/components/reports/match.html:55
 msgid "Deletes email from your mailbox"
 msgstr "Sletter email fra din mailboks"
 
-#: reportapp/templates/components/reports/match.html:64
+#: reportapp/templates/components/reports/match.html:61
 msgid ""
 "You are about to delete selected email from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -668,60 +687,60 @@ msgstr ""
 "Du er ved at slette valgte email fra din mailboks. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:65
+#: reportapp/templates/components/reports/match.html:62
 #: reportapp/templates/components/statistics/user_overview_template.html:69
 #: reportapp/templates/components/statistics/user_overview_template.html:70
 msgid "Delete"
 msgstr "Slet"
 
-#: reportapp/templates/components/reports/match.html:72
+#: reportapp/templates/components/reports/match.html:69
 msgid "Opened"
 msgstr "Åbnet: "
 
-#: reportapp/templates/components/reports/match.html:110
+#: reportapp/templates/components/reports/match.html:107
 msgid "Copy folder path"
 msgstr "Kopiér sti til mappe"
 
-#: reportapp/templates/components/reports/match.html:115
+#: reportapp/templates/components/reports/match.html:112
 msgid "Copy path"
 msgstr "Kopiér sti"
 
-#: reportapp/templates/components/reports/match.html:122
+#: reportapp/templates/components/reports/match.html:119
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:138
-#: reportapp/templates/components/reports/match.html:193
+#: reportapp/templates/components/reports/match.html:141
+#: reportapp/templates/components/reports/match.html:196
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/reports/match.html:200
+#: reportapp/templates/components/reports/match.html:203
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:215
+#: reportapp/templates/components/reports/match.html:218
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:216
+#: reportapp/templates/components/reports/match.html:219
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:217
+#: reportapp/templates/components/reports/match.html:220
 msgid "Probability"
 msgstr "Sandsynlighed"
 
-#: reportapp/templates/components/reports/match.html:235
+#: reportapp/templates/components/reports/match.html:238
 msgid "A temporary error occurred during the latest check of this match"
 msgstr "Der opstod en midlertidig fejl under sidste tjek af dette match"
 
-#: reportapp/templates/components/reports/match.html:237
+#: reportapp/templates/components/reports/match.html:240
 msgid ""
 "OSdatascanner will automatically check this match again as part of the next "
 "scan"
 msgstr "OSdatascanner genbesøger dette match automatisk under næste scan"
 
-#: reportapp/templates/components/reports/match.html:243
+#: reportapp/templates/components/reports/match.html:246
 msgid "Show/hide technical details of the error"
 msgstr "Vis/skjul tekniske detaljer om fejlen"
 
@@ -746,7 +765,7 @@ msgid "Select all results"
 msgstr "Vælg alle resultater"
 
 #: reportapp/templates/components/reports/match_table.html:55
-#: reportapp/templates/components/user/user_content.html:22
+#: reportapp/templates/components/user/user_content.html:16
 msgid "Name"
 msgstr "Navn"
 
@@ -1049,12 +1068,12 @@ msgid "report module"
 msgstr "rapportmodulet"
 
 #: reportapp/templates/components/user/login.html:15
-#: reportapp/templates/components/user/user_content.html:26
+#: reportapp/templates/components/user/user_content.html:20
 msgid "Username"
 msgstr "Brugernavn"
 
 #: reportapp/templates/components/user/login.html:26
-#: reportapp/templates/components/user/user_content.html:136
+#: reportapp/templates/components/user/user_content.html:130
 msgid "Password"
 msgstr "Adgangskode"
 
@@ -1086,34 +1105,19 @@ msgstr "igen"
 msgid "Outlook Settings"
 msgstr "Outlook indstillinger"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:8
-msgid ""
-"This functionality requires a tenant id, which OSdatascanner can only "
-"acquire if you have existing mail results."
-msgstr ""
-"Denne funktionalitet kræver et tenant id, som OSdatascanner kun kan "
-"erhverve, hvis du har eksisterende email resultater."
-
-#: reportapp/templates/components/user/outlook_category_settings.html:31
-msgid ""
-"By checking this box, you allow OSdatascanner to categorize your emails."
-msgstr ""
-"Ved at sætte flueben i denne boks, tillader du OSdatascanner at kategorisere "
-"dine emails."
-
-#: reportapp/templates/components/user/outlook_category_settings.html:36
+#: reportapp/templates/components/user/outlook_category_settings.html:24
 msgid "Match category colour"
 msgstr "Match kategori farve"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:50
+#: reportapp/templates/components/user/outlook_category_settings.html:28
 msgid "False positive category colour"
 msgstr "Falsk positiv kategori farve"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:65
+#: reportapp/templates/components/user/outlook_category_settings.html:33
 msgid "Categorize all existing"
 msgstr "Kategorisér alle eksisterende"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:69
+#: reportapp/templates/components/user/outlook_category_settings.html:37
 msgid ""
 "Categorizes your emails based on your existing results. Be aware that "
 "scannerjob runs will also do this for you, if you've enabled categorizing."
@@ -1122,7 +1126,7 @@ msgstr ""
 "opmærksom på at scannerjob kørsler også gør dette for dig, hvis du har "
 "tilladt kategorisering."
 
-#: reportapp/templates/components/user/outlook_category_settings.html:75
+#: reportapp/templates/components/user/outlook_category_settings.html:42
 msgid ""
 "This action will categorize your emails based on your existing results. Be "
 "aware that scannerjob runs will also do this for you, if you've enabled "
@@ -1132,7 +1136,7 @@ msgstr ""
 "resultater. Væropmærksom på at scannerjob kørsler også gør dette for dig, "
 "hvis du har tilladt kategorisering."
 
-#: reportapp/templates/components/user/outlook_category_settings.html:78
+#: reportapp/templates/components/user/outlook_category_settings.html:45
 msgid "Categorize"
 msgstr "Kategorisér"
 
@@ -1140,31 +1144,31 @@ msgstr "Kategorisér"
 msgid "Account"
 msgstr "Konto"
 
-#: reportapp/templates/components/user/user_content.html:18
+#: reportapp/templates/components/user/user_content.html:12
 msgid "Account information"
 msgstr "Brugerinformation"
 
-#: reportapp/templates/components/user/user_content.html:30
+#: reportapp/templates/components/user/user_content.html:24
 msgid "E-mail"
 msgstr "E-mail"
 
-#: reportapp/templates/components/user/user_content.html:34
+#: reportapp/templates/components/user/user_content.html:28
 msgid "Organization"
 msgstr "Organisation"
 
-#: reportapp/templates/components/user/user_content.html:41
+#: reportapp/templates/components/user/user_content.html:35
 msgid "Manager for"
 msgstr "Leder for"
 
-#: reportapp/templates/components/user/user_content.html:51
+#: reportapp/templates/components/user/user_content.html:45
 msgid "DPO for"
 msgstr "DPO for"
 
-#: reportapp/templates/components/user/user_content.html:59
+#: reportapp/templates/components/user/user_content.html:53
 msgid "Contact Person"
 msgstr "Kontaktperson"
 
-#: reportapp/templates/components/user/user_content.html:72
+#: reportapp/templates/components/user/user_content.html:66
 msgid ""
 "By checking this box, users will be presented with your email address for "
 "DPO-related questions."
@@ -1172,45 +1176,45 @@ msgstr ""
 "Ved at markere dette felt vil brugere blive henvist til din e-mail adresse "
 "med DPO-relaterede spørgsmål."
 
-#: reportapp/templates/components/user/user_content.html:80
+#: reportapp/templates/components/user/user_content.html:74
 msgid "User Rights"
 msgstr "Rettigheder"
 
-#: reportapp/templates/components/user/user_content.html:85
+#: reportapp/templates/components/user/user_content.html:79
 msgid "Active"
 msgstr "Aktiv"
 
-#: reportapp/templates/components/user/user_content.html:89
-#: reportapp/templates/components/user/user_content.html:100
-#: reportapp/templates/components/user/user_content.html:111
+#: reportapp/templates/components/user/user_content.html:83
+#: reportapp/templates/components/user/user_content.html:94
+#: reportapp/templates/components/user/user_content.html:105
 msgid "Yes"
 msgstr "Ja"
 
-#: reportapp/templates/components/user/user_content.html:96
+#: reportapp/templates/components/user/user_content.html:90
 msgid "Staff"
 msgstr "Adgangsbevilget"
 
-#: reportapp/templates/components/user/user_content.html:107
+#: reportapp/templates/components/user/user_content.html:101
 msgid "Superuser"
 msgstr "Superbruger"
 
-#: reportapp/templates/components/user/user_content.html:117
+#: reportapp/templates/components/user/user_content.html:111
 msgid "Aliases"
 msgstr "Aliasser"
 
-#: reportapp/templates/components/user/user_content.html:131
+#: reportapp/templates/components/user/user_content.html:125
 msgid "Login Information"
 msgstr "Login Information"
 
-#: reportapp/templates/components/user/user_content.html:138
+#: reportapp/templates/components/user/user_content.html:132
 msgid "Change"
 msgstr "Skift"
 
-#: reportapp/templates/components/user/user_content.html:143
+#: reportapp/templates/components/user/user_content.html:137
 msgid "User since"
 msgstr "Bruger siden"
 
-#: reportapp/templates/components/user/user_corner_menu.html:47
+#: reportapp/templates/components/user/user_corner_menu.html:37
 msgid "Show Account"
 msgstr "Vis konto"
 
@@ -1520,221 +1524,223 @@ msgstr "Siden eksisterer ikke"
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/statistics_views.py:101
+#: reportapp/views/statistics_views.py:109
 msgid "The user does not have an account."
 msgstr "Brugeren har ikke en konto."
 
-#: reportapp/views/statistics_views.py:133
+#: reportapp/views/statistics_views.py:141
 #, python-brace-format
 msgid "An organizational unit with the UUID '{0}' was not found."
 msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
 
-#: reportapp/views/statistics_views.py:209
+#: reportapp/views/statistics_views.py:217
 msgid "handled"
 msgstr "håndteret"
 
-#: reportapp/views/statistics_views.py:210
+#: reportapp/views/statistics_views.py:218
 msgid "unhandled"
 msgstr "ikke håndteret"
 
-#: reportapp/views/statistics_views.py:217
+#: reportapp/views/statistics_views.py:225
 msgid "other source"
 msgstr "anden kilde"
 
-#: reportapp/views/statistics_views.py:218
+#: reportapp/views/statistics_views.py:226
 msgid "web scan"
 msgstr "webscan"
 
-#: reportapp/views/statistics_views.py:219
+#: reportapp/views/statistics_views.py:227
 msgid "file scan"
 msgstr "filscan"
 
-#: reportapp/views/statistics_views.py:220
+#: reportapp/views/statistics_views.py:228
 msgid "mail scan"
 msgstr "mailscan"
 
-#: reportapp/views/statistics_views.py:221
+#: reportapp/views/statistics_views.py:229
 msgid "Teams scan"
 msgstr "Teams-scan"
 
-#: reportapp/views/statistics_views.py:222
+#: reportapp/views/statistics_views.py:230
 msgid "calendar scan"
 msgstr "kalenderscan"
 
-#: reportapp/views/statistics_views.py:466
+#: reportapp/views/statistics_views.py:474
 msgid "Handled/Unhandled"
 msgstr "Håndteret/Uhånderet"
 
-#: reportapp/views/statistics_views.py:466
+#: reportapp/views/statistics_views.py:474
 msgid "Matches by Handled/Unhandled"
 msgstr "Resultater fordelt på Håndteret/Uhånderet"
 
-#: reportapp/views/statistics_views.py:467
+#: reportapp/views/statistics_views.py:475
 msgid "Matches by Source Type"
 msgstr "Resultater fordelt på Kildetype"
 
-#: reportapp/views/statistics_views.py:468
+#: reportapp/views/statistics_views.py:476
 msgid "Matches by Resolution Status"
 msgstr "Resultater fordelt på Håndteringsstatus"
 
-#: reportapp/views/statistics_views.py:468
+#: reportapp/views/statistics_views.py:476
 msgid "Month"
 msgstr "Måned"
 
-#: reportapp/views/statistics_views.py:468
+#: reportapp/views/statistics_views.py:476
 msgid "Unhandled Matches by Month"
 msgstr "Uhåndterede Resultater per Måned"
 
-#: reportapp/views/statistics_views.py:469
+#: reportapp/views/statistics_views.py:477
 msgid "New Matches by Month"
 msgstr "Nye Resultater per Måned"
 
-#: reportapp/views/statistics_views.py:638
+#: reportapp/views/statistics_views.py:646
 #, python-brace-format
 msgid "You deleted all results from {0} associated with {1}."
 msgstr "Du har slettet alle resultater fra {0} tilknyttet {1}."
 
-#: reportapp/views/statistics_views.py:736
+#: reportapp/views/statistics_views.py:744
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:736
+#: reportapp/views/statistics_views.py:744
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:736
+#: reportapp/views/statistics_views.py:744
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:736
+#: reportapp/views/statistics_views.py:744
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:737
+#: reportapp/views/statistics_views.py:745
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:737
+#: reportapp/views/statistics_views.py:745
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:737
+#: reportapp/views/statistics_views.py:745
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:737
+#: reportapp/views/statistics_views.py:745
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:738
+#: reportapp/views/statistics_views.py:746
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:738
+#: reportapp/views/statistics_views.py:746
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:738
+#: reportapp/views/statistics_views.py:746
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:738
+#: reportapp/views/statistics_views.py:746
 msgid "Dec"
 msgstr "Dec"
 
-#: reportapp/views/user_views.py:63
-msgid "Successfully categorized your emails!"
-msgstr "Kategoriserede dine emails succesfuldt!"
-
-#: reportapp/views/user_views.py:103
-msgid "Successfully created OSdatascanner Match category!"
-msgstr "Oprettede OSdatascanner Match kategorien succesfuldt!"
-
-#: reportapp/views/user_views.py:126
-msgid "Successfully created OSdatascanner False Positive category!"
-msgstr "Oprettede OSdatascanner False Positive kategorien succesfuldt!"
-
-#: reportapp/views/user_views.py:155
-msgid "Successfully updated OSdatascanner Match colour! "
-msgstr "Opdaterede OSdatascanner Match kategorien succesfuldt!"
-
-#: reportapp/views/user_views.py:162
-msgid "Couldn't update match category colour!"
-msgstr "Kunne ikke opdatere match kategori farve!"
-
-#: reportapp/views/user_views.py:180
-msgid "Successfully updated OSdatascanner False Positive colour! "
-msgstr "Opdaterede OSdatascanner False Positive kategorien succesfuldt!"
-
-#: reportapp/views/user_views.py:188
-msgid "Couldn't update false positive category colour!"
-msgstr "Kunne ikke opdatere falsk positiv kategori farve!"
-
-#: reportapp/views/user_views.py:204
-msgid "Successfully deleted OSdatascanner Match category!"
-msgstr "Slettede OSdatascanner Match kategorien succesfuldt!"
-
-#: reportapp/views/user_views.py:211
-msgid "Couldn't delete match category!"
-msgstr "Kunne ikke slette match kategori!"
-
-#: reportapp/views/user_views.py:224
-msgid "Successfully deleted OSdatascanner False Positive category!"
-msgstr "Slettede OSdatascanner False Positive kategorien succesfuldt!"
-
-#: reportapp/views/user_views.py:232
-msgid "Couldn't delete false positive category!"
-msgstr "Kunne ikke slette falsk positiv kategori!"
-
-#: reportapp/views/utilities/msgraph_utilities.py:74
-#, python-brace-format
+#: reportapp/views/user_views.py:60
 msgid ""
-"Couldn't create category! Please make sure category {category_name} doesn't "
-"already exist in Outlook! Code: {status_code}"
+"Your organization has configured this setting for you, disallowing change."
 msgstr ""
-"Kunne ikke oprette kategori! Tjek venligst at kategorien {category_name} "
-"ikke allerede eksisterer i Outlook. Fejlkode: {status_code}"
+"Din organisation har konfigureret denne indstilling for dig. Ændring er ikke tilladt."
 
-#: reportapp/views/utilities/msgraph_utilities.py:124
-#, python-brace-format
-msgid "Couldn't update category! Code: {status_code}"
-msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
+#: reportapp/views/utilities/msgraph_utilities.py:35
+msgid "System configuration is missing Azure-application credentials. "
+msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
 
-#: reportapp/views/utilities/msgraph_utilities.py:166
-#, python-brace-format
-msgid "Couldn't delete category! Code: {status_code}"
-msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
+#: reportapp/views/utilities/msgraph_utilities.py:54
+msgid "Your organization does not allow this operation."
+msgstr "Din organisation tillader ikke denne handling."
 
-#: reportapp/views/utilities/msgraph_utilities.py:286
+#: reportapp/views/utilities/msgraph_utilities.py:102
+msgid "System configuration does not allow mail deletion."
+msgstr "Systemindstillingerne tillader ikke email sletning."
+
+#: reportapp/views/utilities/msgraph_utilities.py:110
 #, python-brace-format
 msgid "Not allowed! You tried to delete an email belonging to {owner}!"
 msgstr "Ikke tilladt! Du har forsøgt at slette en email tilhørende {owner}!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:322
+#: reportapp/views/utilities/msgraph_utilities.py:148
 #, python-brace-format
 msgid "Couldn't delete email! Code: {status_code}"
 msgstr "Kunne ikke slette email! Fejlkode: {status_code}"
 
-#: reportapp/views/utilities/msgraph_utilities.py:343
-msgid "System configuration does not allow mail deletion."
-msgstr "Systemindstillingerne tillader ikke email sletning."
-
-#: reportapp/views/utilities/msgraph_utilities.py:347
-msgid "System configuration is missing Azure-application credentials. "
-msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
-
-#: reportapp/views/utilities/msgraph_utilities.py:352
-msgid "Your organization does not allow this operation."
-msgstr "Din organisation tillader ikke denne handling."
-
-#: reportapp/views/utilities/msgraph_utilities.py:367
+#: reportapp/views/utilities/msgraph_utilities.py:177
 msgid "Could not find your Microsoft tenant!"
 msgstr "Kunne ikke finde din Microsoft tenant!"
 
-#: reportapp/views/utilities/msgraph_utilities.py:384
+#: reportapp/views/utilities/msgraph_utilities.py:195
 msgid "You currently have no Outlook reports. Can't create categories!"
 msgstr ""
 "Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
+
+#~ msgid ""
+#~ "This functionality requires a tenant id, which OSdatascanner can only "
+#~ "acquire if you have existing mail results."
+#~ msgstr ""
+#~ "Denne funktionalitet kræver et tenant id, som OSdatascanner kun kan "
+#~ "erhverve, hvis du har eksisterende email resultater."
+
+#~ msgid ""
+#~ "By checking this box, you allow OSdatascanner to categorize your emails."
+#~ msgstr ""
+#~ "Ved at sætte flueben i denne boks, tillader du OSdatascanner at "
+#~ "kategorisere dine emails."
+
+#~ msgid "Successfully created OSdatascanner Match category!"
+#~ msgstr "Oprettede OSdatascanner Match kategorien succesfuldt!"
+
+#~ msgid "Successfully created OSdatascanner False Positive category!"
+#~ msgstr "Oprettede OSdatascanner False Positive kategorien succesfuldt!"
+
+#~ msgid "Successfully updated OSdatascanner Match colour! "
+#~ msgstr "Opdaterede OSdatascanner Match kategorien succesfuldt!"
+
+#~ msgid "Couldn't update match category colour!"
+#~ msgstr "Kunne ikke opdatere match kategori farve!"
+
+#~ msgid "Successfully updated OSdatascanner False Positive colour! "
+#~ msgstr "Opdaterede OSdatascanner False Positive kategorien succesfuldt!"
+
+#~ msgid "Couldn't update false positive category colour!"
+#~ msgstr "Kunne ikke opdatere falsk positiv kategori farve!"
+
+#~ msgid "Successfully deleted OSdatascanner Match category!"
+#~ msgstr "Slettede OSdatascanner Match kategorien succesfuldt!"
+
+#~ msgid "Couldn't delete match category!"
+#~ msgstr "Kunne ikke slette match kategori!"
+
+#~ msgid "Successfully deleted OSdatascanner False Positive category!"
+#~ msgstr "Slettede OSdatascanner False Positive kategorien succesfuldt!"
+
+#~ msgid "Couldn't delete false positive category!"
+#~ msgstr "Kunne ikke slette falsk positiv kategori!"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Couldn't create category! Please make sure category {category_name} "
+#~ "doesn't already exist in Outlook! Code: {status_code}"
+#~ msgstr ""
+#~ "Kunne ikke oprette kategori! Tjek venligst at kategorien {category_name} "
+#~ "ikke allerede eksisterer i Outlook. Fejlkode: {status_code}"
+
+#, python-brace-format
+#~ msgid "Couldn't update category! Code: {status_code}"
+#~ msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
+
+#, python-brace-format
+#~ msgid "Couldn't delete category! Code: {status_code}"
+#~ msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
 
 #~ msgid "Roles"
 #~ msgstr "Roller"

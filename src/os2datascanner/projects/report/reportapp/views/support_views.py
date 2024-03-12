@@ -6,7 +6,7 @@ from ..utils import convert_context_to_email_body
 from ...organizations.models import Account
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.core_organizational_structure.models.organization import (
-    SupportContactChoices, DPOContactChoices, MSGraphWritePermissionChoices)
+    SupportContactChoices, DPOContactChoices)
 
 
 class SupportButtonView(TemplateView):
@@ -29,7 +29,6 @@ class SupportButtonView(TemplateView):
         context["organization"] = self.org
         context["SupportContactChoices"] = SupportContactChoices
         context["DPOContactChoices"] = DPOContactChoices
-        context["categorization"] = self.org.msgraph_write_permissions in (
-            MSGraphWritePermissionChoices.ALL, MSGraphWritePermissionChoices.CATEGORIZE)
+        context["categorization"] = self.org.has_categorize_permission()
 
         return context

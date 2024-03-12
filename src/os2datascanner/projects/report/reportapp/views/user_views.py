@@ -20,18 +20,14 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
 from django import forms
+from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .utilities.msgraph_utilities import (create_outlook_category_for_account,
-                                          OutlookCategoryName, update_outlook_category_for_account,
-                                          delete_outlook_category_for_account,
-                                          get_msgraph_mail_document_reports,
-                                          get_tenant_id_from_document_report,
-                                          categorize_existing_emails_from_account)
+from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 from ...organizations.models.aliases import AliasType
 from ...organizations.models import Account, AccountOutlookSetting
 
@@ -39,217 +35,34 @@ logger = structlog.get_logger()
 
 
 class AccountOutlookSettingForm(forms.ModelForm):
+
     class Meta:
         model = AccountOutlookSetting
         fields = ['categorize_email', 'match_colour', 'false_positive_colour']
+        widgets = {
+            'categorize_email': forms.CheckboxInput(
+                attrs={'class': "some-neat-css"}  # TODO: example here for how to style
+            ),
+        }
+
+    def __init__(self, organization, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Both these settings means that the user should not be able to choose.
+        # NONE hides this form entirely, but included here for good measure.
+        if (organization.outlook_categorize_email_permission in
+                (OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.NONE)):
+            # Disable field and add explanatory tool-tip explanation
+            # But, do note that disabled means this field won't be included in POST data
+            # read_only is an alternative, but that is not safe from users editing HTML.
+            self.fields['categorize_email'].disabled = True
+            self.fields['categorize_email'].widget.attrs['title'] = (
+                _("Your organization has configured this setting for you, disallowing change."))
 
 
 class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
-    template_name = "components/user/outlook_category_settings.html"
     context_object_name = "account"
     model = Account
-
-    def post(self, request, *args, **kwargs):  # noqa C901, CCR001
-        account = self.get_object()
-
-        htmx_trigger = self.request.headers.get("HX-Trigger-Name")
-        if htmx_trigger == "categorize_existing":
-            try:
-                categorize_existing_emails_from_account(
-                    account,
-                    OutlookCategoryName.Match
-                )
-
-                success_message = _("Successfully categorized your emails!")
-                logger.info(f"{account} categorized their emails manually")
-                messages.add_message(
-                    request,
-                    messages.SUCCESS,
-                    success_message
-                )
-            except PermissionDenied as e:
-                logger.error(f"Error! {account} tried to categorized their emails manually \n"
-                             f"Exception: {e}")
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    e
-                )
-
-        if request.POST.get("outlook_setting", False):  # We're doing stuff in the outlook settings
-            categorize_check = request.POST.get("categorize_check", False) == "on"
-            match_colour = request.POST.get("match_colour")
-            false_positive_colour = request.POST.get("false_positive_colour")
-
-            acc_ol_settings, c = AccountOutlookSetting.objects.update_or_create(
-                account_username=account.username,
-                defaults={
-                    "account": account,
-                    "categorize_email": categorize_check,
-                }
-            )
-
-            if categorize_check:
-                # UUID's on Categories not set: Create
-                if not acc_ol_settings.match_category_uuid:
-                    try:
-                        match_resp = create_outlook_category_for_account(account,
-                                                                         OutlookCategoryName.Match,
-                                                                         AccountOutlookSetting.
-                                                                         OutlookCategoryColour(
-                                                                             match_colour))
-                        acc_ol_settings.match_colour = match_colour
-                        acc_ol_settings.match_category_uuid = match_resp.json().get("id")
-                        success_message = _("Successfully created OSdatascanner Match category!")
-                        logger.info(f"OSdatascanner Match category created for: {account}")
-                        messages.add_message(
-                            request,
-                            messages.SUCCESS,
-                            success_message
-                        )
-                    except PermissionDenied as e:
-                        acc_ol_settings.categorize_email = False
-                        logger.error(f"Error trying to create category: {e}")
-                        messages.add_message(
-                            request,
-                            messages.ERROR,
-                            e)
-
-                if not acc_ol_settings.false_positive_category_uuid:
-                    try:
-                        false_p_resp = create_outlook_category_for_account(
-                            account,
-                            OutlookCategoryName.FalsePositive,
-                            AccountOutlookSetting.OutlookCategoryColour(false_positive_colour))
-                        acc_ol_settings.false_positive_colour = false_positive_colour
-                        acc_ol_settings.false_positive_category_uuid = false_p_resp.json().get("id")
-                        success_message = _("Successfully created OSdatascanner False Positive "
-                                            "category!")
-                        logger.info(f"OSdatascanner False Positive category created for: "
-                                    f"{account}")
-                        messages.add_message(
-                            request,
-                            messages.SUCCESS,
-                            success_message
-                        )
-                    except PermissionDenied as e:
-                        acc_ol_settings.categorize_email = False
-                        logger.error(f"Error trying to create category: {e}")
-                        messages.add_message(
-                            request,
-                            messages.ERROR,
-                            e
-                        )
-
-                # Else, we can assume that we're updating.
-                if match_colour != acc_ol_settings.match_colour:
-                    try:
-                        update_outlook_category_for_account(account,
-                                                            acc_ol_settings.match_category_uuid,
-                                                            AccountOutlookSetting.
-                                                            OutlookCategoryColour(match_colour)
-                                                            )
-
-                        acc_ol_settings.match_colour = (AccountOutlookSetting.
-                                                        OutlookCategoryColour(match_colour))
-                        success_message = _("Successfully updated OSdatascanner Match colour! ")
-                        messages.add_message(
-                            request,
-                            messages.SUCCESS,
-                            success_message
-                        )
-                    except PermissionDenied as e:
-                        error_message = _("Couldn't update match category colour!")
-                        logger.error(f"{error_message} \n {e}")
-                        messages.add_message(
-                            request,
-                            messages.ERROR,
-                            error_message
-                        )
-
-                if false_positive_colour != acc_ol_settings.false_positive_colour:
-                    try:
-                        update_outlook_category_for_account(
-                            account,
-                            acc_ol_settings.false_positive_category_uuid,
-                            AccountOutlookSetting.OutlookCategoryColour(false_positive_colour))
-
-                        acc_ol_settings.false_positive_colour = (AccountOutlookSetting.
-                                                                 OutlookCategoryColour(
-                                                                     false_positive_colour))
-                        success_message = _("Successfully updated OSdatascanner False Positive "
-                                            "colour! ")
-                        messages.add_message(
-                            request,
-                            messages.SUCCESS,
-                            success_message
-                        )
-                    except PermissionDenied as e:
-                        error_message = _("Couldn't update false positive category colour!")
-                        logger.error(f"{error_message} \n {e}")
-                        messages.add_message(
-                            request,
-                            messages.ERROR,
-                            error_message
-                        )
-
-            if not categorize_check and (acc_ol_settings.match_category_uuid
-                                         and acc_ol_settings.false_positive_category_uuid):
-
-                try:
-                    delete_outlook_category_for_account(account,
-                                                        acc_ol_settings.match_category_uuid
-                                                        )
-                    acc_ol_settings.match_category_uuid = None
-                    success_message = _("Successfully deleted OSdatascanner Match category!")
-                    messages.add_message(
-                        request,
-                        messages.SUCCESS,
-                        success_message
-                    )
-                except PermissionDenied as e:
-                    error_message = _("Couldn't delete match category!")
-                    logger.error(f"{error_message} \n {e}")
-                    messages.add_message(
-                        request,
-                        messages.ERROR,
-                        error_message
-                    )
-
-                try:
-                    delete_outlook_category_for_account(account,
-                                                        acc_ol_settings.false_positive_category_uuid
-                                                        )
-                    acc_ol_settings.false_positive_category_uuid = None
-                    success_message = _("Successfully deleted OSdatascanner False Positive "
-                                        "category!")
-                    messages.add_message(
-                        request,
-                        messages.SUCCESS,
-                        success_message
-                    )
-                except PermissionDenied as e:
-                    error_message = _("Couldn't delete false positive category!")
-                    logger.error(f"{error_message} \n {e}")
-                    messages.add_message(
-                        request,
-                        messages.ERROR,
-                        error_message
-                    )
-
-            acc_ol_settings.save()
-
-        # Used to make Django's messages framework and HTMX play ball.
-        response = HttpResponse()
-        response.write(
-            render_to_string(
-                template_name="components/modals/snackbar.html",
-                context={"messages": get_messages(request)},
-                request=request
-            )
-        )
-
-        return response
 
     def get_object(self, queryset=None):
         if self.kwargs.get("pk") is None:
@@ -262,13 +75,74 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
             raise PermissionDenied
         return super().get_object(queryset)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        acc_ol_settings, c = AccountOutlookSetting.objects.get_or_create(
-            account=self.object,
-            account_username=self.object.username)
-        context["categorize_enabled"] = acc_ol_settings.categorize_email
-        context["colour_presets"] = AccountOutlookSettingForm()
+    def post(self, request, *args, **kwargs):  # noqa C901, CCR001
+        account = self.get_object()
+        htmx_trigger = self.request.headers.get("HX-Trigger-Name")
+
+        # Getting a queryset - which should only hold one object - but allows us to use queryset
+        # methods.
+        # TODO: raise something / abort, if it contains more than one object?
+        outl_setting = AccountOutlookSetting.objects.filter(account=account)
+
+        if htmx_trigger == "categorize_existing":
+            # Call queryset method to sort that out
+            message = outl_setting.categorize_existing()
+            # Messages and logging
+            logger.info(f"{account} categorized their emails manually")
+            messages.add_message(request, messages.SUCCESS, message)
+
+        if request.POST.get("outlook_setting", False):  # We're doing stuff in the outlook settings
+            categorize_check = request.POST.get("categorize_email", False) == "on"
+            match_colour = request.POST.get("match_colour")
+            false_positive_colour = request.POST.get("false_positive_colour")
+
+            # If categorization is enabled, either by POST data or ORG_LEVEL
+            if (categorize_check or
+                    account.organization.outlook_categorize_email_permission ==
+                    OutlookCategorizeChoices.ORG_LEVEL):
+
+                # and a category is missing
+                if outl_setting.filter(
+                        Q(match_category_uuid__isnull=True) |
+                        Q(false_positive_category_uuid__isnull=True)
+                ):
+                    # Create/Verify that categories are populated
+                    message = outl_setting.populate_setting()
+                    messages.add_message(request, messages.SUCCESS, message)
+
+                # Else, we can assume that we're updating.
+                # Check if one of the colours are changed
+                if outl_setting_change := outl_setting.exclude(
+                        Q(match_colour=match_colour) &
+                        Q(false_positive_colour=false_positive_colour)
+                ):
+
+                    message = outl_setting_change.update_colour(match_colour, false_positive_colour)
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        message
+                    )
+            # Unchecking means disabling and will delete categories.
+            elif not categorize_check:
+                message = outl_setting.delete_categories()
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    message
+                )
+
+        # Used to make Django's messages framework and HTMX play ball.
+        response = HttpResponse()
+        response.write(
+            render_to_string(
+                template_name="components/modals/snackbar.html",
+                context={"messages": get_messages(request)},
+                request=request
+            )
+        )
+
+        return response
 
 
 class AccountView(LoginRequiredMixin, DetailView):
@@ -291,23 +165,14 @@ class AccountView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         if settings.MSGRAPH_ALLOW_WRITE and self.object.organization.has_categorize_permission():
-            acc_ol_settings, c = AccountOutlookSetting.objects.update_or_create(
-                account_username=self.object.username,
-                defaults={
-                    "account": self.object,
-                }
-            )
+            # Make sure Account has an AccountOutlookSetting object.
+            AccountOutlookSetting.objects.get_or_create(account=self.object)
+            # Include form in context etc.
             context["has_categorize_permission"] = True
-            try:
-                document_report = get_msgraph_mail_document_reports(self.object).last()
-                get_tenant_id_from_document_report(document_report)
-                context["tenant_id_retrievable"] = True
-            except PermissionDenied as e:
-                context["tenant_id_retrievable"] = False
-                logger.warning(f"Can't retrieve tenant id: {e}")
-
-            context["categorize_enabled"] = acc_ol_settings.categorize_email
-            context["colour_presets"] = AccountOutlookSettingForm()
+            context["outlook_settings_form"] = AccountOutlookSettingForm(
+                instance=self.object.outlook_settings,
+                organization=self.object.organization
+            )
 
         user = self.object.user
         context["user"] = user

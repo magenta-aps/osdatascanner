@@ -41,11 +41,10 @@ class DPOContactChoices(models.TextChoices):
     UNIT_DPO = "UD", _("Unit DPO")
 
 
-class MSGraphWritePermissionChoices(models.TextChoices):
-    CATEGORIZE = "CAT", _("Categorize emails")
-    DELETE = "DEL", _("Delete emails")
-    ALL = "ALL", _("Permit all")
-    NONE = "NON", _("No permissions")
+class OutlookCategorizeChoices(models.TextChoices):
+    ORG_LEVEL = "ORG", _("Enable automatic categorization for entire organization")
+    INDIVIDUAL_LEVEL = "IND", _("Allow users to categorize emails")
+    NONE = "NON", _("No categorization")
 
 
 class Organization(models.Model):
@@ -94,12 +93,20 @@ class Organization(models.Model):
         default="RRULE:FREQ=WEEKLY;BYDAY=FR",
         verbose_name=_('Email notification interval')
     )
-    msgraph_write_permissions = models.CharField(
+
+    # Outlook settings
+    outlook_delete_email_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of emails directly"))
+
+    outlook_categorize_email_permission = models.CharField(
         max_length=3,
-        choices=MSGraphWritePermissionChoices.choices,
-        default=MSGraphWritePermissionChoices.NONE,
-        verbose_name=_('MSGraph write permissions'),
-        help_text=_('Select permission(s) you wish to allow for your organization.')
+        choices=OutlookCategorizeChoices.choices,
+        default=OutlookCategorizeChoices.NONE,
+        verbose_name=_("Outlook category settings"),
+        help_text=_("configure whether OSdatascanner should create Outlook categories and"
+                    " categorize found matches, and decide whether you want to enforce this"
+                    " on an organizational level (all accounts) or leave it up to the individual.")
     )
 
     # Access settings
@@ -200,4 +207,4 @@ class OrganizationSerializer(BaseSerializer):
                   'email_notification_schedule', 'leadertab_access', 'dpotab_access',
                   'show_support_button', 'support_contact_method', 'support_name',
                   'support_value', 'dpo_contact_method', 'dpo_name', 'dpo_value',
-                  'msgraph_write_permissions']
+                  'outlook_delete_email_permission', 'outlook_categorize_email_permission']

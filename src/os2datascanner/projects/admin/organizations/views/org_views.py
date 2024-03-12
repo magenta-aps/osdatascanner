@@ -11,7 +11,9 @@ from os2datascanner.projects.admin.adminapp.views.views import (
 from django.core.exceptions import PermissionDenied
 
 from os2datascanner.projects.admin.core.models import Client, Feature, Administrator
-from ..models import Organization
+from ..models.organization import Organization
+
+from django import forms
 
 import logging
 
@@ -48,14 +50,11 @@ class AddOrganizationView(RestrictedCreateView):
     model = Organization
     template_name = 'organizations/org_add.html'
     success_url = reverse_lazy('organization-list')
-    fields = ['name', 'contact_email', 'contact_phone',
-              'msgraph_write_permissions', 'email_notification_schedule']
+    fields = ['name', 'contact_email', 'contact_phone', 'email_notification_schedule']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.required_css_class = 'required-form'
-        # TODO: Overhaul styling of form: Dropdowns & Helptext
-        form.fields['msgraph_write_permissions'].help_text = None
         # form.error_css_class = # TODO: add if relevant?
         return form
 
@@ -87,14 +86,20 @@ class UpdateOrganizationView(RestrictedUpdateView):
     fields = ['name', 'contact_email', 'contact_phone',
               'leadertab_access', 'dpotab_access', 'show_support_button',
               'support_contact_method', 'support_name', 'support_value',
-              'dpo_contact_method', 'dpo_name', 'dpo_value', 'msgraph_write_permissions',
+              'dpo_contact_method', 'dpo_name', 'dpo_value',
+              'outlook_categorize_email_permission', 'outlook_delete_email_permission',
               'email_notification_schedule']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+
+        outlook_field = form.fields['outlook_categorize_email_permission']
+        outlook_field.widget = forms.RadioSelect()
+        outlook_field.choices = Organization._meta.get_field(
+            'outlook_categorize_email_permission').choices
+
         form.required_css_class = 'required-form'
         # TODO: Overhaul styling of form: Dropdowns & Helptext
-        form.fields['msgraph_write_permissions'].help_text = None
         # form.error_css_class = # TODO: add if relevant?
         return form
 

@@ -59,12 +59,6 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         # we catch that below and return to abort transaction if one is raised.
                         serialized_objects.is_valid(raise_exception=True)
                         serialized_objects.save()
-
-                        if model == Alias:
-                            for alias_obj in serialized_objects.validated_data:
-                                create_alias_and_match_relations(
-                                    Alias.objects.get(pk=alias_obj.get("pk")))
-
                         logger.info("Successfully ran broadcast create!")
 
                     else:
@@ -89,6 +83,7 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         serialized_objects.save()
 
                         if model == Alias:
+                            # TODO: move it to alias manager?
                             for alias_obj in serialized_objects.validated_data:
                                 create_alias_and_match_relations(
                                     Alias.objects.get(pk=alias_obj.get("pk")))

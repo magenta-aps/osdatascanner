@@ -54,7 +54,7 @@ class AccountAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
 
 @admin.register(AccountOutlookSetting)
 class AccountOutlookSettingAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
-    list_display = ['account', 'account_username', 'categorize_email',
+    list_display = ['account', 'categorize_email',
                     'match_colour', 'false_positive_colour']
 
 

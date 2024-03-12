@@ -30,6 +30,7 @@ ALLOW_SHOW_ERRORS = false
 MSGRAPH_ALLOW_WRITE = false
 MSGRAPH_APP_ID = ""
 MSGRAPH_CLIENT_SECRET = ""
+MSGRAPH_TENANT_ID = ""
 
 # [site]
 # The URL of this site, used in links in emails and in the redirect URL for

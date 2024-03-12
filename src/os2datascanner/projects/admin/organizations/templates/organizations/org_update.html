@@ -12,12 +12,147 @@
   <div class="aside">
     <h1>{{ object.name }}</h1>
   </div>
-
+ 
   <form class="form" role="form" method="post">
     {% csrf_token %}
     <section class="data-form">
       <fieldset class="form__fieldset">
-        {{ form.as_table }}
+
+        <div class="form__row--general">
+          <span class="form__row__title">{% trans "General settings" %}</span>
+ 
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="" for="{{ form.contact_email.id_for_label }}">{{ form.contact_email.label }}</label>
+            {{ form.contact_email }}
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="" for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
+            {{ form.contact_phone }}
+          </div>
+        </div>
+
+        <div class="form__row--tab-access">
+          <span class="form__row__title">{% trans "Tab settings" %}</span>
+ 
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.leadertab_access.id_for_label }}">{{ form.leadertab_access.label }}</label>
+            {{ form.leadertab_access }}
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.dpotab_access.id_for_label }}">{{ form.dpotab_access.label }}</label>
+            {{ form.dpotab_access }}
+          </div>
+        </div>
+
+        <div class="form__row--support">
+          <span class="form__row__title">{% trans "Support settings" %}</span>
+
+          <div class="form__row__item">
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.show_support_button }}
+ 
+              <label class="required-form"
+                     for="{{ form.show_support_button.id_for_label }}">{{ form.show_support_button.label }}</label>
+ 
+            </div>
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="required-form"
+                   for="{{ form.support_contact_method.id_for_label }}">{{ form.support_contact_method.label }}</label>
+            {{ form.support_contact_method }}
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.support_name.id_for_label }}">{{ form.support_name.label }}</label>
+            {{ form.support_name }}
+          </div>
+
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.support_value.id_for_label }}">{{ form.support_value.label }}</label>
+            {{ form.support_value }}
+          </div>
+        </div>
+
+        <div class="form__row--dpo">
+          <span class="form__row__title">{% trans "DPO settings" %}</span>
+ 
+          <div class="form__row__item">
+            <label class="required-form"
+                   for="{{ form.dpo_contact_method.id_for_label }}">{{ form.dpo_contact_method.label }}</label>
+            {{ form.dpo_contact_method }}
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.dpo_name.id_for_label }}">{{ form.dpo_name.label }}</label>
+            {{ form.dpo_name }}
+          </div>
+ 
+          <div class="form__row__item">
+            <label class="required-form" for="{{ form.dpo_value.id_for_label }}">{{ form.dpo_value.label }}</label>
+            {{ form.dpo_value }}
+          </div>
+        </div>
+
+        <div class="form__row--outlook">
+          <span class="form__row__title">{% trans "Outlook settings" %}</span>
+ 
+          <div class="form__row__item">
+
+            <label class="required-form"
+                   for="{{ form.outlook_categorize_email_permission.id_for_label }}">
+              {{ form.outlook_categorize_email_permission.label }}
+            </label>
+ 
+            <div class="form__row__item__radiocontainer">
+              {% for radio in form.outlook_categorize_email_permission %}
+                <label class="radio radio-before">
+                  <span class="radio__input">
+                    {{ radio.tag }}
+
+                    <span class="radio__control radio__control--notify"></span>
+                  </span>
+ 
+                  <span class="radio__label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}
+                  </label>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form__row__item">
+            <label for="{{ form.outlook_delete_email_permission.id_for_label }}">{% trans "Allow deletion" %}</label>
+
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.outlook_delete_email_permission }}
+
+              <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
+                {{ form.outlook_delete_email_permission.label }}
+              </label>
+
+            </div>
+
+            {% if form.outlook_delete_email_permission.help_text %}
+              <p class="help">{{ form.outlook_delete_email_permission.help_text }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label class="required-form"
+                 for="{{ form.email_notification_schedule.id_for_label }}">
+            {{ form.email_notification_schedule.label }}
+          </label>
+          {{ form.email_notification_schedule }}
+        </div>
+
       </fieldset>
     </section>
 
