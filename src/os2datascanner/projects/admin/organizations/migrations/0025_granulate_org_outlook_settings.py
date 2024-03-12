@@ -19,7 +19,7 @@ def migrate_org_outlook_settings(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('organizations', '0023_alias_organizations_universal_remediator_constraint'),
+        ('organizations', '0024_account_email_field'),
     ]
 
     operations = [

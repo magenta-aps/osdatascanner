@@ -6,6 +6,9 @@
 
 - Account image placeholders are now the user's initials on a colored background.
 
+- The use of Outlook categories / categorization of emails containing matches, can now be configured
+and enforced from the admin module.
+
 ### General improvements
 
 - Recurrence widget has been styled to better match the rest of the system.

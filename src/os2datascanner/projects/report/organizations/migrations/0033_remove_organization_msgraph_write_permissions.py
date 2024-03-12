@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0031_granulate_org_outlook_settings'),
+        ('organizations', '0032_granulate_org_outlook_settings'),
     ]
 
     operations = [

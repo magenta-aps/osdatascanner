@@ -12,7 +12,7 @@ def remove_account_less_setting_objects(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0032_remove_organization_msgraph_write_permissions'),
+        ('organizations', '0033_remove_organization_msgraph_write_permissions'),
     ]
 
     operations = [
