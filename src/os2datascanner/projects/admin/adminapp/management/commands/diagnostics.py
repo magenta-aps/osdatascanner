@@ -120,7 +120,9 @@ class Command(BaseCommand):
             print("  * Email:", org.contact_email)
             print("  * Phone:", org.contact_phone)
             print("  Settings:")
-            print("  * MSGraph Write Permissions:", org.get_msgraph_write_permissions_display())
+            print("  * Outlook delete email permission:", org.outlook_delete_email_permission)
+            print("  * Outlook categorize email permission:",
+                  org.get_outlook_categorize_email_permission_display())
             print("  * Leadertab access:", org.get_leadertab_access_display())
             print(
                 "  * DPO-tab access:",
