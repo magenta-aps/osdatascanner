@@ -31,7 +31,7 @@ from os2datascanner.utils.system_utilities import time_now
 from ...views import statistics_views
 from ...models.documentreport import DocumentReport
 from ....organizations.models.account import Account
-from ....organizations.models.aliases import Alias, AliasType
+from ....organizations.models.aliases import AliasType
 from ....organizations.models import Organization
 
 
@@ -272,17 +272,7 @@ class Command(BaseCommand):
         account = Account.objects.filter(
             username=user.username).first()
 
-        if account is None:
-            return user.email
-
-        alias = Alias.objects.filter(
-            _alias_type=AliasType.EMAIL,
-            account=account).first()
-
-        if alias is None:
-            return user.email
-
-        return alias.value
+        return account.email if account.email else user.email
 
     def send_to_user(self, user, msg, dry_run=False):
         email = self.get_user_email(user)

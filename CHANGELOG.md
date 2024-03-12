@@ -37,6 +37,9 @@
 - Fewer large database queries are made in the dpo-module, increasing performance 
   when large amounts of DocumenReports exist.
 
+- The Account model now has a email-field, 
+  removing the reliance on Aliases when sending notifications.
+
 ### Bugfixes
 
 - Non-superusers in the admin module can now see system rules.

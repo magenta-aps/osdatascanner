@@ -57,6 +57,11 @@ class Account(models.Model):
         blank=True,
         null=True,
     )
+    email = models.EmailField(
+        verbose_name=_('contact email'),
+        blank=True,
+        null=True,
+    )
     organization = models.ForeignKey(
         'organizations.Organization',
         on_delete=models.CASCADE,
@@ -95,12 +100,6 @@ class Account(models.Model):
 
     def __repr__(self):
         return f'<{self.__class__.__name__}: {self.username} ({self.uuid})>'
-
-    @property
-    def email(self):
-        email_aliases = self.aliases.filter(_alias_type="email")
-        email_alias = email_aliases.first()
-        return email_alias.value if email_alias else None
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}" if self.last_name \
@@ -153,4 +152,5 @@ class AccountSerializer(serializers.ModelSerializer):
             "last_name",
             "organization",
             "manager",
-            "is_superuser"]
+            "is_superuser",
+            "email"]

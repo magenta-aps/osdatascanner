@@ -417,7 +417,8 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
                 # Our database schema requires the name properties, so use the
                 # empty string as the dummy value instead of None
                 ("first_name", remote_node.properties.get("firstName", "")),
-                ("last_name", remote_node.properties.get("lastName", ""))):
+                ("last_name", remote_node.properties.get("lastName", "")),
+                ("email", remote_node.properties.get("email", ""))):
             if getattr(account, attr_name) != expected:
                 setattr(account, attr_name, expected)
                 to_update.append((account, (attr_name,)))
