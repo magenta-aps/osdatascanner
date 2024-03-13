@@ -1,13 +1,17 @@
 # Changelog
 
-## New Release
+## Version 3.22.3, 13th March 2024
+
+"Forward March!"
 
 ### New in this release
 
 - Account image placeholders are now the user's initials on a colored background.
 
-- The use of Outlook categories / categorization of emails containing matches, can now be configured
-and enforced from the admin module.
+- The use of Outlook categories / categorization of emails containing matches, 
+  can now be configured and enforced from the admin module.
+
+- Added option to skip attachments in Office 365 mail scans.
 
 ### General improvements
 
