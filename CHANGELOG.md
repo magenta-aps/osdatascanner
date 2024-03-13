@@ -1,5 +1,11 @@
 # Changelog
 
+## New Release
+
+### New in this release 
+
+- Translations and updated images have been added to the report module manual.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"
