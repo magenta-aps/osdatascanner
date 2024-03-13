@@ -1503,7 +1503,7 @@ msgstr ""
 "Hvis der er oprettet et scannerjob hvor dataen ligger on-premise, såsom et "
 "fil- eller Exchange-scan, kræves der som tidligere nævnt ekstra opsætning "
 "før filen/mailen kan åbnes. Hvis dette ikke er en mulighed kan man trykke på "
-"\"Kopiér sti\" eller \"kopiér sti til mappe\" knappen, som kopiere stien til "
+"\"Kopiér sti\" eller \"kopiér sti til mappe\" knappen, som kopierer stien til "
 "den fil eller mappe matchet ligger i."
 
 #: reportapp/templates/manual.html:127
