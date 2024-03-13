@@ -330,7 +330,10 @@ class MSGraphMailMessageHandle(Handle):
 
     @property
     def scan_attachments(self):
-        return self.source.scan_attachments
+        return (self.source  # MSGraphMailAccountSource
+                .handle  # MSGraphMailAccountHandle
+                .source  # MSGraphMailSource
+                .scan_attachments)
 
     def to_json_object(self):
         return dict(
