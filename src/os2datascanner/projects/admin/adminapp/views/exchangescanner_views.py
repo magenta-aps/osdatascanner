@@ -96,6 +96,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
         form = initialize_form(form)
         if self.request.method == 'POST':
             form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
 
         return form
 
@@ -121,6 +122,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
         form = initialize_form(form)
         if self.request.method == 'POST':
             form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
 
         return form
 
@@ -168,6 +170,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
             form.fields['password'].initial = "dummy"
         if self.request.method == 'POST':
             form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
 
         return form
 
@@ -224,6 +227,23 @@ def validate_userlist_or_org_units(form):  # noqa CCR001
                       "newlines, not commas or whitespace!")))
         for error in userlist_errors:
             form.add_error(*error)
+
+    return form
+
+
+def validate_domain(form):
+    """Validates whether the mail_domain starts with '@'. """
+
+    form.is_valid()
+
+    mail_domain = form.cleaned_data.get('mail_domain', '')
+    if not mail_domain:
+        form.add_error('mail_domain', _(""))
+
+    elif not mail_domain.startswith('@'):
+        form.add_error(
+            'mail_domain',
+            _("The domain must start with '@'"))
 
     return form
 

@@ -2171,24 +2171,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:201
+#: adminapp/views/exchangescanner_views.py:202
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:202
+#: adminapp/views/exchangescanner_views.py:203
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:212
+#: adminapp/views/exchangescanner_views.py:213
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:218
+#: adminapp/views/exchangescanner_views.py:219
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:223
+#: adminapp/views/exchangescanner_views.py:224
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2196,17 +2196,21 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:235
+#: adminapp/views/exchangescanner_views.py:242
+msgid "The domain must start with '@'"
+msgstr "Domænet skal starte med @"
+
+#: adminapp/views/exchangescanner_views.py:251
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:239
+#: adminapp/views/exchangescanner_views.py:255
 #: adminapp/views/filescanner_views.py:178
 #: organizations/templates/organizations/account_detail.html:25
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:244
+#: adminapp/views/exchangescanner_views.py:260
 #: adminapp/views/filescanner_views.py:179
 msgid "Password"
 msgstr "Adgangskode"
