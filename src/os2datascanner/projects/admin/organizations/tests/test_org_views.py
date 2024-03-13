@@ -276,6 +276,7 @@ class UpdateOrganizationViewTests(TestCase):
             'dpo_value': '',
             'outlook_categorize_email_permission': OutlookCategorizeChoices.NONE,
             'outlook_delete_email_permission': False,
+            'onedrive_delete_permission': False,
         })
 
         success_url = reverse_lazy('organization-list')
@@ -347,6 +348,7 @@ class UpdateOrganizationViewTests(TestCase):
             'dpo_value': '',
             'outlook_categorize_email_permission': OutlookCategorizeChoices.NONE,
             'outlook_delete_email_permission': False,
+            'onedrive_delete_permission': False,
         })
 
         success_url = reverse_lazy('organization-list')

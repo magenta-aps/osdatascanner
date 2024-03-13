@@ -59,7 +59,7 @@
       </span>
     </button>
   {% endif %}
-  {% if show_delete_button and request.GET.source_type == "msgraph-mail" %}
+  {% if show_email_delete_button and request.GET.source_type == "msgraph-mail" %}
     <button type="button"
             class="button table-checkbox__action button--icon-text-button"
             data-status="match-handle"
@@ -76,6 +76,24 @@
       {% trans "Delete marked emails" %}
     </span>
   </button>
+{% endif %}
+{% if show_file_delete_button and request.GET.source_type == "msgraph-files" %}
+  <button type="button"
+          class="button table-checkbox__action button--icon-text-button"
+          data-status="match-handle"
+          disabled
+          aria-label="{% trans 'Deletes checked files from your online drive' %}"
+          title="{% trans 'Deletes checked files from your online drive' %}"
+          hx-post="{% url 'mass-delete-file' %}"
+          hx-swap="none"
+          hx-trigger="click"
+          hx-push-url="false"
+          hx-confirm="{% blocktrans %}You are about to delete checked files from your online drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+          name="mass-delete">
+    <i class="material-icons">delete_forever</i>
+    {% trans "Delete marked files" %}
+  </span>
+</button>
 {% endif %}
 
 <span class="selected-cb">

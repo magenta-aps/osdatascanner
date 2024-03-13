@@ -8,6 +8,8 @@
 
 - The "Open folder" button is now also implemented for files hosted in
   OneDrive/SharePoint.
+
+- Support for deletion of Office 365 OneDrive files directly from the report module.
   
 ### General improvements
 

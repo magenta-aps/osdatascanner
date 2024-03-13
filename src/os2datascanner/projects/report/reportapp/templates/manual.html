@@ -38,6 +38,11 @@
             <li>{% trans "Categorization in Outlook" %}</li>
           </a>
         {% endif %}
+        {% if file_delete %}
+          <a href="#onedrive_delete">
+            <li>{% trans "Deletion of OneDrive files" %}</li>
+          </a>
+        {% endif %}
       </ul>
       <a href="#FAQ">
         <h3>{% trans "Frequently Asked Questions" %}</h3>
@@ -209,6 +214,23 @@
           {% blocktrans trimmed %}
           Enabling this feature also adds a False positive category to Outlook. Mails marked with 
           this category will no longer be seen as a match by OSdatascanner.
+          {% endblocktrans %}
+        </p>
+      {% endif %}
+
+      {% if file_delete %}
+        <h2 id="onedrive_delete">{% trans "Deletion of OneDrive files" %}</h2>
+        <p>
+          {% blocktrans trimmed %}
+          Pressing the "delete" button on a OneDrive result will move the given file to your recycling bin and mark the result as "Deleted" in OSdatascanner.
+          Mass deletion is possible by first filtering by source type.
+          {% endblocktrans %}
+        </p>
+        <h3>{% trans "Disclaimer:" %}</h3>
+        <p>
+          {% blocktrans trimmed %}
+                  Be aware that OSdatascanner does not back up your files or hold any responsibility in regard to potential loss of data.
+                  OSdatascanner cannot reverse your deletion.
           {% endblocktrans %}
         </p>
       {% endif %}

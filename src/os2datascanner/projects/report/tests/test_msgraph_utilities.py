@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 
 from ..reportapp.views.utilities.msgraph_utilities import \
-    get_mail_message_handle_from_document_report, get_tenant_id_from_document_report
+    get_handle_from_document_report, get_tenant_id_from_document_report
 from ..reportapp.models.documentreport import DocumentReport
 
 scan_tag_origin_metadata = {
@@ -169,17 +169,18 @@ def not_msgraph_reports():
 
 
 class TestMSGraphUtils:
-    def test_get_mail_message_handle_from_document_report(self, msgraph_mail_reports):
+    def test_get_handle_from_document_report(self, msgraph_mail_reports):
         # Checks that we're able to retrieve an MSGraphMailMessageHandle from DocumentReport
         # Metadata regarding email body matches & an attached file.
         for dr in msgraph_mail_reports:
-            assert isinstance(get_mail_message_handle_from_document_report(dr),
+            assert isinstance(get_handle_from_document_report(dr, MSGraphMailMessageHandle),
                               MSGraphMailMessageHandle), "Didn't return MSGraphMailMessageHandle!"
 
-    def test_get_mail_message_handle_from_document_report_not_msgraph(self, not_msgraph_reports):
+    def test_get_handle_from_document_report_not_msgraph(self, not_msgraph_reports):
         # Checks that if we aren't able to find any MSGraphMailMessageHandle, we don't crash, but
         # return None.
-        assert get_mail_message_handle_from_document_report(not_msgraph_reports) is None, \
+        assert get_handle_from_document_report(
+            not_msgraph_reports, MSGraphMailMessageHandle) is None, \
             "Didn't return None when no MSGraphMailMessageHandle found!"
 
     def test_get_tenant_id_from_document_report(self, msgraph_mail_reports):

@@ -123,6 +123,7 @@ class Command(BaseCommand):
             print("  * Outlook delete email permission:", org.outlook_delete_email_permission)
             print("  * Outlook categorize email permission:",
                   org.get_outlook_categorize_email_permission_display())
+            print("  * OneDrive/SharePoint delete permission", org.onedrive_delete_permission)
             print("  * Leadertab access:", org.get_leadertab_access_display())
             print(
                 "  * DPO-tab access:",

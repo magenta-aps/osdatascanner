@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-30 10:42+0100\n"
+"POT-Creation-Date: 2024-03-14 11:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,36 +22,40 @@ msgstr ""
 msgid "core_organizational_structure"
 msgstr "core_organizational_structure"
 
-#: models/account.py:40 models/organization.py:71
+#: models/account.py:42 models/organization.py:70
 #: models/organizational_unit.py:39
 msgid "UUID"
 msgstr "UUID"
 
-#: models/account.py:44
+#: models/account.py:46
 msgid "username"
 msgstr "brugernavn"
 
-#: models/account.py:48
+#: models/account.py:50
 msgid "first name"
 msgstr "fornavn"
 
-#: models/account.py:54
+#: models/account.py:56
 msgid "last name"
 msgstr "efternavn"
 
-#: models/account.py:62 models/organization.py:187
+#: models/account.py:61
+msgid "contact email"
+msgstr "kontakt email"
+
+#: models/account.py:69 models/organization.py:200
 msgid "organization"
 msgstr "organisation"
 
-#: models/account.py:76
+#: models/account.py:83
 msgid "superuser_status"
 msgstr "superbruger status"
 
-#: models/account.py:88 models/aliases.py:79 models/position.py:38
+#: models/account.py:95 models/aliases.py:79 models/position.py:38
 msgid "account"
 msgstr "konto"
 
-#: models/account.py:89
+#: models/account.py:96
 msgid "accounts"
 msgstr "konti"
 
@@ -59,7 +63,7 @@ msgstr "konti"
 msgid "SID"
 msgstr "SID"
 
-#: models/aliases.py:52 models/organization.py:81
+#: models/aliases.py:52 models/organization.py:80
 msgid "email"
 msgstr "email"
 
@@ -117,86 +121,96 @@ msgid "Unit DPO"
 msgstr "Enheds DPO"
 
 #: models/organization.py:45
-msgid "Categorize emails"
-msgstr "Kategorisér emails"
+msgid "Enable automatic categorization for entire organization"
+msgstr "Automatisk kategorisering for alle i organisationen"
 
 #: models/organization.py:46
-msgid "Delete emails"
-msgstr "Slet emails"
+msgid "Allow users to categorize emails"
+msgstr "Tillad brugere at kategorisere emails"
 
 #: models/organization.py:47
-msgid "Permit all"
-msgstr "Tillad alle"
+msgid "No categorization"
+msgstr "Ingen kategorisering"
 
-#: models/organization.py:48
-msgid "No permissions"
-msgstr "Ingen tilladelser"
-
-#: models/organization.py:75 models/organizational_unit.py:44
+#: models/organization.py:74 models/organizational_unit.py:44
 msgid "name"
 msgstr "navn"
 
-#: models/organization.py:87
+#: models/organization.py:86
 msgid "phone number"
 msgstr "telefonnummer"
 
-#: models/organization.py:95
+#: models/organization.py:94
 msgid "Email notification interval"
 msgstr "Emailudsendelse interval"
 
-#: models/organization.py:101
-msgid "MSGraph write permissions"
-msgstr "MSGraph skriverettigheder"
+#: models/organization.py:100
+msgid "allow deletion of emails directly"
+msgstr "tillad direkte sletning af emails"
 
-#: models/organization.py:102
-msgid "Select permission(s) you wish to allow for your organization."
-msgstr "Vælg tilladelse(r) du ønsker at tillade for din organisation."
+#: models/organization.py:106
+msgid "Outlook category settings"
+msgstr "Outlook kategori indstillinger"
 
-#: models/organization.py:110
+#: models/organization.py:107
+msgid ""
+"configure whether OSdatascanner should create Outlook categories and "
+"categorize found matches, and decide whether you want to enforce this on an "
+"organizational level (all accounts) or leave it up to the individual."
+msgstr ""
+"konfigurér hvorvidt OSdatascanner skal oprette Outlook kategorier og "
+"kategorisere fundne resultater, samt hvorvidt du ønsker at håndhæve dette for hele "
+"organisationen, eller lade dette være op til den enkelte."
+
+#: models/organization.py:115
+msgid "allow deletion of online drive files directly"
+msgstr "tillad direkte sletning af filer på online drev"
+
+#: models/organization.py:123
 msgid "Leadertab access"
 msgstr "Lederfane adgang"
 
-#: models/organization.py:116
+#: models/organization.py:129
 msgid "Dpotab access"
 msgstr "DPOfane adgang"
 
-#: models/organization.py:121
+#: models/organization.py:134
 msgid "show support button"
 msgstr "vis supportknap"
 
-#: models/organization.py:126
+#: models/organization.py:139
 msgid "support contact method"
 msgstr "support kontaktform"
 
-#: models/organization.py:131
+#: models/organization.py:144
 msgid "support name"
 msgstr "support navn"
 
-#: models/organization.py:134
+#: models/organization.py:147
 msgid "support value"
 msgstr "support værdi"
 
-#: models/organization.py:139
+#: models/organization.py:152
 msgid "DPO contact method"
 msgstr "DPO kontaktform"
 
-#: models/organization.py:144
+#: models/organization.py:157
 msgid "DPO name"
 msgstr "DPO navn"
 
-#: models/organization.py:147
+#: models/organization.py:160
 msgid "DPO value"
 msgstr "DPO værdi"
 
-#: models/organization.py:161
+#: models/organization.py:174
 msgid "Provide a name of the support contact."
 msgstr "Angiv navn på support kontakt"
 
-#: models/organization.py:169
+#: models/organization.py:182
 msgid "Provide a name of the DPO."
 msgstr "Angiv navn på DPO"
 
-#: models/organization.py:188
+#: models/organization.py:201
 msgid "organizations"
 msgstr "organisationer"
 
@@ -236,3 +250,18 @@ msgstr "tilknytninger"
 #, python-brace-format
 msgid "{cls}: {account} ({role}) at {unit}"
 msgstr "{cls}: {account} ({role}) i {unit}"
+
+#~ msgid "Delete emails"
+#~ msgstr "Slet emails"
+
+#~ msgid "Permit all"
+#~ msgstr "Tillad alle"
+
+#~ msgid "No permissions"
+#~ msgstr "Ingen tilladelser"
+
+#~ msgid "MSGraph write permissions"
+#~ msgstr "MSGraph skriverettigheder"
+
+#~ msgid "Select permission(s) you wish to allow for your organization."
+#~ msgstr "Vælg tilladelse(r) du ønsker at tillade for din organisation."

@@ -44,7 +44,7 @@ from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
 
 from .utilities.document_report_utilities import handle_report
-from .utilities.msgraph_utilities import delete_email
+from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
 from ...organizations.models.aliases import AliasType
@@ -241,8 +241,10 @@ class UserReportView(ReportView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # show_delete_button is overwritten in the archive view.
-        context["show_delete_button"] = (
-            self.request.user.account.organization.has_delete_permission())
+        context["show_email_delete_button"] = (
+            self.request.user.account.organization.has_email_delete_permission())
+        context["show_file_delete_button"] = (
+            self.request.user.account.organization.has_file_delete_permission())
         return context
 
     def base_match_filter(self, reports):
@@ -323,7 +325,8 @@ class UserArchiveView(ArchiveMixin, UserReportView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["show_delete_button"] = False
+        context["show_email_delete_button"] = False
+        context["show_file_delete_button"] = False
         return context
 
 
@@ -368,14 +371,22 @@ class HandleMatchView(HTMXEndpointView, DetailView):
         return response
 
 
-class MassHandleView(HTMXEndpointView, ListView):
-    """Endpoint for mass handling matches via HTMX."""
+class BaseMassView(ListView):
+    """
+    Base class for Mass-related views.
+    A ListView, defining get_queryset, returning queryset of items checked in table-checkbox.
+    Not for any use alone.
+    """
 
     def get_queryset(self):
         qs = super().get_queryset()
         pks = self.request.POST.getlist("table-checkbox", [])
         reports = qs.filter(pk__in=pks)
         return reports
+
+
+class MassHandleView(HTMXEndpointView, BaseMassView):
+    """Endpoint for mass handling matches via HTMX."""
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -461,7 +472,7 @@ class DistributeMatchesView(HTMXEndpointView, ListView):
 
 
 class DeleteMailView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for one email
+    """ View for sending a delete request for an email
     through the MSGraph message API. """
     model = DocumentReport
 
@@ -481,7 +492,7 @@ class DeleteMailView(HTMXEndpointView, DetailView):
         return response
 
 
-class MassDeleteMailView(HTMXEndpointView, ListView):
+class MassDeleteMailView(HTMXEndpointView, BaseMassView):
     """ View for sending delete requests for multiple emails
      through the MSGraph message API. """
 
@@ -492,16 +503,55 @@ class MassDeleteMailView(HTMXEndpointView, ListView):
 
         return response
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pks = self.request.POST.getlist("table-checkbox", [])
-        reports = qs.filter(pk__in=pks)
-        return reports
-
     def delete_emails(self, document_reports):
         for report in document_reports:
             try:
                 delete_email(report, self.request.user.account)
+            except PermissionDenied as e:
+                error_message = _("Failed to delete {pn}: {e}").format(
+                    pn=report.matches.handle.presentation_name, e=e)
+                messages.add_message(
+                    self.request,
+                    messages.WARNING,
+                    error_message)
+
+
+class DeleteFileView(HTMXEndpointView, DetailView):
+    """ View for sending a delete request for a file
+    through the MSGraph API. """
+    model = DocumentReport
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        report = self.get_object()
+
+        try:
+            delete_file(report, request.user.account)
+        except PermissionDenied as e:
+            error_message = _("Failed to delete {pn}: {e}").format(
+                pn=report.matches.handle.presentation_name, e=e)
+            messages.add_message(
+                request,
+                messages.WARNING,
+                error_message)
+        return response
+
+
+class MassDeleteFileView(HTMXEndpointView, BaseMassView):
+    """ View for sending delete requests for multiple files
+     through the MSGraph API. """
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        reports = self.get_queryset()
+        self.delete_files(reports)
+
+        return response
+
+    def delete_files(self, document_reports):
+        for report in document_reports:
+            try:
+                delete_file(report, self.request.user.account)
             except PermissionDenied as e:
                 error_message = _("Failed to delete {pn}: {e}").format(
                     pn=report.matches.handle.presentation_name, e=e)

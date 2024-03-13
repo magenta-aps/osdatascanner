@@ -10,8 +10,9 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 from prometheus_client import Summary, start_http_server
 
+from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 from ...models.documentreport import DocumentReport
-from ...views.utilities.msgraph_utilities import get_mail_message_handle_from_document_report, \
+from ...views.utilities.msgraph_utilities import get_handle_from_document_report, \
     categorize_email_from_report
 
 logger = structlog.get_logger(__name__)
@@ -35,7 +36,9 @@ class EmailTaggerRunner(PikaPipelineThread):
                 dr_pk, category_to_add = body
                 try:
                     document_report = DocumentReport.objects.get(pk=dr_pk)
-                    mail_handle = get_mail_message_handle_from_document_report(document_report)
+                    mail_handle = get_handle_from_document_report(
+                        document_report,
+                        MSGraphMailMessageHandle)
                     mail_source = mail_handle.source
 
                     # We censor these when going through our pipeline, hence we need to set them
