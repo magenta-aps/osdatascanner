@@ -240,8 +240,8 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
             # No new matches. Be cautiously optimistic, but check what
             # actually happened
             if (len(new_matches.matches) == 1
-                    and isinstance(new_matches.matches[0].rule,
-                                   LastModifiedRule)):
+                and isinstance(new_matches.matches[0].rule,
+                               LastModifiedRule)):
                 # The file hasn't been changed, so the matches are the same
                 # as they were last time. Instead of making a new entry,
                 # just update the timestamp on the old one
@@ -252,6 +252,12 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                         # If there is a problem associated with this report, we
                         # no longer care about it
                         raw_problem=None)
+
+                if previous_report.only_notify_superadmin and not scan_tag.scanner.test:
+                    # The old scan had only_notify_superadmin as True, but the new scan doesn't,
+                    # so the old report is updated.
+                    DocumentReport.objects.filter(pk=previous_report.pk).update(
+                        only_notify_superadmin=False)
             else:
                 # The file has been edited and the matches are no longer
                 # present
