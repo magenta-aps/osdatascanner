@@ -253,11 +253,11 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                         # no longer care about it
                         raw_problem=None)
 
-                if previous_report.only_notify_superadmin and not scan_tag.scanner.test:
-                    # The old scan had only_notify_superadmin as True, but the new scan doesn't,
-                    # so the old report is updated.
+                if previous_report.only_notify_superadmin != scan_tag.scanner.test:
+                    # If the previous report doesn't have the same value for
+                    # only_notify_superadmin as the new scan, update the report
                     DocumentReport.objects.filter(pk=previous_report.pk).update(
-                        only_notify_superadmin=False)
+                        only_notify_superadmin=scan_tag.scanner.test)
             else:
                 # The file has been edited and the matches are no longer
                 # present

@@ -551,3 +551,15 @@ class PipelineCollectorTests(TestCase):
 
         self.assertTrue(before)
         self.assertTrue(after)
+
+    def test_take_back_results_when_using_only_notify_superadmin(self):
+        """Scanning with only_notify_superadmin on, should update previously scanned matches."""
+
+        record_match(positive_match)
+        before = DocumentReport.objects.last().only_notify_superadmin
+
+        record_match(positive_match_only_notify_superadmin_later)
+        after = DocumentReport.objects.last().only_notify_superadmin
+
+        self.assertFalse(before)
+        self.assertTrue(after)
