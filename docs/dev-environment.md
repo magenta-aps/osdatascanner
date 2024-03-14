@@ -430,7 +430,7 @@ functionality. To test functionality, it is required to clone the Git-repository
     docker-compose up --build
     ```
 
-4. Go to http://localhost:5000/auth/admin/master/console/#/realms/mo/clients
+4. Go to http://localhost:5000/auth/admin/master/console/#/mo/clients
 5. Enter username and password "admin"
 6. Select the client "dipex"
 7. Go to tab "Credentials"
