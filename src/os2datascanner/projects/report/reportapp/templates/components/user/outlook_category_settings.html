@@ -4,7 +4,8 @@
 
 <h2 id="outlook-settings-title">{% trans "Outlook Settings" %}</h2>
 
-{% include "components/modals/snackbar.html" %}
+{% include "components/feedback/snackbarNew.html" %}
+
 <table class="userprofile-table outlook-settings">
   <tbody>
     <form id="settings-form"
@@ -35,7 +36,8 @@
         <button class="button"
           name="categorize_existing"
           title="{% trans "Categorizes your emails based on your existing results. Be aware that scannerjob runs will also do this for you, if you've enabled categorizing." %}"
-          hx-post="{% url "outlook-category-settings" %}"
+          {% if not tenant_id_retrievable %}disabled{% endif %}
+          hx-post="{% url 'outlook-category-settings' %}"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
           hx-swap="none"
           hx-trigger="click"

@@ -1,3 +1,9 @@
+// ********************************
+// ********************************
+// ***** OLD SNACKBAR STYLING *****
+// ********************************
+// ********************************
+
 .message-popup-area {
   position: fixed;
   z-index: 1000;
@@ -23,5 +29,242 @@
 
   .message-popup:nth-last-of-type(1) {
     margin-bottom: 2rem; // give room for box-shadow
+  }
+}
+
+// ********************************
+// ********************************
+// ***** NEW SNACKBAR STYLING *****
+// ********************************
+// ********************************
+
+// **********************************
+// ***** COLOUR THEME TEMPLATES *****
+// **********************************
+
+// Note: The four categories match the default message types in Django messages
+$colors: (
+  "info": ( // Neutral
+    "bg": var(--color-alert-default),
+    "accent": var(--color-alert-default-accent)
+  ),
+
+  "success": ( // Green
+    "bg": var(--color-alert-success),
+    "accent": var(--color-alert-success-accent)
+  ),
+
+  "warning": ( // Yellow
+    "bg": var(--color-alert-warning),
+    "accent": var(--color-alert-warning-accent)
+  ),
+
+  "error": ( // Red
+    "bg": var(--color-alert-error),
+    "accent": var(--color-alert-error-accent)
+  ),
+);
+
+// ***************************************
+// ***** MANUAL-CLOSE STYLE TEMPLATE *****
+// ***************************************
+
+// Note: this type of snackbar might be redundant after all 
+// the "banner type" alerts have been refactored 
+@mixin manual-style($type) {
+  $color-theme: map-get($colors, $type);
+  
+  // Layout
+  position: relative;
+
+  // Visual
+  background-color: map-get($color-theme, "bg");
+  color: map-get($color-theme, "accent");
+  
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0.5rem;
+    background-color: map-get($color-theme, "accent");
+  }
+}
+
+// *************************************
+// ***** AUTO-CLOSE STYLE TEMPLATE *****
+// *************************************
+
+// TIMER BAR ANIMATION PATH
+@keyframes disappear {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+$animation-duration: 8s; // Has to match "remainingTime" in snackBarNew.js
+
+// STYLE TEMPLATE
+@mixin auto-style($type) {
+  //Layout
+  position: relative;
+
+  // Visual
+  $color-theme: map-get($colors, $type);
+  background-color: map-get($color-theme, "bg");
+  color: map-get($color-theme, "accent");
+
+  // Animation
+  --animation-duration: $animation-duration;
+  
+  &::after {
+    content: "";
+    
+    // Layout
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.25rem; // Height of the timer bar
+    width: 100%;
+
+    // Visual
+    background-color: map-get($color-theme, "accent");
+    opacity: 0.5; // Up for negotiation, but max is 0.75
+    
+    // Animation
+    animation: disappear $animation-duration linear forwards;
+  }
+  
+  &:hover::after {
+    animation-play-state: paused; // Pausing the timer animation
+  }
+}
+
+
+// *************************
+// ***** ICON TEMPLATE *****
+// *************************
+
+$icon-size: 1.25rem;
+
+@mixin icon-style {
+  align-self: start;
+  color: inherit;
+  font-size: $icon-size;
+  width: $icon-size;
+  height: $icon-size;
+}
+
+
+// ********************************
+// ***** THE SNACKABAR ITSELF *****
+// ********************************
+
+.snackbar {
+  &__container { // Styling for the div containing all snackbars
+    // Layout
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: fixed;
+    bottom: var(--service-widget-gap);
+    right: calc(var(--service-button-size) + 2.5rem); // Defines position by the size of the help button
+
+    // Miscellaneous
+    z-index: 9999;
+  }
+
+  // Layout
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden; // Hides the overflow from the decorative "accent" bar and the timer bar
+
+  // Box model
+  min-width: 21.5rem;
+  max-width: 30rem;
+  padding: 1.25rem 1rem;
+  border-radius: var(--border-radius-default);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+  // Fadeout animation
+  transition: opacity 1s ease-out; // Has to match "setTimeout" in snackBarNew.js
+  opacity: 1;
+  &--fading-out {
+    opacity: 0;
+  }
+
+  // Apply style theme according to message type
+  $types: info, success, warning, error;
+  @each $type in $types {
+    &--manual_close.#{$type} { 
+      @include manual-style($type);
+    }
+
+    &--auto_close.#{$type} { 
+      @include auto-style($type);
+    }
+  }
+  
+  &__content {
+    display: grid;
+    grid-template-columns: auto 1fr auto; // icon, text, close button
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+  }
+
+  &__icon { 
+    align-self: start;
+    color: inherit;
+    font-size: $icon-size; 
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  &__text {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    line-height: $icon-size; // Might need rethinking for alerts with multiple lines of text
+  }
+
+  &__close-button {
+    // Layout
+    position: static; // Overwrites "position: absolute;" from close-modal
+    align-self: start;
+
+    // Box model
+    width: $icon-size;
+    height: $icon-size;
+    padding: 0;
+    border: none;
+
+    // Visual
+    color: var(--color-text-secondary);
+    background: none;
+
+    .material-icons {
+      font-weight: 800;
+      font-size: $icon-size;
+      vertical-align: middle;
+    }
+
+    &:disabled {
+      color: var(--color-btn-neutral)
+    }
+  
+    &:hover:not([disabled]),
+    &:focus:not([disabled]) {
+      color: var(--color-text-primary);
+      border: none;
+      background-color: transparent;
+    }
   }
 }

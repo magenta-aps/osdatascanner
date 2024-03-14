@@ -95,7 +95,7 @@
               {% for alias in other_aliases %}
                 <li class="dynamic_li"
                     title="{% trans 'Click to remove' %} {{ alias }}."
-                    hx-post="{% url "delete-alias" account.organization.slug account.uuid alias.uuid %}"
+                    hx-post="{% url 'delete-alias' account.organization.slug account.uuid alias.uuid %}"
                     hx-swap="outerHTML"
                     hx-target=".content"
                     hx-select=".content"
@@ -116,7 +116,7 @@
                     </svg>
                   </button>
                   <dialog class="modal-dialog" id="add-alias-modal">
-                    <div hx-get="{% url "create-alias" account.organization.slug account.uuid %}"
+                    <div hx-get="{% url 'create-alias' account.organization.slug account.uuid %}"
                          hx-swap="outerHTML"
                          hx-trigger="intersect"
                          hx-target="this"></div>
@@ -206,6 +206,6 @@
           </table>
         </div>
 
-        {% include "components/modals/snackbar.html" %}
+        {% include "components/modals/snackbarOld.html" %}
 
       {% endblock content %}

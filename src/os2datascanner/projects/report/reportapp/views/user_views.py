@@ -89,7 +89,12 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
             message = outl_setting.categorize_existing()
             # Messages and logging
             logger.info(f"{account} categorized their emails manually")
-            messages.add_message(request, messages.SUCCESS, message)
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                message,
+                extra_tags="auto_close"
+            )
 
         if request.POST.get("outlook_setting", False):  # We're doing stuff in the outlook settings
             categorize_check = request.POST.get("categorize_email", False) == "on"
@@ -108,7 +113,12 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                 ):
                     # Create/Verify that categories are populated
                     message = outl_setting.populate_setting()
-                    messages.add_message(request, messages.SUCCESS, message)
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        message,
+                        extra_tags="auto_close"
+                    )
 
                 # Else, we can assume that we're updating.
                 # Check if one of the colours are changed
@@ -121,7 +131,8 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                     messages.add_message(
                         request,
                         messages.SUCCESS,
-                        message
+                        message,
+                        extra_tags="auto_close"
                     )
             # Unchecking means disabling and will delete categories.
             elif not categorize_check:
@@ -129,14 +140,15 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    message
+                    message,
+                    extra_tags="auto_close"
                 )
 
         # Used to make Django's messages framework and HTMX play ball.
         response = HttpResponse()
         response.write(
             render_to_string(
-                template_name="components/modals/snackbar.html",
+                template_name="components/feedback/snackbarNew.html",
                 context={"messages": get_messages(request)},
                 request=request
             )
