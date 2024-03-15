@@ -6,6 +6,11 @@
 
 - Translations and updated images have been added to the report module manual.
 
+### Bugfixes
+
+- Error messages found during the exploration of a data source now appear in
+  the administration system's error log view.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"

@@ -17,7 +17,7 @@ logger = structlog.get_logger(__name__)
 READS_QUEUES = ("os2ds_scan_specs",)
 WRITES_QUEUES = (
         "os2ds_conversions", "os2ds_problems", "os2ds_status",
-        "os2ds_scan_specs",)
+        "os2ds_scan_specs", "os2ds_checkups",)
 PROMETHEUS_DESCRIPTION = "Sources explored"
 # An individual exploration task is typically the longest kind of task, so we
 # want to do as little prefetching as possible here. (If we're doing an
@@ -33,7 +33,11 @@ def process_exploration_error(scan_spec, handle_candidate, ex):
     problem_message = messages.ProblemMessage(
             scan_tag=scan_spec.scan_tag, source=scan_spec.source,
             handle=handle_candidate, message=exception_message)
-    yield ("os2ds_problems", problem_message.to_json_object())
+    # We send problem messages to os2ds_problems to create or update a
+    # DocumentReport about the problem, and to os2ds_checkups to create a
+    # UserErrorLog object.
+    for problem_queue in ("os2ds_problems", "os2ds_checkups"):
+        yield (problem_queue, problem_message.to_json_object())
     logger.info(
             "found problem",
             scan_tag=scan_spec.scan_tag, handle=handle_candidate)
