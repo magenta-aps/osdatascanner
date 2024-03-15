@@ -11,6 +11,9 @@
 - Error messages found during the exploration of a data source now appear in
   the administration system's error log view.
 
+- Triggering the extra validation logic associated with alias updates no
+  longer causes the report module to unconditionally throw those updates away.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"
