@@ -14,6 +14,9 @@
 - Triggering the extra validation logic associated with alias updates no
   longer causes the report module to unconditionally throw those updates away.
 
+- objectSid mapper for LDAP import can now be created on LDAP configuration updates if it did not
+  already exist.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"
