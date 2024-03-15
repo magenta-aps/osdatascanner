@@ -10,7 +10,7 @@ from django.db.models import Q
 
 from ....organizations.models import Account
 from ...models.scannerjobs.scanner import Scanner
-from ...utils import CleanMessage
+from ...utils import CleanAccountMessage
 
 
 def is_valid_uuid(string: str):
@@ -57,7 +57,7 @@ class Command(BaseCommand):
             scanners_accounts_dict = self.construct_dict(account_objs, scanner_objs)
 
             if scanners_accounts_dict:
-                CleanMessage.send(
+                CleanAccountMessage.send(
                     scanners_accounts_dict=scanners_accounts_dict,
                     publisher="cleanup_account_results")
             else:

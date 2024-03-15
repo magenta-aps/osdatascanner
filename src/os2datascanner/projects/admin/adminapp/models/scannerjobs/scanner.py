@@ -45,7 +45,7 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.pipeline.headers import get_exchange, get_headers
 from mptt.models import TreeManyToManyField
-from os2datascanner.projects.admin.adminapp.utils import CleanMessage
+from os2datascanner.projects.admin.adminapp.utils import CleanProblemMessage
 
 from ..rules import Rule
 from .scanner_helpers import (  # noqa (interface backwards compatibility)
@@ -59,12 +59,10 @@ base_dir = os.path.dirname(
 
 class ScannerQuerySet(models.query.QuerySet):
     def delete(self):
-        from os2datascanner.projects.admin.organizations.models import Account
-
-        accounts = Account.objects.all()
-        account_dict = CleanMessage.make_account_dict(accounts)
-        scanners_accounts_dict = {pk[0]: account_dict for pk in self.values_list('pk')}
-        CleanMessage.send(scanners_accounts_dict, publisher="Scanner.delete()")
+        scanners = self.values_list("pk", flat=True)
+        CleanProblemMessage.send(scanners, publisher="Scanner.objects.delete()")
+        logger.info('CleanProblemMessage published to the events_queue with '
+                    f'the list of scanners: {scanners}')
         return super().delete()
 
 
@@ -590,6 +588,12 @@ class Scanner(models.Model):
         return Account.objects.filter(
             aliases___alias_type=AliasType.REMEDIATOR,
             aliases___value=self.pk)
+
+    def delete(self, **kwargs):
+        CleanProblemMessage.send([self.pk], publisher="Scanner.delete()")
+        logger.info('CleanProblemMessage published to the events_queue with '
+                    f'the scanner: {self.name} ({self.pk})')
+        return super().delete(**kwargs)
 
     class Meta:
         abstract = False

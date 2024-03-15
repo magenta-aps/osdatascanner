@@ -36,7 +36,7 @@ from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.scannerjobs.scanner_helpers import CoveredAccount
 from ..models.usererrorlog import UserErrorLog
-from ..utils import CleanMessage
+from ..utils import CleanAccountMessage
 from ...organizations.models.aliases import AliasType
 from ....utils.view_mixins import CSVExportMixin
 from django.utils.translation import gettext_lazy as _
@@ -692,7 +692,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
 
                 clean_dict = {
                     self.object.pk: (
-                            acc_dict := CleanMessage.make_account_dict(
+                            acc_dict := CleanAccountMessage.make_account_dict(
                                     acc for acc in stale_accounts
                                     if str(acc.uuid) in uuids_to_clean))
                 }
@@ -702,9 +702,9 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
                         f" {', '.join(acc_dict['usernames'])}"
                         f" for scanner: {self.object}.")
 
-                CleanMessage.send(clean_dict, publisher="UI-manual")
+                CleanAccountMessage.send(clean_dict, publisher="UI-manual")
 
-                # When we send CleanMessages, the report module deletes all of
+                # When we send CleanAccountMessages, the report module deletes all of
                 # the matches associated with these accounts, but the admin
                 # system still knows about them; delete that knowledge to make
                 # sure we don't have uncovered periods

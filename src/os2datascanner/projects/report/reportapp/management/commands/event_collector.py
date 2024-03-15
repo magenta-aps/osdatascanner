@@ -106,7 +106,9 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         logger.info(f"Deleting all {model.__name__} objects {deleted}")
 
             elif event_type == "clean_document_reports":
-                handle_clean_message(body)
+                handle_clean_account_message(body)
+            elif event_type == "clean_problem_reports":
+                handle_clean_problem_message(body)
 
             yield from []
 
@@ -123,10 +125,10 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                          "You'll likely need to purge before retrying!")
 
 
-def handle_clean_message(body):
-    """Accepts a CleanMessage JSON-object, and deletes all document reports
+def handle_clean_account_message(body):
+    """Accepts a CleanAccountMessage JSON-object, and deletes all document reports
     related to the given account and scanner job."""
-    logger.info(f"CleanMessage published by {body.get('publisher')} at {body.get('time')}.")
+    logger.info(f"CleanAccountMessage published by {body.get('publisher')} at {body.get('time')}.")
 
     data_struct = body.get("scanners_accounts_dict", {})
 
@@ -143,6 +145,24 @@ def handle_clean_message(body):
         logger.info(
             f"Deleted {deleted_reports} DocumentReport objects associated with "
             f"scanner_job_pk: {scanner_pk} and accounts: {', '.join(account_usernames)}.")
+
+
+def handle_clean_problem_message(body):
+    """Accepts a CleanProblemMessage JSON-object, and deletes all problem reports
+    related to the given scannerjob pks."""
+    logger.info(f"CleanProblemMessage published by {body.get('publisher')} at {body.get('time')}.")
+
+    scanners = body.get("scanners", [])
+
+    related_problems = DocumentReport.objects.filter(
+        number_of_matches=0, scanner_job_pk__in=scanners)
+    _, deleted_problems_dict = related_problems.delete()
+    deleted_problems = deleted_problems = deleted_problems_dict.get(
+        "os2datascanner_report.DocumentReport", 0)
+
+    logger.info(
+        f"Deleted {deleted_problems} DocumentReport objects without matches "
+        f"associated with scanner_job_pks: {scanners}.")
 
 
 class EventCollectorRunner(PikaPipelineThread):

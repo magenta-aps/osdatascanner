@@ -27,7 +27,7 @@ from os2datascanner.projects.admin.import_services.models import (LDAPConfig,
                                                                   MSGraphImportJob,
                                                                   OS2moImportJob)
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
-from os2datascanner.projects.admin.adminapp.utils import CleanMessage
+from os2datascanner.projects.admin.adminapp.utils import CleanAccountMessage
 from .models.msgraph_configuration import MSGraphConfiguration
 from .models.os2mo_configuration import OS2moConfiguration
 
@@ -118,8 +118,8 @@ def start_os2mo_import(os2mo_conf: OS2moConfiguration):
 
 
 def construct_dict_from_scanners_stale_accounts() -> dict:
-    """Builds a CleanMessage cleanup dict for all stale accounts across all
-    scanners. (See CleanMessage.send for more details.)"""
+    """Builds a CleanAccountMessage cleanup dict for all stale accounts across all
+    scanners. (See CleanAccountMessage.send for more details.)"""
     all_scanners = Scanner.objects.all()
     scanners_accounts_dict = {}
 
@@ -128,7 +128,7 @@ def construct_dict_from_scanners_stale_accounts() -> dict:
             logger.info(f"Scanner “{scanner.name}” is currently running.")
         else:
             if stale_accounts := scanner.compute_stale_accounts():
-                acc_dict = CleanMessage.make_account_dict(stale_accounts)
+                acc_dict = CleanAccountMessage.make_account_dict(stale_accounts)
                 scanners_accounts_dict[scanner.pk] = acc_dict
                 logger.info(
                         "Cleaning up accounts:"
@@ -152,7 +152,7 @@ def post_import_cleanup() -> None:
 
         scanners_accounts_dict = construct_dict_from_scanners_stale_accounts()
 
-        CleanMessage.send(scanners_accounts_dict, publisher="post_import")
+        CleanAccountMessage.send(scanners_accounts_dict, publisher="post_import")
         for pk, acc_dict in scanners_accounts_dict.items():
             CoveredAccount.objects.filter(
                     scanner_id=pk,
