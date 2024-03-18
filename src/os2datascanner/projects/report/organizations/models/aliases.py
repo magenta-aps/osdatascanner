@@ -52,7 +52,7 @@ class AliasQuerySet(models.query.QuerySet):
             rv = super().delete()
             for dr in DocumentReport.objects.filter(
                     pk__in=associated_report_keys,
-                    raw_metadata__isnull=False):
+                    raw_metadata__isnull=False).iterator():
                 create_aliases(dr)
             return rv
 
