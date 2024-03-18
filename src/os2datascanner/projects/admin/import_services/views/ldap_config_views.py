@@ -172,6 +172,17 @@ def _keycloak_update(config_instance):
         mapper_args = [mapper_payload, config_instance.object_sid_mapper_uuid]
         get_token_first(request_update_component, realm.pk, *mapper_args)
 
+    # In case we're doing "Update" but don't have an existing objectSid mapper
+    if not config_instance.object_sid_mapper_uuid and config_instance.object_sid_attribute:
+        res = get_token_first(create_sid_attribute_mapper, realm.pk,
+                              payload["id"], config_instance)
+        if res.ok:
+            # Keycloak returns an empty body upon creation, so we'll fish the id from headers.
+            loc = res.headers.get("Location")
+            mapper_uuid = loc.split("/")[-1]  # The UUID of the mapper should be the last thing.
+            config_instance.object_sid_mapper_uuid = mapper_uuid
+            config_instance.save()
+
 
 class LDAPUpdateView(LoginRequiredMixin, UpdateView):
 
