@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
     def handle(
             self, scanners, *,
-            guess, summarise, metadata, max_depth, **kwargs):
+            guess, summarise, metadata, max_depth, hints, **kwargs):
         with SourceManager() as sm:
             for scanner in scanners:
                 for source in scanner.generate_sources():
@@ -37,4 +37,5 @@ class Command(BaseCommand):
                             guess=guess,
                             summarise=summarise,
                             metadata=metadata,
-                            max_depth=max_depth)
+                            max_depth=max_depth,
+                            hints=hints)
