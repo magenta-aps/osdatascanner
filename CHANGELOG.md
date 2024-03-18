@@ -17,6 +17,9 @@
 - objectSid mapper for LDAP import can now be created on LDAP configuration updates if it did not
   already exist.
 
+- Deleting an alias with many relations to matches will no longer cause the
+  report module to attempt to load all of those matches into memory.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"
