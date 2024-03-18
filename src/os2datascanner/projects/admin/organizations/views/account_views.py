@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.postgres.search import SearchVector
 from django.views.generic import DetailView, CreateView, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -45,10 +46,8 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
     def search_queryset(self, qs):
 
         if search := self.request.GET.get('search_field'):
-            qs = qs.filter(
-                username__icontains=search) | qs.filter(
-                first_name__icontains=search) | qs.filter(
-                last_name__icontains=search)
+            qs = qs.annotate(search=SearchVector("username", "first_name", "last_name"))
+            qs = qs.filter(search=search)
 
         return qs
 
