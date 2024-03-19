@@ -157,7 +157,7 @@ def handle_clean_problem_message(body):
     related_problems = DocumentReport.objects.filter(
         number_of_matches=0, scanner_job_pk__in=scanners)
     _, deleted_problems_dict = related_problems.delete()
-    deleted_problems = deleted_problems = deleted_problems_dict.get(
+    deleted_problems = deleted_problems_dict.get(
         "os2datascanner_report.DocumentReport", 0)
 
     logger.info(
