@@ -25,7 +25,7 @@ def present(handle):
 
 
 @register.filter
-def present_url(handle):
+def present_url(handle, key=lambda h: h.presentation_url):
     """Returns the renderable presentation URL of the given Handle (or, if it
     doesn't define one, of its first parent that does).
 
@@ -33,7 +33,7 @@ def present_url(handle):
     whose scheme is present in the PERMITTED_URL_SCHEMES setting."""
 
     def _test_handle(handle):
-        url = handle.presentation_url
+        url = key(handle)
         if url:
             scheme = urlsplit(url)[0]
             if scheme in settings.PERMITTED_URL_SCHEMES:
@@ -110,22 +110,8 @@ def find_scan_type(type_label):
 
 
 @register.filter
-def find_file_folder(handle, force=False):
-    """Removes the filename of a match and then returns it (the folder where
-    the file is placed"""
-    if isinstance(handle, (SMBHandle, SMBCHandle)):
-        # the force variable is only for testing, since 'file'-protocol is
-        # not allowed by default
-        if force:
-            file_path = handle.presentation_url
-            file_path = file_path[:file_path.rfind('/')]
-            return file_path
-        if present_url(handle):
-            file_path = present_url(handle)
-            file_path = file_path[:file_path.rfind('/')]
-            return file_path
-        else:
-            return None
+def find_file_folder(handle):
+    return present_url(handle, key=lambda h: h.container_url)
 
 
 @register.filter

@@ -23,7 +23,7 @@
           </div>
         </div>
         {% comment %} HTML is a programming language btw {% endcomment %}
-        {% if document_report.last_opened_time or document_report.matches.handle|present_url or type != 'ews' and type != 'msgraph-mail' and document_report.matches.handle|find_parent:type|find_file_folder %}
+        {% if document_report.last_opened_time or document_report.matches.handle|present_url or type != 'ews' and type != 'msgraph-mail' and document_report.matches.handle|find_file_folder %}
           <div class="hit-link">
             <div class="button-group"
                  name='open-button'
@@ -38,13 +38,11 @@
                    target="_blank"
                    rel="noopener">{% trans "Open" %}</a>
               {% endif %}
-              {% if type != 'ews' and type != 'msgraph-mail' %}
-                {% if document_report.matches.handle|find_parent:type|find_file_folder %}
-                  <a href="{{ document_report.matches.handle|find_parent:type|find_file_folder }}"
-                     class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
-                     target="_blank"
-                     rel="noopener">{% trans "Open folder" %}</a>
-                {% endif %}
+              {% if document_report.matches.handle|find_file_folder %}
+                <a href="{{ document_report.matches.handle|find_file_folder }}"
+                   class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
+                   target="_blank"
+                   rel="noopener">{% trans "Open folder" %}</a>
               {% endif %}
               {% if show_delete_button and type == 'msgraph-mail' %}
                 <span class="delete-mail">

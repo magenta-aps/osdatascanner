@@ -241,6 +241,10 @@ class MSGraphFileHandle(Handle):
         return self._weblink
 
     @property
+    def container_url(self):
+        return self._parent_weblink
+
+    @property
     def presentation_place(self):
         folder = self.relative_path.removesuffix(self.name)
         parent = str(self.source.handle)
