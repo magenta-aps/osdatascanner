@@ -46,7 +46,7 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
     def search_queryset(self, qs):
 
         if search := self.request.GET.get('search_field'):
-            qs = qs.annotate(search=SearchVector("first_name", "last_name"))
+            qs = qs.annotate(search=SearchVector("username", "first_name", "last_name"))
             qs = qs.filter(search=search)
 
         return qs

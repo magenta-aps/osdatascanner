@@ -411,10 +411,12 @@
       background-color: var(--color-primary-light);
     }
 
-    tr:first-of-type {
-
-      td {
-        border-top: none;
+    &.no-header {
+      tr:first-of-type {
+  
+        td {
+          border-top: none;
+        }
       }
     }
   }
@@ -463,7 +465,7 @@
     display: none;
   }
 
-  .datatable tbody.links {
+  .datatable tbody.links.no-header {
     tr:first-of-type {
 
       td {

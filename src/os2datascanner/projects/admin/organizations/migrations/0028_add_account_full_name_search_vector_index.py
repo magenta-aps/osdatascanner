@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0026_remove_organization_msgraph_write_permissions'),
+        ('organizations', '0027_organization_onedrive_delete_permission'),
     ]
 
     operations = [
