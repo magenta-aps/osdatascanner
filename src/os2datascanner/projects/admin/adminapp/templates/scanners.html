@@ -122,14 +122,14 @@
 
                   <td class="domain-validation datatable__column--validated">
                     {% if scanner.validation_status %}
-                      <span class="flex flex--icon">
+                      <span class="flex">
                         <span class="flex--width flex--width--icon">
                           <i id="done" title="{% trans 'Is approved' %}" class="material-icons">done</i>
                         </span>
                         <span>{% trans "Yes" %}</span>
                       </span>
                     {% else %}
-                      <span class="flex flex--icon">
+                      <span class="flex">
                         <span class="flex--width flex--width--icon">
                           <i id="clear"
                              title="{% trans 'Is not approved' %}"

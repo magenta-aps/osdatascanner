@@ -30,12 +30,13 @@
 .response {
   display: flex;
   align-items: center;
-  align-content: center;
-  font-size: .8rem;
+  gap: 0.5rem;
+  padding-left: 0.25rem;
+
+  font-size: 0.8rem;
 
   .response-icon {
-    margin: 0 0.25rem 0 0;
-    font-size: .8rem;
+    font-size: inherit;
     height: 1.5rem;
 
     &--error {
@@ -45,8 +46,38 @@
     &--success {
       color: var(--color-ok-dark);
     }
+
+    &--waiting {
+      color: inherit;
+      animation: spin, spinback ease-in-out;
+      animation-delay: 0.25s, 0.25s;
+      animation-duration: 1s;
+      animation-iteration-count: infinite;
+    }
   }
 }
+
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+}
+  
+@keyframes spinback {
+  0% {
+    -webkit-transform: rotate(181deg);
+    transform: rotate(181deg);    
+  }
+  
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+
 
 .userObjClass {
 

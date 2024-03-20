@@ -69,7 +69,7 @@
               {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
                 <td id="import_column__{{ organization.slug }}"
                     class="datatable__column--btn">
-                  <div class="flex flex--icon">
+                  <div class="flex">
                     <div class="button-group">
                       <!-- NB: importservice is in one word because a reverse name was not specified on the ImportService model's relation to Organization and this is the default -->
                       {% if not organization.importservice %}
@@ -109,7 +109,7 @@
               {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
                 <td id="import_column__{{ organization.slug }}"
                     class="datatable__column--btn">
-                  <div class="flex flex--icon">
+                  <div class="flex">
                     <div class="button-group">
                       {% if not organization.importservice %}
                         <a href="{% url 'add-os2mo' org_id=organization.pk %}"
@@ -141,7 +141,7 @@
               {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
                 <td id="import_column__{{ organization.slug }}"
                     class="datatable__column--btn">
-                  <div class="flex flex--icon">
+                  <div class="flex">
                     <div class="button-group">
                       {% if not organization.importservice %}
                         {% if not tenant_id %}

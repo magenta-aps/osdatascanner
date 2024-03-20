@@ -3,35 +3,38 @@
 
 {% with exec_state_value=job.exec_state.value %}
 
-  <div class="response"
-       {% if exec_state_value == "waiting" or exec_state_value == "running" %} hx-get="{% url 'background_job_status_widget' pk=job.pk %}" hx-trigger="every 1s" hx-swap="outerHTML" {% endif %}>
-    {% if exec_state_value == "waiting" or exec_state_value == "running" %}
-      <button class="button button--outline-button button--icon-button"
-              hx-get="{% url 'background_job_cancel' pk=job.pk %}"
-              hx-swap="outerHTML"
-              hx-target="closest div.response"
-              hx-trigger="click">
-        <i class="material-icons">cancel</i>
-      </button>
-    {% endif %}
-    {% if exec_state_value == "finished" %}
-      <span class="response-icon response-icon--success">
-        <i class="material-icons">check</i>
-      </span>
-    {% elif exec_state_value == "failed" %}
-      <span class="response-icon response-icon--error">
-        <i class="material-icons">error</i>
-      </span>
-    {% elif exec_state_value in "waiting running cancelling" %}
-      <span class="response-icon response-icon--waiting">
-        <i class="material-icons">hourglass_top</i>
-      </span>
-    {% elif exec_state_value == "cancelled" %}
-      <span class="response-icon response-icon--cancelled">
-        <i class="material-icons">block</i>
-      </span>
-    {% endif %}
-    {% if exec_state_value != "waiting" %}
+  {% if exec_state_value %}
+    <div class="response"
+         {% if exec_state_value == "waiting" or exec_state_value == "running" %} hx-get="{% url 'background_job_status_widget' pk=job.pk %}" hx-trigger="every 1s" hx-swap="outerHTML" {% endif %}>
+      {% if exec_state_value == "waiting" or exec_state_value == "running" %}
+        <button type="button"
+                class="button button--outline-button button--icon-button"
+                aria-label="{% trans 'Cancel sync process' %}"
+                title="{% trans 'Cancel sync process' %}"
+                hx-get="{% url 'background_job_cancel' pk=job.pk %}"
+                hx-swap="outerHTML"
+                hx-target="closest div.response"
+                hx-trigger="click">
+          <i class="material-icons">sync_disabled</i>
+        </button>
+      {% endif %}
+      {% if exec_state_value == "finished" %}
+        <span class="response-icon response-icon--success">
+          <i class="material-icons">check</i>
+        </span>
+      {% elif exec_state_value == "failed" %}
+        <span class="response-icon response-icon--error">
+          <i class="material-icons">error</i>
+        </span>
+      {% elif exec_state_value in "waiting running cancelling" %}
+        <span class="response-icon response-icon--waiting">
+          <i class="material-icons">hourglass_top</i>
+        </span>
+      {% elif exec_state_value == "cancelled" %}
+        <span class="response-icon response-icon--cancelled">
+          <i class="material-icons">block</i>
+        </span>
+      {% endif %}
       <span class="response-text">
         {% if exec_state_value == "finished" %}
           {% trans 'last updated'|capfirst %},
@@ -40,7 +43,7 @@
         {% endif %}
         {{ job.changed_at|date:'d-m-Y H:i' }}
       </span>
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 
 {% endwith %}
