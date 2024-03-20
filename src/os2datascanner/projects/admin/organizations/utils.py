@@ -176,6 +176,8 @@ class ClientAdminMixin:
     the client, for which they are requesting data, or is a superuser."""
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return super().dispatch(request, *args, **kwargs)
         org, allowed = user_allowed(request.user, kwargs['org_slug'])
         # Add the organization to the kwargs for future use.
         self.kwargs['org'] = org
