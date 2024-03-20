@@ -72,6 +72,17 @@ class Organization(Core_Organization):
 class OrganizationBulkSerializer(BaseBulkSerializer):
     """ Bulk create & update logic lives in BaseBulkSerializer """
 
+    def update(self, instances, validated_data):
+        for instance, new_data in zip(instances, validated_data):
+            for field, value in new_data.items():
+                if field == "email_header_banner":
+                    # We have to make sure to actually write the file to disk
+                    instance.email_header_banner = value
+                    instance.save()
+
+        # ... and then just do as usual
+        return super().update(instances, validated_data)
+
     class Meta:
         model = Organization
 

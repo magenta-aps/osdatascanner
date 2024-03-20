@@ -80,6 +80,7 @@ uvicorn[standard]
 psycopg2-binary
 whitenoise
 djangorestframework
+drf-extra-fields
 channels
 channels_redis
 cryptography>=3.2

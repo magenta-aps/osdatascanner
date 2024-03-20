@@ -80,6 +80,7 @@ django==3.2.11
     #   django-storages
     #   django-structlog
     #   djangorestframework
+    #   drf-extra-fields
     #   mozilla-django-oidc
 django-debug-toolbar==3.7.0
     # via -r requirements-all.in
@@ -111,12 +112,15 @@ djangorestframework==3.14.0
     # via
     #   -r requirements-all.in
     #   django-rest-auth
+    #   drf-extra-fields
 djangorestframework-jwt==1.11.0
     # via django-saml2-auth
 dnspython==2.2.1
     # via
     #   email-validator
     #   exchangelib
+drf-extra-fields==3.7.0
+    # via -r requirements-all.in
 dropbox==10.3.0
     # via -r requirements-all.in
 email-validator==1.3.0
@@ -131,6 +135,8 @@ executing==1.1.1
     # via stack-data
 faker==15.1.1
     # via -r requirements-all.in
+filetype==1.2.0
+    # via drf-extra-fields
 gevent==22.10.1
     # via gunicorn
 google-api-core==2.10.2

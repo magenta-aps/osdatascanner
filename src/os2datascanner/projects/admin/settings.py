@@ -12,6 +12,8 @@ from os2datascanner.projects.django_toml_configuration import process_toml_conf_
 BASE_DIR = str(pathlib.Path(__file__).resolve().parent.parent.parent.parent.absolute())
 PROJECT_DIR = os.path.dirname(BASE_DIR)
 
+MEDIA_URL = "/media/"
+
 process_toml_conf_for_django(
     parent_path=PROJECT_DIR,
     module=sys.modules[__name__],

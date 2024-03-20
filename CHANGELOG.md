@@ -10,6 +10,8 @@
   OneDrive/SharePoint.
 
 - Support for deletion of Office 365 OneDrive files directly from the report module.
+
+- Initial support for user uploaded images for use as header banner in report emails.
   
 ### General improvements
 

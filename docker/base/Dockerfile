@@ -223,6 +223,7 @@ ENV OS2DS_REPORT_SYSTEM_CONFIG_PATH=/code/docker/docker-settings.toml \
 
 RUN groupadd -g 63040 -r os2ds_report\
   && useradd -u 63040 --no-log-init -r -g os2ds_report os2ds_report \
+  && install -o os2ds_report -g os2ds_report -d /code/src/os2datascanner/projects/report/media/images \
   && install -o os2ds_report -g os2ds_report -d /code/build \
   && install -o os2ds_report -g os2ds_report -d /code/static \
   && install -o os2ds_report -g os2ds_report -d /code/var
