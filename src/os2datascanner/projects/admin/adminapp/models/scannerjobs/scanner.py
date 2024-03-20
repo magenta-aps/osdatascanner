@@ -376,8 +376,13 @@ class Scanner(models.Model):
         scanner's ScheduledCheckup objects (in the process deleting objects no
         longer covered by one of this scanner's Sources), and puts them into
         the provided outbox list. Returns the number of checkups added."""
+        source_list = list(self.generate_sources())
         uncensor_map = {
-                source.censor(): source for source in self.generate_sources()}
+                source.censor(): source for source in source_list}
+
+        if not len(uncensor_map) == len(source_list):
+            raise AssertionError("BUG: Sources disappeared before remap() was "
+                                 "called when adding checkups!")
 
         conv_template = messages.ConversionMessage(
                 scan_spec=spec_template,
