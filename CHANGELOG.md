@@ -6,6 +6,9 @@
 
 - Translations and updated images have been added to the report module manual.
 
+- The "Open folder" button is now also implemented for files hosted in
+  OneDrive/SharePoint.
+
 ### Bugfixes
 
 - Error messages found during the exploration of a data source now appear in

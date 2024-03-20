@@ -39,7 +39,7 @@ def print_source(  # noqa
     try:
         for handle in source.handles(manager):
             printfunc(format_d(depth, "{0}", handle))
-            if hints and hasattr(handle, "_hints"):
+            if hints:
                 for k, v in (handle._hints or {}).items():
                     printfunc(format_d(depth + 1, "hint:{0} {1}", k, v))
                 # This is a hint of sorts, but isn't stored in _hints
@@ -82,7 +82,7 @@ def print_source(  # noqa
                 file=stderr)
         lines = traceback.format_exc().strip().split("\n")
         for line in lines:
-            print(format_d(depth + 1, line), file=stderr)
+            print(format_d(depth + 1, "{0}", line), file=stderr)
 
 
 def add_control_arguments(parser):

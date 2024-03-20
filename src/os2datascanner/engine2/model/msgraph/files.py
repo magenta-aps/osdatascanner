@@ -148,22 +148,34 @@ class MSGraphDriveSource(DerivedSource):
                              f" {self.to_json_object()}")
 
     def handles(self, sm):
+        gc: MSGraphSource.GraphCaller = sm.open(self)
 
-        def _explore_folder(components, folder):
+        def _explore_folder(
+                components, folder, parent_weblink=None, is_root=False):
             for obj in folder:
                 name = obj["name"]
+                web_url = obj.get("webUrl", None)
+                if is_root:
+                    # Microsoft appears to have changed the default home page
+                    # of OneDrive from an actual list of files (which we want)
+                    # to some sort of fuzzy recent overview (which we don't)
+                    # without updating webUrl accordingly. Groan; attempt to
+                    # correct for that by requesting the file list view
+                    web_url += "?view=0"
+                here = components + ([name] if not is_root else [])
                 if "file" in obj:
-                    web_url = obj.get("webUrl", None)
                     yield MSGraphFileHandle(
-                            self, "/".join([] + components + [name]), weblink=web_url)
+                            self, "/".join(here),
+                            weblink=web_url, parent_weblink=parent_weblink)
                 elif "folder" in obj:
                     folder_id: str = obj["id"]
-                    subfolder = sm.open(self).get(
-                            f"{self._drive_path}/items/{folder_id}/children").json()
+                    subfolder = gc.get(
+                            f"{self._drive_path}/items/"
+                            f"{folder_id}/children").json()
                     yield from _explore_folder(
-                            components + [name], subfolder["value"])
-        root = sm.open(self).get(f"{self._drive_path}/root/children").json()["value"]
-        yield from _explore_folder([], root)
+                            here, subfolder["value"], parent_weblink=web_url)
+        root = [gc.get(f"{self._drive_path}/root").json()]
+        yield from _explore_folder([], root, is_root=True)
 
 
 class MSGraphFileResource(FileResource):
@@ -215,9 +227,10 @@ class MSGraphFileHandle(Handle):
     type_label = "msgraph-drive-file"
     resource_type = MSGraphFileResource
 
-    def __init__(self, source, path, weblink=None):
+    def __init__(self, source, path, weblink=None, parent_weblink=None):
         super().__init__(source, path)
         self._weblink = weblink
+        self._parent_weblink = parent_weblink
 
     @property
     def presentation_name(self):
@@ -226,6 +239,10 @@ class MSGraphFileHandle(Handle):
     @property
     def presentation_url(self):
         return self._weblink
+
+    @property
+    def container_url(self):
+        return self._parent_weblink
 
     @property
     def presentation_place(self):
@@ -239,11 +256,13 @@ class MSGraphFileHandle(Handle):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            weblink=self._weblink)
+            weblink=self._weblink,
+            parent_weblink=self._parent_weblink)
 
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
         return MSGraphFileHandle(
             Source.from_json_object(obj["source"]),
-            obj["path"], obj.get("weblink"))
+            obj["path"], obj.get("weblink"),
+            obj.get("parent_weblink"))

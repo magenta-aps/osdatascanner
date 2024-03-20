@@ -130,6 +130,13 @@ class Handle(TypePropertyEquality, JSONSerialisable):
         that points at that email in an appropriate webmail system.)"""
         return None
 
+    @property
+    def container_url(self):
+        """Returns a URL that points to a user-meaningful webpage that
+        corresponds to the container of this Handle, if there is one (a folder,
+        for example, for a filesystem file)."""
+        return None
+
     def __str__(self):
         """Returns a (perhaps localised) human-readable string representing
         this Handle: its name and its position."""

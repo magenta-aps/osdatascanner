@@ -147,6 +147,10 @@ class SMBHandle(Handle):
         return make_presentation_url(self)
 
     @property
+    def container_url(self):
+        return self.presentation_url.rsplit('/', maxsplit=1)[0]
+
+    @property
     def sort_key(self):
         return self.presentation.removesuffix("\\")
 
