@@ -41,7 +41,7 @@ set using a `with`-statement when including it in other templates:
 
         {% if view.edit %}
           <div id="{{ changed_id }}" class="changed_rules">
-            {% trans "Note, that changes in the rules means that all files will be scanned anew." %}
+            {% trans "Note, that rule changes will not affect previously scanned objects unless a full scan is run." %}
           </div>
         {% endif %}
 

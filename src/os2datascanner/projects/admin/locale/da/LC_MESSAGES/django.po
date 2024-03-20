@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-19 13:20+0100\n"
+"POT-Creation-Date: 2024-03-20 13:28+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1088,9 +1088,11 @@ msgstr "Tilføj endnu et regulært udtryk"
 
 #: adminapp/templates/components/rules/rule_selector.html:44
 msgid ""
-"Note, that changes in the rules means that all files will be scanned anew."
+"Note, that rule changes will not affect previously scanned objects unless a "
+"full scan is run."
 msgstr ""
-"Bemærk, at ændringer i regelsættet betyder, at alle filer skal scannes på ny."
+"Bemærk, at regelændringer ikke vil påvirke tidligere scannede objekter "
+"medmindre der køres et fuldt scan."
 
 #: adminapp/templates/components/scanner/scan_completed.html:58
 #: adminapp/templates/components/scanner/scan_completed.html:59
@@ -1889,6 +1891,7 @@ msgstr ""
 "(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/mail/password_reset_email.html:4
+#, python-format
 msgid ""
 "\n"
 "  You're receiving this email because you requested a password reset for "
@@ -1911,6 +1914,7 @@ msgid "Thanks for using our site!"
 msgstr "Tak, fordi du brugte vores side!"
 
 #: adminapp/templates/mail/password_reset_email.html:19
+#, python-format
 msgid ""
 "\n"
 "  The %(site_name)s team\n"
