@@ -13,6 +13,9 @@ imported versus manually created objects.
 - Warning filters have been added to tests, and some deprecated functions aren't used any longer, 
   as to decrease the number of warnings given during unit testing.
 
+- Error messages in the report module are now displayed with a warning triangle with the option 
+  to hover to see the error described in a popover (toolhint but bigger). 
+
 ### Bugfixes
 
 - Sitemap files uploaded during the creation of a web scanner are correctly
@@ -61,9 +64,6 @@ imported versus manually created objects.
 
 - Leader overview: when an orgunit is selected in the dropdown, all related 
   orgunit-children will also be displayed.
-
-- Error messages in the report module are now displayed with a warning triangle with the option 
-  to hover to see the error described in a popover (toolhint but bigger). 
 
 ### Bugfixes
 

@@ -210,6 +210,8 @@
       word-wrap: break-word;
       white-space: none;
 
+
+
       &>div {
         min-width: 12rem;
       }
@@ -812,5 +814,15 @@
     &--warning {
       color: var(--color-warning); // Specific styling for the warning icon in tables
     }
+  }
+}
+
+.tableUI__container{
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+
+  .hit-link {
+    margin-top: 0;
   }
 }
