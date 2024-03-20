@@ -13,7 +13,8 @@ _active_apps = [
 
 urlpatterns = [
     path('', include('os2datascanner.projects.admin.adminapp.urls')),
-    path('grants/', include('grants.urls')),
+    path('grants/', include('os2datascanner.projects.admin.grants.urls')),
+    path('core/', include('os2datascanner.projects.admin.core.urls')),
 ]
 
 # Conditionally include urls for relevant active os2datascanner apps:

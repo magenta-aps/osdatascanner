@@ -16,6 +16,10 @@
 - DocumentReports without matches are now deleted when the corresponding
   source no longer exists.
 
+
+- It is now possible to interrupt an organisational import job while, or
+  before, it's running.
+
 ### Bugfixes
 
 - Error messages found during the exploration of a data source now appear in
