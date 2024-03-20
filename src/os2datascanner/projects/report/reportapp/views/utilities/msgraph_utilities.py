@@ -5,8 +5,9 @@ import structlog
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-
+from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
+from os2datascanner.engine2.model.msgraph.files import MSGraphFileHandle
 from os2datascanner.engine2.model.msgraph.utilities import make_token, MSGraphSource
 from os2datascanner.projects.report.organizations.models import Account
 
@@ -66,7 +67,7 @@ def categorize_email_from_report(document_report,
         email_categories.append(category_name)
 
     owner = document_report.owner
-    message_handle = get_mail_message_handle_from_document_report(document_report)
+    message_handle = get_handle_from_document_report(document_report, MSGraphMailMessageHandle)
     msg_id = message_handle.relative_path if message_handle else None
 
     try:
@@ -98,7 +99,7 @@ def delete_email(document_report, account: Account):
 
     # Return early scenarios
     check_msgraph_settings()
-    if not account.organization.has_delete_permission():
+    if not account.organization.has_email_delete_permission():
         allow_deletion_message = _("System configuration does not allow mail deletion.")
         logger.warning(allow_deletion_message)
         raise PermissionDenied(allow_deletion_message)
@@ -119,7 +120,7 @@ def delete_email(document_report, account: Account):
             _make_token,
             session)
 
-        message_handle = get_mail_message_handle_from_document_report(document_report)
+        message_handle = get_handle_from_document_report(document_report, MSGraphMailMessageHandle)
         msg_id = message_handle.relative_path if message_handle else None
 
         try:
@@ -153,14 +154,12 @@ def delete_email(document_report, account: Account):
                 raise PermissionDenied(delete_failed_message)
 
 
-def get_mail_message_handle_from_document_report(document_report) \
-        -> MSGraphMailMessageHandle or None:
-    """ Walks up a DocumentReport's metadata chain to return MSGraphMailMessageHandle
-    or None. """
+def get_handle_from_document_report(document_report, handle_type) -> Handle:
+    """ Walks up a DocumentReport's metadata chain to return provided handle type or None. """
     # Look to grab the handle that represents the email (to support matches in attachments)
     message_handle = next(
         (handle for handle in document_report.metadata.handle.walk_up()
-         if isinstance(handle, MSGraphMailMessageHandle)), None)
+         if isinstance(handle, handle_type)), None)
     return message_handle
 
 
@@ -201,3 +200,66 @@ def get_msgraph_mail_document_reports(account):
 
 def get_msgraph_mail_categories_from_document_report(document_report) -> list:
     return document_report.metadata.metadata.get("outlook-categories", [])
+
+
+def delete_file(document_report, account: Account):
+    from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+    from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
+        import is_owner, handle_report
+
+    def _make_token():
+        return make_token(
+            settings.MSGRAPH_APP_ID,
+            tenant_id,
+            settings.MSGRAPH_CLIENT_SECRET)
+
+    # Return early scenarios
+    # TODO: consider moving it to a separate setting than the email deletion
+    check_msgraph_settings()
+    if not account.organization.has_file_delete_permission():
+        allow_deletion_message = _("System configuration does not allow file deletion.")
+        logger.warning(allow_deletion_message)
+        raise PermissionDenied(allow_deletion_message)
+
+    owner = document_report.owner
+
+    if not is_owner(owner, account):
+        logger.warning(f"User {account} tried to delete a file belonging to {owner}!")
+        not_owner_message = (_("Not allowed! You tried to delete a file belonging to {owner}!").
+                             format(owner=owner))
+        raise PermissionDenied(not_owner_message)
+
+    tenant_id = get_tenant_id_from_document_report(document_report)
+
+    with requests.Session() as session:
+        gc = GraphCaller(_make_token, session)
+
+        file_handle = get_handle_from_document_report(document_report, MSGraphFileHandle)
+        item_path = file_handle.relative_path
+
+        try:
+            delete_response = gc.delete_file(owner, item_path)
+
+            if delete_response.ok:
+                logger.info(f"Successfully deleted file on behalf of {account}! "
+                            f"Setting resolution status REMOVED")
+                handle_report(account,
+                              document_report=document_report,
+                              action=DocumentReport.ResolutionChoices.REMOVED)
+        except requests.HTTPError as ex:
+            # If the file is deleted from Outlook but a user clicks delete on the reportmodule
+            # It will still be handled as deleted.
+            if ex.response.status_code in (404, 410):
+                handle_report(account,
+                              document_report=document_report,
+                              action=DocumentReport.ResolutionChoices.REMOVED)
+                logger.info(f"Delete mail got response code {ex.response.status_code}! "
+                            "Interpreted as file deleted - Document report handled as deleted")
+
+            else:
+                delete_failed_message = _("Couldn't delete file! Code: {status_code}").format(
+                    status_code=ex.response.status_code)
+                logger.warning(f"Couldn't delete file! Got response: {ex.response}")
+                # PermissionDenied is a bit misleading here, it may not represent what went wrong.
+                # But sticking to this exception, makes handling it in the view easier.
+                raise PermissionDenied(delete_failed_message)

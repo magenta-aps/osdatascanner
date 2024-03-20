@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-13 10:20+0100\n"
+"POT-Creation-Date: 2024-03-14 11:50+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3172,10 +3172,10 @@ msgid "DPO settings"
 msgstr "DPO indstillinger"
 
 #: organizations/templates/organizations/org_update.html:105
-msgid "Outlook settings"
-msgstr "Outlook indstillinger"
+msgid "Microsoft Tenant Settings"
+msgstr "Microsoft Tenant Indstillinger"
 
-#: organizations/templates/organizations/org_update.html:131
+#: organizations/templates/organizations/org_update.html:129
 msgid "Allow deletion"
 msgstr "Tillad sletning"
 
@@ -3250,6 +3250,9 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:183
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Outlook settings"
+#~ msgstr "Outlook indstillinger"
 
 #~ msgid "covered accounts"
 #~ msgstr "dækkede konti"

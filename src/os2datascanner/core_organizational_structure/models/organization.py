@@ -109,6 +109,12 @@ class Organization(models.Model):
                     " on an organizational level (all accounts) or leave it up to the individual.")
     )
 
+    # Onedrive/Sharepoint
+    onedrive_delete_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of online drive files directly")
+    )
+
     # Access settings
     leadertab_access = models.CharField(
         max_length=1,
@@ -207,4 +213,5 @@ class OrganizationSerializer(BaseSerializer):
                   'email_notification_schedule', 'leadertab_access', 'dpotab_access',
                   'show_support_button', 'support_contact_method', 'support_name',
                   'support_value', 'dpo_contact_method', 'dpo_name', 'dpo_value',
-                  'outlook_delete_email_permission', 'outlook_categorize_email_permission']
+                  'outlook_delete_email_permission', 'outlook_categorize_email_permission',
+                  'onedrive_delete_permission']

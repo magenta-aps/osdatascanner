@@ -62,8 +62,11 @@ class Organization(Core_Organization):
             (OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.INDIVIDUAL_LEVEL)
         )
 
-    def has_delete_permission(self) -> bool:
+    def has_email_delete_permission(self) -> bool:
         return self.outlook_delete_email_permission
+
+    def has_file_delete_permission(self) -> bool:
+        return self.onedrive_delete_permission
 
 
 class OrganizationBulkSerializer(BaseBulkSerializer):

@@ -110,6 +110,14 @@ class MSGraphSource(Source):
             )
 
         @raw_request_decorator
+        def delete_file(self, owner, item_path):
+            return WebRetrier().run(
+                self._session.delete,
+                f"https://graph.microsoft.com/v1.0/users/{owner}/drive/root:/{item_path}",
+                headers=self._make_headers(),
+            )
+
+        @raw_request_decorator
         def create_outlook_category(self, owner, category_name, category_colour):
             json_params = {"displayName": f"{category_name}",
                            "color": f"{category_colour}"}

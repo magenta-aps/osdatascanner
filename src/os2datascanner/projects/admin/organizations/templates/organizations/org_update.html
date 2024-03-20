@@ -102,7 +102,7 @@
         </div>
 
         <div class="form__row--outlook">
-          <span class="form__row__title">{% trans "Outlook settings" %}</span>
+          <span class="form__row__title">{% trans "Microsoft Tenant Settings" %}</span>
  
           <div class="form__row__item">
 
@@ -116,62 +116,60 @@
                 <label class="radio radio-before">
                   <span class="radio__input">
                     {{ radio.tag }}
-
                     <span class="radio__control radio__control--notify"></span>
                   </span>
- 
+
                   <span class="radio__label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}
                   </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="form__row__item">
+              <label>{% trans "Allow deletion" %}</label>
+
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.outlook_delete_email_permission }}
+                <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
+                  {{ form.outlook_delete_email_permission.label }}
                 </label>
-              {% endfor %}
+              </div>
+
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.onedrive_delete_permission }}
+                <label for="{{ form.onedrive_delete_permission.id_for_label }}">{{ form.onedrive_delete_permission.label }}</label>
+              </div>
+
             </div>
           </div>
 
-          <div class="form__row__item">
-            <label for="{{ form.outlook_delete_email_permission.id_for_label }}">{% trans "Allow deletion" %}</label>
-
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.outlook_delete_email_permission }}
-
-              <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
-                {{ form.outlook_delete_email_permission.label }}
-              </label>
-
-            </div>
-
-            {% if form.outlook_delete_email_permission.help_text %}
-              <p class="help">{{ form.outlook_delete_email_permission.help_text }}</p>
-            {% endif %}
+          <div class="form__row">
+            <label class="required-form"
+                   for="{{ form.email_notification_schedule.id_for_label }}">
+              {{ form.email_notification_schedule.label }}
+            </label>
+            {{ form.email_notification_schedule }}
           </div>
+
+        </fieldset>
+      </section>
+
+      <div class="content-footer">
+        <div class="form__group">
+          <button type="submit"
+                  class="button button--cta-button"
+                  aria-label="{% trans 'update organization'|capfirst %}"
+                  title="{% trans 'update organization'|capfirst %}"
+                  name="save">{% trans "update organization"|capfirst %}</button>
         </div>
-
-        <div class="form__row">
-          <label class="required-form"
-                 for="{{ form.email_notification_schedule.id_for_label }}">
-            {{ form.email_notification_schedule.label }}
-          </label>
-          {{ form.email_notification_schedule }}
-        </div>
-
-      </fieldset>
-    </section>
-
-    <div class="content-footer">
-      <div class="form__group">
-        <button type="submit"
-                class="button button--cta-button"
-                aria-label="{% trans 'update organization'|capfirst %}"
-                title="{% trans 'update organization'|capfirst %}"
-                name="save">{% trans "update organization"|capfirst %}</button>
       </div>
-    </div>
 
-    <script src="{% static 'js/modals/snackBars.js' %}"></script>
-  </form>
+      <script src="{% static 'js/modals/snackBars.js' %}"></script>
+    </form>
 
-  <script src="{% static 'js/organization/organizationForm.js' %}"></script>
+    <script src="{% static 'js/organization/organizationForm.js' %}"></script>
 
-  <!--
+    <!--
         TODO: add boxes with user and unit counts here (dependent on feature flag)
         <div class="flex-org">
           <section class="data-form data-org">
@@ -189,4 +187,4 @@
           </section>
         </div>
         -->
-{% endblock %}
+  {% endblock %}

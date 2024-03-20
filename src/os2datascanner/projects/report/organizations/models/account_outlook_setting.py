@@ -5,10 +5,12 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
+from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 from .account import Account
 from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities import (
     OutlookCategoryName, get_msgraph_mail_document_reports,
-    get_mail_message_handle_from_document_report)
+    get_handle_from_document_report)
 from os2datascanner.core_organizational_structure.models.organization import (
     OutlookCategorizeChoices)
 
@@ -112,7 +114,8 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     logger.info(f"No msgraph-mail document reports for {outl_setting.account}")
 
                 for doc_rep in doc_reps:
-                    message_handle = get_mail_message_handle_from_document_report(doc_rep)
+                    message_handle = get_handle_from_document_report(doc_rep,
+                                                                     MSGraphMailMessageHandle)
                     msg_id = message_handle.relative_path if message_handle else None
                     try:
                         existing_categories_response = gc.get(
