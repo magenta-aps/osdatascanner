@@ -16,6 +16,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from rest_framework.generics import ListAPIView
+import re
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .scanner_views import (
@@ -95,7 +96,9 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
 
         form = initialize_form(form)
         if self.request.method == 'POST':
+            form.is_valid()
             form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
 
         return form
 
@@ -120,7 +123,9 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
 
         form = initialize_form(form)
         if self.request.method == 'POST':
+            form.is_valid()
             form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
 
         return form
 
@@ -167,7 +172,9 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
             # if there is a set password already, use a dummy to enable the placeholder
             form.fields['password'].initial = "dummy"
         if self.request.method == 'POST':
+            form.is_valid()
             form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
 
         return form
 
@@ -196,7 +203,6 @@ def validate_userlist_or_org_units(form):  # noqa CCR001
     """Validates whether the form has either a userlist or organizational units.
     Also checks that the formatting of the userlist is valid.
     NB : must be called after initialize form. """
-    form.is_valid()
     if not form.cleaned_data['userlist'] and not form.cleaned_data['org_unit']:
         form.add_error('org_unit', _("No organizational units has been selected"))
         form.add_error('userlist', _("No userlist has been selected"))
@@ -224,6 +230,22 @@ def validate_userlist_or_org_units(form):  # noqa CCR001
                       "newlines, not commas or whitespace!")))
         for error in userlist_errors:
             form.add_error(*error)
+
+    return form
+
+
+def validate_domain(form):
+    """Validates whether the mail_domain starts with '@'. """
+
+    mail_domain = form.cleaned_data.get('mail_domain', '')
+    pattern = r'^@[^@]+'
+
+    match = re.match(pattern, mail_domain)
+
+    if mail_domain and not match:
+        form.add_error(
+            'mail_domain',
+            _("The domain is invalid"))
 
     return form
 

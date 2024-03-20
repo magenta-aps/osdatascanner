@@ -33,6 +33,9 @@
 - Scanning with only notify superadmin turned on/off will update DocumentReports of found 
   objects accordingly, whether or not the scan uses LastModifiedCheck.
 
+- A domain validation check has been added to ensure the domain given in an 
+  Exchangescanner form is formatted correctly.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"
