@@ -453,7 +453,7 @@ class StatisticsPageViewTest(TestCase):
         created_timestamp = view.matches[0].get('created_month')
         now = timezone.now().date()
 
-        self.assertEquals(created_timestamp, timezone.datetime(now.year, now.month, 1).date())
+        self.assertEqual(created_timestamp, timezone.datetime(now.year, now.month, 1).date())
 
     # count_new_matches_by_month()
     def test_statisticspage_count_new_matches_by_month_as_dpo(self):

@@ -229,7 +229,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
     matches = [(match.rule.presentation, match.matches) for match in new_matches.matches]
     logger.debug(
         "new matchMsg",
-        handle=new_matches.handle.presentation,
+        handle=str(new_matches.handle),
         msgtype="matches",
         matches=matches,
     )

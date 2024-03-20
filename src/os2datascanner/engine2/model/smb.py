@@ -152,7 +152,7 @@ class SMBHandle(Handle):
 
     @property
     def sort_key(self):
-        return self.presentation.removesuffix("\\")
+        return str(self).removesuffix("\\")
 
 
 # Third form from https://www.iana.org/assignments/uri-schemes/prov/smb

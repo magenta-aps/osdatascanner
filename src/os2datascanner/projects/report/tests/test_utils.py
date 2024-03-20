@@ -1,3 +1,5 @@
+import pytest
+
 from django.db import models, DataError, connection, transaction
 from django.test import TestCase
 
@@ -33,7 +35,11 @@ class UtilsTest(TestCase):
     def setUpTestData(cls):
         record_match(get_positive_match_with_probability_and_sensitivity())
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     def test_get_max_sens_prop_value(self):
+        """get_max_sens_prop_value is deprecated; use DocumentReport.matches directly.
+        Since it is used in migration 0017_documentreport_added_sensitivity_and_probability,
+        these tests are still in place."""
         self.assertEqual(1.0,
                          get_max_sens_prop_value(
                              DocumentReport.objects.first(),
@@ -45,6 +51,7 @@ class UtilsTest(TestCase):
                              'sensitivity').value
                          )
 
+    @pytest.mark.filterwarnings("ignore::UnicodeWarning")
     def test_json_null_bytes(self):
         """PostgreSQL-backed JSONFields cannot store null bytes, but our
         utility function can address that by detecting and removing them."""
