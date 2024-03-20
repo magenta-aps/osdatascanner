@@ -11,19 +11,19 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from mptt.managers import TreeManager
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnit as Core_OrganizationalUnit
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnitSerializer as Core_OrganizationalUnitSerializer
 
-from django.db import models
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from ..seralizer import BaseBulkSerializer, SelfRelatingField
 from django.db.models import Count, Q
 
 
-class OrganizationlUnitManager(models.Manager):
+class OrganizationlUnitManager(TreeManager):
     def with_match_counts(self):
         return self.annotate(
             total_ou_matches=Count(

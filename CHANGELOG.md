@@ -26,6 +26,9 @@
   useful, and is no longer confused when searching for both first and last
   names.
 
+- Leader overview: when an orgunit is selected in the dropdown, all related 
+  orgunit-children will also be displayed.
+
 ### Bugfixes
 
 - Error messages found during the exploration of a data source now appear in

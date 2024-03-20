@@ -502,7 +502,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         qs = super().get_queryset()
 
         if self.org_unit:
-            qs = qs.filter(units=self.org_unit)
+            all_units = self.org_unit.get_descendants(include_self=True)
+            qs = qs.filter(units__in=all_units).distinct()
         else:
             qs = Account.objects.none()
 
