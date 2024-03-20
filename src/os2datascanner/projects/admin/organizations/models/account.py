@@ -14,6 +14,8 @@
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
 from os2datascanner.core_organizational_structure.models import \
     AccountSerializer as Core_AccountSerializer
@@ -44,6 +46,16 @@ class Account(Core_Account, Imported, Broadcasted):
             if int(pk) not in [int(scanner['pk']) for scanner in scanners]:
                 scanners.append({'name': _(f'Deleted scanner {pk}'), 'pk': pk})
         return scanners
+
+    class Meta:
+        indexes = [
+            GinIndex(
+                SearchVector(
+                    'username',
+                    'first_name',
+                    'last_name',
+                    config='english'),
+                name='full_name_search')]
 
 
 class AccountSerializer(Core_AccountSerializer):

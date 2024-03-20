@@ -21,6 +21,10 @@
 
 - When a scanner is deleted, the DocumentReports with no matches related to
   that scanner are also deleted.
+  
+- The search field on the account list in the admin module is slightly more
+  useful, and is no longer confused when searching for both first and last
+  names.
 
 ### Bugfixes
 

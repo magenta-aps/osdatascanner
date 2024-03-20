@@ -49,7 +49,12 @@
       <table class="datatable">
         <colgroup>
           <col class="datatable__column--name">
+          <col class="datatable__column--name">
         </colgroup>
+        <thead>
+          <th class="datatable__column--name">{% trans "Name" %}</th>
+          <th class="datatable__column--name">{% trans "Username" %}</th>
+        </thead>
         <tbody class="links">
           {% for account in accounts %}
             <tr hx-get="{% url "account" organization.slug account.uuid %}"
@@ -58,6 +63,7 @@
                 hx-select=".content"
                 hx-swap="outerHTML">
               <td class="datatable__column--name">{{ account.get_full_name }}</td>
+              <td class="datatable__column--name">{{ account.username }}</td>
             </tr>
           {% endfor %}
         </tbody>
