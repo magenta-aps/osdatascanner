@@ -35,6 +35,10 @@
 
 - A domain validation check has been added to ensure the domain given in an 
   Exchangescanner form is formatted correctly.
+  
+- Revisiting `ScheduledCheckup`s for files in a OneDrive/SharePoint drive no
+  longer causes the administration system to incorrectly associate files with
+  accounts.
 
 ## Version 3.22.3, 13th March 2024
 

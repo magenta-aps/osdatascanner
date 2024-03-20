@@ -90,6 +90,7 @@ class MSGraphDriveResource(Resource):
 class MSGraphDriveHandle(Handle):
     type_label = "msgraph-drive"
     resource_type = MSGraphDriveResource
+    eq_properties = Handle.eq_properties + ("_user_account",)
 
     def __init__(self, source, path, folder_name, owner_name, *, user_account=None):
         super().__init__(source, path)
