@@ -52,6 +52,14 @@ scan_tag4 = messages.ScanTagFragment(
         pk=22, name="Dummy test scanner", keep_fp=False),
     time=parse_datetime(time1),
     user=None, organisation=org_frag)
+scan_tag5 = messages.ScanTagFragment(
+    scanner=messages.ScannerFragment(
+            pk=22, name="Dummy test scanner", test=True),
+    time=parse_datetime(time0), user=None, organisation=org_frag)
+scan_tag6 = messages.ScanTagFragment(
+    scanner=messages.ScannerFragment(
+            pk=22, name="Dummy test scanner", test=True),
+    time=parse_datetime(time1), user=None, organisation=org_frag)
 
 common_handle = FilesystemHandle(
         FilesystemSource("/mnt/fs01.magenta.dk/brugere/af"),
@@ -137,6 +145,26 @@ positive_match_with_dimension_rule_probability_and_sensitivity = messages.Matche
             messages.MatchFragment(
                 rule=dimension_rule,
                 matches=[{"match": [2496, 3508]}])
+        ])
+
+positive_match_only_notify_superadmin = messages.MatchesMessage(
+        scan_spec=common_scan_spec._replace(scan_tag=scan_tag5),
+        handle=common_handle,
+        matched=True,
+        matches=[
+            messages.MatchFragment(
+                rule=common_rule,
+                matches=[{"dummy": "match object"}])
+        ])
+
+positive_match_only_notify_superadmin_later = messages.MatchesMessage(
+        scan_spec=common_scan_spec._replace(scan_tag=scan_tag6),
+        handle=common_handle,
+        matched=True,
+        matches=[
+            messages.MatchFragment(
+                rule=common_rule,
+                matches=[{"dummy": "match object"}])
         ])
 
 negative_match = messages.MatchesMessage(
@@ -497,3 +525,41 @@ class PipelineCollectorTests(TestCase):
         # Resolution status should be None now.
         self.assertEqual(DocumentReport.objects.last().resolution_status, None,
                          "DocumentReport resolution status was not reset!")
+
+    def test_override_only_notify_superadmin_with_last_modified_on(self):
+        """If a match has been scanned with only_notify_superadmin, and later is scanned without it,
+        the DocumentReport should be updated accordingly."""
+
+        record_match(positive_match_only_notify_superadmin)
+        before = DocumentReport.objects.last().only_notify_superadmin
+
+        record_match(late_negative_match)
+        after = DocumentReport.objects.last().only_notify_superadmin
+
+        self.assertTrue(before)
+        self.assertFalse(after)
+
+    def test_only_override_when_only_notify_superadmin_turned_off(self):
+        """If a match has been scanned with only_notify_superadmin, scanning it again later,
+        shouldn't change only_notify_superadmin."""
+
+        record_match(positive_match_only_notify_superadmin)
+        before = DocumentReport.objects.last().only_notify_superadmin
+
+        record_match(positive_match_only_notify_superadmin_later)
+        after = DocumentReport.objects.last().only_notify_superadmin
+
+        self.assertTrue(before)
+        self.assertTrue(after)
+
+    def test_take_back_results_when_using_only_notify_superadmin(self):
+        """Scanning with only_notify_superadmin on, should update previously scanned matches."""
+
+        record_match(positive_match)
+        before = DocumentReport.objects.last().only_notify_superadmin
+
+        record_match(positive_match_only_notify_superadmin_later)
+        after = DocumentReport.objects.last().only_notify_superadmin
+
+        self.assertFalse(before)
+        self.assertTrue(after)

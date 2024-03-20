@@ -28,6 +28,9 @@
 - Deleting an alias with many relations to matches will no longer cause the
   report module to attempt to load all of those matches into memory.
 
+- Scanning with only notify superadmin turned on/off will update DocumentReports of found 
+  objects accordingly, whether or not the scan uses LastModifiedCheck.
+
 ## Version 3.22.3, 13th March 2024
 
 "Forward March!"
