@@ -18,6 +18,7 @@ from typing import NamedTuple
 from django.utils import timezone
 
 from .signals import publish_events
+from ....utils.system_utilities import time_now
 
 
 def upload_path_webscan_sitemap(instance, filename):
@@ -46,21 +47,36 @@ def upload_path_gdrive_users(instance, filename):
 
 
 class CleanMessage(NamedTuple):
-    """A CleanMessage conveys a command from the admin module to the report
-    module, that DocumentReport objects related to the given account UUIDs and
-    scanner pks are to be deleted."""
+    """A CleanMessage contains a command from the admin module to the report
+    module to 'clean' some part of the system, often DocumentReports."""
     time: timezone.datetime = None
     publisher: str = None
+    event_type = "template_clean_message"
     scanners_accounts_dict: dict = None
-    event_type = "clean_document_reports"
+    scanners: list = None
 
     def to_json_object(self):
         return {
-            "scanners_accounts_dict": self.scanners_accounts_dict,
             "type": self.event_type,
             "time": timezone.datetime.strftime(self.time, "%m/%d/%Y, %H:%M:%S"),
-            "publisher": self.publisher
+            "publisher": self.publisher,
+            "scanners_accounts_dict": self.scanners_accounts_dict,
+            "scanners": self.scanners
         }
+
+    @classmethod
+    def from_json_object(cls, obj):
+        msg = cls()
+        for attr, val in obj.items():
+            setattr(msg, attr, val)
+        return msg
+
+
+class CleanAccountMessage(CleanMessage):
+    """Contains a command from the admin module to the report module to delete
+    reports related to sets of scanner jobs and accounts."""
+
+    event_type = "clean_document_reports"
 
     @staticmethod
     def make_account_dict(accounts_) -> dict:
@@ -74,7 +90,10 @@ class CleanMessage(NamedTuple):
 
     @staticmethod
     def send(scanners_accounts_dict: dict, publisher="unknown"):
-        """Expected structure:
+        """Publish the CleanMessage to the events queue, to be picked up by the
+        event_collector in the report module.
+
+        Expected structure of scanners_accounts_dict:
         {
             <scanner_pk_1>: {
                 uuids: [
@@ -98,16 +117,24 @@ class CleanMessage(NamedTuple):
             }
         }
         """
-        message = CleanMessage(
+        message = CleanAccountMessage(
             scanners_accounts_dict=scanners_accounts_dict,
-            time=timezone.now(),
+            time=time_now(),
             publisher=publisher)
         publish_events([message])
 
-    @staticmethod
-    def from_json_object(obj):
-        return CleanMessage(
-            scanners_accounts_dict=obj.get("scanners_accounts_dict"),
-            event_type=obj.get("type"),
-            time=timezone.datetime.strptime(obj.get("time"), "%m/%d/%Y, %H:%M:%S"),
-            publisher=obj.get("publisher"))
+
+class CleanProblemMessage(CleanMessage):
+    """Contains a command from the admin module to the report module to delete
+    DocumentReports with no matches related to specific scanners."""
+
+    event_type = "clean_problem_reports"
+
+    def send(scanners: list, publisher="unknown"):
+        """Publish the CleanMessage to the events queue, to be picked up by the
+        event_collector in the report module."""
+        message = CleanProblemMessage(
+            scanners=scanners,
+            time=time_now(),
+            publisher=publisher)
+        publish_events([message])
