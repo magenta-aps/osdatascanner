@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 11:50+0100\n"
+"POT-Creation-Date: 2024-03-19 13:20+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1889,16 +1889,10 @@ msgstr ""
 "(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/mail/password_reset_email.html:4
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "  You're receiving this email because you requested a password reset for "
-#| "your user account at %(site_name)s.\n"
 msgid ""
 "\n"
 "  You're receiving this email because you requested a password reset for "
 "your user account at %(site_name)s.\n"
-"  "
 msgstr ""
 "\n"
 "  Du modtager denne e-mail, fordi du har anmodet om nulstilling af din "
@@ -1917,14 +1911,9 @@ msgid "Thanks for using our site!"
 msgstr "Tak, fordi du brugte vores side!"
 
 #: adminapp/templates/mail/password_reset_email.html:19
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "  The %(site_name)s team\n"
 msgid ""
 "\n"
 "  The %(site_name)s team\n"
-"  "
 msgstr ""
 "\n"
 "  %(site_name)s team\n"
@@ -2171,24 +2160,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:202
+#: adminapp/views/exchangescanner_views.py:207
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:203
+#: adminapp/views/exchangescanner_views.py:208
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:213
+#: adminapp/views/exchangescanner_views.py:218
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:219
+#: adminapp/views/exchangescanner_views.py:224
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:224
+#: adminapp/views/exchangescanner_views.py:229
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2196,21 +2185,21 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:242
-msgid "The domain must start with '@'"
-msgstr "Domænet skal starte med @"
+#: adminapp/views/exchangescanner_views.py:248
+msgid "The domain is invalid"
+msgstr "Domænet er ugyldigt"
 
-#: adminapp/views/exchangescanner_views.py:251
+#: adminapp/views/exchangescanner_views.py:257
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:255
+#: adminapp/views/exchangescanner_views.py:261
 #: adminapp/views/filescanner_views.py:178
 #: organizations/templates/organizations/account_detail.html:25
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:260
+#: adminapp/views/exchangescanner_views.py:266
 #: adminapp/views/filescanner_views.py:179
 msgid "Password"
 msgstr "Adgangskode"
@@ -3257,6 +3246,9 @@ msgstr "Konto ikke fundet."
 
 #~ msgid "Outlook settings"
 #~ msgstr "Outlook indstillinger"
+
+#~ msgid "The domain must start with '@'"
+#~ msgstr "Domænet skal starte med '@'"
 
 #~ msgid "covered accounts"
 #~ msgstr "dækkede konti"

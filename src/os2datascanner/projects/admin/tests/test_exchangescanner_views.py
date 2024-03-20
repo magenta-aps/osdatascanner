@@ -390,3 +390,46 @@ class ExchangeScannerViewsTest(TestCase):
         userlist_is_valid = form is None
 
         self.assertEqual(userlist_is_valid, valid, f"A form was found: {form}")
+
+    @parameterized.expand([
+        (
+            'olsenbanden.com',
+            False
+        ),
+        (
+            '',
+            False
+        ),
+        (
+            '@',
+            False
+        ),
+        (
+            '@olsenbanden.com',
+            True
+        )
+    ])
+    def test_domain_formatting(self, mail_domain, valid):
+        """Makes sure that field errors are raised when the formatting of the
+        domain is wrong."""
+
+        self.client.force_login(self.egon)
+
+        response = self.client.post(reverse('exchangescanner_add'), {
+            'name': 'test_scanner',
+            'mail_domain': mail_domain,
+            'organization': '5d02dfd3-b31c-4076-b2d5-4e41d3442952',
+            'validation_status': 0,
+            'username': 'dummy',
+            'password': 'super_secret',
+            'org_unit': '20e842fc-2671-4e85-8217-454cb01b18ec',
+            'rule': 101
+        })
+
+        context = response.context
+        form = context.get('form') if context else None
+        # If the userlist is incorrectly formatted, the form will exist in the
+        # context. If it is correctly formatted, the form will not exist.
+        domain_is_valid = form is None
+
+        self.assertEqual(domain_is_valid, valid, f"A form was found: {form}")
