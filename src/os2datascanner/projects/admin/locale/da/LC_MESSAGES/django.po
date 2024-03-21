@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-20 13:28+0100\n"
+"POT-Creation-Date: 2024-03-21 13:38+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -111,7 +111,7 @@ msgid "no scanner job exists with id {id}"
 msgstr "intet scannerjob findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
-#: adminapp/models/scannerjobs/scanner.py:78 adminapp/models/usererrorlog.py:52
+#: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:66
 #: import_services/models/realm.py:29
@@ -143,7 +143,7 @@ msgstr "Brugerdomæne"
 msgid "Login method"
 msgstr "Login metode"
 
-#: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:71
+#: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:86
 #: core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:45
 #: organizations/templates/organizations/orgunit_list.html:121
@@ -230,31 +230,31 @@ msgstr "Scan vedhæftede filer"
 msgid "check dead links"
 msgstr "tjek døde links"
 
-#: adminapp/models/scannerjobs/scanner.py:87
+#: adminapp/models/scannerjobs/scanner.py:102
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: adminapp/models/scannerjobs/scanner.py:94
+#: adminapp/models/scannerjobs/scanner.py:109
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
-#: adminapp/models/scannerjobs/scanner.py:99
+#: adminapp/models/scannerjobs/scanner.py:114
 msgid "scan images"
 msgstr "scan billeder"
 
-#: adminapp/models/scannerjobs/scanner.py:104
+#: adminapp/models/scannerjobs/scanner.py:119
 msgid "check date of last modification"
 msgstr "tjek dato for sidste ændring"
 
-#: adminapp/models/scannerjobs/scanner.py:109
+#: adminapp/models/scannerjobs/scanner.py:124
 msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
-#: adminapp/models/scannerjobs/scanner.py:114
+#: adminapp/models/scannerjobs/scanner.py:129
 msgid "keep false positives"
 msgstr "behold falske positive"
 
-#: adminapp/models/scannerjobs/scanner.py:115
+#: adminapp/models/scannerjobs/scanner.py:130
 msgid ""
 "Retain false positives in the report module, regardless of the current state "
 "of the matched sources."
@@ -262,40 +262,40 @@ msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
 
-#: adminapp/models/scannerjobs/scanner.py:126
+#: adminapp/models/scannerjobs/scanner.py:141
 msgid "rule"
 msgstr "regel"
 
-#: adminapp/models/scannerjobs/scanner.py:134
+#: adminapp/models/scannerjobs/scanner.py:149
 msgid "Unverified"
 msgstr "Ugyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:135
+#: adminapp/models/scannerjobs/scanner.py:150
 msgid "Verified"
 msgstr "Gyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:141
+#: adminapp/models/scannerjobs/scanner.py:156
 msgid "username"
 msgstr "brugernavn"
 
-#: adminapp/models/scannerjobs/scanner.py:146
+#: adminapp/models/scannerjobs/scanner.py:161
 msgid "validation status"
 msgstr "valideringstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:151
+#: adminapp/models/scannerjobs/scanner.py:166
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:201
+#: adminapp/models/scannerjobs/scanner.py:216
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:204
+#: adminapp/models/scannerjobs/scanner.py:219
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:207
+#: adminapp/models/scannerjobs/scanner.py:222
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
@@ -745,9 +745,9 @@ msgstr "tilføj organisation"
 
 #: adminapp/templates/components/common/breadcrumb.html:81
 #: organizations/templates/organizations/org_update.html:6
-#: organizations/templates/organizations/org_update.html:163
-#: organizations/templates/organizations/org_update.html:164
-#: organizations/templates/organizations/org_update.html:165
+#: organizations/templates/organizations/org_update.html:166
+#: organizations/templates/organizations/org_update.html:167
+#: organizations/templates/organizations/org_update.html:168
 msgid "update organization"
 msgstr "opdatér organisation"
 
@@ -1041,10 +1041,10 @@ msgstr "Gem ændringer"
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:84
 #: adminapp/templates/rules.html:85 adminapp/templates/scanners.html:188
 #: adminapp/templates/scanners.html:189
-#: organizations/templates/organizations/org_table.html:292
-#: organizations/templates/organizations/org_table.html:293
-#: organizations/templates/organizations/org_table.html:304
-#: organizations/templates/organizations/org_table.html:305
+#: organizations/templates/organizations/org_table.html:211
+#: organizations/templates/organizations/org_table.html:212
+#: organizations/templates/organizations/org_table.html:223
+#: organizations/templates/organizations/org_table.html:224
 msgid "Delete"
 msgstr "Slet"
 
@@ -1896,10 +1896,12 @@ msgid ""
 "\n"
 "  You're receiving this email because you requested a password reset for "
 "your user account at %(site_name)s.\n"
+"  "
 msgstr ""
 "\n"
 "  Du modtager denne e-mail, fordi du har anmodet om nulstilling af din "
 "adgangskode til din bruger på %(site_name)s.\n"
+"  "
 
 #: adminapp/templates/mail/password_reset_email.html:8
 msgid "Please go to the following page and choose a new password:"
@@ -1918,9 +1920,11 @@ msgstr "Tak, fordi du brugte vores side!"
 msgid ""
 "\n"
 "  The %(site_name)s team\n"
+"  "
 msgstr ""
 "\n"
-"  %(site_name)s team\n"
+"  %(site_name)s teamet\n"
+"  "
 
 #: adminapp/templates/miniscan.html:20
 msgid "OSdatascanner mini-scanner"
@@ -2009,6 +2013,7 @@ msgstr "Tilføj regel"
 
 #: adminapp/templates/rules.html:50 adminapp/templates/rules.html:135
 #: organizations/templates/organizations/account_detail.html:21
+#: organizations/templates/organizations/account_list.html:55
 msgid "Name"
 msgstr "Navn"
 
@@ -2200,6 +2205,7 @@ msgstr "f.eks. @example.com"
 #: adminapp/views/exchangescanner_views.py:261
 #: adminapp/views/filescanner_views.py:178
 #: organizations/templates/organizations/account_detail.html:25
+#: organizations/templates/organizations/account_list.html:56
 msgid "Username"
 msgstr "Brugernavn"
 
@@ -2319,7 +2325,7 @@ msgid "user"
 msgstr "bruger"
 
 #: core/models/administrator.py:37 core/models/client.py:115
-#: organizations/models/organization.py:52
+#: organizations/models/organization.py:53
 msgid "client"
 msgstr "kunde"
 
@@ -2452,6 +2458,15 @@ msgstr "kunder"
 #, python-brace-format
 msgid "{value} is not a valid {class_name}"
 msgstr "{value} er ikke en gyldig værdi for {class_name}"
+
+#: core/templates/components/background_job.html:12
+#: core/templates/components/background_job.html:13
+msgid "Cancel sync process"
+msgstr "Afbryd synkronisering"
+
+#: core/templates/components/background_job.html:40
+msgid "last updated"
+msgstr "sidst opdateret"
 
 #: grants/apps.py:8
 msgid "grants"
@@ -2869,20 +2884,20 @@ msgstr ""
 msgid "return to organizations page"
 msgstr "vend tilbage til organisationer-siden"
 
-#: organizations/admin.py:41
+#: organizations/admin.py:42
 msgid "Tab access"
 msgstr "Menu-adgang"
 
-#: organizations/admin.py:47
+#: organizations/admin.py:48
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
 
-#: organizations/models/account.py:45
+#: organizations/models/account.py:47
 #, python-brace-format
 msgid "Deleted scanner {pk}"
 msgstr "Slettet scanner {pk}"
 
-#: organizations/models/organization.py:58
+#: organizations/models/organization.py:59
 msgid "slug"
 msgstr "slug"
 
@@ -3035,7 +3050,7 @@ msgstr "konti for"
 msgid "Search for account"
 msgstr "Søg efter konto"
 
-#: organizations/templates/organizations/account_list.html:68
+#: organizations/templates/organizations/account_list.html:74
 msgid "No accounts found!"
 msgstr "Ingen konti fundet"
 
@@ -3094,53 +3109,47 @@ msgstr "Redigér LDAP-konfiguration"
 #: organizations/templates/organizations/org_table.html:92
 #: organizations/templates/organizations/org_table.html:93
 #: organizations/templates/organizations/org_table.html:99
-#: organizations/templates/organizations/org_table.html:151
-#: organizations/templates/organizations/org_table.html:152
-#: organizations/templates/organizations/org_table.html:158
-#: organizations/templates/organizations/org_table.html:227
-#: organizations/templates/organizations/org_table.html:228
-#: organizations/templates/organizations/org_table.html:234
+#: organizations/templates/organizations/org_table.html:124
+#: organizations/templates/organizations/org_table.html:125
+#: organizations/templates/organizations/org_table.html:131
+#: organizations/templates/organizations/org_table.html:173
+#: organizations/templates/organizations/org_table.html:174
+#: organizations/templates/organizations/org_table.html:180
 msgid "sync"
 msgstr "synkroniser"
 
-#: organizations/templates/organizations/org_table.html:122
-#: organizations/templates/organizations/org_table.html:181
-#: organizations/templates/organizations/org_table.html:257
-msgid "last updated"
-msgstr "sidst opdateret"
-
-#: organizations/templates/organizations/org_table.html:144
-#: organizations/templates/organizations/org_table.html:145
+#: organizations/templates/organizations/org_table.html:117
+#: organizations/templates/organizations/org_table.html:118
 msgid "Add OS2mo configuration"
 msgstr "Tilføj OS2mo-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:204
-#: organizations/templates/organizations/org_table.html:205
-#: organizations/templates/organizations/org_table.html:212
-#: organizations/templates/organizations/org_table.html:213
+#: organizations/templates/organizations/org_table.html:150
+#: organizations/templates/organizations/org_table.html:151
+#: organizations/templates/organizations/org_table.html:158
+#: organizations/templates/organizations/org_table.html:159
 msgid "Add Microsoft Graph configuration"
 msgstr "Tilføj Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:221
-#: organizations/templates/organizations/org_table.html:222
+#: organizations/templates/organizations/org_table.html:167
+#: organizations/templates/organizations/org_table.html:168
 msgid "Edit Microsoft Graph configuration"
 msgstr "Redigér Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:277
-#: organizations/templates/organizations/org_table.html:278
+#: organizations/templates/organizations/org_table.html:196
+#: organizations/templates/organizations/org_table.html:197
 msgid "View organizational units."
 msgstr "Vis organisatoriske enheder"
 
-#: organizations/templates/organizations/org_table.html:284
-#: organizations/templates/organizations/org_table.html:285
+#: organizations/templates/organizations/org_table.html:203
+#: organizations/templates/organizations/org_table.html:204
 msgid "View accounts."
 msgstr "Se konti."
 
-#: organizations/templates/organizations/org_table.html:303
+#: organizations/templates/organizations/org_table.html:222
 msgid "Do you really want to delete this organization?"
 msgstr "Er du sikker på, at du vil slette denne organisation?"
 
-#: organizations/templates/organizations/org_table.html:303
+#: organizations/templates/organizations/org_table.html:222
 msgid ""
 "This will delete all associated import- and scannerjobs. The action cannot "
 "be reversed"
@@ -3148,31 +3157,31 @@ msgstr ""
 "Dette vil også slette import- og scannerjobs der tilhører organisationen. "
 "Handlingen kan ikke fortrydes."
 
-#: organizations/templates/organizations/org_table.html:320
+#: organizations/templates/organizations/org_table.html:239
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
-#: organizations/templates/organizations/org_update.html:22
+#: organizations/templates/organizations/org_update.html:21
 msgid "General settings"
 msgstr "Generelle indstillinger"
 
-#: organizations/templates/organizations/org_update.html:41
+#: organizations/templates/organizations/org_update.html:40
 msgid "Tab settings"
 msgstr "Fane indstillinger"
 
-#: organizations/templates/organizations/org_update.html:55
+#: organizations/templates/organizations/org_update.html:54
 msgid "Support settings"
 msgstr "Support indstillinger"
 
-#: organizations/templates/organizations/org_update.html:85
+#: organizations/templates/organizations/org_update.html:84
 msgid "DPO settings"
 msgstr "DPO indstillinger"
 
-#: organizations/templates/organizations/org_update.html:105
+#: organizations/templates/organizations/org_update.html:104
 msgid "Microsoft Tenant Settings"
 msgstr "Microsoft Tenant Indstillinger"
 
-#: organizations/templates/organizations/org_update.html:129
+#: organizations/templates/organizations/org_update.html:128
 msgid "Allow deletion"
 msgstr "Tillad sletning"
 
@@ -3240,11 +3249,11 @@ msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
 #: organizations/tests/test_org_views.py:127
-#: organizations/views/org_views.py:65
+#: organizations/views/org_views.py:66
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 
-#: organizations/utils.py:183
+#: organizations/utils.py:186
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
