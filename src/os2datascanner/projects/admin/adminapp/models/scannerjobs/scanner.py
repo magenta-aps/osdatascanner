@@ -31,7 +31,7 @@ from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 
-from model_utils.managers import InheritanceManager
+from model_utils.managers import InheritanceManager, InheritanceQuerySet
 from recurrence.fields import RecurrenceField
 
 from os2datascanner.utils.system_utilities import time_now
@@ -57,7 +57,7 @@ base_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 
-class ScannerQuerySet(models.query.QuerySet):
+class ScannerQuerySet(InheritanceQuerySet):
     def delete(self):
         scanners = self.values_list("pk", flat=True)
         CleanProblemMessage.send(scanners, publisher="Scanner.objects.delete()")
