@@ -130,8 +130,8 @@
                                 hx-target=".org-table"
                                 hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
                         <div class="flex">
-                          {% if organization.realm.os2moimport %}
-                            {% include "components/background_job.html" with job=organization.realm.os2moimport.first %}
+                          {% if organization.os2moimport %}
+                            {% include "components/background_job.html" with job=organization.os2moimport.first %}
                           {% endif %}
                         </div>
                       {% endif %}
