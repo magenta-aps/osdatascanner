@@ -10,6 +10,9 @@
 - Management command 'broadcast' has been expanded with arguments to distinguish between 
 imported versus manually created objects.
 
+- Warning filters have been added to tests, and some deprecated functions aren't used any longer, 
+  as to decrease the number of warnings given during unit testing.
+
 ### Bugfixes
 
 - Sitemap files uploaded during the creation of a web scanner are correctly
