@@ -17,6 +17,8 @@ from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
     ScanStatus, CoveredAccount)
 
+from os2datascanner.engine2.pipeline.messages import ScanTagFragment, ScannerFragment
+
 
 class CleanupScannerViewTests(TestCase):
 
@@ -41,8 +43,10 @@ class CleanupScannerViewTests(TestCase):
 
         self.scanner = Scanner.objects.create(
             name="Fake scanner", organization=self.org, rule=self.rule)
+        scanner_frag = ScannerFragment(self.scanner.pk, self.scanner.name)
+        scan_tag = ScanTagFragment(datetime.now(tz=gettz()), None, scanner_frag, None)
         self.scan_status = ScanStatus.objects.create(
-            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
+            scan_tag=scan_tag.to_json_object(),
             scanner=self.scanner
         )
 
