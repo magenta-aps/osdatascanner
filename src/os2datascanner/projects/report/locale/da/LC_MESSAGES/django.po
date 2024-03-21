@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-18 14:54+0100\n"
+"POT-Creation-Date: 2024-03-21 13:02+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,27 +31,27 @@ msgstr "Ikke accepteret"
 msgid "User"
 msgstr "Bruger"
 
-#: organizations/models/account.py:176
+#: organizations/models/account.py:177
 msgid "Last handle"
 msgstr "Sidste håndtering"
 
-#: organizations/models/account.py:184
+#: organizations/models/account.py:185
 msgid "image"
 msgstr "billede"
 
-#: organizations/models/account.py:189
+#: organizations/models/account.py:190
 msgid "Number of matches"
 msgstr "Antal matches"
 
-#: organizations/models/account.py:194
+#: organizations/models/account.py:195
 msgid "Number of withheld matches"
 msgstr "Antal tilbageholdte matches"
 
-#: organizations/models/account.py:199
+#: organizations/models/account.py:200
 msgid "Number of handled matches"
 msgstr "Antal af håndterede matches"
 
-#: organizations/models/account.py:206
+#: organizations/models/account.py:207
 msgid "Contact person"
 msgstr "Kontaktperson"
 
@@ -598,8 +598,8 @@ msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html:11
 #: reportapp/templates/components/reports/handle_match.html:45
-#: reportapp/templates/components/reports/match.html:156
-#: reportapp/templates/components/reports/match.html:202
+#: reportapp/templates/components/reports/match.html:154
+#: reportapp/templates/components/reports/match.html:200
 msgid ""
 "OS2datascanner will not delete results from the system that was scanned. "
 "Marking a result as handled will only remove the result from OS2datascanner."
@@ -613,8 +613,8 @@ msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
 #: reportapp/templates/components/reports/handle_match.html:19
-#: reportapp/templates/components/reports/match.html:165
-#: reportapp/templates/components/reports/match.html:210
+#: reportapp/templates/components/reports/match.html:163
+#: reportapp/templates/components/reports/match.html:208
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -625,8 +625,8 @@ msgstr ""
 "manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/reports/handle_match.html:26
-#: reportapp/templates/components/reports/match.html:171
-#: reportapp/templates/components/reports/match.html:197
+#: reportapp/templates/components/reports/match.html:169
+#: reportapp/templates/components/reports/match.html:195
 msgid "Revert"
 msgstr "Fortryd"
 
@@ -691,15 +691,15 @@ msgstr "Vælg resultat"
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/reports/match.html:47
+#: reportapp/templates/components/reports/match.html:46
 msgid "Open folder"
 msgstr "Åbn mappe"
 
-#: reportapp/templates/components/reports/match.html:55
+#: reportapp/templates/components/reports/match.html:53
 msgid "Deletes email from your mailbox"
 msgstr "Sletter email fra din mailboks"
 
-#: reportapp/templates/components/reports/match.html:61
+#: reportapp/templates/components/reports/match.html:59
 msgid ""
 "You are about to delete selected email from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -707,18 +707,18 @@ msgstr ""
 "Du er ved at slette valgte email fra din mailboks. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:62
-#: reportapp/templates/components/reports/match.html:78
+#: reportapp/templates/components/reports/match.html:60
+#: reportapp/templates/components/reports/match.html:76
 #: reportapp/templates/components/statistics/user_overview_template.html:69
 #: reportapp/templates/components/statistics/user_overview_template.html:70
 msgid "Delete"
 msgstr "Slet"
 
-#: reportapp/templates/components/reports/match.html:71
+#: reportapp/templates/components/reports/match.html:69
 msgid "Deletes file from your online drive"
 msgstr "Sletter fil fra dit online drev"
 
-#: reportapp/templates/components/reports/match.html:77
+#: reportapp/templates/components/reports/match.html:75
 msgid ""
 "You are about to delete selected file from your online drive. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -726,54 +726,54 @@ msgstr ""
 "Du er ved at slette valgte fil fra dit online drev. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:85
+#: reportapp/templates/components/reports/match.html:83
 msgid "Opened"
 msgstr "Åbnet: "
 
-#: reportapp/templates/components/reports/match.html:123
+#: reportapp/templates/components/reports/match.html:121
 msgid "Copy folder path"
 msgstr "Kopiér sti til mappe"
 
-#: reportapp/templates/components/reports/match.html:128
+#: reportapp/templates/components/reports/match.html:126
 msgid "Copy path"
 msgstr "Kopiér sti"
 
-#: reportapp/templates/components/reports/match.html:135
+#: reportapp/templates/components/reports/match.html:133
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:157
-#: reportapp/templates/components/reports/match.html:212
+#: reportapp/templates/components/reports/match.html:155
+#: reportapp/templates/components/reports/match.html:210
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/reports/match.html:219
+#: reportapp/templates/components/reports/match.html:217
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:234
+#: reportapp/templates/components/reports/match.html:232
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:235
+#: reportapp/templates/components/reports/match.html:233
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:236
+#: reportapp/templates/components/reports/match.html:234
 msgid "Probability"
 msgstr "Sandsynlighed"
 
-#: reportapp/templates/components/reports/match.html:254
+#: reportapp/templates/components/reports/match.html:252
 msgid "A temporary error occurred during the latest check of this match"
 msgstr "Der opstod en midlertidig fejl under sidste tjek af dette match"
 
-#: reportapp/templates/components/reports/match.html:256
+#: reportapp/templates/components/reports/match.html:254
 msgid ""
 "OSdatascanner will automatically check this match again as part of the next "
 "scan"
 msgstr "OSdatascanner genbesøger dette match automatisk under næste scan"
 
-#: reportapp/templates/components/reports/match.html:262
+#: reportapp/templates/components/reports/match.html:260
 msgid "Show/hide technical details of the error"
 msgstr "Vis/skjul tekniske detaljer om fejlen"
 
@@ -1454,11 +1454,11 @@ msgstr "organisationensnavn"
 
 #: reportapp/templates/manual.html:77
 msgid ""
-"Note that, instead of organizationname the part of the customers link that "
-"comes before \".dk\" should be input."
+"Note that, instead of \"organizationname\" the part of the link to the "
+"organization's website that comes before \".dk\" should be input."
 msgstr ""
-"Vær opmærksom på at istedet for \"organisationsnavn\" skrives den del af "
-"linket til kundens hjemmeside, der står foran \".dk\"."
+"Vær opmærksom på at istedet for \"organisationsnavn\", skrives den del af "
+"linket til organisationens hjemmeside, der står foran \".dk\"."
 
 #: reportapp/templates/manual.html:82
 msgid ""
@@ -1683,9 +1683,10 @@ msgid ""
 "to your recycling bin and mark the result as \"Deleted\" in OSdatascanner. "
 "Mass deletion is possible by first filtering by source type."
 msgstr ""
-"Ved anvendelse af \"slet\" knappen på et OneDrive resultat vil den pågældende fil "
-"flyttes til din skraldespand, og resultatet vil blive markeret som \"Slettet\" i OSdatascanner. "
-"Masse-sletning er muligt ved først at filtrere efter kildetype."
+"Ved anvendelse af \"slet\" knappen på et OneDrive resultat vil den "
+"pågældende fil flyttes til din skraldespand, og resultatet vil blive "
+"markeret som \"Slettet\" i OSdatascanner. Masse-sletning er muligt ved først "
+"at filtrere efter kildetype."
 
 #: reportapp/templates/manual.html:229
 msgid "Disclaimer:"
@@ -1697,9 +1698,9 @@ msgid ""
 "responsibility in regard to potential loss of data. OSdatascanner cannot "
 "reverse your deletion."
 msgstr ""
-"Vær opmærksom på at OSdatascanner ikke opretter sikkerhedskopier af dine filer og "
-"ikke er ansvarlig for eventuel tab af data. OSdatascanner kan ikke genskabe "
-"dine slettede filer."
+"Vær opmærksom på at OSdatascanner ikke opretter sikkerhedskopier af dine "
+"filer og ikke er ansvarlig for eventuel tab af data. OSdatascanner kan ikke "
+"genskabe dine slettede filer."
 
 #: reportapp/templates/manual.html:239
 msgid ""
@@ -1898,56 +1899,56 @@ msgstr "Uhåndterede Resultater per Måned"
 msgid "New Matches by Month"
 msgstr "Nye Resultater per Måned"
 
-#: reportapp/views/statistics_views.py:646
+#: reportapp/views/statistics_views.py:647
 #, python-brace-format
 msgid "You deleted all results from {0} associated with {1}."
 msgstr "Du har slettet alle resultater fra {0} tilknyttet {1}."
 
-#: reportapp/views/statistics_views.py:744
+#: reportapp/views/statistics_views.py:745
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:744
+#: reportapp/views/statistics_views.py:745
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:744
+#: reportapp/views/statistics_views.py:745
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:744
+#: reportapp/views/statistics_views.py:745
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:745
+#: reportapp/views/statistics_views.py:746
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:745
+#: reportapp/views/statistics_views.py:746
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:745
+#: reportapp/views/statistics_views.py:746
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:745
+#: reportapp/views/statistics_views.py:746
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:746
+#: reportapp/views/statistics_views.py:747
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:746
+#: reportapp/views/statistics_views.py:747
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:746
+#: reportapp/views/statistics_views.py:747
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:746
+#: reportapp/views/statistics_views.py:747
 msgid "Dec"
 msgstr "Dec"
 
