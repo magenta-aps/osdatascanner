@@ -211,6 +211,7 @@ class WebRetrier(ExponentialBackoffRetrier):
     def __init__(self, **kwargs):
         super().__init__(
             requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
             **kwargs)
 
     def _should_retry(self, ex):
