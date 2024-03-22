@@ -47,3 +47,25 @@ class TestWebRetrier(unittest.TestCase):
             self.retrier._test_return_value(response)
         except requests.exceptions.HTTPError:
             self.fail("a successful HTTP response was treated as an error")
+
+    @parameterized.expand([
+            (requests.exceptions.Timeout("The operation timed out"),),
+            (requests.exceptions.SSLError("Unable to open a TLS connection"),),
+    ])
+    def test_exception_handling(self, ex):
+        """WebRetrier understands and handles common timeout exceptions."""
+        first_call = True
+
+        def _operation():
+            nonlocal first_call
+            try:
+                if first_call:
+                    raise ex
+            finally:
+                first_call = False
+            return True
+
+        self.assertEqual(
+                WebRetrier().run(_operation),
+                True,
+                "operation was not successfully completed")
