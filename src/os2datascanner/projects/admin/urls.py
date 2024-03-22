@@ -13,7 +13,7 @@ _active_apps = settings.INSTALLED_APPS
 urlpatterns = [
     path('', include('os2datascanner.projects.admin.adminapp.urls')),
     path('grants/', include('grants.urls')),
-    path('core/', include('core.urls')),
+    path('core/', include('os2datascanner.projects.admin.core.urls')),
     path('admin/', admin.site.urls),  # Enables admin
 ]
 
