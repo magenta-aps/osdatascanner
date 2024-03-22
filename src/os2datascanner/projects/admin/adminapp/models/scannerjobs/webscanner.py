@@ -13,6 +13,7 @@
 #
 
 import urllib
+from base64 import encodebytes as encodeb64
 
 from django.conf import settings
 from django.db import models
@@ -156,7 +157,11 @@ class WebScanner(Scanner):
         If downloading of the sitemap.xml file is disabled, this will return
         None.
         """
-        if not self.download_sitemap:
+        if self.sitemap:
+            with self.sitemap.open("rb") as fp:
+                return ("data:application/xml;base64,"
+                        + encodeb64(fp.read()).decode())
+        elif not self.download_sitemap:
             return None
         else:
             sitemap_url = self.sitemap_url or self.default_sitemap_path

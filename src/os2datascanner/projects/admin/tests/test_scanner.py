@@ -1,4 +1,17 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import RequestFactory, TestCase
+from django.contrib.auth import get_user_model
+from django.utils.text import slugify
+from unittest import skip
+
 from os2datascanner.utils.system_utilities import time_now
+from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.rules import logical, regex
+from os2datascanner.engine2.model.data import unpack_data_url
+from os2datascanner.engine2.model.msgraph import mail as graph_mail
+from os2datascanner.engine2.model.derived import mail
+from os2datascanner.engine2.model.msgraph.files import (MSGraphDriveSource,
+                                                        MSGraphDriveHandle, MSGraphFilesSource)
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 from os2datascanner.projects.admin.organizations.models.account \
     import Account
@@ -20,17 +33,8 @@ from os2datascanner.projects.admin.adminapp.views.webscanner_views \
     import WebScannerUpdate
 from os2datascanner.projects.admin.grants.models import GraphGrant
 from os2datascanner.projects.admin.core.models.client import Client
-from os2datascanner.engine2.rules.cpr import CPRRule
-from os2datascanner.engine2.rules import logical, regex
-from os2datascanner.engine2.model.msgraph import mail as graph_mail
-from os2datascanner.engine2.model.derived import mail
-from os2datascanner.engine2.model.msgraph.files import (MSGraphDriveSource,
-                                                        MSGraphDriveHandle, MSGraphFilesSource)
 from ..adminapp.models.scannerjobs.scanner_helpers import ScanStatus, CoveredAccount
-from django.contrib.auth import get_user_model
-from django.utils.text import slugify
-from django.test import RequestFactory, TestCase
-from unittest import skip
+
 
 User = get_user_model()
 
@@ -123,6 +127,28 @@ class ScannerTest(TestCase):
             msg="User not superuser but validation_status"
             "field present in WebscannerUpdate get_form_fields"
         )
+
+    def test_scanner_job_sitemap(self):
+        # Arrange...
+        sitemap_content = b"<urlset><url>https://example.com</url></urlset>"
+        scanner = WebScanner.objects.get(name="TheyDontWantYouTo")
+        scanner.sitemap = SimpleUploadedFile("sitemap.xml", sitemap_content)
+        scanner.save()
+        scanner.refresh_from_db()
+
+        # ... act...
+        ws = list(scanner.generate_sources())[0]
+        sitemap = ws._sitemap
+
+        self.assertIsNotNone(
+                sitemap,
+                "WebScanner did not respect uploaded sitemap file")
+
+        # ... and assert
+        self.assertEqual(
+                unpack_data_url(ws._sitemap)[1],
+                sitemap_content,
+                "Uploaded sitemap file content is invalid")
 
     def test_synchronize_covered_accounts(self):
         """Make sure that synchronizing covered accounts on the Scanner works
