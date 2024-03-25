@@ -10,6 +10,9 @@
 - HTTP(S) connection setup timeouts are now correctly detected and treated as
   a reason to attempt the connection again.
 
+- Existing ScheduledCheckups are no longer duplicated when a setting on a
+  scanner is changed, followed by a scan.
+
 ## Version 3.22.4, 21st March 2024
 
 "Yesterday Was My Birthday"

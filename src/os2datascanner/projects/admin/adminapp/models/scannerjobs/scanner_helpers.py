@@ -37,6 +37,8 @@ class ScheduledCheckup(models.Model):
                                 on_delete=models.CASCADE)
     # The scanner job that produced this handle.
 
+    path = models.CharField(max_length=256, verbose_name=_('path'))
+
     @property
     def handle(self) -> Handle:
         return Handle.from_json_object(self.handle_representation)
