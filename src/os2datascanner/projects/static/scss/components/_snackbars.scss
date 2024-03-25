@@ -106,7 +106,7 @@ $colors: (
   }
 }
 
-$animation-duration: 8s; // Has to match "remainingTime" in snackBarNew.js
+$animation-duration: 8s; // Has to match "remainingTime" in snackBars.js
 
 // STYLE TEMPLATE
 @mixin auto-style($type) {
@@ -194,7 +194,7 @@ $icon-size: 1.25rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 
   // Fadeout animation
-  transition: opacity 1s ease-out; // Has to match "setTimeout" in snackBarNew.js
+  transition: opacity 1s ease-out; // Has to match "setTimeout" in snackBars.js
   opacity: 1;
   &--fading-out {
     opacity: 0;

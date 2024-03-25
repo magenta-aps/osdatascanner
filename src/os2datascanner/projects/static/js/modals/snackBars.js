@@ -11,7 +11,7 @@ function closeNewSnackBar(el) {
 }
 
 function autoCloseSnackBar() {
-  var snackbars = document.querySelectorAll(".snackbar--auto_close");
+  const snackbars = document.querySelectorAll(".snackbar--auto_close");
   snackbars.forEach(function (snackbar) {
     let timer;
     let startTime;
