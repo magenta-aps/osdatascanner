@@ -3,7 +3,7 @@ from django.contrib import admin
 
 
 from .models.account import Account
-from .models.account_outlook_setting import AccountOutlookSetting
+from .models.account_outlook_setting import AccountOutlookSetting, OutlookCategory
 from .models.aliases import Alias
 from .models.organization import Organization
 from .models.organizational_unit import OrganizationalUnit
@@ -55,6 +55,11 @@ class AccountAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
 @admin.register(AccountOutlookSetting)
 class AccountOutlookSettingAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
     list_display = ['account', 'categorize_email']
+
+
+@admin.register(OutlookCategory)
+class OutlookCategoryAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
+    list_display = ['account_outlook_setting', 'name', 'category_name', 'category_colour']
 
 
 @admin.register(Organization)

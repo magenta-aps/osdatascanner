@@ -29,9 +29,38 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 from ...organizations.models.aliases import AliasType
-from ...organizations.models import Account, AccountOutlookSetting
+from ...organizations.models import Account, AccountOutlookSetting, OutlookCategory
 
 logger = structlog.get_logger("reportapp")
+
+
+class OutlookCategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = OutlookCategory
+        fields = ('category_name', 'category_colour')
+
+    def __init__(self, organization, *args, fp=False, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if fp:
+            self.instance.name = OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE
+            self.instance.category_name = "OSdatascanner False Positive"
+            self.instance.category_colour = OutlookCategory.OutlookCategoryColour.DarkGreen
+            self.fields['category_name'].initial = "OSdatascanner False Positive"
+            self.fields['category_colour'].initial = OutlookCategory.OutlookCategoryColour.DarkGreen
+
+        if (organization.outlook_categorize_email_permission in (
+                OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.NONE)):
+            self.fields['category_name'].disabled = True
+            self.fields['category_colour'].disabled = True
+
+        if self.instance.name == OutlookCategory.OutlookCategoryNames.MATCH:
+            self.fields['match_category_name'] = self.fields['category_name']
+            self.fields['match_category_colour'] = self.fields['category_colour']
+        elif self.instance.name == OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE:
+            self.fields['false_positive_category_name'] = self.fields['category_name']
+            self.fields['false_positive_category_colour'] = self.fields['category_colour']
 
 
 class AccountOutlookSettingForm(forms.ModelForm):
@@ -83,6 +112,8 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
         # methods.
         # TODO: raise something / abort, if it contains more than one object?
         outl_setting = AccountOutlookSetting.objects.filter(account=account)
+        match_category = outl_setting.first().match_category
+        fp_category = outl_setting.first().false_positive_category
 
         if htmx_trigger == "categorize_existing":
             # Call queryset method to sort that out
@@ -98,8 +129,10 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
 
         if request.POST.get("outlook_setting", False):  # We're doing stuff in the outlook settings
             categorize_check = request.POST.get("categorize_email", False) == "on"
-            match_colour = request.POST.get("match_colour")
-            false_positive_colour = request.POST.get("false_positive_colour")
+            match_name = request.POST.get("match_category_name")
+            match_colour = request.POST.get("match_category_colour")
+            false_positive_name = request.POST.get("false_positive_category_name")
+            false_positive_colour = request.POST.get("false_positive_category_colour")
 
             # If categorization is enabled, either by POST data or ORG_LEVEL
             if (categorize_check or
@@ -121,11 +154,22 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                         extra_tags="auto_close"
                     )
 
+                    # Update name of our categories
+                    m_cat = outl_setting.first().match_category
+                    m_cat.category_name = match_name
+                    m_cat.save()
+
+                    fp_cat = outl_setting.first().false_positive_category
+                    fp_cat.category_name = false_positive_name
+                    fp_cat.save()
+
+                    messages.add_message(request, messages.SUCCESS, message)
+
                 # Else, we can assume that we're updating.
                 # Check if one of the colours are changed
-                if (outl_setting.false_positive_category.category_colour
+                if (fp_category.category_colour
                         != false_positive_colour) or (
-                        outl_setting.match_category.category_colour
+                        match_category.category_colour
                         != match_colour):
 
                     message = outl_setting.update_colour(match_colour, false_positive_colour)
@@ -185,6 +229,15 @@ class AccountView(LoginRequiredMixin, DetailView):
             context["outlook_settings_form"] = AccountOutlookSettingForm(
                 instance=self.object.outlook_settings,
                 organization=self.object.organization
+            )
+            context["match_category_form"] = OutlookCategoryForm(
+                instance=self.object.outlook_settings.match_category,
+                organization=self.object.organization
+            )
+            context["false_positive_category_form"] = OutlookCategoryForm(
+                instance=self.object.outlook_settings.false_positive_category,
+                organization=self.object.organization,
+                fp=True
             )
 
         user = self.object.user

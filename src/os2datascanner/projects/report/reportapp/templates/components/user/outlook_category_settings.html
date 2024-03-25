@@ -22,12 +22,20 @@
         </td>
       </tr>
       <tr>
+        <td>{% trans "Match category name" %}</td>
+        <td class="form__group">{{ match_category_form.match_category_name }}</td>
+      </tr>
+      <tr>
         <td>{% trans "Match category colour" %}</td>
-        <td class="dropdown">{{ outlook_settings_form.match_colour }}</td>
+        <td class="dropdown">{{ match_category_form.match_category_colour }}</td>
+      </tr>
+      <tr>
+        <td>{% trans "False positive category name" %}</td>
+        <td class="form__group">{{ false_positive_category_form.false_positive_category_name }}</td>
       </tr>
       <tr>
         <td>{% trans "False positive category colour" %}</td>
-        <td class="dropdown">{{ outlook_settings_form.false_positive_colour }}</td>
+        <td class="dropdown">{{ false_positive_category_form.false_positive_category_colour }}</td>
       </tr>
     </form>
     <tr>
