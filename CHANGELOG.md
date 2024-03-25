@@ -7,6 +7,9 @@
 - Sitemap files uploaded during the creation of a web scanner are correctly
   transmitted to the scanner engine.
 
+- HTTP(S) connection setup timeouts are now correctly detected and treated as
+  a reason to attempt the connection again.
+
 ## Version 3.22.4, 21st March 2024
 
 "Yesterday Was My Birthday"
