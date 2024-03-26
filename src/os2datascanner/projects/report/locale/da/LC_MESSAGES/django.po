@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-21 13:39+0100\n"
+"POT-Creation-Date: 2024-03-26 10:39+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -874,7 +874,8 @@ msgid "Click here to reset the DPO overview"
 msgstr "Klik her for at nulstille DPO-overblikket"
 
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:74
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:261
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:258
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:291
 msgid "Reset"
 msgstr "Nulstil"
 
@@ -920,18 +921,16 @@ msgid "Resolution statuses"
 msgstr "Håndteringsstatusser"
 
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:240
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:274
 msgid "Development overview"
 msgstr "Udviklingsoverblik"
 
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:242
-msgid "Unhandled results by month"
-msgstr "Antal uhåndterede resultater per måned"
+msgid "Accumulated unhandled results by month"
+msgstr "Akkumulerede uhåndterede resultater per måned"
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:244
-msgid "New results by month"
-msgstr "Antal nye resultater per måned"
-
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:254
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:251
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:284
 msgid ""
 "Hold and drag your mouse to zoom in on part of the graph. Hold shift while "
 "using the mouse wheel to manually zoom. Use the reset button to return the "
@@ -941,13 +940,9 @@ msgstr ""
 "zoome ind på. Hold shift inde, mens du scroller med musehjulet, for manuelt "
 "at styre zoom. Tryk på nulstil-knappen for at nulstille zoom."
 
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:266
-msgid "Unhandled results"
-msgstr "Uhåndterede resultater"
-
-#: reportapp/templates/components/statistics/dpo_statistics_template.html:267
-msgid "New results"
-msgstr "Nye resultater"
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:275
+msgid "New results by month"
+msgstr "Antal nye resultater per måned"
 
 #: reportapp/templates/components/statistics/employee_template.html:14
 #, python-format
@@ -2003,6 +1998,12 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#~ msgid "Unhandled results"
+#~ msgstr "Uhåndterede resultater"
+
+#~ msgid "New results"
+#~ msgstr "Nye resultater"
 
 #~ msgid "Delete OneDrive files"
 #~ msgstr "Slet OneDrive filer"
