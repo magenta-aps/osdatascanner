@@ -99,7 +99,7 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         logger.info(f"Deleted {len(classes.get(model.__name__))}"
                                     f" instances of {model.__name__}")
 
-            elif event_type == "bulk_event_purge":
+            elif event_type == "bulk_event_purge_all":
                 for model in ORDER_OF_DELETION:
                     if model.__name__ in classes:
                         deleted = model.objects.all().delete()
