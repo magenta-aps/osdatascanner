@@ -28,8 +28,8 @@ function makeBarChart(chartLabels, chartDatasets, chartElement, swapXY = false, 
 	
 	
 	const barChart = new Chart(chartElement, {
-        type: 'bar',
-        data: {
+		type: 'bar',
+		data: {
 			labels: chartLabels,
 			datasets: chartDatasets,
 			fill: 0,
@@ -40,7 +40,7 @@ function makeBarChart(chartLabels, chartDatasets, chartElement, swapXY = false, 
 			pointHoverRadius: 10,
 			hoverBackgroundColor: "#21759c",
 		},
-        options: {
+		options: {
 			height: 200,
 			// responsive: true,
             indexAxis: swapXY ? 'y' : 'x',

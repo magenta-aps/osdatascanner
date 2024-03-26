@@ -2,6 +2,11 @@
 
 ## Next Release
 
+### General improvements
+
+- The unhandled matches graph in the DPO overview is now a line graph to
+  accurately represent a change in the number of matches over time.
+
 ### Bugfixes
 
 - Sitemap files uploaded during the creation of a web scanner are correctly
