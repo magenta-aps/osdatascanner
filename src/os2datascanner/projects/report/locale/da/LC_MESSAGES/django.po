@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-26 10:39+0100\n"
+"POT-Creation-Date: 2024-03-26 11:53+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -177,7 +177,7 @@ msgid "Dark Cranberry"
 msgstr "Mørk tranebær"
 
 #: organizations/models/account_outlook_setting.py:266
-#: reportapp/templates/components/user/outlook_category_settings.html:17
+#: reportapp/templates/components/user/outlook_category_settings.html:18
 msgid "Categorize emails"
 msgstr "Kategorisér emails"
 
@@ -398,7 +398,7 @@ msgid "Personal"
 msgstr "Personlige"
 
 #: reportapp/templates/components/navigation/index_navigation.html:11
-#: reportapp/views/user_views.py:179
+#: reportapp/views/user_views.py:191
 msgid "Remediator"
 msgstr "Oprydder"
 
@@ -1134,19 +1134,19 @@ msgstr "igen"
 msgid "Outlook Settings"
 msgstr "Outlook indstillinger"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:24
+#: reportapp/templates/components/user/outlook_category_settings.html:25
 msgid "Match category colour"
 msgstr "Match kategori farve"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:28
+#: reportapp/templates/components/user/outlook_category_settings.html:29
 msgid "False positive category colour"
 msgstr "Falsk positiv kategori farve"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:33
+#: reportapp/templates/components/user/outlook_category_settings.html:34
 msgid "Categorize all existing"
 msgstr "Kategorisér alle eksisterende"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:37
+#: reportapp/templates/components/user/outlook_category_settings.html:38
 msgid ""
 "Categorizes your emails based on your existing results. Be aware that "
 "scannerjob runs will also do this for you, if you've enabled categorizing."
@@ -1155,7 +1155,7 @@ msgstr ""
 "opmærksom på at scannerjob kørsler også gør dette for dig, hvis du har "
 "tilladt kategorisering."
 
-#: reportapp/templates/components/user/outlook_category_settings.html:42
+#: reportapp/templates/components/user/outlook_category_settings.html:44
 msgid ""
 "This action will categorize your emails based on your existing results. Be "
 "aware that scannerjob runs will also do this for you, if you've enabled "
@@ -1165,7 +1165,7 @@ msgstr ""
 "resultater. Væropmærksom på at scannerjob kørsler også gør dette for dig, "
 "hvis du har tilladt kategorisering."
 
-#: reportapp/templates/components/user/outlook_category_settings.html:45
+#: reportapp/templates/components/user/outlook_category_settings.html:47
 msgid "Categorize"
 msgstr "Kategorisér"
 
