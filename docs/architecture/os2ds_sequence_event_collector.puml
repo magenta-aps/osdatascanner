@@ -20,7 +20,7 @@ activate ec
                         loop models to delete
                                 ec -> report_db : delete(model)
                         end
-                else event_type is bulk_event_purge
+                else event_type is bulk_event_purge_all
                         loop models to purge
                                 ec -> report_db : delete_all(model)
                         end

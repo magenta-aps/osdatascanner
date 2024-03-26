@@ -7,6 +7,9 @@
 - The unhandled matches graph in the DPO overview is now a line graph to
   accurately represent a change in the number of matches over time.
 
+- Management command 'broadcast' has been expanded with arguments to distinguish between 
+imported versus manually created objects.
+
 ### Bugfixes
 
 - Sitemap files uploaded during the creation of a web scanner are correctly
