@@ -48,14 +48,13 @@ def create_usererrorlog(message: messages.ProblemMessage):
         # This is a residual message for a scanner that the administrator has
         # deleted. Throw it away
         return
-
     error_message = message.message
     # Different types of scans have different source classes, where the
     # source path is contained differently.
     if message.handle and message.handle.presentation_url:
         path = message.handle.presentation_url
-    elif message.handle and message.handle.presentation:
-        path = message.handle.presentation
+    elif message.handle and str(message.handle):
+        path = str(message.handle)
     elif message.handle and message.handle.presentation_name:
         path = message.handle.presentation_name
     else:
@@ -193,7 +192,7 @@ def update_scheduled_checkup(handle, matches, problem, scan_time, scanner):  # n
     elif ((matches and matches.matched)
             or (problem and not problem.missing)):
         logger.debug(
-                "Interesting, creating", handle=handle.presentation)
+                "Interesting, creating", handle=str(handle))
         # An object with a transient problem or with real matches is an
         # object we'll want to check up on again later
         ScheduledCheckup.objects.update_or_create(

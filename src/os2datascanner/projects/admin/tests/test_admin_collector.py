@@ -210,11 +210,14 @@ class PipelineCollectorTests(TestCase):
         scan_tag = scan_spec.scan_tag
         handle = common_handle
         error_message = "Exploration error. MemoryError: 12, Cannot allocate memory"
+        rule = CustomRule.objects.create(**dummy_rule_dict)
+        scanner = Scanner.objects.create(name="Dummy test scanner", rule=rule, pk=22)
+        ScanStatus.objects.create(scanner=scanner, scan_tag=scan_tag.to_json_object())
 
         problem_message = messages.ProblemMessage(
             scan_tag=scan_tag, source=scan_spec.source, handle=handle,
             message=error_message)
-        yield from create_usererrorlog(problem_message)
+        create_usererrorlog(problem_message)
 
         self.assertTrue(UserErrorLog.objects.all().exists())
         self.assertEqual(

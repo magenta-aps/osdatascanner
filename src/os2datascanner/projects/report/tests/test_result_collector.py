@@ -1,4 +1,5 @@
 import hashlib
+import pytest
 
 from django.test import TestCase
 from parameterized import parameterized
@@ -267,6 +268,8 @@ class PipelineCollectorTests(TestCase):
          [None, None, positive_match_corrupt.scan_spec.scan_tag.time,
           common_handle_corrupt.source.type_label]),
     ])
+    @pytest.mark.filterwarnings("ignore:stripping illegal surrogates for PostgreSQL compatibility")
+    # We expect to get a warning because of the corrupted match
     def test_acceptance(self, _, match, expected):
         """Successful match messages should be stored in the database."""
         new = record_match(match)
@@ -286,7 +289,6 @@ class PipelineCollectorTests(TestCase):
                 new.source_type,
                 expected[3],
                 "type label was not extracted to database")
-        return new
 
     def test_edit(self):
         """Removing matches from a file should update the status of the
@@ -410,6 +412,8 @@ class PipelineCollectorTests(TestCase):
             positive_match_with_dimension_rule_probability_and_sensitivity.to_json_object()  # noqa E501
         )["matches"], match_to_match.to_json_object()["matches"])
 
+    @pytest.mark.filterwarnings("ignore:stripping illegal surrogates for PostgreSQL compatibility")
+    # We expect to get a warning because of the corrupted match
     def test_path_format_of_matches(self):
         """Check that recording the matches correctly crunches the handles
         to the `path`-field."""
