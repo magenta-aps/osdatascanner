@@ -1,6 +1,32 @@
 /* exported drawLine */
 
 function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, yLabel = "") {
+
+	const chartAreaBorderPlugin = {
+		id: 'chartAreaBorder',
+		beforeDraw(chart, args, options) {
+			const {ctx, chartArea: {left, top, width, height}} = chart;
+			ctx.save();
+			ctx.strokeStyle = options.borderColor;
+			ctx.lineWidth = options.borderWidth;
+			ctx.setLineDash(options.borderDash || []);
+			ctx.lineDashOffset = options.borderDashOffset;
+			ctx.strokeRect(left, top, width, height);
+			ctx.restore();
+		}
+	};
+
+	const noDataTextDrawPlugin = (ydata.length === 0) ? ({
+		id: 'noData',
+		afterDatasetsDraw(chart) {
+			const {ctx, chartArea: {left, top, width, height}} = chart;
+			ctx.save();
+			ctx.font = 'bold 20px sans-serif';
+			ctx.textAlign = 'center';
+			ctx.fillText(gettext('No data available'), left + width / 2, top + height / 2);
+		}
+	}) : {};
+
 	const lineChart = new Chart(chartElement, {
 		type: 'line',
 		data: {
@@ -85,18 +111,22 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 					title: {
 						display: yLabel !== "",
 						text: yLabel,
-						fontSize: 14,
+						fontSize: 15,
 					},
 					gridLines: {
 						display: false
 					},
 					ticks: {
-						fontSize: 14,
+						fontSize: 15,
 						stepSize: stepSizeFunction(ydata, 2),
 					},
 				}
 			},
-		}
+		},
+		plugins: [
+			chartAreaBorderPlugin,
+			noDataTextDrawPlugin
+		]
 	});
 
 	return lineChart;
@@ -110,34 +140,6 @@ function drawLine(data, ctxName) {
 	// //
 	// //
 	// Creating xx line chart
-
-	Chart.register({
-		id: "chartID",
-		// This works to color the background
-		beforeDraw: function (chart) {
-
-			if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
-				var ctx = chart.ctx;
-				var chartArea = chart.chartArea;
-
-				var meta = chart.getDatasetMeta(0);
-
-				// half the width of a 'bar'
-				var margin = (meta.data[1]._model.x - meta.data[0]._model.x) / 2;
-
-				// Position at index 2 - margin (index 0 is null)
-				var start = meta.data[1]._model.x - margin;
-
-				var stop = meta.data[meta.data.length - 1]._model.x - margin;
-
-				ctx.save();
-				ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
-
-				ctx.fillRect(start, chartArea.top, stop - start, chartArea.bottom - chartArea.top);
-				ctx.restore();
-			}
-		}
-	});
 
 	var lineChartLabels = [];
 	var lineChartValues = [];
@@ -156,5 +158,8 @@ function drawLine(data, ctxName) {
 // steps = how many steps on y-axis ( 0 doesn't count)
 var stepSizeFunction = function (array, steps) {
 	"use strict";
+	if (array.length === 0) {
+		return 0.1;
+	}
 	return (Math.ceil(Math.max.apply(null, array) / 100) * 100) / steps;
 };
