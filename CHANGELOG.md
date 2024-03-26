@@ -13,6 +13,8 @@
 - Existing ScheduledCheckups are no longer duplicated when a setting on a
   scanner is changed, followed by a scan.
 
+- The selected rule on scannerjobs no longer resets to default value on re-render.
+
 ## Version 3.22.4, 21st March 2024
 
 "Yesterday Was My Birthday"

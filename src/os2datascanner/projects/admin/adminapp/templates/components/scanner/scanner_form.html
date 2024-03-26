@@ -679,7 +679,8 @@
           </section>
         {% endif %}
 
-        {% include "components/rules/rule_selector.html" with rule=form.rule is_required=True selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
+        {% include "components/rules/rule_selector.html" with rule=form.rule required="True" selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
+ 
 
         {% if settings.EXCLUSION_RULES %}
 

@@ -19,34 +19,31 @@ set using a `with`-statement when including it in other templates:
 
 <section class="data-form">
   <fieldset class="form__fieldset">
-    <h3 {% if is_required %}class="required-form"{% endif %}>{% trans component_title %}</h3>
+    <h3 {% if required %}class="required-form"{% endif %}>{% trans component_title %}</h3>
     <div id="{% if view.edit %}{{ changed_id }}_message_color{% endif %}"
          class="form__group{% if rule.errors %} has-error{% endif %}">
-      <div class="select-rules">
-        <div class="select-rules__available">
-          <div class="dropdown">
-            <select name="{{ selector_id }}"
-                    id="{{ selector_id }}_id"
-                    class="select-rules-selector"
-                    {% if is_required %}required{% endif %}>
-              {% for rule_value, rule_tag in rule.field.choices %}
-                <option value="{{ rule_value }}"
-                        data-rule-id="{{ rule_value }}"
-                        {% if rule_value == rule.value %}selected{% endif %}>{{ rule_tag }}</option>
-              {% endfor %}
-            </select>
-            <input type="hidden" id="{{ selector_id }}_input" name="{{ selector_id }}">
-          </div>
-        </div>
-
-        {% if view.edit %}
-          <div id="{{ changed_id }}" class="changed_rules">
-            {% trans "Note, that rule changes will not affect previously scanned objects unless a full scan is run." %}
-          </div>
-        {% endif %}
-
-        {% if rule.errors %}{{ rule.errors }}{% endif %}
+      <div class="dropdown">
+        <select name="{{ selector_id }}"
+                id="{{ selector_id }}_id"
+                {% if is_required %}required{% endif %}>
+          {% for rule_value, rule_tag in rule.field.choices %}
+            <option value="{{ rule_value }}"
+                    data-rule-id="{{ rule_value }}"
+                    {% if rule.value|stringformat:"s" == rule_value|stringformat:"s" %}selected{% endif %}>
+              {{ rule_tag }}
+            </option>
+          {% endfor %}
+        </select>
+        <input type="hidden" id="{{ selector_id }}_input" name="{{ selector_id }}">
       </div>
+
+      {% if view.edit %}
+        <div id="{{ changed_id }}" class="changed_rules">
+          {% trans "Note, that rule changes will not affect previously scanned objects unless a full scan is run." %}
+        </div>
+      {% endif %}
+
+      {% if rule.errors %}{{ rule.errors }}{% endif %}
     </div>
   </fieldset>
 </section>
