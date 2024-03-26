@@ -19,7 +19,7 @@ set using a `with`-statement when including it in other templates:
 
 <section class="data-form">
   <fieldset class="form__fieldset">
-    <h3 {% if is_required %}class="required-form"{% endif %}>{% trans component_title %}</h3>
+    <h3 {% if required %}class="required-form"{% endif %}>{% trans component_title %}</h3>
     <div id="{% if view.edit %}{{ changed_id }}_message_color{% endif %}"
          class="form__group{% if rule.errors %} has-error{% endif %}">
       <div class="dropdown">
