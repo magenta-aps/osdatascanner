@@ -103,8 +103,8 @@ def _unit_to_node(
     return LDAPNode.make(
             local_path_part,
             *(_unit_to_node(c, parent_path=full_path)
-              for c in ou.children.all()),
-            *(_account_to_node(c) for c in ou.account_set.all()))
+              for c in ou.children.filter(imported=True)),
+            *(_account_to_node(c) for c in ou.account_set.filter(imported=True)))
 
 
 def _node_to_iid(path: Sequence[RDN], node: LDAPNode) -> str:
