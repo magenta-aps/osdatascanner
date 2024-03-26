@@ -72,7 +72,7 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 						pinch: {
 							enabled: true
 						},
-						mode: swapXY ? 'x' : 'y',
+						mode: swapXY ? 'y' : 'x',
 					}
 				},
 			},
