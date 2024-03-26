@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load l10n %}
+
+<div id="popover-{{ popover_data.id }}" class="popover__wrapper">
+  <div class="popover__content">
+    <div class="popover__text-container">
+      <span class="popover__status">{{ popover_data.status }}</span>
+      <div>
+        <span class="popover__title">{{ popover_data.title }}</span>
+        <span class="popover__sub-title">{{ popover_data.subtitle }}</span>
+      </div>
+    </div>
+    {% if error_text %}
+      <div class="popover__error-container">
+        <span class="popover__error-text">{{ error_text }}</span>
+      </div>
+    {% endif %}
+  </div>
+</div>

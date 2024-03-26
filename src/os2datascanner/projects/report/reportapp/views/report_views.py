@@ -107,6 +107,20 @@ class ReportView(LoginRequiredMixin, ListView):
         context["renderable_rules"] = RENDERABLE_RULES
         context["resolution_choices"] = DocumentReport.ResolutionChoices.choices
         self.add_form_context(context)
+
+        # create a dictionary with data for the popover_component showing error messages
+        popover_data = {
+            'status': _("No action required:"),
+            'title': _(
+                "A temporary error occurred during the latest check of this result. "
+                "OSdatascanner will automatically check this result again as part of the next scan."
+            ),
+            'subtitle': _(""),
+        }
+
+        # pass the dictionary as a single variable
+        context["popover_data"] = popover_data
+
         return context
 
     def base_match_filter(self, reports):
@@ -240,11 +254,13 @@ class UserReportView(ReportView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         # show_delete_button is overwritten in the archive view.
         context["show_email_delete_button"] = (
             self.request.user.account.organization.has_email_delete_permission())
         context["show_file_delete_button"] = (
             self.request.user.account.organization.has_file_delete_permission())
+
         return context
 
     def base_match_filter(self, reports):

@@ -4,6 +4,7 @@
 # OS2datascanner.
 # IBP <ibp@magenta.dk>, 2020.
 # b
+#: reportapp/views/report_views.py:255
 #, fuzzy
 msgid ""
 msgstr ""
@@ -682,24 +683,24 @@ msgstr "Slet markerede filer"
 msgid "selected"
 msgstr "valgt"
 
-#: reportapp/templates/components/reports/match.html:15
-#: reportapp/templates/components/reports/match.html:16
+#: reportapp/templates/components/reports/match.html:18
+#: reportapp/templates/components/reports/match.html:19
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/reports/match.html:40
+#: reportapp/templates/components/reports/match.html:46
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/reports/match.html:46
+#: reportapp/templates/components/reports/match.html:52
 msgid "Open folder"
 msgstr "Åbn mappe"
 
-#: reportapp/templates/components/reports/match.html:53
+#: reportapp/templates/components/reports/match.html:60
 msgid "Deletes email from your mailbox"
 msgstr "Sletter email fra din mailboks"
 
-#: reportapp/templates/components/reports/match.html:59
+#: reportapp/templates/components/reports/match.html:66
 msgid ""
 "You are about to delete selected email from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -1819,8 +1820,21 @@ msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/report_views.py:486 reportapp/views/report_views.py:511
-#: reportapp/views/report_views.py:531 reportapp/views/report_views.py:556
+#: reportapp/views/report_views.py:250
+msgid "No action required:"
+msgstr "Ingen handling påkrævet:"
+
+#: reportapp/views/report_views.py:252
+msgid ""
+"A temporary error occurred during the latest check of this result. "
+"OSdatascanner will automatically check this result again as part of the next "
+"scan."
+msgstr ""
+"Der opstod en midlertidig fejl under sidste tjek af dette resultat. "
+"OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
+"scan."
+
+#: reportapp/views/report_views.py:490 reportapp/views/report_views.py:521
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"

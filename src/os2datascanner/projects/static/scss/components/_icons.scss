@@ -104,11 +104,10 @@ Single-colored icons can be modified like so:
 
   display: none;
 
-  svg {
+  svg, .material-icons {
     fill: var(--color-text-secondary);
     height: 1em;
     width: 1em;
-
     vertical-align: text-top;
   }
 

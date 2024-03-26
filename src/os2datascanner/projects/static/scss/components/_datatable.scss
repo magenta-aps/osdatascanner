@@ -1,5 +1,6 @@
 :root {
   --datatable-cell-padding: 2em;
+  --color-warning-light: #FFEDB6;
 }
 
 .datatable-wrapper {
@@ -208,6 +209,8 @@
       width: 100%;
       word-wrap: break-word;
       white-space: none;
+
+
 
       &>div {
         min-width: 12rem;
@@ -791,11 +794,12 @@
 
 [data-tooltip] {
   position: absolute;
-  font-size: .85rem;
-  padding: .25rem;
+  font-size: 0.85rem;
+  padding: 0.375rem 0.5rem;
   border: 1px solid rgba(0, 0, 0, .2);
   border-radius: var(--border-radius-button);
-  background-color: #f4f4f4;
+  background-color: var(--color-body-bg);
+  color: var(--color-text-secondary);
   box-shadow: var(--box-shadow-filter);
   width: auto;
   white-space: nowrap;
@@ -803,16 +807,22 @@
   cursor: text;
 }
 
-.datatable tr.short td {
-  padding-top: calc(var(--datatable-cell-padding) / 2);
-  padding-bottom: calc(var(--datatable-cell-padding) / 2);
+// Icon for the error messages
+
+.table {
+  &__icon {
+    &--warning {
+      color: var(--color-warning); // Specific styling for the warning icon in tables
+    }
+  }
 }
 
-.datatable tr.warning {
-  background-color: var(--color-warning);
-}
+.tableUI__container{
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
 
-.datatable tr.problem textarea[readonly=true] {
-  width: 100%;
-  padding: 1em;
+  .hit-link {
+    margin-top: 0;
+  }
 }
