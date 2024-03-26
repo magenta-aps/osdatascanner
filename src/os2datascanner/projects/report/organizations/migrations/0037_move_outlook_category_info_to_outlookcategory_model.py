@@ -10,21 +10,21 @@ def move_category_uuids_to_new_model(apps, schema_editor):
 
     for setting in AccountOutlookSetting.objects.iterator():
         if setting.false_positive_category_uuid:
-            colour = setting.false_positive_category_colour or OutlookCategory.OutlookCategoryColour.DarkGreen
+            colour = setting.false_positive_colour or "Preset19"
             OutlookCategory.objects.create(
                     category_uuid=setting.false_positive_category_uuid, 
                     category_name="OS2datascanner False Positive", 
                     category_colour=colour, 
                     account_outlook_setting=setting, 
-                    name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE)
+                    name="false_positive")
         if setting.match_category_uuid:
-            colour = setting.match_category_colour or OutlookCategory.OutlookCategoryColour.DarkRed
+            colour = setting.match_colour or "Preset15"
             OutlookCategory.objects.create(
                     category_uuid=setting.match_category_uuid, 
                     category_name="OS2datascanner Match", 
                     category_colour=colour, 
                     account_outlook_setting=setting, 
-                    name=OutlookCategory.OutlookCategoryNames.MATCH)
+                    name="match")
 
 def move_category_uuids_back_to_old_model(apps, schema_editor):
     AccountOutlookSetting = apps.get_model('organizations', 'AccountOutlookSetting')
@@ -32,12 +32,12 @@ def move_category_uuids_back_to_old_model(apps, schema_editor):
 
     for cat in OutlookCategory.objects.iterator():
         setting = cat.account_outlook_setting
-        if cat.name == OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE:
+        if cat.name == "false_positive":
             setting.false_positive_category_uuid = cat.category_uuid
-            setting.false_positive_category_colour = cat.category_colour
-        elif cat.name == OutlookCategory.OutlookCategoryNames.MATCH:
+            setting.false_positive_colour = cat.category_colour
+        elif cat.name == "match":
             setting.match_category_uuid = cat.category_uuid
-            setting.match_category_colour = cat.category_colour
+            setting.match_colour = cat.category_colour
         setting.save()
 
 class Migration(migrations.Migration):

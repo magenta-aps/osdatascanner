@@ -3,7 +3,7 @@ import structlog
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
@@ -67,9 +67,9 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     return None
 
         # Only objects that don't have either a match or fp category are relevant for inspection.
-        # TODO: We only check if there is 1 or less categories, not what type of
-        # categories there are ...
-        qs = self.annotate(categories=Count("outlook_categories")).filter(categories__lte=1)
+        qs = self.exclude(
+            Q(outlook_categories__name=OutlookCategory.OutlookCategoryNames.MATCH) &
+            Q(outlook_categories__name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE))
 
         with requests.Session() as session:
             gc = self._initiate_graphcaller(session)
@@ -309,8 +309,8 @@ class OutlookCategory(models.Model):
     # UUID from MSGraph category creation
     # We'll only ever need it in str format, so no need for UUID field.
     category_uuid = models.CharField(max_length=36,
-                                     null=True,
-                                     blank=True,
+                                     null=False,
+                                     blank=False,
                                      verbose_name=_("category UUID")
                                      )
 
@@ -338,3 +338,20 @@ class OutlookCategory(models.Model):
         default=OutlookCategoryNames.MATCH,
         null=False,
         blank=False)
+
+    class Meta:
+        constraints = [
+            # Don't allow multiple settings with the same category for the same account
+            models.UniqueConstraint(
+                fields=[
+                    'name',
+                    'account_outlook_setting'],
+                name='outlook_category_label_type_name_and_outlook_setting_constraint'),
+            # Outlook _really_ cares that the name of a label for a user is unique
+            # which means we have to care as well.
+            models.UniqueConstraint(
+                fields=[
+                    'category_name',
+                    'account_outlook_setting'],
+                name='outlook_category_display_name_and_outlook_setting_constraint')
+        ]

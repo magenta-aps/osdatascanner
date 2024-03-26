@@ -179,9 +179,11 @@ class TestAccountOutlookSetting:
                                     categorize_email=True)
         OutlookCategory.objects.create(category_uuid="123",
                                        name=OutlookCategory.OutlookCategoryNames.MATCH,
+                                       category_name="OSdatascanner Match",
                                        account_outlook_setting=setting)
         OutlookCategory.objects.create(category_uuid="1234",
                                        name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE,
+                                       category_name="OSdatascanner False Positive",
                                        account_outlook_setting=setting)
 
         # Act
@@ -236,9 +238,11 @@ class TestAccountOutlookSetting:
         setting = AccountOutlookSetting.objects.create(account=self.base_account)
         OutlookCategory.objects.create(category_uuid="123",
                                        name=OutlookCategory.OutlookCategoryNames.MATCH,
+                                       category_name="OSdatascanner Match",
                                        account_outlook_setting=setting)
         OutlookCategory.objects.create(category_uuid="1234",
                                        name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE,
+                                       category_name="OSdatascanner False Positive",
                                        account_outlook_setting=setting)
 
         # Act

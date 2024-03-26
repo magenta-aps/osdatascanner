@@ -20,7 +20,6 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
 from django import forms
-from django.db.models import Count
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
@@ -140,11 +139,7 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                     OutlookCategorizeChoices.ORG_LEVEL):
 
                 # and a category is missing
-                # TODO: We only check if there is 1 or less categories, not what type of
-                # categories there are ...
-                if outl_setting.annotate(
-                        categories=Count("outlook_categories")).filter(
-                        categories__lte=1):
+                if not match_category or not fp_category:
                     # Create/Verify that categories are populated
                     message = outl_setting.populate_setting()
                     messages.add_message(
@@ -167,10 +162,10 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
 
                 # Else, we can assume that we're updating.
                 # Check if one of the colours are changed
-                if (fp_category.category_colour
-                        != false_positive_colour) or (
-                        match_category.category_colour
-                        != match_colour):
+                if (fp_category and fp_category.category_colour
+                        != false_positive_colour) or (match_category and
+                                                      match_category.category_colour
+                                                      != match_colour):
 
                     message = outl_setting.update_colour(match_colour, false_positive_colour)
                     messages.add_message(

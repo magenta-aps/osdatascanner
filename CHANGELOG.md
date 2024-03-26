@@ -228,8 +228,6 @@
   
 ### General improvements
 
-- bla bla
-
 - The selected rule on scannerjobs no longer resets to default value on re-render.
 
 - Importing via LDAP with non-imported organizational structure in the database
