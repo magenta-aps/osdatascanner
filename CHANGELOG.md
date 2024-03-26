@@ -23,6 +23,9 @@ imported versus manually created objects.
 
 - The selected rule on scannerjobs no longer resets to default value on re-render.
 
+- Importing via LDAP with non-imported organizational structure in the database
+  no longer breaks the import.
+
 ## Version 3.22.4, 21st March 2024
 
 "Yesterday Was My Birthday"
