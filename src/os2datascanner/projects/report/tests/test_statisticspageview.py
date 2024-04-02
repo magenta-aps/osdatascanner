@@ -571,6 +571,21 @@ class StatisticsPageViewTest(TestCase):
         self.assertEqual(response_ke.context_data.get(
             'match_data').get('unhandled').get('count'), 2)
 
+    def test_filter_by_orgunit_with_multiple_positions(self):
+        # Arrange
+        Position.objects.create(
+            account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
+        Position.objects.create(
+            account=self.egon_account, unit=self.olsen_banden, role=Role.EMPLOYEE)
+
+        # Act
+        response_ob = self.get_dpo_statisticspage_response(
+              self.egon, params=f'?orgunit={str(self.olsen_banden.uuid)}')
+
+        # Assert
+        self.assertEqual(response_ob.context_data.get(
+           'match_data').get('unhandled').get('count'), 2)
+
     def test_access_from_different_organization(self):
         """A user should only be able to see results from their own organization."""
         marvel = Organization.objects.create(name="Marvel Cinematic Universe")
