@@ -18,30 +18,33 @@
           <i class="material-icons">sync_disabled</i>
         </button>
       {% endif %}
-      {% if exec_state_value == "finished" %}
-        <span class="response-icon response-icon--success">
-          <i class="material-icons">check</i>
-        </span>
-      {% elif exec_state_value == "failed" %}
-        <span class="response-icon response-icon--error">
-          <i class="material-icons">error</i>
-        </span>
-      {% elif exec_state_value in "waiting running cancelling" %}
-        <span class="response-icon response-icon--waiting">
-          <i class="material-icons">hourglass_top</i>
-        </span>
-      {% elif exec_state_value == "cancelled" %}
-        <span class="response-icon response-icon--cancelled">
-          <i class="material-icons">block</i>
-        </span>
-      {% endif %}
-      <span class="response-text">
+      <div class="response__status-container">
         {% if exec_state_value == "finished" %}
-          {% trans 'last updated'|capfirst %},
-        {% else %}
-          {{ job.exec_state.label|capfirst }},
+          <span class="response-icon response-icon--success">
+            <i class="material-icons">check</i>
+          </span>
+        {% elif exec_state_value == "failed" %}
+          <span class="response-icon response-icon--error">
+            <i class="material-icons">error</i>
+          </span>
+        {% elif exec_state_value in "waiting running cancelling" %}
+          <span class="response-icon response-icon--waiting">
+            <i class="material-icons">hourglass_top</i>
+          </span>
+        {% elif exec_state_value == "cancelled" %}
+          <span class="response-icon response-icon--cancelled">
+            <i class="material-icons">block</i>
+          </span>
         {% endif %}
-        {{ job.changed_at|date:'d-m-Y H:i' }}
+
+        <span class="response-text">
+          {% if exec_state_value == "finished" %}
+            {% trans 'last updated'|capfirst %},
+          {% else %}
+            {{ job.exec_state.label|capfirst }},
+          {% endif %}
+          {{ job.changed_at|date:'d-m-Y H:i' }}
+        </div>
       </span>
     </div>
   {% endif %}
