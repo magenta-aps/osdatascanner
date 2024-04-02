@@ -74,12 +74,6 @@
       var(--datatable-cell-padding) 100%;
     background-attachment: local, scroll, local, scroll;
 
-    // IE11 doesn't understand this implementation properly, so we use the media
-    // query below to target IE11 and then remove the shadows
-    @media (-ms-high-contrast: active), (-ms-high-contrast: none) {
-      background-image: none !important;
-    }
-
     &:focus {
       box-shadow: var(--box-shadow-widget), 0 0 0 3px var(--color-primary-light);
     }
@@ -364,7 +358,7 @@
       }
 
       > * {
-        flex: 0 1 auto; // be explicit for IE11s sake
+        flex: 0 1 auto;
       }
     }
 
@@ -828,6 +822,8 @@
 // ***********************************************
 // ***********************************************
 
+// Redmine ticket: [#59413]
+
 // NOTE: 
 // Change the class name from "datatablex" to "datatable" after all tables have been refactored.
 // Remember to do the same in all relevant HTML docs.
@@ -932,6 +928,8 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 // ***** ORGANIZATION TABLE *****
 // ******************************
 
+// Redmine ticket: [#59989]
+
 .org-table {
   // Table SCSS vars:
   $fixed-column_width: 8.5rem; // The "fixed" column of this specific table
@@ -1002,12 +1000,16 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 // ***** ORGANIZATIONAL STRUCTURE TABLE *****
 // ******************************************
 
+// Redmine ticket: [#60290]
+
 // TBA
 
 
 // ****************************************
 // ***** ORGANIZATIONS ACCOUNTS TABLE *****
 // ****************************************
+
+// Redmine ticket: [#60291]
 
 // TBA
 
@@ -1016,12 +1018,10 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 // ***** RULES TABLES *****
 // ************************
 
-// "CUSTOM RULES":
+// Redmine ticket: [#60287]
 
-// TBA
-
-
-// "SYSTEM RULES":
+  // "CUSTOM RULES":
+  // "SYSTEM RULES":
 
 // TBA
 
@@ -1030,52 +1030,18 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 // ***** SCANNER TABLES *****
 // **************************
 
-// WEB SCANNER:
+// Redmine ticket: [#60288]
 
-// TBA
-
-
-// FILE SCANNER:
-
-// TBA
-
-
-// EXCHANGE SCANNER:
-
-// TBA
-
-
-// OFFICE365 MAIL SCANNER:
-
-// TBA
-
-
-// OFFICE365 ONEDRIVE SCANNER:
-
-// TBA
-
-
-// OFFICE365 TEAMS SCANNER:
-
-// TBA
-
-
-// OFFICE365 CALENDAR SCANNER:
-
-// TBA
-
-
-// GOOGLE DRIVE SCANNER:
-
-// TBA
-
-
-// GMAIL SCANNER:
-
-// TBA
-
-
-// SBSYS SCANNER:
+  // WEB SCANNER:
+  // FILE SCANNER:
+  // EXCHANGE SCANNER:
+  // OFFICE365 MAIL SCANNER:
+  // OFFICE365 ONEDRIVE SCANNER:
+  // OFFICE365 TEAMS SCANNER:
+  // OFFICE365 CALENDAR SCANNER:
+  // GOOGLE DRIVE SCANNER:
+  // GMAIL SCANNER:
+  // SBSYS SCANNER:
 
 // TBA
 
@@ -1084,16 +1050,46 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 // ***** SCAN STATUS TABLES *****
 // ******************************
 
-// ONGOING SCANS:
+// Redmine ticket: [#60289]
+
+  // ONGOING SCANS:
+  // FINISHED SCANS:
+  // ERROR MESSAGES:
 
 // TBA
 
 
-// FINISHED SCANS:
+// ***************************************
+// ***** TABLES IN THE REPORT MODULE *****
+// ***************************************
+
+// **********************************
+// ***** RESULT OVERVIEW TABLES *****
+// **********************************
+
+// Redmine ticket: [#60320]
+
+// ***** REPORT *****
+
+  // PERSONAL:
+  // REMEDIATOR:
+  // UNDISTRIBUTED:
+
+// TBA
+
+// ***** ARCHIVE *****
+
+  // PERSONAL:
+  // REMEDIATOR:
+  // UNDISTRIBUTED:
 
 // TBA
 
 
-// ERROR MESSAGES:
+// *********************************
+// ***** LEADER OVERVIEW TABLE *****
+// *********************************
+
+// Redmine ticket: [#60320]
 
 // TBA
