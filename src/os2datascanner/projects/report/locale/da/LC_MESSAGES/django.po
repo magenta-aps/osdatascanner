@@ -1019,11 +1019,11 @@ msgstr "Uhåndterede resultater"
 
 #: reportapp/templates/components/statistics/total_source_count.html:16
 msgid "Current total number of unhandled matches from"
-msgstr "Nuværende antal af uhåndterede matches fra mails"
+msgstr "Nuværende antal af uhåndterede matches fra"
 
 #: reportapp/templates/components/statistics/total_source_count.html:19
 msgid "Total number of unhandled matches from"
-msgstr "Antal af matches fra mails"
+msgstr "Antal af matches fra"
 
 #: reportapp/templates/components/statistics/total_source_count.html:25
 #: reportapp/templates/components/statistics/total_source_count.html:27
