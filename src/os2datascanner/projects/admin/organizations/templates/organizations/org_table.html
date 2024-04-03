@@ -25,216 +25,224 @@
       </div>
     </div>
   </div>
-  <div class="datatable-wrapper card xl">
-    <table class="datatable">
-      <colgroup>
-        <col class="datatable__column--name">
-        <col class="datatable__column--info">
-        <col class="datatable__column--info">
-        {% with client.enabled_features as feature %}
-          {% if FEATURES.IMPORT_SERVICES in feature or FEATURES.IMPORT_SERVICES_MS_GRAPH in feature or FEATURES.IMPORT_SERVICES_OS2MO in feature %}
-            <col class="datatable__column--btn">
-          {% endif %}
-          {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in feature %}
-            <col class="datatable__column--delete">
-          {% endif %}
-        {% endwith %}
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="datatable__column--name">{% trans "name"|capfirst %}</th>
-          <th class="datatable__column--info">{% trans "email"|capfirst %}</th>
-          <th class="datatable__column--info">{% trans "phone"|capfirst %}</th>
-          {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
-            <th class="datatable__column--btn">{% trans "import service"|capfirst %}</th>
-          {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
-            <th class="datatable__column--btn">{% trans "import service (Microsoft Graph)"|capfirst %}</th>
-          {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
-            <th class="datatable__column--btn">{% trans "import service (OS2mo)"|capfirst %}</th>
-          {% endif %}
-          {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in client.enabled_features %}
-            <th class="datatable__column--actions">{% trans "Actions" %}</th>
-          {% endif %}
-        </tr>
-      </thead>
-      {% if client.organizations.all %}
-        <tbody>
-          {% for organization in client.organizations.all %}
-            <tr>
-              <td class="datatable__column--name">
-                <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
-              </td>
-              <td class="datatable__column--info">{{ organization.contact_email|default_if_none:"-" }}</td>
-              <td class="datatable__column--info">{{ organization.contact_phone|default_if_none:"-" }}</td>
-              {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
-                <td id="import_column__{{ organization.slug }}"
-                    class="datatable__column--btn">
-                  <div class="flex">
-                    <div class="button-group">
-                      <!-- NB: importservice is in one word because a reverse name was not specified on the ImportService model's relation to Organization and this is the default -->
-                      {% if not organization.importservice %}
-                        <a href="{% url 'add-ldap' org_id=organization.pk %}"
-                           id="button-add-configuration"
-                           aria-label="{% trans 'Edit LDAP configuration' %}"
-                           title="{% trans 'Edit LDAP configuration' %}"
-                           class="button button--outline-button button--icon-button">
-                          <i id="library_add_check" class="material-icons">library_add_check</i>
-                        </a>
-                      {% else %}
-                        <a href="{% url 'edit-ldap' pk=organization.pk %}"
-                           id="button-add-configuration"
-                           aria-label="{% trans 'Edit LDAP configuration' %}"
-                           title="{% trans 'Edit LDAP configuration' %}"
-                           class="button button--outline-button button--icon-button">
-                          <i id="library_add_check" class="material-icons">library_add_check</i>
-                        </a>
-                        <button type="button"
-                                aria-label="{% trans 'sync'|capfirst %}"
-                                title="{% trans 'sync'|capfirst %}"
-                                class="btn-text button button--outline-button button--text-button"
-                                data-sync-for="{{ organization.pk }}"
-                                hx-get="{% url 'import-ldap' pk=organization.pk %}"
-                                hx-trigger="click"
-                                hx-target=".org-table"
-                                hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
-                        <div class="flex">
-                          {% if organization.realm.importjob %}
-                            {% include "components/background_job.html" with job=organization.realm.importjob.first %}
-                          {% endif %}
-                        </div>
-                      {% endif %}
+
+  <!-- NOTE:  -->
+  <!-- Change the class names from "datatablex" to "datatable" after all tables have been refactored. -->
+  <!-- Remeber to do the same in all other relevant HTML docs and in _datatable.scss. -->
+  <div class="datatablex__card-container">
+    <div class="datatablex__wrapper">
+      <table class="datatablex org-table">
+        <thead>
+          <tr class="datatablex__row">
+            <th class="column column--name">{% trans "name"|capfirst %}</th>
+            <th class="column column--info">{% trans "contact info"|capfirst %}</th>
+            {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
+              <th class="column column--import">{% trans "import service"|capfirst %}</th>
+            {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
+              <th class="column column--import">{% trans "import service (Microsoft Graph)"|capfirst %}</th>
+            {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
+              <th class="column column--import">{% trans "import service (OS2mo)"|capfirst %}</th>
+            {% endif %}
+            {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in client.enabled_features %}
+              <th class="column column--actions">{% trans "Actions" %}</th>
+            {% endif %}
+          </tr>
+        </thead>
+
+        {% if client.organizations.all %}
+          <tbody>
+            {% for organization in client.organizations.all %}
+              <tr class="datatablex__row">
+                <td class="column column--name">
+                  <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
+                </td>
+                <td class="column column--info">
+                  <div class="info__container">
+                    <div class="info info--email">
+                      <span class="material-icons">mail</span>
+                      <span class="info__label">{{ organization.contact_email|default_if_none:"---" }}</span>
+                    </div>
+ 
+                    <div class="info info--phone">
+                      <span class="material-icons">phone</span>
+                      <span class="info__label">{{ organization.contact_phone|default_if_none:"---" }}</span>
                     </div>
                   </div>
                 </td>
-              {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
-                <td id="import_column__{{ organization.slug }}"
-                    class="datatable__column--btn">
-                  <div class="flex">
-                    <div class="button-group">
-                      {% if not organization.importservice %}
-                        <a href="{% url 'add-os2mo' org_id=organization.pk %}"
-                           id="button-add-os2mo-configuration"
-                           aria-label="{% trans 'Add OS2mo configuration' %}"
-                           title="{% trans 'Add OS2mo configuration' %}"
-                           class="button button--outline-button button--icon-button">
-                          <i id="library_add_check" class="material-icons">library_add_check</i>
-                        </a>
-                      {% else %}
-                        <button type="button"
-                                aria-label="{% trans 'sync'|capfirst %}"
-                                title="{% trans 'sync'|capfirst %}"
-                                class="btn-text button button--outline-button button--text-button"
-                                data-sync-for="{{ organization.pk }}"
-                                hx-get="{% url 'import-os2mo' pk=organization.pk %}"
-                                hx-trigger="click"
-                                hx-target=".org-table"
-                                hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
-                        <div class="flex">
-                          {% if organization.os2moimport %}
-                            {% include "components/background_job.html" with job=organization.os2moimport.first %}
-                          {% endif %}
-                        </div>
-                      {% endif %}
-                    </div>
-                  </div>
-                </td>
-              {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
-                <td id="import_column__{{ organization.slug }}"
-                    class="datatable__column--btn">
-                  <div class="flex">
-                    <div class="button-group">
-                      {% if not organization.importservice %}
-                        {% if not tenant_id %}
-                          <a href="{% url 'add-msgraph' org_id=organization.pk %}"
-                             id="button-add-msgraph-configuration"
-                             aria-label="{% trans 'Add Microsoft Graph configuration' %}"
-                             title="{% trans 'Add Microsoft Graph configuration' %}"
+ 
+
+                {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
+                  <td id="import_column__{{ organization.slug }}"
+                      class="column column--import">
+                    <div class="flex">
+                      <div class="button-group">
+                        <!-- NB: importservice is in one word because a reverse name was not specified on the ImportService model's relation to Organization and this is the default -->
+                        {% if not organization.importservice %}
+                          <a href="{% url 'add-ldap' org_id=organization.pk %}"
+                             id="button-add-configuration"
+                             aria-label="{% trans 'Edit LDAP configuration' %}"
+                             title="{% trans 'Edit LDAP configuration' %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                         {% else %}
-                          <a href="{% url 'add-msgraph' org_id=organization.pk tenant_id=tenant_id %}"
-                             id="button-add-msgraph-configuration"
-                             aria-label="{% trans 'Add Microsoft Graph configuration' %}"
-                             title="{% trans 'Add Microsoft Graph configuration' %}"
+                          <a href="{% url 'edit-ldap' pk=organization.pk %}"
+                             id="button-add-configuration"
+                             aria-label="{% trans 'Edit LDAP configuration' %}"
+                             title="{% trans 'Edit LDAP configuration' %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
+                          <button type="button"
+                                  aria-label="{% trans 'sync'|capfirst %}"
+                                  title="{% trans 'sync'|capfirst %}"
+                                  class="btn-text button button--outline-button button--text-button"
+                                  data-sync-for="{{ organization.pk }}"
+                                  hx-get="{% url 'import-ldap' pk=organization.pk %}"
+                                  hx-trigger="click"
+                                  hx-target=".organizations-overview"
+                                  hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
+                          <div class="flex">
+                            {% if organization.realm.importjob %}
+                              {% include "components/background_job.html" with job=organization.realm.importjob.first %}
+                            {% endif %}
+                          </div>
                         {% endif %}
-                      {% else %}
-                        <a href="{% url 'edit-msgraph' pk=organization.pk %}"
-                           id="button-add-msgraph-configuration"
-                           aria-label="{% trans 'Edit Microsoft Graph configuration' %}"
-                           title="{% trans 'Edit Microsoft Graph configuration' %}"
-                           class="button button--outline-button button--icon-button">
-                          <i id="library_add_check" class="material-icons">library_add_check</i>
-                        </a>
-                        <button type="button"
-                                aria-label="{% trans 'sync'|capfirst %}"
-                                title="{% trans 'sync'|capfirst %}"
-                                class="btn-text button button--outline-button button--text-button"
-                                data-sync-for="{{ organization.pk }}"
-                                hx-get="{% url 'import-msgraph' pk=organization.pk %}"
-                                hx-trigger="click"
-                                hx-target=".org-table"
-                                hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
-                        <div class="flex">
-                          {% if organization.msimport %}
-                            {% include "components/background_job.html" with job=organization.msimport.first %}
-                          {% endif %}
-                        </div>
-                      {% endif %}
+                      </div>
                     </div>
+                  </td>
+                {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
+                  <td id="import_column__{{ organization.slug }}"
+                      class="column column--import">
+                    <div class="flex">
+                      <div class="button-group">
+                        {% if not organization.importservice %}
+                          <a href="{% url 'add-os2mo' org_id=organization.pk %}"
+                             id="button-add-os2mo-configuration"
+                             aria-label="{% trans 'Add OS2mo configuration' %}"
+                             title="{% trans 'Add OS2mo configuration' %}"
+                             class="button button--outline-button button--icon-button">
+                            <i id="library_add_check" class="material-icons">library_add_check</i>
+                          </a>
+                        {% else %}
+                          <button type="button"
+                                  aria-label="{% trans 'sync'|capfirst %}"
+                                  title="{% trans 'sync'|capfirst %}"
+                                  class="btn-text button button--outline-button button--text-button"
+                                  data-sync-for="{{ organization.pk }}"
+                                  hx-get="{% url 'import-os2mo' pk=organization.pk %}"
+                                  hx-trigger="click"
+                                  hx-target=".organizations-overview"
+                                  hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
+                          <div class="flex">
+                            {% if organization.os2moimport %}
+                              {% include "components/background_job.html" with job=organization.os2moimport.first %}
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
+                  <td id="import_column__{{ organization.slug }}"
+                      class="column column--import">
+                    <div class="flex">
+                      <div class="button-group">
+                        {% if not organization.importservice %}
+                          {% if not tenant_id %}
+                            <a href="{% url 'add-msgraph' org_id=organization.pk %}"
+                               id="button-add-msgraph-configuration"
+                               aria-label="{% trans 'Add Microsoft Graph configuration' %}"
+                               title="{% trans 'Add Microsoft Graph configuration' %}"
+                               class="button button--outline-button button--icon-button">
+                              <i id="library_add_check" class="material-icons">library_add_check</i>
+                            </a>
+                          {% else %}
+                            <a href="{% url 'add-msgraph' org_id=organization.pk tenant_id=tenant_id %}"
+                               id="button-add-msgraph-configuration"
+                               aria-label="{% trans 'Add Microsoft Graph configuration' %}"
+                               title="{% trans 'Add Microsoft Graph configuration' %}"
+                               class="button button--outline-button button--icon-button">
+                              <i id="library_add_check" class="material-icons">library_add_check</i>
+                            </a>
+                          {% endif %}
+                        {% else %}
+                          <a href="{% url 'edit-msgraph' pk=organization.pk %}"
+                             id="button-add-msgraph-configuration"
+                             aria-label="{% trans 'Edit Microsoft Graph configuration' %}"
+                             title="{% trans 'Edit Microsoft Graph configuration' %}"
+                             class="button button--outline-button button--icon-button">
+                            <i id="library_add_check" class="material-icons">library_add_check</i>
+                          </a>
+                          <button type="button"
+                                  aria-label="{% trans 'sync'|capfirst %}"
+                                  title="{% trans 'sync'|capfirst %}"
+                                  class="btn-text button button--outline-button button--text-button"
+                                  data-sync-for="{{ organization.pk }}"
+                                  hx-get="{% url 'import-msgraph' pk=organization.pk %}"
+                                  hx-trigger="click"
+                                  hx-target=".organizations-overview"
+                                  hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
+                          <div class="flex">
+                            {% if organization.msimport %}
+                              {% include "components/background_job.html" with job=organization.msimport.first %}
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                {% endif %}
+                <td class="column column--actions">
+                  <div class="action-wrapper button-group">
+                    {% if FEATURES.ORG_STRUCTURE in client.enabled_features %}
+                      <a href="{% url 'orgunit-list' organization.slug %}"
+                         class="button button--icon-button"
+                         aria-label="{% trans 'View organizational units.' %}"
+                         title="{% trans 'View organizational units.' %}">
+                        {% include "../components/svg-icons/org.svg" %}
+                      </a>
+                    {% endif %}
+                    <a href="{% url 'accounts' organization.slug %}"
+                       class="button button--icon-button"
+                       aria-label="{% trans 'View accounts.' %}"
+                       title="{% trans 'View accounts.' %}">{% include "../components/svg-icons/people.svg" %}</a>
+                    {% if request.user.is_superuser %}
+                      {% if organization.scanners_running %}
+                        <a href="#delete-org-blocked"
+                           data-modal="modal:open"
+                           data-src="{% url 'org_delete_block' slug=organization.slug %}"
+                           class="button button--icon-button"
+                           aria-label="{% trans 'Delete' %}"
+                           title="{% trans 'Delete' %}">
+                          <i id="delete_forever" class="material-icons">delete_forever</i>
+                        </a>
+                      {% else %}
+                        <form action="{% url 'delete-organization' slug=organization.slug %}"
+                              method="post">
+                          {% csrf_token %}
+                          {{ form.as_p }}
+                          <button type="submit"
+                                  class="button button--icon-button"
+                                  onclick="return confirm(`{% trans 'Do you really want to delete this organization?' %}\n\n{{ organization.name }}\n\n{% trans 'This will delete all associated import- and scannerjobs. The action cannot be reversed' %}`)"
+                                  aria-label="{% trans 'Delete' %}"
+                                  title="{% trans 'Delete' %}">
+                            <i id="delete_forever" class="material-icons">delete_forever</i>
+                          </button>
+                        </form>
+                      {% endif %}
+                    {% endif %}
                   </div>
                 </td>
-              {% endif %}
-              <td class="datatable__column--actions">
-                <div class="action-wrapper button-group">
-                  {% if FEATURES.ORG_STRUCTURE in client.enabled_features %}
-                    <a href="{% url 'orgunit-list' organization.slug %}"
-                       class="button button--icon-button"
-                       aria-label="{% trans 'View organizational units.' %}"
-                       title="{% trans 'View organizational units.' %}">
-                      {% include "../components/svg-icons/org.svg" %}
-                    </a>
-                  {% endif %}
-                  <a href="{% url 'accounts' organization.slug %}"
-                     class="button button--icon-button"
-                     aria-label="{% trans 'View accounts.' %}"
-                     title="{% trans 'View accounts.' %}">{% include "../components/svg-icons/people.svg" %}</a>
-                  {% if request.user.is_superuser %}
-                    {% if organization.scanners_running %}
-                      <a href="#delete-org-blocked"
-                         data-modal="modal:open"
-                         data-src="{% url 'org_delete_block' slug=organization.slug %}"
-                         class="button button--icon-button"
-                         aria-label="{% trans 'Delete' %}"
-                         title="{% trans 'Delete' %}">
-                        <i id="delete_forever" class="material-icons">delete_forever</i>
-                      </a>
-                    {% else %}
-                      <form action="{% url 'delete-organization' slug=organization.slug %}"
-                            method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit"
-                                class="button button--icon-button"
-                                onclick="return confirm(`{% trans 'Do you really want to delete this organization?' %}\n\n{{ organization.name }}\n\n{% trans 'This will delete all associated import- and scannerjobs. The action cannot be reversed' %}`)"
-                                aria-label="{% trans 'Delete' %}"
-                                title="{% trans 'Delete' %}">
-                          <i id="delete_forever" class="material-icons">delete_forever</i>
-                        </button>
-                      </form>
-                    {% endif %}
-                  {% endif %}
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      {% endif %}
-    </table>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endif %}
+
+      </table>
+    </div>
   </div>
+
   {% if not client.organizations.all %}
     <p>{% trans "no organization added"|capfirst %}</p>
   {% endif %}

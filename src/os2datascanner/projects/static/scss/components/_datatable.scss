@@ -60,34 +60,19 @@
   &.lg.card,
   &.xl.card {
     // use gradients to signify that the table is scrollable
-    background-image:
-      linear-gradient(to right, white var(--datatable-cell-padding), rgba(255, 255, 255, 0)),
+    background-image: 
+      linear-gradient(to right, white var(--datatable-cell-padding),rgba(255, 255, 255, 0)),
       linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
-      linear-gradient(to left, white var(--datatable-cell-padding), rgba(255, 255, 255, 0)),
+      linear-gradient(to left, white var(--datatable-cell-padding),rgba(255, 255, 255, 0)),
       linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
     background-repeat: no-repeat;
-    background-position:
-      left top,
-      left top,
-      100% 0,
-      100% 0;
-    background-size:
+    background-position: left top, left top, 100% 0, 100% 0;
+    background-size: 
       calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%,
       calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%;
-    background-attachment:
-      local,
-      scroll,
-      local,
-      scroll;
-
-    // IE11 doesn't understand this implementation properly, so we use the media
-    // query below to target IE11 and then remove the shadows
-    @media (-ms-high-contrast: active),
-    (-ms-high-contrast: none) {
-      background-image: none !important;
-    }
+    background-attachment: local, scroll, local, scroll;
 
     &:focus {
       box-shadow: var(--box-shadow-widget), 0 0 0 3px var(--color-primary-light);
@@ -106,13 +91,13 @@
   }
 
   .last-opened {
-    opacity: .6;
+    opacity: 0.6;
     margin-top: 0.5rem;
   }
 
   &.disabled {
     pointer-events: none;
-    opacity: .6;
+    opacity: 0.6;
   }
 
   .datatable {
@@ -145,14 +130,12 @@
     }
   }
 
-  tr.open>td,
-  tr.open>th {
-    background-color: rgba(0, 0, 0, .07);
+  tr.open > td,
+  tr.open > th {
+    background-color: rgba(0, 0, 0, 0.07);
   }
 
-
   tr {
-
     td {
       transition: opacity 200ms ease-in-out;
     }
@@ -163,24 +146,24 @@
     }
   }
 
-  .matches-list>td,
-  .matches-list>th {
-    background-color: rgba(0, 0, 0, .035);
+  .matches-list > td,
+  .matches-list > th {
+    background-color: rgba(0, 0, 0, 0.035);
   }
 
-  tr.open>th:first-child,
-  tr.open>td:first-child,
-  .matches-list>th:first-child,
-  .matches-list>td:first-child {
+  tr.open > th:first-child,
+  tr.open > td:first-child,
+  .matches-list > th:first-child,
+  .matches-list > td:first-child {
     // Emulate border-left. Adding an actual border-left will shift
     // the contents of the row
     box-shadow: inset 4px 0 0 var(--color-primary);
   }
 
-  tr.highlighted>td,
-  tr.highlighted>th,
-  tr.highlighted+.matches-list>td,
-  tr.highlighted+.matches-list>th {
+  tr.highlighted > td,
+  tr.highlighted > th,
+  tr.highlighted + .matches-list > td,
+  tr.highlighted + .matches-list > th {
     background-color: var(--color-primary-lightest);
   }
 
@@ -209,8 +192,6 @@
       width: 100%;
       word-wrap: break-word;
       white-space: none;
-
-
 
       &>div {
         min-width: 12rem;
@@ -246,11 +227,11 @@
         margin-top: 0.5rem;
 
         &::after {
-          content: ")"
+          content: ")";
         }
 
         &::before {
-          content: "("
+          content: "(";
         }
 
         span {
@@ -373,11 +354,11 @@
       width: 8.5rem;
 
       .button {
-        margin: .25rem 0 0 .25rem;
+        margin: 0.25rem 0 0 0.25rem;
       }
 
-      >* {
-        flex: 0 1 auto; // be explicit for IE11s sake
+      > * {
+        flex: 0 1 auto;
       }
     }
 
@@ -416,7 +397,6 @@
 
     &.no-header {
       tr:first-of-type {
-  
         td {
           border-top: none;
         }
@@ -435,9 +415,7 @@
   }
 }
 
-
 @media (min-width: $break-sm) {
-
   col.datatable__column--matchcount,
   col.datatable__column--datasource_last_modified,
   col.datatable__column--source {
@@ -455,7 +433,6 @@
 }
 
 @media (max-width: $break-lg) {
-
   col.datatable__column--datasource_last_modified,
   td.datatable__column--datasource_last_modified,
   th.datatable__column--datasource_last_modified {
@@ -470,7 +447,6 @@
 
   .datatable tbody.links.no-header {
     tr:first-of-type {
-
       td {
         border-top: none;
       }
@@ -498,7 +474,7 @@
   text-align: center;
   width: 3.5rem;
   padding: 0.5rem;
-  margin: -.6rem 0;
+  margin: -0.6rem 0;
 
   &--red {
     background-color: var(--color-error);
@@ -525,7 +501,6 @@
   }
 
   .overflow-ellipsis {
-
     .employee__fullname {
       font-weight: bold;
     }
@@ -585,14 +560,20 @@
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     background-color: #f4f4f4;
     white-space: nowrap;
-    top: calc(2rem + var(--size-logo-height) + 12rem); // for sticky purposes; header height + row height of 9rem
+    top: calc(
+      2rem + var(--size-logo-height) + 12rem
+    ); // for sticky purposes; header height + row height of 9rem
 
     @media (min-width: $break-sm) {
-      top: calc(2rem + var(--size-logo-height) + 9rem); // for sticky purposes; header height + row height of 9rem
+      top: calc(
+        2rem + var(--size-logo-height) + 9rem
+      ); // for sticky purposes; header height + row height of 9rem
     }
 
     @media (min-width: $break-md) {
-      top: calc(2rem + var(--size-logo-height) + 6rem); // for sticky purposes; header height + row height of 6rem
+      top: calc(
+        2rem + var(--size-logo-height) + 6rem
+      ); // for sticky purposes; header height + row height of 6rem
     }
 
     @media (min-width: $break-lg) {
@@ -605,7 +586,9 @@
   th {
     background-color: #fff;
     z-index: 2;
-    top: calc(2rem + var(--size-logo-height)); // for sticky purposes; header height
+    top: calc(
+      2rem + var(--size-logo-height)
+    ); // for sticky purposes; header height
 
     &:first-child {
       border-top-left-radius: var(--border-radius-widget);
@@ -627,7 +610,6 @@
 }
 
 .datatable .stuck th {
-
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
   &:first-child {
@@ -678,21 +660,21 @@
   }
 
   &--icon {
-    margin-top: -.25rem;
+    margin-top: -0.25rem;
   }
 
   &--character {
     margin-top: 1.25rem;
     margin-left: 1rem;
-    margin-right: .25rem;
+    margin-right: 0.25rem;
   }
 
   &--bottom {
-    margin-bottom: .25rem;
+    margin-bottom: 0.25rem;
   }
 
   &--width {
-    margin-right: .75rem;
+    margin-right: 0.75rem;
     height: 1.2rem;
     max-width: 1.5rem;
 
@@ -710,7 +692,7 @@
 
   .text {
     color: var(--color-text-secondary);
-    font-size: .75rem;
+    font-size: 0.75rem;
     line-height: 1rem;
   }
 }
@@ -720,7 +702,7 @@
   background-color: #e0e0e0;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius-button);
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 .scan {
@@ -752,7 +734,6 @@
   word-break: break-all;
 }
 
-
 .matches-list {
   &__column {
     &--match {
@@ -770,7 +751,6 @@
 }
 
 .match-context {
-
   &::before,
   &::after {
     content: "[...]";
@@ -778,11 +758,11 @@
   }
 
   &::before {
-    padding-right: .35em;
+    padding-right: 0.35em;
   }
 
   &::after {
-    padding-left: .35em;
+    padding-left: 0.35em;
   }
 }
 
@@ -826,3 +806,290 @@
     margin-top: 0;
   }
 }
+
+.datatable tr.warning {
+  background-color: var(--color-warning);
+}
+
+.datatable tr.problem textarea[readonly="true"] {
+  width: 100%;
+  padding: 1em;
+}
+
+// ***********************************************
+// ***********************************************
+// ***** THE BIG TABLE REFACTORING ANNO 2024 *****
+// ***********************************************
+// ***********************************************
+
+// Redmine ticket: [#59413]
+
+// NOTE: 
+// Change the class name from "datatablex" to "datatable" after all tables have been refactored.
+// Remember to do the same in all relevant HTML docs.
+.datatablex {
+  // Box model
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  &__card-container {
+    // Layout
+    overflow: hidden; // Hides overflow from the scrollbar and the background-gradient
+    
+    // Box model
+    margin-bottom: 0;
+    border-radius: 0;
+    
+    // Visual
+    background-color: var(--color-widget-bg);
+    box-shadow: var(--box-shadow-widget);
+
+    @media (min-width: $break-lg) {
+      // Box model
+      margin-bottom: calc(2 * var(--datatable-cell-padding));
+      border-radius: var(--border-radius-widget);
+    }
+  }
+  
+  &__wrapper {
+    // Layout
+    overflow-x: auto;    
+    
+    // Box model
+    max-width: 100%;
+    height: inherit;
+    clear: both;
+    
+    // Visual
+    background-image: // use gradients to signify that the table is scrollable 
+      linear-gradient(
+        to right,
+        white var(--datatable-cell-padding),
+        rgba(255, 255, 255, 0)
+        ),
+        linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
+      linear-gradient(
+        to left,
+        white var(--datatable-cell-padding),
+        rgba(255, 255, 255, 0)
+        ),
+        linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
+    background-repeat: no-repeat;
+    background-position: left top, left top, 100% 0, 100% 0;
+    background-size: 
+    calc(var(--datatable-cell-padding) * 4) 100%,
+      var(--datatable-cell-padding) 100%,
+      calc(var(--datatable-cell-padding) * 4) 100%,
+      var(--datatable-cell-padding) 100%;
+      background-attachment: local, scroll, local, scroll;
+    }
+    
+    
+  &__row { // Styles for all th + td inside datatables
+    th:first-child,
+    td:first-child {
+      padding-left: var(--datatable-cell-padding);
+    }
+      
+    th:last-child,
+    td:last-child {
+      padding-right: var(--datatable-cell-padding);
+    }
+      
+    th, td {
+      line-height: normal;
+      padding: var(--datatable-cell-padding) calc(var(--datatable-cell-padding) / 2);
+      vertical-align: middle;
+    }
+
+    td {
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+      transition: opacity 200ms ease-in-out;
+    }
+  }
+  
+  a:not(.button) { // So far only used in the org-table on Admin
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--color-primary);
+  }
+}
+
+// **************************************
+// ***** TABLES IN THE ADMIN MODULE *****
+// **************************************
+
+// SCSS vars for über precise and responsive column widths
+$sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
+$relative_table_width: calc(100vw - #{$sidemenu_and_content});
+
+// ******************************
+// ***** ORGANIZATION TABLE *****
+// ******************************
+
+// Redmine ticket: [#59989]
+
+.org-table {
+  // Table SCSS vars:
+  $fixed-column_width: 8.5rem; // The "fixed" column of this specific table
+  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width}); 
+  $table_min-width: 70rem; // The size for this specific table
+
+  // Column SCSS vars:
+  $width_25: calc(#{$table_width} * 0.25);
+  $min-width_25: calc(#{$table_min-width} * 0.25);
+
+  $width_50: calc(#{$table_width} * 0.50);
+  $min-width_50: calc(#{$table_min-width} * 0.50);
+
+  // Styles:
+  min-width: $table_min-width;
+
+  .column {
+    &--name {
+      width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+    }
+    
+    &--info {
+      width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+
+      .info {
+        // Local SCSS vars
+        $text-size: 1rem;
+        $icon-size: 1.25rem;
+
+        &__container {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        &__label {
+          color: var(--color-text-secondary);
+          font-size: $text-size;
+          line-height: $text-size;
+        }
+
+        .material-icons {
+          color: var(--color-primary);
+
+          font-size: $icon-size;
+          width: $icon-size;
+          height: $icon-size;
+          line-height: $icon-size;
+        }
+      }
+    }
+
+    &--import {
+      width: clamp(calc(#{$min-width_50}), calc(#{$width_50}), calc(#{$width_50}));
+    }
+
+    &--actions { // The "fixed" column of this specific table
+      width: $fixed-column_width;
+    }
+  }
+}
+
+// ******************************************
+// ***** ORGANIZATIONAL STRUCTURE TABLE *****
+// ******************************************
+
+// Redmine ticket: [#60290]
+
+// TBA
+
+
+// ****************************************
+// ***** ORGANIZATIONS ACCOUNTS TABLE *****
+// ****************************************
+
+// Redmine ticket: [#60291]
+
+// TBA
+
+
+// ************************
+// ***** RULES TABLES *****
+// ************************
+
+// Redmine ticket: [#60287]
+
+  // "CUSTOM RULES":
+  // "SYSTEM RULES":
+
+// TBA
+
+
+// **************************
+// ***** SCANNER TABLES *****
+// **************************
+
+// Redmine ticket: [#60288]
+
+  // WEB SCANNER:
+  // FILE SCANNER:
+  // EXCHANGE SCANNER:
+  // OFFICE365 MAIL SCANNER:
+  // OFFICE365 ONEDRIVE SCANNER:
+  // OFFICE365 TEAMS SCANNER:
+  // OFFICE365 CALENDAR SCANNER:
+  // GOOGLE DRIVE SCANNER:
+  // GMAIL SCANNER:
+  // SBSYS SCANNER:
+
+// TBA
+
+
+// ******************************
+// ***** SCAN STATUS TABLES *****
+// ******************************
+
+// Redmine ticket: [#60289]
+
+  // ONGOING SCANS:
+  // FINISHED SCANS:
+  // ERROR MESSAGES:
+
+// TBA
+
+
+// ***************************************
+// ***** TABLES IN THE REPORT MODULE *****
+// ***************************************
+
+// **********************************
+// ***** RESULT OVERVIEW TABLES *****
+// **********************************
+
+// Redmine ticket: [#60320]
+
+// ***** REPORT *****
+
+  // PERSONAL:
+  // REMEDIATOR:
+  // UNDISTRIBUTED:
+
+// TBA
+
+// ***** ARCHIVE *****
+
+  // PERSONAL:
+  // REMEDIATOR:
+  // UNDISTRIBUTED:
+
+// TBA
+
+
+// *********************************
+// ***** LEADER OVERVIEW TABLE *****
+// *********************************
+
+// Redmine ticket: [#60320]
+
+// TBA

@@ -8,8 +8,8 @@
 
   @media (min-width: $break-lg) {
     position: static;
-    width: 15rem;
-    min-width: 15rem; // for IE11's sake, otherwise element will collapse completely if next to something that has flex-grow: 1
+    width: var(--width-sidemenu);
+    min-width: var(--width-sidemenu); // for IE11's sake, otherwise element will collapse completely if next to something that has flex-grow: 1
     min-height: 100%;
     display: block !important;
     box-shadow: none !important; // for some reason, IE11 ignores box-shadow: none; here, and falls back to the base style (ln. 6) which has a box-shadow

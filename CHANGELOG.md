@@ -11,19 +11,20 @@
 - The snackbar component has been moved into the shared directive and has been given 
   a style overhaul. 
 
-### General improvements
-
 - The unhandled matches graph in the DPO overview is now a line graph to
   accurately represent a change in the number of matches over time.
 
 - Management command 'broadcast' has been expanded with arguments to distinguish between 
-imported versus manually created objects.
+  imported versus manually created objects.
 
 - Warning filters have been added to tests, and some deprecated functions aren't used any longer, 
   as to decrease the number of warnings given during unit testing.
 
 - Error messages in the report module are now displayed with a warning triangle with the option 
   to hover to see the error described in a popover (toolhint but bigger). 
+
+- _datatables.scss has been prepared so it's ready for future improvement of all datatables on both 
+  Admin and Report.
 
 ### Bugfixes
 
@@ -46,6 +47,8 @@ imported versus manually created objects.
 
 - Common mailboxes connected to several users no longer confuse the error
   detection logic run when a scan is started.
+
+- The datatable on "admin/organizations" now have more responsive UI and no longer collapse on itself.
 
 ## Version 3.22.4, 21st March 2024
 
