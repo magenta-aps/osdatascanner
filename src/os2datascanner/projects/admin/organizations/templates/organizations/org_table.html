@@ -34,17 +34,17 @@
       <table class="datatablex org-table">
         <thead>
           <tr class="datatablex__row">
-            <th class="column column--org-name">{% trans "name"|capfirst %}</th>
-            <th class="column column--org-info">{% trans "contact info"|capfirst %}</th>
+            <th class="column column--name">{% trans "name"|capfirst %}</th>
+            <th class="column column--info">{% trans "contact info"|capfirst %}</th>
             {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
-              <th class="column column--org-import">{% trans "import service"|capfirst %}</th>
+              <th class="column column--import">{% trans "import service"|capfirst %}</th>
             {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
-              <th class="column column--org-import">{% trans "import service (Microsoft Graph)"|capfirst %}</th>
+              <th class="column column--import">{% trans "import service (Microsoft Graph)"|capfirst %}</th>
             {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
-              <th class="column column--org-import">{% trans "import service (OS2mo)"|capfirst %}</th>
+              <th class="column column--import">{% trans "import service (OS2mo)"|capfirst %}</th>
             {% endif %}
             {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in client.enabled_features %}
-              <th class="column column--org-actions">{% trans "Actions" %}</th>
+              <th class="column column--actions">{% trans "Actions" %}</th>
             {% endif %}
           </tr>
         </thead>
@@ -53,10 +53,10 @@
           <tbody>
             {% for organization in client.organizations.all %}
               <tr class="datatablex__row">
-                <td class="column column--org-name">
+                <td class="column column--name">
                   <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
                 </td>
-                <td class="column column--org-info">
+                <td class="column column--info">
                   <div class="info__container">
                     <div class="info info--email">
                       <span class="material-icons">mail</span>
@@ -73,7 +73,7 @@
 
                 {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
                   <td id="import_column__{{ organization.slug }}"
-                      class="column column--org-import">
+                      class="column column--import">
                     <div class="flex">
                       <div class="button-group">
                         <!-- NB: importservice is in one word because a reverse name was not specified on the ImportService model's relation to Organization and this is the default -->
@@ -113,7 +113,7 @@
                   </td>
                 {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
                   <td id="import_column__{{ organization.slug }}"
-                      class="column column--org-import">
+                      class="column column--import">
                     <div class="flex">
                       <div class="button-group">
                         {% if not organization.importservice %}
@@ -145,7 +145,7 @@
                   </td>
                 {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
                   <td id="import_column__{{ organization.slug }}"
-                      class="column column--org-import">
+                      class="column column--import">
                     <div class="flex">
                       <div class="button-group">
                         {% if not organization.importservice %}
@@ -193,7 +193,7 @@
                     </div>
                   </td>
                 {% endif %}
-                <td class="column column--org-actions">
+                <td class="column column--actions">
                   <div class="action-wrapper button-group">
                     {% if FEATURES.ORG_STRUCTURE in client.enabled_features %}
                       <a href="{% url 'orgunit-list' organization.slug %}"

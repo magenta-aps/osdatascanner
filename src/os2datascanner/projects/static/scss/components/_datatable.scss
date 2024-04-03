@@ -947,11 +947,11 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
   min-width: $table_min-width;
 
   .column {
-    &--org-name {
+    &--name {
       width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
     }
     
-    &--org-info {
+    &--info {
       width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
 
       .info {
@@ -986,11 +986,11 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
       }
     }
 
-    &--org-import {
+    &--import {
       width: clamp(calc(#{$min-width_50}), calc(#{$width_50}), calc(#{$width_50}));
     }
 
-    &--org-actions { // The "fixed" column of this specific table
+    &--actions { // The "fixed" column of this specific table
       width: $fixed-column_width;
     }
   }

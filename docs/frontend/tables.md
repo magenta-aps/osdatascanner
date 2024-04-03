@@ -12,7 +12,7 @@ This is an ongoing project, so be mindfull that changes might occur.
     <table class="datatable [table ID]-table">
       <thead>
         <tr class="datatable__row">
-          <th class="column column--[table ID]-[column ID]">
+          <th class="column column--[column ID]">
             {% trans "[column label]"|capfirst %}
           </th>
 
@@ -27,7 +27,7 @@ This is an ongoing project, so be mindfull that changes might occur.
           {% for [data] in [dataset] %}
 
             <tr class="datatable__row">
-              <td class="column column--[table ID]-[column ID]">
+              <td class="column column--[column ID]">
                 {{ [data].[ID tag] }}
               </td>
 
@@ -52,15 +52,15 @@ All tables in OSdatascanner consists of two sets of style classes:
 - General classes, that apply styling to all tables:
     - `.datatable__card-container`, `.datatable__wrapper`, `.datatable`, and `.datatable__row`
 - Individual classes, that define local only styling for each table:
-    - `.[table ID]-table`, `.column`, and `.column--[table ID]-[column ID]`
+    - `.[table ID]-table`, `.column`, and `.column--[column ID]`
 
-| HTML Tag            | Class                                           | Reason                                            |
-| ------------------- | ----------------------------------------------- | ------------------------------------------------- |
-| `<div>`             | `datatable__card-container`                     | Sets the background and "contains" the table      |
-| `<div>`             | `datatable__wrapper`                            | Handles scroll behaviour                          |
-| `<table>`           | `datatable` <br> `[table ID]-table`             | General styling + specific styling for this table |
-| `<tr>`              | `datatable__row`                                | Handles general styling for `<th>` and `<td>`     |
-| `<th>` <br> `<td>`  | `column` <br> `column--[table ID]-[column ID]`  | Handles unique styling for individual columns     |
+| HTML Tag            | Class                               | Reason                                            |
+| ------------------- | ------------------------------------| ------------------------------------------------- |
+| `<div>`             | `datatable__card-container`         | Sets the background and "contains" the table      |
+| `<div>`             | `datatable__wrapper`                | Handles scroll behaviour                          |
+| `<table>`           | `datatable` <br> `[table ID]-table` | General styling + specific styling for this table |
+| `<tr>`              | `datatable__row`                    | Handles general styling for `<th>` and `<td>`     |
+| `<th>` <br> `<td>`  | `column` <br> `column--[column ID]` | Handles unique styling for individual columns     |
 
 
 ## Creating a new table
@@ -76,7 +76,7 @@ It doesn't matter with order these are done in as long as their classes match.
 
 1. Build the new table according to the standard semantic structure seen above.
 2. Name the table identifier something that both *make sense* and is *unique* for this table, and combine it with a "-table" suffix, e.g. `.org-table`.
-3. Name each column identifier by combining the table identifier and the column type, e.g. `.org-import`.
+3. Name each column identifier something relevant to the content type, e.g. `.column--import`.
 
 ### Constructing the SCSS
 
@@ -141,7 +141,7 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
   min-width: $table_min-width;
 
   .column {
-    &--example-name {
+    &--name {
       // We want this column to take up 25% of the table, so we need $width_25 
       // and $min-width_25
 
@@ -159,15 +159,15 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
       // "max" be the same value.
     }
     
-    &--example-date {
+    &--date {
       width: clamp(calc(#{$min-width_15}), calc(#{$width_15}), calc(#{$width_15}));
     }
 
-    &--example-description {
+    &--description {
       width: clamp(calc(#{$min-width_40}), calc(#{$width_40}), calc(#{$width_40}));
     }
 
-    &--example-email { 
+    &--email { 
       width: clamp(calc(#{$min-width_20}), calc(#{$width_20}), calc(#{$width_20}));
     }
   }
@@ -214,21 +214,21 @@ Starting with an example; let's say we have a table with four columns like the o
   min-width: $table_min-width;
   
   .column {
-    &--fixed-name,
-    &--fixed-org {
+    &--name,
+    &--org {
       width: clamp(calc(#{$min-width_20}), calc(#{$width_20}), calc(#{$width_20}));
     }
 
-    &--fixed-phone,
-    &--fixed-email {
+    &--phone,
+    &--email {
       width: clamp(calc(#{$min-width_15}), calc(#{$width_15}), calc(#{$width_15}));
     }    
 
-    &--fixed-import {
+    &--import {
       width: clamp(calc(#{$min-width_30}), calc(#{$width_30}), calc(#{$width_30}));
     }    
 
-    &--fixed-actions { // The "fixed" column of this specific table
+    &--actions { // The "fixed" column of this specific table
       width: $fixed-column_width;
     }
   }
@@ -247,7 +247,7 @@ Starting with an example; let's say we have a table with four columns like the o
     <table class="datatable [tableID]-table">
       <thead>
         <tr class="datatable__row">
-          <th class="column column--[tableID]-[columnID]">
+          <th class="column column--[columnID]">
             {% trans "[label]"|capfirst %}
           </th>
 
@@ -257,7 +257,7 @@ Starting with an example; let's say we have a table with four columns like the o
 
       <tbody>
         <tr class="datatable__row">
-          <td class="column column--[tableID]-[columnID]"></td>
+          <td class="column column--[columnID]"></td>
 
           <!-- Other data cells here -->
         </tr>
@@ -317,15 +317,13 @@ Starting with an example; let's say we have a table with four columns like the o
   min-width: $table_min-width;
 
   .column {
-    &--example-[columnID] {
+    &--[columnID] {
       width: clamp(calc(#{$min-width_10}), calc(#{$width_10}), calc(#{$width_10}));
     }
 
     /* Other column styles here */
   }
 }
-
-// NOTE: Replace "example" with whatever you choose as [tableID] for the table
 ```
 
 *** 
@@ -379,19 +377,17 @@ Starting with an example; let's say we have a table with four columns like the o
   min-width: $table_min-width;
 
   .column {
-    &--fixed-[columnID] {
+    &--[columnID] {
       width: clamp(calc(#{$min-width_10}), calc(#{$width_10}), calc(#{$width_10}));
     }
 
     /* Other column styles here */
 
-    &--fixed-[columnID] { // The "fixed" column of this specific table
+    &--[columnID] { // The "fixed" column of this specific table
       width: $fixed-column_width;
     }
   }
 }
-
-// NOTE: Replace "fixed" with whatever you choose as [tableID] for the table
 ```
 
 ***
