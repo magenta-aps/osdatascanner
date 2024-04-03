@@ -134,8 +134,11 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
             confirmed_dpo = self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
             if self.request.user.is_superuser or confirmed_dpo:
-                self.matches = self.matches.filter(
-                    alias_relation__account__units=orgunit)
+                # This hurts my brain: but if we filter for equality, we multiply by
+                # the amount of positions some user has for a given org unit. (up to 3, currently)
+                # But if we exclude everything that ISN'T our current OU ... we're fine?
+                self.matches = self.matches.exclude(~Q(
+                    alias_relation__account__units=orgunit))
             else:
                 raise OrganizationalUnit.DoesNotExist(
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))

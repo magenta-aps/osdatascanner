@@ -32,6 +32,9 @@ imported versus manually created objects.
 - Importing via LDAP with non-imported organizational structure in the database
   no longer breaks the import.
 
+- When filtering by an organizational unit in the DPO module, results will no longer be multiplied
+  for users with multiple positions in given unit.
+
 ## Version 3.22.4, 21st March 2024
 
 "Yesterday Was My Birthday"
