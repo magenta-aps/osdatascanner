@@ -391,13 +391,26 @@ class Scanner(models.Model):
         scanner's ScheduledCheckup objects (in the process deleting objects no
         longer covered by one of this scanner's Sources), and puts them into
         the provided outbox list. Returns the number of checkups added."""
-        source_list = list(self.generate_sources())
-        uncensor_map = {
-                source.censor(): source for source in source_list}
 
-        if not len(uncensor_map) == len(source_list):
-            raise AssertionError("BUG: Sources disappeared before remap() was "
-                                 "called when adding checkups!")
+        source_list = list(self.generate_sources())
+        uncensor_map = {}
+        for source in source_list:
+            censored = source.censor()
+            match (censored, uncensor_map.get(source)):
+                case (s, None):
+                    # Our map doesn't know about this Source yet, so put it in
+                    # there
+                    uncensor_map[source] = censored
+                case (s, t) if s == t:
+                    # We've ended up with two references to the same Source
+                    # (presumably through two different Accounts?), but that's
+                    # harmless in this context
+                    pass
+                case (s, t):
+                    # Something weird has happened
+                    raise ValueError(
+                            "Conflicting censored representations for "
+                            f"{source}: {s.crunch()} / {t.crunch()}")
 
         conv_template = messages.ConversionMessage(
                 scan_spec=spec_template,

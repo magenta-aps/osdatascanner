@@ -44,6 +44,9 @@ imported versus manually created objects.
 - When filtering by an organizational unit in the DPO module, results will no longer be multiplied
   for users with multiple positions in given unit.
 
+- Common mailboxes connected to several users no longer confuse the error
+  detection logic run when a scan is started.
+
 ## Version 3.22.4, 21st March 2024
 
 "Yesterday Was My Birthday"
