@@ -1,10 +1,14 @@
+<!-- Old version of the snackbar component -->
+
 {# Snackbar for popup messages - Using oob swap, to support django messages #}
+{% load static %}
+
 <div class="message-popup-area" hx-swap-oob="afterbegin" id="snackbar">
   {% for message in messages %}
     <div class="message-popup ">
       {{ message }}
       <button type="button"
-              onclick="closeSnackBar(this)"
+              onclick="closeOldSnackBar(this)"
               class="close-modal button button--modal-close"
               title="Close">
         <svg version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -15,3 +19,5 @@
     </div>
   {% endfor %}
 </div>
+
+<script src="{% static 'js/modals/snackBars.js' %}"></script>

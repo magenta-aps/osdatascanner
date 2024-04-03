@@ -1,28 +1,21 @@
-"""report URL Configuration
+"""Report App URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.11/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, re_path
-from django.urls import path
+from django.urls import include, path
+
+_active_apps = settings.INSTALLED_APPS
 
 urlpatterns = [
-    re_path('', include('os2datascanner.projects.report.reportapp.urls')),
-    re_path('^admin/', admin.site.urls),
+    path('', include('os2datascanner.projects.report.reportapp.urls')),
+    path('admin/', admin.site.urls),  # Enables admin
 ]
 
+# Conditionally include urls for relevant active osdatascanner apps:
 if (hasattr(settings, "OPTIONAL_APPS") and "debug_toolbar" in settings.OPTIONAL_APPS):
     import debug_toolbar
-    urlpatterns.append(path('__debug__/', include(debug_toolbar.urls))),
+    urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))

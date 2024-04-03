@@ -1,0 +1,35 @@
+{# Snackbar for popup messages - Using oob swap, to support django messages #}
+{% load static %}
+
+
+<div class="snackbar__container" hx-swap-oob="afterbegin" id="snackbar">
+  {% for message in messages %}
+    <div class="snackbar snackbar--{{ message.tags }}">
+      <div class="snackbar__content">
+        <span class="snackbar__icon material-icons">
+          <!-- Sets the icon depending on the message type -->
+          {% if 'success' in message.tags %}
+            check_circle
+          {% elif 'warning' in message.tags %}
+            warning
+          {% elif 'error' in message.tags %}
+            error
+          {% else %}
+            info
+          {% endif %}
+        </span>
+
+        <p class="snackbar__text">{{ message }}</p>
+ 
+        <button type="button"
+                class="close-modal button button--modal-close snackbar__close-button"
+                onclick="closeNewSnackBar(this)"
+                title="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script src="{% static 'js/modals/snackBars.js' %}"></script>

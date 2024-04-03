@@ -1,6 +1,15 @@
 # Changelog
 
-## Next Release
+## Next release
+
+### New in this release 
+
+- A shared directive for common components has been added.
+
+### General improvements
+
+- The snackbar component has been moved into the shared directive and has been given 
+  a style overhaul. 
 
 ### General improvements
 

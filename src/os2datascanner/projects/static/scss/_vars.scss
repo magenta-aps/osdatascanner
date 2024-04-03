@@ -49,6 +49,20 @@
 
   --color-office365: #d83b01;
 
+  // alert/popover/snackbar colors
+  --color-alert-default: var(--color-widget-bg);
+  --color-alert-default-accent: #D9D9D9;
+
+  --color-alert-success: #D2EEE6;
+  --color-alert-success-accent: #489681;
+
+  --color-alert-warning: #FFF3D0;
+  --color-alert-warning-accent: #fed149;
+
+  --color-alert-error: #ffe3e3;
+  --color-alert-error-accent: #ED9494;
+
+
   // match_status colors
   --color-status-good: #4a9d8660;
   --color-status-ok: #3a69b460;
