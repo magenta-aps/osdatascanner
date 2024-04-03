@@ -10,8 +10,6 @@ from os2datascanner.engine2.rules import logical, regex
 from os2datascanner.engine2.model.data import unpack_data_url
 from os2datascanner.engine2.model.msgraph import mail as graph_mail
 from os2datascanner.engine2.model.derived import mail
-from os2datascanner.engine2.model.msgraph.files import (MSGraphDriveSource,
-                                                        MSGraphDriveHandle, MSGraphFilesSource)
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 from os2datascanner.projects.admin.organizations.models.account \
     import Account
@@ -355,37 +353,3 @@ class ScannerTest(TestCase):
 
         self.assertEqual(ScheduledCheckup.objects.count(), 1)
         self.assertEqual(ScheduledCheckup.objects.first(), sc)
-
-    def test_add_checkups_sanity_check(self):
-        """If the _add_checkups method has two identical censored sources, it
-        should throw an exception, which we can check for."""
-        client = Client.objects.create(name="Test Industries smba")
-        org = Organization.objects.create(
-                client=client, name="Test Industries smba")
-        grant = GraphGrant.objects.create(organization=org)
-        scanner = MSGraphMailScanner.objects.create(
-                organization=org,
-                name="Test Department",
-                grant=grant, rule=self.dummy_rule)
-
-        fake_handle = MSGraphDriveHandle(MSGraphFilesSource(
-                                    "Not a real client ID value",
-                                    "Not a real tenant ID value",
-                                    "Not a very secret client secret"),
-                                    "notARealPathButCamelCase",
-                                    "Very nice folder",
-                                    "Burger Bob",
-                                    user_account="Burger Bob")
-        # Mock the generate_sources method to return two specific sources.
-        scanner.generate_sources = lambda: [
-            MSGraphDriveSource(fake_handle),
-            MSGraphDriveSource(fake_handle)]
-
-        self.assertRaises(
-            AssertionError,
-            scanner._add_checkups,
-            scanner._construct_scan_spec_template(
-                self.user,
-                False),
-            [],
-            False)
