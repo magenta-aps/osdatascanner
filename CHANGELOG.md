@@ -1,10 +1,12 @@
 # Changelog
 
-## Next release
+## Version 3.22.5, 4th April 2024
+
+"Front Doors Only"
 
 ### New in this release 
 
-- A shared directive for common components has been added.
+- A shared application for common components has been added.
 
 ### General improvements
 
