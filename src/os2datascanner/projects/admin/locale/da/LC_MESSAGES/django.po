@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-21 13:38+0100\n"
+"POT-Creation-Date: 2024-04-04 09:19+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -145,7 +145,7 @@ msgstr "Login metode"
 
 #: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:86
 #: core/models/client.py:75
-#: organizations/templates/organizations/org_table.html:45
+#: organizations/templates/organizations/org_table.html:37
 #: organizations/templates/organizations/orgunit_list.html:121
 msgid "name"
 msgstr "navn"
@@ -226,7 +226,7 @@ msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
 #: adminapp/models/scannerjobs/msgraph.py:191
-#: adminapp/models/scannerjobs/webscanner.py:42
+#: adminapp/models/scannerjobs/webscanner.py:43
 msgid "check dead links"
 msgstr "tjek døde links"
 
@@ -303,93 +303,97 @@ msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 msgid "connected scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:71
+#: adminapp/models/scannerjobs/scanner_helpers.py:40
+msgid "path"
+msgstr "sti"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py:73
 msgid "total sources"
 msgstr "antal kilder"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:76
+#: adminapp/models/scannerjobs/scanner_helpers.py:78
 msgid "explored sources"
 msgstr "udforskede kilder"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:81
+#: adminapp/models/scannerjobs/scanner_helpers.py:83
 msgid "total objects"
 msgstr "antal objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:86
+#: adminapp/models/scannerjobs/scanner_helpers.py:88
 msgid "scanned objects"
 msgstr "scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:91
+#: adminapp/models/scannerjobs/scanner_helpers.py:93
 msgid "size of scanned objects"
 msgstr "størrelse af scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:97
+#: adminapp/models/scannerjobs/scanner_helpers.py:99
 msgid "message"
 msgstr "Fejlbesked"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:105
+#: adminapp/models/scannerjobs/scanner_helpers.py:107
 msgid "matches found"
 msgstr "resultater fundet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:179
+#: adminapp/models/scannerjobs/scanner_helpers.py:181
 #: import_services/models/exported_mixin.py:37
 msgid "last modified"
 msgstr "senest opdateret"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:184
+#: adminapp/models/scannerjobs/scanner_helpers.py:186
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:191
+#: adminapp/models/scannerjobs/scanner_helpers.py:193
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:196
+#: adminapp/models/scannerjobs/scanner_helpers.py:198
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:250
+#: adminapp/models/scannerjobs/scanner_helpers.py:252
 msgid "Start time"
 msgstr "Startet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:253
+#: adminapp/models/scannerjobs/scanner_helpers.py:255
 #: adminapp/models/usererrorlog.py:29
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:254
+#: adminapp/models/scannerjobs/scanner_helpers.py:256
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:310
+#: adminapp/models/scannerjobs/scanner_helpers.py:312
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:318
+#: adminapp/models/scannerjobs/scanner_helpers.py:320
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:319
+#: adminapp/models/scannerjobs/scanner_helpers.py:321
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/webscanner.py:58
+#: adminapp/models/scannerjobs/webscanner.py:59
 msgid "validation method"
 msgstr "valideringsmetode"
 
-#: adminapp/models/scannerjobs/webscanner.py:64
+#: adminapp/models/scannerjobs/webscanner.py:65
 msgid "sitemap file"
 msgstr "sitemap fil"
 
-#: adminapp/models/scannerjobs/webscanner.py:71
+#: adminapp/models/scannerjobs/webscanner.py:72
 msgid "sitemap url"
 msgstr "sitemap url"
 
-#: adminapp/models/scannerjobs/webscanner.py:76
+#: adminapp/models/scannerjobs/webscanner.py:77
 msgid "crawl the sitemap's content"
 msgstr "crawle i sitemap-filens indhold"
 
-#: adminapp/models/scannerjobs/webscanner.py:78
+#: adminapp/models/scannerjobs/webscanner.py:79
 msgid ""
 "instead of just treating the sitemap as a complete list of links, run the "
 "crawler on those links as well"
@@ -397,15 +401,15 @@ msgstr ""
 "i stedet for at betragte sitemap-filen som en liste af alle relevante links, "
 "kør crawleren på selve disse links"
 
-#: adminapp/models/scannerjobs/webscanner.py:84
+#: adminapp/models/scannerjobs/webscanner.py:85
 msgid "download Sitemap from server"
 msgstr "hent Sitemap fra serveren"
 
-#: adminapp/models/scannerjobs/webscanner.py:89
+#: adminapp/models/scannerjobs/webscanner.py:90
 msgid "reduce communication"
 msgstr "formindsk kommunikation"
 
-#: adminapp/models/scannerjobs/webscanner.py:91
+#: adminapp/models/scannerjobs/webscanner.py:92
 msgid ""
 "reduce the number of HTTP requests made to the server by unconditionally "
 "trusting the content of the sitemap"
@@ -413,11 +417,11 @@ msgstr ""
 "formindsk antallet af HTTP-anmodninger til serveren ved at stole ubetinget "
 "på sitemap-filens indhold"
 
-#: adminapp/models/scannerjobs/webscanner.py:99
+#: adminapp/models/scannerjobs/webscanner.py:100
 msgid "comma-separated list of urls to exclude"
 msgstr "Kommasepareret liste af URLs der skal eksluderes"
 
-#: adminapp/models/scannerjobs/webscanner.py:101
+#: adminapp/models/scannerjobs/webscanner.py:102
 msgid ""
 "Be sure to include a trailing '/'to enforce path matching, i.e. https://"
 "example.com/images/ instead of https://example.com/images"
@@ -425,11 +429,11 @@ msgstr ""
 "Afslut URL'en med '/' for at sikre sti-matching, i.e. https://example.com/"
 "images/ i stedet for https://example.com/images"
 
-#: adminapp/models/scannerjobs/webscanner.py:107
+#: adminapp/models/scannerjobs/webscanner.py:108
 msgid "extended hint support"
 msgstr "udvidet hint-understøttelse"
 
-#: adminapp/models/scannerjobs/webscanner.py:109
+#: adminapp/models/scannerjobs/webscanner.py:110
 msgid ""
 "present pages by their HTML titles and allow the presentation of links to be "
 "overridden"
@@ -1027,9 +1031,9 @@ msgstr "Beskrivelse af regel"
 #: adminapp/templates/components/rules/regexrule_form.html:257
 #: adminapp/templates/components/rules/regexrule_form.html:258
 #: adminapp/templates/components/rules/regexrule_form.html:260
-#: adminapp/templates/components/scanner/scanner_form.html:724
 #: adminapp/templates/components/scanner/scanner_form.html:725
-#: adminapp/templates/components/scanner/scanner_form.html:727
+#: adminapp/templates/components/scanner/scanner_form.html:726
+#: adminapp/templates/components/scanner/scanner_form.html:728
 msgid "Save changes"
 msgstr "Gem ændringer"
 
@@ -1041,10 +1045,10 @@ msgstr "Gem ændringer"
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:84
 #: adminapp/templates/rules.html:85 adminapp/templates/scanners.html:188
 #: adminapp/templates/scanners.html:189
-#: organizations/templates/organizations/org_table.html:211
-#: organizations/templates/organizations/org_table.html:212
-#: organizations/templates/organizations/org_table.html:223
-#: organizations/templates/organizations/org_table.html:224
+#: organizations/templates/organizations/org_table.html:216
+#: organizations/templates/organizations/org_table.html:217
+#: organizations/templates/organizations/org_table.html:228
+#: organizations/templates/organizations/org_table.html:229
 msgid "Delete"
 msgstr "Slet"
 
@@ -1086,7 +1090,7 @@ msgstr "Fjern udtryk"
 msgid "Add another regular expression"
 msgstr "Tilføj endnu et regulært udtryk"
 
-#: adminapp/templates/components/rules/rule_selector.html:44
+#: adminapp/templates/components/rules/rule_selector.html:42
 msgid ""
 "Note, that rule changes will not affect previously scanned objects unless a "
 "full scan is run."
@@ -1135,7 +1139,7 @@ msgstr "Status"
 #: adminapp/templates/components/scanner/scan_completed.html:88
 #: adminapp/templates/components/scanstatus/scan_status_table.html:43
 #: adminapp/templates/error_log.html:196
-#: organizations/templates/organizations/org_table.html:56
+#: organizations/templates/organizations/org_table.html:47
 msgid "Actions"
 msgstr "Handlinger"
 
@@ -1445,11 +1449,11 @@ msgstr ""
 "Universelle opryddere er automatisk tildelt oprydderrollen for alle "
 "scannerjobs."
 
-#: adminapp/templates/components/scanner/scanner_form.html:692
+#: adminapp/templates/components/scanner/scanner_form.html:693
 msgid "Schedule scan"
 msgstr "Planlæg scan"
 
-#: adminapp/templates/components/scanner/scanner_form.html:699
+#: adminapp/templates/components/scanner/scanner_form.html:700
 msgid ""
 "Schedule your scan by creating a fixed interval or adding a date to complete "
 "the scannerjob."
@@ -1457,7 +1461,7 @@ msgstr ""
 "Planlæg dit scan ved at oprette et fast interval eller tilføj en dato for "
 "afvikling af scannerjobbet."
 
-#: adminapp/templates/components/scanner/scanner_form.html:712
+#: adminapp/templates/components/scanner/scanner_form.html:713
 msgid "The scanner will start at the following time for the selected days:"
 msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 
@@ -2464,7 +2468,7 @@ msgstr "{value} er ikke en gyldig værdi for {class_name}"
 msgid "Cancel sync process"
 msgstr "Afbryd synkronisering"
 
-#: core/templates/components/background_job.html:40
+#: core/templates/components/background_job.html:42
 msgid "last updated"
 msgstr "sidst opdateret"
 
@@ -2537,7 +2541,7 @@ msgid "organization UUID"
 msgstr "UUID for organisation"
 
 #: import_services/models/import_service.py:43
-#: organizations/templates/organizations/org_table.html:49
+#: organizations/templates/organizations/org_table.html:40
 msgid "import service"
 msgstr "importservice"
 
@@ -2914,7 +2918,6 @@ msgid "select"
 msgstr "vælg"
 
 #: organizations/templates/components/modals/alias_create.html:26
-#: organizations/templates/organizations/org_table.html:46
 msgid "email"
 msgstr "e-mail"
 
@@ -3087,69 +3090,69 @@ msgstr "organisationer for"
 msgid "Add new organization"
 msgstr "Tilføj ny organisation"
 
-#: organizations/templates/organizations/org_table.html:47
-msgid "phone"
-msgstr "telefon"
+#: organizations/templates/organizations/org_table.html:38
+msgid "contact info"
+msgstr "kontaktinformation"
 
-#: organizations/templates/organizations/org_table.html:51
+#: organizations/templates/organizations/org_table.html:42
 msgid "import service (Microsoft Graph)"
 msgstr "Importservice (Microsoft Graph)"
 
-#: organizations/templates/organizations/org_table.html:53
+#: organizations/templates/organizations/org_table.html:44
 msgid "import service (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
-#: organizations/templates/organizations/org_table.html:78
-#: organizations/templates/organizations/org_table.html:79
-#: organizations/templates/organizations/org_table.html:86
-#: organizations/templates/organizations/org_table.html:87
+#: organizations/templates/organizations/org_table.html:83
+#: organizations/templates/organizations/org_table.html:84
+#: organizations/templates/organizations/org_table.html:91
+#: organizations/templates/organizations/org_table.html:92
 msgid "Edit LDAP configuration"
 msgstr "Redigér LDAP-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:92
-#: organizations/templates/organizations/org_table.html:93
-#: organizations/templates/organizations/org_table.html:99
-#: organizations/templates/organizations/org_table.html:124
-#: organizations/templates/organizations/org_table.html:125
-#: organizations/templates/organizations/org_table.html:131
-#: organizations/templates/organizations/org_table.html:173
-#: organizations/templates/organizations/org_table.html:174
-#: organizations/templates/organizations/org_table.html:180
+#: organizations/templates/organizations/org_table.html:97
+#: organizations/templates/organizations/org_table.html:98
+#: organizations/templates/organizations/org_table.html:104
+#: organizations/templates/organizations/org_table.html:129
+#: organizations/templates/organizations/org_table.html:130
+#: organizations/templates/organizations/org_table.html:136
+#: organizations/templates/organizations/org_table.html:178
+#: organizations/templates/organizations/org_table.html:179
+#: organizations/templates/organizations/org_table.html:185
 msgid "sync"
 msgstr "synkroniser"
 
-#: organizations/templates/organizations/org_table.html:117
-#: organizations/templates/organizations/org_table.html:118
+#: organizations/templates/organizations/org_table.html:122
+#: organizations/templates/organizations/org_table.html:123
 msgid "Add OS2mo configuration"
 msgstr "Tilføj OS2mo-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:150
-#: organizations/templates/organizations/org_table.html:151
-#: organizations/templates/organizations/org_table.html:158
-#: organizations/templates/organizations/org_table.html:159
+#: organizations/templates/organizations/org_table.html:155
+#: organizations/templates/organizations/org_table.html:156
+#: organizations/templates/organizations/org_table.html:163
+#: organizations/templates/organizations/org_table.html:164
 msgid "Add Microsoft Graph configuration"
 msgstr "Tilføj Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:167
-#: organizations/templates/organizations/org_table.html:168
+#: organizations/templates/organizations/org_table.html:172
+#: organizations/templates/organizations/org_table.html:173
 msgid "Edit Microsoft Graph configuration"
 msgstr "Redigér Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:196
-#: organizations/templates/organizations/org_table.html:197
+#: organizations/templates/organizations/org_table.html:201
+#: organizations/templates/organizations/org_table.html:202
 msgid "View organizational units."
 msgstr "Vis organisatoriske enheder"
 
-#: organizations/templates/organizations/org_table.html:203
-#: organizations/templates/organizations/org_table.html:204
+#: organizations/templates/organizations/org_table.html:208
+#: organizations/templates/organizations/org_table.html:209
 msgid "View accounts."
 msgstr "Se konti."
 
-#: organizations/templates/organizations/org_table.html:222
+#: organizations/templates/organizations/org_table.html:227
 msgid "Do you really want to delete this organization?"
 msgstr "Er du sikker på, at du vil slette denne organisation?"
 
-#: organizations/templates/organizations/org_table.html:222
+#: organizations/templates/organizations/org_table.html:227
 msgid ""
 "This will delete all associated import- and scannerjobs. The action cannot "
 "be reversed"
@@ -3157,7 +3160,7 @@ msgstr ""
 "Dette vil også slette import- og scannerjobs der tilhører organisationen. "
 "Handlingen kan ikke fortrydes."
 
-#: organizations/templates/organizations/org_table.html:239
+#: organizations/templates/organizations/org_table.html:247
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
@@ -3256,6 +3259,9 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:186
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "phone"
+#~ msgstr "telefon"
 
 #~ msgid "Outlook settings"
 #~ msgstr "Outlook indstillinger"
