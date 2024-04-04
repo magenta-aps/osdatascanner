@@ -1,5 +1,17 @@
 # Changelog
 
+## Next release
+
+### New in this release 
+
+
+### General improvements
+
+- Added Google's Material Symbols as a font, so we can use it as an icon library.
+
+### Bugfixes
+
+
 ## Version 3.22.5, 4th April 2024
 
 "Front Doors Only"
