@@ -74,9 +74,21 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                                     f" of type {model.__name__}")
 
                         for instance in raw_model_data:
-                            pk_list.append(instance.get("pk"))
+                            # OBS: In this case we're converting pks to str
+                            # We do that to support both type UUID and int in our sorting function.
+                            pk_list.append(str(instance.get("pk")))
 
-                        serialized_objects = serializer(model.objects.filter(pk__in=pk_list),
+                        objects_to_update = model.objects.filter(pk__in=pk_list)
+
+                        # We have to be careful, there is no guarantee that we're getting
+                        # objects from the database in the same order as raw_model_data.
+                        # Sort that out here, before passing objects on to the serializer.
+                        objects_to_update = sorted(
+                            objects_to_update,
+                            key=lambda x: pk_list.index(str(x.pk))
+                        )
+
+                        serialized_objects = serializer(objects_to_update,
                                                         data=raw_model_data, many=True)
 
                         serialized_objects.is_valid(raise_exception=True)
