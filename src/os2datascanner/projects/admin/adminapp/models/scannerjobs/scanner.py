@@ -608,6 +608,19 @@ class Scanner(models.Model):
                     f'the scanner: {self.name} ({self.pk})')
         return super().delete(**kwargs)
 
+    def get_analysis_job(self, finished=False):
+        """Returns the last analysis job, if any exists."""
+        from .analysisscanner import AnalysisJob
+        if finished:
+            from os2datascanner.projects.admin.core.models.background_job import JobState
+            job = AnalysisJob.objects.filter(scanner=self, _exec_state=JobState.FINISHED.value
+                                             ).order_by("-created_at"
+                                                        ).prefetch_related("types").first()
+        else:
+            job = AnalysisJob.objects.filter(scanner=self).order_by(
+                "-created_at").prefetch_related("types").first()
+        return job
+
     class Meta:
         abstract = False
         ordering = ['name']

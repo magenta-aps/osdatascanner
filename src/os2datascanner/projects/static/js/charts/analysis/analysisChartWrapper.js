@@ -3,7 +3,7 @@ function drawBars(){
   if (typeof dataElement !== 'undefined' && dataElement.textContent !== '""'){
     const Data = JSON.parse(dataElement.textContent);
     JSON.parse(Data).forEach((dataset, i) => {
-      let ctx = document.getElementById("#bar"+(i+1).toString());
+      let ctx = document.getElementById("bar"+(i+1).toString());
       let [data, binSize] = getData(dataset.sizes);
       let title = dataset.type.charAt(0).toUpperCase() + dataset.type.slice(1);
       charts.push(createBars(data, ctx, title, binSize));
@@ -26,8 +26,8 @@ function drawPies() {
   const dataElement = document.getElementById("chart_data");
   if (typeof dataElement !== 'undefined' && dataElement.textContent !== '""'){
     const Data = JSON.parse(dataElement.textContent);
-    const ctx1 = document.getElementById("#pie1");
-    const ctx2 = document.getElementById("#pie2");
+    const ctx1 = document.getElementById("pie1");
+    const ctx2 = document.getElementById("pie2");
     const types = JSON.parse(Data).map(object => object.type);
     const nFiles = JSON.parse(Data).map(object => object.n_files); // jshint ignore:line
     const totalSize = JSON.parse(Data).map(object => object.total_size); // jshint ignore:line
@@ -56,6 +56,4 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   window.charts = [];
-  // drawPies();
-  // drawBars();
 });

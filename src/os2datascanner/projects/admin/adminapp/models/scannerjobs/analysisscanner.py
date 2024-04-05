@@ -1,8 +1,12 @@
+import structlog
+
 from .scanner import Scanner
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.core.models import BackgroundJob
 from os2datascanner.engine2.model.core import SourceManager
+
+logger = structlog.getLogger(__name__)
 
 
 class AnalysisJob(BackgroundJob):
@@ -14,26 +18,30 @@ class AnalysisJob(BackgroundJob):
                                 on_delete=models.CASCADE)
 
     def run(self):
+        logger.info("Running ...")
         sm = SourceManager()
 
-        try:
-            source = list(
-                Scanner.objects.select_subclasses().get(
-                    pk=self.scanner.pk).generate_sources())[0]
-            self.save()
-        except Exception:
-            print("Source not found")
+        source = list(
+            Scanner.objects.select_subclasses().get(
+                pk=self.scanner.pk).generate_sources())[0]
+
+        if not source:
+            return
 
         for handle in source.handles(sm):
+
+            # Is the handle actually an error? Skip it.
             if isinstance(handle, tuple) and handle[1]:
                 continue
 
+            # Are we unable to determine the size of the resource? Skip the handle.
             try:
                 size = handle.follow(sm).get_size()
             except OSError:
                 continue
 
             mime = handle.guess_type()
+            # Are we unable to determine the type of the handle? Skip it.
             if mime == "application/octet-stream":
                 continue
 

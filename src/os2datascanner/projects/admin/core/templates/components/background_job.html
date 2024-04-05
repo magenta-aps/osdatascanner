@@ -5,12 +5,13 @@
 
   {% if exec_state_value %}
     <div class="response"
-         {% if exec_state_value == "waiting" or exec_state_value == "running" %} hx-get="{% url 'background_job_status_widget' pk=job.pk %}" hx-trigger="every 1s" hx-swap="outerHTML" {% endif %}>
+         name="status-response"
+         {% if exec_state_value == "waiting" or exec_state_value == "running" %} hx-push-url="false" hx-get="{% url 'background_job_status_widget' pk=job.pk %}" hx-trigger="every 1s" hx-swap="outerHTML" hx-target="this" hx-select=".response" {% endif %}>
       {% if exec_state_value == "waiting" or exec_state_value == "running" %}
         <button type="button"
                 class="button button--outline-button button--icon-button"
-                aria-label="{% trans 'Cancel sync process' %}"
-                title="{% trans 'Cancel sync process' %}"
+                aria-label="{% trans 'Cancel task' %}"
+                title="{% trans 'Cancel task' %}"
                 hx-get="{% url 'background_job_cancel' pk=job.pk %}"
                 hx-swap="outerHTML"
                 hx-target="closest div.response"

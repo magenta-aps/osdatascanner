@@ -39,6 +39,31 @@ function formatNumber(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+function unorderedListLegend(data, colors, chart) {
+    let text = [`<ul id="${chart.id}" class="pie_legend_list">`];
+  
+    const totalValue = data.data.reduce((sum, obj) => sum + (obj || 0)); // Get the total of all non-zero data points
+  
+    for (i = 0; i < data.data.length; i++) {
+      const value = data.data[i];
+      const label = data.labels[i].charAt(0).toUpperCase() + data.labels[i].slice(1);
+      const backgroundColor = colors[i];
+  
+      const percentage = value ? ((value / totalValue) * 100).toFixed(2) + "%" : "0%"; // Calculate percentage based on totalValue
+  
+      if (value > 0) {
+        text.push(`<li><span class="bullet" style="color:${backgroundColor}">&#8226;</span>`);
+        if (label) {
+            text.push(`<span class="legend-txt">${label}</span>`,
+                      `<span class="data-label">${percentage}</span>`);
+        }
+        text.push('</li>');
+      }
+    }
+    text.push('</ul>');
+    return text.join("");
+  }
+
 function createPie(data, htmlElements, colors){ // jshint ignore:line
     let [ctx, pieCanvasID] = htmlElements;
     while (colors.length < data.labels.length){
@@ -149,6 +174,7 @@ function createPie(data, htmlElements, colors){ // jshint ignore:line
         maintainAspectRatio: false,
         }
     });
+    document.getElementById(ctx.id + "_legend").innerHTML = unorderedListLegend(data, colors, pie);
     return pie;
 }
 

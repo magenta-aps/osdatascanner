@@ -14,12 +14,13 @@ function binAndCount(array, binVal){
   // divides array into bins with a range of approx {binVal} % of total range
   // counts number of instances in each bin
   const max = Math.max.apply(Math, array);
+  let binSize = 0;
   if (array.length <= 15){
-    var binSize = max/array.length
+    binSize = max/array.length
   }
 
   else {
-    var binSize = Math.round(max*(binVal/100));
+    binSize = Math.round(max*(binVal/100));
   }
   const roundNumber = Math.pow(10, getDigitLength(Math.round(binSize))-1);
   binSize = Math.round(binSize/roundNumber)*roundNumber;
@@ -53,31 +54,10 @@ function getData(dataArray, granularity=5){ // jshint ignore:line
 
   const converted = dataArray.map(byte => bytesToKB(byte));
   let [counts, binSize] = binAndCount(converted, granularity);
-  // let nLarge = counts.filter((val)=>val>converted.length*0.05).length;
-  // let nSmall = counts.filter((val)=>val<=0).length;
-
-  // If there are too many bins with much data in it, make granularity finer
-  // let i=0.5;
-  // while (nLarge > 7) {
-  //   console.log("binVal is set to: ", granularity, i);
-  //   [counts, binSize] = binAndCount(converted, granularity-i);
-  //   nLarge = counts.filter((val)=>val>converted.length*0.05).length;
-  //   console.log(nLarge)
-  //   i+=0.5;
-  // }
-
-  // // If there are too many bins with zero or one datapoint, make granularity more coarse
-  // console.log("small comparison: ", nSmall/counts.length )
-  // let j = 0.5;
-  // while (nSmall/counts.length > 0.3){
-  //   [counts, binSize] = binAndCount(converted, granularity+j);
-  //   nSmall = counts.filter((val)=>val ===0).length;
-  //   j+=0.5;
-  // }
 
   let nBins = counts.length;
   let labels = [];
-  for (let i = 0; i<nBins; i++){
+  for (let i = 0; i < nBins; i++){
     labels.push(binSize*i+(binSize/2));
   }
   let points = labels.map((c, i) => ({x: c, y: counts[i]}));
