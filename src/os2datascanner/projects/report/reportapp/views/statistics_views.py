@@ -31,8 +31,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.conf import settings
 
-from os2datascanner.core_organizational_structure.models.position import Role
-
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
 from ...organizations.models.aliases import AliasType
@@ -111,10 +109,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         if self.request.user.is_superuser:
             self.user_units = org_units.order_by("name")
         else:
-            self.user_units = org_units.filter(
-                Q(positions__account=self.request.user.account)
-                & Q(positions__role=Role.DPO)
-            ).order_by("name")
+            self.user_units = self.request.user.account.get_dpo_units().order_by("name")
 
     def get(self, request, *args, **kwargs):
         self._check_access(request)
@@ -565,10 +560,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         if self.request.user.is_superuser:
             self.user_units = OrganizationalUnit.objects.all().order_by("name")
         else:
-            self.user_units = (OrganizationalUnit.objects.filter(
-                Q(positions__account=self.request.user.account)
-                & Q(positions__role=Role.MANAGER))
-                .order_by("name"))
+            self.user_units = self.request.user.account.get_managed_units().order_by("name")
 
         if unit_uuid := request.GET.get('org_unit', None):
             self.org_unit = self.user_units.get(uuid=unit_uuid)

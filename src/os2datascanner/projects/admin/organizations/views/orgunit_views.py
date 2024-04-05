@@ -43,11 +43,11 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
             ).prefetch_related(
                 Prefetch(
                     'positions',
-                    queryset=Position.objects.filter(role=Role.MANAGER).select_related('account'),
+                    queryset=Position.managers.all().select_related('account'),
                     to_attr='managers'),
                 Prefetch(
                     'positions',
-                    queryset=Position.objects.filter(role=Role.DPO).select_related('account'),
+                    queryset=Position.dpos.all().select_related('account'),
                     to_attr='dpos')
                 )
 
@@ -82,22 +82,22 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
         if new_manager_uuid := request.POST.get("add-manager", None):
             orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
             new_manager = Account.objects.get(uuid=new_manager_uuid)
-            Position.objects.get_or_create(account=new_manager, unit=orgunit, role=Role.MANAGER)
+            Position.managers.get_or_create(account=new_manager, unit=orgunit)
 
         if rem_manager_uuid := request.POST.get("rem-manager", None):
             orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
             rem_manager = Account.objects.get(uuid=rem_manager_uuid)
-            Position.objects.filter(account=rem_manager, unit=orgunit, role=Role.MANAGER).delete()
+            Position.managers.filter(account=rem_manager, unit=orgunit).delete()
 
         if new_dpo_uuid := request.POST.get("add-dpo", None):
             orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
             new_dpo = Account.objects.get(uuid=new_dpo_uuid)
-            Position.objects.get_or_create(account=new_dpo, unit=orgunit, role=Role.DPO)
+            Position.dpos.get_or_create(account=new_dpo, unit=orgunit)
 
         if rem_dpo_uuid := request.POST.get("rem-dpo", None):
             orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
             rem_dpo = Account.objects.get(uuid=rem_dpo_uuid)
-            Position.objects.filter(account=rem_dpo, unit=orgunit, role=Role.DPO).delete()
+            Position.dpos.filter(account=rem_dpo, unit=orgunit).delete()
 
         response = self.get(request, *args, **kwargs)
 

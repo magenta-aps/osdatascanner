@@ -84,11 +84,17 @@ class Account(models.Model):
         default=False
     )
 
+    def get_employed_units(self):
+        positions = self.positions.filter(role=Role.EMPLOYEE)
+        return self.units.filter(positions__in=positions)
+
     def get_managed_units(self):
-        return self.units.filter(positions__role=Role.MANAGER)
+        positions = self.positions.filter(role=Role.MANAGER)
+        return self.units.filter(positions__in=positions)
 
     def get_dpo_units(self):
-        return self.units.filter(positions__role=Role.DPO)
+        positions = self.positions.filter(role=Role.DPO)
+        return self.units.filter(positions__in=positions)
 
     class Meta:
         abstract = True

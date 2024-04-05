@@ -167,7 +167,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                                  sid=member.get("sid"))
 
                 try:
-                    Position.objects.get(account=acc, unit=unit, imported=True)
+                    Position.employees.get(account=acc, unit=unit, imported=True)
                 except Position.DoesNotExist:
                     position = Position(
                         imported=True,
@@ -185,7 +185,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
 
     # Figure out which positions to delete for each user.
     for acc in account_positions:
-        positions_to_delete = Position.objects.filter(
+        positions_to_delete = Position.employees.filter(
             account=acc, imported=True).exclude(
             unit__in=account_positions[acc])
         if positions_to_delete:

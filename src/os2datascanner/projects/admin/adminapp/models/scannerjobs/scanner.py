@@ -554,19 +554,18 @@ class Scanner(models.Model):
     def compute_covered_accounts(self):
         """Return all accounts which would be scanned by this scannerjob, if
         run at this moment."""
-        from os2datascanner.projects.admin.organizations.models import Account, OrganizationalUnit  # noqa: avoid circular import
+        from os2datascanner.projects.admin.organizations.models import Position, Account, OrganizationalUnit  # noqa: avoid circular import
         if self.org_unit.exists():
-            return Account.objects.filter(
-                    units__in=self.org_unit.all()).distinct()
+            relevant_units = self.org_unit.all()
         elif self._supports_account_annotations:
             relevant_units = OrganizationalUnit.objects.filter(
                     organization=self.organization)
-            return Account.objects.filter(
-                    units__in=relevant_units).distinct()
         else:
             # We can't assume that everyone is covered, but we can conclude
             # that we can't know who's covered. (Scan might use a user-list file)
-            return Account.objects.none()
+            relevant_units = []
+        positions = Position.employees.filter(unit__in=relevant_units)
+        return Account.objects.filter(positions__in=positions).distinct()
 
     def compute_stale_accounts(self):
         """Computes all accounts that have previously been included in this

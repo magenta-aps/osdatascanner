@@ -7,6 +7,8 @@
 - Analysis jobs can now be started from the UI, and results will be presented
   in the "analysis"-tab.
 
+- Scannerjobs based on organizational units now only scan accounts related to
+  the specified units through a Position with the "employee" role.
 
 ### General improvements
 
