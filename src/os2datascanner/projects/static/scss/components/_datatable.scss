@@ -975,9 +975,8 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
           line-height: $text-size;
         }
 
-        .material-icons {
+        .material-symbols {
           color: var(--color-primary);
-
           font-size: $icon-size;
           width: $icon-size;
           height: $icon-size;

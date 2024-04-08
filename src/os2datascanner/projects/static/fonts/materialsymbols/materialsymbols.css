@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'Material Symbols';
+  font-style: normal;
+  font-weight: 400;
+  font-variation-settings: 'FILL' 1;
+  src: local("Material Symbols"), local("MaterialSymbols-Outlined"),
+    url(MaterialSymbols-Outlined.woff2) format('woff2'),
+    url(MaterialSymbols-Outlined.ttf) format('truetype');
+}
