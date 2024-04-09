@@ -132,7 +132,7 @@
                       {% if orgunit.parent %}<div class="parent">({{ orgunit.parent.name }})</div>{% endif %}
                     </td>
                     <td class="datatable__column--info orgunit_members">
-                      {{ orgunit.associated_accounts }} {% trans "accounts associated." %}
+                      {{ orgunit.employee_count }} {% trans "accounts associated." %}
                     </td>
                     <td class="datatable__column--managers orgunit_managers">
                       <ul>

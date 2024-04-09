@@ -38,9 +38,7 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
 
         # Prefetch related manager and dpo accounts, as well as number of
         # associated accounts. Saves 3 queries per OU.
-        qs = qs.annotate(
-            associated_accounts=Count('positions__account')
-            ).prefetch_related(
+        qs = qs.prefetch_related(
                 Prefetch(
                     'positions',
                     queryset=Position.managers.all().select_related('account'),
@@ -49,7 +47,8 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
                     'positions',
                     queryset=Position.dpos.all().select_related('account'),
                     to_attr='dpos')
-                )
+                ).annotate(
+                    employee_count=Count('positions', filter=Q(positions__role=Role.EMPLOYEE)))
 
         # Prefetch parents to save one query per unit
         qs = qs.prefetch_related('parent')

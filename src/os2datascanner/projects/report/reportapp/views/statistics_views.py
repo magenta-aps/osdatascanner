@@ -34,6 +34,7 @@ from django.conf import settings
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
 from ...organizations.models.aliases import AliasType
+from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
 from ....utils.view_mixins import CSVExportMixin
 from .report_views import EmptyPagePaginator
@@ -129,11 +130,8 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
             confirmed_dpo = self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
             if self.request.user.is_superuser or confirmed_dpo:
-                # This hurts my brain: but if we filter for equality, we multiply by
-                # the amount of positions some user has for a given org unit. (up to 3, currently)
-                # But if we exclude everything that ISN'T our current OU ... we're fine?
-                self.matches = self.matches.exclude(~Q(
-                    alias_relation__account__units=orgunit))
+                positions = Position.employees.filter(unit=orgunit)
+                self.matches = self.matches.filter(alias_relation__account__positions__in=positions)
             else:
                 raise OrganizationalUnit.DoesNotExist(
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
@@ -501,7 +499,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         if self.org_unit:
             all_units = self.org_unit.get_descendants(include_self=True)
-            qs = qs.filter(units__in=all_units).distinct()
+            positions = Position.employees.filter(unit__in=all_units)
+            qs = qs.filter(positions__in=positions).distinct()
         else:
             qs = Account.objects.none()
 
