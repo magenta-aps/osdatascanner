@@ -4,8 +4,8 @@ from random import random, uniform
 import requests
 import structlog
 
+from os2datascanner.utils.timer import TimerManager
 from os2datascanner.utils.system_utilities import time_now
-from .timeout import run_with_timeout
 from .datetime import parse_datetime
 
 
@@ -132,21 +132,16 @@ class TimeoutRetrier(CountingRetrier):
     one-shot interval timer behind the scenes and consequently can only be
     used on the main thread.)"""
     def __init__(self, *exception_set, seconds=5.0, **kwargs):
-        super().__init__(TimeoutError, *exception_set, **kwargs)
-        self._timeout = seconds
-
-    def _test_return_value(self, rv):
-        if rv == (False, None):
-            raise TimeoutError("The operation timed out")
-        else:
-            return rv[1]
+        self._ctx = (ctx := TimerManager.get().timeout(seconds))
+        super().__init__(ctx.Timeout, *exception_set, **kwargs)
 
     def run(self, operation, *args, **kwargs):
-
-        def _op_wrap(*args, **kwargs):
-            return run_with_timeout(
-                    self._timeout, operation, *args, **kwargs)
-        return super().run(_op_wrap, *args, **kwargs)
+        try:
+            return super().run(
+                    self._ctx.wrap(operation),
+                    *args, **kwargs)
+        except self._ctx.Timeout:
+            raise TimeoutError
 
 
 class SleepingRetrier(CountingRetrier):

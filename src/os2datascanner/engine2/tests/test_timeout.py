@@ -3,48 +3,60 @@ Unit test for the timeout module which is part of engine2's utilities.
 """
 import time
 import unittest
-from os2datascanner.engine2.utilities.timeout import (run_with_timeout,
-                                                      yield_from_with_timeout,
-                                                      _signal_timeout_handler,
-                                                      SignalAlarmException,
-                                                      _timeout)
+import threading
+from os2datascanner.utils.timer import TimerManager
 
 
-class TestTimeout(unittest.TestCase):
+def run_with_timeout(seconds: float, func, *args, **kwargs):
+    with TimerManager.get().timeout(seconds) as ctx:
+        try:
+            return (True, func(*args, **kwargs))
+        except ctx.Timeout:
+            return (False, None)
+
+
+def yield_from_with_timeout(seconds: float, it):
+    result = []
+
+    ctx = TimerManager.get().timeout(seconds)
+
+    try:
+        while True:
+            with ctx:
+                result.append(next(it))
+    except (ctx.Timeout, StopIteration):
+        return result
+
+
+class TestTimeoutLegacy(unittest.TestCase):
     """
     Test case class for engine2.utilities.timeout module.
     """
 
-    # SECTION: _signal_timeout_handler
-
-    def test_signal_timeout_handler_raises_exception(self):
-        with self.assertRaises(SignalAlarmException):
-            _signal_timeout_handler(None, None)
-
-    # END
-
-    # SECTION: _timeout
+    # SECTION: TimerManager.get().timeout
 
     def test_timeout_raises_sends_signal_when_expired(self):
-        with self.assertRaises(SignalAlarmException):
-            with _timeout(1):
+        ctx = TimerManager.get().timeout(1)
+        with self.assertRaises(ctx.Timeout):
+            with ctx:
                 time.sleep(2)
 
     def test_timeout_cancels_alarm_in_due_time(self):
         result = 0
-        with _timeout(2):
+        with TimerManager.get().timeout(2):
             result += 1
 
         self.assertEqual(1, result)
 
     def test_timeout_raises_sends_signal_for_generators(self):
+        ctx = TimerManager.get().timeout(1)
         def generator():
             for num in [1, 2, 3]:
-                with _timeout(1):
+                with ctx:
                     time.sleep(2)
                     yield num
 
-        with self.assertRaises(SignalAlarmException):
+        with self.assertRaises(ctx.Timeout):
             list(generator())
 
     # END

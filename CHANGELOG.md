@@ -9,6 +9,8 @@
 
 - Added Google's Material Symbols as a font, so we can use it as an icon library.
 
+- Internal operation timeouts are now more reliable.
+
 ### Bugfixes
 
 - Corrected an issue where objects for update through event_collector could get mismatched.
