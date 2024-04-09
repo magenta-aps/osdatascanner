@@ -50,6 +50,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
     def test_timeout_raises_sends_signal_for_generators(self):
         ctx = TimerManager.get().timeout(1)
+
         def generator():
             for num in [1, 2, 3]:
                 with ctx:
@@ -258,3 +259,107 @@ class TestTimeoutLegacy(unittest.TestCase):
             run_with_timeout("", func(elements))
 
     # END
+
+
+class TestTimerManager(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tm = TimerManager.get()
+
+    def test_after_basic(self):
+        k = []
+        self.tm.after(0.5, k.append, ":D")
+
+        time.sleep(0.6)
+
+        self.assertEqual(
+                k,
+                [":D"])
+
+    def test_pause(self):
+        k = []
+
+        with self.tm.suspension(delay=False):
+            self.tm.after(0.5, k.append, ":D")
+            time.sleep(0.6)
+
+            self.assertEqual(
+                    k,
+                    [])
+
+        time.sleep(0.1)
+        self.assertEqual(
+                k,
+                [":D"])
+
+    def test_timeout(self):
+        ctx = self.tm.timeout(0.3)
+
+        with (self.subTest(),
+                self.assertRaises(ctx.Timeout),
+                ctx):
+            time.sleep(0.5)
+
+        with (self.subTest(),
+                ctx):
+            time.sleep(0.1)
+
+    def test_timeout_yield(self):
+        def wait_and_ret(k):
+            time.sleep(k / 10)
+            return k * 2
+
+        ctx = self.tm.timeout(0.35)
+
+        with (self.subTest(),
+                self.assertRaises(ctx.Timeout)):
+            generator = (wait_and_ret(k) for k in [1, 2, 3, 4])
+            list(ctx.yield_all(generator))
+
+        with self.subTest():
+            generator = (wait_and_ret(k) for k in [1, 2, 3, 4])
+            self.assertEqual(
+                    list(ctx.yield_some(generator)),
+                    [2, 4, 6])
+
+    def test_after_complicated(self):
+        """Four functions scheduled to be called in a strange order are
+        nonetheless called in the right order."""
+        condition = threading.Condition()
+
+        def _notify():
+            with condition:
+                condition.notify()
+
+        chunks = []
+
+        self.tm.pause()
+        self.tm.after(0.4, chunks.append, "! :D")
+        self.tm.after(0.1, chunks.append, "Hello")
+        self.tm.after(0.3, chunks.append, "world")
+        self.tm.after(0.2, chunks.append, ", ")
+        self.tm.after(0.5, _notify)
+
+        self.tm.resume()
+        with condition:
+            condition.wait()
+
+        self.assertEqual(
+                "".join(chunks),
+                "Hello, world! :D")
+
+    def test_nesting_outer(self):
+        """If an outer timeout expires before an inner one, the outer timeout's
+        distinguishable exception is raised."""
+        with (self.tm.timeout(0.1) as ctx,
+              self.tm.timeout(0.5)):
+            with self.assertRaises(ctx.Timeout):
+                time.sleep(0.2)
+
+    def test_nesting_inner(self):
+        """If an inner timeout expires before an outer one, the inner timeout's
+        distinguishable exception is raised."""
+        with (self.tm.timeout(0.5),
+              self.tm.timeout(0.1) as cty):
+            with self.assertRaises(cty.Timeout):
+                time.sleep(0.2)
