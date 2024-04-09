@@ -11,6 +11,7 @@
 
 ### Bugfixes
 
+- Corrected an issue where objects for update through event_collector could get mismatched.
 
 ## Version 3.22.5, 4th April 2024
 

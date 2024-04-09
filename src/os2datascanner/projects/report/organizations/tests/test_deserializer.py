@@ -3,7 +3,6 @@ import pytest
 from os2datascanner.core_organizational_structure.utils import get_serializer
 from ..models import Alias, Account, Organization
 
-
 uuid_prefix = b"TEST".hex() + "-" + (b"OK".hex() + "-") * 3
 
 
