@@ -15,6 +15,8 @@
 
 - Corrected an issue where objects for update through event_collector could get mismatched.
 
+- A useless input field were removed from the or-rule span in the rulebuilder.
+
 ## Version 3.22.5, 4th April 2024
 
 "Front Doors Only"
