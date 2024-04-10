@@ -260,7 +260,11 @@ class WebRetrier(ExponentialBackoffRetrier):
                     f"WebRetrier: 'retry-after'-attribute not found,"
                     f" sleeping for {delay} seconds."
                 )
-            sleep(delay)
+
+            # Delay all scheduled function calls by the requested sleep
+            # duration; enforcing a global timeout isn't sensible if we've
+            # explicitly been asked to wait!
+            TimerManager.get().suspension().sleep(delay)
 
 
 class Testing:
