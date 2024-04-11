@@ -3,48 +3,61 @@ Unit test for the timeout module which is part of engine2's utilities.
 """
 import time
 import unittest
-from os2datascanner.engine2.utilities.timeout import (run_with_timeout,
-                                                      yield_from_with_timeout,
-                                                      _signal_timeout_handler,
-                                                      SignalAlarmException,
-                                                      _timeout)
+import threading
+from os2datascanner.utils.timer import TimerManager
 
 
-class TestTimeout(unittest.TestCase):
+def run_with_timeout(seconds: float, func, *args, **kwargs):
+    with TimerManager.get().timeout(seconds) as ctx:
+        try:
+            return (True, func(*args, **kwargs))
+        except ctx.Timeout:
+            return (False, None)
+
+
+def yield_from_with_timeout(seconds: float, it):
+    result = []
+
+    ctx = TimerManager.get().timeout(seconds)
+
+    try:
+        while True:
+            with ctx:
+                result.append(next(it))
+    except (ctx.Timeout, StopIteration):
+        return result
+
+
+class TestTimeoutLegacy(unittest.TestCase):
     """
     Test case class for engine2.utilities.timeout module.
     """
 
-    # SECTION: _signal_timeout_handler
-
-    def test_signal_timeout_handler_raises_exception(self):
-        with self.assertRaises(SignalAlarmException):
-            _signal_timeout_handler(None, None)
-
-    # END
-
-    # SECTION: _timeout
+    # SECTION: TimerManager.get().timeout
 
     def test_timeout_raises_sends_signal_when_expired(self):
-        with self.assertRaises(SignalAlarmException):
-            with _timeout(1):
+        ctx = TimerManager.get().timeout(1)
+        with self.assertRaises(ctx.Timeout):
+            with ctx:
                 time.sleep(2)
 
     def test_timeout_cancels_alarm_in_due_time(self):
         result = 0
-        with _timeout(2):
+        with TimerManager.get().timeout(2):
             result += 1
 
         self.assertEqual(1, result)
 
     def test_timeout_raises_sends_signal_for_generators(self):
+        ctx = TimerManager.get().timeout(1)
+
         def generator():
             for num in [1, 2, 3]:
-                with _timeout(1):
+                with ctx:
                     time.sleep(2)
                     yield num
 
-        with self.assertRaises(SignalAlarmException):
+        with self.assertRaises(ctx.Timeout):
             list(generator())
 
     # END
@@ -246,3 +259,107 @@ class TestTimeout(unittest.TestCase):
             run_with_timeout("", func(elements))
 
     # END
+
+
+class TestTimerManager(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tm = TimerManager.get()
+
+    def test_after_basic(self):
+        k = []
+        self.tm.after(0.5, k.append, ":D")
+
+        time.sleep(0.6)
+
+        self.assertEqual(
+                k,
+                [":D"])
+
+    def test_pause(self):
+        k = []
+
+        with self.tm.suspension(delay=False):
+            self.tm.after(0.5, k.append, ":D")
+            time.sleep(0.6)
+
+            self.assertEqual(
+                    k,
+                    [])
+
+        time.sleep(0.1)
+        self.assertEqual(
+                k,
+                [":D"])
+
+    def test_timeout(self):
+        ctx = self.tm.timeout(0.3)
+
+        with (self.subTest(),
+                self.assertRaises(ctx.Timeout),
+                ctx):
+            time.sleep(0.5)
+
+        with (self.subTest(),
+                ctx):
+            time.sleep(0.1)
+
+    def test_timeout_yield(self):
+        def wait_and_ret(k):
+            time.sleep(k / 10)
+            return k * 2
+
+        ctx = self.tm.timeout(0.35)
+
+        with (self.subTest(),
+                self.assertRaises(ctx.Timeout)):
+            generator = (wait_and_ret(k) for k in [1, 2, 3, 4])
+            list(ctx.yield_all(generator))
+
+        with self.subTest():
+            generator = (wait_and_ret(k) for k in [1, 2, 3, 4])
+            self.assertEqual(
+                    list(ctx.yield_some(generator)),
+                    [2, 4, 6])
+
+    def test_after_complicated(self):
+        """Four functions scheduled to be called in a strange order are
+        nonetheless called in the right order."""
+        condition = threading.Condition()
+
+        def _notify():
+            with condition:
+                condition.notify()
+
+        chunks = []
+
+        self.tm.pause()
+        self.tm.after(0.4, chunks.append, "! :D")
+        self.tm.after(0.1, chunks.append, "Hello")
+        self.tm.after(0.3, chunks.append, "world")
+        self.tm.after(0.2, chunks.append, ", ")
+        self.tm.after(0.5, _notify)
+
+        self.tm.resume()
+        with condition:
+            condition.wait()
+
+        self.assertEqual(
+                "".join(chunks),
+                "Hello, world! :D")
+
+    def test_nesting_outer(self):
+        """If an outer timeout expires before an inner one, the outer timeout's
+        distinguishable exception is raised."""
+        with (self.tm.timeout(0.1) as ctx,
+              self.tm.timeout(0.5)):
+            with self.assertRaises(ctx.Timeout):
+                time.sleep(0.2)
+
+    def test_nesting_inner(self):
+        """If an inner timeout expires before an outer one, the inner timeout's
+        distinguishable exception is raised."""
+        with (self.tm.timeout(0.5),
+              self.tm.timeout(0.1) as cty):
+            with self.assertRaises(cty.Timeout):
+                time.sleep(0.2)
