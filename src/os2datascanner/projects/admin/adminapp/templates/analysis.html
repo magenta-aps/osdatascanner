@@ -1,23 +1,28 @@
-{% extends 'components/common/base.html' %}
+{% extends "components/common/base.html" %}
 {% load static %}
 {% load i18n %}
 {% block scripts %}
+  {{ block.super }}
   <script src="{% static "3rdparty/chart-4.0.1.min.js" %}"></script>
   <script src="{% static "3rdparty/chartjs-plugin-datalabels.min.js" %}"></script>
   <script type="text/javascript" src="/jsi18n/"></script>
-  <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
-  <script src="{% static "3rdparty/htmx.min.js" %}"></script>
   <script src="{% static "js/charts/analysis/analysisChartWrapper.js" %}"></script>
   <script src="{% static "js/charts/analysis/analysisBar-ChartJS3.js" %}"></script>
   <script src="{% static "js/charts/analysis/analysisPie-ChartJS3.js" %}"></script>
   <script src="{% static "js/index.js" %}"></script>
-{% endblock %}
+{% endblock scripts %}
 
 {% block body %}
   {% include "components/common/header.html" %}
 
-  <main class="wrapper">
+  <main class="wrapper" hx-push-url="true">
     {% include "components/common/main.html" with active_tab="analysis" %}
-    {% include "components/analysis/analysis_template.html" %}
-  </div>
-{% endblock %}
+    <div class="content"
+         name="analysis-content"
+         hx-get=""
+         hx-trigger="reload-htmx from:body"
+         hx-target="this"
+         hx-select=".content"
+         hx-swap="outerHTML">{% include "components/analysis/analysis_template.html" %}</div>
+  </main>
+{% endblock body %}

@@ -1,0 +1,8 @@
+
+{% load i18n %}
+
+<div id="analysis_response" class="flex">
+  {% if analysis_job %}
+    {% include "components/background_job.html" with job=analysis_job %}
+  {% endif %}
+</div>

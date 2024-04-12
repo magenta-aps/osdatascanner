@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from .forms import ClientAdminForm
 from .models import Client, Administrator, BackgroundJob
 from .models.background_job import JobState
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.analysisscanner \
+    import AnalysisJob, TypeStats
 
 
 @admin.register(Administrator)
@@ -103,3 +105,13 @@ class BackgroundJobAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return BackgroundJob.objects.all().select_subclasses()
+
+
+@admin.register(AnalysisJob)
+class AnalysisJobAdmin(BackgroundJobAdmin):
+    list_display = ('pk', 'scanner', 'exec_state', progress)
+
+
+@admin.register(TypeStats)
+class TypeStatsAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'analysis_job')

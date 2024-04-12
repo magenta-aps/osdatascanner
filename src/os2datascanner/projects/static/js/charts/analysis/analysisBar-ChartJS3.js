@@ -1,27 +1,34 @@
-
+/* jshint ignore:start */
 function getDigitLength(number) {
   return number.toString().length;
 }
+/* jshint ignore:end */
 
 function bytesToKB(bytes) {
   if (bytes === 0) {return 0;}
   let KB = parseInt((bytes / Math.pow(1024, 1)).toFixed(1));
   return KB;
 }
-
+/* jshint ignore:start */
 function binAndCount(array, binVal){
   // divides array into bins with a range of approx {binVal} % of total range
   // counts number of instances in each bin
-
   const max = Math.max.apply(Math, array);
-  let binSize = Math.round(max*(binVal/100));
-  const roundNumber = Math.pow(10, getDigitLength(binSize)-1);
+  let binSize = 0;
+  if (array.length <= 15){
+    binSize = max/array.length
+  }
+
+  else {
+    binSize = Math.round(max*(binVal/100));
+  }
+  const roundNumber = Math.pow(10, getDigitLength(Math.round(binSize))-1);
   binSize = Math.round(binSize/roundNumber)*roundNumber;
   let nBins = Math.ceil(max/binSize);
   if (Number.isInteger(max/binSize)){
     nBins++;
   }
-
+  
   let counts = Array(nBins).fill(0);
   for (let i = 0; i < array.length; i++ ){
     const index = Math.floor(array[i]/binSize);
@@ -29,6 +36,7 @@ function binAndCount(array, binVal){
   }
   return [counts, binSize];
 }
+/* jshint ignore:end */
 
 function getData(dataArray, granularity=5){ // jshint ignore:line
   // bins and counts dataArray
@@ -37,34 +45,19 @@ function getData(dataArray, granularity=5){ // jshint ignore:line
   // balancing values are rather arbitrary - should they be soft-coded???
   // binsize is passed as it is used to create appropriate labels for tooltips
 
+  if (dataArray.length ===1){
+    return [[{x: dataArray[0], y:1}], 1];
+  }
   dataArray.sort(function(a,b) {
     return a-b;
   });
 
   const converted = dataArray.map(byte => bytesToKB(byte));
   let [counts, binSize] = binAndCount(converted, granularity);
-  let nLarge = counts.filter((val)=>val>converted.length*0.05).length;
-  let nSmall = counts.filter((val)=>val<=0).length;
-
-  // If there are too many bins with much data in it, make granularity finer
-  let i=0.5;
-  while (nLarge > 7) {
-    [counts, binSize] = binAndCount(converted, granularity-i);
-    nLarge = counts.filter((value)=>value>converted.length*0.05).length;
-    i+=0.5;
-  }
-
-  // If there are too many bins with zero or one datapoint, make granularity more coarse
-  let j = 0.5;
-  while (nSmall/counts.length > 0.3){
-    [counts, binSize] = binAndCount(converted, granularity+j);
-    nSmall = counts.filter((val)=>val ===0).length;
-    j+=0.5;
-  }
 
   let nBins = counts.length;
   let labels = [];
-  for (let i = 0; i<nBins; i++){
+  for (let i = 0; i < nBins; i++){
     labels.push(binSize*i+(binSize/2));
   }
   let points = labels.map((c, i) => ({x: c, y: counts[i]}));
@@ -95,7 +88,8 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
               color: 'black',
               font: {
                 size: 13
-              }
+              },
+              precision:0
             },
             title: {
               display: true,
@@ -120,7 +114,8 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
               color: 'black',
               font: {
                 size: 14
-              }
+              },
+              precision:0
             }
         }
       },

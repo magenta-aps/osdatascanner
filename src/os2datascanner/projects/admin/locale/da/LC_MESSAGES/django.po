@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-04 09:19+0200\n"
+"POT-Creation-Date: 2024-04-12 10:46+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -164,7 +164,7 @@ msgstr "Følsomhed"
 msgid "Rule"
 msgstr "Regel"
 
-#: adminapp/models/scannerjobs/analysisscanner.py:63
+#: adminapp/models/scannerjobs/analysisscanner.py:71
 msgid "Mime type"
 msgstr "Filformat"
 
@@ -611,38 +611,51 @@ msgstr "resultater fundet"
 msgid "context check"
 msgstr "konteksttjek"
 
-#: adminapp/templates/components/analysis/analysis_template.html:9
+#: adminapp/templates/components/analysis/analysis_template.html:8
 #: adminapp/templates/components/navigation/navigation.html:34
 msgid "Analysis"
 msgstr "Analyse"
 
-#: adminapp/templates/components/analysis/analysis_template.html:39
-msgid "Last updated"
-msgstr "Sidst opdateret"
+#: adminapp/templates/components/analysis/analysis_template.html:22
+#: organizations/templates/organizations/account_detail.html:186
+msgid "Choose scannerjob"
+msgstr "Vælg scannerjob"
 
-#: adminapp/templates/components/analysis/analysis_template.html:49
-#: adminapp/templates/components/analysis/analysis_template.html:50
-#: adminapp/templates/components/analysis/analysis_template.html:52
+#: adminapp/templates/components/analysis/analysis_template.html:43
+#: adminapp/templates/components/analysis/analysis_template.html:44
+#: adminapp/templates/components/analysis/analysis_template.html:46
 msgid "Run analysis scan"
 msgstr "Kør analyse-scan"
 
+#: adminapp/templates/components/analysis/analysis_template.html:51
+msgid "This scannertype is not supported by analysis scans! ... Yet!"
+msgstr "Denne scannertype er ikke understøttet af analysescan! ... Endnu!"
+
+#: adminapp/templates/components/analysis/analysis_template.html:57
+msgid "Number of files"
+msgstr "Antal filer"
+
 #: adminapp/templates/components/analysis/analysis_template.html:58
+msgid "Overview of the number of each identified file type"
+msgstr "Overblik over antallet af hver enkelt identificeret filtype"
+
+#: adminapp/templates/components/analysis/analysis_template.html:73
 msgid "Storage"
 msgstr "Opbevaringsplads"
 
-#: adminapp/templates/components/analysis/analysis_template.html:59
+#: adminapp/templates/components/analysis/analysis_template.html:74
 msgid "Overview of storage for different filetypes"
 msgstr "Overblik over opbevaringsplads for de forskellige filtyper"
 
-#: adminapp/templates/components/analysis/analysis_template.html:76
+#: adminapp/templates/components/analysis/analysis_template.html:89
 msgid "File size distribution"
 msgstr "Distribution af filstørrelser"
 
-#: adminapp/templates/components/analysis/analysis_template.html:77
+#: adminapp/templates/components/analysis/analysis_template.html:90
 msgid "Overview of number of files "
 msgstr "Overblik over antallet af filer"
 
-#: adminapp/templates/components/analysis/analysis_template.html:93
+#: adminapp/templates/components/analysis/analysis_template.html:108
 msgid "Choose a scannerjob to start a new scan or view analysis"
 msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 
@@ -2272,11 +2285,11 @@ msgstr "f.eks. https://example.com/exclude1, https://example.com/exclude2"
 msgid "Space is not allowed in the web-domain name."
 msgstr "Mellemrum er ikke tilladt i web-domænenavnet."
 
-#: core/admin.py:31
+#: core/admin.py:33
 msgid "Users who are already Administrators are not shown."
 msgstr "Viser ikke brugere, der allerede er administratorer."
 
-#: core/admin.py:34
+#: core/admin.py:36
 msgid "-- No valid users available --"
 msgstr "-- Der findes ingen gyldige brugere --"
 
@@ -2463,12 +2476,12 @@ msgstr "kunder"
 msgid "{value} is not a valid {class_name}"
 msgstr "{value} er ikke en gyldig værdi for {class_name}"
 
-#: core/templates/components/background_job.html:12
 #: core/templates/components/background_job.html:13
-msgid "Cancel sync process"
-msgstr "Afbryd synkronisering"
+#: core/templates/components/background_job.html:14
+msgid "Cancel task"
+msgstr "Annullér opgave"
 
-#: core/templates/components/background_job.html:42
+#: core/templates/components/background_job.html:43
 msgid "last updated"
 msgstr "sidst opdateret"
 
@@ -3033,10 +3046,6 @@ msgstr "Klik her for at tilføje en ny oprydder"
 msgid "Add remediator"
 msgstr "Tilføj oprydder"
 
-#: organizations/templates/organizations/account_detail.html:186
-msgid "Choose scannerjob"
-msgstr "Vælg scannerjob"
-
 #: organizations/templates/organizations/account_detail.html:198
 msgid "Login Information"
 msgstr "Kontooplysninger"
@@ -3259,6 +3268,9 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:186
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Last updated"
+#~ msgstr "Sidst opdateret"
 
 #~ msgid "phone"
 #~ msgstr "telefon"

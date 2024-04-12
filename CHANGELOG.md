@@ -2,7 +2,10 @@
 
 ## Next release
 
-### New in this release 
+### New in this release
+
+- Analysis jobs can now be started from the UI, and results will be presented
+  in the "analysis"-tab.
 
 
 ### General improvements

@@ -1,56 +1,71 @@
 
-<div class="content" hx-push-url="true">
-  {% load i18n %}
-  {% load l10n %}
-  {% load static %}
-  {% include "components/navigation/scanner_tabs.html" with page="analysis"  %}
+{% load i18n %}
+{% load l10n %}
+{% load static %}
+{% include "components/navigation/scanner_tabs.html" with page="analysis" %}
 
-  <div class="content-header">
-    <h1 class="page-title">{% trans "Analysis" %}</h1>
-  </div>
-
-  {% if scanners %}
-    <form name="analysis_page"
-          hx-get="{% url 'analysis' %}"
-          hx-target=".content"
-          hx-select=".content"
-          hx-swap="outerHTML"
-          hx-trigger="change">
-      <div class="dropdown stats_dropdown content-body">
-        <select name="scannerjob" id="scannerjobs" data-compareto="none">
-          <option value="none"
-                  {% if scanners|last == "none" %}selected="selected"{% endif %}>-</option>
-          {% for scanner in scanners|first %}
-            <option value="{{ scanner.pk }}"
-                    {% if scanners|last == scanner.pk|stringformat:"i" %} selected="selected" {% endif %}>
-              {{ scanner.name|capfirst }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-    </form>
+<div class="content-header">
+  <h1 class="page-title">{% trans "Analysis" %}</h1>
  
-    {% if selected_scanner %}
-      <div class="flex">
-        <div class="response">
-          <span class="response-icon response-icon--success"
-                data-sync-for="{{ selected_scanner.first.pk }}"><i class="material-icons">check</i></span>
-          <span class="response-text" data-sync-for="{{ selected_scanner.first.pk }}">
-            {% trans 'Last updated' %} 14-11-2022, 13:22
-          </span>
-        </div>
-      </div>
+
+  <form name="analysis_page"
+        hx-get="{% url 'analysis' %}"
+        hx-target=".content"
+        hx-select=".content"
+        hx-swap="outerHTML"
+        hx-trigger="change">
+    <div class="dropdown stats_dropdown content-body">
+      <select name="scannerjob"
+              id="scannerjobs"
+              data-compareto="none"
+              autocomplete="off">
+        <option value="none" {% if not selected_scanner %}selected{% endif %}>{% trans "Choose scannerjob" %}</option>
+        {% for scanner in scanners %}
+          <option value="{{ scanner.pk }}"
+                  {% if scanner.pk == selected_scanner.pk %}selected{% endif %}>{{ scanner.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+ 
+  {% if selected_scanner %}
+    {% if supported_scannertype %}
+      {% include "components/analysis/analysis_status.html" with selected_scanner=selected_scanner analysis_job=analysis_job %}
       <div class="content-body">
         <div class="button-group">
-          <a href="#run-analysis-modal" {# This needs creation, backend not ready #}
-            data-modal="modal:open"
-            data-src="/webscanners/{{ selected_scanner.first.pk }}/askrun/"
-            class="button button--icon-text-button"
-            aria-label="{% trans 'Run analysis scan' %}"
-            title="{% trans 'Run analysis scan' %}">
+          <button name="run-analysis"
+                  hx-post="{% url "run-analysis-job" selected_scanner.pk %}"
+                  hx-target="#analysis_response"
+                  hx-select="#analysis_response"
+                  hx-swap="outerHTML"
+                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                  class="button button--icon-text-button"
+                  aria-label="{% trans "Run analysis scan" %}"
+                  title="{% trans "Run analysis scan" %}">
             <i id="play_arrow" class="material-icons">play_arrow</i>
-            <span>{% trans 'Run analysis scan' %}</span>
-          </a>
+            <span>{% trans "Run analysis scan" %}</span>
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <p>{% trans "This scannertype is not supported by analysis scans! ... Yet!" %}</p>
+    {% endif %}
+
+    {% if chart_data %}
+
+      <div class="charts-container-box">
+        <h2 class="page-title__sub">{% trans "Number of files" %}</h2>
+        <p class="chart_description">{% trans "Overview of the number of each identified file type" %}</p>
+ 
+        <div class="pie-charts-container">
+          <div class="chart-container">
+            <div class="pie-chart-content">
+              <div class="chart-legend" id="pie1_legend"></div>
+              <div class="chart-canvas">
+                <canvas id="pie1"> </canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -59,19 +74,17 @@
         <p class="chart_description">{% trans "Overview of storage for different filetypes" %}</p>
  
         <div class="pie-charts-container">
-          {% for i in pie_list %}
-            <div class="chart-container">
-              <div class="pie-chart-content">
-                <div class="chart-legend" id="pie{{ forloop.counter }}_legend"></div>
-                <div class="chart-canvas">
-                  <canvas id="pie{{ forloop.counter }}"> </canvas>
-                </div>
+          <div class="chart-container">
+            <div class="pie-chart-content">
+              <div class="chart-legend" id="pie2_legend"></div>
+              <div class="chart-canvas">
+                <canvas id="pie2"> </canvas>
               </div>
             </div>
-          {% endfor %}
+          </div>
         </div>
- 
       </div>
+
       <div class="charts-container-box">
         <h2 class="page-title__sub">{% trans "File size distribution" %}</h2>
         <p class="chart_description">{% trans "Overview of number of files " %}</p>
@@ -88,22 +101,12 @@
           {% endfor %}
         </div>
       </div>
- 
-    {% else %}
-      <p class="no-results">{% trans "Choose a scannerjob to start a new scan or view analysis" %}</p>
+
     {% endif %}
+ 
+  {% else %}
+    <p class="no-results">{% trans "Choose a scannerjob to start a new scan or view analysis" %}</p>
   {% endif %}
 </div>
 
-
-{% block modal %}
-  <div class="modal"
-       id="run-analysis-modal"
-       tabindex="-1"
-       role="dialog"
-       aria-labelledby="run-analysis-modal-title"
-       aria-hidden="true"
-       data-href="/webscanners/add/">
-    <iframe src="about:blank" frameborder="0"></iframe>
-  </div>
-{% endblock %}
+{{ chart_data|json_script:"chart_data" }}
