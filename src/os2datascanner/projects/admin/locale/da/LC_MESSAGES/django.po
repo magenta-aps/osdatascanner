@@ -1819,7 +1819,7 @@ msgid " in total - in "
 msgstr " i alt - på "
 
 #: adminapp/templates/mail/finished_scannerjob.html:45
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /><a "
 "href=\"%(admin_login_url)serror-log/\">Click here to inspect the error logs</"

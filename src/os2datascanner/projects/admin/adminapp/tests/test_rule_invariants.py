@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.cpr import CPRRule
@@ -9,73 +9,88 @@ from os2datascanner.projects.admin.adminapp.views.utils.invariants import (
 )
 
 
-class RuleInvariantTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.checker = RuleInvariantChecker()
-        self.cpr = CPRRule()
-        self.name = NameRule()
-        self.wrl = OrderedWordlistRule("en_20211018_unit_test_words")
+class TestRuleInvariant:
 
-    def test_standalone_invariant_holds_for_cpr(self):
-        self.assertTrue(self.checker.standalone_invariant(self.cpr))
+    @pytest.fixture(scope="class")
+    def invariant_checker(self):
+        return RuleInvariantChecker()
 
-    def test_standalone_invariant_holds_for_name(self):
-        self.assertTrue(self.checker.standalone_invariant(self.name))
+    @pytest.fixture(scope="class")
+    def cpr_rule(self):
+        return CPRRule()
 
-    def test_standalone_invariant_violated_for_wordlist(self):
-        self.assertRaises(RuleInvariantViolationError,
-                          self.checker.standalone_invariant, self.wrl)
+    @pytest.fixture(scope="class")
+    def name_rule(self):
+        return NameRule()
 
-    def test_standalone_invariant_holds_for_or_with_single_cpr(self):
-        rule = OrRule(self.cpr, name="A single CPRRule")
+    @pytest.fixture(scope="class")
+    def wordlist_rule(self):
+        return OrderedWordlistRule("en_20211018_unit_test_words")
 
-        self.assertTrue(self.checker.standalone_invariant(rule))
+    def test_standalone_invariant_holds_for_cpr(self, invariant_checker, cpr_rule):
+        assert invariant_checker.check_invariants(cpr_rule)
 
-    def test_standalone_invariant_holds_for_or_with_single_name(self):
-        rule = OrRule(self.name, name="A single NameRule")
+    def test_standalone_invariant_holds_for_name(self, invariant_checker, name_rule):
+        assert invariant_checker.check_invariants(name_rule)
 
-        self.assertTrue(self.checker.standalone_invariant(rule))
+    def test_standalone_invariant_violated_for_wordlist(self, invariant_checker, wordlist_rule):
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(wordlist_rule)
 
-    def test_standalone_invariant_violated_for_or_with_single_wordlist(self):
-        rule = OrRule(self.wrl, name="A single Wordlist")
+    def test_standalone_invariant_holds_for_or_with_single_cpr(self, invariant_checker, cpr_rule):
+        rule = OrRule(cpr_rule, name="A single CPRRule")
+        assert invariant_checker.check_invariants(rule)
 
-        self.assertRaises(RuleInvariantViolationError,
-                          self.checker.standalone_invariant, rule)
+    def test_standalone_invariant_holds_for_or_with_single_name(self, invariant_checker, name_rule):
+        rule = OrRule(name_rule, name="A single NameRule")
 
-    def test_standalone_invariant_holds_for_compound_rule(self):
-        rule = OrRule(self.wrl, self.cpr, name="Wordlist then CPR")
+        assert invariant_checker.check_invariants(rule)
 
-        self.assertTrue(self.checker.standalone_invariant(rule))
+    def test_standalone_invariant_violated_for_or_with_single_wordlist(self, invariant_checker,
+                                                                       wordlist_rule):
+        rule = OrRule(wordlist_rule, name="A single Wordlist")
 
-    def test_precedence_invariant_holds_for_cpr_then_health(self):
-        rule = OrRule(self.cpr, self.wrl, name="CPR then Wordlist")
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
 
-        self.assertTrue(self.checker.precedence_invariant(rule))
+    def test_precedence_invariant_holds_for_cpr_then_health(self, invariant_checker, cpr_rule,
+                                                            wordlist_rule):
 
-    def test_precedence_invariant_holds_for_cpr_then_name(self):
-        rule = OrRule(self.cpr, self.name, name="CPR then Name")
+        rule = OrRule(cpr_rule, wordlist_rule, name="CPR then Wordlist")
 
-        self.assertTrue(self.checker.precedence_invariant(rule))
+        assert invariant_checker.check_invariants(rule)
 
-    def test_precedence_invariant_holds_for_name_then_healthe(self):
-        rule = OrRule(self.name, self.wrl, name="Name then Wordlist")
+    def test_precedence_invariant_holds_for_cpr_then_name(self, invariant_checker, cpr_rule,
+                                                          name_rule):
 
-        self.assertTrue(self.checker.precedence_invariant(rule))
+        rule = OrRule(cpr_rule, name_rule, name="CPR then Name")
 
-    def test_precedence_invariant_violated_for_wordlist_then_cpr(self):
-        rule = OrRule(self.wrl, self.cpr, name="Wordlist then CPR")
+        assert invariant_checker.check_invariants(rule)
 
-        self.assertRaises(RuleInvariantViolationError,
-                          self.checker.precedence_invariant, rule)
+    def test_precedence_invariant_holds_for_name_then_health(self, invariant_checker, name_rule,
+                                                             wordlist_rule):
+        rule = OrRule(name_rule, wordlist_rule, name="Name then Wordlist")
 
-    def test_precedence_invariant_violated_for_name_then_cpr(self):
-        rule = OrRule(self.name, self.cpr, name="Name then CPR")
+        assert invariant_checker.check_invariants(rule)
 
-        self.assertRaises(RuleInvariantViolationError,
-                          self.checker.precedence_invariant, rule)
+    def test_precedence_invariant_violated_for_wordlist_then_cpr(self, invariant_checker,
+                                                                 wordlist_rule, cpr_rule):
 
-    def test_precedence_invariant_violated_for_wordlist_then_name(self):
-        rule = OrRule(self.wrl, self.name, name="Wordlist then Name")
+        rule = OrRule(wordlist_rule, cpr_rule, name="Wordlist then CPR")
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
 
-        self.assertRaises(RuleInvariantViolationError,
-                          self.checker.precedence_invariant, rule)
+    def test_precedence_invariant_violated_for_name_then_cpr(self, invariant_checker, name_rule,
+                                                             cpr_rule):
+
+        rule = OrRule(name_rule, cpr_rule, name="Name then CPR")
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
+
+    def test_precedence_invariant_violated_for_wordlist_then_name(self, invariant_checker,
+                                                                  wordlist_rule, name_rule):
+
+        rule = OrRule(wordlist_rule, name_rule, name="Wordlist then Name")
+
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
