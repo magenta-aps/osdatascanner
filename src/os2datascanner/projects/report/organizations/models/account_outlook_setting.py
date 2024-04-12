@@ -76,7 +76,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             for outl_setting in qs:
                 # TODO: ENUM use should be refactored to support name change.
                 if not outl_setting.match_category_uuid:
-                    match_uuid = _create_category(outl_setting.account.username,
+                    match_uuid = _create_category(outl_setting.account.email,
                                                   OutlookCategoryName.Match.value,
                                                   outl_setting.match_colour)
                     outl_setting.match_category_uuid = match_uuid
@@ -84,7 +84,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                         created_category_count += 1
 
                 if not outl_setting.false_positive_category_uuid:
-                    fp_uuid = _create_category(outl_setting.account.username,
+                    fp_uuid = _create_category(outl_setting.account.email,
                                                OutlookCategoryName.FalsePositive.value,
                                                outl_setting.false_positive_colour)
                     outl_setting.false_positive_category_uuid = fp_uuid
@@ -119,7 +119,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                     msg_id = message_handle.relative_path if message_handle else None
                     try:
                         existing_categories_response = gc.get(
-                            f"users/{outl_setting.account.username}/messages/{msg_id}?$select"
+                            f"users/{outl_setting.account.email}/messages/{msg_id}?$select"
                             f"=categories").json()
 
                         email_categories = existing_categories_response.get("categories", [])
@@ -131,7 +131,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                             email_categories.append(OutlookCategoryName.Match.value)
 
                         categorize_email_response = gc.categorize_mail(
-                            outl_setting.account.username,
+                            outl_setting.account.email,
                             msg_id,
                             email_categories)
 
@@ -139,7 +139,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                             categorized_count += 1
                             logger.info(f"Successfully added category "
                                         f"{OutlookCategoryName.Match.value} to email for: "
-                                        f"{outl_setting.account.username}!")
+                                        f"{outl_setting.account.email}!")
 
                     except requests.HTTPError as ex:
                         # We don't want to raise anything here, as we're iterating emails.
@@ -156,7 +156,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                 try:
                     if outl_setting.match_colour != match_colour:
                         match_resp = gc.update_category_colour(
-                            outl_setting.account.username,
+                            outl_setting.account.email,
                             outl_setting.match_category_uuid,
                             match_colour)
 
@@ -166,7 +166,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
                     if outl_setting.false_positive_colour != fp_colour:
                         fp_resp = gc.update_category_colour(
-                            outl_setting.account.username,
+                            outl_setting.account.email,
                             outl_setting.false_positive_category_uuid,
                             fp_colour)
 
@@ -189,7 +189,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             for outl_setting in self:
                 try:
                     delete_match_category_response = gc.delete_category(
-                        outl_setting.account.username,
+                        outl_setting.account.email,
                         outl_setting.match_category_uuid)
                     if delete_match_category_response.ok:
                         logger.info(f"Successfully deleted Match "
@@ -197,7 +197,7 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                         deleted_category_count += 1
 
                     delete_fp_response = gc.delete_category(
-                        outl_setting.account.username,
+                        outl_setting.account.email,
                         outl_setting.false_positive_category_uuid)
                     if delete_fp_response.ok:
                         logger.info(f"Successfully deleted False Positive "
