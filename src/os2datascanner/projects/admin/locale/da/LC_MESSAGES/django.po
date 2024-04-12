@@ -19,27 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adminapp/admin.py:84
-msgid "Rule cannot be compiled by scanner"
-msgstr "Reglen kan ikke kompileres af scanneren"
-
-#: adminapp/admin.py:88
+#: adminapp/admin.py:80
 msgid "CPR rule should not be used more than once"
 msgstr "CPR-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:92
+#: adminapp/admin.py:84
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:148
+#: adminapp/admin.py:140
 msgid "An errorlog cannot both be new and removed"
 msgstr "En fejlbesked kan ikke både være ny og fjernet"
 
-#: adminapp/admin.py:187
+#: adminapp/admin.py:179
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:191
+#: adminapp/admin.py:183
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -48,50 +44,50 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:196
+#: adminapp/admin.py:188
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:200
+#: adminapp/admin.py:192
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:203
+#: adminapp/admin.py:195
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:207
+#: adminapp/admin.py:199
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:210
+#: adminapp/admin.py:202
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:214
+#: adminapp/admin.py:206
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
-msgstr "Ændrede {qs_count} elementers fjernet-status til True"
+msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:232
+#: adminapp/admin.py:224
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:236
+#: adminapp/admin.py:228
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
-msgstr "Ændrede {qs_count} elementers løst-status til True"
+msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:239
+#: adminapp/admin.py:231
 msgid "Change resolved-status to False"
-msgstr "Sæt løst-status til False"
+msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:243
+#: adminapp/admin.py:235
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
-msgstr "Ændrede {qs_count} elementers løst-status til True"
+msgstr "Ændrede {qs_count} elementers ny-status til False"
 
 #: adminapp/management/commands/start_scan.py:19
 msgid "the primary key of the scanner job to start"
@@ -2239,13 +2235,13 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:74
+#: adminapp/views/rule_views.py:75
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:76
+#: adminapp/views/rule_views.py:77
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
@@ -2264,6 +2260,20 @@ msgstr "Scannerjob"
 #: adminapp/views/scanner_views.py:553
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
+
+#: adminapp/views/validators.py:18
+#, python-format
+msgid ""
+"Invariant violation - precedence: %(r1)s has lower precedence than %(r2)s."
+msgstr ""
+"Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på "
+"rækkefølgen."
+
+#: adminapp/views/validators.py:20
+#, python-format
+msgid ""
+"Invariant violation - standalone: %(r1)s must be used in a compound rule."
+msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
 #: adminapp/views/views.py:200 import_services/models/exported_mixin.py:31
 msgid "created"
@@ -3299,6 +3309,9 @@ msgstr "Konto ikke fundet."
 #~ msgid "All scanners"
 #~ msgstr "Alle scannere"
 
+#~ msgid "Rule violates invariants"
+#~ msgstr "Reglen overholder ikke kriterierne"
+
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"
 
@@ -3330,10 +3343,6 @@ msgstr "Konto ikke fundet."
 #, python-brace-format
 #~ msgid "<Administrator: {uid} (User) for {cid} (Client)>"
 #~ msgstr "<Administrator: {uid} (User) for {cid} (Client)>"
-
-#, python-brace-format
-#~ msgid "Changed {qs_count} elements removed to False"
-#~ msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
 #, python-format
 #~ msgid ""

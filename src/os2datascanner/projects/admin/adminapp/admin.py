@@ -19,8 +19,6 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.engine2.rules.rule import Rule
-
 from .models.authentication import Authentication
 from .models.apikey import APIKey
 from .models.scannerjobs.scanner_helpers import CoveredAccount
@@ -77,12 +75,6 @@ class CustomRuleForm(forms.ModelForm):
 
     # Check that POST-response is valid using clean_<field_name>
     def clean__rule(self):
-        try:
-            Rule.from_json_object(self.cleaned_data["_rule"])
-        except Exception:
-            raise forms.ValidationError(
-                _("Rule cannot be compiled by scanner"))
-
         if str(self.cleaned_data["_rule"]).count("'type': 'cpr'") > 1:
             raise forms.ValidationError(
                 _("CPR rule should not be used more than once"))

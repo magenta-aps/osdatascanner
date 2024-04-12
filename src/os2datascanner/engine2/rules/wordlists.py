@@ -5,6 +5,7 @@ from typing import Iterator, Optional
 from ..conversions.types import OutputType
 from .rule import Rule, SimpleRule, Sensitivity
 from .datasets.loader import common as common_loader
+from .utilities.properties import RulePrecedence, RuleProperties
 
 
 def load_words(dataset):
@@ -39,6 +40,9 @@ class OrderedWordlistRule(SimpleRule):
     operates_on = OutputType.Text
     type_label = "ordered-wordlist"
     eq_properties = ("_dataset",)
+    properties = RuleProperties(
+        precedence=RulePrecedence.RIGHT,
+        standalone=False)
 
     def __init__(self, dataset: str, **super_kwargs):
         super().__init__(**super_kwargs)
