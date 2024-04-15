@@ -6,8 +6,8 @@ import requests
 import structlog
 from contextlib import contextmanager
 
+from .. import factory
 from .. import settings as engine2_settings
-from ..utilities.backoff import WebRetrier
 from ..utilities.datetime import parse_datetime
 from ..conversions.types import OutputType
 from ..conversions.utilities.navigable import (
@@ -19,7 +19,6 @@ from .utilities import crawler
 
 
 logger = structlog.getLogger(__name__)
-TIMEOUT: int = engine2_settings.model["http"]["timeout"]
 TTL: int = engine2_settings.model["http"]["ttl"]
 _equiv_domains = set({"www", "www2", "m", "ww1", "ww2", "en", "da", "secure"})
 # match whole words (\bWORD1\b | \bWORD2\b) and escape to handle metachars.
@@ -34,7 +33,7 @@ def rate_limit(request_function, *args, **kwargs):
     """ Wrapper function to force a proces to sleep by a requested amount,
     when a certain amount of requests are made by it """
     def _rate_limit(*args2, **kwargs2):
-        return WebRetrier().run(
+        return factory.make_webretrier().run(
             request_function,
             *args, *args2,
             **kwargs, **kwargs2)
@@ -180,7 +179,7 @@ class WebSource(Source):
     def handles(self, sm):  # noqa: CCR001
         session = sm.open(self)
         wc = crawler.WebCrawler(
-                self._url, session=session, timeout=TIMEOUT, ttl=TTL,
+                self._url, session=session, ttl=TTL,
                 allow_element_hints=self._extended_hints)
         if self._exclude:
             wc.exclude(*self._exclude)
@@ -261,8 +260,8 @@ def wrap_session_send(send_m):
             logger.warning(
                     f"got 405 Method Not Supported for {rq.method} {rq.url},"
                     " trying again with GET")
-            response.request.method = "GET"
-            response = send_m(response.request, *args, **kwargs)
+            rq.method = "GET"
+            response = send_m(rq, *args, **kwargs)
         return response
     return _session_send
 
@@ -290,7 +289,7 @@ class WebResource(FileResource):
         throttled_session_head = rate_limit(
                 make_head_fallback(self._get_cookie()))
         return throttled_session_head(
-                self.handle._url, timeout=TIMEOUT, allow_redirects=True)
+                self.handle._url, allow_redirects=True)
 
     def check(self) -> bool:
         if (self.handle.source.has_trusted_sitemap
@@ -300,8 +299,7 @@ class WebResource(FileResource):
         context = self._get_cookie()
         th_send = wrap_session_send(
                 rate_limit(
-                        context.send,
-                        timeout=TIMEOUT, allow_redirects=False))
+                        context.send, allow_redirects=False))
 
         request = requests.Request(
                 method="HEAD", url=self.handle._url).prepare()
@@ -379,7 +377,7 @@ class WebResource(FileResource):
     def make_stream(self):
         # Assign session HTTP methods to variables, wrapped to constrain requests per second
         throttled_session_get = rate_limit(self._get_cookie().get)
-        response = throttled_session_get(self.handle._url, timeout=TIMEOUT)
+        response = throttled_session_get(self.handle._url)
         response.raise_for_status()
         with BytesIO(response.content) as s:
             yield s

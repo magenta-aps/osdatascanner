@@ -6,8 +6,8 @@ from urllib.parse import urlsplit, urlunsplit, SplitResult
 import logging
 import requests
 
+from os2datascanner.engine2.factory import make_webretrier
 from os2datascanner.engine2.conversions.types import Link
-from ...utilities.backoff import WebRetrier
 
 logger = logging.getLogger(__name__)
 
@@ -115,14 +115,13 @@ def simplify_mime_type(mime):
 
 class WebCrawler(Crawler):
     def __init__(
-            self, url: str, session: requests.Session, timeout: float = None,
+            self, url: str, session: requests.Session,
             *args, allow_element_hints=False, retrier=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._url = url
         self._split_url = urlsplit(url)
         self._session = session
-        self._timeout = timeout
-        self._retrier = retrier or WebRetrier()
+        self._retrier = retrier or make_webretrier()
         self._allow_element_hints = allow_element_hints
         self.exclusions = set()
 
@@ -190,19 +189,19 @@ class WebCrawler(Crawler):
 
     def visit_one(self, url: str, ttl: int, hints):  # noqa CCR001
         if ttl > 0 and self.is_crawlable(url) and not self._frozen:
-            response = self.head(url, timeout=self._timeout)
+            response = self.head(url)
 
             if response.status_code == 405:
                 # The server doesn't support HEAD requests? That's odd. Oh,
                 # well, let's use GET instead
-                response = self.get(url, timeout=self._timeout)
+                response = self.get(url)
 
             if response.status_code == 200:
                 ct = response.headers.get(
                         "Content-Type", "application/octet-stream")
                 if simplify_mime_type(ct).lower() == "text/html":
                     if not response.content:
-                        response = self.get(url, timeout=self._timeout)
+                        response = self.get(url)
                     doc = parse_html(response.content, url)
 
                     if self._allow_element_hints and not hints.get("title"):
