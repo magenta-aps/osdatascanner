@@ -332,7 +332,7 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
                 account_positions[account] = []
 
             try:
-                Position.objects.get(
+                Position.employees.get(
                         # Use account.imported_id here and not iid to handle
                         # the case above where the imported ID is changing
                         account__imported_id=account.imported_id,
@@ -428,7 +428,7 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
     to_delete = [t for t in to_delete if t.imported_id not in iids_to_preserve]
     # Figure out which positions to delete for each user.
     for acc in account_positions:
-        positions_to_delete = Position.objects.filter(
+        positions_to_delete = Position.employees.filter(
             account=acc, imported=True).exclude(
             unit__in=account_positions[acc])
         if positions_to_delete:

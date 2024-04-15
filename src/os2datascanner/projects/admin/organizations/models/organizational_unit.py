@@ -12,7 +12,6 @@
 # sector open source network <https://os2.eu/>.
 #
 
-from django.db.models import Count
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 
@@ -21,7 +20,6 @@ from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnit as Core_OrganizationalUnit
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnitSerializer as Core_OrganizationalUnitSerializer
-from os2datascanner.core_organizational_structure.models.position import Role
 from .broadcasted_mixin import Broadcasted
 
 
@@ -31,14 +29,7 @@ class OrganizationalUnit(Core_OrganizationalUnit, Broadcasted, Imported):
 
     @property
     def members_associated(self):
-        return self.positions.values("account").annotate(
-            count=Count("account")).values("account").count()
-
-    def get_managers(self):
-        return self.positions.filter(role=Role.MANAGER).prefetch_related("account")
-
-    def get_dpos(self):
-        return self.positions.filter(role=Role.DPO).prefetch_related("account")
+        return self.get_employees().count()
 
     def get_root(self):
         if self.parent is None:

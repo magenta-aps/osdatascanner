@@ -543,18 +543,18 @@ class StatisticsPageViewTest(TestCase):
 
     def test_filter_by_orgunit(self):
         """Filtering by organizational units should only return results from
-        users with positions in that unit."""
+        users with employee positions in that unit."""
         kun_egon = OrganizationalUnit.objects.create(
             name='Kun Egon',
             organization=self.org)
-
-        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
-        Position.objects.create(account=self.egon_account, unit=kun_egon, role=Role.DPO)
 
         # Add accounts to the OUs
         self.egon_account.units.add(self.olsen_banden, kun_egon)
         self.benny_account.units.add(self.olsen_banden)
         self.kjeld_account.units.add(self.olsen_banden)
+
+        Position.dpos.create(account=self.egon_account, unit=self.olsen_banden)
+        Position.dpos.create(account=self.egon_account, unit=kun_egon)
 
         response_ob = self.get_dpo_statisticspage_response(
             self.egon, params=f'?orgunit={str(self.olsen_banden.uuid)}')
@@ -605,10 +605,11 @@ class StatisticsPageViewTest(TestCase):
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_dpo_with_access_to_csv_export(self):
         """A dpo should be able to export data from their own orgunit."""
-        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
 
         self.egon_account.units.add(self.olsen_banden)
         self.benny_account.units.add(self.olsen_banden)
+
+        Position.dpos.create(account=self.egon_account, unit=self.olsen_banden)
 
         response = self.get_dpo_statistics_csv_response(
             self.egon, params=f'?orgunit={str(self.olsen_banden.uuid)}')
@@ -661,7 +662,9 @@ class StatisticsPageViewTest(TestCase):
     def test_csv_export_scannerjob_and_orgunit_filter(self):
         """Exporting data from an orgunit and scannerjob, should only contain relevant data."""
 
-        Position.objects.create(account=self.egon_account, unit=self.olsen_banden, role=Role.DPO)
+        self.egon_account.units.add(self.olsen_banden)
+
+        Position.dpos.create(account=self.egon_account, unit=self.olsen_banden)
 
         response = self.get_dpo_statistics_csv_response(
             self.egon, params=f"?scannerjob=11&orgunit={str(self.olsen_banden.uuid)}")

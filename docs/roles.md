@@ -30,9 +30,11 @@ access to different features in the system.
 
 ### Employee
 
-The Employee role doesn't give access to any special functions. However, an
-account must have this role to be considered part of an organizational unit and
-to be included in its statistics.
+The Employee role specifies that an account should be scanned if the related
+organizational unit is specified in an account-based scannerjob. For example,
+an O365 mailscanner specifying three organizational units will scan all
+accounts related to those units through Position-objects with the "employee"
+role.
 
 #### Assigning an Employee
 

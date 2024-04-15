@@ -20,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
 from ..serializer import BaseSerializer
+from .position import Role
 
 
 class OrganizationalUnit(MPTTModel):
@@ -59,8 +60,17 @@ class OrganizationalUnit(MPTTModel):
         blank=False,
     )
 
+    def get_employees(self):
+        positions = self.positions.filter(role=Role.EMPLOYEE)
+        return self.account_set.filter(positions__in=positions)
+
     def get_managers(self):
-        return self.positions.filter(role="manager").select_related("account")
+        positions = self.positions.filter(role=Role.MANAGER)
+        return self.account_set.filter(positions__in=positions)
+
+    def get_dpos(self):
+        positions = self.positions.filter(role=Role.DPO)
+        return self.account_set.filter(positions__in=positions)
 
     class Meta:
         abstract = True

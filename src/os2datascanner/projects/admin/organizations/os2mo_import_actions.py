@@ -185,16 +185,16 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         Adds positions to to_delete list.
         Returns nothing."""
         for empl_acc in account_employee_positions:
-            employee_positions_to_delete = Position.objects.filter(
-                account=empl_acc, imported=True, role="employee").exclude(
+            employee_positions_to_delete = Position.employees.filter(
+                account=empl_acc, imported=True).exclude(
                 unit__in=account_employee_positions[empl_acc])
             if positions_to_delete:
                 to_delete.append(employee_positions_to_delete)
             else:
                 continue
         for man_acc in account_manager_positions:
-            manager_positions_to_delete = Position.objects.filter(
-                account=man_acc, imported=True, role="manager").exclude(
+            manager_positions_to_delete = Position.managers.filter(
+                account=man_acc, imported=True).exclude(
                 unit__in=account_manager_positions[man_acc])
             if positions_to_delete:
                 to_delete.append(manager_positions_to_delete)

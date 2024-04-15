@@ -11,6 +11,8 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from abc import ABC
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from mptt.models import TreeForeignKey
@@ -28,8 +30,63 @@ class Role(models.TextChoices):
     DPO = 'dpo', _('data protection officer')
 
 
+class RolePositionQuerySet(ABC, models.QuerySet):
+    """Abstract parent class for querysets of positions with a certain role."""
+
+    def create(self, *args, **kwargs):
+        kwargs["role"] = self._role
+        return super().create(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        if "role" in kwargs:
+            kwargs["role"] = self._role
+        return super().update(*args, **kwargs)
+
+
+class EmployeePositionQuerySet(RolePositionQuerySet):
+    _role = Role.EMPLOYEE
+
+
+class ManagerPositionQuerySet(RolePositionQuerySet):
+    _role = Role.MANAGER
+
+
+class DPOPositionQuerySet(RolePositionQuerySet):
+    _role = Role.DPO
+
+
+class RolePositionManager(ABC, models.Manager):
+    """Abstract parent class for defining managers specific for querying
+    positions with a certain role."""
+
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(role=self._role)
+
+
+class EmployeePositionManager(RolePositionManager):
+    _queryset_class = EmployeePositionQuerySet
+    _role = Role.EMPLOYEE
+
+
+class ManagerPositionManager(RolePositionManager):
+    _queryset_class = ManagerPositionQuerySet
+    _role = Role.MANAGER
+
+
+class DPOPositionManager(RolePositionManager):
+    _queryset_class = DPOPositionQuerySet
+    _role = Role.DPO
+
+
 class Position(models.Model):
     serializer_class = None
+
+    # When defining custom managers, the default manager is excluded by default.
+    objects = models.Manager()
+
+    employees = EmployeePositionManager()
+    managers = ManagerPositionManager()
+    dpos = DPOPositionManager()
 
     account = models.ForeignKey(
         'Account',
