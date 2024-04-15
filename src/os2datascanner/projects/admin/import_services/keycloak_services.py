@@ -25,6 +25,7 @@ def refresh_token(fn):
     """ Wrapper function, that on an HTTPError will try once to fetch a
     new access token, and run the function again. If it fails, HTTPError will be raised.
     It is required that 'token' is a keyword argument on the decorated function"""
+
     def _wrapper(*args, token, **kwargs):
         try:
             response = fn(*args, token=token, **kwargs)
@@ -36,6 +37,7 @@ def refresh_token(fn):
             response = fn(*args, token=token, **kwargs)
             response.raise_for_status()
             return response
+
     return _wrapper
 
 
@@ -101,7 +103,8 @@ def request_create_component(realm, token, payload):
     return requests.post(url, data=json.dumps(payload), headers=headers)
 
 
-def request_update_component(realm, token, payload, component_id):
+@refresh_token
+def request_update_component(realm, payload, component_id, token=None):
     """TODO:"""
     url = (settings.KEYCLOAK_BASE_URL +
            f'/auth/admin/realms/{realm}/components/{component_id}')
@@ -214,61 +217,3 @@ def iter_users(realm, token=None, timeout=5, page_size=500):
         else:
             yield from users
             offset += len(users)
-
-
-def create_member_of_attribute_mapper(realm, token, provider_id):
-
-    url = (settings.KEYCLOAK_BASE_URL +
-           f'/auth/admin/realms/{realm}/components'
-           )
-
-    headers = {
-        'Authorization': f'bearer {token}',
-        'Content-Type': 'application/json;charset=utf-8',
-    }
-
-    payload = {
-        "config": {
-            "user.model.attribute": [
-                "memberOf"
-            ],
-            "ldap.attribute": [
-                "memberOf"
-            ],
-            "read.only": [
-                "true"
-            ],
-            "always.read.value.from.ldap": [
-                "true"
-            ],
-            "is.mandatory.in.ldap": [
-                "false"
-            ],
-            "is.binary.attribute": [
-                "false"
-            ]
-        },
-        "name": "memberOf",
-        "providerId": "user-attribute-ldap-mapper",
-        "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
-        "parentId": f"{provider_id}"
-    }
-
-    return requests.post(url, data=json.dumps(payload), headers=headers)
-
-
-def create_sid_attribute_mapper(realm, token, provider_id, ldap_conf):
-
-    url = (settings.KEYCLOAK_BASE_URL +
-           f'/auth/admin/realms/{realm}/components'
-           )
-
-    headers = {
-        'Authorization': f'bearer {token}',
-        'Content-Type': 'application/json;charset=utf-8',
-    }
-
-    payload = ldap_conf.get_mapper_payload_dict(parent_id=provider_id,
-                                                ldap_sid_attribute=ldap_conf.object_sid_attribute)
-
-    return requests.post(url, data=json.dumps(payload), headers=headers)

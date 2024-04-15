@@ -11,6 +11,11 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+import json
+import requests
+import structlog
+
+from django.conf import settings
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -18,7 +23,64 @@ from django.utils.translation import gettext_lazy as _
 from .exported_mixin import Exported
 from .import_service import ImportService
 from .realm import Realm
+from ..keycloak_services import refresh_token
 from ...adminapp.aescipher import encrypt, decrypt  # Suggestion: move to core?
+
+logger = structlog.get_logger()
+
+
+class LDAPUserAttributeMapper:
+    def __init__(self, name, ldap_attr, user_attr, mandatory_in_ldap=False,
+                 binary_attr=False, always_read=True, read_only=True):
+        self.name = name
+        self.ldap_attr = ldap_attr
+        self.user_attr = user_attr
+        self.mandatory_in_ldap = mandatory_in_ldap
+        self.binary_attr = binary_attr
+        self.always_read = always_read
+        self.read_only = read_only
+
+    def to_payload_json(self, config_id):
+        return {
+            "name": self.name,
+            "providerId": "user-attribute-ldap-mapper",
+            "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
+            "parentId": config_id,
+            "config": {
+                "ldap.attribute": [self.ldap_attr],
+                "is.mandatory.in.ldap": [self.mandatory_in_ldap],
+                "is.binary.attribute": [self.binary_attr],
+                "always.read.value.from.ldap": [self.always_read],
+                "read.only": [self.read_only],
+                "user.model.attribute": [self.user_attr]
+            }
+        }
+
+
+class LDAPUsernameAttributeMapper(LDAPUserAttributeMapper):
+    # The username attribute field creates a mapper behind the scenes in Keycloak. Annoyingly, this
+    # isn't updated when the user federation configuration is. Hence, we need a way to update it.
+    def __init__(self, ldap_attr, ):
+        super().__init__(name="username", ldap_attr=ldap_attr, user_attr="username")
+
+
+class LDAPFirstNameAttributeMapper(LDAPUserAttributeMapper):
+    def __init__(self, ldap_attr: str):
+        # Most defaults are good here, we just need the AD specific attribute.
+        super().__init__(name="first name", ldap_attr=ldap_attr, user_attr="firstName")
+
+
+class LDAPMemberOfMapper(LDAPUserAttributeMapper):
+    def __init__(self):
+        # We currently don't allow any customization, it's always just memberOf
+        super().__init__(name="memberOf", ldap_attr="memberOf", user_attr="memberOf")
+
+
+class LDAPSIDMapper(LDAPUserAttributeMapper):
+    def __init__(self, ldap_attr: str):
+        # Needs to be in binary
+        super().__init__(name="objectSid", ldap_attr=ldap_attr,
+                         user_attr="objectSid", binary_attr=True)
 
 
 # NOTE: all help-texts are copied from the equivalent form in Keycloak admin
@@ -51,6 +113,19 @@ class LDAPConfig(Exported, ImportService):
         ),
         verbose_name=_('username LDAP attribute'),
     )
+    firstname_attribute = models.CharField(
+        max_length=64,
+        help_text=_(
+            "Name of the LDAP attribute which is mapped as first name. "
+            "For many LDAP server vendors it can be 'givenName'"
+        ),
+        verbose_name=_("First name LDAP attribute"),
+        # We're too late to the party, not setting a default value as it is AD vendor dependant.
+        # If not populated, we're sticking to whatever Keycloak does behind the scenes.
+        null=True,
+        blank=True
+    )
+
     rdn_attribute = models.CharField(
         max_length=64,
         help_text=_(
@@ -86,7 +161,6 @@ class LDAPConfig(Exported, ImportService):
         ),
         verbose_name=_("Object security identifier")
     )
-    object_sid_mapper_uuid = models.UUIDField(blank=True, null=True)
     user_obj_classes = models.TextField(
         help_text=_(
             "All values of LDAP objectClass attribute for users in LDAP "
@@ -164,6 +238,11 @@ class LDAPConfig(Exported, ImportService):
         return decrypt(self._iv_ldap_credential,
                        bytes(self._cipher_ldap_credential))
 
+    @property
+    def realm(self):
+        realm = get_object_or_404(Realm, organization_id=self.pk)
+        return realm
+
     @ldap_credential.setter
     def ldap_credential(self, value):
         self._iv_ldap_credential, self._cipher_ldap_credential = encrypt(value)
@@ -177,13 +256,12 @@ class LDAPConfig(Exported, ImportService):
         verbose_name_plural = _('LDAP configurations')
 
     def get_payload_dict(self):
-        realm = get_object_or_404(Realm, organization_id=self.pk)
         full_connection_url = self.connection_protocol + self.connection_url
         return {
             "name": "ldap",
             "providerId": "ldap",
             "providerType": "org.keycloak.storage.UserStorageProvider",
-            "parentId": realm.pk,
+            "parentId": self.realm.pk,
             "id": str(self.pk),
             "config": {
                 "enabled": ["true"],
@@ -236,30 +314,43 @@ class LDAPConfig(Exported, ImportService):
             }
         }
 
-    def get_mapper_payload_dict(self, parent_id=None, ldap_sid_attribute=None):
-        return {
-            "name": "objectSid",
-            "providerId": "user-attribute-ldap-mapper",
-            "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
-            "parentId": parent_id if parent_id else str(self.pk),
-            "config": {
-                "ldap.attribute": [
-                    ldap_sid_attribute if ldap_sid_attribute else self.object_sid_attribute
-                ],
-                "is.mandatory.in.ldap": [
-                    "false"
-                ],
-                "is.binary.attribute": [
-                    "true"
-                ],
-                "always.read.value.from.ldap": [
-                    "true"
-                ],
-                "read.only": [
-                    "true"
-                ],
-                "user.model.attribute": [
-                    "objectSid"
-                ]
-            }
+    # API calls
+    @refresh_token
+    def get_mappers(self, token=None):
+        url = (settings.KEYCLOAK_BASE_URL +
+               f'/auth/admin/realms/{str(self.realm)}/components?parent={str(self.pk)}'
+               f'&type=org.keycloak.storage.ldap.mappers.LDAPStorageMapper')
+
+        headers = {
+            'Authorization': f'bearer {token}',
+            'Content-Type': 'application/json;charset=utf-8',
         }
+
+        return requests.get(url, headers=headers)
+
+    @refresh_token
+    def update_or_create_user_attr_mapper(self, mapper: LDAPUserAttributeMapper, token=None):
+
+        headers = {
+            'Authorization': f'bearer {token}',
+            'Content-Type': 'application/json;charset=utf-8',
+        }
+
+        # API call - gets existing mappers in json format - returns a list of dictionaries.
+        existing_mappers = self.get_mappers(token=token).json()
+        # Unpack - if there is an existing one, we need its id.
+        name_to_id = {d["name"]: d["id"] for d in existing_mappers}
+        mapper_id = name_to_id.get(mapper.name)
+
+        payload = mapper.to_payload_json(config_id=str(self.pk))
+
+        if mapper_id:  # Means there's an existing mapper
+            url = (settings.KEYCLOAK_BASE_URL +
+                   f'/auth/admin/realms/{str(self.realm)}/components/{mapper_id}')
+            logger.info(f"Existing mapper: {mapper.name} found! Updating it..")
+            return requests.put(url, data=json.dumps(payload), headers=headers)
+
+        else:  # Means there isn't an existing one - create it.
+            url = (settings.KEYCLOAK_BASE_URL + f'/auth/admin/realms/{str(self.realm)}/components/')
+            logger.info(f"No mapper: {mapper.name} found! Creating one..")
+            return requests.post(url, data=json.dumps(payload), headers=headers)
