@@ -116,13 +116,13 @@ def simplify_mime_type(mime):
 class WebCrawler(Crawler):
     def __init__(
             self, url: str, session: requests.Session, timeout: float = None,
-            *args, allow_element_hints=False, **kwargs):
+            *args, allow_element_hints=False, retrier=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._url = url
         self._split_url = urlsplit(url)
         self._session = session
         self._timeout = timeout
-        self._retrier = WebRetrier()
+        self._retrier = retrier or WebRetrier()
         self._allow_element_hints = allow_element_hints
         self.exclusions = set()
 
