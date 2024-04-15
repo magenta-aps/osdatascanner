@@ -2,6 +2,11 @@
 
 ## Next release
 
+### New in this release
+
+- Management command for removing DocumentReports only containing problems
+  from deleted scannerjobs.
+
 ### Bugfixes
 
 - Removing a rule from a ruleset while adding or editing a rule in the UI will
