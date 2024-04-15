@@ -168,7 +168,7 @@ class ExponentialBackoffRetrier(SleepingRetrier):
     def __init__(self, *exception_set, base=1, ceiling=7, fuzz=0.2, **kwargs):
         super().__init__(*exception_set, **kwargs)
         self._base = base
-        self._fuzz = 0
+        self._fuzz = fuzz
         self._ceiling = ceiling
 
     def _compute_delay(self):
