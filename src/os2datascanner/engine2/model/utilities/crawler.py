@@ -24,20 +24,20 @@ class Crawler(ABC):
 
     def _adapt(self, obj):
         """Converts a candidate object into a form suitable for insertion into
-        a set. The default implementation returns it unchanged.
+        the set that tracks visited objects. The default implementation returns
+        it unchanged.
 
         Subclasses may override this method."""
         return obj
 
     def add(self, obj, ttl: int = None, **hints):
-        """Adds an object to be visited.
+        """Adds an object to the list of objects to be visited. Regardless of
+        how many times this method is called for a given object, that object
+        will only be visited once. Subclasses may override this method to add
+        additional checks for the relevance of an object.
 
-        Once an object has been added, there is an expectation that it will
-        eventually be yielded by Crawler.visit. To avoid that, subclasses can
-        override this method to add additional checks.
-
-        Any keyword arguments passed to this function will be passed on (in a
-        dict) to the Crawler.visit_one function."""
+        Any keyword arguments passed to this method will be passed on (in a
+        dict) to the Crawler.visit_one method."""
         if not self._frozen:
             hints["referrer"] = self._visiting
             self.to_visit.append(
@@ -50,9 +50,16 @@ class Crawler(ABC):
     @abstractmethod
     def visit_one(self, obj, ttl: int, hints):
         """Visits a single object discovered by this Crawler (or manually fed
-        to it by the Crawler.add method). Subclasses should override this
-        method to explore the object, and should call self.add for every object
-        that they discover in the process."""
+        to it by the Crawler.add method).
+
+        Subclasses should override this method to actually visit the object,
+        and should call Crawler.add with a reduced TTL value for every object
+        that they discover in the process.
+
+        All of the objects yielded by all of the calls made to this function
+        collectively form the objects yielded by the Crawler.visit method. A
+        corollary of that is that visited objects can be hidden by not yielding
+        them here."""
         yield from ()
 
     def visit(self):
