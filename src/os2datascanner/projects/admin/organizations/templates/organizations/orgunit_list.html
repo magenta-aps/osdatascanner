@@ -163,7 +163,12 @@
                                     hx-trigger="change"
                                     hx-vals='{"orgunit": "{{ orgunit.pk }}"}'>
                               <option value="">{% trans "Choose new manager" %}</option>
-                              {% for account in accounts %}<option value="{{ account.uuid }}">{{ account.get_full_name }}</option>{% endfor %}
+                              {% for account in accounts %}
+                                <option value="{{ account.uuid }}">
+                                  {{ account.get_full_name }}
+                                  {% if account.username %}({{ account.username }}){% endif %}
+                                </option>
+                              {% endfor %}
                             </select>
                           </li>
 
@@ -198,7 +203,12 @@
                                     hx-trigger="change"
                                     hx-vals='{"orgunit": "{{ orgunit.pk }}"}'>
                               <option value="">{% trans "Choose new DPO" %}</option>
-                              {% for account in accounts %}<option value="{{ account.uuid }}">{{ account.get_full_name }}</option>{% endfor %}
+                              {% for account in accounts %}
+                                <option value="{{ account.uuid }}">
+                                  {{ account.get_full_name }}
+                                  {% if account.username %}({{ account.username }}){% endif %}
+                                </option>
+                              {% endfor %}
                             </select>
                           </li>
                         </ul>
