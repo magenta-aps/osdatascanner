@@ -26,6 +26,8 @@
 
 - A useless input field were removed from the or-rule span in the rulebuilder.
 
+- Creation of Outlook categories now relies on given account's email attribute instead of username.
+
 ## Version 3.22.5, 4th April 2024
 
 "Front Doors Only"
