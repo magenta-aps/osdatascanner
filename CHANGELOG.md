@@ -10,6 +10,8 @@
 - Scannerjobs based on organizational units now only scan accounts related to
   the specified units through a Position with the "employee" role.
 
+- Added the possibility of defining users LDAP first name attribute in LDAP configurations.
+
 ### General improvements
 
 - Added Google's Material Symbols as a font, so we can use it as an icon library.
@@ -32,6 +34,8 @@
 
 - When adding a leader or DPO to an org unit, two accounts with the same name can 
   now be distinguished, because their username is added after their name.
+
+- Changing username attribute in LDAP configuration now updates Keycloak mapper accordingly. 
 
 ## Version 3.22.5, 4th April 2024
 

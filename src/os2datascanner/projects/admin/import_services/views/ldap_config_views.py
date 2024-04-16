@@ -7,12 +7,15 @@ from django.utils.timezone import now
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 
-from os2datascanner.projects.admin.import_services.keycloak_services import \
-    add_ldap_conf, create_realm, request_update_component, \
-    get_token_first, create_member_of_attribute_mapper, create_sid_attribute_mapper
+from os2datascanner.projects.admin.import_services.keycloak_services import (
+    add_ldap_conf, create_realm, request_update_component)
 from os2datascanner.projects.admin.organizations.models import Organization
 from os2datascanner.projects.admin.import_services.models import LDAPConfig, Realm
 from os2datascanner.projects.admin.import_services.utils import start_ldap_import
+
+from os2datascanner.projects.admin.import_services import keycloak_services
+from os2datascanner.projects.admin.import_services.models.ldap_configuration import (
+    LDAPUsernameAttributeMapper, LDAPSIDMapper, LDAPMemberOfMapper, LDAPFirstNameAttributeMapper)
 
 
 class LDAPEditForm(forms.ModelForm):
@@ -32,6 +35,7 @@ class LDAPEditForm(forms.ModelForm):
             'rdn_attribute',
             'uuid_attribute',
             'object_sid_attribute',
+            'firstname_attribute',
             'users_dn',
             'search_scope',
             'user_obj_classes',
@@ -79,7 +83,8 @@ class LDAPEditForm(forms.ModelForm):
             'username_attribute',
             'rdn_attribute',
             'uuid_attribute',
-            'object_sid_attribute'
+            'object_sid_attribute',
+            'firstname_attribute',
         ]
         return fields
 
@@ -112,6 +117,7 @@ class LDAPAddView(LoginRequiredMixin, CreateView):
                 'uuid_attribute': "entryUUID",
                 'user_obj_classes': "inetOrgPerson, organizationalPerson",
                 'object_sid_attribute': "objectSid",
+                'firstname_attribute': "givenName"
             },
         }
         return context
@@ -148,16 +154,25 @@ def _keycloak_creation(config_instance):
     add_ldap_conf(realm.pk, payload)
     # TODO: consider moving request elsewhere,
     # else add error-handling!
+
+    # fetch a token
+    token = keycloak_services.request_access_token()
+
     # Create a memberOf attribute mapper on the LDAP user federation in Keycloak upon creation
-    get_token_first(create_member_of_attribute_mapper, realm.pk, payload["id"])
-    res = get_token_first(create_sid_attribute_mapper, realm.pk,
-                          payload["id"], config_instance)
-    if res.ok:
-        # Keycloak returns an empty body upon creation, so we'll fish the id from headers.
-        loc = res.headers.get("Location")
-        mapper_uuid = loc.split("/")[-1]  # The UUID of the mapper should be the last thing.
-        config_instance.object_sid_mapper_uuid = mapper_uuid
-        config_instance.save()
+    # TODO: We probably shouldn't create one always, as it's just going to make JSON objects larger
+    config_instance.update_or_create_user_attr_mapper(LDAPMemberOfMapper(), token=token)
+
+    # Create SID mapper - if one is set.
+    if config_instance.object_sid_attribute:
+        sid_attr_mapper = LDAPSIDMapper(ldap_attr=config_instance.object_sid_attribute)
+        config_instance.update_or_create_user_attr_mapper(sid_attr_mapper, token=token)
+
+    # Create first name mapper - if one is set.
+    if config_instance.firstname_attribute:
+        firstname_attr_mapper = LDAPFirstNameAttributeMapper(
+            ldap_attr=config_instance.firstname_attribute
+        )
+        config_instance.update_or_create_user_attr_mapper(firstname_attr_mapper, token=token)
 
 
 def _keycloak_update(config_instance):
@@ -165,27 +180,31 @@ def _keycloak_update(config_instance):
     realm = Realm.objects.get(organization_id=pk)
     payload = config_instance.get_payload_dict()
     args = [payload, pk]
-    get_token_first(request_update_component, realm.pk, *args)
-    # Do the same for SID mapper - if one is set.
-    if config_instance.object_sid_mapper_uuid:
-        mapper_payload = config_instance.get_mapper_payload_dict()
-        mapper_args = [mapper_payload, config_instance.object_sid_mapper_uuid]
-        get_token_first(request_update_component, realm.pk, *mapper_args)
 
-    # In case we're doing "Update" but don't have an existing objectSid mapper
-    if not config_instance.object_sid_mapper_uuid and config_instance.object_sid_attribute:
-        res = get_token_first(create_sid_attribute_mapper, realm.pk,
-                              payload["id"], config_instance)
-        if res.ok:
-            # Keycloak returns an empty body upon creation, so we'll fish the id from headers.
-            loc = res.headers.get("Location")
-            mapper_uuid = loc.split("/")[-1]  # The UUID of the mapper should be the last thing.
-            config_instance.object_sid_mapper_uuid = mapper_uuid
-            config_instance.save()
+    # fetch a token
+    token = keycloak_services.request_access_token()
+    # Update general fields (those on the user federation)
+    request_update_component(realm.pk, *args, token=token)
+
+    # Update username attribute mapper. This is created behind the scenes by Keycloak on creation.
+    config_instance.update_or_create_user_attr_mapper(
+        LDAPUsernameAttributeMapper(ldap_attr=config_instance.username_attribute), token=token
+    )
+
+    # Update or create SID mapper - if one is set.
+    if config_instance.object_sid_attribute:
+        sid_attr_mapper = LDAPSIDMapper(ldap_attr=config_instance.object_sid_attribute)
+        config_instance.update_or_create_user_attr_mapper(sid_attr_mapper, token=token)
+
+    # Update or create first name mapper - if one is set.
+    if config_instance.firstname_attribute:
+        firstname_attr_mapper = LDAPFirstNameAttributeMapper(
+            ldap_attr=config_instance.firstname_attribute
+        )
+        config_instance.update_or_create_user_attr_mapper(firstname_attr_mapper, token=token)
 
 
 class LDAPUpdateView(LoginRequiredMixin, UpdateView):
-
     model = LDAPConfig
     template_name = 'import_services/ldap_edit.html'
     success_url = reverse_lazy('organization-list')
