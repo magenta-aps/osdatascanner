@@ -28,6 +28,8 @@
 
 - Creation of Outlook categories now relies on given account's email attribute instead of username.
 
+- The side menu in Read the Docs now correctly shows the current section.
+
 ## Version 3.22.5, 4th April 2024
 
 "Front Doors Only"

@@ -31,11 +31,10 @@ nav:
     - Role, Special roles and Alias: roles.md
   - Frontend:
     - Frontend Architecture: architecture/frontend.md
-    - Frontend Guides:
-      - Buttons: frontend/buttons/buttons.md
-      - Icons: frontend/icons.md
-      - Components: frontend/components/utility.md
-      - Tables: frontend/tables.md
+    - Buttons: frontend/buttons/buttons.md
+    - Icons: frontend/icons.md
+    - Components: frontend/components/utility.md
+    - Tables: frontend/tables.md
   - Other:
     - Reusable components: reusable-components.md
     - Release notes: changelog.md
