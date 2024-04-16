@@ -52,7 +52,6 @@ class OrganizationalUnit(MPTTModel):
         related_name='children',
         verbose_name=_('parent unit'),
     )
-
     organization = models.ForeignKey(
         'Organization',
         on_delete=models.CASCADE,

@@ -30,6 +30,9 @@
 
 - The side menu in Read the Docs now correctly shows the current section.
 
+- When adding a leader or DPO to an org unit, two accounts with the same name can 
+  now be distinguished, because their username is added after their name.
+
 ## Version 3.22.5, 4th April 2024
 
 "Front Doors Only"
