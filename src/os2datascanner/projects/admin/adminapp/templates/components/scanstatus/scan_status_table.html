@@ -70,6 +70,10 @@
                   {% blocktranslate with obj=status.scanned_objects %}{{ obj }} objects scanned{% endblocktranslate %}
                 {% elif status.stage.value == 2 %}
                   {% blocktranslate with obj=status.scanned_objects total=status.total_objects %}{{ obj }} out of {{ total }} objects scanned {% endblocktranslate %}
+                  {% if status.skipped_by_last_modified %}
+                    <p>{{ status.skipped_by_last_modified }} {% trans "known objects skipped due to no change" %}</p>
+                  {% endif %}
+ 
                   {% with frac=status.fraction_scanned %}
                     <div class="progressbar-container">
                       <div class="progressbar"

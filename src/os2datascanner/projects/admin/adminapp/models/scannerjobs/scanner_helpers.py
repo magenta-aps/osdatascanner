@@ -109,6 +109,13 @@ class AbstractScanStatus(models.Model):
         blank=True
     )
 
+    skipped_by_last_modified = models.IntegerField(
+        verbose_name=_("files skipped by last modified check"),
+        default=0,
+        null=True,
+        blank=True
+    )
+
     @property
     def stage(self) -> int:
         # Workers have not begun scanning any objects yet
@@ -158,6 +165,10 @@ class AbstractScanStatus(models.Model):
                     (self.scanned_objects or 0) / self.total_objects, 1.0)
         else:
             return None
+
+    @property
+    def new_objects(self) -> int:
+        return self.total_objects - self.skipped_by_last_modified
 
     class Meta:
         abstract = True

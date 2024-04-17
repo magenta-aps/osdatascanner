@@ -454,6 +454,7 @@ class StatusMessage(NamedTuple):
     object_size: Optional[int] = None
     object_type: Optional[str] = None
     matches_found: Optional[int] = None
+    skipped_by_last_modified: Optional[int] = None
 
     def to_json_object(self):
         return {
@@ -464,6 +465,7 @@ class StatusMessage(NamedTuple):
             "total_objects": self.total_objects,
             "new_sources": self.new_sources,
             "matches_found": self.matches_found,
+            "skipped_by_last_modified": self.skipped_by_last_modified,
 
             "object_size": self.object_size,
             "object_type": self.object_type
@@ -478,6 +480,7 @@ class StatusMessage(NamedTuple):
                 total_objects=obj.get("total_objects"),
                 new_sources=obj.get("new_sources"),
                 matches_found=obj.get("matches_found"),
+                skipped_by_last_modified=obj.get("skipped_by_last_modified"),
                 object_size=obj.get("object_size"),
                 object_type=obj.get("object_type"))
 

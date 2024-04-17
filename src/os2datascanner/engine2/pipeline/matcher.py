@@ -2,6 +2,7 @@ import structlog
 from ..conversions.types import decode_dict
 from . import messages
 from .. import settings
+from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 
 logger = structlog.get_logger("matcher")
 
@@ -28,6 +29,14 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
         conclusion, new_matches = rule.try_match(
                 representations,
                 obj_limit=max(1, settings.pipeline["matcher"]["obj_limit"]))
+
+        # Convoluted way of checking if we _did not_ match on LastModifiedRule,
+        # meaning that we won't be scanning its content again.
+        if not conclusion and isinstance(new_matches[0][0], LastModifiedRule):
+            yield ("os2ds_status", messages.StatusMessage(
+                scan_tag=message.scan_spec.scan_tag,
+                skipped_by_last_modified=1).to_json_object())
+
     except Exception as e:
         exception_message = "Matching error"
         exception_message += ". {0}: ".format(type(e).__name__)
