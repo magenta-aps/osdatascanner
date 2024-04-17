@@ -201,7 +201,7 @@ class LDAPNode(NamedTuple):
 
     def walk(self, *, _parents: Sequence[RDN] = ()) -> Iterator[
              Tuple[Sequence[RDN], 'LDAPNode']]:
-        """Enumerates all LDAPNodes in this hierarchy in depth-first order,
+        """Enumerates all LDAPNodes in this hierarchy in depth-first pre-order,
         along with their full distinguished names."""
         yield (_parents + self.label, self)
         for k in self.children:

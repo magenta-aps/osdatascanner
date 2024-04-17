@@ -172,24 +172,8 @@ def sync_users(realm, provider_id, token=None, timeout=5):
     return requests.post(url, headers=headers, timeout=timeout)
 
 
-def get_user_count_in_realm(realm, token, timeout=5):
-    """ Given a realm name and token and it will return
-    a count on all users in given realm"""
-    headers = {
-        'Authorization': f'bearer {token}'
-
-    }
-
-    url = (settings.KEYCLOAK_BASE_URL +
-           f'/auth/admin/realms/{realm}/users/count')
-
-    user_count = int(requests.get(url, headers=headers, timeout=timeout).content)
-
-    return user_count
-
-
 @refresh_token
-def get_users(realm, timeout=5, max_users=500, start_with_user=0, token=None):
+def get_users(realm, timeout=5, max_elements=500, start_with=0, token=None):
     """Given a realm name and token, returns a list of maximum 500 users at a time
     known to Keycloak under that realm, starting with user 0."""
 
@@ -197,23 +181,75 @@ def get_users(realm, timeout=5, max_users=500, start_with_user=0, token=None):
         'Authorization': f'bearer {token}'
     }
     url = (settings.KEYCLOAK_BASE_URL +
-           f'/auth/admin/realms/{realm}/users?first={start_with_user}&max='
-           f'{max_users}')
+           f'/auth/admin/realms/{realm}/users?first={start_with}&max='
+           f'{max_elements}')
     return requests.get(url, headers=headers, timeout=timeout)
 
 
-def iter_users(realm, token=None, timeout=5, page_size=500):
-    """Yields all users known to Keycloak under the given realm, making as
-    many API calls as necessary given the specified page size."""
+@refresh_token
+def get_group_members(realm, group_id=None, timeout=5, max_elements=500, start_with=0, token=None):
+    """Given a realm name, token and group-id, returns a list of maximum 500 members at a time
+    known to Keycloak in that group, starting with user 0."""
+    headers = {
+        'Authorization': f'bearer {token}'
+    }
+    url = (settings.KEYCLOAK_BASE_URL +
+           f'/auth/admin/realms/{realm}/groups/{group_id}/members?first={start_with}&max='
+           f'{max_elements}')
+    return requests.get(url, headers=headers, timeout=timeout)
+
+
+@refresh_token
+def get_groups(realm, timeout=5, max_elements=500, start_with=0, token=None):
+    """Given a realm name and token, returns a list of maximum 500 groups at a time
+    known to Keycloak under that realm, starting with group 0."""
+
+    headers = {
+        'Authorization': f'bearer {token}'
+    }
+    url = (settings.KEYCLOAK_BASE_URL +
+           f'/auth/admin/realms/{realm}/groups?first={start_with}&max='
+           f'{max_elements}&briefRepresentation=false')
+    return requests.get(url, headers=headers, timeout=timeout)
+
+
+def iter_api_call(realm, function, token=None, timeout=5, page_size=500, **kwargs):
+    """Given a get_xxxx function, yields all results know to Keycloak,
+    makins as many API calls as necessary given the specified page size."""
     offset = 0
 
-    while rq := get_users(realm, start_with_user=offset,
-                          token=token, timeout=timeout, max_users=page_size):
+    while rq := function(
+            realm,
+            start_with=offset,
+            token=token,
+            timeout=timeout,
+            max_elements=page_size,
+            **kwargs):
         rq.raise_for_status()
 
-        users = rq.json()
-        if not users:  # No more users to fetch
+        results = rq.json()
+        if not results:  # No more elements to fetch
             break
         else:
-            yield from users
-            offset += len(users)
+            yield from results
+            offset += len(results)
+
+
+def iter_group_members(realm, group_id, group_dn=None, token=None, timeout=5, page_size=500):
+    """Yields all members of given group,
+    and saves the dn of the group as an attribute of the members"""
+
+    for member in iter_api_call(realm, get_group_members, token=token, timeout=timeout,
+                                page_size=page_size, group_id=group_id):
+        member["attributes"]["group_dn"] = group_dn
+        yield member
+
+
+def iter_users(realm, token=None, timeout=5, page_size=500):
+    """Yields all users known to Keycloak under the given realm."""
+    yield from iter_api_call(realm, get_users, token=token, timeout=timeout, page_size=page_size)
+
+
+def iter_groups(realm, token=None, timeout=5, page_size=500):
+    """Yields all groups known to Keycloak under the given realm."""
+    yield from iter_api_call(realm, get_groups, token=token, timeout=timeout, page_size=page_size)
