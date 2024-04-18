@@ -38,12 +38,14 @@ class LDAPEditForm(forms.ModelForm):
             'firstname_attribute',
             'users_dn',
             'search_scope',
+            'custom_user_filter',
             'user_obj_classes',
         ]
         widgets = {
             'bind_dn': forms.TextInput(),
             'users_dn': forms.TextInput(),
             'user_obj_classes': forms.TextInput(),
+            'custom_user_filter': forms.TextInput(),
         }
 
     ldap_password = forms.CharField(
@@ -74,6 +76,7 @@ class LDAPEditForm(forms.ModelForm):
             'users_dn',
             'search_scope',
             'user_obj_classes',
+            'custom_user_filter'
         ]
         return fields
 

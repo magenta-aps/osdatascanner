@@ -170,6 +170,17 @@ class LDAPConfig(Exported, ImportService):
         ),
         verbose_name=_('user object classes'),
     )
+    custom_user_filter = models.TextField(
+        blank=True,
+        null=True,
+        help_text=_(
+            "Additional LDAP Filter for filtering searched users. "
+            "Leave this empty if you don't need additional filter. "
+            "Make sure that it starts with '(' and ends with ')'"
+        ),
+        verbose_name=_('custom LDAP user filter'),
+    )
+
     connection_protocol = models.CharField(
         max_length=8,
         choices=(('ldap://', 'ldap'), ('ldaps://', 'ldaps')),
@@ -289,7 +300,7 @@ class LDAPConfig(Exported, ImportService):
                 "startTls": [],
                 "bindDn": [self.bind_dn],
                 "bindCredential": [self.ldap_credential],
-                "customUserSearchFilter": [],
+                "customUserSearchFilter": [self.custom_user_filter],
                 "searchScope": [str(self.search_scope)],
                 "validatePasswordPolicy": ["false"],
                 "trustEmail": ["false"],
