@@ -83,7 +83,13 @@
                   <th class="datatable__column--starttime">{% trans "Started" %}</th>
                   <th class="datatable__column--objects">{% trans "Objects" %}</th>
                   <th class="datatable__column--validated">{% trans "Results" %}</th>
-                  <th class="datatable__column--status">{% trans "Status" %}</th>
+                  <th class="datatable__column--status">
+                    {% trans "Status" %}
+                    <span class="help-tooltip"
+                          title="{% trans 'Status for given job as well as an indication of its running time. Be aware that runtimes may not be fully accurate, they do not necessarily include any time spent in the exploration phase. Runtimes are shown idle time excluded. ' %}">
+                      {% include "components/svg-icons/help.svg" %}
+                    </span>
+                  </th>
                   {% if user.is_superuser %}
                     <th class="datatable__column--delete">{% trans "Actions" %}</th>
                   {% endif %}
