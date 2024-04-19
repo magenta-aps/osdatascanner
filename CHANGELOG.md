@@ -12,6 +12,8 @@
 
 - Added the possibility of defining users LDAP first name attribute in LDAP configurations.
 
+- Added the possibility of defining a custom LDAP filter for users in LDAP configurations.
+
 ### General improvements
 
 - Added Google's Material Symbols as a font, so we can use it as an icon library.
