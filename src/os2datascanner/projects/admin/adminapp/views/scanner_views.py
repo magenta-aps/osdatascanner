@@ -165,19 +165,28 @@ class StatusCompleted(StatusBase):
 
         total_scan_times = {}
 
-        # Subquery fetches the last snapshot for each status object
+        # We're fetching the first snapshot that has recorded a scanned object (or more) to
+        # exclude time spent idle - f.e. due to multiple running jobs resulting in a large message
+        # queue.
+        # The last snapshot is fetched as well, to provide us the means to calculate runtime.
+        first_snapshot_with_scanned_obj_subquery = ScanStatusSnapshot.objects.filter(
+            scan_status=OuterRef('pk'), scanned_objects__gte=1).order_by(
+            'time_stamp').values("time_stamp")[:1]
         last_snapshot_subquery = ScanStatusSnapshot.objects.filter(
             scan_status=OuterRef('pk')).order_by(
             '-time_stamp').values('time_stamp')[:1]
 
-        # Annotate the Status queryset with the subquery to fetch the last snapshot
-        statuses = self.object_list.annotate(last_snapshot_time=Subquery(last_snapshot_subquery))
+        # Annotate the Status queryset with the ScanStatusSnapshot subqueries
+        statuses = self.object_list.annotate(
+            last_snapshot_time=Subquery(last_snapshot_subquery),
+            first_snapshot=Subquery(first_snapshot_with_scanned_obj_subquery)
+        )
 
         for status in statuses:
             if status.last_snapshot_time:
                 seconds_since_start = (
                     status.last_snapshot_time -
-                    status.start_time).total_seconds()
+                    status.first_snapshot).total_seconds()
                 total_scan_times[status.pk] = seconds_since_start
             else:
                 total_scan_times[status.pk] = None

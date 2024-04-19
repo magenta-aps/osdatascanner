@@ -22,6 +22,9 @@
 
 - Internal operation timeouts are now more reliable.
 
+- Completed scannerjobs now base their runtime on first snapshot that has recorded 
+  a scanned object, which should exclude most idle time in busy systems.
+
 ### Bugfixes
 
 - Corrected an issue where objects for update through event_collector could get mismatched.
