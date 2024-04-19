@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-16 12:06+0200\n"
+"POT-Creation-Date: 2024-04-19 08:48+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -475,11 +475,11 @@ msgid "error logs"
 msgstr "fejlbeskeder"
 
 #: adminapp/models/usererrorlog.py:33 adminapp/templates/error_log.html:173
-#: adminapp/views/scanner_views.py:357
+#: adminapp/views/scanner_views.py:366
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:359
+#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:368
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -1047,8 +1047,8 @@ msgid "Save changes"
 msgstr "Gem ændringer"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:6
-#: adminapp/templates/components/scanner/scan_completed.html:149
-#: adminapp/templates/components/scanner/scan_completed.html:150
+#: adminapp/templates/components/scanner/scan_completed.html:155
+#: adminapp/templates/components/scanner/scan_completed.html:156
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:84
@@ -1140,58 +1140,69 @@ msgstr "Objekter"
 msgid "Results"
 msgstr "Resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:86
+#: adminapp/templates/components/scanner/scan_completed.html:87
 #: adminapp/templates/components/scanstatus/scan_status_table.html:42
 msgid "Status"
 msgstr "Status"
 
-#: adminapp/templates/components/scanner/scan_completed.html:88
+#: adminapp/templates/components/scanner/scan_completed.html:89
+msgid ""
+"Status for given job as well as an indication of its running time. Be aware "
+"that runtimes may not be fully accurate, they do not necessarily include any "
+"time spent in the exploration phase. Runtimes are shown idle time excluded. "
+msgstr ""
+"Status for givent job og en indikation på dets køretid. Vær opmærksom på "
+"at køretider ikke nødvendigvis er fuldstændigt akkurate. Der inkluderes ikke nødvendigvis "
+"tid brugt i udforskningsfasen. Køretider vises uden spildtid."
+
+
+#: adminapp/templates/components/scanner/scan_completed.html:94
 #: adminapp/templates/components/scanstatus/scan_status_table.html:43
 #: adminapp/templates/error_log.html:196
 #: organizations/templates/organizations/org_table.html:47
 msgid "Actions"
 msgstr "Handlinger"
 
-#: adminapp/templates/components/scanner/scan_completed.html:106
-#: adminapp/templates/components/scanner/scan_completed.html:107
+#: adminapp/templates/components/scanner/scan_completed.html:112
+#: adminapp/templates/components/scanner/scan_completed.html:113
 msgid "Select result"
 msgstr "Vælg resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:116
+#: adminapp/templates/components/scanner/scan_completed.html:122
 msgid "objects explored"
 msgstr "objekter udforsket"
 
-#: adminapp/templates/components/scanner/scan_completed.html:119
+#: adminapp/templates/components/scanner/scan_completed.html:125
 msgid "Not available"
 msgstr "Ikke tilgængelig"
 
-#: adminapp/templates/components/scanner/scan_completed.html:123
+#: adminapp/templates/components/scanner/scan_completed.html:129
 msgid "result"
 msgstr "resultat"
 
-#: adminapp/templates/components/scanner/scan_completed.html:125
+#: adminapp/templates/components/scanner/scan_completed.html:131
 msgid "results"
 msgstr "resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:135
+#: adminapp/templates/components/scanner/scan_completed.html:141
 msgid "Finished in"
 msgstr "Afsluttet på"
 
-#: adminapp/templates/components/scanner/scan_completed.html:137
+#: adminapp/templates/components/scanner/scan_completed.html:143
 msgid "Finished"
 msgstr "Afsluttet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:149
-#: adminapp/templates/components/scanner/scan_completed.html:150
+#: adminapp/templates/components/scanner/scan_completed.html:155
+#: adminapp/templates/components/scanner/scan_completed.html:156
 msgid "scannerjob"
 msgstr "scannerjob"
 
-#: adminapp/templates/components/scanner/scan_completed.html:161
-#: adminapp/templates/components/scanner/scan_completed.html:162
+#: adminapp/templates/components/scanner/scan_completed.html:167
+#: adminapp/templates/components/scanner/scan_completed.html:168
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
-#: adminapp/templates/components/scanner/scan_completed.html:195
+#: adminapp/templates/components/scanner/scan_completed.html:201
 msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
@@ -2249,15 +2260,15 @@ msgstr "Formateringsfejl"
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:356
+#: adminapp/views/scanner_views.py:365
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:358
+#: adminapp/views/scanner_views.py:367
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:553
+#: adminapp/views/scanner_views.py:562
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
@@ -2646,7 +2657,8 @@ msgid ""
 "Name of the LDAP attribute which is mapped as first name. For many LDAP "
 "server vendors it can be 'givenName'"
 msgstr ""
-"Navnet på den LDAP-attribut der bruges som fornavn på brugere. Typisk defineret som 'givenName'"
+"Navnet på den LDAP-attribut der bruges som fornavn på brugere. Typisk "
+"defineret som 'givenName'"
 
 #: import_services/models/ldap_configuration.py:122
 msgid "First name LDAP attribute"
@@ -3024,14 +3036,14 @@ msgstr "Aliasser"
 #: organizations/templates/organizations/account_detail.html:97
 #: organizations/templates/organizations/account_detail.html:154
 #: organizations/templates/organizations/orgunit_list.html:142
-#: organizations/templates/organizations/orgunit_list.html:177
+#: organizations/templates/organizations/orgunit_list.html:182
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:104
 #: organizations/templates/organizations/account_detail.html:163
 #: organizations/templates/organizations/orgunit_list.html:149
-#: organizations/templates/organizations/orgunit_list.html:184
+#: organizations/templates/organizations/orgunit_list.html:189
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
@@ -3257,7 +3269,7 @@ msgstr "konti tilknyttet"
 
 #: organizations/templates/organizations/orgunit_list.html:142
 #: organizations/templates/organizations/orgunit_list.html:149
-#: organizations/templates/organizations/orgunit_list.html:177
+#: organizations/templates/organizations/orgunit_list.html:182
 msgid "as manager of"
 msgstr "som leder af"
 
@@ -3265,19 +3277,19 @@ msgstr "som leder af"
 msgid "Choose new manager"
 msgstr "Vælg ny leder"
 
-#: organizations/templates/organizations/orgunit_list.html:184
+#: organizations/templates/organizations/orgunit_list.html:189
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:201
+#: organizations/templates/organizations/orgunit_list.html:206
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
 
-#: organizations/templates/organizations/orgunit_list.html:211
+#: organizations/templates/organizations/orgunit_list.html:221
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:219
+#: organizations/templates/organizations/orgunit_list.html:229
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
