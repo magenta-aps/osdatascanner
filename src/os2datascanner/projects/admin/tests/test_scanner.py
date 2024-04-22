@@ -3,12 +3,15 @@ from django.test import RequestFactory, TestCase
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 from unittest import skip
+from parameterized import parameterized
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules import logical, regex
 from os2datascanner.engine2.model.data import unpack_data_url
-from os2datascanner.engine2.model.msgraph import mail as graph_mail
+from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
+from os2datascanner.engine2.model.msgraph import (
+        mail as graph_mail, files as graph_files)
 from os2datascanner.engine2.model.derived import mail
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 from os2datascanner.projects.admin.organizations.models.account \
@@ -353,3 +356,68 @@ class ScannerTest(TestCase):
 
         self.assertEqual(ScheduledCheckup.objects.count(), 1)
         self.assertEqual(ScheduledCheckup.objects.first(), sc)
+
+    @parameterized.expand([
+        (
+            SMBCHandle(
+                    SMBCSource("//SERVER/Share", "svcacct", "SVCPASSWD0"),
+                    "path/to/file.txt"),
+            [
+                SMBCSource("//SERVER/Files", "svcacct", "SVCPASSWD0"),
+                SMBCSource("//SERVER/Share", "svcacct", "SVCPASSWD0"),
+                SMBCSource("//SERVER/Home", "svcacct", "SVCPASSWD0")
+            ],
+        ),
+        (
+            graph_mail.MSGraphMailMessageHandle(
+                    graph_mail.MSGraphMailAccountSource._make(
+                            graph_mail.MSGraphMailSource(
+                                    client_id="4",
+                                    tenant_id="5",
+                                    client_secret="6"),
+                            "jens@tester.invalid"),
+                    "idvaluegoeshere",
+                    "Re: Yyuo haev won teh priez!",
+                    "https://example.invalid/mail/idvaluegoeshere"),
+            [
+                graph_mail.MSGraphMailSource(
+                        client_id="4",
+                        tenant_id="5",
+                        client_secret="6")
+            ],
+        ),
+        (
+            graph_files.MSGraphFileHandle(
+                    graph_files.MSGraphDriveSource._make(
+                            graph_files.MSGraphFilesSource(
+                                    client_id="4",
+                                    tenant_id="5",
+                                    client_secret="6"),
+                            "DRIVEHANDLEISALONGSTRINGWITH"
+                            "NOCLEARMEANINGINITSCONTENT",
+                            "Jens Testers OneDrive",
+                            "jens@tester.invalid"),
+                    "Path/To/Document.TXT"),
+            [
+                graph_files.MSGraphFilesSource(
+                        client_id="4",
+                        tenant_id="5",
+                        client_secret="6")
+            ],
+        ),
+    ])
+    def test_uncensoring(self, true_handle, sources):
+        censored_handle = true_handle.censor()
+
+        self.assertNotEqual(
+                true_handle,
+                censored_handle,
+                "censoring did not affect equality check; this may confuse"
+                " SourceManager into restoring censored credentials!")
+
+        self.assertEqual(
+                Scanner._uncensor_handle(
+                        Scanner._make_remap_dict(sources),
+                        censored_handle),
+                (True, true_handle),
+                "uncensoring did not restore the original handle")
