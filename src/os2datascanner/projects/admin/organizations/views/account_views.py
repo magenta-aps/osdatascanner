@@ -1,5 +1,7 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import SearchVector
+from django.views.generic import DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
@@ -8,7 +10,7 @@ from django.forms import ModelForm
 from ..models import Account, Alias
 from ..models.aliases import AliasType
 from ...adminapp.views.views import (RestrictedListView, RestrictedDetailView,
-                                     RestrictedCreateView, RestrictedDeleteView)
+                                     RestrictedCreateView)
 from ...adminapp.models.scannerjobs.scanner import Scanner
 from ...adminapp.views.scanner_views import EmptyPagePaginator
 from ..utils import ClientAdminMixin
@@ -81,9 +83,6 @@ class AccountDetailView(ClientAdminMixin, RestrictedDetailView):
 
     def post(self, request, *args, **kwargs):
         trigger_name = request.headers.get('HX-Trigger-Name')
-
-        print('headers:', request.headers)
-        print('POST:', request.POST)
 
         acc = self.get_object()
 
@@ -158,7 +157,7 @@ class AliasCreateView(ClientAdminMixin, RestrictedCreateView):
                 'pk': self.kwargs.get('acc_uuid')})
 
 
-class AliasDeleteView(ClientAdminMixin, RestrictedDeleteView):
+class AliasDeleteView(LoginRequiredMixin, ClientAdminMixin, DeleteView):
     model = Alias
 
     def get_success_url(self):
