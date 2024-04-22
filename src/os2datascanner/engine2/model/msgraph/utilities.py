@@ -52,7 +52,7 @@ class MSGraphSource(Source):
         self._client_secret = client_secret
 
     def censor(self):
-        return type(self)(self._client_id, self._tenant_id, None)
+        return type(self)(None, self._tenant_id, None)
 
     def make_token(self):
         return make_token(

@@ -80,7 +80,7 @@ class MSGraphMailSource(MSGraphSource):
                 scan_attachments=obj.get("scan_attachments", True))
 
     def censor(self):
-        return type(self)(self._client_id, self._tenant_id, None,
+        return type(self)(None, self._tenant_id, None,
                           scan_deleted_items_folder=self.scan_deleted_items_folder,
                           scan_syncissues_folder=self.scan_syncissues_folder,
                           scan_attachments=self.scan_attachments)
