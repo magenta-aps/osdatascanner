@@ -99,6 +99,7 @@ class PDFPageHandle(Handle):
 @Source.mime_handler(PAGE_TYPE)
 class PDFPageSource(DerivedSource):
     type_label = "pdf-page"
+    derived_from = PDFPageHandle
 
     def _generate_state(self, sm):
         # As we produce FilesystemResources, we need to produce a cookie of the

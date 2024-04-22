@@ -3,7 +3,7 @@ from parameterized import parameterized
 
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.derived.pdf import (
-        PDFObjectHandle, PDFPageSource, PDFPageHandle, PDFSource)
+        PDFObjectHandle, PDFPageSource, PDFSource)
 from os2datascanner.engine2.model.derived.mail import (
         MailSource, MailPartHandle)
 from os2datascanner.engine2.model.msgraph.mail import (
@@ -115,14 +115,13 @@ class Engine2EqualityTest(unittest.TestCase):
          "_relpath=1/Copy of Copy of FINAL (3) (EDITED) (FIXED2).doc.docx)",
          None),
         (PDFObjectHandle(
-                PDFPageSource(
-                        PDFPageHandle(
-                                PDFSource(
-                                        MailPartHandle(
-                                                mail_source,
-                                                "2/OUTPUT.PDF",
-                                                "application/pdf")),
-                                "14")),
+                PDFPageSource._make(
+                        PDFSource(
+                                MailPartHandle(
+                                        mail_source,
+                                        "2/OUTPUT.PDF",
+                                        "application/pdf")),
+                        "14"),
                 "text.html"),
          "PDFObjectHandle(_source=(PDFPageSource(_handle=(PDFPageHandle(_sourc"
          "e=(PDFSource(_handle=(MailPartHandle(_source=(MailSource(_handle=(MS"

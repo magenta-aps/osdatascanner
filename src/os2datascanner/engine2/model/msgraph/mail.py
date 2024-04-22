@@ -146,6 +146,7 @@ class MSGraphMailAccountHandle(Handle):
 @Source.mime_handler(DUMMY_MIME)
 class MSGraphMailAccountSource(DerivedSource):
     type_label = "msgraph-mail-account"
+    derived_from = MSGraphMailAccountHandle
 
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)

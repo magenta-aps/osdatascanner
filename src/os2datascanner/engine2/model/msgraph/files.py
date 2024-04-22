@@ -134,6 +134,7 @@ class MSGraphDriveHandle(Handle):
 @Source.mime_handler(DUMMY_MIME)
 class MSGraphDriveSource(DerivedSource):
     type_label = "msgraph-drive"
+    derived_from = MSGraphDriveHandle
 
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)

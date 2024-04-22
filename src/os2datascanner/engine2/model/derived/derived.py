@@ -6,11 +6,25 @@ class DerivedSource(Source):
     """A DerivedSource is a convenience class for a Source backed by a Handle.
     It provides sensible default implementations of Source.handle,
     Source.censor, Source.remap, and Source.to_json_object, and automatically
-    registers the constructor of every subclass as a JSON object decoder for
-    Sources."""
+    registers the constructor of every (non-abstract) subclass as a JSON object
+    decoder for Sources."""
+
+    derived_from: type | None = None
 
     def __init__(self, handle):
+        if self.derived_from and not isinstance(handle, self.derived_from):
+            raise TypeError(
+                    f"expected '{self.derived_from.__name__}',"
+                    f" but got '{type(handle).__name__}'")
         self._handle = handle
+
+    @classmethod
+    def _make(cls, *args, **kwargs):
+        if not cls.derived_from:
+            raise TypeError(
+                    "make() is only supported for DerivedSources with a"
+                    " single valid Handle derivation")
+        return cls(cls.derived_from(*args, **kwargs))
 
     @property
     def handle(self):
