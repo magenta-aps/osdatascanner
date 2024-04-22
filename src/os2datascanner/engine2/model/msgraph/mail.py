@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class MSGraphMailSource(MSGraphSource):
     type_label = "msgraph-mail"
 
-    eq_properties = ("_userlist", "_tenant_id")
+    eq_properties = MSGraphSource.eq_properties + ("_userlist",)
 
     def __init__(
             self,

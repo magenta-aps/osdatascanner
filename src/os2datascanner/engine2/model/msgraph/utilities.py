@@ -43,6 +43,8 @@ def raw_request_decorator(fn):
 class MSGraphSource(Source):
     yields_independent_sources = True
 
+    eq_properties = ("_client_id", "_tenant_id", "_client_secret",)
+
     def __init__(self, client_id, tenant_id, client_secret):
         super().__init__()
         self._client_id = client_id
