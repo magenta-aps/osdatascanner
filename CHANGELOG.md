@@ -54,6 +54,12 @@
 - All components of the web scanner now respect the system's configured
   timeout and backoff parameters.
 
+- Datatables on "admin/scannerjobs" have been refactored.
+  - Scanner names now link to "edit scannerjob".
+  - URL's for webscanners truncate on desktop and display the full string on hover.
+  - Validation status' are displayed as labels/badges similar to the status-labels on Report.
+  - All icons are now 'Material Symbols'.
+
 ### Bugfixes
 
 - Corrected an issue where objects for update through event_collector could get mismatched.

@@ -659,7 +659,7 @@ msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 #: adminapp/templates/components/navigation/navigation.html:17
 #: adminapp/templates/components/scanner/scan_completed.html:82
 #: adminapp/templates/components/scanstatus/scan_status_table.html:40
-#: adminapp/templates/scanners.html:25 adminapp/templates/scanners.html:66
+#: adminapp/templates/scanners.html:25 adminapp/templates/scanners.html:245
 msgid "Scannerjob"
 msgstr "Scannerjob"
 
@@ -993,8 +993,8 @@ msgstr "Ønsker du virkelig at slette?"
 
 #: adminapp/templates/components/rules/cprrule_confirm_delete.html:17
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:21
-#: adminapp/templates/rules.html:203 adminapp/templates/scanners.html:138
-#: adminapp/templates/scanners.html:150
+#: adminapp/templates/rules.html:203 adminapp/templates/scanners.html:310
+#: adminapp/templates/scanners.html:322
 msgid "No"
 msgstr "Nej"
 
@@ -1052,8 +1052,8 @@ msgstr "Gem ændringer"
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:84
-#: adminapp/templates/rules.html:85 adminapp/templates/scanners.html:188
-#: adminapp/templates/scanners.html:189
+#: adminapp/templates/rules.html:85 adminapp/templates/scanners.html:360
+#: adminapp/templates/scanners.html:361
 #: organizations/templates/organizations/org_table.html:216
 #: organizations/templates/organizations/org_table.html:217
 #: organizations/templates/organizations/org_table.html:228
@@ -1999,16 +1999,16 @@ msgid "Load rule"
 msgstr "Indlæs regel"
 
 #: adminapp/templates/miniscan.html:75 adminapp/templates/miniscan.html:76
-#: adminapp/templates/miniscan.html:77 adminapp/templates/scanners.html:160
-#: adminapp/templates/scanners.html:161
+#: adminapp/templates/miniscan.html:77 adminapp/templates/scanners.html:332
+#: adminapp/templates/scanners.html:333
 msgid "Run"
 msgstr "Kør"
 
 #: adminapp/templates/miniscan.html:75 adminapp/templates/miniscan.html:76
-#: adminapp/templates/scanners.html:160 adminapp/templates/scanners.html:161
-#: adminapp/templates/scanners.html:167 adminapp/templates/scanners.html:168
-#: adminapp/templates/scanners.html:174 adminapp/templates/scanners.html:175
-#: adminapp/templates/scanners.html:188 adminapp/templates/scanners.html:189
+#: adminapp/templates/scanners.html:332 adminapp/templates/scanners.html:333
+#: adminapp/templates/scanners.html:339 adminapp/templates/scanners.html:340
+#: adminapp/templates/scanners.html:346 adminapp/templates/scanners.html:347
+#: adminapp/templates/scanners.html:360 adminapp/templates/scanners.html:361
 msgid "scanner"
 msgstr "scanner"
 
@@ -2035,12 +2035,13 @@ msgid "Add rule"
 msgstr "Tilføj regel"
 
 #: adminapp/templates/rules.html:50 adminapp/templates/rules.html:135
+#: adminapp/templates/scanners.html:63
 #: organizations/templates/organizations/account_detail.html:21
 #: organizations/templates/organizations/account_list.html:55
 msgid "Name"
 msgstr "Navn"
 
-#: adminapp/templates/rules.html:51 adminapp/templates/scanners.html:80
+#: adminapp/templates/rules.html:51 adminapp/templates/scanners.html:251
 #: organizations/templates/organizations/account_detail.html:33
 msgid "Organization"
 msgstr "Organisation"
@@ -2053,12 +2054,14 @@ msgstr "Beskrivelse"
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/templates/rules.html:54 adminapp/templates/scanners.html:87
+#: adminapp/templates/rules.html:54 adminapp/templates/scanners.html:81
+#: adminapp/templates/scanners.html:258
 msgid "Action"
 msgstr "Handling"
 
 #: adminapp/templates/rules.html:73 adminapp/templates/rules.html:74
-#: adminapp/templates/scanners.html:167 adminapp/templates/scanners.html:168
+#: adminapp/templates/scanners.html:92 adminapp/templates/scanners.html:93
+#: adminapp/templates/scanners.html:339 adminapp/templates/scanners.html:340
 msgid "Edit"
 msgstr "Redigér"
 
@@ -2066,7 +2069,8 @@ msgstr "Redigér"
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:83 adminapp/templates/scanners.html:187
+#: adminapp/templates/rules.html:83 adminapp/templates/scanners.html:221
+#: adminapp/templates/scanners.html:359
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
@@ -2090,7 +2094,7 @@ msgstr "Ønsker du at slette"
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:200 adminapp/templates/scanners.html:129
+#: adminapp/templates/rules.html:200 adminapp/templates/scanners.html:301
 #: organizations/templates/organizations/account_detail.html:70
 msgid "Yes"
 msgstr "Ja"
@@ -2104,23 +2108,23 @@ msgstr "Søg efter scanner"
 msgid "Add scannerjob"
 msgstr "Tilføj scannerjob"
 
-#: adminapp/templates/scanners.html:78
-msgid "Name/URL"
-msgstr "Navn/URL"
+#: adminapp/templates/scanners.html:66
+msgid "URL"
+msgstr "URL"
 
-#: adminapp/templates/scanners.html:83
+#: adminapp/templates/scanners.html:70 adminapp/templates/scanners.html:254
 msgid "Drive"
 msgstr "Drev"
 
-#: adminapp/templates/scanners.html:85
-msgid "Approved"
-msgstr "Godkendt"
+#: adminapp/templates/scanners.html:74
+msgid "Validation"
+msgstr "Validering"
 
-#: adminapp/templates/scanners.html:86
-msgid "Automatic"
-msgstr "Automatisk"
+#: adminapp/templates/scanners.html:78
+msgid "Next scan"
+msgstr "Næste scan"
 
-#: adminapp/templates/scanners.html:103
+#: adminapp/templates/scanners.html:110 adminapp/templates/scanners.html:274
 msgid ""
 "The following users are no longer covered by this scannerjob, but have been "
 "scanned previously:"
@@ -2128,27 +2132,79 @@ msgstr ""
 "Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
 "blevet scannet:"
 
-#: adminapp/templates/scanners.html:104
+#: adminapp/templates/scanners.html:113 adminapp/templates/scanners.html:275
 msgid "Stale accounts"
 msgstr "Frakoblede konti"
 
-#: adminapp/templates/scanners.html:127
-msgid "Is approved"
-msgstr "Er godkendt"
+#: adminapp/templates/scanners.html:144 adminapp/templates/scanners.html:155
+msgid "Validation status for this scanner job has been set to"
+msgstr "Valideringstatus for dette scannerjob er blevet indstillet til"
 
-#: adminapp/templates/scanners.html:135
-msgid "Is not approved"
-msgstr "Er ikke godkendt"
+#: adminapp/templates/scanners.html:144 adminapp/templates/scanners.html:148
+msgid "Valid"
+msgstr "Gyldig"
 
-#: adminapp/templates/scanners.html:145
-msgid "Next scan: "
-msgstr "Næste scan: "
+#: adminapp/templates/scanners.html:155 adminapp/templates/scanners.html:159
+msgid "Invalid"
+msgstr "Ugyldig"
 
-#: adminapp/templates/scanners.html:187
+#: adminapp/templates/scanners.html:169
+msgid "Next scan will run the"
+msgstr "Næste scan vil køre den"
+
+#: adminapp/templates/scanners.html:177
+msgid "There are currently no scans scheduled for this scanner job"
+msgstr "Der er i øjeblikket ingen planlagte scan for dette scannerjob"
+
+#: adminapp/templates/scanners.html:181
+msgid "Not scheduled"
+msgstr "Ikke planlagt"
+
+#: adminapp/templates/scanners.html:194 adminapp/templates/scanners.html:195
+msgid "Run scanner job"
+msgstr "Kør scannerjob"
+
+#: adminapp/templates/scanners.html:201 adminapp/templates/scanners.html:202
+msgid "Edit scanner job"
+msgstr "Redigér scannerjob"
+
+#: adminapp/templates/scanners.html:208 adminapp/templates/scanners.html:209
+msgid "Copy scanner job"
+msgstr "Kopiér scannerjob"
+
+#: adminapp/templates/scanners.html:221 adminapp/templates/scanners.html:359
 msgid "Do you really want to delete this scanner?"
 msgstr "Er du sikker på, at du vil slette denne scanner?"
 
-#: adminapp/templates/scanners.html:203
+#: adminapp/templates/scanners.html:222 adminapp/templates/scanners.html:223
+msgid "Delete scanner job"
+msgstr "Slet scannerjob"
+
+#: adminapp/templates/scanners.html:249
+msgid "Name/URL"
+msgstr "Navn/URL"
+
+#: adminapp/templates/scanners.html:256
+msgid "Approved"
+msgstr "Godkendt"
+
+#: adminapp/templates/scanners.html:257
+msgid "Automatic"
+msgstr "Automatisk"
+
+#: adminapp/templates/scanners.html:299
+msgid "Is approved"
+msgstr "Er godkendt"
+
+#: adminapp/templates/scanners.html:307
+msgid "Is not approved"
+msgstr "Er ikke godkendt"
+
+#: adminapp/templates/scanners.html:317
+msgid "Next scan: "
+msgstr "Næste scan: "
+
+#: adminapp/templates/scanners.html:375
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
@@ -3314,6 +3370,15 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:186
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Validation status for"
+#~ msgstr "Valideringstatus for"
+
+#~ msgid "has been set to"
+#~ msgstr "er blevet indstillet til"
+
+#~ msgid "Edit scanner"
+#~ msgstr "Rediger scanner"
 
 #~ msgid "Last updated"
 #~ msgstr "Sidst opdateret"
