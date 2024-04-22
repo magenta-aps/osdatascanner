@@ -391,7 +391,7 @@ class Scanner(models.Model):
                 case (s, None):
                     # Our map doesn't know about this Source yet, so put it in
                     # there
-                    uncensor_map[source] = censored
+                    uncensor_map[censored] = source
                 case (s, t) if s == t:
                     # We've ended up with two references to the same Source
                     # (presumably through two different Accounts?), but that's

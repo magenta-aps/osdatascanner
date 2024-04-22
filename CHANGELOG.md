@@ -42,6 +42,9 @@
 
 - Changing username attribute in LDAP configuration now updates Keycloak mapper accordingly. 
 
+- Two bugs in the code that submits `ScheduledCheckup`s to the scanner engine
+  were fixed. (This code is now also subject to automated regression testing.)
+
 ## Version 3.22.5, 4th April 2024
 
 "Front Doors Only"
