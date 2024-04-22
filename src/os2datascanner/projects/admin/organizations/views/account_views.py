@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import SearchVector
-from django.views.generic import DeleteView
+from django.views.generic import DetailView, CreateView, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
@@ -9,8 +9,7 @@ from django.forms import ModelForm
 
 from ..models import Account, Alias
 from ..models.aliases import AliasType
-from ...adminapp.views.views import (RestrictedListView, RestrictedDetailView,
-                                     RestrictedCreateView)
+from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
 from ...adminapp.views.scanner_views import EmptyPagePaginator
 from ..utils import ClientAdminMixin
@@ -62,11 +61,10 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
         return self.request.GET.get('paginate_by', self.paginate_by)
 
 
-class AccountDetailView(ClientAdminMixin, RestrictedDetailView):
+class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
     model = Account
     template_name = "organizations/account_detail.html"
     context_object_name = "account"
-    fields = ()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,7 +119,7 @@ class AccountDetailView(ClientAdminMixin, RestrictedDetailView):
         return self.get(request, *args, **kwargs)
 
 
-class AliasCreateView(ClientAdminMixin, RestrictedCreateView):
+class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
     model = Alias
     template_name = "components/modals/alias_create.html"
     fields = ('_alias_type', '_value')
