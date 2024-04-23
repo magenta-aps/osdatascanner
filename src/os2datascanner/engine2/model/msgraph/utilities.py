@@ -43,6 +43,8 @@ def raw_request_decorator(fn):
 class MSGraphSource(Source):
     yields_independent_sources = True
 
+    eq_properties = ("_client_id", "_tenant_id", "_client_secret",)
+
     def __init__(self, client_id, tenant_id, client_secret):
         super().__init__()
         self._client_id = client_id
@@ -50,7 +52,7 @@ class MSGraphSource(Source):
         self._client_secret = client_secret
 
     def censor(self):
-        return type(self)(self._client_id, self._tenant_id, None)
+        return type(self)(None, self._tenant_id, None)
 
     def make_token(self):
         return make_token(

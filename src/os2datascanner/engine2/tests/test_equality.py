@@ -3,12 +3,11 @@ from parameterized import parameterized
 
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.derived.pdf import (
-        PDFObjectHandle, PDFPageSource, PDFPageHandle, PDFSource)
+        PDFObjectHandle, PDFPageSource, PDFSource)
 from os2datascanner.engine2.model.derived.mail import (
         MailSource, MailPartHandle)
 from os2datascanner.engine2.model.msgraph.mail import (
-        MSGraphMailSource, MSGraphMailAccountHandle,
-        MSGraphMailAccountSource, MSGraphMailMessageHandle)
+        MSGraphMailSource, MSGraphMailAccountSource, MSGraphMailMessageHandle)
 
 from os2datascanner.engine2.utilities.equality import TypePropertyEquality
 
@@ -94,20 +93,19 @@ class Engine2EqualityTest(unittest.TestCase):
         (MailPartHandle(
                 mail_source := MailSource(
                         MSGraphMailMessageHandle(
-                                MSGraphMailAccountSource(
-                                        MSGraphMailAccountHandle(
-                                                MSGraphMailSource(
-                                                        "NRCIDV",
-                                                        "NRTIDV",
-                                                        "NRCLSV",
-                                                        True),
-                                                "testuser@example.invalid")),
+                                MSGraphMailAccountSource._make(
+                                        MSGraphMailSource(
+                                                "NRCIDV",
+                                                "NRTIDV",
+                                                "NRCLSV",
+                                                True),
+                                        "testuser@example.invalid"),
                                 "bWVzc2FnZTI=",
                                 "Re: Submission deadline",
                                 "https://example.invalid/view/bWVzc2FnZTI=")),
                 "1/Copy of Copy of FINAL (3) (EDITED) (FIXED2).doc.docx",
                 "application/vnd.openxmlformats-officedocument"
-                ".wordprocessingml.document"),
+                ".wordprocessingml.document").censor(),
          "MailPartHandle(_source=(MailSource(_handle=(MSGraphMailMessageHandle"
          "(_source=(MSGraphMailAccountSource(_handle=(MSGraphMailAccountHandle"
          "(_source=(MSGraphMailSource(_tenant_id=NRTIDV));_relpath=testuser@"
@@ -115,15 +113,14 @@ class Engine2EqualityTest(unittest.TestCase):
          "_relpath=1/Copy of Copy of FINAL (3) (EDITED) (FIXED2).doc.docx)",
          None),
         (PDFObjectHandle(
-                PDFPageSource(
-                        PDFPageHandle(
-                                PDFSource(
-                                        MailPartHandle(
-                                                mail_source,
-                                                "2/OUTPUT.PDF",
-                                                "application/pdf")),
-                                "14")),
-                "text.html"),
+                PDFPageSource._make(
+                        PDFSource(
+                                MailPartHandle(
+                                        mail_source,
+                                        "2/OUTPUT.PDF",
+                                        "application/pdf")),
+                        "14"),
+                "text.html").censor(),
          "PDFObjectHandle(_source=(PDFPageSource(_handle=(PDFPageHandle(_sourc"
          "e=(PDFSource(_handle=(MailPartHandle(_source=(MailSource(_handle=(MS"
          "GraphMailMessageHandle(_source=(MSGraphMailAccountSource(_handle=(MS"

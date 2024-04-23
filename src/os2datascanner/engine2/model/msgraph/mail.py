@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class MSGraphMailSource(MSGraphSource):
     type_label = "msgraph-mail"
 
-    eq_properties = ("_userlist", "_tenant_id")
+    eq_properties = MSGraphSource.eq_properties + ("_userlist",)
 
     def __init__(
             self,
@@ -80,7 +80,7 @@ class MSGraphMailSource(MSGraphSource):
                 scan_attachments=obj.get("scan_attachments", True))
 
     def censor(self):
-        return type(self)(self._client_id, self._tenant_id, None,
+        return type(self)(None, self._tenant_id, None,
                           scan_deleted_items_folder=self.scan_deleted_items_folder,
                           scan_syncissues_folder=self.scan_syncissues_folder,
                           scan_attachments=self.scan_attachments)
@@ -146,6 +146,7 @@ class MSGraphMailAccountHandle(Handle):
 @Source.mime_handler(DUMMY_MIME)
 class MSGraphMailAccountSource(DerivedSource):
     type_label = "msgraph-mail-account"
+    derived_from = MSGraphMailAccountHandle
 
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)

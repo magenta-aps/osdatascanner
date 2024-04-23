@@ -382,25 +382,16 @@ class Scanner(models.Model):
                 source_count += 1
         return source_count
 
-    def _add_checkups(
-            self, spec_template: messages.ScanSpecMessage,
-            outbox: list,
-            force: bool,
-            queue_suffix=None) -> int:
-        """Creates instructions to rescan every object covered by this
-        scanner's ScheduledCheckup objects (in the process deleting objects no
-        longer covered by one of this scanner's Sources), and puts them into
-        the provided outbox list. Returns the number of checkups added."""
-
-        source_list = list(self.generate_sources())
+    @classmethod
+    def _make_remap_dict(cls, source_iterator):
         uncensor_map = {}
-        for source in source_list:
+        for source in source_iterator:
             censored = source.censor()
             match (censored, uncensor_map.get(source)):
                 case (s, None):
                     # Our map doesn't know about this Source yet, so put it in
                     # there
-                    uncensor_map[source] = censored
+                    uncensor_map[censored] = source
                 case (s, t) if s == t:
                     # We've ended up with two references to the same Source
                     # (presumably through two different Accounts?), but that's
@@ -412,6 +403,30 @@ class Scanner(models.Model):
                             "Conflicting censored representations for "
                             f"{source}: {s.crunch()} / {t.crunch()}")
 
+        return uncensor_map
+
+    @classmethod
+    def _uncensor_handle(cls, remap_dict, handle):
+        for h in handle.walk_up():
+            if h.source in remap_dict:
+                break
+        else:
+            return (False, handle)
+
+        return (True, handle.remap(remap_dict))
+
+    def _add_checkups(
+            self, spec_template: messages.ScanSpecMessage,
+            outbox: list,
+            force: bool,
+            queue_suffix=None) -> int:
+        """Creates instructions to rescan every object covered by this
+        scanner's ScheduledCheckup objects (in the process deleting objects no
+        longer covered by one of this scanner's Sources), and puts them into
+        the provided outbox list. Returns the number of checkups added."""
+
+        uncensor_map = self._make_remap_dict(self.generate_sources())
+
         conv_template = messages.ConversionMessage(
                 scan_spec=spec_template,
                 handle=None,
@@ -420,24 +435,13 @@ class Scanner(models.Model):
                     matches=[]))
         checkup_count = 0
         for reminder in self.checkups.iterator():
-            rh = reminder.handle
-
-            # for/else is one of the more obscure Python loop constructs, but
-            # it is precisely what we want here: the else clause is executed
-            # only when the for loop *isn't* stopped by a break statement
-            for handle in rh.walk_up():
-                if handle.source in uncensor_map:
-                    # One of the Sources that contains this checkup's Handle is
-                    # still relevant for us. Abort the walk up the tree
-                    break
-            else:
+            remapped, rh = self._uncensor_handle(uncensor_map, reminder.handle)
+            if not remapped:
                 # This checkup refers to a Source that we no longer care about
                 # (for example, an account that's been removed from the scan).
                 # Delete it
                 reminder.delete()
                 continue
-
-            rh = rh.remap(uncensor_map)
 
             # XXX: we could be adding LastModifiedRule twice
             ib = reminder.interested_before

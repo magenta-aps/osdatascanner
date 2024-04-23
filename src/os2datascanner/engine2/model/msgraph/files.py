@@ -11,7 +11,7 @@ from .utilities import MSGraphSource, warn_on_httperror
 class MSGraphFilesSource(MSGraphSource):
     type_label = "msgraph-files"
 
-    eq_properties = ("_site_drives", "_user_drives", "_userlist", "_tenant_id")
+    eq_properties = MSGraphSource.eq_properties + ("_userlist",)
 
     def __init__(self, client_id, tenant_id, client_secret,
                  site_drives=True, user_drives=True, userlist=None):
@@ -134,6 +134,7 @@ class MSGraphDriveHandle(Handle):
 @Source.mime_handler(DUMMY_MIME)
 class MSGraphDriveSource(DerivedSource):
     type_label = "msgraph-drive"
+    derived_from = MSGraphDriveHandle
 
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
