@@ -82,12 +82,47 @@ class Rule(models.Model):
         return _sensitivity_mapping[self.sensitivity]
 
 
+class RuleCategory(models.Model):
+    """Category for categorizing rules. For sorting purposes."""
+
+    class CategoryNames(models.TextChoices):
+        # Properties of the target scanned for
+        NUMBER_ID = "number_id", _("number ID")
+        NAMES = "names", _("names")
+        ADDRESSES = "addresses", _("addresses")
+        SICK_LEAVE = "sick_leave", _("sick leave")
+
+        # Language
+        DANISH = "danish", _("Danish")
+
+    name = models.CharField(
+        max_length=256,
+        choices=CategoryNames.choices,
+        verbose_name=_("name"),
+        unique=True)
+
+    @classmethod
+    def populate(cls):
+        existing = cls.objects.values_list("name", flat=True)
+        for category in cls.CategoryNames.choices:
+            if category not in existing:
+                cls.objects.create(name=category)
+
+    def __str__(self):
+        return self.get_name_display()
+
+
 class CustomRule(Rule):
     """CustomRule is an escape hatch that allows for the JSON representation of
     an arbitrary engine2 rule to be stored in the administration system's
     database."""
 
     _rule = models.JSONField(verbose_name=_('Rule'))
+
+    categories = models.ManyToManyField(
+        RuleCategory,
+        verbose_name=_("categories"),
+        related_name="rules")
 
     @property
     def rule(self):

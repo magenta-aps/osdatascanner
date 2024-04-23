@@ -24,7 +24,7 @@ from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDeleteView
 from .validators import customrule_validator
 from ..models.sensitivity_level import Sensitivity
-from ..models.rules import Rule, CustomRule
+from ..models.rules import Rule, CustomRule, RuleCategory
 from ...utilities import UserWrapper
 
 
@@ -35,11 +35,25 @@ class RuleList(RestrictedListView):
     context_object_name = 'rules'
     template_name = 'rules.html'
 
+    def get_system_rules(self):
+        system_rules = CustomRule.objects.filter(organization__isnull=True)
+        if selected_categories_pks := self.request.GET.getlist("categories"):
+            all_categories = RuleCategory.objects.all()
+            unselected_categories = all_categories.exclude(pk__in=selected_categories_pks)
+
+            system_rules = system_rules.exclude(categories__in=unselected_categories)
+
+        return system_rules
+
     def get_context_data(self):
         context = super().get_context_data()
 
+        context["categories"] = RuleCategory.objects.all()
+        context["selected_categories"] = self.request.GET.getlist(
+            "categories") or RuleCategory.objects.all()
+
         context["sensitivity"] = Sensitivity
-        context["systemrule_list"] = CustomRule.objects.filter(organization__isnull=True)
+        context["systemrule_list"] = self.get_system_rules()
         context["customrule_list"] = self.get_queryset().filter(organization__isnull=False)
 
         return context

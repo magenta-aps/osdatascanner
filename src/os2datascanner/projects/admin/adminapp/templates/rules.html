@@ -8,6 +8,20 @@
   <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
 
+{% block jquery_script %}
+  <script>
+  (($) => {
+    $(document).ready(() => {
+      $('#categories_select2').select2();
+    });
+  })(jQuery);
+  
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/css/select2.min.css"
+        rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/js/select2.min.js"></script>
+{% endblock jquery_script %}
+
 {% block body %}
   {% include "components/common/header.html" %}
   <main class="wrapper">
@@ -116,44 +130,7 @@
         </p>
       {% endif %}
 
-      <div class="content-header">
-        <h1 class="page-title">{% trans "System rules" %}</h1>
-      </div>
-
-      <div class="datatable-wrapper card lg"
-           role="region"
-           tabindex="0"
-           aria-label="{% trans 'System rules' %}">
-        <table class="datatable">
-          <colgroup>
-            <col class="datatable__column--name" />
-            <col class="datatable__column--info" />
-            <col class="datatable__column--sensitivity" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th class="datatable__column--name">{% trans "Name" %}</th>
-              <th class="datatable__column--info">{% trans "Description" %}</th>
-              <th class="datatable__column--sensitivity">{% trans "Sensitivity" %}</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for rule in systemrule_list %}
-              <tr tabindex="0">
-                <td class="datatable__column--name">{{ rule.name }}</td>
-                <td class="datatable__column--info">{{ rule.description }}</td>
-                <td class="datatable__column--sensitivity">
-                  <span class="flex">
-                    <span class="flex--width">{% include "components/rules/sensitivity_icon.html" %}</span>
-                    <span>{{ rule.get_sensitivity_display }}</span>
-                  </span>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+      {% include "system_rules.html" %}
 
     </div>
   </main>

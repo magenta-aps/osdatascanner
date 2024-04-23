@@ -27,15 +27,15 @@ msgstr "CPR-reglen kan ikke bruges mere end én gang"
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:140
+#: adminapp/admin.py:144
 msgid "An errorlog cannot both be new and removed"
 msgstr "En fejlbesked kan ikke både være ny og fjernet"
 
-#: adminapp/admin.py:179
+#: adminapp/admin.py:183
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:183
+#: adminapp/admin.py:187
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -44,47 +44,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:188
+#: adminapp/admin.py:192
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:192
+#: adminapp/admin.py:196
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:195
+#: adminapp/admin.py:199
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:199
+#: adminapp/admin.py:203
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:202
+#: adminapp/admin.py:206
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:206
+#: adminapp/admin.py:210
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:224
+#: adminapp/admin.py:228
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:228
+#: adminapp/admin.py:232
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:231
+#: adminapp/admin.py:235
 msgid "Change resolved-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:235
+#: adminapp/admin.py:239
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
@@ -152,8 +152,8 @@ msgstr "Brugerdomæne"
 msgid "Login method"
 msgstr "Login metode"
 
-#: adminapp/models/rules.py:40 adminapp/models/scannerjobs/scanner.py:86
-#: core/models/client.py:75
+#: adminapp/models/rules.py:40 adminapp/models/rules.py:98
+#: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:76
 #: organizations/templates/organizations/org_table.html:37
 #: organizations/templates/organizations/orgunit_list.html:121
 msgid "name"
@@ -168,10 +168,35 @@ msgid "sensitivity"
 msgstr "Følsomhed"
 
 #: adminapp/models/rules.py:90
+msgid "number ID"
+msgstr "identifikationsnummer"
+
+#: adminapp/models/rules.py:91
+#: adminapp/templates/components/admin_widgets/rule_builder.html:32
+msgid "names"
+msgstr "personnavne"
+
+#: adminapp/models/rules.py:92
+msgid "addresses"
+msgstr "adresser"
+
+#: adminapp/models/rules.py:93
+msgid "sick leave"
+msgstr "sygemelding"
+
+#: adminapp/models/rules.py:96
+msgid "Danish"
+msgstr "dansk"
+
+#: adminapp/models/rules.py:117
 #: adminapp/templates/components/rules/customrule_form.html:64
 #: adminapp/templates/components/rules/regexrule_form.html:135
 msgid "Rule"
 msgstr "Regel"
+
+#: adminapp/models/rules.py:119
+msgid "categories"
+msgstr "kategorier"
 
 #: adminapp/models/scannerjobs/analysisscanner.py:71
 msgid "Mime type"
@@ -540,10 +565,6 @@ msgstr "regulært udtryk"
 #: adminapp/templates/components/admin_widgets/rule_builder.html:31
 msgid "health information"
 msgstr "helbredsinformation"
-
-#: adminapp/templates/components/admin_widgets/rule_builder.html:32
-msgid "names"
-msgstr "personnavne"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:33
 msgid "address"
@@ -1099,17 +1120,17 @@ msgstr ""
 "Ønsker du virkelig at slette denne regel? Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:13
-#: adminapp/templates/rules.html:193
+#: adminapp/templates/rules.html:200
 msgid "Please note that this rule is currently included in"
 msgstr "Bemærk venligst at denne regel i øjeblikket indgår i"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:14
-#: adminapp/templates/rules.html:195
+#: adminapp/templates/rules.html:202
 msgid "scannerjob and"
 msgstr "scannerjob og"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:15
-#: adminapp/templates/rules.html:196
+#: adminapp/templates/rules.html:203
 msgid "reports."
 msgstr "rapporter."
 
@@ -2112,11 +2133,11 @@ msgstr "Navn"
 msgid "Organization"
 msgstr "Organisation"
 
-#: adminapp/templates/rules.html:52 adminapp/templates/rules.html:136
+#: adminapp/templates/rules.html:52 adminapp/templates/rules.html:138
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: adminapp/templates/rules.html:53 adminapp/templates/rules.html:137
+#: adminapp/templates/rules.html:53 adminapp/templates/rules.html:139
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
@@ -2145,15 +2166,19 @@ msgstr "Der er endnu ikke tilføjet nogle regler"
 msgid "System rules"
 msgstr "Systemregler"
 
-#: adminapp/templates/rules.html:170 adminapp/templates/rules.html:181
+#: adminapp/templates/rules.html:137
+msgid "Categories"
+msgstr "Kategorier"
+
+#: adminapp/templates/rules.html:177 adminapp/templates/rules.html:188
 msgid "Delete rule"
 msgstr "Slet regel"
 
-#: adminapp/templates/rules.html:189
+#: adminapp/templates/rules.html:196
 msgid "Do you want to delete"
 msgstr "Ønsker du at slette"
 
-#: adminapp/templates/rules.html:190
+#: adminapp/templates/rules.html:197
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
@@ -2420,7 +2445,7 @@ msgctxt "Verbose name for core app"
 msgid "Management"
 msgstr "Administration"
 
-#: core/forms.py:32 core/models/client.py:89
+#: core/forms.py:32 core/models/client.py:90
 msgid "enabled features"
 msgstr "aktiverede features"
 
@@ -2428,7 +2453,7 @@ msgstr "aktiverede features"
 msgid "Select a feature to enable it for this client."
 msgstr "Vælg en feature for at aktivere den for denne kunde."
 
-#: core/forms.py:40 core/models/client.py:95
+#: core/forms.py:40 core/models/client.py:96
 msgid "activated scan types"
 msgstr "tilgængelige scannertyper"
 
@@ -2516,80 +2541,84 @@ msgstr "kørselsstatus"
 msgid "last status message"
 msgstr "sidste status-besked"
 
-#: core/models/client.py:26
+#: core/models/client.py:27
 msgid "web scan"
 msgstr "webscan"
 
-#: core/models/client.py:27
+#: core/models/client.py:28
 msgid "file scan"
 msgstr "filscan"
 
-#: core/models/client.py:28
+#: core/models/client.py:29
 msgid "Exchange scan"
 msgstr "Exchange-scan"
 
-#: core/models/client.py:29
+#: core/models/client.py:30
 msgid "SBSYS scan"
 msgstr "SBSYS-scan"
 
-#: core/models/client.py:30
+#: core/models/client.py:31
 msgid "Dropbox scan"
 msgstr "Dropbox-scan"
 
-#: core/models/client.py:31
+#: core/models/client.py:32
 msgid "Microsoft Graph - mail scan"
 msgstr "Microsoft Graph - mailscan"
 
-#: core/models/client.py:32
+#: core/models/client.py:33
 msgid "Microsoft Graph - file scan"
 msgstr "Microsoft Graph - filscan"
 
-#: core/models/client.py:33
+#: core/models/client.py:34
 msgid "Google - drive scan"
 msgstr "Google - drevscan"
 
-#: core/models/client.py:34
+#: core/models/client.py:35
 msgid "Google - mail scan"
 msgstr "Google - mailscan"
 
-#: core/models/client.py:35
+#: core/models/client.py:36
 msgid "Microsoft Graph - Teams file scan"
 msgstr "Microsoft Graph - Teams filscan"
 
-#: core/models/client.py:42
+#: core/models/client.py:43
 msgid "administration API"
 msgstr "administrations-API"
 
-#: core/models/client.py:49
+#: core/models/client.py:50
 msgid "structured organization support"
 msgstr "understøttelse af strukturerede organisationer"
 
-#: core/models/client.py:50 import_services/apps.py:8
+#: core/models/client.py:51 import_services/apps.py:8
 #: import_services/models/import_service.py:44
 msgid "import services"
 msgstr "importtjenester"
 
-#: core/models/client.py:51
+#: core/models/client.py:52
 msgid "import services (MS Graph)"
 msgstr "importtjenester (MS Graph)"
 
-#: core/models/client.py:52
+#: core/models/client.py:53
 msgid "import services (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
-#: core/models/client.py:70
+#: core/models/client.py:71
 msgid "client ID"
 msgstr "kunde-ID"
 
-#: core/models/client.py:79
+#: core/models/client.py:80
 msgid "e-mail"
 msgstr "e-mail"
 
-#: core/models/client.py:83
+#: core/models/client.py:84
 msgid "phone number"
 msgstr "telefonnummer"
 
-#: core/models/client.py:116
+#: core/models/client.py:99
+msgid "rule categories"
+msgstr "regelkategorier"
+
+#: core/models/client.py:119
 msgid "clients"
 msgstr "kunder"
 

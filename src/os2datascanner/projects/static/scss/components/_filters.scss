@@ -132,6 +132,32 @@
   }
 }
 
+.rule_filtering_wrapper {
+  float: left;
+  width: 100%;
+  margin-bottom: 2rem;
+
+  .rule-filter-form {
+    display: flex;
+    max-width: 600px;
+    flex-direction: column;
+
+    .button {
+      max-width: fit-content;
+      margin-top: 1rem;
+    }
+  }
+
+  #categories_select2 {
+    min-width: 30rem;
+  }
+
+  .select2-selection__rendered {
+    height: fit-content !important;
+    overflow-y: scroll !important;
+  }
+}
+
 .checkbox_button {
   position: absolute;
   opacity: 0;
