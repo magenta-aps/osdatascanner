@@ -5,8 +5,6 @@ networks:
   os2mo_default:
     name:
       os2mo_default
-  os2datascanner_default:
-    name: os2datascanner_default
 
 services:
   db:
@@ -126,7 +124,7 @@ services:
       queue:
         condition: service_healthy
     networks:
-      - os2datascanner_default
+      - default
       - os2mo_default
 
   admin_checkup_collector:
@@ -170,7 +168,7 @@ services:
     depends_on: *admin_dependencies
     stop_grace_period: 1m30s
     networks:
-      - os2datascanner_default
+      - default
       - os2mo_default
 
   report_migrate:
