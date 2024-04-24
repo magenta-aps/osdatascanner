@@ -6,8 +6,8 @@ from urllib.parse import urlsplit, urlunsplit, SplitResult
 import logging
 import requests
 
+from os2datascanner.engine2.factory import make_webretrier
 from os2datascanner.engine2.conversions.types import Link
-from ...utilities.backoff import WebRetrier
 
 logger = logging.getLogger(__name__)
 
@@ -24,20 +24,20 @@ class Crawler(ABC):
 
     def _adapt(self, obj):
         """Converts a candidate object into a form suitable for insertion into
-        a set. The default implementation returns it unchanged.
+        the set that tracks visited objects. The default implementation returns
+        it unchanged.
 
         Subclasses may override this method."""
         return obj
 
     def add(self, obj, ttl: int = None, **hints):
-        """Adds an object to be visited.
+        """Adds an object to the list of objects to be visited. Regardless of
+        how many times this method is called for a given object, that object
+        will only be visited once. Subclasses may override this method to add
+        additional checks for the relevance of an object.
 
-        Once an object has been added, there is an expectation that it will
-        eventually be yielded by Crawler.visit. To avoid that, subclasses can
-        override this method to add additional checks.
-
-        Any keyword arguments passed to this function will be passed on (in a
-        dict) to the Crawler.visit_one function."""
+        Any keyword arguments passed to this method will be passed on (in a
+        dict) to the Crawler.visit_one method."""
         if not self._frozen:
             hints["referrer"] = self._visiting
             self.to_visit.append(
@@ -50,9 +50,16 @@ class Crawler(ABC):
     @abstractmethod
     def visit_one(self, obj, ttl: int, hints):
         """Visits a single object discovered by this Crawler (or manually fed
-        to it by the Crawler.add method). Subclasses should override this
-        method to explore the object, and should call self.add for every object
-        that they discover in the process."""
+        to it by the Crawler.add method).
+
+        Subclasses should override this method to actually visit the object,
+        and should call Crawler.add with a reduced TTL value for every object
+        that they discover in the process.
+
+        All of the objects yielded by all of the calls made to this function
+        collectively form the objects yielded by the Crawler.visit method. A
+        corollary of that is that visited objects can be hidden by not yielding
+        them here."""
         yield from ()
 
     def visit(self):
@@ -108,14 +115,13 @@ def simplify_mime_type(mime):
 
 class WebCrawler(Crawler):
     def __init__(
-            self, url: str, session: requests.Session, timeout: float = None,
-            *args, allow_element_hints=False, **kwargs):
+            self, url: str, session: requests.Session,
+            *args, allow_element_hints=False, retrier=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._url = url
         self._split_url = urlsplit(url)
         self._session = session
-        self._timeout = timeout
-        self._retrier = WebRetrier()
+        self._retrier = retrier or make_webretrier()
         self._allow_element_hints = allow_element_hints
         self.exclusions = set()
 
@@ -183,19 +189,19 @@ class WebCrawler(Crawler):
 
     def visit_one(self, url: str, ttl: int, hints):  # noqa CCR001
         if ttl > 0 and self.is_crawlable(url) and not self._frozen:
-            response = self.head(url, timeout=self._timeout)
+            response = self.head(url)
 
             if response.status_code == 405:
                 # The server doesn't support HEAD requests? That's odd. Oh,
                 # well, let's use GET instead
-                response = self.get(url, timeout=self._timeout)
+                response = self.get(url)
 
             if response.status_code == 200:
                 ct = response.headers.get(
                         "Content-Type", "application/octet-stream")
                 if simplify_mime_type(ct).lower() == "text/html":
                     if not response.content:
-                        response = self.get(url, timeout=self._timeout)
+                        response = self.get(url)
                     doc = parse_html(response.content, url)
 
                     if self._allow_element_hints and not hints.get("title"):

@@ -67,6 +67,7 @@ directory = ""
 # replaced by a new plaintext conversion (in bytes)
 size_threshold = 1048576
 
+# Note that these settings only affect WebSource/WebResource
 [model.http]
 # The maximum number of outgoing HTTP requests an individual process can make
 # every second
