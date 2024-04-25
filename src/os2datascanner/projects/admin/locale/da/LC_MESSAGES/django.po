@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-19 08:48+0200\n"
+"POT-Creation-Date: 2024-04-24 16:50+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1151,10 +1151,9 @@ msgid ""
 "that runtimes may not be fully accurate, they do not necessarily include any "
 "time spent in the exploration phase. Runtimes are shown idle time excluded. "
 msgstr ""
-"Status for givent job og en indikation på dets køretid. Vær opmærksom på "
-"at køretider ikke nødvendigvis er fuldstændigt akkurate. Der inkluderes ikke nødvendigvis "
-"tid brugt i udforskningsfasen. Køretider vises uden spildtid."
-
+"Status for givent job og en indikation på dets køretid. Vær opmærksom på at "
+"køretider ikke nødvendigvis er fuldstændigt akkurate. Der inkluderes ikke "
+"nødvendigvis tid brugt i udforskningsfasen. Køretider vises uden spildtid."
 
 #: adminapp/templates/components/scanner/scan_completed.html:94
 #: adminapp/templates/components/scanstatus/scan_status_table.html:43
@@ -2275,16 +2274,16 @@ msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 #: adminapp/views/validators.py:18
 #, python-format
 msgid ""
-"Invariant violation - precedence: %(r1)s has lower precedence than %(r2)s."
+"Cannot build rule: %(r1)s may not precede %(r2)s. Please change the order."
 msgstr ""
-"Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på "
-"rækkefølgen."
+"Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på rækkefølgen."
 
 #: adminapp/views/validators.py:20
 #, python-format
 msgid ""
-"Invariant violation - standalone: %(r1)s must be used in a compound rule."
-msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
+"Cannot build rule: %(r1)s must be used in conjunction with another rule."
+msgstr ""
+"Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
 #: adminapp/views/views.py:200 import_services/models/exported_mixin.py:31
 msgid "created"
@@ -2735,8 +2734,8 @@ msgid ""
 "with ')'"
 msgstr ""
 "Et ekstra LDAP filter til filtrering af fundne brugere. Efterlad denne tom "
-"hvis du ikke har brug for yderligere filtrering. Sikr dig at denne værdi starter med '(' "
-"og slutter med ')'"
+"hvis du ikke har brug for yderligere filtrering. Sikr dig at denne værdi "
+"starter med '(' og slutter med ')'"
 
 #: import_services/models/ldap_configuration.py:181
 msgid "custom LDAP user filter"

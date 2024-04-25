@@ -15,9 +15,9 @@ from os2datascanner.projects.admin.adminapp.views.utils.invariants import (
 # probably the best we can do for now.
 error_table = {
     "precedence":
-    _("Invariant violation - precedence: %(r1)s has lower precedence than %(r2)s."),
+    _("Cannot build rule: %(r1)s may not precede %(r2)s. Please change the order."),
     "standalone":
-    _("Invariant violation - standalone: %(r1)s must be used in a compound rule."),
+    _("Cannot build rule: %(r1)s must be used in conjunction with another rule."),
 }
 
 
