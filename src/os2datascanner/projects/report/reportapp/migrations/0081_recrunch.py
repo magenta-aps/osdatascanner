@@ -28,9 +28,10 @@ def recrunch(apps, schema_editor):
         for report in DocumentReport.objects.order_by("-pk").iterator():
             crunchable = get_crunchable(report)
 
-            report.path = crunchable.censor().crunch(hash=True)
+            if crunchable:
+                report.path = crunchable.censor().crunch(hash=True)
 
-            batch.append(report)
+                batch.append(report)
 
     print(f"Updated {batch.count} DocumentReports")
 
