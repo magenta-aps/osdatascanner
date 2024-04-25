@@ -1,6 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.22.6, 25th April 2024
+
+"Outstanding in its fields"
 
 ### New in this release
 

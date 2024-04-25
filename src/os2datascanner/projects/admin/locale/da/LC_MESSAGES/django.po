@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-24 16:50+0200\n"
+"POT-Creation-Date: 2024-04-25 11:13+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2276,14 +2276,14 @@ msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 msgid ""
 "Cannot build rule: %(r1)s may not precede %(r2)s. Please change the order."
 msgstr ""
-"Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på rækkefølgen."
+"Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på "
+"rækkefølgen."
 
 #: adminapp/views/validators.py:20
 #, python-format
 msgid ""
 "Cannot build rule: %(r1)s must be used in conjunction with another rule."
-msgstr ""
-"Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
+msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
 #: adminapp/views/views.py:200 import_services/models/exported_mixin.py:31
 msgid "created"
