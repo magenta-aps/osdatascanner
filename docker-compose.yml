@@ -45,6 +45,7 @@ services:
       - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
     ports:
       - "8030:15672"  # management port
+      - "8072:5672"  # For local attachment during IDE debugging
     volumes:
       - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./docker/rabbitmq/advanced.config:/etc/rabbitmq/advanced.config:ro
