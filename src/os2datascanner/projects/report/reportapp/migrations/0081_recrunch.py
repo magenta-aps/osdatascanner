@@ -2,7 +2,6 @@
 
 from django.db import migrations
 
-from os2datascanner.utils.batch import BatchUpdate
 from os2datascanner.engine2.model.core import Handle, Source
 
 
@@ -24,16 +23,20 @@ def recrunch(apps, schema_editor):
     DocumentReport = apps.get_model(
             'os2datascanner_report', 'DocumentReport')
 
-    with BatchUpdate(DocumentReport.objects, ["path"]) as batch:
-        for report in DocumentReport.objects.order_by("-pk").iterator():
-            crunchable = get_crunchable(report)
+    for report in DocumentReport.objects.order_by("-pk").iterator():
+        crunchable = get_crunchable(report)
 
-            if crunchable:
-                report.path = crunchable.censor().crunch(hash=True)
+        if crunchable:
+            report.path = crunchable.censor().crunch(hash=True)
 
-                batch.append(report)
-
-    print(f"Updated {batch.count} DocumentReports")
+            # If a duplicate of this report exists, delete this one.
+            if DocumentReport.objects.filter(
+                scanner_job_pk=report.scanner_job_pk, 
+                path=report.path).exclude(pk=report.pk).exists():
+                report.delete()
+            # Otherwise, save the new path.
+            else:  
+                report.save()
 
 
 class Migration(migrations.Migration):
