@@ -180,6 +180,85 @@ There are two ways to clear the queues.
 2. or from the CLI: `docker-compose exec queue rabbitmqctl purge_queue os2ds_scan_specs`
 
 
+### IDE Debugging
+
+It is possible to debug problems or follow data flows in the code using
+breakpoints via an IDE. This section describes this procedure for PyCharm. The
+overall procedure is as follows:
+1. Start the entire Docker Compose stack.
+2. Stop the component you wish to debug.
+3. Start the component you wish to debug in PyCharm.
+
+We will here use the `explorer` component as an example for a file scan using
+the Samba service - if you perform the procedure on another component and for
+another source, the files and configuration changes below may have to be
+adjusted accordingly, but the overall principle should be the same.
+
+In the `explorer` case, two configuration changes are required: 1) the AMQP
+hostname and port and 2) the Samba UNC. The former can be changed by creating
+a file similar to `os2datascanner/dev-environment/engine/dev-settings.toml` and
+the latter can be changed directly in the admin module in the browser.
+
+The complete list of steps to get it up and running are the following:
+1. Create a replacement file for
+   `os2datascanner/dev-environment/engine/dev-settings.toml` with this content
+   (only the `AMQP_HOST` and `AMQP_POST` have changed):
+   ```
+   secret_value = "THIS VALUE IS NOT SECRET"
+
+   [amqp]
+   # Nested amqp settings are picked up by the common amqp utility module
+   AMQP_HOST = "localhost"
+   AMQP_PORT = 8072
+   AMQP_USER = "os2ds"
+   AMQP_PWD = "os2ds"
+
+   # timeout for requests (in seconds)
+   timeout = 20
+   ttl = 25
+   ```
+   Assume we save this file at `/tmp/my-dev-settings.toml`.
+2. Start the Docker Compose stack with (double check that you are using the
+   latest version of `docker-compose.yml` where the Docker RabbitMQ port 5672
+   has been exposed as port 8072 on `localhost`):
+   ```
+   $ docker compose up -d
+   ```
+3. Stop the `explorer` service:
+   ```
+   $ docker compose stop explorer
+   ```
+4. Run the usual `quickstart_dev` commands as described [above](TL;DR).
+5. Login to the admin module and navigate to the
+   [Filescanner](http://localhost:8020/filescanners/). Press the "Edit"
+   button for the "Lille Samba" and update the `UNC` to
+   `//localhost:8139/e2test` (remember to save).
+6. (This step is not required for IDE debugging, but it serves as a command
+   line example - adjust accordingly to use `pdb`). Activate the Python
+   virtual environment (assuming this has already been created and that Python
+   requirements have been installed) and navigate to the `src` folder:
+   ```
+   $ cd path/to/os2datascanner
+   $ source venv/bin/activate
+   $ cd src
+   $ OS2DS_ENGINE_USER_CONFIG_PATH=/tmp/my-dev-settings.toml \
+     python -m os2datascanner.engine2.pipeline.run_stage explorer
+   ```
+   The scanner should work as usual, and you can start a scan with a locally
+   running (non-Docker) `explorer`.
+7. For using the PyCharm IDE you will need to create a run/debug configuration
+   corresponding the Python command in the previous step. In PyCharm, click the
+   "Run configurations" dropdown and click "Edit Configurations...". Click the
+   "+" button (top left corner) and add a new "Python" configuration. Edit the
+   configuration to match the Python command above as seen in this screenshot
+   (make sure to set module name and parameters, environment variables and
+   the working directory):
+   ![Run Configuration](./run_conf.png)
+8. A debug session can now be started - add some breakpoints and start the run
+   using the "Debug" button next to the selected (explorer) run configuration
+   in the top right corner. You should be able to follow the flow of data
+   through the code, inspect variables and objects and step through the code.
+
 ## docker-compose
 
 You can use `docker-compose` to start the OS2datascanner system and its runtime
