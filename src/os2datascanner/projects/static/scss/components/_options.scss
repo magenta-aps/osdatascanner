@@ -271,6 +271,12 @@ label+.dropdown, label+.input {
       /* icon size, then gradient */
       background-size: .75rem auto, 100%;
       transition: var(--transition-default);
+
+      &:disabled {
+        background-color: var(--color-disabled-widget-bg);
+        cursor: not-allowed;
+        background-image: none;
+      }
     }
 
     &#distribute-to {
@@ -278,6 +284,7 @@ label+.dropdown, label+.input {
       width: 30rem;
       height: 8rem;
     }
+
   }
 
   /* Hide arrow icon in IE browsers */
