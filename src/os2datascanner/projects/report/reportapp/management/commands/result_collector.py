@@ -223,8 +223,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
     path = new_matches.handle.crunch(hash=True)
     # The queryset is evaluated and locked here.
     previous_report = (locked_qs.filter(
-            path=path, scanner_job_pk=scan_tag.scanner.pk).
-            exclude(scan_time=scan_tag.time).order_by("-scan_time").first())
+            path=path, scanner_job_pk=scan_tag.scanner.pk).order_by("-scan_time").first())
 
     matches = [(match.rule.presentation, match.matches) for match in new_matches.matches]
     logger.debug(
