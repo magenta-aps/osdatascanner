@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+### Bugfixes
+
+- Removing a rule from a ruleset while adding or editing a rule in the UI will
+  now correctly update the JSON field to reflect removal of the component.
+
 ## Version 3.22.6, 25th April 2024
 
 "Outstanding in its fields"
