@@ -15,6 +15,9 @@
 - Changed ScheduledCheckup indexes to reflect checkup collector's logic. An index
   on path is now available, again achieving higher database speeds.
 
+- Testing authentication of LDAP connection is now done via POST request 
+  instead of GET.
+
 ## Version 3.22.6, 25th April 2024
 
 "Outstanding in its fields"

@@ -12,7 +12,7 @@ def process_request(request, parameter_keys, kc_call):
     parameters = []
     missing_parameters = []
     for key in parameter_keys:
-        parameter = request.GET.get(key, None)
+        parameter = request.POST.get(key, None)
         if parameter:
             parameters.append(parameter)
         else:
