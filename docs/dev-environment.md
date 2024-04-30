@@ -200,35 +200,37 @@ a file similar to `os2datascanner/dev-environment/engine/dev-settings.toml` and
 the latter can be changed directly in the admin module in the browser.
 
 The complete list of steps to get it up and running are the following:
+
 1. Create a replacement file for
    `os2datascanner/dev-environment/engine/dev-settings.toml` with this content
    (only the `AMQP_HOST` and `AMQP_POST` have changed):
-   ```
-   secret_value = "THIS VALUE IS NOT SECRET"
 
-   [amqp]
-   # Nested amqp settings are picked up by the common amqp utility module
-   AMQP_HOST = "localhost"
-   AMQP_PORT = 8072
-   AMQP_USER = "os2ds"
-   AMQP_PWD = "os2ds"
+        secret_value = "THIS VALUE IS NOT SECRET"
+       
+        [amqp]
+        # Nested amqp settings are picked up by the common amqp utility module
+        AMQP_HOST = "localhost"
+        AMQP_PORT = 8072
+        AMQP_USER = "os2ds"
+        AMQP_PWD = "os2ds"
+       
+        # timeout for requests (in seconds)
+        timeout = 20
+        ttl = 25
+   
+    Assume we save this file at `/tmp/my-dev-settings.toml`.
 
-   # timeout for requests (in seconds)
-   timeout = 20
-   ttl = 25
-   ```
-   Assume we save this file at `/tmp/my-dev-settings.toml`.
 2. Start the Docker Compose stack with (double check that you are using the
    latest version of `docker-compose.yml` where the Docker RabbitMQ port 5672
    has been exposed as port 8072 on `localhost`):
-   ```
-   $ docker compose up -d
-   ```
+   
+        $ docker compose up -d
+
 3. Stop the `explorer` service:
-   ```
-   $ docker compose stop explorer
-   ```
-4. Run the usual `quickstart_dev` commands as described [above](TL;DR).
+
+        $ docker compose stop explorer
+
+4. Run the usual `quickstart_dev` commands as described above.
 5. Login to the admin module and navigate to the
    [Filescanner](http://localhost:8020/filescanners/). Press the "Edit"
    button for the "Lille Samba" and update the `UNC` to
@@ -237,15 +239,16 @@ The complete list of steps to get it up and running are the following:
    line example - adjust accordingly to use `pdb`). Activate the Python
    virtual environment (assuming this has already been created and that Python
    requirements have been installed) and navigate to the `src` folder:
-   ```
-   $ cd path/to/os2datascanner
-   $ source venv/bin/activate
-   $ cd src
-   $ OS2DS_ENGINE_USER_CONFIG_PATH=/tmp/my-dev-settings.toml \
-     python -m os2datascanner.engine2.pipeline.run_stage explorer
-   ```
-   The scanner should work as usual, and you can start a scan with a locally
-   running (non-Docker) `explorer`.
+
+        $ cd path/to/os2datascanner
+        $ source venv/bin/activate
+        $ cd src
+        $ OS2DS_ENGINE_USER_CONFIG_PATH=/tmp/my-dev-settings.toml \
+          python -m os2datascanner.engine2.pipeline.run_stage explorer
+
+    The scanner should work as usual, and you can start a scan with a locally
+    running (non-Docker) `explorer`.
+
 7. For using the PyCharm IDE you will need to create a run/debug configuration
    corresponding the Python command in the previous step. In PyCharm, click the
    "Run configurations" dropdown and click "Edit Configurations...". Click the
@@ -253,7 +256,9 @@ The complete list of steps to get it up and running are the following:
    configuration to match the Python command above as seen in this screenshot
    (make sure to set module name and parameters, environment variables and
    the working directory):
-   ![Run Configuration](./run_conf.png)
+
+    ![Run Configuration](./run_conf.png)
+
 8. A debug session can now be started - add some breakpoints and start the run
    using the "Debug" button next to the selected (explorer) run configuration
    in the top right corner. You should be able to follow the flow of data
