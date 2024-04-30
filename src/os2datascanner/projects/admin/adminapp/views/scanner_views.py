@@ -692,7 +692,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.is_htmx = request.headers.get('HX-Request') == "true"
-        uuids_to_clean = request.POST.getlist('cleanup_account_uuid', [])
+        uuids_to_clean = request.POST.getlist('cleanup_account_uuids', [])
 
         if not self.is_htmx:
             return
