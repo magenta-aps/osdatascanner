@@ -3,10 +3,10 @@ from django.contrib.auth import get_user_model
 
 from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
 
-from ...organizations.models import Organization
-from ...core.models import Administrator, Client
-from ..models.scannerjobs.scanner import Scanner, ScanStatus
-from ...tests.test_utilities import dummy_rule_dict
+from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.core.models import Administrator, Client
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
+from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 
 @pytest.fixture
@@ -18,8 +18,13 @@ def user():
 
 @pytest.fixture(autouse=True)
 def test_org():
-    client = Client.objects.create(name='test_client')
-    return Organization.objects.create(name='test_org', client=client)
+    client = Client.objects.create(name='test_client',
+                                   contact_email="test@magenta.dk",
+                                   contact_phone="12345678")
+    return Organization.objects.create(
+        name='test_org',
+        client=client,
+        uuid="3d6d288f-b75f-43e2-be33-a43803cd1243")
 
 
 @pytest.fixture
