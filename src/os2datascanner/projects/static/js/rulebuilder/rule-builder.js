@@ -151,7 +151,12 @@ function patchHierarchy(h) {
 
   for (let elem of
       h.getElementsByClassName("destroyer")) {
-    elem.addEventListener("click", _ => elem.parentNode.remove());
+    elem.addEventListener("click", _ => {
+      elem.parentNode.remove();
+      let watcher = document.getElementsByClassName("watcher")[0];
+      let {target, functionWindow} = getElements(watcher);
+      watcher.textContent = functionWindow(target);
+    });
   }
 
   elements = Array.from(h.getElementsByTagName("*"));
@@ -266,15 +271,20 @@ function stringifyRule(elem) {
   return JSON.stringify(makeRule(elem));
 }
 
+function getElements(watcher) {
+  let selector = watcher.getAttribute("data-selector"),
+      target = document.querySelector(selector),
+      functionId = watcher.getAttribute("data-function"),
+      functionWindow = window[functionId];
+  return {"target": target, "functionWindow": functionWindow};
+}
+
 document.addEventListener("DOMContentLoaded", _ => {
   for (let watcher
       of document.getElementsByClassName("watcher")) {
-    let selector = watcher.getAttribute("data-selector"),
-        target = document.querySelector(selector),
-        functionId = watcher.getAttribute("data-function"),
-        functino = window[functionId];
+    let {target, functionWindow} = getElements(watcher);
     target.addEventListener("change", _ => {
-      watcher.textContent = functino(target);
+      watcher.textContent = functionWindow(target);
     });
     const jsonField = JSON.parse(watcher.textContent);
     if (jsonField) {
