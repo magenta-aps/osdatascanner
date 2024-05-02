@@ -1,64 +1,47 @@
 import pytest
 
-from ...core.models import Client
-from ...adminapp.models.scannerjobs.scanner import Scanner
-from ...adminapp.models.scannerjobs.scanner_helpers import CoveredAccount, ScanStatus
-from ...organizations.models import Organization, OrganizationalUnit, Account
+from ...adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
 from ..utils import construct_dict_from_scanners_stale_accounts
-
-from tests.test_utilities import dummy_rule_dict
-from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
 
 
 @pytest.mark.django_db
 class TestPostImportCleanup:
 
     @pytest.fixture(autouse=True)
-    def scanner_with_covered_accounts_and_benny(self):
-        client = Client.objects.create(name='test_client')
-        org = Organization.objects.create(name="test_org", client=client)
-        rule = CustomRule.objects.create(**dummy_rule_dict)
-        scanner = Scanner.objects.create(name="Scammer, I mean Scanner", organization=org,
-                                         rule=rule)
-        scan_status = ScanStatus.objects.create(
-            scan_tag={"time": time_now().isoformat()},
-            scanner=scanner,
-            total_sources=1,
-            total_objects=1,
-            explored_sources=1,
-            scanned_objects=1,
-        )
-
-        oluf = Account.objects.create(username="Oluf", organization=org)
-        gertrud = Account.objects.create(username="Gertrud", organization=org)
-        benny = Account.objects.create(username="Benny", organization=org)
-
-        fritz = Account.objects.create(username="Fritz", organization=org)
-        günther = Account.objects.create(username="Günther", organization=org)
-        hansi = Account.objects.create(username="Hansi", organization=org)
-
-        fam_sand = OrganizationalUnit.objects.create(name="Familien Sand", organization=org)
-        nisser = OrganizationalUnit.objects.create(name="Nisserne", organization=org)
-
-        fam_sand.account_set.add(oluf, gertrud)
-        nisser.account_set.add(fritz, günther, hansi)
+    def scanner_with_covered_accounts_and_benny(
+            self,
+            basic_scanner,
+            basic_scanstatus_completed,
+            oluf,
+            gertrud,
+            benny,
+            fritz,
+            günther,
+            hansi,
+            familien_sand,
+            nisserne):
 
         CoveredAccount.objects.bulk_create(
             [
-                CoveredAccount(scanner=scanner, account=oluf, scan_status=scan_status),
-                CoveredAccount(scanner=scanner, account=gertrud, scan_status=scan_status),
-                CoveredAccount(scanner=scanner, account=benny, scan_status=scan_status),
-                CoveredAccount(scanner=scanner, account=fritz, scan_status=scan_status),
-                CoveredAccount(scanner=scanner, account=günther, scan_status=scan_status),
-                CoveredAccount(scanner=scanner, account=hansi, scan_status=scan_status),
+                CoveredAccount(scanner=basic_scanner, account=oluf,
+                               scan_status=basic_scanstatus_completed),
+                CoveredAccount(scanner=basic_scanner, account=gertrud,
+                               scan_status=basic_scanstatus_completed),
+                CoveredAccount(scanner=basic_scanner, account=benny,
+                               scan_status=basic_scanstatus_completed),
+                CoveredAccount(scanner=basic_scanner, account=fritz,
+                               scan_status=basic_scanstatus_completed),
+                CoveredAccount(scanner=basic_scanner, account=günther,
+                               scan_status=basic_scanstatus_completed),
+                CoveredAccount(scanner=basic_scanner, account=hansi,
+                               scan_status=basic_scanstatus_completed),
 
             ]
         )
 
-        scanner.org_unit.add(fam_sand, nisser)
+        basic_scanner.org_unit.add(familien_sand, nisserne)
 
-        return scanner, benny
+        return basic_scanner, benny
 
     def test_construct_dict_from_scanners_stale_accounts_one_stale_account(
             self,
