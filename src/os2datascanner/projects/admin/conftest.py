@@ -13,6 +13,14 @@ from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 def user():
     return get_user_model().objects.create(username='mr_userman', password='hunter2')
 
+
+@pytest.fixture
+def superuser(user):
+    return get_user_model().objects.create(
+        username='mr_superuserman',
+        password='hunter2',
+        is_superuser=True)
+
 # First test organization
 
 
@@ -81,7 +89,7 @@ def nisserne(test_org):
 @pytest.fixture
 def oluf(test_org, familien_sand):
     oluf = Account.objects.create(
-        username="oluf",
+        username="kartoffeloluf",
         first_name="Oluf",
         last_name="Sand",
         organization=test_org)

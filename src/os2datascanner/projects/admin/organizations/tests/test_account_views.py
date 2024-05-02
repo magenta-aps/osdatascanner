@@ -103,57 +103,65 @@ def olsen_banden():
 @pytest.mark.django_db
 class TestAccountListView:
 
-    def test_search_query_full_name(self, client, olsen_banden):
+    @pytest.fixture(autouse=True)
+    def setup_org(self, test_org, oluf, gertrud, benny):
+        pass
+
+    @pytest.fixture
+    def url(self, test_org):
+        return reverse_lazy('accounts', kwargs={'org_slug': test_org.slug})
+
+    def test_search_query_full_name(self, superuser, url, oluf, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({'search_field': 'egon olsen'})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({'search_field': 'oluf sand'})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
         assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username='manden_med_planen')
+        assert accounts.first() == oluf
 
-    def test_search_query_username(self, client, olsen_banden):
+    def test_search_query_username(self, superuser, url, oluf, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({"search_field": "ben123"})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": "kartoffeloluf"})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
         assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username="ben123")
+        assert accounts.first() == oluf
 
-    def test_search_query_first_name(self, client, olsen_banden):
+    def test_search_query_first_name(self, superuser, url, oluf, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({"search_field": "benny"})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": "oluf"})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
         assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username="ben123")
+        assert accounts.first() == oluf
 
-    def test_search_query_last_name(self, client, olsen_banden):
+    def test_search_query_last_name(self, superuser, url, oluf, gertrud, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({"search_field": "frandsen"})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": "sand"})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
-        assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username="ben123")
+        assert accounts.count() == 2
+        assert list(accounts) == [gertrud, oluf]
 
     def test_account_list_order(self, client, olsen_banden):
         # Arrange
