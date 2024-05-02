@@ -12,6 +12,9 @@
 - Removing a rule from a ruleset while adding or editing a rule in the UI will
   now correctly update the JSON field to reflect removal of the component.
 
+- Changed ScheduledCheckup indexes to reflect checkup collector's logic. An index
+  on path is now available, again achieving higher database speeds.
+
 ## Version 3.22.6, 25th April 2024
 
 "Outstanding in its fields"

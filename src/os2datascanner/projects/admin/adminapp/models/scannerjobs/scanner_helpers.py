@@ -9,7 +9,6 @@ from django.db.models import F, Q
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.indexes import HashIndex
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle
@@ -51,9 +50,9 @@ class ScheduledCheckup(models.Model):
 
     class Meta:
         indexes = (
-            HashIndex(
-                    fields=("handle_representation",),
-                    name="sc_cc_lookup"),
+            models.Index(
+                    fields=("path",),
+                    name="scheduled_checkup_path_index"),
         )
 
 
