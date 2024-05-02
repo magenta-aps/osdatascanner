@@ -2,8 +2,9 @@ import pytest
 from django.contrib.auth import get_user_model
 
 from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
-    Organization, OrganizationalUnit, Account)
+    Organization, OrganizationalUnit, Account, Position)
 from os2datascanner.projects.admin.core.models import Administrator, Client
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
@@ -23,7 +24,7 @@ def superuser(user):
 
 
 # First test organization
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def test_org():
     client = Client.objects.create(name='test_client',
                                    contact_email="test@magenta.dk",
@@ -139,7 +140,48 @@ def hansi(test_org, nisserne):
     return hansi
 
 
+@pytest.fixture
+def gammel_nok(test_org):
+    return Account.objects.create(
+        username="gammelnok",
+        first_name="Gammel",
+        last_name="Nok",
+        organization=test_org)
+
+
+@pytest.fixture
+def fritz_boss(fritz, nisserne):
+    Position.objects.get_or_create(account=fritz, unit=nisserne, role=Role.EMPLOYEE)
+    Position.objects.get_or_create(account=fritz, unit=nisserne, role=Role.MANAGER)
+    Position.objects.get_or_create(account=fritz, unit=nisserne, role=Role.DPO)
+    return fritz
+
+
+# Additional test organizational units
+@pytest.fixture
+def bingoklubben(test_org):
+    return OrganizationalUnit.objects.create(name="Bingoklubben", organization=test_org)
+
+
+@pytest.fixture
+def nørre_snede_if(test_org):
+    return OrganizationalUnit.objects.create(name="Nørre Snede IF", organization=test_org)
+
+
+@pytest.fixture
+def kok_sokker(test_org):
+    return OrganizationalUnit.objects.create(name="Kok-Sokker", organization=test_org)
+
+
+@pytest.fixture
+def dansk_kartoffelavlerforening(test_org):
+    return OrganizationalUnit.objects.create(
+        name="Dansk Kartoffelavlerforening",
+        organization=test_org)
+
 # Second test organization
+
+
 @pytest.fixture
 def test_org2():
     client = Client.objects.create(name='test_client2')
