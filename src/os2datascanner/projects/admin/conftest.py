@@ -21,9 +21,8 @@ def superuser(user):
         password='hunter2',
         is_superuser=True)
 
+
 # First test organization
-
-
 @pytest.fixture(autouse=True)
 def test_org():
     client = Client.objects.create(name='test_client',
@@ -73,9 +72,8 @@ def basic_scanstatus_completed(basic_scanner):
         explored_sources=1,
         scanned_objects=1)
 
+
 # Test accounts and organizational units for test organization
-
-
 @pytest.fixture
 def familien_sand(test_org):
     return OrganizationalUnit.objects.create(name="Familien Sand", organization=test_org)
@@ -140,17 +138,15 @@ def hansi(test_org, nisserne):
     hansi.units.add(nisserne)
     return hansi
 
+
 # Second test organization
-
-
 @pytest.fixture
 def test_org2():
     client = Client.objects.create(name='test_client2')
     return Organization.objects.create(name='test_org2', client=client)
 
+
 # Other scanner and ScanStatus fixtures with basic rule
-
-
 @pytest.fixture
 def basic_scanner2(test_org2, basic_rule):
     return Scanner.objects.create(
