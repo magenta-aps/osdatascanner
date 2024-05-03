@@ -35,8 +35,8 @@ from prometheus_client import Summary, start_http_server
 
 from ...models.documentreport import DocumentReport
 from ...utils import prepare_json_object
-from ...views.utilities.msgraph_utilities import OutlookCategoryName
 from ....organizations.models import AccountOutlookSetting
+from ...views.utilities.msgraph_utilities import outlook_settings_from_owner
 
 logger = structlog.get_logger("result_collector")
 SUMMARY = Summary("os2datascanner_result_collector_report",
@@ -96,7 +96,7 @@ def owner_from_metadata(message: messages.MetadataMessage) -> str:
 def outlook_categorize_enabled(owner: str) -> bool:
     """ Checks if categorize_email is enabled for an account with an alias corresponding to owner
     value. Returns bool"""
-    return bool(AccountOutlookSetting.objects.filter(account__aliases___value=owner,
+    return bool(AccountOutlookSetting.objects.filter(account__email=owner,
                                                      categorize_email=True))
 
 
@@ -126,8 +126,14 @@ def handle_metadata_message(scan_tag, result):
         lm = scan_tag.time or time_now()
 
     # Specific to Outlook matches - if they have a "False Positive" category set, resolve them.
-    outlook_false_positive = (OutlookCategoryName.FalsePositive.value in
-                              message.metadata.get("outlook-categories", []))
+    outlook_categories = message.metadata.get("outlook-categories", [])
+    settings = outlook_settings_from_owner(owner)
+    if outlook_categories and settings and settings.false_positive_category:
+        outlook_false_positive = (settings.false_positive_category.category_name in
+                                  outlook_categories)
+    else:
+        outlook_false_positive = False
+
     # If the report is already handled as a false positive, keep it handled in that way.
     previous_false_positive = (scan_tag.scanner.keep_fp and previous_report and
                                previous_report.resolution_status ==
@@ -153,8 +159,8 @@ def handle_metadata_message(scan_tag, result):
 
     # We've encountered an Outlook match that isn't categorized False Positive.
     if dr.source_type == MSGraphMailSource.type_label and not outlook_false_positive:
-        if outlook_categorize_enabled(owner):
-            message_body = (dr.pk, OutlookCategoryName.Match.value)
+        if (settings := outlook_settings_from_owner(owner)) and outlook_categorize_enabled(owner):
+            message_body = (dr.pk, settings.match_category.category_name)
             yield ("os2ds_email_tags", message_body)
             logger.debug(f"Enqueued categorize email request containing body: {message_body}")
         else:

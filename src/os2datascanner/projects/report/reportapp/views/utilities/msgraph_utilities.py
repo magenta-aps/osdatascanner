@@ -1,5 +1,3 @@
-from enum import Enum
-
 import requests
 import structlog
 from django.utils.translation import gettext_lazy as _
@@ -19,14 +17,14 @@ logger = structlog.get_logger("reportapp")
 GraphCaller = MSGraphSource.GraphCaller
 
 
-class OutlookCategoryName(Enum):
-    """ Enum used to set Outlook category names """
-    # Don't translate these - it'll give you proxy objects which aren't serializable,
-    # and we need to be able to trust their values.
-    # TODO: We need to rename these to reflect the new name "OSdatascanner"
-    # but this will break functionality with the customers already using it.
-    Match = "OS2datascanner Match"
-    FalsePositive = "OS2datascanner False Positive"
+def outlook_settings_from_owner(owner: str):
+    """Returns the AccountOutlookSetting object related to a specific owner."""
+    from ....organizations.models import AccountOutlookSetting
+    try:
+        return AccountOutlookSetting.objects.get(account__email=owner)
+    except AccountOutlookSetting.DoesNotExist:
+        logger.warning(f"Could not find AccountOutlookSetting for owner {owner}")
+        return None
 
 
 def check_msgraph_settings():
@@ -62,11 +60,14 @@ def categorize_email_from_report(document_report,
     # Make sure an OS2datascanner category isn't already added.
     # We don't want to mark False Positive marked ones with Match, or
     # mark any mails twice.
-    if not any(category.value in email_categories for category in OutlookCategoryName):
-        # Append OS2datascanner category
-        email_categories.append(category_name)
-
     owner = document_report.owner
+    if settings := outlook_settings_from_owner(owner):
+        if not any(
+                    category.category_name in email_categories
+                for category in settings.outlook_categories.all()):
+            # Append OS2datascanner category
+            email_categories.append(category_name)
+
     message_handle = get_handle_from_document_report(document_report, MSGraphMailMessageHandle)
     msg_id = message_handle.relative_path if message_handle else None
 

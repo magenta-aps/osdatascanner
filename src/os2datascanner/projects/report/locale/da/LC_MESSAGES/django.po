@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-25 16:45+0200\n"
+"POT-Creation-Date: 2024-06-28 11:24+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -55,138 +55,161 @@ msgstr "Antal af håndterede matches"
 msgid "Contact person"
 msgstr "Kontaktperson"
 
-#: organizations/models/account_outlook_setting.py:101
+#: organizations/models/account_outlook_setting.py:111
 #, python-brace-format
 msgid "Created {created_category_count} categories!"
 msgstr "Oprettede {created_category_count} kategorier!"
 
-#: organizations/models/account_outlook_setting.py:151
+#: organizations/models/account_outlook_setting.py:162
 #, python-brace-format
 msgid "Successfully categorized {categorized_count} emails!"
 msgstr "Kategoriserede {categorized_count} emails succesfuldt!"
 
-#: organizations/models/account_outlook_setting.py:184
+#: organizations/models/account_outlook_setting.py:200
 #, python-brace-format
 msgid "Updated {updated_category_count} categories!"
 msgstr "Opdaterede {updated_category_count} kategorier!"
 
-#: organizations/models/account_outlook_setting.py:216
+#: organizations/models/account_outlook_setting.py:231
 #, python-brace-format
 msgid "Deleted {deleted_category_count} categories!"
 msgstr "Slettede {deleted_category_count} kategorier!"
 
-#: organizations/models/account_outlook_setting.py:235
-msgid "Red"
-msgstr "Rød"
-
-#: organizations/models/account_outlook_setting.py:236
-msgid "Orange"
-msgstr "Orange"
-
-#: organizations/models/account_outlook_setting.py:237
-msgid "Brown"
-msgstr "Brun"
-
-#: organizations/models/account_outlook_setting.py:238
-msgid "Yellow"
-msgstr "Gul"
-
-#: organizations/models/account_outlook_setting.py:239
-msgid "Green"
-msgstr "Grøn"
-
-#: organizations/models/account_outlook_setting.py:240
-msgid "Teal"
-msgstr "Blågrøn"
-
-#: organizations/models/account_outlook_setting.py:241
-msgid "Olive"
-msgstr "Oliven"
-
-#: organizations/models/account_outlook_setting.py:242
-msgid "Blue"
-msgstr "Blå"
-
-#: organizations/models/account_outlook_setting.py:243
-msgid "Purple"
-msgstr "Lilla"
-
-#: organizations/models/account_outlook_setting.py:244
-msgid "Cranberry"
-msgstr "Tranebær"
-
-#: organizations/models/account_outlook_setting.py:245
-msgid "Steel"
-msgstr "Stål"
-
-#: organizations/models/account_outlook_setting.py:246
-msgid "Dark Steel"
-msgstr "Mørk stål"
-
-#: organizations/models/account_outlook_setting.py:247
-msgid "Gray"
-msgstr "Grå"
-
-#: organizations/models/account_outlook_setting.py:248
-msgid "Dark Gray"
-msgstr "Mørkegrå"
-
-#: organizations/models/account_outlook_setting.py:249
-msgid "Black"
-msgstr "Sort"
-
-#: organizations/models/account_outlook_setting.py:250
-msgid "Dark Red"
-msgstr "Mørkerød"
-
-#: organizations/models/account_outlook_setting.py:251
-msgid "Dark Orange"
-msgstr "Mørkeorange"
-
-#: organizations/models/account_outlook_setting.py:252
-msgid "Dark Brown"
-msgstr "Mørkebrun"
-
-#: organizations/models/account_outlook_setting.py:253
-msgid "Dark Yellow"
-msgstr "Mørkegul"
-
-#: organizations/models/account_outlook_setting.py:254
-msgid "Dark Green"
-msgstr "Mørkegrøn"
-
 #: organizations/models/account_outlook_setting.py:255
-msgid "Dark Teal"
-msgstr "Mørk blågrøn"
-
-#: organizations/models/account_outlook_setting.py:256
-msgid "Dark Olive"
-msgstr "Mørk oliven"
-
-#: organizations/models/account_outlook_setting.py:257
-msgid "Dark Blue"
-msgstr "Mørkeblå"
-
-#: organizations/models/account_outlook_setting.py:258
-msgid "Dark Purple"
-msgstr "Mørkelilla"
-
-#: organizations/models/account_outlook_setting.py:259
-msgid "Dark Cranberry"
-msgstr "Mørk tranebær"
-
-#: organizations/models/account_outlook_setting.py:268
 #: reportapp/templates/components/user/outlook_category_settings.html:18
 msgid "Categorize emails"
 msgstr "Kategorisér emails"
 
+#: organizations/models/account_outlook_setting.py:277
+msgid "Red"
+msgstr "Rød"
+
+#: organizations/models/account_outlook_setting.py:278
+msgid "Orange"
+msgstr "Orange"
+
 #: organizations/models/account_outlook_setting.py:279
-msgid "Category colour for matches"
-msgstr "Kategori farve for matches"
+msgid "Brown"
+msgstr "Brun"
+
+#: organizations/models/account_outlook_setting.py:280
+msgid "Yellow"
+msgstr "Gul"
+
+#: organizations/models/account_outlook_setting.py:281
+msgid "Green"
+msgstr "Grøn"
+
+#: organizations/models/account_outlook_setting.py:282
+msgid "Teal"
+msgstr "Blågrøn"
+
+#: organizations/models/account_outlook_setting.py:283
+msgid "Olive"
+msgstr "Oliven"
+
+#: organizations/models/account_outlook_setting.py:284
+msgid "Blue"
+msgstr "Blå"
+
+#: organizations/models/account_outlook_setting.py:285
+msgid "Purple"
+msgstr "Lilla"
+
+#: organizations/models/account_outlook_setting.py:286
+msgid "Cranberry"
+msgstr "Tranebær"
+
+#: organizations/models/account_outlook_setting.py:287
+msgid "Steel"
+msgstr "Stål"
+
+#: organizations/models/account_outlook_setting.py:288
+msgid "Dark Steel"
+msgstr "Mørk stål"
+
+#: organizations/models/account_outlook_setting.py:289
+msgid "Gray"
+msgstr "Grå"
 
 #: organizations/models/account_outlook_setting.py:290
-msgid "Category colour for false positives"
-msgstr "Kategori farve for falske positiver"
+msgid "Dark Gray"
+msgstr "Mørkegrå"
+
+#: organizations/models/account_outlook_setting.py:291
+msgid "Black"
+msgstr "Sort"
+
+#: organizations/models/account_outlook_setting.py:292
+msgid "Dark Red"
+msgstr "Mørkerød"
+
+#: organizations/models/account_outlook_setting.py:293
+msgid "Dark Orange"
+msgstr "Mørkeorange"
+
+#: organizations/models/account_outlook_setting.py:294
+msgid "Dark Brown"
+msgstr "Mørkebrun"
+
+#: organizations/models/account_outlook_setting.py:295
+msgid "Dark Yellow"
+msgstr "Mørkegul"
+
+#: organizations/models/account_outlook_setting.py:296
+msgid "Dark Green"
+msgstr "Mørkegrøn"
+
+#: organizations/models/account_outlook_setting.py:297
+msgid "Dark Teal"
+msgstr "Mørk blågrøn"
+
+#: organizations/models/account_outlook_setting.py:298
+msgid "Dark Olive"
+msgstr "Mørk oliven"
+
+#: organizations/models/account_outlook_setting.py:299
+msgid "Dark Blue"
+msgstr "Mørkeblå"
+
+#: organizations/models/account_outlook_setting.py:300
+msgid "Dark Purple"
+msgstr "Mørkelilla"
+
+#: organizations/models/account_outlook_setting.py:301
+msgid "Dark Cranberry"
+msgstr "Mørk tranebær"
+
+#: organizations/models/account_outlook_setting.py:305
+msgid "account Outlook setting"
+msgstr "konto Outlook indstillinger"
+
+#: organizations/models/account_outlook_setting.py:315
+msgid "category UUID"
+msgstr "kategori UUID"
+
+#: organizations/models/account_outlook_setting.py:320
+msgid "category name"
+msgstr "kategorinavn"
+
+#: organizations/models/account_outlook_setting.py:328
+msgid "category colour"
+msgstr "kategorifarve"
+
+#: organizations/models/account_outlook_setting.py:332
+msgid "match"
+msgstr "match"
+
+#: organizations/models/account_outlook_setting.py:333
+msgid "false positive"
+msgstr "falsk positiv"
+
+#: organizations/models/account_outlook_setting.py:337
+#: reportapp/models/documentreport.py:61
+#: reportapp/templates/components/reports/match_table.html:98
+#: reportapp/templates/components/reports/match_table.html:99
+msgid "name"
+msgstr "navn"
 
 #: organizations/models/aliases.py:169
 msgid "user"
@@ -236,12 +259,6 @@ msgstr "sti"
 #: reportapp/models/documentreport.py:56
 msgid "sort key"
 msgstr "sortér efter"
-
-#: reportapp/models/documentreport.py:61
-#: reportapp/templates/components/reports/match_table.html:98
-#: reportapp/templates/components/reports/match_table.html:99
-msgid "name"
-msgstr "navn"
 
 #: reportapp/models/documentreport.py:64
 #: reportapp/templates/components/reports/filters.html:185
@@ -397,7 +414,7 @@ msgid "Personal"
 msgstr "Personlige"
 
 #: reportapp/templates/components/navigation/index_navigation.html:11
-#: reportapp/views/user_views.py:191
+#: reportapp/views/user_views.py:199
 msgid "Remediator"
 msgstr "Oprydder"
 
@@ -1150,19 +1167,19 @@ msgstr "igen"
 msgid "Outlook Settings"
 msgstr "Outlook indstillinger"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:25
+#: reportapp/templates/components/user/outlook_category_settings.html:26
 msgid "Match category colour"
 msgstr "Match kategori farve"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:29
+#: reportapp/templates/components/user/outlook_category_settings.html:31
 msgid "False positive category colour"
 msgstr "Falsk positiv kategori farve"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:34
+#: reportapp/templates/components/user/outlook_category_settings.html:37
 msgid "Categorize all existing"
 msgstr "Kategorisér alle eksisterende"
 
-#: reportapp/templates/components/user/outlook_category_settings.html:38
+#: reportapp/templates/components/user/outlook_category_settings.html:41
 msgid ""
 "Categorizes your emails based on your existing results. Be aware that "
 "scannerjob runs will also do this for you, if you've enabled categorizing."
@@ -1171,7 +1188,7 @@ msgstr ""
 "opmærksom på at scannerjob kørsler også gør dette for dig, hvis du har "
 "tilladt kategorisering."
 
-#: reportapp/templates/components/user/outlook_category_settings.html:44
+#: reportapp/templates/components/user/outlook_category_settings.html:46
 msgid ""
 "This action will categorize your emails based on your existing results. Be "
 "aware that scannerjob runs will also do this for you, if you've enabled "
@@ -1181,7 +1198,7 @@ msgstr ""
 "resultater. Væropmærksom på at scannerjob kørsler også gør dette for dig, "
 "hvis du har tilladt kategorisering."
 
-#: reportapp/templates/components/user/outlook_category_settings.html:47
+#: reportapp/templates/components/user/outlook_category_settings.html:49
 msgid "Categorize"
 msgstr "Kategorisér"
 
@@ -1984,18 +2001,26 @@ msgstr "Nov"
 msgid "Dec"
 msgstr "Dec"
 
-#: reportapp/views/user_views.py:60
+#: reportapp/views/user_views.py:51
+msgid "match category colour"
+msgstr "match kategori farve"
+
+#: reportapp/views/user_views.py:55
+msgid "false positive category colour"
+msgstr "falsk positiv kategori farve"
+
+#: reportapp/views/user_views.py:68
 msgid ""
 "Your organization has configured this setting for you, disallowing change."
 msgstr ""
 "Din organisation har konfigureret denne indstilling for dig. Ændring er ikke "
 "tilladt."
 
-#: reportapp/views/utilities/msgraph_utilities.py:37
+#: reportapp/views/utilities/msgraph_utilities.py:34
 msgid "System configuration is missing Azure-application credentials. "
 msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
 
-#: reportapp/views/utilities/msgraph_utilities.py:56
+#: reportapp/views/utilities/msgraph_utilities.py:53
 msgid "Your organization does not allow this operation."
 msgstr "Din organisation tillader ikke denne handling."
 
@@ -2049,35 +2074,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
 #~ msgid "Unhandled results"
 #~ msgstr "Uhåndterede resultater"
-
-#~ msgid "Successfully created {category} category!"
-#~ msgstr "Oprettede {category} kategorien succesfuldt!"
-
-#~ msgid "Successfully updated {category} colour!"
-#~ msgstr "Opdaterede {category} kategorien succesfuldt!"
-
-#~ msgid "Couldn't update match category colour!"
-#~ msgstr "Kunne ikke opdatere match kategori farve!"
-
-#~ msgid "Couldn't update false positive category colour!"
-#~ msgstr "Kunne ikke opdatere falsk positiv kategori farve!"
-
-#~ msgid "Successfully deleted {category} category!"
-#~ msgstr "Slettede {category} kategorien succesfuldt!"
-
-#~ msgid "Couldn't delete match category!"
-#~ msgstr "Kunne ikke slette match kategori!"
-
-#~ msgid "Couldn't delete false positive category!"
-#~ msgstr "Kunne ikke slette falsk positiv kategori!"
-
-#, python-brace-format
-#~ msgid "Couldn't update category! Code: {status_code}"
-#~ msgstr "Kunne ikke opdatere kategori! Fejlkode: {status_code}"
-
-#, python-brace-format
-#~ msgid "Couldn't delete category! Code: {status_code}"
-#~ msgstr "Kunne ikke slette kategori! Fejlkode: {status_code}"
 
 #~ msgid "Delete OneDrive files"
 #~ msgstr "Slet OneDrive filer"

@@ -11,7 +11,7 @@ def delete_categories_without_uuid(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0037_move_outlook_category_info_to_outlookcategory_model'),
+        ('organizations', '0042_move_outlook_category_info_to_outlookcategory_model'),
     ]
 
     operations = [

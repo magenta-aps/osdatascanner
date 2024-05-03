@@ -43,7 +43,7 @@ def move_category_uuids_back_to_old_model(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0036_organization_email_header_banner'),
+        ('organizations', '0041_alias_shared'),
     ]
 
     operations = [

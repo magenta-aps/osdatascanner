@@ -33,35 +33,6 @@ from ...organizations.models import Account, AccountOutlookSetting, OutlookCateg
 logger = structlog.get_logger("reportapp")
 
 
-class OutlookCategoryForm(forms.ModelForm):
-
-    class Meta:
-        model = OutlookCategory
-        fields = ('category_name', 'category_colour')
-
-    def __init__(self, organization, *args, fp=False, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if fp:
-            self.instance.name = OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE
-            self.instance.category_name = "OSdatascanner False Positive"
-            self.instance.category_colour = OutlookCategory.OutlookCategoryColour.DarkGreen
-            self.fields['category_name'].initial = "OSdatascanner False Positive"
-            self.fields['category_colour'].initial = OutlookCategory.OutlookCategoryColour.DarkGreen
-
-        if (organization.outlook_categorize_email_permission in (
-                OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.NONE)):
-            self.fields['category_name'].disabled = True
-            self.fields['category_colour'].disabled = True
-
-        if self.instance.name == OutlookCategory.OutlookCategoryNames.MATCH:
-            self.fields['match_category_name'] = self.fields['category_name']
-            self.fields['match_category_colour'] = self.fields['category_colour']
-        elif self.instance.name == OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE:
-            self.fields['false_positive_category_name'] = self.fields['category_name']
-            self.fields['false_positive_category_colour'] = self.fields['category_colour']
-
-
 class AccountOutlookSettingForm(forms.ModelForm):
 
     class Meta:
@@ -75,6 +46,15 @@ class AccountOutlookSettingForm(forms.ModelForm):
 
     def __init__(self, organization, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields['match_category_colour'] = forms.ChoiceField(
+            label=_('match category colour'),
+            choices=OutlookCategory.OutlookCategoryColour.choices,
+            initial=OutlookCategory.OutlookCategoryColour.DarkRed)
+        self.fields['false_positive_category_colour'] = forms.ChoiceField(
+            label=_('false positive category colour'),
+            choices=OutlookCategory.OutlookCategoryColour.choices,
+            initial=OutlookCategory.OutlookCategoryColour.DarkGreen)
 
         # Both these settings means that the user should not be able to choose.
         # NONE hides this form entirely, but included here for good measure.
@@ -128,9 +108,7 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
 
         if request.POST.get("outlook_setting", False):  # We're doing stuff in the outlook settings
             categorize_check = request.POST.get("categorize_email", False) == "on"
-            match_name = request.POST.get("match_category_name")
             match_colour = request.POST.get("match_category_colour")
-            false_positive_name = request.POST.get("false_positive_category_name")
             false_positive_colour = request.POST.get("false_positive_category_colour")
 
             # If categorization is enabled, either by POST data or ORG_LEVEL
@@ -148,17 +126,6 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
                         message,
                         extra_tags="auto_close"
                     )
-
-                    # Update name of our categories
-                    m_cat = outl_setting.first().match_category
-                    m_cat.category_name = match_name
-                    m_cat.save()
-
-                    fp_cat = outl_setting.first().false_positive_category
-                    fp_cat.category_name = false_positive_name
-                    fp_cat.save()
-
-                    messages.add_message(request, messages.SUCCESS, message)
 
                 # Else, we can assume that we're updating.
                 # Check if one of the colours are changed
@@ -225,15 +192,7 @@ class AccountView(LoginRequiredMixin, DetailView):
                 instance=self.object.outlook_settings,
                 organization=self.object.organization
             )
-            context["match_category_form"] = OutlookCategoryForm(
-                instance=self.object.outlook_settings.match_category,
-                organization=self.object.organization
-            )
-            context["false_positive_category_form"] = OutlookCategoryForm(
-                instance=self.object.outlook_settings.false_positive_category,
-                organization=self.object.organization,
-                fp=True
-            )
+            context["categorize_check"] = self.object.outlook_settings.categorize_email
 
         user = self.object.user
         context["user"] = user

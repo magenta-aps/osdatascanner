@@ -24,12 +24,12 @@ class MockGraphCaller:
         res = [
             {
                 "id": "d60ae84c-93b3-45f6-bb74-51ad35d09730",
-                "displayName": "OS2datascanner Match",
+                "displayName": "OSdatascanner Match",
                 "color": "preset15"
             },
             {
                 "id": "ad76143b-5180-4751-8079-1f1d3f11b38b",
-                "displayName": "OS2datascanner False Positive",
+                "displayName": "OSdatascanner False Positive",
                 "color": "preset15"
             }
         ]
@@ -110,7 +110,7 @@ class TestAccountOutlookSetting:
         AccountOutlookSetting.objects.create(account=self.base_account)
 
         # Act
-        AccountOutlookSetting.objects.filter(account=self.base_account).populate_setting()
+        print(AccountOutlookSetting.objects.filter(account=self.base_account).populate_setting())
 
         # Assert - ID's should be populated
         self.base_account.refresh_from_db()

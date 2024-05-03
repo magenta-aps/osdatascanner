@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 from .account import Account
 from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities import (
-    OutlookCategoryName, get_msgraph_mail_document_reports,
+    get_msgraph_mail_document_reports,
     get_handle_from_document_report)
 from os2datascanner.core_organizational_structure.models.organization import (
     OutlookCategorizeChoices)
@@ -79,28 +79,28 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                 # TODO: ENUM use should be refactored to support name change.
                 if not outl_setting.match_category:
                     match_uuid = _create_category(outl_setting.account.email,
-                                                  OutlookCategoryName.Match.value,
+                                                  "OSdatascanner Match",
                                                   OutlookCategory.OutlookCategoryColour.DarkRed)
-                    OutlookCategory.objects.create(
-                            category_name=OutlookCategoryName.Match.value,
+                    if match_uuid:
+                        OutlookCategory.objects.create(
+                            category_name="OSdatascanner Match",
                             category_colour=OutlookCategory.OutlookCategoryColour.DarkRed,
                             category_uuid=match_uuid,
                             name=OutlookCategory.OutlookCategoryNames.MATCH,
                             account_outlook_setting=outl_setting)
-                    if match_uuid:
                         created_category_count += 1
 
                 if not outl_setting.false_positive_category:
                     fp_uuid = _create_category(outl_setting.account.email,
-                                               OutlookCategoryName.FalsePositive.value,
+                                               "OSdatascanner False Positive",
                                                OutlookCategory.OutlookCategoryColour.DarkGreen)
-                    OutlookCategory.objects.create(
-                            category_name=OutlookCategoryName.FalsePositive.value,
+                    if fp_uuid:
+                        OutlookCategory.objects.create(
+                            category_name="OSdatascanner False Positive",
                             category_colour=OutlookCategory.OutlookCategoryColour.DarkGreen,
                             category_uuid=fp_uuid,
                             name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE,
                             account_outlook_setting=outl_setting)
-                    if fp_uuid:
                         created_category_count += 1
 
                 # TODO: Perhaps convert to bulk updates
@@ -138,9 +138,9 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
                         # Only append if it isn't already marked.
                         # TODO: refactor to not use ENUM
-                        if not any(category.value in email_categories for category in
-                                   OutlookCategoryName):
-                            email_categories.append(OutlookCategoryName.Match.value)
+                        if not any(category.category_name in email_categories for category in
+                                   outl_setting.outlook_categories.all()):
+                            email_categories.append(outl_setting.match_category.category_name)
 
                         categorize_email_response = gc.categorize_mail(
                             outl_setting.account.email,
@@ -149,9 +149,10 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
                         if categorize_email_response.ok:
                             categorized_count += 1
-                            logger.info(f"Successfully added category "
-                                        f"{OutlookCategoryName.Match.value} to email for: "
-                                        f"{outl_setting.account.email}!")
+                            logger.info(
+                                f"Successfully added category "
+                                f"{outl_setting.match_category.category_name} to email for: "
+                                f"{outl_setting.account.email}!")
 
                     except requests.HTTPError as ex:
                         # We don't want to raise anything here, as we're iterating emails.
