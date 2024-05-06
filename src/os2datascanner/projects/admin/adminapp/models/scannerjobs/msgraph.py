@@ -13,7 +13,7 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( http://www.os2web.dk/ )
-import logging
+import structlog
 
 from django.db import models
 from django.conf import settings
@@ -32,7 +32,7 @@ from ....organizations.models.aliases import AliasType
 from ....grants.models import GraphGrant
 from .scanner import Scanner
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def _create_user_list(org_unit):  # noqa

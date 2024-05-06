@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'recurrence',
     'channels',
     'channels_redis',
+    'django_structlog',
     'os2datascanner.core_organizational_structure.apps.CoreOrganizationalStructureConfig',
     'os2datascanner.projects.report.organizations.apps.OrganizationsConfig',
     'os2datascanner.projects.shared',

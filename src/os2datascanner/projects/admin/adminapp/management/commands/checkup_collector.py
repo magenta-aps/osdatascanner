@@ -15,7 +15,6 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 
-import logging
 import structlog
 
 from django.db import transaction
@@ -34,7 +33,7 @@ from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScheduledCheckup)
 from ...models.usererrorlog import UserErrorLog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("checkup_collector")
 SUMMARY = Summary("os2datascanner_checkup_collector_admin",
                   "Messages through checkup collector")
 
@@ -257,11 +256,8 @@ class Command(BaseCommand):
     def handle(self, *args, log, **options):
         debug.register_debug_signal()
 
-        # Change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
         # Set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         CheckupCollectorRunner(
             read=["os2ds_checkups"],

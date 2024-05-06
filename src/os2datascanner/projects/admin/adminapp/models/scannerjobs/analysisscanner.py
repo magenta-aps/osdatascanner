@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.core.models import BackgroundJob
 from os2datascanner.engine2.model.core import SourceManager
 
-logger = structlog.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class AnalysisJob(BackgroundJob):

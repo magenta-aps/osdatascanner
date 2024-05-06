@@ -23,7 +23,7 @@ from os2datascanner.engine2.model.smbc import SMBCSource
 from .scanner import Scanner
 
 # Get an instance of a logger
-logger = structlog.get_logger()
+logger = structlog.get_logger("adminapp")
 
 
 class FileScanner(Scanner):

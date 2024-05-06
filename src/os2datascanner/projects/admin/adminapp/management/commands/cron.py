@@ -16,7 +16,7 @@
 # source municipalities ( http://www.os2web.dk/ )
 
 from os import getenv
-import logging
+import structlog
 import datetime
 
 from django.core.management.base import BaseCommand
@@ -25,7 +25,7 @@ from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.utils.system_utilities import time_now
 from ...models.scannerjobs.scanner import Scanner, ScanStatus
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def should_scanner_start(scanner: Scanner,
@@ -62,11 +62,8 @@ class Command(BaseCommand):
         if log is None:
             log = getenv("LOG_LEVEL", "info")
 
-        # Change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
         # Set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         # Loop through all scanners
         for scanner in Scanner.objects.exclude(schedule="").select_subclasses():

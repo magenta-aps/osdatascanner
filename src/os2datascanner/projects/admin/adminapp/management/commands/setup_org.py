@@ -1,4 +1,4 @@
-import logging
+import structlog
 import sys
 
 from django.core.management.base import BaseCommand
@@ -8,7 +8,7 @@ from ....organizations.broadcast_bulk_events import BulkCreateEvent, BulkUpdateE
 from ....organizations.publish import publish_events
 from ....organizations.models.organization import Organization, OrganizationSerializer
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class Command(BaseCommand):

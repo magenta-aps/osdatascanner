@@ -4,14 +4,13 @@ Utility functions to support configuration through toml-files for Django.
 
 import os
 import sys
+import structlog
 
 from django.utils.translation import gettext_lazy as _
+from os2datascanner.utils.toml_configuration import get_3_layer_config
 
-from os2datascanner.utils.toml_configuration import (
-        TrivialLogger, get_3_layer_config)
-
-
-logger = TrivialLogger(__name__)
+# For some reason this doesn't produce logs, if you're using __name__
+logger = structlog.get_logger("django_toml_configuration")
 
 
 def _process_relative_path(placeholder, replacement_value, path_list):
@@ -25,17 +24,16 @@ def _set_constants(module, configuration):
     # Only ever print or log explicitly chosen (and safe!) settings!
     for key, value in configuration.items():
         if key.startswith("_"):
-            logger.info("skipping setting %s", key)
+            logger.info("skipping", setting=key)
         elif key.isupper():
             # NB! Never log the value for an unspecified key!
             if isinstance(value, list):
-                logger.debug("Converting list value to tuple for %s", key)
+                logger.debug("Converting list value to tuple for", setting=key)
                 value = tuple(value)
-            logger.debug("adding setting: %s", key)
+            logger.debug("adding setting!", setting=key)
             setattr(module, key, value)
         else:
-            logger.error(
-                    'setting "%s" is not a valid Django setting', key)
+            logger.error("setting is not a valid Django setting!", setting=key)
 
 
 def _process_directory_configuration(configuration, placeholder, directory):
@@ -47,9 +45,7 @@ def _process_directory_configuration(configuration, placeholder, directory):
         sys.exit(1)
     for key, value in directories.items():
         if configuration.get(key):
-            logger.error(
-                "the directory %s has already been configured" % key
-            )
+            logger.error("the directory has already been configured!", directory=key)
             sys.exit(1)
         else:
             configuration[key] = _process_relative_path(

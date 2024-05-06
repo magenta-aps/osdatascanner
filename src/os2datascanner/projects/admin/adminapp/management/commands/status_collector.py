@@ -1,5 +1,4 @@
 import math
-import logging
 import structlog
 
 from django.conf import settings
@@ -21,7 +20,7 @@ from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
 from ...notification import send_mail_upon_completion
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("status_collector")
 SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
                   "Messages through ScanStatus collector")
 
@@ -138,11 +137,8 @@ class Command(BaseCommand):
     def handle(self, *args, log, **options):
         debug.register_debug_signal()
 
-        # Change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
         # Set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         StatusCollectorRunner(
             read=["os2ds_status"],

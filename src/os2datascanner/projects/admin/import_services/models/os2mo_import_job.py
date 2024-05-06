@@ -1,7 +1,7 @@
 from sys import stderr
 import json
-import logging
 import requests
+import structlog
 from tenacity import Retrying, stop_after_attempt, wait_exponential
 from collections import deque
 
@@ -14,7 +14,7 @@ from os2datascanner.projects.admin.adminapp.signals import get_pika_thread
 from ...core.models.background_job import JobState, BackgroundJob
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("import_services")
 
 
 message_buffer = deque(maxlen=5)

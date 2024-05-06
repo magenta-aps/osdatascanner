@@ -16,12 +16,11 @@ from os2datascanner.utils import debug
 from os2datascanner.utils.log_levels import log_levels
 
 import time
-import logging
+import structlog
 
 
-logger = logging.getLogger(
-        "os2datascanner.projects.admin.core.management"
-        ".commands.run_background_jobs")
+logger = structlog.get_logger("admin_run_background_jobs")
+
 # Registry for Prometheus
 REGISTRY = CollectorRegistry()
 JOB_STATE = Enum('background_job_status',
@@ -122,15 +121,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *, wait, single, log, **kwargs):  # noqa: CCR001, C901
-        # leave all loggers from external libraries at default(WARNING) level.
-        # change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
 
         # set level for root logger
         if log is None:
             log = getenv("LOG_LEVEL", "info")
-        root_logger = logging.getLogger("os2datascanner")
+        root_logger = structlog.get_logger("os2datascanner")
         root_logger.setLevel(log_levels[log])
 
         running = True

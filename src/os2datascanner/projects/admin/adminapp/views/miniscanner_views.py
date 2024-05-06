@@ -17,7 +17,7 @@ from os2datascanner.engine2.pipeline import messages, worker
 from os2datascanner.projects.admin import settings
 
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class MiniScanner(TemplateView, LoginRequiredMixin):

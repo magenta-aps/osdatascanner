@@ -32,7 +32,7 @@ from .models.msgraph_configuration import MSGraphConfiguration
 from .models.os2mo_configuration import OS2moConfiguration
 
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("import_services")
 
 
 def start_ldap_import(ldap_conf: LDAPConfig):

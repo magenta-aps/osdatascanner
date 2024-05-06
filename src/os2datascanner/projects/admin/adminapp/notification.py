@@ -8,7 +8,7 @@ from django.template import loader
 from .models.scannerjobs.scanner import Scanner, ScanStatus
 from .models.usererrorlog import UserErrorLog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 GIGABYTE = 1073741824
 MEGABYTE = 1048576

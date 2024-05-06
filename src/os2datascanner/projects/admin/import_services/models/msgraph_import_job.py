@@ -1,4 +1,4 @@
-import logging
+import structlog
 import requests
 from django.conf import settings
 from django.db import models
@@ -10,7 +10,7 @@ from os2datascanner.projects.admin.adminapp.signals import get_pika_thread
 from os2datascanner.engine2.model.msgraph.utilities import (
         make_token, MSGraphSource)
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("import_services")
 
 # Consider moving GraphCaller out of MSGraphSource.
 GraphCaller = MSGraphSource.GraphCaller

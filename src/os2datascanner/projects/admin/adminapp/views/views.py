@@ -36,7 +36,7 @@ from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 import structlog
 
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("adminapp")
 
 
 def _hide_csrf_token_and_password(d):

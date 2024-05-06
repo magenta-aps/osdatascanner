@@ -52,7 +52,7 @@ from .scanner_helpers import (  # noqa (interface backwards compatibility)
         ScanStatus, CoveredAccount, ScheduledCheckup, ScanStatusSnapshot)
 from ..authentication import Authentication
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 base_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 

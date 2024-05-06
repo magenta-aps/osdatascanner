@@ -15,9 +15,9 @@ from ..models.organization import Organization
 
 from django import forms
 
-import logging
+import structlog
 
-logger = logging.getLogger("admin")
+logger = structlog.get_logger("admin_organizations")
 
 
 class OrganizationListView(RestrictedListView):

@@ -14,7 +14,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner i
 from os2datascanner.projects.admin.core.models.background_job import JobState
 import json
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class AnalysisPageView(LoginRequiredMixin, TemplateView):

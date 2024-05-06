@@ -15,7 +15,7 @@ from os2datascanner.engine2.model.core import Handle
 import os2datascanner.engine2.pipeline.messages as messages
 
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class ScheduledCheckup(models.Model):

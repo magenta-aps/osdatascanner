@@ -15,7 +15,7 @@
 # source municipalities ( http://www.os2web.dk/ )
 import os
 import chardet
-import logging
+import structlog
 
 from django.db import models
 from django.conf import settings
@@ -31,7 +31,7 @@ from ...utils import upload_path_exchange_users
 from ..authentication import Authentication
 from .scanner import Scanner
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def get_users_from_file(userlist):

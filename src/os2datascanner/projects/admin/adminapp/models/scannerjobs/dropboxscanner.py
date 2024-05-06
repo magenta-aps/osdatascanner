@@ -21,7 +21,7 @@ from os2datascanner.engine2.model.dropbox import DropboxSource
 from .scanner import Scanner
 
 # Get an instance of a logger
-logger = structlog.get_logger()
+logger = structlog.get_logger("adminapp")
 
 
 class DropboxScanner(Scanner):

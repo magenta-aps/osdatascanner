@@ -105,6 +105,7 @@ INSTALLED_APPS = [
     'channels',
     'channels_redis',
     'rest_framework',
+    'django_structlog'
 ]
 OS2DATASCANNER_APPS = [
     'os2datascanner.projects.admin.adminapp',

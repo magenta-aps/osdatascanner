@@ -1,4 +1,4 @@
-import logging
+import structlog
 from .keycloak_actions import _dummy_pc
 
 from .models import (Account, Alias, Position,
@@ -8,7 +8,7 @@ from os2datascanner.utils.system_utilities import time_now
 from .utils import prepare_and_publish
 from ..adminapp.signals_utils import suppress_signals
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("admin_organizations")
 
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"

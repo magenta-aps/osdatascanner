@@ -1,11 +1,11 @@
 import logging
+import structlog
 from pathlib import Path
 
-from os2datascanner.utils.toml_configuration import (
-        TrivialLogger, get_3_layer_config)
+from os2datascanner.utils.toml_configuration import get_3_layer_config
 
 
-logger = TrivialLogger(__name__)
+logger = structlog.get_logger()
 
 
 # NEVER print or log the config object, as it will expose secrets
@@ -17,9 +17,9 @@ for key, value in get_3_layer_config(
     if not key.startswith('_'):
         # NB! Never log the value for an unspecified key!
         if isinstance(value, list):
-            logger.debug("converting list value to tuple for %s", key)
+            logger.debug("converting list value to tuple for", setting=key)
             value = tuple(value)
-        logger.debug("adding setting: %s", key)
+        logger.debug("adding setting!", setting=key)
         globals()[key] = value
 
 

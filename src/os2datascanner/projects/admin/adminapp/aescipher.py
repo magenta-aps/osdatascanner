@@ -1,6 +1,6 @@
 import binascii
 import os
-import logging
+import structlog
 from Crypto.Util import Counter
 from Crypto.Cipher import AES
 from Crypto import Random
@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.exceptions import ImproperlyConfigured
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def encrypt(plaintext, key=None):
