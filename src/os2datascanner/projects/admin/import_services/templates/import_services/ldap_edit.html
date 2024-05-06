@@ -12,8 +12,9 @@
   <script type="text/javascript" src="/admin/jsi18n/"></script>
   <script src="{% static 'js/ldap/addInput.js' %}"></script>
   <script>
-        var urlConnection = "{% url 'test-ldap-connection' %}"
-        var urlAuth = "{% url 'test-ldap-authentication' %}"
+        const urlConnection = "{% url 'test-ldap-connection' %}"
+        const urlAuth = "{% url 'test-ldap-authentication' %}"
+        const csrfToken = "{{ csrf_token }}"
   </script>
   <script src="{% static 'js/ldap/ldapConfig.js' %}"></script>
 {% endblock %}

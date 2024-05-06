@@ -22,7 +22,11 @@ function testConnection(e) {
     var oReq = new XMLHttpRequest();
 
     // Get Http request with params
-    oReq.open("GET", urlConnection + "?url=" + connectionProtocol + connectionUrl);
+    oReq.open("POST", urlConnection);
+
+    // Set CSRFToken in header
+    oReq.setRequestHeader("X-CSRFToken", csrfToken);
+    oReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
     oReq.onreadystatechange = function () {
         if (oReq.readyState === 4) {
@@ -40,7 +44,7 @@ function testConnection(e) {
         }
     };
 
-    oReq.send();
+    oReq.send("url=" + connectionProtocol + connectionUrl);
 }
 
 
@@ -59,7 +63,11 @@ function testAuth(e) {
     var oReq = new XMLHttpRequest();
 
     // Get Http request with params
-    oReq.open("GET", urlAuth + "?url=" + connectionProtocol + connectionUrl + "&bind_dn=" + bindDn  + "&bind_credential=" + credential);
+    oReq.open("POST", urlAuth);
+
+    // Set CSRFToken in header
+    oReq.setRequestHeader("X-CSRFToken", csrfToken);
+    oReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
     oReq.onreadystatechange = function () {
         if (oReq.readyState === 4) {
@@ -77,5 +85,5 @@ function testAuth(e) {
         }
     };
 
-    oReq.send();
+    oReq.send("url=" + connectionProtocol + connectionUrl + "&bind_dn=" + bindDn  + "&bind_credential=" + credential);
 }
