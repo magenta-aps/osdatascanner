@@ -1,10 +1,11 @@
 import pytest
+
 from django.contrib.auth import get_user_model
 
 from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
-    Organization, OrganizationalUnit, Account, Position)
+    Organization, OrganizationalUnit, Account, Position, Alias)
 from os2datascanner.projects.admin.core.models import Administrator, Client
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
@@ -36,7 +37,10 @@ def test_org():
 
 
 @pytest.fixture
-def user_admin(user, test_org):
+def user_admin(test_org):
+    user = get_user_model().objects.create(
+        username='mr_useradmin', password='hunter2'
+    )
     Administrator.objects.create(user=user, client=test_org.client)
     return user
 
@@ -86,6 +90,11 @@ def nisserne(test_org):
 
 
 @pytest.fixture
+def nisserne_accounts(nisserne):
+    return nisserne.account_set.all()
+
+
+@pytest.fixture
 def oluf(test_org, familien_sand):
     oluf = Account.objects.create(
         username="kartoffeloluf",
@@ -121,6 +130,30 @@ def fritz(test_org, nisserne):
     fritz = Account.objects.create(username="fritz", first_name="Fritz", organization=test_org)
     fritz.units.add(nisserne)
     return fritz
+
+
+@pytest.fixture
+def fritz_email_alias(fritz):
+    return Alias.objects.create(
+        account=fritz,
+        _alias_type="email",
+        _value="fritz@nisserne.gl",
+        imported=True)
+
+
+@pytest.fixture
+def fritz_shared_email_alias(fritz):
+    return Alias.objects.create(account=fritz, _alias_type="email", _value="all@nisserne.gl")
+
+
+@pytest.fixture
+def fritz_generic_alias(fritz):
+    return Alias.objects.create(account=fritz, _alias_type="generic", _value="fritz.website")
+
+
+@pytest.fixture
+def fritz_remediator_alias(fritz, basic_scanner):
+    return Alias.objects.create(account=fritz, _alias_type="remediator", _value=basic_scanner.pk)
 
 
 @pytest.fixture
@@ -179,13 +212,30 @@ def dansk_kartoffelavlerforening(test_org):
         name="Dansk Kartoffelavlerforening",
         organization=test_org)
 
+
 # Second test organization
-
-
 @pytest.fixture
 def test_org2():
     client = Client.objects.create(name='test_client2')
     return Organization.objects.create(name='test_org2', client=client)
+
+
+@pytest.fixture
+def other_admin(test_org2):
+    user = get_user_model().objects.create(
+        username='mr_otheradmin', password='hunter2'
+    )
+    Administrator.objects.create(user=user, client=test_org2.client)
+    return user
+
+
+@pytest.fixture
+def egon(test_org2):
+    return Account.objects.create(
+        username="manden_med_planen",
+        first_name="Egon",
+        last_name="Olsen",
+        organization=test_org2)
 
 
 # Other scanner and ScanStatus fixtures with basic rule
