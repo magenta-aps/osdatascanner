@@ -6,6 +6,10 @@
 
 - Management command for removing DocumentReports only containing problems
   from deleted scannerjobs.
+  
+## General improvements
+
+- Extended test suite for account interactions in the admin module.
 
 ### Bugfixes
 
