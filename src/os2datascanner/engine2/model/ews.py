@@ -258,8 +258,11 @@ class EWSMailResource(FileResource):
                 # the function that... returns a Folder object?... okay, fine,
                 # let's do that...
                 folder_object = Folder(id=folder_id)
-                return account.root.get_folder(
-                        folder_object).all().only("message_id").get(id=mail_id)
+                folder = account.root.get_folder(folder_object)
+                if folder:
+                    return folder.all().only("message_id").get(id=mail_id)
+                else:
+                    return False
 
             m = DefaultRetrier(ErrorServerBusy).run(_retrieve_message)
             # exchangelib is slightly inconsistent about whether it *returns*
