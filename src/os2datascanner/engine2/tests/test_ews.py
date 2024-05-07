@@ -40,3 +40,11 @@ class TestEWS:
         with pytest.raises(ValueError):
             source, _ = sources_and_credentials[0]
             source.censor()._make_credentials()
+
+    def test_source_equality(self):
+        """After censoring, EWSAccountSources that refer to the same mail
+        address should be equal, whether they use a Graph grant or a service
+        account."""
+        (old_and_busted, _), (new_hotness, _) = sources_and_credentials
+        assert old_and_busted != new_hotness
+        assert old_and_busted.censor() == new_hotness.censor()

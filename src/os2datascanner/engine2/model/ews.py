@@ -69,10 +69,15 @@ class InsensitiveDict(dict):
 class EWSAccountSource(Source):
     type_label = "ews"
 
+    # Ordinarily we would also include _tenant_id and _server in here, but one
+    # of them is only used with Microsoft Graph and the other one is only used
+    # with basic authentication. If we include neither of them, then we can
+    # make EWSMailHandles that are compatible with both! (Anyway, _domain by
+    # itself should be enough to uniquely identify the target system...)
     eq_properties = (
-            "_domain", "_server", "_user",
+            "_domain", "_user",
             "_admin_user", "_admin_password",
-            "_client_id", "_tenant_id", "_client_secret")
+            "_client_id", "_client_secret")
 
     def __init__(
             self, domain, server, admin_user, admin_password, user,
@@ -158,7 +163,7 @@ class EWSAccountSource(Source):
     def censor(self):
         return EWSAccountSource(
                 self._domain, self._server, None, None, self._user,
-                self._client_id, self._tenant_id, None)
+                None, self._tenant_id, None)
 
     @classmethod
     def _relevant_folders(cls, account: Account) -> Iterator[Folder]:
