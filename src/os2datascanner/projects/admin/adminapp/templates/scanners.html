@@ -55,150 +55,171 @@
       </div>
 
       {% if scanner_list %}
-        <div class="datatable-wrapper card search-target {% if view.type == 'file' and user.is_superuser %}xl{% else %}lg{% endif %}"
-             hx-get=""
-             hx-swap="outerHTML"
-             hx-target=".datatable-wrapper"
-             hx-select=".datatable-wrapper"
-             hx-trigger="modal-closed"
-             role="region"
-             tabindex="0"
-             aria-label="{% trans 'Scannerjob' %}">
-          <table class="datatable">
-            <colgroup>
-              <col class="datatable__column--name">
-              {% if user.is_superuser %}<col class="datatable__column--org">{% endif %}
-              {% if view.type == 'file' %}<col class="datatable__column--drive">{% endif %}
-              <col class="datatable__column--validated">
-              <col class="datatable__column--automatic">
-              <col class="datatable__column--actions">
-            </colgroup>
-            <thead>
-              <tr>
-                <th class="datatable__column--name">{% trans "Name/URL" %}</th>
-                {% if user.is_superuser %}
-                  <th class="datatable__column--org">{% trans "Organization" %}</th>
-                {% endif %}
-                {% if view.type == 'file' %}
-                  <th class="datatable__column--drive">{% trans "Drive" %}</th>
-                {% endif %}
-                <th class="datatable__column--validated">{% trans "Approved" %}</th>
-                <th class="datatable__column--automatic">{% trans "Automatic" %}</th>
-                <th class="datatable__column--actions">{% trans "Action" %}</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {% for scanner in scanner_list %}
-                <tr tabindex="0">
-
-                  <td class="domain-url datatable__column--name">
-                    <div>{{ scanner.name }}</div>
-                    <div class="scanner-url">{{ scanner.url }}</div>
-                    {% if scanner.compute_stale_accounts.exists %}
-                      <a class="button button--grey stale-accounts"
-                         href="#cleanup-accounts-modal"
-                         data-modal="modal:open"
-                         data-src="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
-                         title="{% trans "The following users are no longer covered by this scannerjob, but have been scanned previously:" %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
-                        <span class="material-icons">notification_important</span> {% trans "Stale accounts" %}
-                      </a>
-                    {% endif %}
-                  </td>
-                  {% if user.is_superuser %}
-                    <td class="scanner-organization datatable__column--org">{{ scanner.organization }}</td>
-                  {% endif %}
-
-                  {% if view.type == 'file' %}
-                    <td class="domain-letter datatable__column--drive">
-                      {% if scanner.alias %}
-                        {{ scanner.alias }}
-                        {% if ":" not in scanner.alias %}
-                          :
-                        {% endif %}
-                      {% endif %}
-                    </td>
-                  {% endif %}
-
-                  <td class="domain-validation datatable__column--validated">
-                    {% if scanner.validation_status %}
-                      <span class="flex">
-                        <span class="flex--width flex--width--icon">
-                          <i id="done" title="{% trans 'Is approved' %}" class="material-icons">done</i>
-                        </span>
-                        <span>{% trans "Yes" %}</span>
-                      </span>
-                    {% else %}
-                      <span class="flex">
-                        <span class="flex--width flex--width--icon">
-                          <i id="clear"
-                             title="{% trans 'Is not approved' %}"
-                             class="material-icons">clear</i>
-                        </span>
-                        <span>{% trans "No" %}</span>
-                      </span>
-                    {% endif %}
-                  </td>
-
-                  {% if scanner.schedule_datetime %}
-                    <td class="scanner-runtime datatable__column--automatic">
-                      {% trans "Next scan: " %}
-                      <br />
-                      <span title="{{ scanner.schedule_datetime }}">{{ scanner.schedule_datetime|naturaltime }}</span>
-                    </td>
-                  {% else %}
-                    <td class="scanner-runtime datatable__column--automatic">{% trans "No" %}</td>
+        <div class="datatablex__card-container search-target">
+          <div class="datatablex__wrapper">
+            <table class="datatablex scannerjob-table{% if view.type == 'web' %} scannerjob-table--webscanner{% elif view.type == 'file' %} scannerjob-table--filescanner{% endif %}">
+              <thead>
+                <tr class="datatablex__row">
+                  <th class="column column--name">{% trans "Name" %}</th>
+ 
+                  {% if view.type == 'web' %}
+                    <th class="column column--url">{% trans "URL" %}</th>
                   {% endif %}
  
+                  {% if view.type == 'file' %}
+                    <th class="column column--drive">{% trans "Drive" %}</th>
+                  {% endif %}
 
-                  <td class="scanner-actions datatable__column--actions">
-                    <div class="action-wrapper button-group">
-                      <a href="#run-scanner-modal"
-                         data-modal="modal:open"
-                         data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
-                         class="button button--icon-button"
-                         aria-label="{% trans 'Run' %} {% trans 'scanner' %}"
-                         title="{% trans 'Run' %} {% trans 'scanner' %}">
-                        <i id="play_arrow" class="material-icons">play_arrow</i>
-                      </a>
-
-                      <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
-                         class="button button--icon-button"
-                         aria-label="{% trans 'Edit' %} {% trans 'scanner' %}"
-                         title="{% trans 'Edit' %} {% trans 'scanner' %}">
-                        <i id="edit" class="material-icons">edit</i>
-                      </a>
-
-                      <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
-                         class="button button--icon-button"
-                         aria-label="Kopiér {% trans 'scanner' %}"
-                         title="Kopiér {% trans 'scanner' %}">
-                        <i id="copy_all" class="material-icons">copy_all</i>
-                      </a>
-
-                      {% if not scanner.scans %}
-                        <form action="/{{ view.type }}scanners/{{ scanner.pk }}/delete/"
-                              method="post"
-                              style="display: inline-block">
-                          {% csrf_token %}
-                          {{ form.as_p }}
-                          <button type="submit"
-                                  class="button button--icon-button"
-                                  onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
-                                  aria-label="{% trans 'Delete' %} {% trans 'scanner' %}"
-                                  title="{% trans 'Delete' %} {% trans 'scanner' %}">
-                            <i id="delete_forever" class="material-icons">delete_forever</i>
-                          </button>
-                        </form>
-                      {% endif %}
-                    </div>
-                  </td>
+                  <th class="column column--validation">{% trans "Validation" %}</th>
+ 
+                  <th class="column column--automatic">{% trans "Next scan" %}</th>
+ 
+                  <th class="column column--actions">{% trans "Action" %}</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+              </thead>
 
+              <tbody>
+                {% for scanner in scanner_list %}
+                  <tr class="datatablex__row" tabindex="0">
+                    <td class="domain-url column column--name">
+                      <div class="name__container">
+                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
+                           class="name__label"
+                           aria-label="{% trans 'Edit' %} {{ scanner.name }}"
+                           title="{% trans 'Edit' %} &quot;{{ scanner.name }}&quot;">
+                          <span>{{ scanner.name }}</span>
+                        </a>
+ 
+                        {% if user.is_superuser %}<span class="scanner-organization name__org">({{ scanner.organization }})</span>{% endif %}
+                      </div>
+ 
+                      <div class="UI-container">
+                        {% if scanner.compute_stale_accounts.exists %}
+                          <a class="button button--icon-text-button stale-accounts"
+                             href="#cleanup-accounts-modal"
+                             data-modal="modal:open"
+                             data-src="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
+                             title="{% trans 'The following users are no longer covered by this scannerjob, but have been scanned previously:' %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
+                            <i id="person_off" class="material-symbols">person_off</i>
+
+                            <span>{% trans "Stale accounts" %}</span>
+                          </a>
+                        {% endif %}
+                      </div>
+                    </td>
+
+                    {% if view.type == 'web' %}
+                      <td class="column column--url">
+                        <div class="tooltip">
+                          <div class="overflow-ellipsis">
+                            <span data-tooltip-text>{{ scanner.url }}</span>
+                          </div>
+                        </div>
+                      </td>
+                    {% endif %}
+ 
+                    {% if view.type == 'file' %}
+                      <td class="domain-letter column column--drive">
+                        {% if scanner.alias %}
+                          {{ scanner.alias }}
+                          {% if ":" not in scanner.alias %}
+                            :
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                    {% endif %}
+ 
+                    <td class="domain-validation column column--validation">
+                      {% if scanner.validation_status %}
+                        <div class="status status--valid">
+                          <div class="status__wrapper"
+                               title="{% trans 'Validation status for this scanner job has been set to' %} &quot;{% trans 'Valid'|lower %}&quot;">
+                            <i id="check" class="material-symbols status__icon">check</i>
+ 
+                            <span class="status__label">{% trans "Valid" %}</span>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div class="status status--invalid">
+                          <div class="status__wrapper"
+                               title="{% trans 'Validation status for this scanner job has been set to' %} &quot;{% trans 'Invalid'|lower %}&quot;">
+                            <i id="close" class="material-symbols status__icon">close</i>
+
+                            <span class="status__label">{% trans "Invalid" %}</span>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </td>
+ 
+                    <td class="scanner-runtime column column--automatic">
+                      {% if scanner.schedule_datetime %}
+                        <div class="status"
+                             title="{% trans 'Next scan will run the' %} {{ scanner.schedule_datetime }}">
+                          <i id="calendar_clock"
+                             class="material-symbols status__icon status__icon--planned">calendar_clock</i>
+                          <span class="status__label">{{ scanner.schedule_datetime|naturaltime }}</span>
+                        </div>
+                      {% else %}
+                        <div class="status"
+                             title="{% trans 'There are currently no scans scheduled for this scanner job' %}">
+                          <i id="event_busy"
+                             class="material-symbols status__icon status__icon--unplanned">event_busy</i>
+ 
+                          <span class="status__label">{% trans "Not scheduled" %}</span>
+                        </div>
+                      {% endif %}
+                    </td>
+ 
+ 
+                    <td class="scanner-actions column column--actions">
+                      <div class="action-wrapper button-group">
+                        <a href="#run-scanner-modal"
+                           data-modal="modal:open"
+                           data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
+                           class="button button--icon-button button--transparent-button"
+                           aria-label="{% trans 'Run scanner job' %}"
+                           title="{% trans 'Run scanner job' %}">
+                          <i id="play_arrow" class="material-symbols">play_arrow</i>
+                        </a>
+ 
+                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
+                           class="button button--icon-button button--transparent-button"
+                           aria-label="{% trans 'Edit scanner job' %}"
+                           title="{% trans 'Edit scanner job' %}">
+                          <i id="edit" class="material-symbols">edit</i>
+                        </a>
+ 
+                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
+                           class="button button--icon-button button--transparent-button"
+                           aria-label="{% trans 'Copy scanner job' %}"
+                           title="{% trans 'Copy scanner job' %}">
+                          <i id="content_copy" class="material-symbols">content_copy</i>
+                        </a>
+ 
+                        {% if not scanner.scans %}
+                          <form action="/{{ view.type }}scanners/{{ scanner.pk }}/delete/"
+                                method="post"
+                                style="display: inline-block">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit"
+                                    class="button button--icon-button button--transparent-button"
+                                    onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
+                                    aria-label="{% trans 'Delete scanner job' %}"
+                                    title="{% trans 'Delete scanner job' %}">
+                              <i id="delete" class="material-symbols">delete</i>
+                            </button>
+                          </form>
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+ 
       {% else %}
         <p class="no-results search-target">{% trans "No scannerjob added" %}</p>
       {% endif %}

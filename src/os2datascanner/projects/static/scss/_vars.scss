@@ -22,8 +22,11 @@
   --color-primary-light: #5ca4cd;
   --color-primary-lightest: #d4efff;
   --color-primary-dark: #00496e;
-  --color-checkmark: #4a9d86;
   --color-dropdown: #e5e5e5;
+  
+  // Status colors
+  --color-checkmark: #4a9d86; // checkmarks
+  --color-clear: #e24e4e; // "x"/clear (icon name is "clear" in Material Symbols/Icons)
 
   //text colors
   --color-text-main: #222;

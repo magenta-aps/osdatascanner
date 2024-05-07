@@ -384,11 +384,6 @@
     word-break: break-all;
   }
 
-  .scanner-url {
-    margin-top: 0.5rem;
-    font-size: small;
-  }
-
   tbody.links {
     tr:hover td {
       cursor: pointer;
@@ -1031,18 +1026,256 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
 // Redmine ticket: [#60288]
 
-  // WEB SCANNER:
-  // FILE SCANNER:
-  // EXCHANGE SCANNER:
-  // OFFICE365 MAIL SCANNER:
-  // OFFICE365 ONEDRIVE SCANNER:
-  // OFFICE365 TEAMS SCANNER:
-  // OFFICE365 CALENDAR SCANNER:
-  // GOOGLE DRIVE SCANNER:
-  // GMAIL SCANNER:
-  // SBSYS SCANNER:
+.scannerjob-table {
+  // Table SCSS vars:
+  // $fixed-column_width: 16rem; // The "fixed" column of this specific table
+  $fixed-column_width: 210px; // The "fixed" column of this specific table
+  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width}); 
+  $table_min-width: 60rem; 
 
-// TBA
+  // Column SCSS vars:
+  $width_25: calc(#{$table_width} * 0.25);
+  $min-width_25: calc(#{$table_min-width} * 0.25);
+  
+  $width_35: calc(#{$table_width} * 0.35);
+  $min-width_35: calc(#{$table_min-width} * 0.35);
+  
+  $width_40: calc(#{$table_width} * 0.4);
+  $min-width_40: calc(#{$table_min-width} * 0.4);
+
+  // Styles:
+  min-width: $table_min-width;
+
+  .column {
+    @mixin flex-center { 
+      /* We might end up moving this out of here and make it available for all 
+      datatables. Why write 3 lines of code when you can write one? */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    $uniform_gap-size: 0.25rem;
+
+    &--name {
+      width: clamp(calc(#{$min-width_35}), calc(#{$width_35}), calc(#{$width_35}));
+
+      .name {
+        &__container {
+          display: flex;
+          flex-direction: column;
+          gap: $uniform_gap-size;
+        }
+
+        &__label {
+          &:hover {
+            color: var(--color-primary-dark);
+          }
+        }
+
+        &__org {
+          font-size: 0.813rem;
+          color: var(--color-text-secondary);
+          font-style: italic;
+        }
+      }
+
+      .UI-container {
+        width: fit-content;
+        margin-top: 0.5rem;
+      }
+    }
+
+    &--validation {
+      width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+
+      .status {        
+        @mixin pill-variant($bgColor, $textColor) {
+          background-color: $bgColor;
+          color: $textColor;
+        }
+
+        @include flex-center;
+        
+        border-radius: 50px;
+        height: 2.125rem;
+        width: 6.75rem; 
+        /* NOTE: This fixed width is a tiny bit bigger than the "natural" width of 
+        the "ugyldig"/"invalid" label/badge, so that both types of label/badge have 
+        matching width. If the wording changes, then this should be updated as well 
+        to fit whatever the "natural" width of the bigger one is. */
+                
+        &--valid {
+          @include pill-variant(var(--color-status-good), var(--color-checkmark));
+        }
+
+        &--invalid {
+          @include pill-variant(var(--color-status-bad), var(--color-clear));
+        }
+
+        &__wrapper {          
+          @include flex-center;
+          gap: $uniform_gap-size;
+          padding: 0 1rem 0 0.625rem; // Asymmetrical padding to compensate for visual weight
+        }
+
+        &__label {
+          $font-size: 0.875rem;
+          font-size: $font-size;
+          margin-top: calc(#{$font-size} * 0.115); // Google's recommended alignment correction for text next to icons
+          font-weight: 500;
+        }
+      }
+    }
+
+    &--automatic {
+      width: clamp(calc(#{$min-width_40}), calc(#{$width_40}), calc(#{$width_40}));
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: $uniform_gap-size;
+
+        &__icon {
+          &.material-symbols {
+            font-variation-settings: 'wght' 300;
+            color: var(--color-text-secondary);
+          }
+        }
+
+        &__label {
+          $font-size: 1rem;
+          font-size: $font-size;
+          margin-top: calc(#{$font-size} * 0.115);
+
+          color: var(--color-text-main);
+        }
+      }
+    }
+
+    &--actions { // The "fixed" column of this specific table
+      width: $fixed-column_width;
+
+      .button-group {
+        /* NOTE: We might need to re-think this in _buttons.scss instead, but I 
+        think it's worth waiting until after we've refactored all datatables */
+        flex-wrap: nowrap;
+
+        .button {          
+          .material-symbols {
+            color: var(--color-primary-dark);
+          }
+          
+          &:hover {
+            background-color: var(--color-primary-dark) !important;
+            
+            .material-symbols {
+              font-variation-settings: 'wght' 500, 'GRAD' -25 !important;
+              color: var(--color-text-white);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &--webscanner {
+    // NOTE: This only applies to the webscanner table
+
+    /* We overwrite the "standard" column distrubution for scannerjob tables 
+    because webscanner tables have an extra column with URL's. This requires 
+    us to repeat the vars, so we can recalculate the column sizes. */
+
+    $table_min-width: 70rem; // Bigger min-width to account for more table content
+
+    // Column SCSS vars:
+    $min-width_20: calc(#{$table_min-width} * 0.2);
+    $width_20: calc(#{$table_width} * 0.2);
+
+    $min-width_25: calc(#{$table_min-width} * 0.25);
+    $width_25: calc(#{$table_width} * 0.25);
+    
+    $min-width_30: calc(#{$table_min-width} * 0.3);
+    $width_30: calc(#{$table_width} * 0.3);
+
+    // Styles:
+    min-width: $table_min-width;
+
+    .column {
+      &--name {
+        width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+      } 
+
+      &--url {
+        width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+        
+        .tooltip { // This could be remade as an mixin and made available for all datatables
+          .overflow-ellipsis {
+            word-break: break-all;
+
+            // Only applying the ellipsis on pc-screens
+            @media (min-width: $break-lg) {
+              overflow: hidden;
+              text-overflow: ellipsis;              
+              white-space: nowrap;
+              width: calc(#{$width_25}*0.95);
+            }
+          }
+        }
+      }
+
+      &--validation {
+        width: clamp(calc(#{$min-width_20}), calc(#{$width_20}), calc(#{$width_20}));
+      }
+
+      &--automatic {
+        width: clamp(calc(#{$min-width_30}), calc(#{$width_30}), calc(#{$width_30}));
+      }
+
+      // The width for "--actions" is not overwritten.
+    }
+  }
+
+  &--filescanner {
+    // NOTE: This only applies to the filescanner table
+
+    /* We overwrite the "standard" column distrubution for scannerjob tables 
+    because filescanner tables have an extra column with URL's. This requires 
+    us to repeat the vars, so we can recalculate the column sizes. */
+
+    $table_min-width: 65rem; // Bigger min-width to account for more table content
+
+    // Column SCSS vars:
+    $min-width_20: calc(#{$table_min-width} * 0.2);
+    $width_20: calc(#{$table_width} * 0.2);
+
+    $min-width_25: calc(#{$table_min-width} * 0.25);
+    $width_25: calc(#{$table_width} * 0.25);
+    
+    $min-width_35: calc(#{$table_min-width} * 0.35);    
+    $width_35: calc(#{$table_width} * 0.35);
+
+    // Styles:
+    min-width: $table_min-width;
+
+    .column {
+      &--name {
+        width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+      }
+
+      &--drive, 
+      &--validation {
+        width: clamp(calc(#{$min-width_20}), calc(#{$width_20}), calc(#{$width_20}));
+      }
+
+      &--automatic {
+        width: clamp(calc(#{$min-width_35}), calc(#{$width_35}), calc(#{$width_35}));
+      }
+
+      // The width for "--actions" is not overwritten.
+    }
+  }
+}
 
 
 // ******************************

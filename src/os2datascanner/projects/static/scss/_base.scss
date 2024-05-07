@@ -60,6 +60,7 @@ img {
   font-weight: normal;
   font-style: normal;
   font-size: 24px;  /* Preferred icon size */
+  width: 24px;
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -75,4 +76,14 @@ img {
 
   /* Support for Firefox. */
   -moz-osx-font-smoothing: grayscale;
+
+  /* NOTE: Our "base" settings need to be defined here so Safari 
+  and Chrome actually  l i s t e n  instead of going rogue. */
+  font-variation-settings: 
+    'FILL' 1, 
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  /* Any of these can be overwritten if necessary - see the 
+  "developers guide" for Google's Material Symbols. */
 }

@@ -55,6 +55,7 @@
       <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
 
       {% block scripts %}
+        <!-- NOTE: This needs a tidy at some point in time, see [#60788] -->
 
         <!-- TODO: Since the following scripts are in a 'scripts' block, are they supposed to be overwritten by templates? -->
         <script src="{% static '3rdparty/htmx.min.js' %}"></script>
@@ -74,6 +75,9 @@
 
         {% endif %}
         <script src="{% static 'js/main.js' %}"></script>
+
+        {% include "components/common/scripts.html" %}
+
       {% endblock %}
 
       <!-- TODO: Do 'scripts' and 'jquery_script' need to be separate blocks? -->

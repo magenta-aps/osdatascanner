@@ -11,6 +11,12 @@
 
 - Extended test suite for account interactions in the admin module.
 
+- Datatables on "admin/scannerjobs" have been refactored.
+  - Scanner names now link to "edit scannerjob".
+  - URL's for webscanners truncate on desktop and display the full string on hover.
+  - Validation status' are displayed as labels/badges similar to the status-labels on Report.
+  - All icons are now 'Material Symbols'.
+
 ### Bugfixes
 
 - Removing a rule from a ruleset while adding or editing a rule in the UI will
