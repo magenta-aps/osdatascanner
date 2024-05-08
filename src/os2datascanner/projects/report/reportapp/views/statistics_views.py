@@ -40,7 +40,7 @@ from ....utils.view_mixins import CSVExportMixin
 from .report_views import EmptyPagePaginator
 
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 
 def month_delta(series_start: date, here: date):

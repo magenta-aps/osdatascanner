@@ -15,7 +15,6 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 
-import logging
 import structlog
 from django.db import IntegrityError, transaction
 from django.core.management.base import BaseCommand
@@ -31,7 +30,7 @@ from os2datascanner.projects.report.reportapp.models.documentreport import Docum
 from prometheus_client import Summary, start_http_server
 from ...utils import create_alias_and_match_relations
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("event_collector")
 SUMMARY = Summary("os2datascanner_event_collector_report",
                   "Messages through event collector report")
 
@@ -52,8 +51,8 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                     serializer = get_serializer(model)
                     if raw_model_data := classes.get(model.__name__):
                         serialized_objects = serializer(data=raw_model_data, many=True)
-                        logger.info(f"Serializing and attempting to create objects of type:"
-                                    f" {model.__name__}")
+                        logger.info("Serializing and attempting to create objects of",
+                                    model=model.__name__)
 
                         # Exception raised from is_valid will be a rest_framework ValidationError,
                         # we catch that below and return to abort transaction if one is raised.
@@ -62,7 +61,7 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         logger.info("Successfully ran broadcast create!")
 
                     else:
-                        logger.info(f"No objects to create of type {model.__name__}")
+                        logger.info("No objects to create of", model=model.__name__)
 
             elif event_type == "bulk_event_update":
                 logger.info("Initiating broadcast update transaction...")
@@ -70,8 +69,8 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                     pk_list = []
                     serializer = get_serializer(model)
                     if raw_model_data := classes.get(model.__name__):
-                        logger.info(f"Received instructions to bulk update objects"
-                                    f" of type {model.__name__}")
+                        logger.info("Received instructions to bulk update objects of",
+                                    model=model.__name__)
 
                         for instance in raw_model_data:
                             # OBS: In this case we're converting pks to str
@@ -102,20 +101,22 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
 
                         logger.info("Successfully ran broadcast update!")
                     else:
-                        logger.info(f"Nothing to update for {model.__name__}")
+                        logger.info("Nothing to update for", model=model.__name__)
 
             elif event_type == "bulk_event_delete":
                 for model in ORDER_OF_DELETION:
                     if model.__name__ in classes:
                         model.objects.filter(pk__in=classes.get(model.__name__)).delete()
-                        logger.info(f"Deleted {len(classes.get(model.__name__))}"
-                                    f" instances of {model.__name__}")
+                        logger.info("Deleted instances of", model=model.__name__,
+                                    count=len(classes.get(model.__name__))
+                                    )
 
             elif event_type == "bulk_event_purge_all":
                 for model in ORDER_OF_DELETION:
                     if model.__name__ in classes:
                         deleted = model.objects.all().delete()
-                        logger.info(f"Deleting all {model.__name__} objects {deleted}")
+                        logger.info("Deleting all objects of",
+                                    model=model.__name__, count=deleted)
 
             elif event_type == "clean_document_reports":
                 handle_clean_account_message(body)
@@ -125,8 +126,8 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
             yield from []
 
     except ValidationError:
-        logger.warning(f"Error in serialized object!: {model.__name__}: \n "
-                       f"{serialized_objects.errors}")
+        logger.warning("Error in serialized object!",
+                       model=model.__name__, error=serialized_objects.errors)
 
     except TransactionManagementError:
         logger.exception("Transaction Management Error! \n"
@@ -140,7 +141,8 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
 def handle_clean_account_message(body):
     """Accepts a CleanAccountMessage JSON-object, and deletes all document reports
     related to the given account and scanner job."""
-    logger.info(f"CleanAccountMessage published by {body.get('publisher')} at {body.get('time')}.")
+    logger.info("CleanAccountMessage published by",
+                publisher=body.get('publisher'), published_time=body.get('time'))
 
     data_struct = body.get("scanners_accounts_dict", {})
 
@@ -155,14 +157,16 @@ def handle_clean_account_message(body):
         deleted_reports = deleted_reports_dict.get("os2datascanner_report.DocumentReport", 0)
 
         logger.info(
-            f"Deleted {deleted_reports} DocumentReport objects associated with "
-            f"scanner_job_pk: {scanner_pk} and accounts: {', '.join(account_usernames)}.")
+            "Deleted DocumentReport objects!",
+            count=deleted_reports, scanner_job_pk=scanner_pk,
+            associated_accounts=', '.join(account_usernames))
 
 
 def handle_clean_problem_message(body):
     """Accepts a CleanProblemMessage JSON-object, and deletes all problem reports
     related to the given scannerjob pks."""
-    logger.info(f"CleanProblemMessage published by {body.get('publisher')} at {body.get('time')}.")
+    logger.info("CleanProblemMessage published by",
+                publisher=body.get('publisher'), published_time=body.get('time'))
 
     scanners = body.get("scanners", [])
 
@@ -173,8 +177,8 @@ def handle_clean_problem_message(body):
         "os2datascanner_report.DocumentReport", 0)
 
     logger.info(
-        f"Deleted {deleted_problems} DocumentReport objects without matches "
-        f"associated with scanner_job_pks: {scanners}.")
+        "Deleted DocumentReport objects without matches ",
+        count=deleted_problems, scanner_job_pk=scanners)
 
 
 class EventCollectorRunner(PikaPipelineThread):
@@ -206,11 +210,8 @@ class Command(BaseCommand):
     def handle(self, *args, log, **options):
         debug.register_debug_signal()
 
-        # change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-        # set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        # Set level for root logger
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         EventCollectorRunner(
             read=["os2ds_events"],

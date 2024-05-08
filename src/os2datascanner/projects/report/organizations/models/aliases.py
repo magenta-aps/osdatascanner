@@ -29,7 +29,7 @@ from os2datascanner.core_organizational_structure.models.aliases import AliasTyp
 
 from ..seralizer import BaseBulkSerializer
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("report_organizations")
 
 
 class AliasQuerySet(models.query.QuerySet):

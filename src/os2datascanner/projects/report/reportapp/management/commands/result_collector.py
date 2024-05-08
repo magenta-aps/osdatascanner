@@ -15,7 +15,6 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 
-import logging
 import structlog
 from django.db import transaction
 from django.core.management.base import BaseCommand
@@ -40,7 +39,7 @@ from ...utils import prepare_json_object
 from ...views.utilities.msgraph_utilities import OutlookCategoryName
 from ....organizations.models import AccountOutlookSetting
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("result_collector")
 SUMMARY = Summary("os2datascanner_result_collector_report",
                   "Messages through result collector report")
 
@@ -495,11 +494,8 @@ class Command(BaseCommand):
     def handle(self, *args, log, **options):
         debug.register_debug_signal()
 
-        # change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-        # set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        # Set level for root logger
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         ResultCollectorRunner(
             read=["os2ds_results"],

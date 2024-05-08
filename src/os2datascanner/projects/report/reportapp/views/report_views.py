@@ -49,7 +49,7 @@ from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
 from ...organizations.models.aliases import AliasType
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 RENDERABLE_RULES = (
     CPRRule.type_label, RegexRule.type_label, LinksFollowRule.type_label,

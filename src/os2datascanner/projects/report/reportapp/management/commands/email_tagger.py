@@ -1,4 +1,3 @@
-import logging
 import structlog
 from django.conf import settings
 from os2datascanner.utils import debug
@@ -15,7 +14,7 @@ from ...models.documentreport import DocumentReport
 from ...views.utilities.msgraph_utilities import get_handle_from_document_report, \
     categorize_email_from_report
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("email_tagger")
 SUMMARY = Summary("os2datascanner_email_tagger",
                   "Messages through os2ds_email_tags")
 
@@ -53,7 +52,7 @@ class EmailTaggerRunner(PikaPipelineThread):
                                                  gc)
 
                 except DocumentReport.DoesNotExist:
-                    logger.warning(f"Can't categorize email, document report not found: {dr_pk}")
+                    logger.warning("Can't categorize email, document report not found", dr_pk=dr_pk)
 
                 yield from []
 
@@ -73,11 +72,8 @@ class Command(BaseCommand):
     def handle(self, *args, log, **options):
         debug.register_debug_signal()
 
-        # change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-        # set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+        # Set level for root logger
+        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         with SourceManager() as source_manager:
             EmailTaggerRunner(

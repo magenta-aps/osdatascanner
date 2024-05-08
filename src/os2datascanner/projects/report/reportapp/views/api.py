@@ -9,7 +9,7 @@ from os2datascanner.utils.system_utilities import time_now
 from ..models.documentreport import DocumentReport
 from ..utils import iterate_queryset_in_batches
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("api")
 
 
 def set_status_1(username, body):

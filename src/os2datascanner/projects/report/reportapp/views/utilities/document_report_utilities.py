@@ -4,7 +4,7 @@ from os2datascanner.projects.report.organizations.models import Account
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 
 def is_owner(owner: str, account: Account) -> bool:

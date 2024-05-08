@@ -16,7 +16,7 @@ import structlog
 
 from os2datascanner.projects.report.organizations.models import Alias
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("reportapp")
 
 
 class DocumentReport(models.Model):

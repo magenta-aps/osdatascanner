@@ -31,7 +31,7 @@ from os2datascanner.core_organizational_structure.models import OutlookCategoriz
 from ...organizations.models.aliases import AliasType
 from ...organizations.models import Account, AccountOutlookSetting
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 
 class AccountOutlookSettingForm(forms.ModelForm):
