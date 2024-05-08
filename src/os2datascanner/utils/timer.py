@@ -1,8 +1,10 @@
 from time import time, sleep
-import bisect
+from dataclasses import dataclass, field
+from typing import Callable, Any, Dict
 import signal
 import logging
 import threading
+import heapq
 
 
 logger = logging.getLogger(__name__)
@@ -68,11 +70,22 @@ class TimerManager:
         function scheduled for execution by a TimerManager."""
         __slots__ = ()
 
+    @dataclass(init=True, order=True)
+    class Operation:
+        timestamp: float = field(compare=True)
+        operation: Callable[..., Any]
+        args: tuple
+        kwargs: Dict[str, Any]
+        cookie: 'TimerManager.Cookie' = None
+
+        def __iter__(self):
+            yield from [self.timestamp, self.operation, self.args, self.kwargs, self.cookie]
+
     def __init__(self, *, key):
         if key is not self.__key:  # noqa
             raise TypeError
 
-        self.stack = []
+        self.queue = []
         self._pauses = []
 
         self._install_handler()
@@ -95,10 +108,10 @@ class TimerManager:
         allowed to bubble up, although in all cases the signal handler will
         attempt to reschedule itself for execution again."""
         try:
-            while self.stack:
-                (ts, op, args, kwargs, _) = self.stack[-1]
+            while self.queue:
+                (ts, op, args, kwargs, _) = self.queue[0]
                 if ts <= time():
-                    self.stack.pop()
+                    heapq.heappop(self.queue)
                     op(*args, **kwargs)
                 else:
                     break
@@ -109,11 +122,11 @@ class TimerManager:
     def fires_at(self) -> float:
         """Returns the (floating-point) UNIX timestamp at which this
         TimerManager's next function call is scheduled."""
-        match self.stack:
-            case (*_, (ts, _, _, _, _)):
-                return ts
-            case _:
-                return None
+        if self.queue:
+            (ts, _, _, _, _) = self.queue[0]
+            return ts
+        else:
+            return None
 
     @property
     def fires_in(self) -> float:
@@ -142,13 +155,7 @@ class TimerManager:
         try:
             cookie = self.Cookie()
 
-            # Scope for optimisation here: bisect.insort() finds the position
-            # at which to insert the object in O(log n) time, but list.insert
-            # still takes O(n). Groan...
-            bisect.insort(
-                    self.stack,
-                    (ts, op, args, kwargs, cookie),
-                    key=lambda entry: -entry[0])
+            heapq.heappush(self.queue, self.Operation(ts, op, args, kwargs, cookie))
 
             return cookie
         finally:
@@ -170,12 +177,12 @@ class TimerManager:
 
         self._deschedule()
         try:
-            # Rewriting the entire stack isn't ideal, but the alternative is
+            # Rewriting the entire queue isn't ideal, but the alternative is
             # either a fancy data structure or a writable daataclass for the
             # sake of updating one field
-            self.stack = [
-                (ts + seconds, op, args, kwargs, cookie)
-                for ts, op, args, kwargs, cookie in self.stack]
+            self.queue = [
+                self.Operation(ts + seconds, op, args, kwargs, cookie)
+                for ts, op, args, kwargs, cookie in self.queue]
         finally:
             self._reschedule()
 
@@ -215,9 +222,10 @@ class TimerManager:
         indicates whether or not the cookie identified a live call."""
         self._deschedule()
         try:
-            for idx, (_, _, _, _, c) in enumerate(self.stack):
+            for idx, (_, _, _, _, c) in enumerate(self.queue):
                 if cookie is c:
-                    del self.stack[idx]
+                    del self.queue[idx]
+                    heapq.heapify(self.queue)
                     return True
             else:
                 return False

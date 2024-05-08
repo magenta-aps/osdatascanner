@@ -276,6 +276,19 @@ class TestTimerManager(unittest.TestCase):
                 k,
                 [":D"])
 
+    def test_equal_time(self):
+        k = []
+        time_now = time.time()
+        in_half_second = time_now + 0.5
+
+        self.tm.at(in_half_second, k.append, ":D")
+        self.tm.at(in_half_second, k.append, ":O")
+
+        time.sleep(0.6)
+
+        # Timer doesn't guarantee order, when two operations are to be called at same time
+        self.assertTrue(":D" in k and ":O" in k)
+
     def test_pause(self):
         k = []
 

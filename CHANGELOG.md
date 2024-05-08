@@ -33,6 +33,10 @@
 - Testing authentication of LDAP connection is now done via POST request 
   instead of GET.
 
+### General improvements
+
+- TimeoutManager now uses a heapq as the underlying datastructure making it asymptotically faster.
+
 ## Version 3.22.6, 25th April 2024
 
 "Outstanding in its fields"
