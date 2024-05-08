@@ -17,6 +17,11 @@
   - Validation status' are displayed as labels/badges similar to the status-labels on Report.
   - All icons are now 'Material Symbols'.
 
+- It is once again possible to use an Exchange scanner to scan accounts in
+  Exchange Online (Office 365). (Note that Microsoft will remove support for
+  this interface in October 2026, so we continue to recommend the use of a
+  Microsoft Graph scanner where possible.)
+
 ### Bugfixes
 
 - Removing a rule from a ruleset while adding or editing a rule in the UI will

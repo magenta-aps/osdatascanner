@@ -24,9 +24,11 @@ from exchangelib.errors import ErrorNonExistentMailbox
 from os2datascanner.engine2.model.ews import EWSAccountSource
 from os2datascanner.engine2.model.core import SourceManager
 
+from ....grants.models import GraphGrant
 from ....organizations.models.account import Account
 from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
+from ..authentication import Authentication
 from .scanner import Scanner
 
 logger = logging.getLogger(__name__)
@@ -66,6 +68,9 @@ class ExchangeScanner(Scanner):
         default=""
     )
 
+    grant = models.ForeignKey(
+            GraphGrant, null=True, blank=True, on_delete=models.SET_NULL)
+
     @property
     def needs_revalidation(self):
         try:
@@ -96,14 +101,36 @@ class ExchangeScanner(Scanner):
         yield from (source for _, source in self.generate_sources_with_accounts())
 
     def generate_sources_with_accounts(self):
+        constructor_param_base = {
+            "domain": self.mail_domain.lstrip("@"),
+            "server": self.service_endpoint or None,
+        }
 
-        def _make_source(user):
+        match (self.grant, self.authentication):
+            # Prefer GraphGrant if we have one...
+            case (GraphGrant(), _) if settings.MSGRAPH_EWS_AUTH:
+                constructor_param_base |= {
+                    "admin_user": None,
+                    "admin_password": None,
+
+                    "client_id": settings.MSGRAPH_APP_ID,
+                    "tenant_id": str(self.grant.tenant_id),
+                    "client_secret": settings.MSGRAPH_CLIENT_SECRET,
+                }
+            # ... but use the Authentication object if we don't (as long as it
+            # actually has a username)
+            case (_, Authentication(username=u)) if u:
+                constructor_param_base |= {
+                    "admin_user": self.authentication.username,
+                    "admin_password": self.authentication.get_password(),
+                }
+            case _:
+                raise ValueError("No authentication method available")
+
+        def _make_source(**kwargs):
             return EWSAccountSource(
-                    domain=self.mail_domain.lstrip("@"),
-                    server=self.service_endpoint or None,
-                    admin_user=self.authentication.username,
-                    admin_password=self.authentication.get_password(),
-                    user=user)
+                    **constructor_param_base,
+                    **kwargs)
 
         if (covered_accounts := self.compute_covered_accounts()).exists():
             for account in covered_accounts:
@@ -114,11 +141,11 @@ class ExchangeScanner(Scanner):
                         _value__iendswith=self.mail_domain):
                     user_mail_address: str = alias.value
                     local_part = user_mail_address.split("@", maxsplit=1)[0]
-                    yield (account, _make_source(local_part))
+                    yield (account, _make_source(user=local_part))
         elif self.userlist:
             user_list = get_users_from_file(self.userlist)
             for u in user_list:
-                yield (None, _make_source(u))
+                yield (None, _make_source(user=u))
         else:
             raise ValueError("No users available")
 

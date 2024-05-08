@@ -11,39 +11,21 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-import json
-import base64
-from django.conf import settings
+
 from django.forms import ModelChoiceField
 from django.views import View
-from django.views.generic.base import TemplateView
-from urllib.parse import urlencode
 
 from os2datascanner.projects.admin.grants.models.graphgrant import GraphGrant
+from os2datascanner.projects.admin.grants.views.msgraph_views import (
+        MSGraphGrantRequestView)
 from os2datascanner.projects.admin.utilities import UserWrapper
 from ..models.scannerjobs.msgraph import MSGraphMailScanner
 from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
-from .views import LoginRequiredMixin
 from .scanner_views import (
         ScannerRun, ScannerList, ScannerAskRun, ScannerCreate, ScannerDelete,
         ScannerUpdate, ScannerCopy, ScannerCleanupStaleAccounts)
-
-
-def make_consent_url(state):
-    if settings.MSGRAPH_APP_ID:
-        return ("https://login.microsoftonline.com/common/adminconsent?"
-                + urlencode({
-                    "client_id": settings.MSGRAPH_APP_ID,
-                    "scope": "https://graph.microsoft.com/.default",
-                    "response_type": "code",
-                    "state": base64.b64encode(json.dumps(state).encode()),
-                    "redirect_uri": (
-                            settings.SITE_URL + "grants/msgraph/receive/")
-                }))
-    else:
-        return None
 
 
 class MSGraphMailList(ScannerList):
@@ -64,7 +46,7 @@ class MSGraphMailCreate(View):
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
             handler = _MSGraphMailCreate.as_view()
         else:
-            handler = _MSGraphPermissionRequest.as_view(
+            handler = MSGraphGrantRequestView.as_view(
                     redirect_token="msgraphmailscanner_add")
         return handler(request, *args, **kwargs)
 
@@ -76,31 +58,6 @@ def patch_form(view, form):
     form.fields['grant'] = ModelChoiceField(grant_qs, empty_label=None)
 
     return form
-
-
-class _MSGraphPermissionRequest(LoginRequiredMixin, TemplateView):
-    """Sends the user to the Microsoft Online login system in order to permit
-    OS2datascanner to access organisational mail accounts through the Graph
-    API.
-
-    Note that only Microsoft accounts with organisational administrator
-    privileges can grant applications the right to access Graph resources
-    without having to go through a specific user account."""
-    template_name = "grants/grant_start.html"
-
-    redirect_token = None
-
-    def get_context_data(self, **kwargs):
-        return dict(**super().get_context_data(**kwargs), **{
-            "service_name": "Microsoft Online",
-            "auth_endpoint": make_consent_url(
-                    state={
-                        "red": self.redirect_token,
-                        "org": str(UserWrapper(self.request.user).get_org().pk)
-                    }),
-            "error": self.request.GET.get("error"),
-            "error_description": self.request.GET.get("error_description")
-        })
 
 
 class _MSGraphMailCreate(ScannerCreate):
@@ -225,7 +182,7 @@ class MSGraphFileCreate(View):
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
             handler = _MSGraphFileCreate.as_view()
         else:
-            handler = _MSGraphPermissionRequest.as_view(
+            handler = MSGraphGrantRequestView.as_view(
                     redirect_token="msgraphfilescanner_add")
         return handler(request, *args, **kwargs)
 
@@ -316,7 +273,7 @@ class MSGraphCalendarCreate(View):
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
             handler = _MSGraphCalendarCreate.as_view()
         else:
-            handler = _MSGraphPermissionRequest.as_view(
+            handler = MSGraphGrantRequestView.as_view(
                     redirect_token="msgraphcalendarscanner_add")
         return handler(request, *args, **kwargs)
 
@@ -400,7 +357,7 @@ class MSGraphTeamsFileCreate(View):
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
             handler = _MSGraphTeamsFileCreate.as_view()
         else:
-            handler = _MSGraphPermissionRequest.as_view(
+            handler = MSGraphGrantRequestView.as_view(
                     redirect_token="msgraphteamsfilescanner_add")
         return handler(request, *args, **kwargs)
 

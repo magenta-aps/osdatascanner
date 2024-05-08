@@ -557,7 +557,10 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
                 or is_in_cleaned("unc", self.old_url) \
                 or is_in_cleaned("username", self.old_user):
             # No password supplied for new username or URL, displaying error to user.
-            if 'password' in form.cleaned_data and form.cleaned_data["password"] == "":
+            if 'password' in form.cleaned_data \
+                    and 'creds-method' in form.cleaned_data \
+                    and form.cleaned_data['creds-method'] == 'use-credentials' \
+                    and form.cleaned_data["password"] == "":
                 form.add_error("password",
                                _("Password must be updated, when changing username or url."))
                 return super().form_invalid(form)

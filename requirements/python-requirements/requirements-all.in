@@ -23,7 +23,7 @@ toml
 chardet
 defusedxml
 dropbox==10.3.0
-exchangelib==4.8.0  # Brittle API; do /not/ bump without checking for changes!
+exchangelib==5.3.0  # Brittle API; do /not/ bump without checking for changes!
 lxml
 odfpy
 olefile

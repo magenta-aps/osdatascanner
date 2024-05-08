@@ -29,25 +29,42 @@ In the _Service endpoint_ field, provide the URL to the Exchange Web Services
 API instance. If you don't fill it in, then the EWS autodiscovery protocol will
 be used instead.
 
-Under _Brugernavn_ og _Adgangskode_, you'll need to provide the details of a
-service account with the special role `ApplicationImpersonation`. Having this
-role lets a service account act on behalf of any other user in the same
-management scope. (Naturally, OS2datascanner only uses this to read messages.)
-Contact your system administrator if you don't have access to such an account.
-
-(Note that _Brugernavn_ should typically resemble an email address -- that is,
-`service-account@company.example`, not `service-account`.)
-
-> Note that Exchange Web Services for Office 365 does not support this use of a
-> service account as of December 31st, 2022. This means that EWS can only
-> presently be used to communicate with on-premises installations.
-
 EWS doesn't offer any way of discovering the users present in an Exchange
 installation, so you'll need to get that from Active Directory or from Azure
 AD. Choose the _Organisatoriske enheder_ field to use OS2datascanner's LDAP
 support to automatically scan all of the users detected in your organisational
 hierarchy, or upload a UTF-8 text file with one account name on each line with
 _Upload fil_.
+
+#### Authenticate with a service account
+
+For on-premises Exchange installations, you'll need to create a service
+account with the special role `ApplicationImpersonation`. Having this role lets
+a service account act on behalf of any other user in the same management scope.
+(Naturally, OSdatascanner only uses this to read messages.) Fill in the
+details of this account in the _Brugernavn_ og _Adgangskode_ fields.
+
+(Note that _Brugernavn_ should typically resemble an email address -- that is,
+`service-account@company.example`, not `service-account`.)
+
+#### Authenticate with a Microsoft Graph client
+
+The use of service accounts is not supported in Office 365, where you'll
+instead need to set up an Azure application. (Follow the instructions in the
+Azure Setup Guide to set up the basic application.)
+
+To give the application access to EWS, select _Office 365 Exchange Online_ from
+the _APIs my organization uses_ tab...
+
+![Select "Office 365 Exchange Online"...](azure-ews-1.png)
+
+... and then grant the application permission `full_access_as_app`.
+
+![... and then grant the application permission "full_access_as_app".](azure-ews-2.png)
+
+Once you've done that, you can visit the special URL `/grants/msgraph/request/`
+to begin the authentication flow to make OSdatascanner aware of your Azure
+tenant.
 
 [comment:] # ## Filesystem scans
 
