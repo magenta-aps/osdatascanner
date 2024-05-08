@@ -36,6 +36,7 @@ OPTIONAL_MIDDLEWARE = [
 # [msgraph]
 MSGRAPH_APP_ID = ""
 MSGRAPH_CLIENT_SECRET = ""
+MSGRAPH_EWS_AUTH = true
 
 # [os2mo]
 OS2MO_TOKEN_URL = "http://keycloak:8080/auth/realms/mo/protocol/openid-connect/token"

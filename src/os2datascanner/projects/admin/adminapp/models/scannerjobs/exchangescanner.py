@@ -108,7 +108,7 @@ class ExchangeScanner(Scanner):
 
         match (self.grant, self.authentication):
             # Prefer GraphGrant if we have one...
-            case (GraphGrant(), _):
+            case (GraphGrant(), _) if settings.MSGRAPH_EWS_AUTH:
                 constructor_param_base |= {
                     "admin_user": None,
                     "admin_password": None,

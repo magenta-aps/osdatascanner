@@ -53,6 +53,9 @@ MSGRAPH_APP_ID = ""
 # OS2datascanner installation corresponds to a registered Azure application
 # (client private keys are not yet supported):
 MSGRAPH_CLIENT_SECRET = ""
+# Should Microsoft Graph grants also be displayed as a possible authentication
+# method when setting traditional Exchange Web Services scanners up?
+MSGRAPH_EWS_AUTH = false
 
 # [os2mo]
 OS2MO_TOKEN_URL = ""
@@ -171,7 +174,8 @@ SETTINGS_EXPORT = [
     'ANALYSIS_PAGE',
     'MINISCAN_FILE_SIZE_LIMIT',
     'MANUAL_PAGE',
-    'USERERRORLOG'
+    'USERERRORLOG',
+    'MSGRAPH_EWS_AUTH',
 ]
 
 # [internationalization]

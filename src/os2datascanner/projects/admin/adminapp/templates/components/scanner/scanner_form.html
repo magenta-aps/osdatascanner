@@ -193,7 +193,7 @@
                 {% include "components/scanner/scanner_form_input_field.html" with field=form.token placeholder="(Uændret)" password="True" required="True" %}
               {% endif %}
 
-              {% if view.type == "exchange" %}
+              {% if view.type == "exchange" and settings.MSGRAPH_EWS_AUTH %}
 
                 <label for="use-grant">{% trans "use grant for access authentication"|capfirst %}</label>
  
