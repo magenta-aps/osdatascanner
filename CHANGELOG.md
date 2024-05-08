@@ -33,6 +33,9 @@
 - Testing authentication of LDAP connection is now done via POST request 
   instead of GET.
 
+- Reports marked as "false positive" no longer lose their handled status, when
+  the related object is scanned twice in one scannerjob.
+
 ### General improvements
 
 - TimeoutManager now uses a heapq as the underlying datastructure making it asymptotically faster.

@@ -530,6 +530,29 @@ class PipelineCollectorTests(TestCase):
         self.assertEqual(DocumentReport.objects.last().resolution_status, None,
                          "DocumentReport resolution status was not reset!")
 
+    def test_conserve_false_positive_same_message_twice(self):
+        """When performing a thorough scan, previously handled reports, which
+        are marked as false positive, will be received by the result collector
+        twice, because the engine will visit it twice (due to ScheduledCheckups.)
+        The status should still be conserved."""
+
+        # Initial match message
+        record_match(positive_match)
+
+        # Handle the report as a false positive
+        dr = DocumentReport.objects.last()
+        dr.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE.value
+        dr.save()
+
+        # Another message -- twice
+        record_match(positive_match_keep_fp)
+        record_match(positive_match_keep_fp)
+
+        # Resolution status should still be the same.
+        self.assertEqual(DocumentReport.objects.last().resolution_status,
+                         DocumentReport.ResolutionChoices.FALSE_POSITIVE.value,
+                         "DocumentReport did not keep its false positive resolution status!")
+
     def test_override_only_notify_superadmin_with_last_modified_on(self):
         """If a match has been scanned with only_notify_superadmin, and later is scanned without it,
         the DocumentReport should be updated accordingly."""
