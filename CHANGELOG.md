@@ -36,6 +36,10 @@
 - Reports marked as "false positive" no longer lose their handled status, when
   the related object is scanned twice in one scannerjob.
 
+- Deleting a mail folder in Exchange will now cause OSdatascanner to resolve
+  all matches in that folder as having been deleted. (Note that this
+  functionality does not appear to work reliably in Office 365.
+
 ### General improvements
 
 - TimeoutManager now uses a heapq as the underlying datastructure making it asymptotically faster.
