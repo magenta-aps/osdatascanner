@@ -112,6 +112,6 @@ Single-colored icons can be modified like so:
   }
 
   @media (min-width: $break-lg) {
-    display: inline;
+    display: inline-block;
   }
 }

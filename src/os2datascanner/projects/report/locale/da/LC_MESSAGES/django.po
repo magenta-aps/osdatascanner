@@ -471,21 +471,21 @@ msgstr "resultater"
 msgid "of"
 msgstr "af"
 
-#: reportapp/templates/components/pagination/pagination.html:27
+#: reportapp/templates/components/pagination/pagination.html:25
 #: reportapp/templates/components/pagination/pagination.html:32
 msgid "Previous"
 msgstr "Forrige"
 
-#: reportapp/templates/components/pagination/pagination.html:100
-#: reportapp/templates/components/pagination/pagination.html:105
+#: reportapp/templates/components/pagination/pagination.html:98
+#: reportapp/templates/components/pagination/pagination.html:104
 msgid "Next"
 msgstr "Næste"
 
-#: reportapp/templates/components/pagination/pagination.html:111
+#: reportapp/templates/components/pagination/pagination.html:112
 msgid "Go to page"
 msgstr "Gå til side"
 
-#: reportapp/templates/components/pagination/pagination.html:129
+#: reportapp/templates/components/pagination/pagination.html:130
 msgid "Go"
 msgstr "Gå"
 
@@ -894,7 +894,99 @@ msgstr "Handlinger"
 msgid "Show more matches..."
 msgstr "Vis flere matches..."
 
-#: reportapp/templates/components/statistics/employee_template.html:16
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:9
+msgid "DPO statistics"
+msgstr "DPO-statistik"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:46
+msgid "organizational unit"
+msgstr "Organisatorisk enhed"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:49
+msgid "All"
+msgstr "Alle"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:63
+msgid "Reset the DPO overview"
+msgstr "Nulstil DPO-overblikket"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:64
+msgid "Click here to reset the DPO overview"
+msgstr "Klik her for at nulstille DPO-overblikket"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:73
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:257
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:290
+msgid "Reset"
+msgstr "Nulstil"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:78
+msgid "Export DPO data as a csv-file"
+msgstr "Eksportér DPO-data som en csv-fil"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:79
+msgid "Click here to export DPO data as a csv-file"
+msgstr "Klik her for at eksportere DPO-data som en csv-fil"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:79
+msgid "Export CSV"
+msgstr "Eksportér CSV"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:116
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:128
+msgid "Handled results"
+msgstr "Håndterede resultater"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:118
+msgid "The organizational unit's percentage of handled results"
+msgstr "Afdelingens procentvise andel af håndterede resultater"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:139
+msgid "Distribution of results"
+msgstr "Fordeling af resultater"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:141
+msgid "Results distributed by data sources"
+msgstr "Resultater fordelt på datakilder"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:144
+msgid "Results distributed by resolution statuses"
+msgstr "Resultater fordelt på håndteringsstatusser"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:149
+msgid "Data sources"
+msgstr "Datakilder"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:150
+msgid "Resolution statuses"
+msgstr "Håndteringsstatusser"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:239
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:273
+#: reportapp/templates/components/statistics/user_overview_template.html:168
+msgid "Development overview"
+msgstr "Udviklingsoverblik"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:241
+msgid "Accumulated unhandled results by month"
+msgstr "Akkumulerede uhåndterede resultater per måned"
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:250
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:283
+msgid ""
+"Hold and drag your mouse to zoom in on part of the graph. Hold shift while "
+"using the mouse wheel to manually zoom. Use the reset button to return the "
+"graph to normal."
+msgstr ""
+"Hold på grafen med musen, og træk for at markere et område, du ønsker at "
+"zoome ind på. Hold shift inde, mens du scroller med musehjulet, for manuelt "
+"at styre zoom. Tryk på nulstil-knappen for at nulstille zoom."
+
+#: reportapp/templates/components/statistics/dpo_statistics_template.html:274
+msgid "New results by month"
+msgstr "Antal nye resultater per måned"
+
+#: reportapp/templates/components/statistics/employee_template.html:23
 #, python-format
 msgid ""
 "The user has %(withheld)s matches, which have not been distributed to the "
@@ -903,31 +995,72 @@ msgstr ""
 "Brugeren har %(withheld)s resultater, som ikke er blevet uddelt til brugeren "
 "endnu. Dette kan gøres af en superbruger i rapportmodulet."
 
-#: reportapp/templates/components/statistics/employee_template.html:17
+#: reportapp/templates/components/statistics/employee_template.html:24
 msgid "withheld"
 msgstr "tilbageholdt"
 
-#: reportapp/templates/components/statistics/employee_template.html:22
+#: reportapp/templates/components/statistics/employee_template.html:29
 msgid "The user's false positive rate is unusually high:"
 msgstr "Brugerens andel af falske positive resultater er ualmindeligt høj:"
 
-#: reportapp/templates/components/statistics/employee_template.html:36
-#: reportapp/templates/components/statistics/employee_template.html:37
+#: reportapp/templates/components/statistics/employee_template.html:45
+#: reportapp/templates/components/statistics/employee_template.html:46
 msgid "Send notification to"
 msgstr "Send påmindelse til"
 
-#: reportapp/templates/components/statistics/employee_template.html:37
+#: reportapp/templates/components/statistics/employee_template.html:46
 msgid "Send notification"
 msgstr "Send påmindelse"
 
-#: reportapp/templates/components/statistics/employee_template.html:40
-#: reportapp/templates/components/statistics/employee_template.html:41
+#: reportapp/templates/components/statistics/employee_template.html:49
+#: reportapp/templates/components/statistics/employee_template.html:50
 msgid "Show/hide overview"
 msgstr "Vis/skjul overblik"
 
+#: reportapp/templates/components/statistics/leader_statistics_template.html:11
+msgid "Leader overview for:"
+msgstr "Lederoverblik for:"
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:26
+msgid "employees"
+msgstr "medarbejdere"
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:41
+msgid "Organizational units"
+msgstr "Organisatoriske enheder"
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:58
+msgid "Search for employee"
+msgstr "Søg efter medarbejder"
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:73
+msgid "Employee"
+msgstr "Medarbejder"
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:106
+#, python-format
+msgid ""
+"The status of each user is determined by how many matches that user has, and "
+"how often they have handled their matches recently. A user with a "
+"“Completed” status has no matches. A user with a “Accepted” status has "
+"handled at least 75%% of their recent matches."
+msgstr ""
+"Status på hver bruger afgøres af, hvor mange resultater brugeren har, samt "
+"hvor ofte brugeren har håndteret sine resultater for nyligt. En bruger med "
+"“Færdig”-statussen har ingen resultater. En bruger med “Accepteret” har "
+"håndteret mindst 75%% af sine seneste resultater."
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:136
+msgid "Loading employee ..."
+msgstr "Indlæser medarbejder ..."
+
+#: reportapp/templates/components/statistics/leader_statistics_template.html:141
+msgid "No employees found."
+msgstr "Ingen medarbejdere fundet."
+
 #: reportapp/templates/components/statistics/total_source_count.html:10
 msgid "Unhandled results from"
-msgstr "Uhåndterede resultater"
+msgstr "Uhåndterede resultater fra"
 
 #: reportapp/templates/components/statistics/total_source_count.html:16
 msgid "Current total number of unhandled matches from"
@@ -942,6 +1075,99 @@ msgstr "Antal af matches fra"
 #: reportapp/templates/components/statistics/total_source_count.html:29
 msgid " the last 30 days"
 msgstr " de sidste 30 dage"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:10
+#, fuzzy
+#| msgid "Statistic for"
+msgid "Statistics for"
+msgstr "Statistik for"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:20
+msgid "Number of matches per week"
+msgstr "Antal matches pr. uge"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:21
+#: reportapp/templates/components/statistics/user_overview_template.html:28
+#: reportapp/templates/components/statistics/user_overview_template.html:50
+#: reportapp/templates/components/statistics/user_overview_template.html:72
+msgid "Week"
+msgstr "Uge"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:32
+#: reportapp/templates/components/statistics/user_overview_template.html:54
+#: reportapp/templates/components/statistics/user_overview_template.html:76
+msgid "Unhandled matches at the end of week"
+msgstr "Uhåndterede resultater i slutningen af uge"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:38
+#: reportapp/templates/components/statistics/user_overview_template.html:60
+#: reportapp/templates/components/statistics/user_overview_template.html:82
+msgid "New matches during week"
+msgstr "Nye resultater i løbet af uge"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:42
+#: reportapp/templates/components/statistics/user_overview_template.html:64
+#: reportapp/templates/components/statistics/user_overview_template.html:86
+msgid "Matches handled during week"
+msgstr "Resultater håndteret i løbet af uge"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:101
+msgid "Unhandled results"
+msgstr "Uhåndterede resultater"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:102
+msgid "Number of unhandled results per scanner job"
+msgstr "Antal uhåndterede resultater pr. scannerjob"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:131
+#: reportapp/templates/components/statistics/user_overview_template.html:132
+msgid "Delete results from"
+msgstr "Slet resultater fra"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:138
+msgid "You are about to delete all results from the scannerjob"
+msgstr "Du er ved at slette alle resultater fra scannerjobbet"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:138
+msgid "associated with the user"
+msgstr "tilknyttet brugeren"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:138
+msgid "Are you sure? This action cannot be reversed."
+msgstr "Er du sikker? Denne handling kan ikke fortrydes."
+
+#: reportapp/templates/components/statistics/user_overview_template.html:144
+msgid ""
+"This button is disabled. Only superusers are allowed to delete results from "
+"scanner jobs"
+msgstr ""
+"Denne knap er slået fra. Kun superbrugere har tilladelse til at "
+"sletteresultater fra scannerjobs"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:145
+msgid "Only superusers are allowed to delete results from scanner jobs"
+msgstr ""
+"Kun superbrugere har tilladelse til at slette resultater fra scannerjobs"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:159
+msgid "There are no unhandled results to show"
+msgstr "Der er ingen uhåndterede resultater at vise"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:170
+msgid "Accumulated matches over the past 52 weeks"
+msgstr "Akkumulerede matches over de seneste 52 uger"
+
+#: reportapp/templates/components/statistics/user_overview_template.html:176
+msgid ""
+"Chart of the change in the amount of the user's unhandled matches over the "
+"past year on a weekly basis."
+msgstr ""
+"Graf over udviklingen af antallet af brugerens uhåndterede resultater i "
+"løbet af det sidste år på ugentlig basis."
+
+#: reportapp/templates/components/statistics/user_overview_template.html:183
+msgid "False positive percentage:"
+msgstr "Falsk positiv procentdel:"
 
 #: reportapp/templates/components/user/login.html:10
 msgid "report module"
@@ -1684,6 +1910,12 @@ msgstr ""
 "tidligere matchede emails, skal du bruge \"Kategorisér\"-funktionen på din "
 "<a href=\"%(my-account)s\">profile page</a>."
 
+#: reportapp/templates/remediator_content.html:14
+#: reportapp/templates/undistributed_content.html:8
+#: reportapp/templates/user_content.html:8
+msgid "results"
+msgstr "resultater"
+
 #: reportapp/templates/remediator_content.html:24
 #: reportapp/templates/undistributed_content.html:50
 #: reportapp/templates/user_content.html:14
@@ -2146,6 +2378,12 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgid "Password change successful"
 #~ msgstr "Skift adgangskode lykkedes"
 
+#~ msgid "Development overview for"
+#~ msgstr "Udviklingsoverblik for"
+
+#~ msgid "Development chart"
+#~ msgstr "Udviklingsgraf"
+
 #~ msgid "A temporary error occurred during the latest check of this match"
 #~ msgstr "Der opstod en midlertidig fejl under sidste tjek af dette match"
 
@@ -2156,9 +2394,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
 #~ msgid "Show/hide technical details of the error"
 #~ msgstr "Vis/skjul tekniske detaljer om fejlen"
-
-#~ msgid "Unhandled results"
-#~ msgstr "Uhåndterede resultater"
 
 #~ msgid "Delete OneDrive files"
 #~ msgstr "Slet OneDrive filer"

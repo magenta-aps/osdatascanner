@@ -31,11 +31,10 @@ def param_replace(context, **kwargs):
 
 
 @register.simple_tag
-def match_interval(document_reports, page_obj, paginate_by):
-    """Used for displaying which matches are being shown."""
-
+def object_interval(object_list, page_obj, paginate_by):
+    """Returns a string indicating the range of items being displayed."""
     curr_page = int(page_obj.number)
     pag_by = int(paginate_by)
-    first_match = pag_by * curr_page - (pag_by - 1)
-    last_match = first_match + document_reports.count() - 1
-    return f"{intcomma(first_match)} - {intcomma(last_match)}"
+    first_item = pag_by * curr_page - (pag_by - 1)
+    last_item = first_item + object_list.count() - 1
+    return f"{intcomma(first_item)} - {intcomma(last_item)}"

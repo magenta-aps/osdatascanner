@@ -176,21 +176,21 @@
                         <a href="#run-scanner-modal"
                            data-modal="modal:open"
                            data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
-                           class="button button--icon-button button--transparent-button"
+                           class="button button--icon-button button--datatable-actions"
                            aria-label="{% trans 'Run scanner job' %}"
                            title="{% trans 'Run scanner job' %}">
                           <i id="play_arrow" class="material-symbols">play_arrow</i>
                         </a>
  
                         <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
-                           class="button button--icon-button button--transparent-button"
+                           class="button button--icon-button button--datatable-actions"
                            aria-label="{% trans 'Edit scanner job' %}"
                            title="{% trans 'Edit scanner job' %}">
                           <i id="edit" class="material-symbols">edit</i>
                         </a>
  
                         <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
-                           class="button button--icon-button button--transparent-button"
+                           class="button button--icon-button button--datatable-actions"
                            aria-label="{% trans 'Copy scanner job' %}"
                            title="{% trans 'Copy scanner job' %}">
                           <i id="content_copy" class="material-symbols">content_copy</i>
@@ -203,7 +203,7 @@
                             {% csrf_token %}
                             {{ form.as_p }}
                             <button type="submit"
-                                    class="button button--icon-button button--transparent-button"
+                                    class="button button--icon-button button--datatable-actions"
                                     onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
                                     aria-label="{% trans 'Delete scanner job' %}"
                                     title="{% trans 'Delete scanner job' %}">

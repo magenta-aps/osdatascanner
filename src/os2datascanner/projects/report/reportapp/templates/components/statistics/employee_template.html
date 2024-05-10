@@ -1,16 +1,23 @@
 {% load i18n %}
 
-<tr class="employee_row">
-  <td class="datatable__column--name">
-    <div class="overflow-ellipsis">
-      <div class="employee__fullname">{{ employee.get_full_name }}</div>
-      <div class="employee__username">{{ employee.username }}</div>
+<tr class="datatablex__row employee_row">
+  <td class="column--employee">
+    <div class="employee__container">
+      <div class="overflow-ellipsis">
+        <span class="employee__fullname">{{ employee.get_full_name|title }}</span>
+      </div>
+ 
+      <div class="overflow-ellipsis">
+        <span class="employee__username">{{ employee.username|lower }}</span>
+      </div>
     </div>
   </td>
-  <td class="datatable__column--matchcount">
+
+  <td class="column--matches">
     <div class="matches_container">
       <div class="matches">
-        {{ employee.match_count }}
+        <span class="datatable-numeral">{{ employee.match_count }}</span>
+
         {% if employee.withheld_matches > 0 %}
           <div class="withheld-matches"
                title="{% blocktranslate with withheld=employee.withheld_matches %}The user has {{ withheld }} matches, which have not been distributed to the user yet. This can be done by a superuser in the report module.{% endblocktranslate %}">
@@ -25,10 +32,12 @@
       {% endif %}
     </div>
   </td>
-  <td class="datatable__column--matchstatus">
+
+  <td class="column--status">
     <div class="status tag" data-status="{{ employee.match_status }}">{{ employee.status }}</div>
   </td>
-  <td class="datatable__column--leader-actions">
+
+  <td class="column--actions">
     <div class="action-wrapper">
       <div class="button-group">
         <a href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}"
@@ -36,7 +45,7 @@
            aria-label="{% trans 'Send notification to' %} {{ employee.get_full_name }}"
            title="{% trans 'Send notification to' %} {{ employee.get_full_name }}">{% trans "Send notification" %}</a>
         <button type="button"
-                class="overview-expand button button--icon-button button--caret-button"
+                class="overview-expand button button--caret-button"
                 aria-label="{% trans 'Show/hide overview' %}"
                 title="{% trans 'Show/hide overview' %}">
           <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
@@ -45,7 +54,8 @@
     </div>
   </td>
 </tr>
-<tr class="user-overview" hidden>
+
+<tr class="user-overview datatablex__row" hidden>
   <td colspan="4">
     <div class="overview_wrapper"
          hx-get="{% url 'statistics-user-id' employee.uuid %}"

@@ -24,11 +24,11 @@ from django.contrib.postgres.aggregates import StringAgg
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, Count, DateField, When, Case, CharField, Value
 from django.db.models.functions import Coalesce, TruncMonth
-from django.http import HttpResponseForbidden, Http404, HttpResponse
+from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.views.generic import TemplateView, DetailView, ListView
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
 
@@ -541,9 +541,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         context['user_units'] = self.user_units
-
         context["org_unit"] = self.org_unit
-
         context["employee_count"] = self.employee_count
 
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
@@ -700,18 +698,21 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
                 number_of_matches__gte=1),
             only_personal=True)
 
-        response_string = _('You deleted all results from {0} associated with {1}.'.format(
-                scannerjob_name, account.get_full_name()))
+        response_string = _(
+            'You have deleted all results from %(scannerjob)s associated with '
+            '%(account)s.'
+        ) % {
+            'scannerjob': scannerjob_name,
+            'account': account.get_full_name(),
+        }
 
         reports.delete()
 
-        response = HttpResponse(
-            "<li>" +
-            response_string +
-            "</li>")
-
-        response.headers["HX-Trigger"] = "reload-htmx"
-        return response
+        return render(
+            request,
+            "components/statistics/results_deleted.html", {
+                "message": response_string
+                })
 
     def get(self, request, *args, **kwargs):
         try:
