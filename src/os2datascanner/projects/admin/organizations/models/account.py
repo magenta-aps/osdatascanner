@@ -24,7 +24,8 @@ from os2datascanner.projects.admin.import_services.models import Imported
 from .broadcasted_mixin import Broadcasted
 
 
-class Account(Core_Account, Imported, Broadcasted):
+@Broadcasted.register
+class Account(Core_Account, Imported):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
 

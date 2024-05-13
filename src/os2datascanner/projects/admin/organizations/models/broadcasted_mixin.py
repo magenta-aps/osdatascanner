@@ -10,7 +10,9 @@
 #
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
+
 #
+from abc import ABC
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from os2datascanner.utils.test_helpers import in_test_environment
@@ -20,10 +22,10 @@ from ..publish import publish_events
 from os2datascanner.core_organizational_structure.utils import get_serializer
 
 
-class Broadcasted:
-    """Abstract base class for objects for which changes should be broadcasted."""
-    class Meta:
-        abstract = True
+class Broadcasted(ABC):  # noqa
+    """Virtual superclass for objects for which changes should be broadcasted.
+    (Register classes as virtual subclasses using the Broadcasted.register
+    decorator.)"""
 
 
 # TODO: change to avoid using save/delete-signals as they are not called on bulk actions

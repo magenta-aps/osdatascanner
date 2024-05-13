@@ -2,7 +2,6 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import os2datascanner.projects.admin.organizations.models.broadcasted_mixin
 import uuid
 
 
@@ -25,7 +24,6 @@ class Migration(migrations.Migration):
                 'verbose_name': 'alias',
                 'verbose_name_plural': 'aliases',
             },
-            bases=(os2datascanner.projects.admin.organizations.models.broadcasted_mixin.Broadcasted, models.Model),
         ),
     ]
 

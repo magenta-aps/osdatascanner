@@ -6,7 +6,8 @@ from django.test import TestCase
 from ..models.broadcasted_mixin import Broadcasted
 
 
-class DummyBroadcastedModel(Broadcasted, Model):
+@Broadcasted.register
+class DummyBroadcastedModel(Model):
     test_field = BooleanField(
         default=False
     )

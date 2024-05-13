@@ -42,7 +42,8 @@ def replace_nordics(name: str):
     return name
 
 
-class Organization(Core_Organization, Broadcasted):
+@Broadcasted.register
+class Organization(Core_Organization):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
 

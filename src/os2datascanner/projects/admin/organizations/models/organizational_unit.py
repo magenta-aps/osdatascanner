@@ -23,7 +23,8 @@ from os2datascanner.core_organizational_structure.models import \
 from .broadcasted_mixin import Broadcasted
 
 
-class OrganizationalUnit(Core_OrganizationalUnit, Broadcasted, Imported):
+@Broadcasted.register
+class OrganizationalUnit(Core_OrganizationalUnit, Imported):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
 
