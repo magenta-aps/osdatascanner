@@ -1,8 +1,8 @@
-import logging
+import structlog
 # from .. import settings
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 def get_headers(stage=None, organisation=None, msg=None, rk=None):

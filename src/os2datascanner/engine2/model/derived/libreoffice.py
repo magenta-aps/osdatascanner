@@ -1,4 +1,4 @@
-import logging
+import structlog
 import magic
 from os import unlink, listdir, scandir
 from tempfile import TemporaryDirectory
@@ -13,7 +13,7 @@ from .derived import DerivedSource
 from .utilities import office_metadata
 from .utilities.extraction import TinyImageFilter
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 """Helper functions for converting Office documents
 

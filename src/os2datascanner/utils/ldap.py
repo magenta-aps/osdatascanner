@@ -1,11 +1,11 @@
 from typing import (
         Tuple, Callable, Iterator, Optional, Sequence, NamedTuple,
         MutableSequence)
-import logging
+import structlog
 from itertools import zip_longest
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("utils")
 
 
 _scs = """ "#+,;<=>\\"""

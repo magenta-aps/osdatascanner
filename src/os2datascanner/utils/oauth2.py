@@ -1,8 +1,8 @@
-import logging
+import structlog
 import requests
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("utils")
 
 
 def _default_wrapper(function, *args, **kwargs):

@@ -2,12 +2,12 @@ from time import time, sleep
 from dataclasses import dataclass, field
 from typing import Callable, Any, Dict
 import signal
-import logging
+import structlog
 import threading
 import heapq
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("utils")
 
 
 def _throw(ex, *args, **kwargs):

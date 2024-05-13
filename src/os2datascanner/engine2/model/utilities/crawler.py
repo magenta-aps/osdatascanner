@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 from lxml.html import HtmlElement, document_fromstring
 from lxml.etree import ParserError
 from urllib.parse import urlsplit, urlunsplit, SplitResult
-import logging
+import structlog
 import requests
 
 from os2datascanner.engine2.factory import make_webretrier
 from os2datascanner.engine2.conversions.types import Link
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 class Crawler(ABC):

@@ -1,4 +1,4 @@
-import logging
+import structlog
 import magic
 import pandas as pd
 
@@ -7,7 +7,7 @@ from .derived import DerivedSource
 from .utilities import office_metadata
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 """
 

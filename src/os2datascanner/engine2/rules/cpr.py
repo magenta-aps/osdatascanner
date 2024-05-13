@@ -13,7 +13,7 @@ from .utilities.context import make_context, add_context_filter
 from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator
 from .utilities.properties import RuleProperties, RulePrecedence
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("engine2")
 
 cpr_regex = r"\b(\d{6})(?:[ \-/\.\t]|[ ]\-[ ])?(\d{4})\b"
 calculator = CprProbabilityCalculator()

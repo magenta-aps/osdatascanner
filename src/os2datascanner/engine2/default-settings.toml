@@ -2,6 +2,9 @@
 # derivation for cryptographic primitives
 secret_value = ""
 
+# [logging]
+LOG_LEVEL = "INFO"
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"

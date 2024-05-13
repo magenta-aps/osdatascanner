@@ -98,6 +98,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Configure log level trace
+structlog.stdlib.TRACE = TRACE = 2
+structlog.stdlib._NAME_TO_LEVEL['trace'] = TRACE
+structlog.stdlib._LEVEL_TO_NAME[TRACE] = 'trace'
+
+
+def trace(self, msg, *args, **kw):
+    return self.log(TRACE, msg, *args, **kw)
+
+
+# Set above method as the logger.trace()
+structlog.stdlib.BoundLogger.trace = trace
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,

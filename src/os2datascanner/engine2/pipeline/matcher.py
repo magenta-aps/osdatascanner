@@ -1,9 +1,9 @@
-import logging
+import structlog
 from ..conversions.types import decode_dict
 from . import messages
 from .. import settings
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("matcher")
 
 READS_QUEUES = ("os2ds_representations",)
 WRITES_QUEUES = (

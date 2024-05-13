@@ -1,4 +1,4 @@
-import logging
+import structlog
 
 from io import BytesIO
 from urllib.parse import urlsplit
@@ -11,7 +11,7 @@ from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror, MailFSBuilder
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 # TODO: This probably shouldn't be a thing, but has complicated consequences to remove?

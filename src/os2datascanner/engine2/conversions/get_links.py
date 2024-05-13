@@ -1,11 +1,11 @@
-import logging
+import structlog
 from lxml.etree import ParserError
 
 from .types import OutputType
 from .registry import conversion
 from ..model.utilities.crawler import (parse_html, make_outlinks)
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 @conversion(OutputType.Links, "text/html")

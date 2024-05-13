@@ -5,7 +5,7 @@ import structlog
 from ...model.core import Handle
 from ...rules.rule import Rule
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 def is_handle_relevant(handle: Handle, filter_rule: Rule) -> bool:
