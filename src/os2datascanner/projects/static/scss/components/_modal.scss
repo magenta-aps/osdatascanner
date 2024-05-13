@@ -62,8 +62,12 @@
     }
   }
 
+  .select2-container {
+    min-width: 100%;
+  }
+
   .select2-selection__rendered {
-    height: 8rem !important;
+    height: fit-content !important;
     overflow-y: scroll !important;
   }
 
@@ -73,16 +77,6 @@
     .icon {
       width: 15rem;
       height: auto;
-    }
-
-    ul {
-      list-style: none;
-      height: 8rem;
-      overflow-y: scroll;
-
-      li {
-        margin-left: 0;
-      }
     }
 
     .button-wrapper {
