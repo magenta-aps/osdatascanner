@@ -21,7 +21,6 @@ from django.core.management.base import BaseCommand
 from django.db.transaction import TransactionManagementError
 from rest_framework.serializers import ValidationError
 from os2datascanner.utils import debug
-from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.core_organizational_structure.utils import get_serializer
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.projects.report.organizations.models import (Account, Alias, Organization,
@@ -200,18 +199,8 @@ class Command(BaseCommand):
     """Command for starting an event collector process."""
     help = __doc__
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-                "--log",
-                default="info",
-                help="change the level at which log messages will be printed",
-                choices=log_levels.keys())
-
-    def handle(self, *args, log, **options):
+    def handle(self, *args, **options):
         debug.register_debug_signal()
-
-        # Set level for root logger
-        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         EventCollectorRunner(
             read=["os2ds_events"],

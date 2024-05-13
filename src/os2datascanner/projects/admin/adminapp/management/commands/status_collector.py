@@ -11,7 +11,6 @@ from django.core.management.base import BaseCommand
 from prometheus_client import Summary, start_http_server
 
 from os2datascanner.utils import debug
-from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
@@ -127,18 +126,8 @@ class Command(BaseCommand):
     """Command for starting a ScanStatus collector process."""
     help = __doc__
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-                "--log",
-                default="info",
-                help="change the level at which log messages will be printed",
-                choices=log_levels.keys())
-
-    def handle(self, *args, log, **options):
+    def handle(self, *args, **options):
         debug.register_debug_signal()
-
-        # Set level for root logger
-        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         StatusCollectorRunner(
             read=["os2ds_status"],

@@ -158,7 +158,7 @@ EMAIL_PORT = 25
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # [logging]
-DJANGO_LOG_LEVEL = "INFO"
+LOG_LEVEL = "INFO"
 
 SHELL_PLUS_IMPORTS = ["from os2datascanner._interactive import *"]
 

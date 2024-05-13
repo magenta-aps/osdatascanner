@@ -1,6 +1,5 @@
 """Runs background jobs."""
 
-from os import getenv
 import sys
 import signal
 from typing import Optional
@@ -13,7 +12,6 @@ from django.conf import settings
 
 from ...models.background_job import JobState, BackgroundJob
 from os2datascanner.utils import debug
-from os2datascanner.utils.log_levels import log_levels
 
 import time
 import structlog
@@ -113,21 +111,8 @@ class Command(BaseCommand):
                 action='store_true',
                 help=_("do not loop: run a single job and then exit"),
         )
-        parser.add_argument(
-                "--log",
-                default=None,
-                help="change the level at which log messages will be printed",
-                choices=log_levels.keys()
-        )
 
-    def handle(self, *, wait, single, log, **kwargs):  # noqa: CCR001, C901
-
-        # set level for root logger
-        if log is None:
-            log = getenv("LOG_LEVEL", "info")
-        root_logger = structlog.get_logger("os2datascanner")
-        root_logger.setLevel(log_levels[log])
-
+    def handle(self, *, wait, single, **kwargs):  # noqa: CCR001, C901
         running = True
 
         def _handler(signum, frame):

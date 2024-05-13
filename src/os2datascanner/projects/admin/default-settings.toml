@@ -220,7 +220,7 @@ ENABLE_GMAILSCAN = false
 ENABLE_SBSYSSCAN = false
 
 # [logging]
-DJANGO_LOG_LEVEL = "INFO"
+LOG_LEVEL = "INFO"
 
 # These settings are Django-specific, and must be top level to get picked up
 AMQP_PIPELINE_TARGET = "os2ds_scan_specs"

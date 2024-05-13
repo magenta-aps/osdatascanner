@@ -16,6 +16,7 @@ import pathlib
 import structlog
 
 from os2datascanner.projects.django_toml_configuration import process_toml_conf_for_django
+from structlog.processors import CallsiteParameter
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = str(pathlib.Path(
@@ -114,6 +115,11 @@ structlog.stdlib.BoundLogger.trace = trace
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
+        # Includes module and function name in log messages.
+        structlog.processors.CallsiteParameterAdder(
+            [CallsiteParameter.MODULE,
+             CallsiteParameter.FUNC_NAME],
+        ),
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
@@ -129,7 +135,9 @@ structlog.configure(
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    # I'm not sure if we actually want to disable existing loggers really.
+    # But, currently, it is very noisy for views if not, filled with  GET static files.
+    'disable_existing_loggers': False,
     'formatters': {
         "json": {
             "()": "structlog.stdlib.ProcessorFormatter",
@@ -187,7 +195,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': globals()['DJANGO_LOG_LEVEL'],
+        'level': globals()['LOG_LEVEL'],
         'propagate': True,
     },
     'loggers': {
@@ -198,12 +206,12 @@ LOGGING = {
         },
         'django_structlog': {
             'handlers': ['debug_log'],
-            'level': globals()['DJANGO_LOG_LEVEL'],
+            'level': globals()['LOG_LEVEL'],
             'propagate': True,
         },
         'os2datascanner': {
             'handlers': ['debug_log'],
-            'level': globals()['DJANGO_LOG_LEVEL'],
+            'level': globals()['LOG_LEVEL'],
             'propagate': True,
         },
     }

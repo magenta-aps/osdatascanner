@@ -145,6 +145,9 @@ def add_arguments(parser):
                  " sources have URL representations.)",
             nargs='+')
     add_control_arguments(parser)
+    # Do note that this isn't our _usual_ way of setting log level. You are also able to do so
+    # through environment variables - but it makes sense to be able to provide it as an argument
+    # here, because we're not interested in running a new container for this command.
     parser.add_argument(
             "--log-level",
             default="info",

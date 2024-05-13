@@ -187,7 +187,7 @@ class Command(BaseCommand):
                        "ENABLE_SBSYSSCAN")
 
         print("\n# [logging]")
-        print_settings("DJANGO_LOG_LEVEL")
+        print_settings("LOG_LEVEL")
 
         print("\n# [other]")
         print_settings("ENABLE_MINISCAN", "MINISCAN_REQUIRES_LOGIN",

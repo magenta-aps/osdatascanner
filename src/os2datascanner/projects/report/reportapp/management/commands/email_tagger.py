@@ -1,7 +1,6 @@
 import structlog
 from django.conf import settings
 from os2datascanner.utils import debug
-from os2datascanner.utils.log_levels import log_levels
 from django.core.management import BaseCommand
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
@@ -59,21 +58,10 @@ class EmailTaggerRunner(PikaPipelineThread):
 
 class Command(BaseCommand):
     """Starts an email tagger process."""
-
     help = __doc__
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--log",
-            default="info",
-            help="change the level at which log messages will be printed",
-            choices=log_levels.keys())
-
-    def handle(self, *args, log, **options):
+    def handle(self, *args, **options):
         debug.register_debug_signal()
-
-        # Set level for root logger
-        structlog.get_logger("os2datascanner").setLevel(log_levels[log])
 
         with SourceManager() as source_manager:
             EmailTaggerRunner(
