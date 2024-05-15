@@ -20,6 +20,11 @@
 
 - Outphased django TestCase in the report module, now using pytest instead.
 
+- CPRule.match() has been refactored to reduce redundancy.
+
+- The cprrule context-check "bin_check", has been moved to cpr_probability.py,
+  where the rest of the cpr utility functions are located.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"
