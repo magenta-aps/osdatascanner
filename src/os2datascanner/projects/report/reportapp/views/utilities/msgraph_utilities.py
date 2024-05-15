@@ -13,7 +13,7 @@ from os2datascanner.projects.report.organizations.models import Account
 
 from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 # Consider moving GraphCaller out of MSGraphSource.
 GraphCaller = MSGraphSource.GraphCaller

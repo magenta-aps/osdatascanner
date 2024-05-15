@@ -16,6 +16,7 @@ import pathlib
 import structlog
 
 from os2datascanner.projects.django_toml_configuration import process_toml_conf_for_django
+from structlog.processors import CallsiteParameter
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = str(pathlib.Path(
@@ -98,19 +99,35 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Configure log level trace
+structlog.stdlib.TRACE = TRACE = 2
+structlog.stdlib._NAME_TO_LEVEL['trace'] = TRACE
+structlog.stdlib._LEVEL_TO_NAME[TRACE] = 'trace'
+
+
+def trace(self, msg, *args, **kw):
+    return self.log(TRACE, msg, *args, **kw)
+
+
+# Set above method as the logger.trace()
+structlog.stdlib.BoundLogger.trace = trace
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
+        # Includes module and function name in log messages.
+        structlog.processors.CallsiteParameterAdder(
+            [CallsiteParameter.MODULE,
+             CallsiteParameter.FUNC_NAME],
+        ),
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
-    context_class=structlog.threadlocal.wrap_dict(dict),
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
@@ -118,7 +135,9 @@ structlog.configure(
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    # I'm not sure if we actually want to disable existing loggers really.
+    # But, currently, it is very noisy for views if not, filled with  GET static files.
+    'disable_existing_loggers': False,
     'formatters': {
         "json": {
             "()": "structlog.stdlib.ProcessorFormatter",
@@ -176,7 +195,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': globals()['DJANGO_LOG_LEVEL'],
+        'level': globals()['LOG_LEVEL'],
         'propagate': True,
     },
     'loggers': {
@@ -187,12 +206,12 @@ LOGGING = {
         },
         'django_structlog': {
             'handlers': ['debug_log'],
-            'level': globals()['DJANGO_LOG_LEVEL'],
+            'level': globals()['LOG_LEVEL'],
             'propagate': True,
         },
         'os2datascanner': {
             'handlers': ['debug_log'],
-            'level': globals()['DJANGO_LOG_LEVEL'],
+            'level': globals()['LOG_LEVEL'],
             'propagate': True,
         },
     }

@@ -1,4 +1,4 @@
-import logging
+import structlog
 import warnings
 
 from .signals_utils import suppress_signals
@@ -10,7 +10,7 @@ from os2datascanner.utils.test_helpers import in_test_environment
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 ppt = None

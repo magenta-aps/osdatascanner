@@ -6,6 +6,9 @@ MEDIA_ROOT = ["*"," src", "os2datascanner", "projects", "report"]
 DEBUG = true
 SAML2_ENABLED = false
 
+# [logging]
+LOG_LEVEL = "INFO"
+
 # [functionality]
 HANDLE_DROPDOWN = true
 ALLOW_CONTACT_MAGENTA = true

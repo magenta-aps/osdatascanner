@@ -12,7 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 import os
-import logging
+import structlog
 from PIL import Image
 from datetime import timedelta
 from rest_framework import serializers
@@ -39,7 +39,7 @@ from os2datascanner.utils.system_utilities import time_now
 
 from ..seralizer import BaseBulkSerializer, SelfRelatingField
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("report_organizations")
 
 
 class StatusChoices(models.IntegerChoices):

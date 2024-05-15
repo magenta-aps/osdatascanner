@@ -1,4 +1,4 @@
-import logging
+import structlog
 from urllib.error import HTTPError
 from .. import settings
 from ..model.core import Source
@@ -7,7 +7,7 @@ from ..conversions import convert
 from ..conversions.types import OutputType, encode_dict
 from . import messages
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("processor")
 
 READS_QUEUES = ("os2ds_conversions",)
 WRITES_QUEUES = (

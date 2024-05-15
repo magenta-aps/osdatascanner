@@ -1,5 +1,4 @@
 import math
-import logging
 import structlog
 
 from django.conf import settings
@@ -12,7 +11,6 @@ from django.core.management.base import BaseCommand
 from prometheus_client import Summary, start_http_server
 
 from os2datascanner.utils import debug
-from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
@@ -21,7 +19,7 @@ from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
 from ...notification import send_mail_upon_completion
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("status_collector")
 SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
                   "Messages through ScanStatus collector")
 
@@ -128,21 +126,8 @@ class Command(BaseCommand):
     """Command for starting a ScanStatus collector process."""
     help = __doc__
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-                "--log",
-                default="info",
-                help="change the level at which log messages will be printed",
-                choices=log_levels.keys())
-
-    def handle(self, *args, log, **options):
+    def handle(self, *args, **options):
         debug.register_debug_signal()
-
-        # Change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-        # Set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
 
         StatusCollectorRunner(
             read=["os2ds_status"],

@@ -107,6 +107,8 @@ services:
       "--reload-include", "*.mo",
       "os2datascanner.projects.admin.asgi:application",
     ]
+    tty: # If you like coloured log messages.
+      true
     volumes:
       # First line below is needed in dev, because we copy all our live code in, which replaces
       # the built-in code from Dockerfile (this is for watchdog reasons)
@@ -135,6 +137,8 @@ services:
       dockerfile: docker/base/Dockerfile
       target: admin
     command: python manage.py checkup_collector
+    tty:
+      true
     volumes:
       - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -148,6 +152,8 @@ services:
       dockerfile: docker/base/Dockerfile
       target: admin
     command: python manage.py status_collector
+    tty:
+      true
     volumes:
       - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -163,6 +169,8 @@ services:
     environment:
       - AMQP_BROADCAST_SYNC=false
     command: python manage.py run_background_jobs
+    tty:
+      true
     volumes:
       - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -179,6 +187,8 @@ services:
       dockerfile: docker/base/Dockerfile
       target: report
     command: ["python", "manage.py", "migrate"]
+    tty:
+      true
     volumes:
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -204,6 +214,8 @@ services:
       "--reload-include", "*.mo",
       "os2datascanner.projects.report.asgi:application",
     ]
+    tty:
+      true
     volumes:
       # First line below is needed in dev, because we copy all our live code in, which replaces
       # the built-in code from Dockerfile (this is for watchdog reasons)
@@ -236,6 +248,8 @@ services:
       dockerfile: docker/base/Dockerfile
       target: report
     command: python manage.py event_collector
+    tty:
+      true
     volumes:
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -249,6 +263,8 @@ services:
       dockerfile: docker/base/Dockerfile
       target: report
     command: python manage.py result_collector
+    tty:
+      true
     volumes:
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -261,6 +277,8 @@ services:
       dockerfile: docker/base/Dockerfile
       target: report
     command: python manage.py email_tagger
+    tty:
+      true
     volumes:
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -276,6 +294,8 @@ services:
       - ./dev-environment/engine/dev-settings.env
     command: explorer
     init: true
+    tty:
+      true
     volumes:
       - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -297,6 +317,8 @@ services:
       - SCHEDULE_ON_CPU=0
       - QUEUE_SUFFIX
       - ENABLE_RUSAGE=true
+    tty:
+      true
     volumes:
       - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -312,6 +334,8 @@ services:
     env_file:
       - ./dev-environment/engine/dev-settings.env
     init: true
+    tty:
+      true
     volumes:
       - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
@@ -342,6 +366,8 @@ services:
       - "8070:5000"
     environment:
       -  OS2DS_ADMIN_USER_CONFIG_PATH="/dev-environment/api/dev-settings.toml"
+    tty:
+      true
     volumes:
       - ./dev-environment/api/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner

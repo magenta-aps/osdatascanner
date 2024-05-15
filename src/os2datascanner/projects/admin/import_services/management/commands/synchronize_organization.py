@@ -14,7 +14,7 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
-import logging
+import structlog
 from django.core.management import BaseCommand
 
 from os2datascanner.projects.admin.import_services.models import ImportService
@@ -29,7 +29,7 @@ from os2datascanner.projects.admin.import_services.utils import start_ldap_impor
     organizational synchronizations should take place.
 """
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("import_services")
 
 
 class Command(BaseCommand):

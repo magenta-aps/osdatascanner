@@ -1,4 +1,4 @@
-import logging
+import structlog
 
 from ..utilities.backoff import TimeoutRetrier
 from .explorer import message_received_raw as explorer_handler
@@ -8,7 +8,7 @@ from .tagger import message_received_raw as tagger_handler
 from . import messages
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("worker")
 
 
 READS_QUEUES = ("os2ds_conversions",)

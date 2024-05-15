@@ -26,7 +26,7 @@ from .realm import Realm
 from ..keycloak_services import refresh_token
 from ...adminapp.aescipher import encrypt, decrypt  # Suggestion: move to core?
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("import_services")
 
 
 class LDAPUserAttributeMapper:

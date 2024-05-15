@@ -11,7 +11,7 @@ from .utilities.filtering import is_handle_relevant
 import structlog
 
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("explorer")
 
 
 READS_QUEUES = ("os2ds_scan_specs",)

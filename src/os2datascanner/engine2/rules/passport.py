@@ -7,7 +7,7 @@ from .utilities.context import make_context
 from .rule import Rule, Sensitivity
 from ..conversions.types import OutputType
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("engine2")
 
 passport_regex = (r"P[A-Z<]"           # Passport and optional type identifier
                   r"(D<<|[A-Z]{3})"    # Issuing country code

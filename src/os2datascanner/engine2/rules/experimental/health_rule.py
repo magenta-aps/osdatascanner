@@ -6,7 +6,7 @@ from ..rule import Rule, SimpleRule, Sensitivity
 from ..datasets.loader import common as common_loader
 from os2ds_rules.wordlist_rule import WordListRule
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 class TurboHealthRule(SimpleRule):

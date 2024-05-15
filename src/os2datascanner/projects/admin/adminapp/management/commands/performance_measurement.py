@@ -10,7 +10,7 @@ from os2datascanner.projects.admin.organizations.models.organization import Orga
 import cProfile
 import pstats
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class Command(BaseCommand):

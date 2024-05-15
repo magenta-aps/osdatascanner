@@ -1,4 +1,4 @@
-import logging
+import structlog
 from itertools import chain
 from django.apps import apps
 from django.db import transaction
@@ -16,7 +16,7 @@ from ..organizations.broadcast_bulk_events import (BulkCreateEvent, BulkUpdateEv
                                                    BulkDeleteEvent)
 from ..organizations.publish import publish_events
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("admin_organizations")
 
 
 def get_broadcasted_models():

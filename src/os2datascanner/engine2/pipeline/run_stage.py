@@ -3,13 +3,12 @@ import sys
 import click
 import pstats
 import random
-import logging
+import structlog
 from collections import deque
 
 from prometheus_client import Info, Summary, start_http_server, CollectorRegistry
 
 from os2datascanner.utils import debug, profiling
-from os2datascanner.utils.log_levels import log_levels
 from ... import __version__
 from ..model.core import SourceManager
 from . import explorer, exporter, matcher, messages, processor, tagger, worker
@@ -19,9 +18,7 @@ from .utilities.pika import (ANON_QUEUE,
                              HandleMessageType)
 from .headers import get_headers, get_queues, get_exchange
 
-# __name__ is "__main__" in this context, which isn't quite what we want for
-# our position in the logging hierarchy
-logger = logging.getLogger("os2datascanner.engine2.pipeline.run_stage")
+logger = structlog.get_logger("run_stage")
 
 
 _module_mapping = {
@@ -101,10 +98,6 @@ class GenericRunner(PikaPipelineThread):
         if command.abort:
             self._cancelled.appendleft(command.abort)
 
-        if command.log_level:
-            logging.getLogger("os2datascanner").setLevel(
-                    command.log_level)
-
         if command.profiling is not None:
             profiling.print_stats(pstats.SortKey.CUMULATIVE, silent=True)
             if command.profiling:
@@ -164,10 +157,6 @@ restarting = False
 
 
 @click.command()
-@click.option('--log', 'log_level',
-              type=click.Choice(log_levels.keys()),
-              default='info', envvar='LOG_LEVEL',
-              help='change the level at which log messages will be printed')
 @click.option('--profile/--no-profile', 'enable_profiling',
               default=False, envvar='ENABLE_PROFILING',
               is_flag=True, help='record and print profiling output')
@@ -202,19 +191,11 @@ restarting = False
                                    "tagger",
                                    "exporter",
                                    "worker"]))
-def main(log_level, enable_profiling, enable_rusage, enable_metrics,
+def main(enable_profiling, enable_rusage, enable_metrics,
          prometheus_port, width, single_cpu, restart_after, queue_suffix, stage):
     debug.register_debug_signal()
     module = _module_mapping[stage]
-
-    # leave all loggers from external libraries at default(WARNING) level.
-    # change formatting to include datestamp
-    fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-    # set level for root logger
-    root_logger = logging.getLogger("os2datascanner")
-    root_logger.setLevel(log_levels[log_level])
-    root_logger.info("starting pipeline {0}".format(stage))
+    logger.info("starting pipeline", stage=stage)
 
     if enable_rusage:
         debug.add_debug_function(debug.rusage_dbg_func)
@@ -234,15 +215,15 @@ def main(log_level, enable_profiling, enable_rusage, enable_metrics,
         else:
             # Otherwise, pick a random CPU to run on
             cpu = random.choice(available_cpus)
-        root_logger.info(f"executing only on CPU {cpu}")
+        logger.info(f"executing only on CPU {cpu}")
         os.sched_setaffinity(0, {cpu})
 
     if enable_profiling:
-        root_logger.info("enabling profiling")
+        logger.info("enabling profiling")
         profiling.enable_profiling()
 
     if queue_suffix:
-        root_logger.info(f"Using dedicated queues with suffix: '{queue_suffix}'")
+        logger.info(f"Using dedicated queues with suffix: '{queue_suffix}'")
 
     try:
         with SourceManager(width=width) as source_manager:
@@ -257,7 +238,7 @@ def main(log_level, enable_profiling, enable_rusage, enable_metrics,
                 ).run_consumer()
 
         if restarting:
-            root_logger.info(f"restarting after {restart_after} messages")
+            logger.info(f"restarting after {restart_after} messages")
             restart_process()
     finally:
         profiling.print_stats(pstats.SortKey.CUMULATIVE, silent=True)

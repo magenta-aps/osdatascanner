@@ -28,7 +28,7 @@ from ...utils import upload_path_webscan_sitemap
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 class WebScanner(Scanner):

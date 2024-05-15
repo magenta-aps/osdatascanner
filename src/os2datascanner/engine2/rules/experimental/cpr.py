@@ -7,7 +7,7 @@ from ..rule import Rule, SimpleRule, Sensitivity
 from ..logical import oxford_comma
 
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 def censor(text, cpr):

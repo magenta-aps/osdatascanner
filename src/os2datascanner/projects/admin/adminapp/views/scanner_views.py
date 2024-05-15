@@ -44,7 +44,7 @@ from django.utils.translation import gettext_lazy as _
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def count_new_errors(user) -> int:

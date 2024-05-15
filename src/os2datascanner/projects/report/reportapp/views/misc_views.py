@@ -22,7 +22,7 @@ from django.conf import settings
 from django.views.generic import View, TemplateView
 
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 
 class LogoutPageView(TemplateView, View):

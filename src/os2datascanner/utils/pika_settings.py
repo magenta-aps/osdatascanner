@@ -1,11 +1,11 @@
-import logging
+import structlog
 import os
 
 from enum import Enum
 
 from os2datascanner.utils.toml_configuration import get_3_layer_config
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("utils")
 
 
 class OS2DSModule(Enum):

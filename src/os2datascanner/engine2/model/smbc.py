@@ -1,7 +1,7 @@
 import io
 from os import stat_result, O_RDONLY
 import enum
-import logging
+import structlog
 import smbc
 from typing import Optional
 from urllib.parse import quote
@@ -24,7 +24,7 @@ from .file import stat_attributes
 
 import errno
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 XATTR_DOS_ATTRIBUTES = "system.dos_attr.mode"
 """The attribute name for a file's mode flags. (This is not documented in

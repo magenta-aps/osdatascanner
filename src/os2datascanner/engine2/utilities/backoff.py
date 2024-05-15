@@ -9,7 +9,7 @@ from os2datascanner.utils.system_utilities import time_now
 from .datetime import parse_datetime
 
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 class Retrier:
@@ -91,6 +91,7 @@ class DummyRetrier(Retrier):
 
     (This is chiefly useful when you want to disable retrier functionality in
     some circumstances without having to refactor the code that uses it.)"""
+
     def __init__(self):
         super().__init__()
 
@@ -131,6 +132,7 @@ class TimeoutRetrier(CountingRetrier):
     finish within a certain period. (Note that this is implemented using a
     one-shot interval timer behind the scenes and consequently can only be
     used on the main thread.)"""
+
     def __init__(self, *exception_set, seconds=5.0, **kwargs):
         self._ctx = (ctx := TimerManager.get().timeout(seconds))
         super().__init__(ctx.Timeout, *exception_set, **kwargs)

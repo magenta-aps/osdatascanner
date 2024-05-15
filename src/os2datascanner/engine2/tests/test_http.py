@@ -3,7 +3,6 @@ import os.path
 import http.server
 import unittest
 import contextlib
-import logging
 import time
 from random import choice
 from datetime import datetime
@@ -481,19 +480,6 @@ class Engine2HTTPSetup():
         cls._ws.terminate()
         cls._ws.join()
         cls._ws = None
-
-    def setUp(self):
-        # list all loggers, just example
-        loggers = [logging.getLogger(name) for name in  # noqa
-                   logging.root.manager.loggerDict]
-
-        # we only want the module and log message
-        fmt = "[%(name)s] - [%(message)s]"
-        logging.basicConfig(format=fmt)
-        logger = logging.getLogger("os2datascanner")
-        logger.setLevel(logging.INFO)
-        # we have no handler in os2ds (except the NullHandler)
-        # logger.addHandler(logging.StreamHandler())
 
 
 class Engine2HTTPExplorationTest(Engine2HTTPSetup, unittest.TestCase):

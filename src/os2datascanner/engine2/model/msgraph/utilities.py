@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from contextlib import contextmanager
-import logging
+import structlog
 import requests
 
 from os2datascanner.utils.oauth2 import mint_cc_token
@@ -9,7 +9,7 @@ from os2datascanner.engine2.utilities.backoff import WebRetrier
 
 from ..core import Source
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 def make_token(client_id, tenant_id, client_secret):

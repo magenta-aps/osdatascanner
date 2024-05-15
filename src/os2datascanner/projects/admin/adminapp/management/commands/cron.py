@@ -15,17 +15,15 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( http://www.os2web.dk/ )
 
-from os import getenv
-import logging
+import structlog
 import datetime
 
 from django.core.management.base import BaseCommand
 
-from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.utils.system_utilities import time_now
 from ...models.scannerjobs.scanner import Scanner, ScanStatus
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def should_scanner_start(scanner: Scanner,
@@ -52,21 +50,8 @@ class Command(BaseCommand):
             "--now",
             action="store_true",
             help="run the scanner now if scheduled for today")
-        parser.add_argument(
-            "--log",
-            default=None,
-            help="change the level at which log messages will be printed",
-            choices=log_levels.keys())
 
-    def handle(self, *args, now, log, **options):
-        if log is None:
-            log = getenv("LOG_LEVEL", "info")
-
-        # Change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-        # Set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
+    def handle(self, *args, now, **options):
 
         # Loop through all scanners
         for scanner in Scanner.objects.exclude(schedule="").select_subclasses():
@@ -85,6 +70,5 @@ class Command(BaseCommand):
                 if last_status is None or last_status.finished:
                     scanner.run()
                 else:
-                    logger.warning(
-                        f"{scanner!r} is already running, not starting it"
-                        " again")
+                    logger.warning("Scanner is already running, not starting it again!",
+                                   scanner=scanner)

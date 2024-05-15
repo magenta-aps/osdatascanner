@@ -6,7 +6,7 @@ it."""
 from sys import stderr
 import signal
 import argparse
-import logging
+import structlog
 import traceback
 
 from os2datascanner.utils.log_levels import log_levels
@@ -145,6 +145,9 @@ def add_arguments(parser):
                  " sources have URL representations.)",
             nargs='+')
     add_control_arguments(parser)
+    # Do note that this isn't our _usual_ way of setting log level. You are also able to do so
+    # through environment variables - but it makes sense to be able to provide it as an argument
+    # here, because we're not interested in running a new container for this command.
     parser.add_argument(
             "--log-level",
             default="info",
@@ -194,10 +197,8 @@ def main():  # noqa: C901, CCR001
             if hasattr(here, head):
                 setattr(here, head, value)
 
-    # https://docs.python.org/3/library/logging.html#logrecord-attributes
-    logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s")
-    logger = logging.getLogger("os2datascanner")
-    logger.setLevel(log_levels[args.log_level])
+    # Set level for root logger
+    structlog.get_logger("os2datascanner").setLevel(log_levels[args.log_level])
 
     with SourceManager() as sm:
         for i in args.urls:

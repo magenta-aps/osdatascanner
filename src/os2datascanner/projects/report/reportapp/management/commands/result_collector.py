@@ -15,14 +15,12 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 
-import logging
 import structlog
 from django.db import transaction
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from os2datascanner.utils import debug
-from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.model.core import (
         Handle, Source, UnknownSchemeError)
@@ -40,7 +38,7 @@ from ...utils import prepare_json_object
 from ...views.utilities.msgraph_utilities import OutlookCategoryName
 from ....organizations.models import AccountOutlookSetting
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("result_collector")
 SUMMARY = Summary("os2datascanner_result_collector_report",
                   "Messages through result collector report")
 
@@ -485,21 +483,8 @@ class Command(BaseCommand):
     """Command for starting a result collector process."""
     help = __doc__
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-                "--log",
-                default="info",
-                help="change the level at which log messages will be printed",
-                choices=log_levels.keys())
-
-    def handle(self, *args, log, **options):
+    def handle(self, *args, **options):
         debug.register_debug_signal()
-
-        # change formatting to include datestamp
-        fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        logging.basicConfig(format=fmt, datefmt='%Y-%m-%d %H:%M:%S')
-        # set level for root logger
-        logging.getLogger("os2datascanner").setLevel(log_levels[log])
 
         ResultCollectorRunner(
             read=["os2ds_results"],

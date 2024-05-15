@@ -1,7 +1,7 @@
 import gzip
 import json
 from typing import Optional
-import logging
+import structlog
 from pathlib import Path
 from datetime import datetime
 from functools import cached_property
@@ -14,7 +14,7 @@ from ..types import OutputType
 from ..registry import convert
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 def lastmod(p: Path) -> Optional[datetime]:
@@ -31,6 +31,7 @@ class CacheManager:
     a password. This ensures that you can only decrypt a cached representation
     if you already know what it is and where it is (at which point you could
     just retrieve it yourself anyway.)"""
+
     def __init__(self, resource: Resource):
         self._resource = resource
 

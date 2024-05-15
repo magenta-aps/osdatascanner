@@ -247,7 +247,7 @@ class Command(BaseCommand):
         print_settings("MSGRAPH_ALLOW_WRITE")
 
         print("\n# [logging]")
-        print_settings("DJANGO_LOG_LEVEL")
+        print_settings("LOG_LEVEL")
 
         print("\n# [other]")
         print_settings()

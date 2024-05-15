@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'recurrence',
     'channels',
     'channels_redis',
+    'django_structlog',
     'os2datascanner.core_organizational_structure.apps.CoreOrganizationalStructureConfig',
     'os2datascanner.projects.report.organizations.apps.OrganizationsConfig',
     'os2datascanner.projects.shared',
@@ -157,7 +158,7 @@ EMAIL_PORT = 25
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # [logging]
-DJANGO_LOG_LEVEL = "INFO"
+LOG_LEVEL = "INFO"
 
 SHELL_PLUS_IMPORTS = ["from os2datascanner._interactive import *"]
 

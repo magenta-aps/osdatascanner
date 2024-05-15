@@ -14,7 +14,7 @@ from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities 
 from os2datascanner.core_organizational_structure.models.organization import (
     OutlookCategorizeChoices)
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("report_organizations")
 
 
 class AccountOutlookSettingQuerySet(models.QuerySet):
@@ -37,14 +37,17 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
 
     def populate_setting(self) -> str:  # noqa: CCR001 Too complex
         def _create_category(owner, category_name, category_colour):
+            log = logger.bind(owner=owner,
+                              category_name=category_name,
+                              category_colour=category_colour)
+
             try:
                 response = gc.create_outlook_category(
                     owner, category_name=category_name,
                     category_colour=category_colour
                 )
                 if response.ok:
-                    logger.info(f"Successfully created Outlook Category for {owner}! "
-                                f"Category name: {category_name} & Colour {category_colour}")
+                    log.info("Successfully created Outlook Category")
                     return response.json().get("id")
 
             except requests.HTTPError as ex:
@@ -54,14 +57,13 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                             f"users/{owner}/outlook/masterCategories")
                         for category in master_categories:
                             if category.get("displayName") == category_name:
-                                logger.info("Found existing category! Fetching ID..")
+                                log.info("Found existing category! Fetching ID..")
                                 return category.get("id")
                     except requests.HTTPError as ex:
-                        logger.warning(f"Couldn't fetch existing category! "
-                                       f"Got response: {ex.response}")
+                        log.warning("Couldn't fetch existing category!", response=ex.response)
 
                 else:
-                    logger.warning(f"Couldn't create category! Got response: {ex.response}")
+                    log.warning("Couldn't create category!", response=ex.response)
                     return None
 
         # Only objects that don't have either a match or fp category are relevant for inspection.

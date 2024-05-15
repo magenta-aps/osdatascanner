@@ -1,10 +1,10 @@
-import logging
+import structlog
 from pathlib import Path
 
 from os2datascanner.utils.toml_configuration import get_3_layer_config
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger()
 
 
 # NEVER print or log the config object, as it will expose secrets
@@ -22,4 +22,4 @@ for key, value in get_3_layer_config(
         globals()[key] = value
 
 
-del key, Path, value, logger, logging, get_3_layer_config
+del key, Path, value, logger, get_3_layer_config

@@ -13,7 +13,7 @@ from .utilities import convert_data_to_text
 # https://lxml.de/api/lxml.etree.XMLParser-class.html
 _PARSER = etree.XMLParser(resolve_entities=False)
 TIMEOUT = engine2_settings.model["http"]["timeout"]
-logger = structlog.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 
 
 def _xp(e, path: str) -> List[str]:
@@ -57,7 +57,6 @@ def _get_url_data(url: str, context=requests) -> Optional[bytes]:
 def process_sitemap_url(  # noqa: CCR001, E501 too high cognitive complexity
         url: str, *, context=requests,
         allow_sitemap: bool = True) -> Iterable[Tuple[str, dict]]:
-
     """Retrieves and parses the sitemap or sitemap index at the given URL and
     yields zero or more (URL, hint dictionary) tuples.
 

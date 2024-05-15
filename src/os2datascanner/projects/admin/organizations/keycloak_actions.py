@@ -1,6 +1,6 @@
 import base64
-import logging
 import struct
+import structlog
 from typing import Tuple, Sequence
 from django.db import transaction
 from os2datascanner.utils.ldap import RDN, LDAPNode
@@ -16,7 +16,7 @@ from .models import (Alias, Account, Position,
                      Organization, OrganizationalUnit)
 from .models.aliases import AliasType
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
 SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
@@ -437,6 +437,7 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
     logger.info("Applying database operations")
 
     with transaction.atomic():
+        import logging
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("Summarising LDAP transaction:")
             for manager, instances in group_into(

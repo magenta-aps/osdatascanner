@@ -7,10 +7,10 @@ from os2datascanner.utils.log_levels import log_levels
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities import pika
 
-import logging
+import structlog
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("adminapp")
 
 
 def scan_tag(s):
@@ -76,7 +76,7 @@ class Command(BaseCommand):
                 abort=abort_scantag,
                 log_level=log_levels.get(log_level) if log_level else None,
                 profiling=profile)
-        logging.info(msg)
+        logger.info(msg)
 
         with pika.PikaPipelineThread() as p:
             p.enqueue_message(

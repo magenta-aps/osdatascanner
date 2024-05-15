@@ -1,11 +1,11 @@
-import logging
+import structlog
 import warnings
 
 from django.conf import settings
 from os2datascanner.utils.test_helpers import in_test_environment
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("admin_organizations")
 
 
 ppt = None

@@ -18,7 +18,7 @@ from os2datascanner.engine2.utilities.equality import TypePropertyEquality
 from os2datascanner.projects.report.organizations.models import (
     Alias, AliasType, Organization, Account)
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("reportapp")
 
 
 def convert_context_to_email_body(request):

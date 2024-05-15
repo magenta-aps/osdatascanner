@@ -18,7 +18,7 @@ from django.conf import settings
 from os2datascanner.utils.oauth2 import mint_cc_token
 from os2datascanner.engine2.utilities.backoff import WebRetrier
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("import_services")
 
 
 def refresh_token(fn):

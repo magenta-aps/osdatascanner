@@ -15,6 +15,7 @@ google-api-python-client
 oauth2client
 parameterized
 pika==1.2.0
+rich
 sortedcontainers
 structlog
 toml
@@ -74,7 +75,7 @@ django-prometheus
 django-recurrence
 django-settings-export
 django-storages[google]
-django-structlog
+django-structlog==8.0.0
 gunicorn
 uvicorn[standard]
 psycopg2-binary

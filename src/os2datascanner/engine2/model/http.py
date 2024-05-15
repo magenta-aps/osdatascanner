@@ -18,7 +18,7 @@ from .utilities.sitemap import process_sitemap_url
 from .utilities import crawler
 
 
-logger = structlog.getLogger(__name__)
+logger = structlog.get_logger("engine2")
 TTL: int = engine2_settings.model["http"]["ttl"]
 _equiv_domains = set({"www", "www2", "m", "ww1", "ww2", "en", "da", "secure"})
 # match whole words (\bWORD1\b | \bWORD2\b) and escape to handle metachars.
