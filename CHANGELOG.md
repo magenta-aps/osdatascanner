@@ -1,6 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.22.7, 15th May 2024
+
+"Friendship Bracelet Exchange"
 
 ### New in this release
 
@@ -22,6 +24,8 @@
   this interface in October 2026, so we continue to recommend the use of a
   Microsoft Graph scanner where possible.)
 
+- TimeoutManager now uses a heapq as the underlying datastructure making it asymptotically faster.
+
 ### Bugfixes
 
 - Removing a rule from a ruleset while adding or editing a rule in the UI will
@@ -38,11 +42,8 @@
 
 - Deleting a mail folder in Exchange will now cause OSdatascanner to resolve
   all matches in that folder as having been deleted. (Note that this
-  functionality does not appear to work reliably in Office 365.
+  functionality does not appear to work reliably in Office 365.)
 
-### General improvements
-
-- TimeoutManager now uses a heapq as the underlying datastructure making it asymptotically faster.
 
 ## Version 3.22.6, 25th April 2024
 
