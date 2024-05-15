@@ -31,7 +31,7 @@ data_url = "data:text/plain;base64,{0}".format(
 
 rule = OrRule(
         RegexRule("Æthelred the Unready", name="Check for ill-advised kings"),
-        RegexRule("Scyld S(.*)g", sensitivity=Sensitivity.CRITICAL),
+        RegexRule("(Scyld) (?:S.*g)", sensitivity=Sensitivity.CRITICAL),
         RegexRule("Professor James Moriarty"))
 
 expected_matches = [
@@ -49,7 +49,7 @@ expected_matches = [
             "type": "regex",
             "sensitivity": Sensitivity.CRITICAL.value,
             "name": None,
-            "expression": "Scyld S(.*)g"
+            "expression": "(Scyld) (?:S.*g)"
         },
         "matches": [
             {
@@ -58,7 +58,7 @@ expected_matches = [
                 "offset": 98,
                 # context is 50 char before and after the match(13 char)
                 "context":
-                    "m gefrūnon, hū ðā æþeling as ell en fremedon. Oft Scyld"
+                    "m gefrūnon, hū ðā æþeling as ell en fremedon. Oft XXXXX"
                     " Scēfing sceaþena þrēatum, monegum mǣgþum meodo-setla"
                     " oftē",
                 "context_offset": 50,

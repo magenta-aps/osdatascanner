@@ -1,7 +1,6 @@
 import regex
 
-from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleTextRule, Sensitivity
 from .datasets.loader import common as common_loader
 from .utilities.context import make_context
 
@@ -58,11 +57,10 @@ def match_full_name(text):
     return matches
 
 
-class NameRule(SimpleRule):
+class NameRule(SimpleTextRule):
     """A NameRule looks for strings of text that resemble Danish names. It
     couples a regular expression-driven scan for name-like tokens with a
     dataset used to determine if those tokens are plausible names."""
-    operates_on = OutputType.Text
     type_label = "name"
     eq_properties = ("_whitelist", "_blacklist",)
 
@@ -215,6 +213,10 @@ class NameRule(SimpleRule):
                             if self.sensitivity else None
                         ),
                     }
+
+    def get_censor_intervals(self, context):
+        # TODO: Consider what this rule should censor
+        return super().get_censor_intervals(context)
 
     def to_json_object(self):
         return dict(

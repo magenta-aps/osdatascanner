@@ -274,6 +274,10 @@ the risk of violating database constraints.)
 
 - The port to Django 4.2 LTS has now been completed.
 
+- All SimpleRules that operates on text, now inherits from SimpleTextRule.
+  These rules implements get_censor_intervals, which allows the rule to censor the context,
+  of any matches the rule itself or other rules in a compound rule finds.
+
 ### General improvements
 
 - The CI pipeline and the development test environment no longer specify

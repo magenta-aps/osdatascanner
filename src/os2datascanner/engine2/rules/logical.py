@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from typing import Sequence
+from functools import reduce
 from .rule import Rule, Sensitivity
 
 
@@ -74,6 +75,9 @@ class CompoundRule(Rule):
             **super().to_json_object(),
             components=[c.to_json_object() for c in self._components],
         )
+
+    def flatten(self):
+        return reduce(lambda set_, component: set_ | component.flatten(), self._components, set())
 
 
 class AllRule(CompoundRule):
@@ -224,6 +228,9 @@ class NotRule(Rule):
 
     def to_json_object(self):
         return dict(**super().to_json_object(), rule=self._rule.to_json_object())
+
+    def flatten(self):
+        return self._rule.flatten()
 
     @staticmethod
     @Rule.json_handler(type_label)

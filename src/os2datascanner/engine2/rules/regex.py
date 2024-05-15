@@ -1,14 +1,12 @@
 import re
 from typing import Iterator, Optional
 
-from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleTextRule, Sensitivity
 from .utilities.context import make_context
 from .utilities.properties import RulePrecedence, RuleProperties
 
 
-class RegexRule(SimpleRule):
-    operates_on = OutputType.Text
+class RegexRule(SimpleTextRule):
     type_label = "regex"
     eq_properties = ("_expression",)
     properties = RuleProperties(
@@ -39,6 +37,14 @@ class RegexRule(SimpleRule):
                     if self.sensitivity else None
                 ),
             }
+
+    def get_censor_intervals(self, context):
+        for m in self._compiled_expression.finditer(context):
+            if (m.groups()):
+                for i in range(len(m.groups())):
+                    yield m.span(i+1)
+            else:
+                yield m.span()
 
     def to_json_object(self) -> dict:
         return dict(**super().to_json_object(), expression=self._expression)

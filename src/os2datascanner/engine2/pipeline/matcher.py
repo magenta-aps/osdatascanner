@@ -1,8 +1,10 @@
 import structlog
-from ..conversions.types import decode_dict
+
+from ..conversions.types import decode_dict, OutputType
 from . import messages
 from .. import settings
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 
 logger = structlog.get_logger("matcher")
 
@@ -14,6 +16,46 @@ WRITES_QUEUES = (
     "os2ds_conversions",)
 PROMETHEUS_DESCRIPTION = "Representations examined"
 PREFETCH_COUNT = 8
+
+
+def censor_context(context, rules):
+    """Given a text and an iterable of rules, will censor the text,
+    using the get_censor_intervals method of each SimpleTextRule."""
+    censor_intervals = []
+    for r in rules:
+        if hasattr(r, "get_censor_intervals"):
+            censor_intervals.extend(r.get_censor_intervals(context))
+
+    censor_intervals.sort()
+    censored_context = ""
+    next_interval = 0
+    mx = -1
+    for i, char in enumerate(context):
+        while next_interval < len(censor_intervals) and i >= censor_intervals[next_interval][0]:
+            mx = max(mx, censor_intervals[next_interval][1])
+            next_interval += 1
+
+        censored_context += char if i >= mx else 'X'
+
+    return censored_context
+
+
+def postprocess_match(
+        base_rule: Rule,
+        match_object: tuple[SimpleRule, list[dict]]):
+    rule, matches = match_object
+    """Goes through all found matches and censors their context, if the rule operates on text."""
+
+    if not matches:
+        return (rule, None)
+
+    if rule.operates_on == OutputType.Text:
+        all_rules = base_rule.flatten()
+        for match_dict in matches:
+            if context := match_dict.get("context", None):
+                match_dict["context"] = censor_context(context, all_rules)
+
+    return (rule, matches)
 
 
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 too high cognitive complexity
@@ -49,9 +91,10 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
                     message=exception_message).to_json_object())
         return
 
-    final_matches = message.progress.matches + [
-            messages.MatchFragment(rule, matches or None)
-            for rule, matches in new_matches]
+    final_matches = message.progress.matches
+    for match in new_matches:
+        sub_rule, matches = postprocess_match(rule, match)
+        final_matches.append(messages.MatchFragment(sub_rule, matches))
 
     if isinstance(conclusion, bool):
         # We've come to a conclusion!

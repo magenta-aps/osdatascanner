@@ -1,8 +1,7 @@
 import regex
 import structlog
 
-from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleTextRule, Sensitivity
 from .datasets.loader import common as common_loader
 
 logger = structlog.get_logger("engine2")
@@ -68,7 +67,7 @@ def match_full_address(text):
     return matches
 
 
-class AddressRule(SimpleRule):
+class AddressRule(SimpleTextRule):
     """Represents a rule which scans for addresses in text.
 
     The rule loads a list of addresses and matches against them to determine the
@@ -79,7 +78,6 @@ class AddressRule(SimpleRule):
     sensitivity is `PROBLEM`
 
     """
-    operates_on = OutputType.Text
     type_label = "address"
     eq_properties = ("_whitelist", "_blacklist", "_whitelist_address")
 
@@ -149,6 +147,10 @@ class AddressRule(SimpleRule):
             whitelist_address=list(self._whitelist_address),
             blacklist=list(self._blacklist),
         )
+
+    def get_censor_intervals(self, context):
+        # TODO: Consider what this rule should censor
+        return super().get_censor_intervals(context)
 
     @staticmethod
     @Rule.json_handler(type_label)
