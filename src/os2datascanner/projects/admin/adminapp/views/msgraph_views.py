@@ -15,8 +15,8 @@
 from django.forms import ModelChoiceField
 from django.views import View
 
-from os2datascanner.projects.admin.grants.models.graphgrant import GraphGrant
-from os2datascanner.projects.admin.grants.views.msgraph_views import (
+from os2datascanner.projects.grants.models.graphgrant import GraphGrant
+from os2datascanner.projects.grants.views.msgraph_views import (
         MSGraphGrantRequestView)
 from os2datascanner.projects.admin.utilities import UserWrapper
 from ..models.scannerjobs.msgraph import MSGraphMailScanner

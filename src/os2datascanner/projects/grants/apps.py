@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class GrantsConfig(AppConfig):
-    name = 'os2datascanner.projects.admin.grants'
+    name = 'os2datascanner.projects.grants'
     label = 'grants'
     verbose_name = _('grants')
     default = True

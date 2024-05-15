@@ -24,7 +24,7 @@ from exchangelib.errors import ErrorNonExistentMailbox
 from os2datascanner.engine2.model.ews import EWSAccountSource
 from os2datascanner.engine2.model.core import SourceManager
 
-from ....grants.models import GraphGrant
+from os2datascanner.projects.grants.models import GraphGrant
 from ....organizations.models.account import Account
 from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
