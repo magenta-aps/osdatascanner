@@ -13,6 +13,7 @@
 #
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
+
 from os2datascanner.projects.admin.import_services.models import Imported
 from os2datascanner.core_organizational_structure.models import Position as Core_Position
 from os2datascanner.core_organizational_structure.models import \
@@ -20,7 +21,8 @@ from os2datascanner.core_organizational_structure.models import \
 from .broadcasted_mixin import Broadcasted
 
 
-class Position(Core_Position, Imported, Broadcasted):
+@Broadcasted.register
+class Position(Core_Position, Imported):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
 

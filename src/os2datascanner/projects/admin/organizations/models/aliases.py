@@ -48,7 +48,8 @@ class AliasManager(models.Manager):
             return super().create(**kwargs)
 
 
-class Alias(Core_Alias, Imported, Broadcasted):
+@Broadcasted.register
+class Alias(Core_Alias, Imported):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
     objects = AliasManager()
