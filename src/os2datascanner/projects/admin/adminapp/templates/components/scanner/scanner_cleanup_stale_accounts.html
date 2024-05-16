@@ -36,29 +36,28 @@
                 name="cleanup_account_uuids"
                 multiple>
           {% for account in scanner.compute_stale_accounts %}
-            <li>
-              <option name="cleanup_account_uuid"
-                      id="cleanup_account_{{ account.uuid }}"
-                      value="{{ account.uuid }}"
-                      selected>{{ account.get_full_name }} ({{ account.username }})</option>
-            {% endfor %}
-          </select>
-          <div class="button-wrapper">
-            <button type="button"
-                    class="button button--cta-button"
-                    name="cleanup-button"
-                    aria-label="{% trans 'Clean' %}"
-                    title="{% trans 'Clean' %}"
-                    hx-post="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
-                    hx-trigger="click"
-                    hx-include="#cleanup-accounts-form"
-                    hx-swap="outerHTML"
-                    hx-target=".cleanup-container"
-                    hx-select=".cleanup-container">
-              <span>{% trans "Clean" %}</span>
-            </button>
-          </div>
-        </form>
-      </div>
+            <option name="cleanup_account_uuid"
+                    id="cleanup_account_{{ account.uuid }}"
+                    value="{{ account.uuid }}"
+                    selected>{{ account.get_full_name }} ({{ account.username }})</option>
+          {% endfor %}
+        </select>
+        <div class="button-wrapper">
+          <button type="button"
+                  class="button button--cta-button"
+                  name="cleanup-button"
+                  aria-label="{% trans 'Clean' %}"
+                  title="{% trans 'Clean' %}"
+                  hx-post="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
+                  hx-trigger="click"
+                  hx-include="#cleanup-accounts-form"
+                  hx-swap="outerHTML"
+                  hx-target=".cleanup-container"
+                  hx-select=".cleanup-container">
+            <span>{% trans "Clean" %}</span>
+          </button>
+        </div>
+      </form>
     </div>
-  {% endblock %}
+  </div>
+{% endblock %}
