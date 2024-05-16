@@ -89,6 +89,10 @@ class Alias(models.Model):
         max_length=256,
         verbose_name=_('value')
     )
+    shared = models.BooleanField(verbose_name=_('shared'), default=False, help_text=_(
+        'The results related to the user through this alias is shared with other users. '
+        'Matches associated through this alias will not be taken into account in '
+        'user statistics.'), )
 
     @property
     def alias_type(self):
@@ -139,4 +143,4 @@ class Alias(models.Model):
 
 class AliasSerializer(BaseSerializer):
     class Meta:
-        fields = ["pk", "account", "_value", "_alias_type"]
+        fields = ["pk", "account", "_value", "_alias_type", "shared"]

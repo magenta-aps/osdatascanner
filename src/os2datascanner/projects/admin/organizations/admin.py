@@ -17,9 +17,9 @@ class AliasAdmin(ImportedAdmin):
            for the Alias model"""
     list_filter = ["_alias_type"]
     fields = ('account', '_alias_type', '_value',
-              'last_import_requested', 'last_import'
+              'last_import_requested', 'last_import', 'shared'
               )
-    list_display = ('account', '_alias_type', '_value', 'last_import')
+    list_display = ('account', '_alias_type', '_value', 'shared', 'last_import')
 
 
 @admin.register(Organization)

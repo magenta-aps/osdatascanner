@@ -2,6 +2,11 @@
 
 ## Version ???
 
+### New in this release
+
+- Aliases can now be marked as "shared". Results related to a user through such
+  an alias will now be counted in user statistics.
+
 ### General improvements
 
 - All unit tests in the admin module now utilizes pytest instead of Django tests.

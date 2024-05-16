@@ -224,10 +224,12 @@ class Account(Core_Account):
     def status(self):
         return StatusChoices(self.match_status).label
 
-    def _count_matches(self):
+    def _count_matches(self, exclude_shared=False):
         """Counts the number of unhandled matches associated with the account."""
         from ...reportapp.models.documentreport import DocumentReport
         aliases = self.aliases.exclude(_alias_type=AliasType.REMEDIATOR)
+        if exclude_shared:
+            aliases = aliases.exclude(shared=True)
         reports = DocumentReport.objects.filter(  # noqa: ECE001
             alias_relation__in=aliases,
             number_of_matches__gte=1,
@@ -255,13 +257,13 @@ class Account(Core_Account):
             else:
                 self.match_count += obj.get("count", 0)
 
-    def _calculate_status(self):
+    def _calculate_status(self, exclude_shared=False):
         """Calculate the status of the user. The user can have one of three
         statuses: GOOD, OK and BAD. The status is calulated on the basis of
         the number of matches associated with the user, and how often the user
         has handled matches recently."""
 
-        matches_by_week = self.count_matches_by_week(weeks=3)
+        matches_by_week = self.count_matches_by_week(weeks=3, exclude_shared=exclude_shared)
 
         total_new = 0
         total_handled = 0
@@ -276,7 +278,7 @@ class Account(Core_Account):
         else:
             self.match_status = StatusChoices.OK
 
-    def count_matches_by_week(self, weeks: int = 52):  # noqa: CCR001
+    def count_matches_by_week(self, weeks: int = 52, exclude_shared=False):  # noqa: CCR001
         """
         This method counts the number of (unhandled) matches, the number of
         new matches and the number of handled matches on a weekly basis.
@@ -288,6 +290,8 @@ class Account(Core_Account):
         from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 
         aliases = self.aliases.exclude(_alias_type=AliasType.REMEDIATOR)
+        if exclude_shared:
+            aliases = aliases.exclude(shared=True)
 
         all_matches = DocumentReport.objects.filter(
             number_of_matches__gte=1,
@@ -404,8 +408,8 @@ class Account(Core_Account):
 
     def save(self, *args, **kwargs):
 
-        self._count_matches()
-        self._calculate_status()
+        self._count_matches(exclude_shared=True)
+        self._calculate_status(exclude_shared=True)
 
         return super().save(*args, **kwargs)
 

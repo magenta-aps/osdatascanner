@@ -15,19 +15,34 @@ function clearFilter(elementid) { // jshint ignore:line
   var element = document.querySelector('#' + elementid + ' [value="all"]').selected = true;
   document.getElementById("filter_form", element).submit();
 }
-function checkedBox() {
-  var checkbox = document.getElementById('30-days-toggle');
-  var thirtyDays = document.getElementById('30-days');
+function thirtyDaysCheckedBox() {
+  const checkbox = document.getElementById('30-days-toggle');
+  const thirtyDays = document.getElementById('30-days');
   if (checkbox.checked) {
     thirtyDays.value = 'true';
   } else {
     thirtyDays.value = 'false';
   }
 }
-function setCheckEvent() { // jshint ignore:line
-  var toggle = document.getElementById('30-days-toggle');
-  if (toggle) {
-    toggle.addEventListener('click', checkedBox);
+
+function includeSharedCheckedBox() {
+  const checkbox = document.getElementById('include-shared-toggle');
+  const includeShared = document.getElementById('include-shared');
+  if (checkbox.checked) {
+    includeShared.value = 'true';
+  } else {
+    includeShared.value = 'false';
+  }
+}
+
+function setCheckEvents() { // jshint ignore:line
+  var thirtyDaysToggle = document.getElementById('30-days-toggle');
+  if (thirtyDaysToggle) {
+    thirtyDaysToggle.addEventListener('click', thirtyDaysCheckedBox);
+  }
+  let includeSharedToggle = document.getElementById('include-shared-toggle');
+  if (includeSharedToggle) {
+    includeSharedToggle.addEventListener('click', includeSharedCheckedBox);
   }
 }
 
@@ -82,13 +97,13 @@ function setDistributeSelectEvent() {
 
 document.addEventListener('DOMContentLoaded', function () {
   setDropdownEvent();
-  setCheckEvent();
+  setCheckEvents();
   setDistributeSelectEvent();
 });
 
 htmx.onLoad(function () {
   // When content is loaded with HTMX, reinstantiate dropdown and checkbox code
   setDropdownEvent();
-  setCheckEvent();
+  setCheckEvents();
   setDistributeSelectEvent();
 });

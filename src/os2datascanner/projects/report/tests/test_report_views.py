@@ -1,3 +1,5 @@
+from parameterized import parameterized
+
 from os2datascanner.engine2.model.smbc import SMBCHandle, SMBCSource
 from os2datascanner.projects.report.organizations.models import (
     Alias, AliasType, Account, Organization)
@@ -227,6 +229,69 @@ kjeld_metadata_3 = messages.MetadataMessage(
               "last-modified": time_30_days.strftime(DATE_FORMAT)}
 )
 
+""" BENNY DATA """
+benny_adsid_handle1 = SMBCHandle(
+    source=SMBCSource(
+                "//172.16.20.108/toender/presentations",
+                "username"),
+    relpath="os2datascanner.jpg"
+)
+benny_adsid_handle2 = SMBCHandle(
+    source=SMBCSource(
+                "//172.16.20.108/presentations",
+                "username"),
+    relpath="os2datascanner.png"
+)
+
+benny_scan_spec1 = messages.ScanSpecMessage(
+    scan_tag=None,  # placeholder
+    source=benny_adsid_handle1.source,
+    rule=common_rule,
+    configuration={},
+    filter_rule=None,
+    progress=None)
+
+benny_scan_spec2 = messages.ScanSpecMessage(
+    scan_tag=None,  # placeholder
+    source=benny_adsid_handle2.source,
+    rule=common_rule,
+    configuration={},
+    filter_rule=None,
+    progress=None)
+
+benny_positive_match1 = messages.MatchesMessage(
+    scan_spec=benny_scan_spec1._replace(scan_tag=scan_tag0),
+    handle=benny_adsid_handle1,
+    matched=True,
+    matches=[messages.MatchFragment(
+        rule=common_rule,
+        matches=[{"dummy": "match object"}]
+    )]
+)
+benny_positive_match2 = messages.MatchesMessage(
+    scan_spec=benny_scan_spec2._replace(scan_tag=scan_tag0),
+    handle=benny_adsid_handle2,
+    matched=True,
+    matches=[messages.MatchFragment(
+        rule=common_rule,
+        matches=[{"dummy": "match object"}]
+    )]
+)
+
+benny_metadata_personal = messages.MetadataMessage(
+    scan_tag=scan_tag0,
+    handle=benny_adsid_handle1,
+    metadata={"email-account": "benny@olsenbanden.dk",
+              "last-modified": time_30_days.strftime(DATE_FORMAT)}
+)
+
+benny_metadata_shared = messages.MetadataMessage(
+    scan_tag=scan_tag0,
+    handle=benny_adsid_handle2,
+    metadata={"email-account": "fælles@olsenbanden.dk",
+              "last-modified": time_30_days.strftime(DATE_FORMAT)}
+)
+
 
 class UserReportViewTest(TestCase):
 
@@ -241,6 +306,13 @@ class UserReportViewTest(TestCase):
         record_match(egon_positive_match_1)
         record_metadata(egon_metadata_1)
 
+    def generate_benny_data(self):
+        record_match(benny_positive_match1)
+        record_metadata(benny_metadata_personal)
+
+        record_match(benny_positive_match2)
+        record_metadata(benny_metadata_shared)
+
     def setUp(self):
         self.factory = RequestFactory()
         self.org = Organization.objects.create(
@@ -248,6 +320,7 @@ class UserReportViewTest(TestCase):
         self.account = Account.objects.create(username='egon', organization=self.org)
         self.generate_kjeld_data()
         self.generate_egon_data()
+        self.generate_benny_data()
 
     def test_userreportview_as_default_role_with_no_matches(self):
         qs = self.userreport_get_queryset()
@@ -310,7 +383,23 @@ class UserReportViewTest(TestCase):
         qs = self.userreport_get_queryset(params)
         self.assertEqual(qs.count(), 2)
 
+    @parameterized.expand([
+        ('true', 2),
+        ('false', 1)
+    ])
+    def test_userreportview_personal_and_shared_aliases(self, include_shared, expected_count):
+        """Results from shared aliases should not be presented along with
+        personal results in the report module if the 'include-shared' parameter
+        is false."""
+        params = f'?include-shared={include_shared}'
+        benny_alias_personal, benny_alias_shared = self.create_email_aliases_benny()
+        create_alias_and_match_relations(benny_alias_personal)
+        create_alias_and_match_relations(benny_alias_shared)
+        qs = self.userreport_get_queryset(params)
+        self.assertEqual(qs.count(), expected_count)
+
     # Helper methods
+
     def create_adsid_alias_kjeld_and_egon(self):
         kjeld_alias = Alias.objects.create(
             user=self.account.user,
@@ -325,6 +414,22 @@ class UserReportViewTest(TestCase):
             _alias_type=AliasType.SID
         )
         return kjeld_alias, egon_alias
+
+    def create_email_aliases_benny(self):
+        personal_alias = Alias.objects.create(
+            user=self.account.user,
+            account=self.account,
+            _value='benny@olsenbanden.dk',
+            _alias_type=AliasType.EMAIL
+        )
+        shared_alias = Alias.objects.create(
+            user=self.account.user,
+            account=self.account,
+            _value='fælles@olsenbanden.dk',
+            _alias_type=AliasType.EMAIL,
+            shared=True
+        )
+        return personal_alias, shared_alias
 
     def userreport_get_queryset(self, params=''):
         request = self.factory.get('/' + params)

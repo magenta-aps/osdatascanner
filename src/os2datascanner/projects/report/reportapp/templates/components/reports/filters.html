@@ -210,10 +210,34 @@
               <input type="checkbox"
                      id="30-days-toggle"
                      class="30-days-toggle"
+                     autocomplete="off"
                      {% if 30_days == "true" %}checked{% endif %}>
               <label for="30-days-toggle">{% trans "Include results, that are less than 30 days old" %}</label>
             </div>
           </div>
         </div>
+
+        {% if view.type == "personal" %}
+          <div class="checkbox_wrapper">
+            <div class="checkbox-group">
+              <div class="ds-checkbox">
+                {% comment %}
+            We use the hidden input field below to track whether 30-days is enabled or not.
+            If we used the checkbox, unticking it would make it disappear from the form's GET action
+                {% endcomment %}
+                <input type="hidden"
+                       id="include-shared"
+                       name="include-shared"
+                       value="{{ include_shared }}">
+                <input type="checkbox"
+                       id="include-shared-toggle"
+                       class="include-shared-toggle"
+                       autocomplete="off"
+                       {% if include_shared == "true" %}checked{% endif %}>
+                <label for="include-shared-toggle">{% trans "Include results from shared mailboxes" %}</label>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       </form>
     </div>
