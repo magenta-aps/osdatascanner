@@ -9,6 +9,9 @@
 
 - Created shared fixtures for use in unit tests in the admin module.
 
+- The modal for cleaning up stale accounts on a scannerjob now utilizes a
+  multiple-select element instead of checkboxes.
+
 ## Version 3.22.7, 15th May 2024
 
 "Friendship Bracelet Exchange"
