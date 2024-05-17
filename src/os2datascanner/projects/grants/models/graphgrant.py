@@ -2,10 +2,7 @@ from uuid import uuid4
 from django.db import models
 
 from os2datascanner.engine2.model.msgraph.utilities import make_token
-from os2datascanner.projects.utils import aes
-from .grant import Grant
-
-from django.conf import settings
+from .grant import Grant, wrap_encrypted_field
 
 
 class GraphGrant(Grant):
@@ -22,20 +19,7 @@ class GraphGrant(Grant):
             default=uuid4, editable=False, verbose_name="tenant ID")
 
     _client_secret = models.JSONField(verbose_name="client secret")
-
-    @classmethod
-    def encrypt_secret(cls, secret: str) -> (str, str):
-        return tuple(
-                c.hex() for c in aes.encrypt(secret, settings.DECRYPTION_HEX))
-
-    @property
-    def client_secret(self) -> str:
-        iv, ciphertext = [bytes.fromhex(c) for c in self._client_secret]
-        return aes.decrypt(iv, ciphertext, settings.DECRYPTION_HEX)
-
-    @client_secret.setter
-    def client_secret(self, secret: str):
-        self._client_secret = self.encrypt_secret(secret)
+    client_secret = wrap_encrypted_field("_client_secret")
 
     def make_token(self):
         return make_token(
