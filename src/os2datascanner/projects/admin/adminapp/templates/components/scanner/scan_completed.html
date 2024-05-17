@@ -119,13 +119,7 @@
                         {{ status.start_time }}
                       {% endtimezone %}
                     </td>
-                    <td class="datatable__column--objects">
-                      {{ status.total_objects }} {% trans "objects explored" %}
-                      {% if status.skipped_by_last_modified %}
-                        <p>{{ status.skipped_by_last_modified }} {% trans "known objects skipped due to no change" %}</p>
-                        <p>{{ status.new_objects }} {% trans "new objects" %}</p>
-                      {% endif %}
-                    </td>
+                    <td class="datatable__column--objects">{{ status.total_objects }} {% trans "objects explored" %}</td>
                     <td class="datatable__column--validated">
                       {% if status.matches_found is None %}
                         {% trans "Not available" %}

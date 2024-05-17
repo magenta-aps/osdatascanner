@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0126_scheduledcheckup_path'),
+        ('os2datascanner', '0130_recrunch_and_recensor_ews'),
     ]
 
     operations = [
