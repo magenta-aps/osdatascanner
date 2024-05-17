@@ -2,415 +2,338 @@ import pytest
 import urllib
 
 from django.urls import reverse_lazy
-from django.contrib.auth import get_user_model
 
-from ..models import Account, Organization, Alias
-from ...core.models import Client, Administrator
-from ...adminapp.models.scannerjobs.webscanner import WebScanner
-from ...adminapp.models.rules import CustomRule
-
-
-@pytest.fixture
-def olsen_banden():
-    superuser = get_user_model().objects.create(username='superuser', is_superuser=True)
-    regular_user = get_user_model().objects.create(username="regular_user")
-
-    # Olsen Banden
-    ob_client = Client.objects.create(name='Olsen Banden')
-    olsen_banden = Organization.objects.create(name='Olsen Banden', client=ob_client)
-    ob_admin = get_user_model().objects.create(username='olsen_banden_admin')
-    Administrator.objects.create(user=ob_admin, client=ob_client)
-
-    Account.objects.bulk_create([
-        Account(username='manden_med_planen', first_name='Egon',
-                last_name='Olsen', organization=olsen_banden),
-        Account(username='ben123', first_name='Benny',
-                last_name='Frandsen', organization=olsen_banden),
-        Account(username='yvonneogkjeld', first_name='Kjeld',
-                last_name='Jensen', organization=olsen_banden)
-    ])
-
-    egon = Account.objects.get(username='manden_med_planen')
-
-    egon_url = reverse_lazy(
-            'account',
-            kwargs={
-                'org_slug': olsen_banden.slug,
-                'pk': egon.uuid})
-
-    ob_url = reverse_lazy('accounts', kwargs={'org_slug': olsen_banden.slug})
-
-    # Ninja Turtles
-    nt_client = Client.objects.create(name='Teenage Mutant Ninja Turtles')
-    ninja_turtles = Organization.objects.create(name="Ninja Turtles", client=nt_client)
-    nt_admin = get_user_model().objects.create(username="ninja_turtles_admin")
-    Administrator.objects.create(user=nt_admin, client=nt_client)
-
-    Account.objects.bulk_create([
-        Account(username="katana", first_name="Leonardo", organization=ninja_turtles),
-        Account(username="sai", first_name="Raphael", organization=ninja_turtles),
-        Account(username="bo", first_name="Donatello", organization=ninja_turtles),
-        Account(username="nunchuck", first_name="Michelangelo", organization=ninja_turtles)
-    ])
-
-    leo = Account.objects.get(username="katana")
-
-    leo_url = reverse_lazy(
-        'account',
-        kwargs={
-            'org_slug': ninja_turtles.slug,
-            'pk': leo.uuid})
-
-    nt_url = reverse_lazy('accounts', kwargs={'org_slug': ninja_turtles.slug})
-
-    # Scanners
-    rule = CustomRule.objects.create(name="custom", organization=None, _rule="{}")
-
-    # On bulk_create: ValueError: Can't bulk create a multi-table inherited model
-    ob_scanner1 = WebScanner.objects.create(name="scanner1", organization=olsen_banden, rule=rule)
-    ob_scanner2 = WebScanner.objects.create(name="scanner2", organization=olsen_banden, rule=rule)
-    WebScanner.objects.create(name="scanner3", organization=ninja_turtles, rule=rule)
-
-    # Aliases
-
-    Alias.objects.bulk_create([
-        Alias(imported=True, imported_id="real_id1", account=egon,
-              _alias_type="email", _value="egon@olsen.dk"),
-        Alias(imported=True, imported_id="real_id2", account=egon,
-              _alias_type="SID", _value="SID-123"),
-        Alias(imported=False, account=egon,
-              _alias_type="generic", _value="olsenbanden.dk"),
-        Alias(imported=False, account=egon,
-              _alias_type="remediator", _value=ob_scanner2.pk),
-        Alias(imported=True, imported_id="real_id3", account=leo,
-              _alias_type="email", _value="leo@tmnt.dk"),
-    ])
-
-    return {
-        "superuser": superuser,
-        "regular_user": regular_user,
-        "ob_admin": ob_admin,
-        "nt_admin": nt_admin,
-        "ob_url": ob_url,
-        "egon_url": egon_url,
-        "nt_url": nt_url,
-        "leo_url": leo_url,
-        "ob_scanner1": ob_scanner1,
-        "ob_scanner2": ob_scanner2
-    }
+from os2datascanner.projects.admin.organizations.models import Alias
 
 
 @pytest.mark.django_db
 class TestAccountListView:
 
-    def test_search_query_full_name(self, client, olsen_banden):
+    @pytest.fixture(autouse=True)
+    def setup_org(self, test_org, oluf, gertrud, benny):
+        pass
+
+    @pytest.fixture
+    def url(self, test_org):
+        return reverse_lazy('accounts', kwargs={'org_slug': test_org.slug})
+
+    @pytest.fixture
+    def other_url(self, test_org2):
+        return reverse_lazy('accounts', kwargs={'org_slug': test_org2.slug})
+
+    def test_search_query_full_name(self, superuser, url, oluf, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({'search_field': 'egon olsen'})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({'search_field': 'oluf sand'})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
         assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username='manden_med_planen')
+        assert accounts.first() == oluf
 
-    def test_search_query_username(self, client, olsen_banden):
+    def test_search_query_username(self, superuser, url, oluf, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({"search_field": "ben123"})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": "kartoffeloluf"})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
         assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username="ben123")
+        assert accounts.first() == oluf
 
-    def test_search_query_first_name(self, client, olsen_banden):
+    def test_search_query_first_name(self, superuser, url, oluf, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({"search_field": "benny"})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": "oluf"})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
         assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username="ben123")
+        assert accounts.first() == oluf
 
-    def test_search_query_last_name(self, client, olsen_banden):
+    def test_search_query_last_name(self, superuser, url, oluf, gertrud, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        query = urllib.parse.urlencode({"search_field": "frandsen"})
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": "sand"})
 
         # Act
-        response = client.get(olsen_banden["ob_url"] + '?' + query)
+        response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
-        assert accounts.count() == 1
-        assert accounts.first() == Account.objects.get(username="ben123")
+        assert accounts.count() == 2
+        assert list(accounts) == [gertrud, oluf]
 
-    def test_account_list_order(self, client, olsen_banden):
+    def test_account_list_order(self, user_admin, url, nisserne_accounts, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-        expected_order = ['ben123', 'manden_med_planen', 'yvonneogkjeld']
+        client.force_login(user_admin)
+        expected_order = nisserne_accounts.order_by(
+            'first_name', 'last_name').values_list(
+            'username', flat=True)
 
         # Act
-        response = client.get(olsen_banden["ob_url"])
-        accounts = response.context['accounts'].values_list('username', flat=True)
+        response = client.get(url)
+        usernames = response.context['accounts'].values_list('username', flat=True)
 
         # Assert
-        assert all([username[0] == username[1] for username in zip(accounts, expected_order)])
+        assert all([username[0] == username[1] for username in zip(usernames, expected_order)])
 
-    def test_account_list_superuser_access(self, client, olsen_banden):
+    @pytest.mark.parametrize("access_user,expected_codes", [
+        ("superuser", [200, 200]),
+        ("admin", [200, 404]),
+        ("regular_user", [404, 404]),
+        ("anonymous", [302, 302]),
+    ])
+    def test_account_list_access(
+            self,
+            access_user,
+            expected_codes,
+            superuser,
+            user_admin,
+            user,
+            url,
+            other_url,
+            nisserne,
+            client):
         # Arrange
-        client.force_login(olsen_banden["superuser"])
+        users = {"superuser": superuser, "admin": user_admin, "regular_user": user}
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(users[access_user])
 
         # Act
-        ob_response = client.get(olsen_banden["ob_url"])
-        nt_response = client.get(olsen_banden["nt_url"])
+        response1 = client.get(url)
+        response2 = client.get(other_url)
 
         # Assert
-        assert ob_response.status_code == 200
-        assert nt_response.status_code == 200
-
-    def test_account_list_admin_access(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-
-        # Act
-        ob_response = client.get(olsen_banden["ob_url"])
-        nt_response = client.get(olsen_banden["nt_url"])
-
-        # Assert
-        assert ob_response.status_code == 200
-        assert nt_response.status_code == 404
-
-    def test_account_list_regular_user_access(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["regular_user"])
-
-        # Act
-        ob_response = client.get(olsen_banden["ob_url"])
-        nt_response = client.get(olsen_banden["nt_url"])
-
-        # Assert
-        assert ob_response.status_code == 404
-        assert nt_response.status_code == 404
-
-    def test_account_list_logged_out_access(self, client, olsen_banden):
-        # Arrange
-        client.logout()
-
-        # Act
-        ob_response = client.get(olsen_banden["ob_url"])
-        nt_response = client.get(olsen_banden["nt_url"])
-
-        # Assert
-        assert ob_response.status_code == 302
-        assert nt_response.status_code == 302
+        assert response1.status_code == expected_codes[0]
+        assert response2.status_code == expected_codes[1]
 
 
 @pytest.mark.django_db
 class TestAccountDetailView:
 
-    def test_account_detail_superuser_get_access(self, client, olsen_banden):
+    @pytest.fixture
+    def fritz_url(self, test_org, fritz):
+        return reverse_lazy('account', kwargs={'org_slug': test_org.slug, 'pk': fritz.uuid})
+
+    @pytest.fixture
+    def egon_url(self, test_org2, egon):
+        return reverse_lazy('account', kwargs={'org_slug': test_org2.slug, 'pk': egon.uuid})
+
+    @pytest.mark.parametrize("access_user,method,expected_codes", [
+        ("superuser", "GET", [200, 200]),
+        ("admin", "GET", [200, 404]),
+        ("regular_user", "GET", [404, 404]),
+        ("anonymous", "GET", [302, 302]),
+        ("superuser", "POST", [200, 200]),
+        ("admin", "POST", [200, 404]),
+        ("regular_user", "POST", [404, 404]),
+        ("anonymous", "POST", [302, 302]),
+    ])
+    def test_account_detail_access(
+            self,
+            access_user,
+            method,
+            expected_codes,
+            superuser,
+            user_admin,
+            user,
+            fritz_url,
+            egon_url,
+            client):
         # Arrange
-        client.force_login(olsen_banden["superuser"])
+        users = {"superuser": superuser, "admin": user_admin, "regular_user": user}
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(users[access_user])
 
         # Act
-        egon_response = client.get(olsen_banden["egon_url"])
-        leo_response = client.get(olsen_banden["leo_url"])
+        if method == "GET":
+            response1 = client.get(fritz_url)
+            response2 = client.get(egon_url)
+        elif method == "POST":
+            response1 = client.post(fritz_url)
+            response2 = client.post(egon_url)
 
         # Assert
-        assert egon_response.status_code == 200
-        assert leo_response.status_code == 200
+        assert response1.status_code == expected_codes[0]
+        assert response2.status_code == expected_codes[1]
 
-    def test_account_detail_admin_get_access(self, client, olsen_banden):
+    def test_account_detail_aliases(
+            self,
+            user_admin,
+            fritz_url,
+            fritz_email_alias,
+            fritz_shared_email_alias,
+            fritz_generic_alias,
+            client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
+        client.force_login(user_admin)
+        expected_imported_aliases = [fritz_email_alias]
+        expected_other_alias = [fritz_shared_email_alias, fritz_generic_alias]
 
         # Act
-        egon_response = client.get(olsen_banden["egon_url"])
-        leo_response = client.get(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 200
-        assert leo_response.status_code == 404
-
-    def test_account_detail_regular_user_get_access(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["regular_user"])
-
-        # Act
-        egon_response = client.get(olsen_banden["egon_url"])
-        leo_response = client.get(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 404
-        assert leo_response.status_code == 404
-
-    def test_account_detail_logged_out_get_access(self, client, olsen_banden):
-        # Arrange
-        client.logout()
-
-        # Act
-        egon_response = client.get(olsen_banden["egon_url"])
-        leo_response = client.get(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 302
-        assert leo_response.status_code == 302
-
-    def test_account_detail_superuser_post_access(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["superuser"])
-
-        # Act
-        egon_response = client.post(olsen_banden["egon_url"])
-        leo_response = client.post(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 200
-        assert leo_response.status_code == 200
-
-    def test_account_detail_admin_post_access(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-
-        # Act
-        egon_response = client.post(olsen_banden["egon_url"])
-        leo_response = client.post(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 200
-        assert leo_response.status_code == 404
-
-    def test_account_detail_regular_user_post_access(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["regular_user"])
-
-        # Act
-        egon_response = client.post(olsen_banden["egon_url"])
-        leo_response = client.post(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 404
-        assert leo_response.status_code == 404
-
-    def test_account_detail_logged_out_post_access(self, client, olsen_banden):
-        # Arrange
-        client.logout()
-
-        # Act
-        egon_response = client.post(olsen_banden["egon_url"])
-        leo_response = client.post(olsen_banden["leo_url"])
-
-        # Assert
-        assert egon_response.status_code == 302
-        assert leo_response.status_code == 302
-
-    def test_account_detail_aliases(self, client, olsen_banden):
-        # Arrange
-        client.force_login(olsen_banden["ob_admin"])
-
-        # Act
-        response = client.get(olsen_banden["egon_url"])
+        response = client.get(fritz_url)
         imported_aliases = response.context['imported_aliases']
         other_aliases = response.context['other_aliases']
 
         # Assert
-        assert imported_aliases.count() == 2
-        assert other_aliases.count() == 1
+        assert all(alias in imported_aliases for alias in expected_imported_aliases)
+        assert all(alias in other_aliases for alias in expected_other_alias)
 
-    def test_account_detail_remediator_for_scanners(self, client, olsen_banden):
+    def test_account_detail_remediator_for_scanners(
+            self, user_admin, fritz_url, fritz_remediator_alias, client):
         # Arrange
-        client.force_login(olsen_banden["ob_admin"])
+        client.force_login(user_admin)
 
         # Act
-        response = client.get(olsen_banden["egon_url"])
+        response = client.get(fritz_url)
         rem_scanners = response.context['remediator_for_scanners']
 
         # Assert
         assert len(rem_scanners) == 1
+        assert rem_scanners[0]["pk"] == fritz_remediator_alias._value
 
-    @pytest.mark.parametrize("user,response_code,count", [
-        ("ob_admin", 200, 1),
+    @pytest.mark.parametrize("access_user,expected_code,expected_aliases", [
+        ("admin", 200, 1),
         ("superuser", 200, 1),
-        ("nt_admin", 404, 0),
-        ("regular_user", 404, 0)])
+        ("other_admin", 404, 0),
+        ("regular_user", 404, 0),
+        ("anonymous", 302, 0)])
     def test_account_detail_remediator_check(
-            self, client, olsen_banden, user, response_code, count):
+            self,
+            access_user,
+            expected_code,
+            expected_aliases,
+            superuser,
+            user_admin,
+            user,
+            other_admin,
+            fritz_url,
+            fritz,
+            client):
         # Arrange
-        client.force_login(olsen_banden[user])
+        users = {
+            "superuser": superuser,
+            "admin": user_admin,
+            "regular_user": user,
+            "other_admin": other_admin}
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(users[access_user])
 
         # Act
         response = client.post(
-            olsen_banden["egon_url"],
+            fritz_url,
             data={"remediator-check": "on"},
             **{"HTTP_HX-Trigger-Name": "remediator-check"}
             )
 
         # Assert
-        assert response.status_code == response_code
+        assert response.status_code == expected_code
         assert Alias.objects.filter(
-            account=Account.objects.get(
-                username="manden_med_planen"),
+            account=fritz,
             _alias_type="remediator",
-            _value=0).count() == count
+            _value=0).count() == expected_aliases
 
-    @pytest.mark.parametrize("user,response_code,count", [
-        ("ob_admin", 200, 1),
+    @pytest.mark.parametrize("access_user,expected_code,expected_aliases", [
+        ("admin", 200, 1),
         ("superuser", 200, 1),
-        ("nt_admin", 404, 0),
-        ("regular_user", 404, 0)])
+        ("other_admin", 404, 0),
+        ("regular_user", 404, 0),
+        ("anonymous", 302, 0)])
     def test_account_detail_admin_add_remediator(
-            self, client, olsen_banden, user, response_code, count):
+            self,
+            access_user,
+            expected_code,
+            expected_aliases,
+            superuser,
+            user_admin,
+            user,
+            other_admin,
+            fritz_url,
+            fritz,
+            basic_scanner,
+            client):
         # Arrange
-        client.force_login(olsen_banden[user])
-        ob_scanner1 = olsen_banden["ob_scanner1"]
+        users = {
+            "superuser": superuser,
+            "admin": user_admin,
+            "regular_user": user,
+            "other_admin": other_admin}
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(users[access_user])
 
         # Act
         response = client.post(
-            olsen_banden["egon_url"],
-            data={"add-remediator": ob_scanner1.pk},
+            fritz_url,
+            data={"add-remediator": basic_scanner.pk},
             **{"HTTP_HX-Trigger-Name": "add-remediator"}
             )
 
         # Assert
-        assert response.status_code == response_code
+        assert response.status_code == expected_code
         assert Alias.objects.filter(
-            account=Account.objects.get(
-                username="manden_med_planen"),
+            account=fritz,
             _alias_type="remediator",
-            _value=ob_scanner1.pk).count() == count
+            _value=basic_scanner.pk).count() == expected_aliases
 
-    @pytest.mark.parametrize("user,response_code,count", [
-        ("ob_admin", 200, 0),
+    @pytest.mark.parametrize("access_user,expected_code,expected_aliases", [
+        ("admin", 200, 0),
         ("superuser", 200, 0),
-        ("nt_admin", 404, 1),
-        ("regular_user", 404, 1)])
+        ("other_admin", 404, 1),
+        ("regular_user", 404, 1),
+        ("anonymous", 302, 1)])
     def test_account_detail_admin_rem_remediator(
-            self, client, olsen_banden, user, response_code, count):
+            self,
+            access_user,
+            expected_code,
+            expected_aliases,
+            superuser,
+            user_admin,
+            user,
+            other_admin,
+            fritz_url,
+            fritz,
+            fritz_remediator_alias,
+            basic_scanner,
+            client):
         # Arrange
-        client.force_login(olsen_banden[user])
-        ob_scanner2 = olsen_banden["ob_scanner2"]
+        users = {
+            "superuser": superuser,
+            "admin": user_admin,
+            "regular_user": user,
+            "other_admin": other_admin}
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(users[access_user])
 
         # Act
         response = client.post(
-            olsen_banden["egon_url"],
-            data={"rem-remediator": ob_scanner2.pk},
+            fritz_url,
+            data={"rem-remediator": basic_scanner.pk},
             **{"HTTP_HX-Trigger-Name": "rem-remediator"}
         )
 
         # Assert
-        assert response.status_code == response_code
+        assert response.status_code == expected_code
         assert Alias.objects.filter(
-            account=Account.objects.get(username="manden_med_planen"),
+            account=fritz,
             _alias_type="remediator",
-            _value=ob_scanner2.pk).count() == count
+            _value=basic_scanner.pk).count() == expected_aliases

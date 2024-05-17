@@ -7,6 +7,8 @@
 - System logging is now more consistently using structlog and quality of life improvements
   for the dev-env in this regard have been added.
 
+- Created shared fixtures for use in unit tests in the admin module.
+
 ## Version 3.22.7, 15th May 2024
 
 "Friendship Bracelet Exchange"
