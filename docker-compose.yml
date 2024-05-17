@@ -152,6 +152,7 @@ services:
       - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
       - ./dev-environment/admin/.secret:/code/.secret
       - ./src/os2datascanner:/code/src/os2datascanner
+      - ./dev-environment/uploads:/code/uploads
     ports:
       - "8020:5000"
     depends_on: &admin_dependencies
@@ -209,6 +210,7 @@ services:
     volumes:
       - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
+      - ./dev-environment/uploads:/code/uploads
     depends_on: *admin_dependencies
     stop_grace_period: 1m30s
     networks:
@@ -604,6 +606,7 @@ x-disabled:
     volumes:
       - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
+      - ./dev-environment/uploads:/code/uploads
     depends_on:
       - db
       - admin

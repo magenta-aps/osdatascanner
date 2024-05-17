@@ -6,6 +6,11 @@
 
 - All unit tests in the admin module now utilizes pytest instead of Django tests.
 
+### Bugfixes
+
+- Files uploaded to the administration system in the development environment
+  are now preserved across restarts.
+
 ## Version 3.23.0, 18th June 2024
 
 "Okay then, let's Samba"
