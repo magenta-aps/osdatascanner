@@ -4,11 +4,12 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ...core.models.background_job import BackgroundJob
-from ...grants.models import GraphGrant
+from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.adminapp.signals import get_pika_thread
 from os2datascanner.engine2.model.msgraph.utilities import (
         make_token, MSGraphSource)
+from ...core.models.background_job import BackgroundJob
+
 
 logger = structlog.get_logger("import_services")
 

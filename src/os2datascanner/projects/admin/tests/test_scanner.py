@@ -32,7 +32,7 @@ from os2datascanner.projects.admin.adminapp.models.rules \
     import CustomRule
 from os2datascanner.projects.admin.adminapp.views.webscanner_views \
     import WebScannerUpdate
-from os2datascanner.projects.admin.grants.models import GraphGrant
+from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.core.models.client import Client
 from ..adminapp.models.scannerjobs.scanner_helpers import ScanStatus, CoveredAccount
 

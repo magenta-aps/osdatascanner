@@ -1,64 +1,22 @@
-import binascii
 import os
+import secrets
 import structlog
-from Crypto.Util import Counter
-from Crypto.Cipher import AES
-from Crypto import Random
 
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.exceptions import ImproperlyConfigured
 
+from ...utils import aes
+
 logger = structlog.get_logger("adminapp")
 
 
 def encrypt(plaintext, key=None):
-    """
-    Takes as input a 32-byte key and an arbitrary-length plaintext and returns a
-    pair (iv, ciphtertext). "iv" stands for initialization vector.
-    """
-    key = key if key else get_key()
-
-    # Choose a random, 16-byte IV.
-    iv = Random.new().read(AES.block_size)
-
-    # Convert the IV to a Python integer.
-    iv_int = int(binascii.hexlify(iv), 16)
-
-    # Create a new Counter object with IV = iv_int.
-    ctr = Counter.new(AES.block_size * 8, initial_value=iv_int)
-
-    # Create AES-CTR cipher.
-    aes = AES.new(key, AES.MODE_CTR, counter=ctr)
-
-    # Encrypt and return IV and ciphertext.
-    ciphertext = aes.encrypt(plaintext.encode())
-    return iv, ciphertext
+    return aes.encrypt(plaintext, key or get_key())
 
 
 def decrypt(iv, ciphertext, key=None):
-    """
-    Takes as input a 32-byte key, a 16-byte IV, and a ciphertext, and outputs
-    the corresponding plaintext.
-    """
-    key = key if key else get_key()
-
-    # Check if there is anything to encrypt at all
-    if iv != b'':
-        # Initialize counter for decryption. iv should be the same as the output of
-        # encrypt().
-        iv_int = int(binascii.hexlify(iv), 16)
-        ctr = Counter.new(AES.block_size * 8, initial_value=iv_int)
-
-        # Create AES-CTR cipher.
-        aes = AES.new(key, AES.MODE_CTR, counter=ctr)
-
-        # Decrypt and return the plaintext.
-        plaintext = aes.decrypt(ciphertext)
-        return plaintext.decode('utf-8')
-
-    # otherwise just return some empty plaintext.
-    return ""
+    return aes.decrypt(iv, ciphertext, key or get_key())
 
 
 def get_key():
@@ -85,9 +43,9 @@ def get_key():
 
 def generate_new_hex():
     # AES supports multiple key sizes: 16 (AES128), 24 (AES192), or 32 (AES256).
-    key_bytes = 32
-    key = Random.new().read(key_bytes)
-    return key.hex()
+    return (secrets.randbits(8 * 32)
+            .to_bytes(32, "big")
+            .hex())
 
 
 def _email_admin(subject, body):

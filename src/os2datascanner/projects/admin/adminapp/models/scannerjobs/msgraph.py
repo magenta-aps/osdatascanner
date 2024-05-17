@@ -28,8 +28,8 @@ from os2datascanner.engine2.model.msgraph.calendar import (MSGraphCalendarSource
                                                            MSGraphCalendarAccountHandle)
 from os2datascanner.engine2.model.msgraph.teams import MSGraphTeamsFilesSource
 
+from os2datascanner.projects.grants.models import GraphGrant
 from ....organizations.models.aliases import AliasType
-from ....grants.models import GraphGrant
 from .scanner import Scanner
 
 logger = structlog.get_logger("adminapp")

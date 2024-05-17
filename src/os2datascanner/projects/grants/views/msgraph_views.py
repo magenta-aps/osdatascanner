@@ -72,7 +72,12 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
             # the database before we redirect
             GraphGrant.objects.get_or_create(
                     tenant_id=request.GET["tenant"],
-                    organization_id=state["org"])
+                    organization_id=state["org"],
+                    defaults={
+                        "app_id": settings.MSGRAPH_APP_ID,
+                        "_client_secret": GraphGrant.encrypt_secret(
+                            settings.MSGRAPH_CLIENT_SECRET),
+                    })
         elif any(k in request.GET for k in self.FAILURE_PARAMS):
             # The remote server has not given us our grant -- boo. Pass the
             # error details back when we redirect

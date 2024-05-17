@@ -1,6 +1,6 @@
 from django.db import models
 
-from ...grants.models import GraphGrant
+from os2datascanner.projects.grants.models import GraphGrant
 from .import_service import ImportService
 from .exported_mixin import Exported
 from django.utils.translation import gettext_lazy as _
