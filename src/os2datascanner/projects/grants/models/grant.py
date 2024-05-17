@@ -14,7 +14,8 @@ class Grant(models.Model):
 
     organization = models.ForeignKey(
             'organizations.Organization',
-            related_name="grants",
+            related_name="%(class)s",
+            related_query_name="%(class)ss",
             on_delete=models.CASCADE)
 
     def validate(self):
@@ -40,3 +41,22 @@ def wrap_encrypted_field(field_name: str):
         setattr(self, field_name, [iv, ciphertext])
 
     return property(_get, _set)
+
+
+class UsernamePasswordGrant(Grant):
+    """A UsernamePasswordGrant represents a traditional service account, with a
+    username and password."""
+    username = models.TextField(verbose_name="username")
+    _password = models.JSONField(verbose_name="password (encrypted)")
+    password = wrap_encrypted_field("_password")
+
+    class Meta:
+        abstract = True
+
+        constraints = [
+            # It'll never make sense for one organization to define two Grants
+            # with the same model type and username but different passwords!
+            models.UniqueConstraint(
+                    fields=["organization", "username"],
+                    name="%(app_label)s_%(class)s_unique")
+        ]
