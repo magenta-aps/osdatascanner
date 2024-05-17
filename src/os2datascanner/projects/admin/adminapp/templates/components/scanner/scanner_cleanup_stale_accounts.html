@@ -6,11 +6,20 @@
 {% block rendertype %}iframe-modal{% endblock %}
 
 {% block scripts %}
+  {{ block.super }}
+  <script src="{% static '3rdparty/jquery-3.6.0.min.js' %}"></script>
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
   <script src="{% static '3rdparty/htmx.min.js' %}"></script>
   <script src="{% static 'js/index.js' %}"></script>
   <script src="{% static 'js/scannerjob/cleanupStaleAccountsCheckmarks.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/js/select2.min.js"></script>
+  <script>$("#cleanup_account_uuids").select2({dropdownParent: $('.cleanup-container')});</script>
 {% endblock %}
+
+{% block extra_head_html %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/css/select2.min.css"
+        rel="stylesheet">
+{% endblock extra_head_html %}
 
 {% block body %}
   <div class="cleanup-container"
@@ -22,19 +31,17 @@
       </p>
       <p>{% trans "Delete the report results for the following users:" %}</p>
       <form id="cleanup-accounts-form" name="cleanup-accounts-form">
-        <ul>
+        <select id="cleanup_account_uuids"
+                class="select2"
+                name="cleanup_account_uuids"
+                multiple>
           {% for account in scanner.compute_stale_accounts %}
-            <li>
-              <input type="checkbox"
-                     name="cleanup_account_uuid"
-                     id="cleanup_account_{{ account.uuid }}"
-                     value="{{ account.uuid }}"
-                     checked />
-              <label for="cleanup_account_{{ account.uuid }}">{{ account.get_full_name }} ({{ account.username }})</label>
-            </li>
+            <option name="cleanup_account_uuid"
+                    id="cleanup_account_{{ account.uuid }}"
+                    value="{{ account.uuid }}"
+                    selected>{{ account.get_full_name }} ({{ account.username }})</option>
           {% endfor %}
-        </ul>
-
+        </select>
         <div class="button-wrapper">
           <button type="button"
                   class="button button--cta-button"
