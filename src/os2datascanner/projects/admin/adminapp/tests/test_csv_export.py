@@ -9,8 +9,8 @@ class TestExportUserErrorLog:
     url = reverse_lazy('export-error-log')
 
     @pytest.fixture(autouse=True)
-    def enable_user_error_log(self, settings):
-        settings.USERERRORLOG = True  # Need to override, it's False by default in pipeline
+    def enable_user_error_log(self, USERERRORLOG_True):
+        pass  # Need to override, it's False by default in pipeline
 
     @pytest.fixture
     def error_logs(self, test_org, basic_scanstatus):

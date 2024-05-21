@@ -1,123 +1,79 @@
 import json
+import pytest
 
-from django.test import TestCase
-from django.utils.text import slugify
-
-from os2datascanner.projects.admin.core.models.client import Client
-from os2datascanner.projects.admin.organizations.models.organization import Organization
 from os2datascanner.engine2.rules.rule import Rule
-from os2datascanner.engine2.rules.regex import RegexRule
-from ..adminapp.models.rules import CustomRule
 from ..adminapp.models.apikey import APIKey
 
 
-class APITest(TestCase):
-    def setUp(self):
-        client1 = Client.objects.create(name="client1")
-        self.org1 = Organization.objects.create(
-                name="General Services Corp.",
-                uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c",
-                slug=slugify("General Services Corp."),
-                client=client1,
-        )
-        client2 = Client.objects.create(name="client2")
-        self.org2 = Organization.objects.create(
-                name="Ministry of Tasks",
-                uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0",
-                slug=slugify("Ministry of Tasks"),
-                client=client2,
-        )
+@pytest.fixture
+def api_key_good(test_org):
+    return APIKey.objects.create(organization=test_org, scope="get-rule/1")
 
-        self.rule1 = CustomRule.objects.create(
-            name="Check for tax number",
-            description="A rule that searches for tax numbers",
-            organization=self.org1,
-            _rule=RegexRule(r"[0-9]{12}").to_json_object(),
-            )
-        self.rule2 = CustomRule.objects.create(
-            name="Check for department ID",
-            description="A rule that searches for department IDs",
-            organization=self.org2,
-            _rule=RegexRule(r"Dx[1-58]{4}").to_json_object(),
-            )
 
-        self.key1_bad = APIKey.objects.create(organization=self.org1)
-        self.key1_good = APIKey.objects.create(
-                organization=self.org1, scope="get-rule/1")
-        self.key2 = APIKey.objects.create(
-                organization=self.org2, scope="get-rule/1")
+@pytest.fixture
+def other_api_key(test_org2):
+    return APIKey.objects.create(organization=test_org2, scope="get-rule/1")
 
-    def test_api_success(self):
+
+@pytest.mark.django_db
+class TestAPI:
+
+    def test_api_success(self, client, org_rule, org2_rule, api_key_good, other_api_key):
         """Making a valid API call with the appropriate authorised key should
         succeed and return the right object."""
         for rule, key in (
-                (self.rule1, self.key1_good), (self.rule2, self.key2),):
-            r = self.client.post(
+                (org_rule, api_key_good), (org2_rule, other_api_key),):
+            r = client.post(
                     "/api/get-rule/1",
                     {"rule_id": rule.pk},
                     "application/json",
                     HTTP_AUTHORIZATION="Bearer {0}".format(key.uuid))
-            self.assertEqual(r.status_code, 200,
-                             "API request failed")
+            assert r.status_code == 200
             body = json.loads(r.content.decode("ascii"))
-            self.assertEqual(
-                    Rule.from_json_object(body["rule"]),
-                    rule.make_engine2_rule(),
-                    "returned rule not equal")
+            print(body)
+            assert Rule.from_json_object(body["rule"]) == rule.make_engine2_rule()
 
-    def test_api_no_key(self):
+    def test_api_no_key(self, client, org_rule):
         """Making a valid API call with no key should fail with HTTP 401
         Unauthorized."""
-        r = self.client.post(
+        r = client.post(
                 "/api/get-rule/1",
-                {"rule_id": self.rule1.pk}, "application/json")
-        self.assertEqual(
-                r.status_code, 401,
-                "API request did not fail as expected")
+                {"rule_id": org_rule.pk}, "application/json")
+        assert r.status_code == 401
 
-    def test_api_invalid_header(self):
+    def test_api_invalid_header(self, client, org_rule):
         """Making a valid API call with an invalid HTTP header should fail with
         HTTP 400 Bad Request."""
-        r = self.client.post(
+        r = client.post(
                 "/api/get-rule/1",
-                {"rule_id": self.rule1.pk}, "application/json",
+                {"rule_id": org_rule.pk}, "application/json",
                 HTTP_AUTHORIZATION="Invalid INVALID")
-        self.assertEqual(
-                r.status_code, 400,
-                "API request did not fail as expected")
+        assert r.status_code == 400
 
-    def test_api_invalid_key(self):
+    def test_api_invalid_key(self, client, org_rule):
         """Making a valid API call with an invalid key should fail with HTTP
         401 Unauthorized."""
-        r = self.client.post(
+        r = client.post(
                 "/api/get-rule/1",
-                {"rule_id": self.rule1.pk}, "application/json",
+                {"rule_id": org_rule.pk}, "application/json",
                 HTTP_AUTHORIZATION="Bearer INVALID")
-        self.assertEqual(
-                r.status_code, 401,
-                "API request did not fail as expected")
+        assert r.status_code == 401
 
-    def test_api_wrong_key(self):
+    def test_api_wrong_key(self, client, org_rule, other_api_key):
         """Making a valid API call with a valid key for the wrong organisation
         should fail as though the object did not exist."""
-        r = self.client.post(
+        r = client.post(
                 "/api/get-rule/1",
-                {"rule_id": self.rule1.pk}, "application/json",
-                HTTP_AUTHORIZATION="Bearer {0}".format(self.key2.uuid))
-        self.assertEqual(
-                r.status_code, 200,
-                "API request failed")
+                {"rule_id": org_rule.pk}, "application/json",
+                HTTP_AUTHORIZATION="Bearer {0}".format(other_api_key.uuid))
+        assert r.status_code == 200
         body = json.loads(r.content.decode("ascii"))
-        self.assertEqual(
-                body["status"], "fail",
-                "API key granted access to another organisation")
+        assert body["status"] == "fail"
 
-    def test_api_unauthorised(self):
+    def test_api_unauthorised(self, client, api_key_good):
         """Making an API call with a valid key whose scope does not cover that
         API call should fail with HTTP 403 Forbidden."""
-        r = self.client.post(
+        r = client.post(
                 "/api/get-scanner/1",
-                HTTP_AUTHORIZATION="Bearer {0}".format(self.key1_good.uuid))
-        self.assertEqual(
-                r.status_code, 403,
-                "API request failed")
+                HTTP_AUTHORIZATION="Bearer {0}".format(api_key_good.uuid))
+        assert r.status_code == 403

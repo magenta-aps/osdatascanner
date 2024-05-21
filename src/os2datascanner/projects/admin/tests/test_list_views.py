@@ -1,268 +1,187 @@
-from datetime import datetime
-from dateutil.tz import gettz
-from parameterized import parameterized
+import pytest
+
 from itertools import pairwise
 
-from django.contrib.auth.models import User, AnonymousUser
-from django.test import RequestFactory, TestCase
-from django.utils.text import slugify
+from django.contrib.auth.models import AnonymousUser
+from django.test import RequestFactory
 from django.urls import reverse_lazy
 
 from ..adminapp.views.webscanner_views import WebScannerList
-from ..adminapp.models.scannerjobs.webscanner import WebScanner
-from ..adminapp.models.rules import CustomRule
 from ..adminapp.views.rule_views import RuleList
 from ..adminapp.views.scanner_views import StatusOverview, UserErrorLogView
-from ..adminapp.models.scannerjobs.scanner import Scanner, ScanStatus
-from ..adminapp.models.usererrorlog import UserErrorLog
-from ..core.models import Client, Administrator
-from ..organizations.models import Organization
 from ..organizations.views import OrganizationListView
-from .test_utilities import dummy_rule_dict
 
 
-class ListViewsTest(TestCase):
+all_scanner_list_urls = [
+        reverse_lazy('exchangescanners'),
+        reverse_lazy('filescanners'),
+        reverse_lazy('webscanners'),
+        reverse_lazy('dropboxscanners'),
+        reverse_lazy('googledrivescanners'),
+        reverse_lazy('gmailscanners'),
+        reverse_lazy('sbsysscanners'),
+        reverse_lazy('msgraphcalendarscanner_list'),
+        reverse_lazy('msgraphfilescanner_list'),
+        reverse_lazy('msgraphmailscanner_list'),
+    ]
 
-    @classmethod
-    def setUpTestData(cls):
-        client1 = Client.objects.create(name="client1")
-        org1 = Organization.objects.create(
-            name="Magenta",
-            uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c",
-            slug=slugify("Magenta"),
-            client=client1,
-        )
-        client2 = Client.objects.create(name="client2")
-        org2 = Organization.objects.create(
-            name="IANA (example.com)",
-            slug=slugify("IANA (example.com)"),
-            uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0",
-            client=client2,
-        )
-        dummy_rule = CustomRule.objects.create(**dummy_rule_dict)
-        WebScanner.objects.create(
-            name="Magenta",
-            url="http://magenta.dk",
-            organization=Organization.objects.get(
-                uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
-            validation_status=WebScanner.VALID,
-            download_sitemap=False, rule=dummy_rule
-        )
-        WebScanner.objects.create(
-            name="TheyDontWantYouTo",
-            url="http://theydontwantyou.to",
-            organization=Organization.objects.get(
-                uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0"),
-            validation_status=WebScanner.VALID,
-            download_sitemap=False,
-            rule=dummy_rule
-        )
-        CustomRule.objects.create(name="Ny regel",
-                                  organization=Organization.objects.get(
-                                      uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
-                                  description="Helt ny regel",
-                                  _rule="{}"
-                                  )
-        CustomRule.objects.create(name="Ny regel 2",
-                                  organization=Organization.objects.get(
-                                      uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0"),
-                                  description="Helt ny regel 2",
-                                  _rule="{}"
-                                  )
-        status = ScanStatus.objects.create(
-            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
-            scanner=Scanner.objects.get(name="Magenta")
-        )
-        ScanStatus.objects.create(
-            scan_tag={"time": datetime.now(tz=gettz()).isoformat()},
-            scanner=Scanner.objects.get(name="TheyDontWantYouTo")
-        )
-
-        UserErrorLog.objects.create(
-            scan_status=status,
-            organization=org1,
-            path="The errors are here!",
-            error_message="Something went awry :(",
-            is_new=True
-        )
-        UserErrorLog.objects.create(
-            scan_status=status,
-            organization=org1,
-            path="The errors are here!",
-            error_message="ERROR ERROR ERROR",
-            is_new=True
-        )
-        UserErrorLog.objects.create(
-            scan_status=status,
-            organization=org2,
-            path="The errors are here!",
-            error_message="OH NOOOOO!",
-            is_new=True
-        )
-        UserErrorLog.objects.create(
-            scan_status=status,
-            organization=org2,
-            path="The errors are here!",
-            error_message="97 98 99 ... ... ... crashed",
-            is_new=True
-        )
-
-    def setUp(self) -> None:
-        super().setUp()
-        # Every test needs access to the request factory.
-        self.factory = RequestFactory()
-        self.user = User.objects.create_user(
-            username='kjeld', email='kjeld@jensen.com', password='top_secret')
-
-    def get_path_and_class():
-        params = [
-            ("WebscannerListViewTest", '/webscanners/', WebScannerList()),
-            ("RuleListViewTest", '/rules/', RuleList()),
-            ("ScanStatusListViewTest", '/status/', StatusOverview()),
-            ("OrganizationListViewTest", '/organizations/', OrganizationListView()),
-            ("UserErrorLogViewTest", '/error-log/', UserErrorLogView()),
+path_and_class = [
+            ("WebscannerListViewTest", reverse_lazy('webscanners'), WebScannerList()),
+            ("RuleListViewTest", reverse_lazy('rules'), RuleList()),
+            ("ScanStatusListViewTest", reverse_lazy('status'), StatusOverview()),
+            ("OrganizationListViewTest", reverse_lazy('organization-list'), OrganizationListView()),
+            ("UserErrorLogViewTest", reverse_lazy('error-log'), UserErrorLogView()),
         ]
-        return params
 
-    def test_view_as_anonymous_user(self):
-        request = self.factory.get('/webscanners')
+
+def listview_get_queryset(user, path, view, **kwargs):
+    request = RequestFactory().get(path, data=kwargs.get('request_kwargs'))
+    request.user = user
+    view.setup(request)
+    return view.get_queryset()
+
+
+@pytest.fixture
+def populate_lists(basic_rule,
+                   org_rule,
+                   org2_rule,
+                   web_scanner,
+                   invalid_web_scanner,
+                   web_scanner2,
+                   basic_scanstatus,
+                   web_scanstatus,
+                   basic_scanstatus2,
+                   test_org,
+                   test_org2,
+                   basic_usererrorlog,
+                   basic_usererrorlog2):
+    pass
+
+
+@pytest.mark.django_db
+class TestListViews:
+
+    @pytest.mark.parametrize('url', all_scanner_list_urls)
+    def test_view_as_anonymous_user(self, url):
+        request = RequestFactory().get(url)
         request.user = AnonymousUser()
         response = WebScannerList.as_view()(request)
-        self.assertNotEqual(response.status_code, 200)
+        assert response.status_code == 302
 
-    @parameterized.expand(get_path_and_class)
-    def test_as_superuser(self, _, path, list_type):
-        self.user.is_superuser = True
-        qs = self.listview_get_queryset(path, list_type)
+    @pytest.mark.parametrize('_,path,list_type', path_and_class)
+    def test_as_superuser(self, _, path, list_type, superuser, populate_lists):
+        qs = listview_get_queryset(superuser, path, list_type)
         if isinstance(list_type, RuleList):
-            self.assertEqual(len(qs), 4)
+            assert qs.count() == 4
         elif isinstance(list_type, OrganizationListView):
-            self.assertEqual(len(qs), 2)
+            assert qs.count() == 2
+        elif isinstance(list_type, StatusOverview):
+            assert qs.count() == 3
         elif isinstance(list_type, UserErrorLogView):
-            self.assertEqual(len(qs), 4)
+            assert qs.count() == 2
+        elif isinstance(list_type, WebScannerList):
+            assert qs.count() == 3
         else:
-            self.assertEqual(len(qs), 2)
+            raise AssertionError(f"Got unexpected list type: {list_type}")
 
-    @parameterized.expand(get_path_and_class)
-    def test_as_user(self, _, path, list_type):
-        qs = self.listview_get_queryset(path, list_type)
-        self.assertEqual(len(qs), 0)
+    @pytest.mark.parametrize('_,path,list_type', path_and_class)
+    def test_as_user(self, _, path, list_type, user, populate_lists):
+        qs = listview_get_queryset(user, path, list_type)
+        assert qs.count() == 0
 
-    @parameterized.expand(get_path_and_class)
-    def test_as_administrator_for_magenta_org(self, _, path, list_type):
-        administrator = Administrator.objects.create(
-            user=self.user,
-            client=Client.objects.get(name="client1")
-        )
-        qs = self.listview_get_queryset(path, list_type)
+    @pytest.mark.parametrize('_,path,list_type', path_and_class)
+    def test_as_administrator_for_magenta_org(self, _, path, list_type, user_admin, populate_lists):
+        qs = listview_get_queryset(user_admin, path, list_type)
         if isinstance(list_type, UserErrorLogView):
-            self.assertEqual(len(qs), 2)
-        else:
-            self.assertEqual(len(qs), 1)
-
-        if isinstance(list_type, StatusOverview):
-            self.assertEqual(qs.first().scanner.organization.name, "Magenta")
+            assert qs.count() == 1
+        elif isinstance(list_type, RuleList):
+            assert qs.count() == 1
         elif isinstance(list_type, OrganizationListView):
-            self.assertEqual(qs.first().organizations.first().name,
-                             "Magenta")
+            assert qs.count() == 1
+            assert qs.first() == user_admin.administrator_for.client
+        elif isinstance(list_type, StatusOverview):
+            assert qs.count() == 2
+            assert qs.first().scanner.organization.client == user_admin.administrator_for.client
+        elif isinstance(list_type, WebScannerList):
+            assert qs.count() == 2
+            assert qs.first().organization.client == user_admin.administrator_for.client
         else:
-            self.assertEqual(qs.first().organization.name, "Magenta")
-        administrator.delete()
+            raise AssertionError(f"Got unexpected list type: {list_type}")
 
-    @parameterized.expand(get_path_and_class)
-    def test_as_administrator_for_theydontwantyouto_org(self, _, path, list_type):
-        administrator = Administrator.objects.create(
-            user=self.user,
-            client=Client.objects.get(name="client2")
-        )
-        qs = self.listview_get_queryset(path, list_type)
+    @pytest.mark.parametrize('_,path,list_type', path_and_class)
+    def test_as_administrator_for_other_org(self, _, path, list_type, other_admin, populate_lists):
+        qs = listview_get_queryset(other_admin, path, list_type)
         if isinstance(list_type, UserErrorLogView):
-            self.assertEqual(len(qs), 2)
-        else:
-            self.assertEqual(len(qs), 1)
-
-        if isinstance(list_type, StatusOverview):
-            self.assertEqual(qs.first().scanner.organization.name,
-                             "IANA (example.com)")
+            assert qs.count() == 1
+        elif isinstance(list_type, RuleList):
+            assert qs.count() == 1
         elif isinstance(list_type, OrganizationListView):
-            self.assertEqual(qs.first().organizations.first().name,
-                             "IANA (example.com)")
+            assert qs.count() == 1
+            assert qs.first() == other_admin.administrator_for.client
+        elif isinstance(list_type, StatusOverview):
+            assert qs.count() == 1
+            assert qs.first().scanner.organization.client == other_admin.administrator_for.client
+        elif isinstance(list_type, WebScannerList):
+            assert qs.count() == 1
+            assert qs.first().organization.client == other_admin.administrator_for.client
         else:
-            self.assertEqual(qs.first().organization.name, "IANA (example.com)")
-        administrator.delete()
+            raise AssertionError(f"Got unexpected list type: {list_type}")
 
-    def test_searching_for_scannerjobs(self):
+    def test_searching_for_scannerjobs(self, superuser, web_scanner, invalid_web_scanner):
         # Arrange
-        self.user.is_superuser = True
-        self.user.save()
-        created_scanner = WebScanner.objects.create(
-            name="obscure name",
-            url="http://magenta.dk",
-            organization=Organization.objects.get(
-                uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c"),
-            validation_status=WebScanner.VALID,
-            download_sitemap=False, rule=CustomRule.objects.first()
-        )
+        path = reverse_lazy('webscanners')
+        view = WebScannerList()
 
         # Act
-        qs = self.listview_get_queryset(
-            reverse_lazy('webscanners'),
-            WebScannerList(),
+        qs = listview_get_queryset(
+            superuser, path, view,
             request_kwargs={
-                'search_field': 'obscure'})
+                'search_field': web_scanner.name[:10]})
 
         # Assert
-        self.assertEqual(qs.count(), 1)
-        self.assertEqual(qs.first(), created_scanner)
+        assert qs.count() == 1
+        assert qs.first() == web_scanner
 
-    def test_sort_usererrorlogs_default(self):
+    def test_sort_usererrorlogs_default(self, superuser, a_lot_of_usererrorlogs):
         """By default, user error logs should be sorted by pk, descending."""
-        self.user.is_superuser = True
-        self.user.save()
+        path = reverse_lazy('error-log')
+        view = UserErrorLogView()
 
-        qs = self.listview_get_queryset(
-            reverse_lazy('error-log'),
-            UserErrorLogView(),
+        qs = listview_get_queryset(
+            superuser, path, view,
             request_kwargs={})
 
         def is_sorted(a, b):
             return a.pk >= b.pk
 
-        self.assertTrue(all(is_sorted(a, b) for (a, b) in pairwise(qs)))
+        assert all(is_sorted(a, b) for (a, b) in pairwise(qs))
 
-    def test_sort_usererrorlogs_with_param(self):
+    def test_sort_usererrorlogs_with_param(self, superuser, a_lot_of_usererrorlogs):
         """User error logs can be sorted by giving parameters order_by and order."""
-        self.user.is_superuser = True
-        self.user.save()
+        path = reverse_lazy('error-log')
+        view = UserErrorLogView()
 
-        qs = self.listview_get_queryset(
-            reverse_lazy('error-log'),
-            UserErrorLogView(),
+        qs = listview_get_queryset(
+            superuser, path, view,
             request_kwargs={'order_by': 'error_message', 'order': 'ascending'})
 
         def is_sorted(a, b):
             return a.error_message <= b.error_message
 
-        self.assertTrue(all(is_sorted(a, b) for (a, b) in pairwise(qs)))
+        assert all(is_sorted(a, b) for (a, b) in pairwise(qs))
 
-    def test_sort_usererrorlogs_with_illegal_param(self):
+    def test_sort_usererrorlogs_with_illegal_param(self, superuser, a_lot_of_usererrorlogs):
         """When given an illegal sorting paramter, user error logs are sorted in the default way,
         pk descending."""
-        self.user.is_superuser = True
-        self.user.save()
 
-        qs = self.listview_get_queryset(
-            reverse_lazy('error-log'),
-            UserErrorLogView(),
+        path = reverse_lazy('error-log')
+        view = UserErrorLogView()
+
+        qs = listview_get_queryset(
+            superuser, path, view,
             request_kwargs={'order_by': 'organization'})
 
         def is_sorted(a, b):
             return a.pk >= b.pk
 
-        self.assertTrue(all(is_sorted(a, b) for (a, b) in pairwise(qs)))
-
-    def listview_get_queryset(self, path, view, **kwargs):
-        request = self.factory.get(path, data=kwargs.get('request_kwargs'))
-        request.user = self.user
-        view.setup(request)
-        return view.get_queryset()
+        assert all(is_sorted(a, b) for (a, b) in pairwise(qs))
