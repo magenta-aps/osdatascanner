@@ -12,6 +12,9 @@ class GraphGrant(Grant):
     (Note that the specific permissions associated with this entitlement are
     not specified here, but in the OS2datascanner application registration in
     Microsoft's portal.)"""
+
+    __match_args__ = ("app_id", "tenant_id", "client_secret",)
+
     app_id = models.UUIDField(
             default=uuid4, editable=False, verbose_name="app ID")
 

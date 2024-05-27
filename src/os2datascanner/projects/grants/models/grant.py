@@ -46,6 +46,8 @@ def wrap_encrypted_field(field_name: str):
 class UsernamePasswordGrant(Grant):
     """A UsernamePasswordGrant represents a traditional service account, with a
     username and password."""
+    __match_args__ = ("username", "password",)
+
     username = models.TextField(verbose_name="username")
     _password = models.JSONField(verbose_name="password (encrypted)")
     password = wrap_encrypted_field("_password")

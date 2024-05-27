@@ -7,6 +7,8 @@ class SMBGrant(UsernamePasswordGrant):
     """A SMBGrant represents a service account with access to a Windows domain,
     and thereby an entitlement to access and scan that domain."""
 
+    __match_args__ = ("domain", "username", "password",)
+
     domain = models.TextField(blank=True)
 
     def validate(self):
