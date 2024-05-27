@@ -20,6 +20,14 @@ services:
       /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/db_init.sql;
       /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sagstilstandopslag_init.sql;
       /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sagsstatus_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/hieraki_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/hierakimedlem_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/adresse_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/arkivafklaringstatus_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/ansaettelsessted_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/fagomraade_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/bruger_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sag_init.sql;
       echo "Set up DB!";
       '
     profiles:
