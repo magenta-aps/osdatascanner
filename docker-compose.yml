@@ -7,6 +7,40 @@ networks:
       os2mo_default
 
 services:
+
+  init_SBSYS_DB:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    volumes:
+      - ./docker/sbsys_db:/docker-entrypoint-initdb.d
+    depends_on:
+      SBSYS_DB:
+        condition: service_healthy
+    command: >
+      bash -c '
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/db_init.sql;
+      echo "Set up DB!";
+      '
+    profiles:
+      - sbsys
+
+  SBSYS_DB:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+      - "7777:1433"
+      - "7778:1434"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=ub3rStr0nGpassword
+      - MSSQL_COLLATION=SQL_Danish_Pref_CP1_CI_AS
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -Q 'SELECT 1' || exit 1" ]
+      interval: 10s
+      retries: 3
+      start_period: 10s
+      timeout: 3s
+    profiles:
+      - sbsys
+
   db:
     image: postgres:12
     ports:
