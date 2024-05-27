@@ -18,6 +18,8 @@ services:
     command: >
       bash -c '
       /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/db_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sagstilstandopslag_init.sql;
+      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sagsstatus_init.sql;
       echo "Set up DB!";
       '
     profiles:
