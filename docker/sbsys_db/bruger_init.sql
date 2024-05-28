@@ -27,7 +27,7 @@ INSERT INTO [dbo].[Bruger]
              1, --(<LogonID, nvarchar(50),> NOT NULL
              Null, -- <LogonPassword, nvarchar(88),>
              Null, -- ,<LogonSalt, nvarchar(88),>
-             'SHA512', -- <LogonAlgorithm, nvarchar(6),> NOT NULL
+             'MD5', -- <LogonAlgorithm, nvarchar(6),> NOT NULL
              Null, -- <LogonIterations, int,>
              0, -- <LogonFailedAttemptCount, int,> NOT NULL
              Null, -- <LogonTemporaryLockedExpiration, datetime,>
