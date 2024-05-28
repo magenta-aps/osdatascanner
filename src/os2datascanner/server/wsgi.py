@@ -13,13 +13,23 @@ from os2datascanner.engine2.pipeline.worker import (
         message_received_raw as worker_mrr)
 from os2datascanner.engine2.pipeline.exporter import (
         message_received_raw as exporter_mrr)
-from . import settings
+from os2datascanner.server import settings
+
+ALLOWED_FILE_FORMATS = [
+    'text/plain',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+]
+
+# The maximum file size in bytes (201 MB)
+MAX_FILE_SIZE = 201 * 1024 * 1024
 
 
 def requires_token(func):
     def runner(env, start_response, body):
         server_token = settings.server["token"]
-        if not server_token:
+        demo_token = settings.server["demo_token"]
+        if not server_token or not demo_token:
             start_response("500 Internal Server Error", [])
             yield b"""\
 <html><body><h1>500 Internal Server Error</h1>\
@@ -31,19 +41,30 @@ def requires_token(func):
                     ("WWW-Authentication", "Bearer realm=\"api\"")])
             return
         else:
-            authentication = env["HTTP_AUTHORIZATION"].split()
+            authentication = env["HTTP_AUTHORIZATION"].split(maxsplit=1)
             if not authentication[0] == "Bearer" or len(authentication) != 2:
                 start_response("400 Bad Request", [
                         ("WWW-Authentication",
                          "Bearer realm=\"api\""
                          " error=\"invalid_request\"")])
                 return
-            elif authentication[1] != server_token:
+            elif authentication[1] != server_token and authentication[1] != demo_token:
                 start_response("401 Unauthorized", [
                         ("WWW-Authentication",
                          "Bearer realm=\"api\""
                          " error=\"invalid_token\"")])
                 return
+            elif authentication[1] == demo_token:
+                if (int(env["CONTENT_LENGTH"]) > MAX_FILE_SIZE
+                        or body["source"]["type"] != "data"
+                        or body["source"]["mime"] not in ALLOWED_FILE_FORMATS):
+
+                    start_response("403 Forbidden", [
+                            ("WWW-Authentication",
+                             "Bearer realm=\"api\""
+                             " error=\"invalid_credentials\"")])
+                return
+
         yield from func(env, start_response, body)
     return runner
 

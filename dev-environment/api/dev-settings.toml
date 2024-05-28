@@ -1,2 +1,3 @@
 [server]
 token = "thisIsNotASecret"
+demo_token = "demoToken"

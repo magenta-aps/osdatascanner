@@ -1,0 +1,30 @@
+# Traefik dynamic configuration for file provider.
+
+# Rules for HTTP traffic
+[http]
+  [http.routers]
+    [http.routers.os2datascanner-api_server-1]
+      rule = "Host(`localhost`)" # Hostname for the url, via which you will access the service.
+      service = "os2datascanner-api_server-1" # Container name of the service docker container
+      middlewares = [
+        "test-ratelimit",
+      ]
+      entryPoints = ["web"]
+
+  # Define middleware to the router
+  [http.middlewares]
+    [http.middlewares.test-ratelimit.rateLimit]
+      average = 100
+      burst = 200
+
+  [http.services]
+    [http.services.os2datascanner-api_server-1]
+      [http.services.os2datascanner-api_server-1.loadBalancer]
+        [[http.services.os2datascanner-api_server-1.loadBalancer.servers]]
+          url = "http://os2datascanner-api_server-1:5000/" 
+          # URL, which the traefik container sends to. Note, that it can resolve container names,
+          # if-and-only-if the the services container and the traefik container is on the same docker network.
+
+[tls.options]
+  [tls.options.default]
+    minVersion = "VersionTLS12"

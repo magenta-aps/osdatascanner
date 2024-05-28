@@ -6,6 +6,9 @@ networks:
     name:
       os2mo_default
 
+  traefik:
+    name: traefik
+
 services:
 
   init_SBSYS_DB:
@@ -395,8 +398,6 @@ services:
         "--reload", # restart workers when code changes
         "os2datascanner.server.wsgi"
     ]
-    ports:
-      - "8070:5000"
     environment:
       -  OS2DS_ADMIN_USER_CONFIG_PATH="/dev-environment/api/dev-settings.toml"
     tty:
@@ -406,6 +407,8 @@ services:
       - ./src/os2datascanner:/code/src/os2datascanner
     profiles:
       - api
+    networks:
+      - traefik
 
   swagger_ui:
     image: swaggerapi/swagger-ui:v3.41.1
@@ -541,6 +544,15 @@ services:
       - ldap_server
     profiles:
       - ldap
+
+  traefik:
+    image: traefik:v3.0
+    ports:
+      - "8070:80"
+    volumes:
+      - ./dev-environment/traefik/:/etc/traefik
+    networks:
+      - traefik
 
   samba:
     image: magentaaps/samba-test:master
