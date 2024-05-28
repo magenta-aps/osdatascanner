@@ -1,8 +1,13 @@
+DROP DATABASE  IF EXISTS [SbSysNetDrift]
+GO
 CREATE DATABASE [SbSysNetDrift]
 GO
-
 USE [SbSysNetDrift]
 GO
+
+CREATE SCHEMA [sts]
+GO
+
 /****** Object:  Table [dbo].[AdministrativProfil]    Script Date: 27-05-2024 09:13:19 ******/
 SET ANSI_NULLS ON
 GO
@@ -12186,3 +12191,5 @@ ALTER TABLE [dbo].[StyringsreolHyldeFag]  WITH NOCHECK ADD  CONSTRAINT [CK_Styri
 GO
 ALTER TABLE [dbo].[StyringsreolHyldeFag] CHECK CONSTRAINT [CK_StyringsreolHyldeFag]
 GO
+
+PRINT N'Done with db_init.sql'
