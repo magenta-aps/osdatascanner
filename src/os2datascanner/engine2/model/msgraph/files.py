@@ -32,9 +32,23 @@ class MSGraphFilesSource(MSGraphSource):
     def handles(self, sm):  # noqa
         if self._site_drives:
             with warn_on_httperror("SharePoint drive check"):
-                drives = sm.open(self).get("sites/root/drives").json()
-                for drive in drives["value"]:
+                # Get all sites possible, but exclude personal ones, as they usually
+                # will lead us to users 'personal' OneDrive.
+                sites = sm.open(self).paginated_get(
+                    "sites/getAllSites?$filter=isPersonalSite ne true")
+
+                for site in sites:
+                    # For some reason, this returns id key as 3 comma seperated values ...
+                    # tenant, site id, some other id.
+                    site_id = site.get("id").split(",")[1]
+                    site_w_drive = sm.open(self).get(
+                        f"sites/{site_id}?$select=*,drive&$expand=drive").json()
+
+                    # Grab the "drive" found navigating this site
+                    drive = site_w_drive.get("drive")
+
                     yield self._make_drive_handle(drive)
+
         if self._user_drives:
             if self._userlist is None:
                 for user in self._list_users(sm):
