@@ -123,3 +123,14 @@ ADRESSE = [
         "AdgangsAdresseIdentity": None,
     }
 ]
+
+ARKIV_AFKLARINGS_STATUS = [
+    {
+        "ID": 1,
+        "Navn": "Mangler bekræftelse",
+    },
+    {
+        "ID": 2,
+        "Navn": "Skal arkiveres",
+    },
+]
