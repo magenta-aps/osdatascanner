@@ -173,3 +173,29 @@ FAG_OMRAADE = [
         "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
     }
 ]
+
+BRUGER = [
+    {
+        "LogonID": 1,
+        "LogonPassword": None,
+        "LogonSalt": None,
+        "LogonAlgorithm": "MD5",
+        "LogonIterations": None,
+        "LogonFailedAttemptCount": 0,
+        "LogonTemporaryLockedExpiration": None,
+        "Navn": "Bruce Lee",
+        "Titel": None,
+        "Stilling": None,
+        "KontorID": None,
+        "FagomraadeID": 1,
+        "Lokale": None,
+        "AdresseID": None,
+        "AnsaettelsesstedID": 1,
+        "Status": 1,
+        "EksternID": None,
+        "ObjectSid": "S-DIG",
+        "UserPrincipalName": "bruce@kungfu.org",
+        "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
+        "ErSystembruger": 0,
+    }
+]
