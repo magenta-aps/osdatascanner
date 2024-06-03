@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from os2datascanner.engine2.sbsys.config import get_sbsys_settings
 from os2datascanner.engine2.sbsys.db import get_engine, get_tables
-
+from os2datascanner.engine2.tests.sbsys.data import SAGS_TILSTAND_OPSLAG, \
+    SAGS_STATUS, HIERAKI, HIERAKI_MEDLEM
 
 if __name__ == "__main__":
     sbsys_settings = get_sbsys_settings()
@@ -28,69 +29,25 @@ if __name__ == "__main__":
         # Populate table "SagsTilstandOpslag"
         session.execute(
             insert(SagsTilstandOpslag),
-            [
-                {"ID": 0, "Navn": "Aktiv"},
-                {"ID": 1, "Navn": "Afsluttet"},
-            ]
+            SAGS_TILSTAND_OPSLAG,
         )
 
         # Populate table "SagsStatus"
         session.execute(
             insert(SagsStatus),
-            [
-                {
-                    "ID": 1, "Navn": "Opklaring", "Orden": 2, "SagsTilstand": 0,
-                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
-                },
-                {
-                    "ID": 2, "Navn": "Afgjort_slettet", "Orden": 3, "SagsTilstand": 0,
-                    "RequireComments": 0, "IsDeleted": 1, "SagsForklaede": 0
-                },
-                {
-                    "ID": 3, "Navn": "Afventer", "Orden": 4, "SagsTilstand": 0,
-                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
-                },
-                {
-                    "ID": 4, "Navn": "Afsluttet", "Orden": 5, "SagsTilstand": 1,
-                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 2
-                },
-                {
-                    "ID": 5, "Navn": "Arkiveret", "Orden": 6, "SagsTilstand": 1,
-                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 2
-                },
-                {
-                    "ID": 6, "Navn": "Afsluttet fra GoPro", "Orden": 7, "SagsTilstand": 1,
-                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 2
-                },
-                {
-                    "ID": 7, "Navn": "Endeligt_slettet", "Orden": 8, "SagsTilstand": 1,
-                    "RequireComments": 0, "IsDeleted": 1, "SagsForklaede": 2
-                },
-                {
-                    "ID": 8, "Navn": "Opstået", "Orden": 1, "SagsTilstand": 0,
-                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
-                },
-            ]
+            SAGS_STATUS,
         )
 
         # Populate table "Hieraki" (NOTE: "Hierarki" is misspelled in SBSYS)
         session.execute(
             insert(Hieraki),
-            {"Navn": "Vejstrand Hierarki", "Beskrivelse": None, "EksternID": None}
+            HIERAKI,
         )
 
         # Polulate table "HierakiMedlem" (NOTE: table name is misspelled in SBSYS)
         session.execute(
             insert(HierakiMedlem),
-            [
-                {
-                    "Navn": "Vejstrand Hieraki Medlem",
-                    "HierakiID": 1,
-                    "ParentID": None,
-                    "EksternID": None,
-                    "SortIndex": None,
-                }
-            ]
+            HIERAKI_MEDLEM,
         )
 
         session.commit()
