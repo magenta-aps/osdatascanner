@@ -4,6 +4,8 @@
 #
 #    pip-compile --allow-unsafe requirements-all.in
 #
+annotated-types==0.7.0
+    # via pydantic
 anyio==3.6.2
     # via watchfiles
 asgiref==3.8.1
@@ -167,7 +169,9 @@ google-resumable-media==2.4.0
 googleapis-common-protos==1.56.4
     # via google-api-core
 greenlet==1.1.3.post0
-    # via gevent
+    # via
+    #   gevent
+    #   sqlalchemy
 gunicorn[gevent]==20.1.0
     # via -r requirements-all.in
 h11==0.14.0
@@ -292,6 +296,14 @@ pycparser==2.21
     # via cffi
 pycryptodome==3.15.0
     # via -r requirements-all.in
+pydantic==2.7.3
+    # via
+    #   -r requirements-all.in
+    #   pydantic-settings
+pydantic-core==2.18.4
+    # via pydantic
+pydantic-settings==2.3.0
+    # via -r requirements-all.in
 pygments==2.13.0
     # via
     #   exchangelib
@@ -299,6 +311,8 @@ pygments==2.13.0
     #   rich
 pyjwt==1.7.1
     # via djangorestframework-jwt
+pymssql==2.3.0
+    # via -r requirements-all.in
 pynacl==1.5.0
     # via -r requirements-all.in
 pyopenssl==22.1.0
@@ -340,7 +354,9 @@ python-dateutil==2.8.2
     #   pandas
     #   pysaml2
 python-dotenv==0.21.0
-    # via uvicorn
+    # via
+    #   pydantic-settings
+    #   uvicorn
 python-ipware==3.0.0
     # via django-ipware
 python-magic==0.4.27
@@ -400,6 +416,8 @@ sniffio==1.3.0
     # via anyio
 sortedcontainers==2.4.0
     # via -r requirements-all.in
+sqlalchemy==2.0.30
+    # via -r requirements-all.in
 sqlparse==0.4.3
     # via
     #   django
@@ -422,6 +440,11 @@ traitlets==5.5.0
     # via
     #   ipython
     #   matplotlib-inline
+typing-extensions==4.12.1
+    # via
+    #   pydantic
+    #   pydantic-core
+    #   sqlalchemy
 tzdata==2022.5
     # via
     #   exchangelib
