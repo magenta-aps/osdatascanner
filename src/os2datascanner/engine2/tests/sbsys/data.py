@@ -102,3 +102,24 @@ HIERAKI_MEDLEM = [
         "SortIndex": None,
     }
 ]
+
+ADRESSE = [
+    {
+        "Adresse1": "Paradisæblevej",
+        "Adresse2": None,
+        "Adresse3": None,
+        "Adresse4": None,
+        "Adresse5": None,
+        "PostNummer": 1000,
+        "HusNummer": 13,
+        "Etage": None,
+        "DoerBetegnelse": None,
+        "PostBoks": None,
+        "PostDistrikt": None,
+        "LandeKode": "DK",
+        "ErUdlandsadresse": 0,
+        "ErBeskyttet": 0,
+        "AdresseIdentity": None,
+        "AdgangsAdresseIdentity": None,
+    }
+]

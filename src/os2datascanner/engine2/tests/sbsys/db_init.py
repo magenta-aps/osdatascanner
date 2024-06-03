@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from os2datascanner.engine2.sbsys.config import get_sbsys_settings
 from os2datascanner.engine2.sbsys.db import get_engine, get_tables
 from os2datascanner.engine2.tests.sbsys.data import SAGS_TILSTAND_OPSLAG, \
-    SAGS_STATUS, HIERAKI, HIERAKI_MEDLEM
+    SAGS_STATUS, HIERAKI, HIERAKI_MEDLEM, ADRESSE
 
 if __name__ == "__main__":
     sbsys_settings = get_sbsys_settings()
@@ -24,6 +24,7 @@ if __name__ == "__main__":
     SagsStatus = tables["SagsStatus"]
     Hieraki = tables["Hieraki"]
     HierakiMedlem = tables["HierakiMedlem"]
+    Adresse = tables["Adresse"]
 
     with Session(engine) as session:
         # Populate table "SagsTilstandOpslag"
@@ -50,4 +51,10 @@ if __name__ == "__main__":
             HIERAKI_MEDLEM,
         )
 
+        session.execute(
+            insert(Adresse),
+            ADRESSE,
+        )
+
+        # Populate table "Adresse"
         session.commit()
