@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
     # Table references for convenience
     SagsTilstandOpslag = tables["SagsTilstandOpslag"]
+    SagsStatus = tables["SagsStatus"]
 
     with Session(engine) as session:
         # Populate table "SagsTilstandOpslag"
@@ -28,6 +29,45 @@ if __name__ == "__main__":
             [
                 {"ID": 0, "Navn": "Aktiv"},
                 {"ID": 1, "Navn": "Afsluttet"},
+            ]
+        )
+
+        # Populate table "SagsStatus"
+        session.execute(
+            insert(SagsStatus),
+            [
+                {
+                    "ID": 1, "Navn": "Opklaring", "Orden": 2, "SagsTilstand": 0,
+                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
+                },
+                {
+                    "ID": 2, "Navn": "Afgjort_slettet", "Orden": 3, "SagsTilstand": 0,
+                    "RequireComments": 0, "IsDeleted": 1, "SagsForklaede": 0
+                },
+                {
+                    "ID": 3, "Navn": "Afventer", "Orden": 4, "SagsTilstand": 0,
+                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
+                },
+                {
+                    "ID": 4, "Navn": "Afsluttet", "Orden": 5, "SagsTilstand": 1,
+                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 2
+                },
+                {
+                    "ID": 5, "Navn": "Arkiveret", "Orden": 6, "SagsTilstand": 1,
+                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 2
+                },
+                {
+                    "ID": 6, "Navn": "Afsluttet fra GoPro", "Orden": 7, "SagsTilstand": 1,
+                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 2
+                },
+                {
+                    "ID": 7, "Navn": "Endeligt_slettet", "Orden": 8, "SagsTilstand": 1,
+                    "RequireComments": 0, "IsDeleted": 1, "SagsForklaede": 2
+                },
+                {
+                    "ID": 8, "Navn": "Opstået", "Orden": 1, "SagsTilstand": 0,
+                    "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
+                },
             ]
         )
 
