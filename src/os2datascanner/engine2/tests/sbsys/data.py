@@ -134,3 +134,35 @@ ARKIV_AFKLARINGS_STATUS = [
         "Navn": "Skal arkiveres",
     },
 ]
+
+ANSAETTELSESSTED = [
+    {
+        "Navn": "Vejstrand vej-afdeling",
+        "CustomAdID": None,
+        "Beskrivelse": None,
+        "PostAdresseID": 1,
+        "FysiskAdresseID": 1,
+        "Aabningstider": None,
+        "EanNummer": None,
+        "Leder": None,
+        "CvrNummer": None,
+        "PNummer": None,
+        "Fritekst1": None,
+        "Fritekst2": None,
+        "FagomraadeID": None,
+        "Indjournaliseringsfolder": None,
+        "DefaultEmneplanID": None,
+        "HierakiMedlemID": 1,
+        "Webside": None,
+        "DefaultSagSecuritySetID": None,
+        "VisAdgangsListeVedOpretSag": None,
+        "TilladBrugerAtSkiftePassword": 1,
+        "TilladPublicering": 1,
+        "EksterneAdviseringer": 0,
+        "AutomatiskErindringVedJournalisering": 1,
+        "StandardAktindsigtVedJournalisering": 1,
+        "VisCPR": 1,
+        "AnsaettelsesstedIdentity": "DB05212B-15FA-4C02-8001-A05D0D45FED8",
+        "VisCVR": 1,
+    }
+]
