@@ -166,3 +166,10 @@ ANSAETTELSESSTED = [
         "VisCVR": 1,
     }
 ]
+
+FAG_OMRAADE = [
+    {
+        "Navn": "Veje og strande",
+        "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
+    }
+]
