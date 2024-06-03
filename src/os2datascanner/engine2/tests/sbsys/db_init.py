@@ -21,6 +21,7 @@ if __name__ == "__main__":
     # Table references for convenience
     SagsTilstandOpslag = tables["SagsTilstandOpslag"]
     SagsStatus = tables["SagsStatus"]
+    Hieraki = tables["Hieraki"]
 
     with Session(engine) as session:
         # Populate table "SagsTilstandOpslag"
@@ -69,6 +70,12 @@ if __name__ == "__main__":
                     "RequireComments": 0, "IsDeleted": 0, "SagsForklaede": 0
                 },
             ]
+        )
+
+        # Populate table "Hieraki" (NOTE: "Hierarki" is misspelled in SBSYS)
+        session.execute(
+            insert(Hieraki),
+            {"Navn": "Vejstrand Hierarki", "Beskrivelse": None, "EksternID": None}
         )
 
         session.commit()
