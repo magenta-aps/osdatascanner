@@ -22,6 +22,7 @@ if __name__ == "__main__":
     SagsTilstandOpslag = tables["SagsTilstandOpslag"]
     SagsStatus = tables["SagsStatus"]
     Hieraki = tables["Hieraki"]
+    HierakiMedlem = tables["HierakiMedlem"]
 
     with Session(engine) as session:
         # Populate table "SagsTilstandOpslag"
@@ -76,6 +77,20 @@ if __name__ == "__main__":
         session.execute(
             insert(Hieraki),
             {"Navn": "Vejstrand Hierarki", "Beskrivelse": None, "EksternID": None}
+        )
+
+        # Polulate table "HierakiMedlem" (NOTE: table name is misspelled in SBSYS)
+        session.execute(
+            insert(HierakiMedlem),
+            [
+                {
+                    "Navn": "Vejstrand Hieraki Medlem",
+                    "HierakiID": 1,
+                    "ParentID": None,
+                    "EksternID": None,
+                    "SortIndex": None,
+                }
+            ]
         )
 
         session.commit()
