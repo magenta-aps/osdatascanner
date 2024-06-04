@@ -11,11 +11,11 @@ if __name__ == "__main__":
     sbsys_settings = get_sbsys_settings()
 
     engine = get_engine(
-        host=sbsys_settings.host,
-        port=sbsys_settings.port,
-        user=sbsys_settings.user,
-        password=sbsys_settings.password,
-        database=sbsys_settings.database,
+        host=sbsys_settings.sbsys_host,
+        port=sbsys_settings.sbsys_port,
+        user=sbsys_settings.sbsys_user,
+        password=sbsys_settings.sbsys_password,
+        database=sbsys_settings.sbsys_database,
     )
 
     tables = get_tables(engine)

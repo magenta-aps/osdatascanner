@@ -3,11 +3,11 @@ from pydantic_settings import BaseSettings
 
 
 class SBSYSSettings(BaseSettings):
-    host: str
-    port: PositiveInt
-    user: str
-    password: SecretStr
-    database: str
+    sbsys_host: str
+    sbsys_port: PositiveInt
+    sbsys_user: str
+    sbsys_password: SecretStr
+    sbsys_database: str
 
 
 def get_sbsys_settings(*args, **kwargs) -> SBSYSSettings:
