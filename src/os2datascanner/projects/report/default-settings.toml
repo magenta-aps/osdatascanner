@@ -7,6 +7,7 @@
 # /dev-environment/dev-settings.toml
 
 SECRET_KEY = ""
+DECRYPTION_HEX = ""
 
 # django-prometheus will try to connect to postgresql during collectstatic
 # without this setting: https://github.com/korfuri/django-prometheus/issues/34.
@@ -76,6 +77,7 @@ INSTALLED_APPS = [
     'os2datascanner.core_organizational_structure.apps.CoreOrganizationalStructureConfig',
     'os2datascanner.projects.report.organizations.apps.OrganizationsConfig',
     'os2datascanner.projects.shared',
+    'os2datascanner.projects.grants',
 ]
 AUTHENTICATION_BACKENDS = [
     'os2datascanner.projects.report.reportapp.utils.OIDCAuthenticationBackend',

@@ -11,6 +11,13 @@ class Migration(migrations.Migration):
         ('os2datascanner_report', '0040_refactor_for_efficient_updating'),
     ]
 
+    run_before = [
+        # The organizations database doesn't actually exist at
+        # organizations/0001_initial, so we need to register this migration as
+        # a dependency of the grants app
+        ('grants', '0001_initial'),
+    ]
+
     operations = [
         # Because we moved Organization to live in the organizations app, we must perform some
         # migration magic:
