@@ -5,7 +5,7 @@ from os2datascanner.engine2.sbsys.config import get_sbsys_settings
 from os2datascanner.engine2.sbsys.db import get_engine, get_tables
 from os2datascanner.engine2.tests.sbsys.data import SAGS_TILSTAND_OPSLAG, \
     SAGS_STATUS, HIERAKI, HIERAKI_MEDLEM, ADRESSE, ARKIV_AFKLARING_STATUS, \
-    ANSAETTELSESSTED, FAG_OMRAADE, BRUGER
+    ANSAETTELSESSTED, FAG_OMRAADE, BRUGER, SAG
 
 if __name__ == "__main__":
     sbsys_settings = get_sbsys_settings()
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     Ansaettelsessted = tables["Ansaettelsessted"]
     FagOmraade = tables["FagOmraade"]
     Bruger = tables["Bruger"]
+    Sag = tables["Sag"]
 
     with Session(engine) as session:
         # Populate table "SagsTilstandOpslag"
@@ -58,5 +59,8 @@ if __name__ == "__main__":
 
         # Populate table "Bruger"
         session.execute(insert(Bruger), BRUGER)
+
+        # Populate table "Sag"
+        session.execute(insert(Sag), SAG)
 
         session.commit()

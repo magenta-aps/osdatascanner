@@ -1,3 +1,26 @@
+from copy import copy
+from datetime import datetime
+from typing import Any
+
+
+def _update_base_obj(
+    base_obj: dict[str, Any],
+    updates: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    Update a base table object dict with values new values, e.g.
+    we can update the _SAG_BASE dict to a proper SAG dict.
+
+    Args:
+        base_obj: the base object to update, e.g. _SAG_BASE
+        updates: the values to update
+    """
+
+    updated_obj = copy(base_obj)
+    updated_obj.update(updates)
+    return updated_obj
+
+
 SAGS_TILSTAND_OPSLAG = [
     {
         "ID": 0,
@@ -198,4 +221,100 @@ BRUGER = [
         "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
         "ErSystembruger": 0,
     }
+]
+
+_SAG_BASE = {
+    "SagIdentity": None,
+    "Nummer": None,
+    "Titel": None,
+    "ErBeskyttet": None,
+    "Kommentar": None,
+    "BevaringID": None,
+    "KommuneID": None,
+    "BehandlerID": None,
+    "SagsStatusID": None,
+    "CreatedByID": None,
+    "Created": None,
+    "LastChangedByID": None,
+    "LastChanged": None,
+    "YderligereMaterialeFindes": None,
+    "YderligereMaterialeBeskrivelse": None,
+    "AmtID": None,
+    "ErBesluttet": None,
+    "Besluttet": None,
+    "BeslutningsTypeID": None,
+    "BeslutningNotat": None,
+    "BeslutningDeadline": None,
+    "BeslutningHarDeadline": None,
+    "ErSamlesag": None,
+    "FagomraadeID": None,
+    "SecuritySetID": None,
+    "SagsNummerID": None,
+    "LastStatusChange": None,
+    "LastStatusChangeComments": None,
+    "Kassationsdato": None,
+    "SagsPartID": None,
+    "RegionID": None,
+    "KommuneFoer2007ID": None,
+    "Opstaaet": None,
+    "AnsaettelsesstedID": None,
+    "ArkivAfklaringStatusID": None,
+    "ArkivNote": None,
+    "StyringsreolHyldeID": None,
+    "SkabelonID": None,
+    "Sletningsdato": None,
+}
+
+SAG = [
+    _update_base_obj(
+        _SAG_BASE,
+        {
+            "SagIdentity": "2B37AF33-BDFC-4C9B-B332-CAE56310E963",
+            "Nummer": "06.13.01-K02-3-13",
+            "Titel": "Opsætning af skilte: Skabet til Narnia",
+            "ErBeskyttet": 1,
+            "BehandlerID": 1,  # Reference to the "Bruger" table
+            "SagsStatusID": 8,
+            "CreatedByID": 1,
+            "Created": datetime(2013, 9, 11),
+            "LastChangedByID": 1,
+            "LastChanged": datetime(2023, 9, 11),
+            "AnsaettelsesstedID": 1,
+            "ArkivAfklaringStatusID": 1,
+        }
+    ),
+    _update_base_obj(
+        _SAG_BASE,
+        {
+            "SagIdentity": "EE5BF8A0-D44F-4780-A76A-6E625EF312DA",
+            "Nummer": "07.13.01-K02-3-13",
+            "Titel": "Eiffel Tower",
+            "ErBeskyttet": 1,
+            "BehandlerID": 1,  # Reference to the "Bruger" table
+            "SagsStatusID": 5,
+            "CreatedByID": 1,
+            "Created": datetime(2013, 9, 11),
+            "LastChangedByID": 1,
+            "LastChanged": datetime(2022, 9, 11),
+            "AnsaettelsesstedID": 1,
+            "ArkivAfklaringStatusID": 1,
+        }
+    ),
+    _update_base_obj(
+        _SAG_BASE,
+        {
+            "SagIdentity": "5A766711-7E0C-4085-8A8B-158ACE9EE087",
+            "Nummer": "05.13.01-K02-3-13",
+            "Titel": "Den Grimme Ælling",
+            "ErBeskyttet": 1,
+            "BehandlerID": 1,  # Reference to the "Bruger" table
+            "SagsStatusID": 8,
+            "CreatedByID": 1,
+            "Created": datetime(2013, 9, 11),
+            "LastChangedByID": 1,
+            "LastChanged": datetime(2022, 9, 11),
+            "AnsaettelsesstedID": 1,
+            "ArkivAfklaringStatusID": 1,
+        }
+    ),
 ]
