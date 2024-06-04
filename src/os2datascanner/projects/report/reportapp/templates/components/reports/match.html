@@ -193,7 +193,7 @@
             </div>
           {% else %}
             {% if "/archive/" in request.path %}
-              <button class="revert-handle button button--icon-button"
+              <button class="revert-handle button button--icon-text-button"
                       type="button"
                       title="Here is a title."
                       hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
@@ -206,7 +206,7 @@
                 <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Revert" %}</span>
               </button>
             {% else %}
-              <button class="matches-handle button button--icon-button"
+              <button class="matches-handle button button--icon-text-button"
                       type="button"
                       title="{% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}"
                       hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
