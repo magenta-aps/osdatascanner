@@ -16,6 +16,8 @@
 
 - The "Show/hide all matches" button works as intended, again. 
 
+- Handle button on match results, once again, fits texts when HANDLE_DROPDOWN is set to false. 
+
 ## Version 3.22.7, 15th May 2024
 
 "Friendship Bracelet Exchange"
