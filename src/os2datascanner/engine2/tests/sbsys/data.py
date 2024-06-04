@@ -124,7 +124,7 @@ ADRESSE = [
     }
 ]
 
-ARKIV_AFKLARINGS_STATUS = [
+ARKIV_AFKLARING_STATUS = [
     {
         "ID": 1,
         "Navn": "Mangler bekræftelse",
