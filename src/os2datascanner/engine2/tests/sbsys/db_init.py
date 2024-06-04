@@ -33,34 +33,16 @@ if __name__ == "__main__":
     Sag = tables["Sag"]
 
     with Session(engine) as session:
-        # Populate table "SagsTilstandOpslag"
+        # Populate tables
         session.execute(insert(SagsTilstandOpslag), SAGS_TILSTAND_OPSLAG)
-
-        # Populate table "SagsStatus"
         session.execute(insert(SagsStatus), SAGS_STATUS)
-
-        # Populate table "Hieraki" (NOTE: "Hierarki" is misspelled in SBSYS)
-        session.execute(insert(Hieraki), HIERAKI)
-
-        # Polulate table "HierakiMedlem" (NOTE: table name is misspelled in SBSYS)
-        session.execute(insert(HierakiMedlem), HIERAKI_MEDLEM)
-
-        # Populate table "Adresse"
+        session.execute(insert(Hieraki), HIERAKI)  # NOTE misspelled in SBSYS
+        session.execute(insert(HierakiMedlem), HIERAKI_MEDLEM)  # NOTE misspelled in SBSYS
         session.execute(insert(Adresse), ADRESSE)
-
-        # Populate table "ArkivAfklaringsStatus"
         session.execute(insert(ArkivAfklaringStatus), ARKIV_AFKLARING_STATUS)
-
-        # Populate table "Ansaettelsessted"
         session.execute(insert(Ansaettelsessted), ANSAETTELSESSTED)
-
-        # Populate table "FagOmraade"
         session.execute(insert(FagOmraade), FAG_OMRAADE)
-
-        # Populate table "Bruger"
         session.execute(insert(Bruger), BRUGER)
-
-        # Populate table "Sag"
         session.execute(insert(Sag), SAG)
 
         session.commit()
