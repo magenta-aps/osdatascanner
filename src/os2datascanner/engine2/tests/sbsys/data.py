@@ -107,45 +107,71 @@ SAGS_STATUS = [
     },
 ]
 
+_HIERAKI_BASE = {
+    "Navn": None,
+    "Beskrivelse": None,
+    "EksternID": None
+}
+
 # Misspelled in SBSYS
 HIERAKI = [
-    {
-        "Navn": "Vejstrand Hierarki",
-        "Beskrivelse": None,
-        "EksternID": None
-    }
+    _update_base_obj(
+        _HIERAKI_BASE,
+        {
+            "Navn": "Vejstrand Hierarki",
+        }
+    )
 ]
+
+_HIERAKI_MEDLEM_BASE = {
+    "Navn": None,
+    "HierakiID": None,
+    "ParentID": None,
+    "EksternID": None,
+    "SortIndex": None,
+}
 
 HIERAKI_MEDLEM = [
-    {
-        "Navn": "Vejstrand Hieraki Medlem",
-        "HierakiID": 1,
-        "ParentID": None,
-        "EksternID": None,
-        "SortIndex": None,
-    }
+    _update_base_obj(
+        _HIERAKI_MEDLEM_BASE,
+        {
+            "Navn": "Vejstrand Hieraki Medlem",
+            "HierakiID": 1,
+        }
+    )
 ]
 
+_ADRESSE_BASE = {
+    "Adresse1": None,
+    "Adresse2": None,
+    "Adresse3": None,
+    "Adresse4": None,
+    "Adresse5": None,
+    "PostNummer": None,
+    "HusNummer": None,
+    "Etage": None,
+    "DoerBetegnelse": None,
+    "PostBoks": None,
+    "PostDistrikt": None,
+    "LandeKode": "DK",
+    "ErUdlandsadresse": 0,
+    "ErBeskyttet": 0,
+    "AdresseIdentity": None,
+    "AdgangsAdresseIdentity": None,
+}
+
+
 ADRESSE = [
-    {
-        "Adresse1": "Paradisæblevej",
-        "Adresse2": None,
-        "Adresse3": None,
-        "Adresse4": None,
-        "Adresse5": None,
-        "PostNummer": 1000,
-        "HusNummer": 13,
-        "Etage": None,
-        "DoerBetegnelse": None,
-        "PostBoks": None,
-        "PostDistrikt": None,
-        "LandeKode": "DK",
-        "ErUdlandsadresse": 0,
-        "ErBeskyttet": 0,
-        "AdresseIdentity": None,
-        "AdgangsAdresseIdentity": None,
-    }
+    _update_base_obj(
+        _ADRESSE_BASE,
+        {
+            "Adresse1": "Paradisæblevej",
+            "PostNummer": 1000,
+            "HusNummer": 13,
+        }
+    )
 ]
+
 
 ARKIV_AFKLARING_STATUS = [
     {
@@ -158,69 +184,102 @@ ARKIV_AFKLARING_STATUS = [
     },
 ]
 
+_ANSAETTELSESSTED_BASE = {
+    "Navn": None,
+    "CustomAdID": None,
+    "Beskrivelse": None,
+    "PostAdresseID": None,
+    "FysiskAdresseID": None,
+    "Aabningstider": None,
+    "EanNummer": None,
+    "Leder": None,
+    "CvrNummer": None,
+    "PNummer": None,
+    "Fritekst1": None,
+    "Fritekst2": None,
+    "FagomraadeID": None,
+    "Indjournaliseringsfolder": None,
+    "DefaultEmneplanID": None,
+    "HierakiMedlemID": None,
+    "Webside": None,
+    "DefaultSagSecuritySetID": None,
+    "VisAdgangsListeVedOpretSag": None,
+    "TilladBrugerAtSkiftePassword": 1,
+    "TilladPublicering": 1,
+    "EksterneAdviseringer": 0,
+    "AutomatiskErindringVedJournalisering": 1,
+    "StandardAktindsigtVedJournalisering": 1,
+    "VisCPR": 1,
+    "AnsaettelsesstedIdentity": None,
+    "VisCVR": 1,
+}
+
 ANSAETTELSESSTED = [
-    {
-        "Navn": "Vejstrand vej-afdeling",
-        "CustomAdID": None,
-        "Beskrivelse": None,
-        "PostAdresseID": 1,
-        "FysiskAdresseID": 1,
-        "Aabningstider": None,
-        "EanNummer": None,
-        "Leder": None,
-        "CvrNummer": None,
-        "PNummer": None,
-        "Fritekst1": None,
-        "Fritekst2": None,
-        "FagomraadeID": None,
-        "Indjournaliseringsfolder": None,
-        "DefaultEmneplanID": None,
-        "HierakiMedlemID": 1,
-        "Webside": None,
-        "DefaultSagSecuritySetID": None,
-        "VisAdgangsListeVedOpretSag": None,
-        "TilladBrugerAtSkiftePassword": 1,
-        "TilladPublicering": 1,
-        "EksterneAdviseringer": 0,
-        "AutomatiskErindringVedJournalisering": 1,
-        "StandardAktindsigtVedJournalisering": 1,
-        "VisCPR": 1,
-        "AnsaettelsesstedIdentity": "DB05212B-15FA-4C02-8001-A05D0D45FED8",
-        "VisCVR": 1,
-    }
+    _update_base_obj(
+        _ANSAETTELSESSTED_BASE,
+        {
+            "Navn": "Vejstrand vej-afdeling",
+            "PostAdresseID": 1,
+            "FysiskAdresseID": 1,
+            "HierakiMedlemID": 1,
+            "AnsaettelsesstedIdentity": "DB05212B-15FA-4C02-8001-A05D0D45FED8",
+        }
+    )
 ]
+
+_FAG_OMRAADE_BASE = {
+    "Navn": None,
+    "FagomraadeIdentity": None,
+}
 
 FAG_OMRAADE = [
-    {
-        "Navn": "Veje og strande",
-        "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
-    }
+    _update_base_obj(
+        _FAG_OMRAADE_BASE,
+        {
+            "Navn": "Veje og strande",
+            "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
+        }
+    )
 ]
 
+_BRUGER_BASE = {
+    "LogonID": None,
+    "LogonPassword": None,
+    "LogonSalt": None,
+    "LogonAlgorithm": "MD5",
+    "LogonIterations": None,
+    "LogonFailedAttemptCount": 0,
+    "LogonTemporaryLockedExpiration": None,
+    "Navn": None,
+    "Titel": None,
+    "Stilling": None,
+    "KontorID": None,
+    "FagomraadeID": None,
+    "Lokale": None,
+    "AdresseID": None,
+    "AnsaettelsesstedID": None,
+    "Status": None,
+    "EksternID": None,
+    "ObjectSid": None,
+    "UserPrincipalName": None,
+    "BrugerIdentity": None,
+    "ErSystembruger": 0,
+}
+
 BRUGER = [
-    {
-        "LogonID": 1,
-        "LogonPassword": None,
-        "LogonSalt": None,
-        "LogonAlgorithm": "MD5",
-        "LogonIterations": None,
-        "LogonFailedAttemptCount": 0,
-        "LogonTemporaryLockedExpiration": None,
-        "Navn": "Bruce Lee",
-        "Titel": None,
-        "Stilling": None,
-        "KontorID": None,
-        "FagomraadeID": 1,
-        "Lokale": None,
-        "AdresseID": None,
-        "AnsaettelsesstedID": 1,
-        "Status": 1,
-        "EksternID": None,
-        "ObjectSid": "S-DIG",
-        "UserPrincipalName": "bruce@kungfu.org",
-        "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
-        "ErSystembruger": 0,
-    }
+    _update_base_obj(
+        _BRUGER_BASE,
+        {
+            "LogonID": 1,
+            "Navn": "Bruce Lee",
+            "FagomraadeID": 1,
+            "AnsaettelsesstedID": 1,
+            "Status": 1,
+            "ObjectSid": "S-DIG",
+            "UserPrincipalName": "bruce@kungfu.org",
+            "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
+        }
+    )
 ]
 
 _SAG_BASE = {
