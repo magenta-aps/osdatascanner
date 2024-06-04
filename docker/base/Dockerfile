@@ -259,3 +259,34 @@ RUN set -ex \
 EXPOSE 5000
 ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
 CMD ["gunicorn", "--config", "/code/docker/gunicorn-settings.py", "asgi", "os2datascanner.projects.report.asgi:application"]
+
+ARG BASE_IMAGE=base
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} AS sbsys-init
+
+ENV ACCEPT_EULA=Y \
+    SBSYS_HOST=SBSYS_DB \
+    SBSYS_PORT=1433 \
+    SBSYS_USER=sa \
+    # Password not sensitive (only used in dev env and in the GitLab pipeline)
+    SBSYS_PASSWORD=ub3rStr0nGpassword \
+    SBSYS_DATABASE=SbSysNetDrift
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc \
+    | tee /etc/apt/trusted.gpg.d/microsoft.asc \
+    && curl https://packages.microsoft.com/config/debian/11/prod.list \
+       | tee /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends msodbcsql18=18.3.3.1-1 \
+       mssql-tools18=18.2.1.1-1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /code/src
+COPY src/ ./
+
+COPY docker/sbsys_db/db_init.sql docker/sbsys_db/sbsys-init-entrypoint.sh /
+
+ENTRYPOINT ["/bin/bash", "/sbsys-init-entrypoint.sh"]
