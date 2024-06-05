@@ -33,6 +33,9 @@ MSGRAPH_APP_ID = ""
 MSGRAPH_CLIENT_SECRET = ""
 MSGRAPH_TENANT_ID = ""
 
+# [smb]
+SMB_ALLOW_WRITE = false
+
 # [site]
 # The URL of this site, used in links in emails and in the redirect URL for
 # OAuth 2.0 services. (This value should end with a forward slash.)
