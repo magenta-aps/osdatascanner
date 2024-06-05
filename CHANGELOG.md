@@ -18,6 +18,8 @@
 
 - Handle button on match results, once again, fits texts when HANDLE_DROPDOWN is set to false. 
 
+- Increased wait time for retry logic during OS2mo import, to better handle unavailable service(s).
+
 ## Version 3.22.7, 15th May 2024
 
 "Friendship Bracelet Exchange"
