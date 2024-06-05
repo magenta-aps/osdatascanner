@@ -70,13 +70,15 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
         if all(k in request.GET for k in self.SUCCESS_PARAMS):
             # The remote server has given us our grant -- hooray! Store it in
             # the database before we redirect
+
             GraphGrant.objects.get_or_create(
                     tenant_id=request.GET["tenant"],
                     organization_id=state["org"],
                     defaults={
                         "app_id": settings.MSGRAPH_APP_ID,
-                        "_client_secret": GraphGrant.encrypt_secret(
-                            settings.MSGRAPH_CLIENT_SECRET),
+                        # Django does the right thing if you assign to a
+                        # property rather than a database field. Crazy
+                        "client_secret": settings.MSGRAPH_CLIENT_SECRET
                     })
         elif any(k in request.GET for k in self.FAILURE_PARAMS):
             # The remote server has not given us our grant -- boo. Pass the
