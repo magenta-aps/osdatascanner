@@ -2,7 +2,20 @@
 
 ## Next Release
 
-## General improvements
+### New in this release
+
+- Support for deleting matches on Windows network drives:
+
+  - Where the system administrator permits it, users can now delete files with
+    matches on Windows network drives from the OSdatascanner user interface.
+
+  - This function performs three different security checks to make sure that
+    users cannot delete files that they're not responsible for.
+
+  - Note that this function is disabled by default, and that the system
+    administrator must configure a special service account in order to use it.
+
+### General improvements
 
 - System logging is now more consistently using structlog and quality of life improvements
   for the dev-env in this regard have been added.
@@ -12,7 +25,10 @@
 - The modal for cleaning up stale accounts on a scannerjob now utilizes a
   multiple-select element instead of checkboxes.
 
-## Bugfixes
+- The administration system and report module now share a common data model for
+  credentials and privileges.
+ 
+### Bugfixes
 
 - The "Show/hide all matches" button works as intended, again. 
 
@@ -29,7 +45,7 @@
 - Management command for removing DocumentReports only containing problems
   from deleted scannerjobs.
   
-## General improvements
+### General improvements
 
 - Extended test suite for account interactions in the admin module.
 
