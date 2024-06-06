@@ -139,6 +139,7 @@ LANGUAGE_CODE = "da-dk"
 _LOCALE_PATHS = [
     ["*", "src", "os2datascanner", "projects", "report", "locale"],
     ["*", "src", "os2datascanner", "core_organizational_structure", "locale"],
+    ["*", "src", "os2datascanner", "projects", "grants", "locale"],
 ]
 _LANGUAGES = [
     ["da", "Danish"],

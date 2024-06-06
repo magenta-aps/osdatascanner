@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-15 10:14+0200\n"
+"POT-Creation-Date: 2024-06-06 10:43+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -108,7 +108,7 @@ msgstr "intet scannerjob findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
 #: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
-#: import_services/models/msgraph_import_job.py:28
+#: import_services/models/msgraph_import_job.py:29
 #: import_services/models/os2mo_import_job.py:66
 #: import_services/models/realm.py:29
 msgid "organization"
@@ -1267,11 +1267,11 @@ msgstr ""
 "Succes! Alle resultater tilhørende de frakoblede konti fra dette scannerjob "
 "er blevet slettet!"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:19
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:28
 msgid "Clean up stale accounts"
 msgstr "Ryd op i frakoblede konti"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:21
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:30
 msgid ""
 "OSdatascanner has registered, that some users, which were previously scanned "
 "with this scanner job, are no longer covered. These accounts will no longer "
@@ -1281,13 +1281,13 @@ msgstr ""
 "scannet af dette scannerjob, ikke længere er tilknyttet scannerjobbet. Disse "
 "konti vil ikke længere blive scannet af dette scannerjob."
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:23
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:32
 msgid "Delete the report results for the following users:"
 msgstr "Slet resultaterne for følgende brugere:"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:42
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:43
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:49
 #: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:50
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:57
 msgid "Clean"
 msgstr "Ryd op"
 
@@ -2368,21 +2368,21 @@ msgstr "Vælg en scannertype for at gøre den tilgængelig for denne kunde."
 msgid "Only one type of import service can be active at a time."
 msgstr "Kun en type af importservice kan være aktiveret."
 
-#: core/management/commands/run_background_jobs.py:108
+#: core/management/commands/run_background_jobs.py:105
 #, python-format
 msgid "sleep for %(metavar)s seconds if there were no jobs to run"
 msgstr "vent %(metavar)s sekunder hvis der ikke var nogle jobs til afvikling"
 
-#: core/management/commands/run_background_jobs.py:115
+#: core/management/commands/run_background_jobs.py:112
 msgid "do not loop: run a single job and then exit"
 msgstr "kør ikke i løkke: kør et enkelt job og gå derefter ud"
 
-#: core/management/commands/run_background_jobs.py:215
+#: core/management/commands/run_background_jobs.py:195
 #, python-brace-format
 msgid "{0} job(s) completed."
 msgstr "{0} færdige job(s)."
 
-#: core/management/commands/run_background_jobs.py:216
+#: core/management/commands/run_background_jobs.py:196
 #, python-brace-format
 msgid "{0} job(s) failed."
 msgstr "{0} fejlede job(s)."
@@ -2392,7 +2392,7 @@ msgid "user"
 msgstr "bruger"
 
 #: core/models/administrator.py:37 core/models/client.py:115
-#: organizations/models/organization.py:53
+#: organizations/models/organization.py:54
 msgid "client"
 msgstr "kunde"
 
@@ -2534,62 +2534,6 @@ msgstr "Annullér opgave"
 #: core/templates/components/background_job.html:43
 msgid "last updated"
 msgstr "sidst opdateret"
-
-#: grants/apps.py:8
-msgid "grants"
-msgstr "bevillinger"
-
-#: grants/templates/grants/grant_start.html:23
-msgid "Configure Microsoft Graph"
-msgstr "Konfigurér Microsoft Graph"
-
-#: grants/templates/grants/grant_start.html:27
-msgid ""
-"To use this service, you must allow OSdatascanner access to its content."
-msgstr ""
-"For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
-"tjenestens indhold."
-
-#: grants/templates/grants/grant_start.html:31
-#: import_services/templates/import_services/msgraph_oauth.html:21
-msgid "The service refused to grant OSdatascanner the necessary rights:"
-msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
-
-#: grants/templates/grants/grant_start.html:34
-#: import_services/templates/import_services/msgraph_oauth.html:24
-msgid "Click the button below to try again."
-msgstr "Klik på knappen nedenfor for at prøve igen."
-
-#: grants/templates/grants/grant_start.html:36
-#: import_services/templates/import_services/msgraph_oauth.html:26
-msgid "Click the button below to forward to this service."
-msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
-
-#: grants/templates/grants/grant_start.html:42
-#: grants/templates/grants/grant_start.html:43
-#: grants/templates/grants/grant_start.html:44
-#: import_services/templates/import_services/msgraph_oauth.html:32
-#: import_services/templates/import_services/msgraph_oauth.html:33
-msgid "Continue to"
-msgstr "Fortsæt til"
-
-#: grants/templates/grants/grant_start.html:47
-#: import_services/templates/import_services/msgraph_oauth.html:35
-msgid ""
-"You will be forwarded to the creation form after the service has issued the "
-"necessary rights."
-msgstr ""
-"Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
-"de nødvendige rettigheder."
-
-#: grants/templates/grants/grant_start.html:49
-#: import_services/templates/import_services/msgraph_oauth.html:37
-msgid ""
-"The information pointing to the OSdatascanner system for this service is "
-"missing."
-msgstr ""
-"De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
-"mangler."
 
 #: import_services/models/exported_mixin.py:42
 msgid "last successful export"
@@ -2946,6 +2890,39 @@ msgstr ""
 "Denne organisationsstruktur ligger i skyen, og en eksterne tjeneste skal "
 "tillade OSdatascanner adgang til dens indhold."
 
+#: import_services/templates/import_services/msgraph_oauth.html:21
+msgid "The service refused to grant OSdatascanner the necessary rights:"
+msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
+
+#: import_services/templates/import_services/msgraph_oauth.html:24
+msgid "Click the button below to try again."
+msgstr "Klik på knappen nedenfor for at prøve igen."
+
+#: import_services/templates/import_services/msgraph_oauth.html:26
+msgid "Click the button below to forward to this service."
+msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
+
+#: import_services/templates/import_services/msgraph_oauth.html:32
+#: import_services/templates/import_services/msgraph_oauth.html:33
+msgid "Continue to"
+msgstr "Fortsæt til"
+
+#: import_services/templates/import_services/msgraph_oauth.html:35
+msgid ""
+"You will be forwarded to the creation form after the service has issued the "
+"necessary rights."
+msgstr ""
+"Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
+"de nødvendige rettigheder."
+
+#: import_services/templates/import_services/msgraph_oauth.html:37
+msgid ""
+"The information pointing to the OSdatascanner system for this service is "
+"missing."
+msgstr ""
+"De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
+"mangler."
+
 #: import_services/templates/import_services/os2mo_edit.html:15
 msgid "connect to OS2mo"
 msgstr "opret forbindelse til OS2mo"
@@ -2985,12 +2962,12 @@ msgstr "Menu-adgang"
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
 
-#: organizations/models/account.py:47
+#: organizations/models/account.py:48
 #, python-brace-format
 msgid "Deleted scanner {pk}"
 msgstr "Slettet scanner {pk}"
 
-#: organizations/models/organization.py:59
+#: organizations/models/organization.py:60
 msgid "slug"
 msgstr "slug"
 
@@ -3344,6 +3321,18 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:188
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "grants"
+#~ msgstr "bevillinger"
+
+#~ msgid "Configure Microsoft Graph"
+#~ msgstr "Konfigurér Microsoft Graph"
+
+#~ msgid ""
+#~ "To use this service, you must allow OSdatascanner access to its content."
+#~ msgstr ""
+#~ "For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
+#~ "tjenestens indhold."
 
 #~ msgid "Name/URL"
 #~ msgstr "Navn/URL"
