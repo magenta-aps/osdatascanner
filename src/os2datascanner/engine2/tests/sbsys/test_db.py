@@ -2,7 +2,7 @@ from pydantic import SecretStr
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 
-from os2datascanner.engine2.sbsys.db import get_engine, get_tables
+from os2datascanner.integrations.sbsys.db import get_engine, get_tables
 
 
 def test_get_engine():

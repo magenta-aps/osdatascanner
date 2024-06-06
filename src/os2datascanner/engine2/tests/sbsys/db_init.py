@@ -1,8 +1,8 @@
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
-from os2datascanner.engine2.sbsys.config import get_sbsys_settings
-from os2datascanner.engine2.sbsys.db import get_engine, get_tables
+from os2datascanner.integrations.sbsys.config import get_sbsys_settings
+from os2datascanner.integrations.sbsys.db import get_engine, get_tables
 from os2datascanner.engine2.tests.sbsys.data import SAGS_TILSTAND_OPSLAG, \
     SAGS_STATUS, HIERAKI, HIERAKI_MEDLEM, ADRESSE, ARKIV_AFKLARING_STATUS, \
     ANSAETTELSESSTED, FAG_OMRAADE, BRUGER, SAG

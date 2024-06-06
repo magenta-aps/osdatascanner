@@ -1,7 +1,7 @@
 from _pytest.monkeypatch import MonkeyPatch
 from pydantic import SecretStr
 
-from os2datascanner.engine2.sbsys.config import get_sbsys_settings
+from os2datascanner.integrations.sbsys.config import get_sbsys_settings
 
 
 def test_settings(monkeypatch: MonkeyPatch):
