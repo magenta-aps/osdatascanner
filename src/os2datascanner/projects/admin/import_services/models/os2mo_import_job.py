@@ -48,8 +48,8 @@ def walk_mo_json_response(response: dict, *path):
 
 retry = Retrying(
         reraise=True,
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        stop=stop_after_attempt(10))
+        wait=wait_exponential(multiplier=1, min=1, max=120),
+        stop=stop_after_attempt(15))
 
 
 def make_token():
