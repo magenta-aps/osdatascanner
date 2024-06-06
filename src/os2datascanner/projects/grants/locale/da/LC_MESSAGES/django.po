@@ -1,0 +1,67 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-06 10:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps.py:8
+msgid "grants"
+msgstr "bevillinger"
+
+#: templates/grants/grant_start.html:23
+msgid "Configure Microsoft Graph"
+msgstr "Konfigurér Microsoft Graph"
+
+#: templates/grants/grant_start.html:27
+msgid ""
+"To use this service, you must allow OSdatascanner access to its content."
+msgstr ""
+"For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
+"tjenestens indhold."
+
+#: templates/grants/grant_start.html:31
+msgid "The service refused to grant OSdatascanner the necessary rights:"
+msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
+
+#: templates/grants/grant_start.html:34
+msgid "Click the button below to try again."
+msgstr "Klik på knappen nedenfor for at prøve igen."
+
+#: templates/grants/grant_start.html:36
+msgid "Click the button below to forward to this service."
+msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
+
+#: templates/grants/grant_start.html:42 templates/grants/grant_start.html:43
+#: templates/grants/grant_start.html:44
+msgid "Continue to"
+msgstr "Fortsæt til"
+
+#: templates/grants/grant_start.html:47
+msgid ""
+"You will be forwarded to the creation form after the service has issued the "
+"necessary rights."
+msgstr ""
+"Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
+"de nødvendige rettigheder."
+
+#: templates/grants/grant_start.html:49
+msgid ""
+"The information pointing to the OSdatascanner system for this service is "
+"missing."
+msgstr ""
+"De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
+"mangler."
