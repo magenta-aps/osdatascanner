@@ -496,6 +496,7 @@
   }
 
   .overflow-ellipsis {
+    
     .employee__fullname {
       font-weight: bold;
     }
@@ -508,10 +509,16 @@
 
     // Only show ellipsis on pc-screens.
     @media (min-width: $break-lg) {
+      cursor: default;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+  }
+
+  .full-path {
+    white-space: normal;
+    word-break: break-all;
   }
 
   &:first-child {

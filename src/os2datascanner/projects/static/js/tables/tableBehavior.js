@@ -267,6 +267,38 @@ document.addEventListener("DOMContentLoaded", function () {
       if (typeof ClipboardJS !== "undefined") {
         new ClipboardJS(document.querySelectorAll("[data-clipboard-text]"));
       }
+
+      showMoreButton();
     }
   });
+
+  function isContentOverflowing(element) {
+    return element.scrollWidth > element.clientWidth;
+  }
+  
+  function showMoreButton() {
+    const pathContainers = document.querySelectorAll(".overflow-ellipsis");
+    pathContainers.forEach (pathContainer => {
+      const moreBtn = pathContainer.querySelector(".show-more");
+  
+      
+      if (moreBtn && isContentOverflowing(pathContainer)) {
+        moreBtn.style.display = "block";
+      }
+    });
+  }
+  
+  showMoreButton();
+  
+  document.togglePath = function(button) {
+    let overflowDiv = button.parentElement;
+    overflowDiv.classList.toggle("full-path");
+  
+    if (overflowDiv.classList.contains("full-path")) {
+      button.innerText = gettext("Show less");
+    } else {
+      button.innerText = gettext("Show more");
+    }
+  };
 });
+
