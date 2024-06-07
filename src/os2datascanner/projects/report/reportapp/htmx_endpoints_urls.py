@@ -6,7 +6,7 @@ from .views.report_views import (
     DistributeMatchesView,
     DeleteMailView, MassDeleteMailView,
     DeleteFileView, MassDeleteFileView,
-    DeleteSMBFileView)
+    DeleteSMBFileView, MassDeleteSMBFileView)
 
 urlpatterns = [
     path('handle_match/<int:pk>/', HandleMatchView.as_view(), name='handle-match'),
@@ -24,4 +24,5 @@ urlpatterns = [
 if settings.SMB_ALLOW_WRITE:
     urlpatterns.extend([
         path('delete_smb_file/<int:pk>', DeleteSMBFileView.as_view(), name="delete-smb-file"),
+        path('mass_delete_smb_file/', MassDeleteSMBFileView.as_view(), name="mass-delete-smb-file"),
     ])

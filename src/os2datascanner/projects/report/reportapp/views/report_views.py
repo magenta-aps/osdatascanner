@@ -581,7 +581,7 @@ class MassDeleteFileView(HTMXEndpointView, BaseMassView):
 
 class DeleteSMBFileView(HTMXEndpointView, DetailView):
     """ View for sending a delete request for a file
-    through the MSGraph API. """
+    on an SMB share."""
     model = DocumentReport
 
     def post(self, request, *args, **kwargs):
@@ -598,3 +598,26 @@ class DeleteSMBFileView(HTMXEndpointView, DetailView):
                 error_message)
 
         return response
+
+
+class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
+    """View for sending delete requests for multiple files
+    on an SMB share."""
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        reports = self.get_queryset()
+        self.delete_files(reports)
+
+        return response
+
+    def delete_files(self, document_reports):
+        for report in document_reports:
+            deleted, problem = try_smb_delete_1(self.request)
+            if not deleted:
+                error_message = _("Failed to delete {pn}: {e}").format(
+                    pn=report.matches.handle.presentation_name, e=problem)
+                messages.add_message(
+                    self.request,
+                    messages.WARNING,
+                    error_message)

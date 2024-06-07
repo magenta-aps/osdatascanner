@@ -72,31 +72,43 @@
             hx-push-url="false"
             hx-confirm="{% blocktrans %}You are about to delete checked mails from your mailbox. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
             name="mass-delete">
-      <i class="material-icons">delete_forever</i>
-      {% trans "Delete marked emails" %}
-    </span>
-  </button>
-{% endif %}
-{% if show_file_delete_button and request.GET.source_type == "msgraph-files" %}
-  <button type="button"
-          class="button table-checkbox__action button--icon-text-button"
-          data-status="match-handle"
-          disabled
-          aria-label="{% trans 'Deletes checked files from your online drive' %}"
-          title="{% trans 'Deletes checked files from your online drive' %}"
-          hx-post="{% url 'mass-delete-file' %}"
-          hx-swap="none"
-          hx-trigger="click"
-          hx-push-url="false"
-          hx-confirm="{% blocktrans %}You are about to delete checked files from your online drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
-          name="mass-delete">
-    <i class="material-icons">delete_forever</i>
-    {% trans "Delete marked files" %}
-  </span>
-</button>
-{% endif %}
+      <i class="material-icons">delete_forever</i><span>{% trans "Delete marked emails" %}</span>
+    </button>
+  {% endif %}
+  {% if show_file_delete_button and request.GET.source_type == "msgraph-files" %}
+    <button type="button"
+            class="button table-checkbox__action button--icon-text-button"
+            data-status="match-handle"
+            disabled
+            aria-label="{% trans 'Deletes checked files from your online drive' %}"
+            title="{% trans 'Deletes checked files from your online drive' %}"
+            hx-post="{% url 'mass-delete-file' %}"
+            hx-swap="none"
+            hx-trigger="click"
+            hx-push-url="false"
+            hx-confirm="{% blocktrans %}You are about to delete checked files from your online drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+            name="mass-delete">
+      <i class="material-icons">delete_forever</i><span>{% trans "Delete marked files" %}</span>
+    </button>
+  {% endif %}
+  {% if show_smb_delete_button and request.GET.source_type == "smbc" %}
+    <button type="button"
+            class="button table-checkbox__action button--icon-text-button"
+            data-status="match-handle"
+            disabled
+            aria-label="{% trans 'Deletes checked files from your shared drive' %}"
+            title="{% trans 'Deletes checked files from your shared drive' %}"
+            hx-post="{% url 'mass-delete-smb-file' %}"
+            hx-swap="none"
+            hx-trigger="click"
+            hx-push-url="false"
+            hx-confirm="{% blocktrans %}You are about to delete checked files from your shared drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+            name="mass-delete">
+      <i class="material-icons">delete_forever</i><span>{% trans "Delete marked files" %}</span>
+    </button>
+  {% endif %}
 
-<span class="selected-cb">
-  <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}
-</span>
+  <span class="selected-cb">
+    <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}
+  </span>
 </div>

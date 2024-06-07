@@ -17,7 +17,7 @@ from os2datascanner.projects.report.reportapp.models.documentreport import (
 logger = structlog.get_logger("reportapp")
 
 
-def try_smb_delete_1(request) -> (bool, str):
+def try_smb_delete_1(request, path: str | None = None) -> (bool, str):
     user = request.user
 
     if not settings.SMB_ALLOW_WRITE:
@@ -26,7 +26,7 @@ def try_smb_delete_1(request) -> (bool, str):
                 user=user)
         return (False, "function not enabled")
 
-    path = request.POST["path"]
+    path = path if path else request.POST["path"]
     client_hash = request.POST["client_hash"]
 
     # Verify that the hash value submitted by the client matches what we'd
