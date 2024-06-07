@@ -4,12 +4,12 @@
 # OS2datascanner.
 # IBP <ibp@magenta.dk>, 2020.
 # b
-#: reportapp/views/report_views.py:118
+#: reportapp/views/report_views.py:119
 #, fuzzy
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-06 10:43+0200\n"
+"POT-Creation-Date: 2024-06-07 09:59+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -599,8 +599,8 @@ msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html:11
 #: reportapp/templates/components/reports/handle_match.html:45
-#: reportapp/templates/components/reports/match.html:167
-#: reportapp/templates/components/reports/match.html:213
+#: reportapp/templates/components/reports/match.html:185
+#: reportapp/templates/components/reports/match.html:231
 msgid ""
 "OS2datascanner will not delete results from the system that was scanned. "
 "Marking a result as handled will only remove the result from OS2datascanner."
@@ -614,8 +614,8 @@ msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
 #: reportapp/templates/components/reports/handle_match.html:19
-#: reportapp/templates/components/reports/match.html:176
-#: reportapp/templates/components/reports/match.html:221
+#: reportapp/templates/components/reports/match.html:194
+#: reportapp/templates/components/reports/match.html:239
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -626,8 +626,8 @@ msgstr ""
 "manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/reports/handle_match.html:26
-#: reportapp/templates/components/reports/match.html:182
-#: reportapp/templates/components/reports/match.html:208
+#: reportapp/templates/components/reports/match.html:200
+#: reportapp/templates/components/reports/match.html:226
 msgid "Revert"
 msgstr "Fortryd"
 
@@ -683,24 +683,24 @@ msgstr "Slet markerede filer"
 msgid "selected"
 msgstr "valgt"
 
-#: reportapp/templates/components/reports/match.html:15
 #: reportapp/templates/components/reports/match.html:16
+#: reportapp/templates/components/reports/match.html:17
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/reports/match.html:42
+#: reportapp/templates/components/reports/match.html:43
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/reports/match.html:48
+#: reportapp/templates/components/reports/match.html:49
 msgid "Open folder"
 msgstr "Åbn mappe"
 
-#: reportapp/templates/components/reports/match.html:55
+#: reportapp/templates/components/reports/match.html:56
 msgid "Deletes email from your mailbox"
 msgstr "Sletter email fra din mailboks"
 
-#: reportapp/templates/components/reports/match.html:61
+#: reportapp/templates/components/reports/match.html:62
 msgid ""
 "You are about to delete selected email from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -708,18 +708,19 @@ msgstr ""
 "Du er ved at slette valgte email fra din mailboks. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:62
-#: reportapp/templates/components/reports/match.html:78
+#: reportapp/templates/components/reports/match.html:63
+#: reportapp/templates/components/reports/match.html:79
+#: reportapp/templates/components/reports/match.html:96
 #: reportapp/templates/components/statistics/user_overview_template.html:69
 #: reportapp/templates/components/statistics/user_overview_template.html:70
 msgid "Delete"
 msgstr "Slet"
 
-#: reportapp/templates/components/reports/match.html:71
+#: reportapp/templates/components/reports/match.html:72
 msgid "Deletes file from your online drive"
 msgstr "Sletter fil fra dit online drev"
 
-#: reportapp/templates/components/reports/match.html:77
+#: reportapp/templates/components/reports/match.html:78
 msgid ""
 "You are about to delete selected file from your online drive. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -727,40 +728,52 @@ msgstr ""
 "Du er ved at slette valgte fil fra dit online drev. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:85
+#: reportapp/templates/components/reports/match.html:88
+msgid "Deletes file from the shared drive"
+msgstr "Sletter fil fra dit fælles netværksdrev"
+
+#: reportapp/templates/components/reports/match.html:95
+msgid ""
+"You are about to delete the selected file from your shared drive. "
+"OSdatascanner cannot reverse this action. Are you sure?"
+msgstr ""
+"Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling kan ikke "
+"fortrydes i OSdatascanner. Er du sikker?"
+
+#: reportapp/templates/components/reports/match.html:103
 msgid "Opened"
 msgstr "Åbnet: "
 
-#: reportapp/templates/components/reports/match.html:134
+#: reportapp/templates/components/reports/match.html:152
 msgid "Copy folder path"
 msgstr "Kopiér sti til mappe"
 
-#: reportapp/templates/components/reports/match.html:139
+#: reportapp/templates/components/reports/match.html:157
 msgid "Copy path"
 msgstr "Kopiér sti"
 
-#: reportapp/templates/components/reports/match.html:146
+#: reportapp/templates/components/reports/match.html:164
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:168
-#: reportapp/templates/components/reports/match.html:223
+#: reportapp/templates/components/reports/match.html:186
+#: reportapp/templates/components/reports/match.html:241
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/reports/match.html:230
+#: reportapp/templates/components/reports/match.html:248
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:245
+#: reportapp/templates/components/reports/match.html:263
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:246
+#: reportapp/templates/components/reports/match.html:264
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:247
+#: reportapp/templates/components/reports/match.html:265
 msgid "Probability"
 msgstr "Sandsynlighed"
 
@@ -1762,39 +1775,39 @@ msgstr ""
 "tidligere matchede emails, skal du bruge \"Kategorisér\"-funktionen på din "
 "<a href=\"%(my-account)s\">profile page</a>."
 
-#: reportapp/templatetags/handle_extras.py:93
+#: reportapp/templatetags/handle_extras.py:97
 msgid "File"
 msgstr "Fil"
 
-#: reportapp/templatetags/handle_extras.py:95
+#: reportapp/templatetags/handle_extras.py:99
 msgid "Office 365 File"
 msgstr "Office 365 Fil"
 
-#: reportapp/templatetags/handle_extras.py:97
+#: reportapp/templatetags/handle_extras.py:101
 msgid "MS Teams file"
 msgstr "MS Teams fil"
 
-#: reportapp/templatetags/handle_extras.py:99
+#: reportapp/templatetags/handle_extras.py:103
 msgid "Exchange Mail"
 msgstr "Exchange mail"
 
-#: reportapp/templatetags/handle_extras.py:101
+#: reportapp/templatetags/handle_extras.py:105
 msgid "Gmail"
 msgstr "Gmail"
 
-#: reportapp/templatetags/handle_extras.py:103
+#: reportapp/templatetags/handle_extras.py:107
 msgid "Office 365 Mail"
 msgstr "Office 365 Mail"
 
-#: reportapp/templatetags/handle_extras.py:105
+#: reportapp/templatetags/handle_extras.py:109
 msgid "Web"
 msgstr "Hjemmeside"
 
-#: reportapp/templatetags/handle_extras.py:107
+#: reportapp/templatetags/handle_extras.py:111
 msgid "Office 365 Calendar"
 msgstr "Office 365 Kalender"
 
-#: reportapp/templatetags/handle_extras.py:109
+#: reportapp/templatetags/handle_extras.py:113
 msgid "Unrecognized scan type"
 msgstr "Uidentificerbar scan type"
 
@@ -1802,15 +1815,15 @@ msgstr "Uidentificerbar scan type"
 msgid "%0D%0A%0D%0A--- Do not alter text below this line! ---%0D%0A"
 msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 
-#: reportapp/views/report_views.py:70
+#: reportapp/views/report_views.py:71
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/report_views.py:113
+#: reportapp/views/report_views.py:114
 msgid "No action required:"
 msgstr "Ingen handling påkrævet:"
 
-#: reportapp/views/report_views.py:115
+#: reportapp/views/report_views.py:116
 msgid ""
 "A temporary error occurred during the latest check of this result. "
 "OSdatascanner will automatically check this result again as part of the next "
@@ -1820,8 +1833,9 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:502 reportapp/views/report_views.py:527
-#: reportapp/views/report_views.py:547 reportapp/views/report_views.py:572
+#: reportapp/views/report_views.py:504 reportapp/views/report_views.py:529
+#: reportapp/views/report_views.py:549 reportapp/views/report_views.py:574
+#: reportapp/views/report_views.py:593
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"

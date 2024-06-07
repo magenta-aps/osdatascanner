@@ -40,6 +40,8 @@ MSGRAPH_APP_ID = ""
 MSGRAPH_CLIENT_SECRET = ""
 MSGRAPH_TENANT_ID = ""
 
+SMB_ALLOW_WRITE = true
+
 # KEYCLOAK
 OIDC_RP_CLIENT_ID = "os2datascanner"
 # endpoints

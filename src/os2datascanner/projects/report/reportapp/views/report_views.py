@@ -43,6 +43,7 @@ from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
 
+from .utilities.smb_utilities import try_smb_delete_1
 from .utilities.document_report_utilities import handle_report
 from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport
@@ -260,6 +261,7 @@ class UserReportView(ReportView):
             self.request.user.account.organization.has_email_delete_permission())
         context["show_file_delete_button"] = (
             self.request.user.account.organization.has_file_delete_permission())
+        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
 
         return context
 
@@ -575,3 +577,24 @@ class MassDeleteFileView(HTMXEndpointView, BaseMassView):
                     self.request,
                     messages.WARNING,
                     error_message)
+
+
+class DeleteSMBFileView(HTMXEndpointView, DetailView):
+    """ View for sending a delete request for a file
+    through the MSGraph API. """
+    model = DocumentReport
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        report = self.get_object()
+
+        deleted, problem = try_smb_delete_1(request)
+        if not deleted:
+            error_message = _("Failed to delete {pn}: {e}").format(
+                pn=report.matches.handle.presentation_name, e=problem)
+            messages.add_message(
+                request,
+                messages.WARNING,
+                error_message)
+
+        return response
