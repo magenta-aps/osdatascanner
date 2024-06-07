@@ -216,6 +216,9 @@ def _keycloak_update(config_instance):
                                                     config_instance.group_filter)
         config_instance.update_or_create_mapper(group_filter_mapper, token=token)
 
+    # If there exists a memberOf mapper, it should be removed
+    config_instance.delete_mapper("memberOf", token=token)
+
 
 class LDAPUpdateView(LoginRequiredMixin, UpdateView):
     model = LDAPConfig

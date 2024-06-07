@@ -75,10 +75,16 @@ def perform_import(
             realm.realm_id, realm.organization.pk, token=token, timeout=1800)
     sync_message.raise_for_status()
 
+    # If the client doesn't have a group_filter_mapper they haven't updated their ldap config
+    mappers = import_service.ldapconfig.get_mappers(token=token).json()
+    has_group_filter = any(mapper['name'] == "group_filter_mapper" for mapper in mappers)
+    if import_service.ldapconfig.import_into == "group" and not has_group_filter:
+        logger.debug("LDAP configuration not updated. Importing without group filter.")
+
     # TODO: In the future this kind of logic should be reimplemented using
     # websockets.
     # Timeout set to 30 minutes
-    if import_service.ldapconfig.import_into == "group":
+    if import_service.ldapconfig.import_into == "group" and has_group_filter:
         # Gets all groups in the realm, and then gets every member of the groups
 
         # Iterator object of all groups in realm
