@@ -116,7 +116,7 @@ class ReportView(LoginRequiredMixin, ListView):
                 "A temporary error occurred during the latest check of this result. "
                 "OSdatascanner will automatically check this result again as part of the next scan."
             ),
-            'subtitle': _(""),
+            'subtitle': "",
         }
 
         # pass the dictionary as a single variable

@@ -9,7 +9,7 @@
   - Where the system administrator permits it, users can now delete files with
     matches on Windows network drives from the OSdatascanner user interface.
 
-  - This function performs three different security checks to make sure that
+  - This function performs two different security checks to make sure that
     users cannot delete files that they're not responsible for.
 
   - Note that this function is disabled by default, and that the system
@@ -17,6 +17,9 @@
 
 - LDAP import jobs can now be configured to only import members of 
   groups with names beginning with a given string.
+
+- Support for mass deletion of files on Windoes network drives, as specified 
+  above.
 
 ### General improvements
 
