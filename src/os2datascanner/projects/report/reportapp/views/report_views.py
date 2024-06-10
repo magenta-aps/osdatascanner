@@ -277,6 +277,12 @@ class UserReportView(ReportView):
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
+        return context
+
     def base_match_filter(self, reports):
         reports = super().base_match_filter(reports)
         # Find everything remediator related and not withheld
@@ -588,7 +594,7 @@ class DeleteSMBFileView(HTMXEndpointView, DetailView):
         response = super().post(request, *args, **kwargs)
         report = self.get_object()
 
-        deleted, problem = try_smb_delete_1(request)
+        deleted, problem = try_smb_delete_1(request, [report.path])
         if not deleted:
             error_message = _("Failed to delete {pn}: {e}").format(
                 pn=report.matches.handle.presentation_name, e=problem)
@@ -612,12 +618,14 @@ class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
         return response
 
     def delete_files(self, document_reports):
-        for report in document_reports:
-            deleted, problem = try_smb_delete_1(self.request, report.path)
-            if not deleted:
-                error_message = _("Failed to delete {pn}: {e}").format(
-                    pn=report.matches.handle.presentation_name, e=problem)
-                messages.add_message(
-                    self.request,
-                    messages.WARNING,
-                    error_message)
+        deleted, problem = try_smb_delete_1(
+            self.request, document_reports.values_list(
+                "path", flat=True))
+
+        if not deleted:
+            error_message = _("Failed to delete some reports: {e}").format(
+                e=problem)
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                error_message)
