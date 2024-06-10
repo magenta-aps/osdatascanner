@@ -594,7 +594,7 @@ class DeleteSMBFileView(HTMXEndpointView, DetailView):
         response = super().post(request, *args, **kwargs)
         report = self.get_object()
 
-        deleted, problem = try_smb_delete_1(request, [report.path])
+        deleted, problem = try_smb_delete_1(request, [report.pk])
         if not deleted:
             error_message = _("Failed to delete {pn}: {e}").format(
                 pn=report.matches.handle.presentation_name, e=problem)
@@ -620,7 +620,7 @@ class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
     def delete_files(self, document_reports):
         deleted, problem = try_smb_delete_1(
             self.request, document_reports.values_list(
-                "path", flat=True))
+                "pk", flat=True))
 
         if not deleted:
             error_message = _("Failed to delete some reports: {e}").format(

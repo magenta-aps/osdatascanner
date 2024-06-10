@@ -17,7 +17,7 @@ from os2datascanner.projects.report.reportapp.models.documentreport import (
 logger = structlog.get_logger("reportapp")
 
 
-def try_smb_delete_1(request, paths: list[str]) -> (bool, str):  # noqa: CCR001
+def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
     if not settings.SMB_ALLOW_WRITE:
@@ -27,7 +27,7 @@ def try_smb_delete_1(request, paths: list[str]) -> (bool, str):  # noqa: CCR001
         return (False, "function not enabled")
 
     # Find the referenced DocumentReport
-    reports = DocumentReport.objects.filter(path__in=paths)
+    reports = DocumentReport.objects.filter(pk__in=pks)
     if not reports.exists():
         return (False, "DocumentReports not found")
 
