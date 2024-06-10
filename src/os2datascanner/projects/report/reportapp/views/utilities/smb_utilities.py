@@ -66,6 +66,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         return (grant.domain, grant.username, grant.password)
 
     deleted_matches: list[int] = []
+    result: tuple | None = None
     for report in reports:
         # Find the SMBCHandle object in this DocumentReport
         handle: Handle | None = None
