@@ -33,7 +33,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
 
     # Find the active user account
     account = user.account
-    aliases = account.aliases
+    aliases = account.aliases.all()
     organization = account.organization
 
     # Verify that the active user has an association to the DocumentReports
