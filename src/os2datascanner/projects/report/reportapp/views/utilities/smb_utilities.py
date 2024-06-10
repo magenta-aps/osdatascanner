@@ -1,5 +1,4 @@
 import smbc
-from hashlib import sha512
 import structlog
 from traceback import print_exc
 
@@ -27,17 +26,6 @@ def try_smb_delete_1(request, path: str | None = None) -> (bool, str):
         return (False, "function not enabled")
 
     path = path if path else request.POST["path"]
-    client_hash = request.POST["client_hash"]
-
-    # Verify that the hash value submitted by the client matches what we'd
-    # expect for the other parameters
-    expected_hash: str = sha512(
-            f"{settings.SECRET_KEY};{path}".encode()).hexdigest()
-    if client_hash != expected_hash:
-        logger.warning(
-                "SMB deletion request with wrong client hash!",
-                user=user)
-        return (False, "invalid client hash supplied")
 
     # Find the referenced DocumentReport
     try:
@@ -50,6 +38,7 @@ def try_smb_delete_1(request, path: str | None = None) -> (bool, str):
     organization = account.organization
 
     # Verify that the active user has an association to the DocumentReport
+    # TODO: This allows remediators to delete files they may not own. Intended?
     if not any(
             alias.account == account
             for alias in report.alias_relation.all()):
