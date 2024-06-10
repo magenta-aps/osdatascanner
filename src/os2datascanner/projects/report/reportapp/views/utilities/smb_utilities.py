@@ -103,4 +103,4 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         resolution_time=time_now()
         )
 
-    return result if result else (True, "ok")
+    return result or (True, "ok")

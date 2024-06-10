@@ -122,6 +122,11 @@ class ReportView(LoginRequiredMixin, ListView):
         # pass the dictionary as a single variable
         context["popover_data"] = popover_data
 
+        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
+        context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
+            (self.request.GET["source_type"] == "smbc" or
+                all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
+
         return context
 
     def base_match_filter(self, reports):
@@ -261,7 +266,6 @@ class UserReportView(ReportView):
             self.request.user.account.organization.has_email_delete_permission())
         context["show_file_delete_button"] = (
             self.request.user.account.organization.has_file_delete_permission())
-        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
 
         return context
 
@@ -276,12 +280,6 @@ class UserReportView(ReportView):
 
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
-        return context
 
     def base_match_filter(self, reports):
         reports = super().base_match_filter(reports)
@@ -313,6 +311,9 @@ class UndistributedView(ReportView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['undistributed_scannerjobs'] = self.scannerjob_filters
+
+        context["show_smb_delete_button"] = False
+        context["show_smb_mass_delete_button"] = False
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -337,6 +338,14 @@ class ArchiveMixin:
             'sort_key',
             'pk')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["show_email_delete_button"] = False
+        context["show_file_delete_button"] = False
+        context["show_smb_delete_button"] = False
+        context["show_smb_mass_delete_button"] = False
+        return context
+
     def dispatch(self, request, *args, **kwargs):
         if settings.ARCHIVE_TAB:
             return super().dispatch(request, *args, **kwargs)
@@ -346,12 +355,6 @@ class ArchiveMixin:
 
 class UserArchiveView(ArchiveMixin, UserReportView):
     """Presents the user with their personal handled results."""
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["show_email_delete_button"] = False
-        context["show_file_delete_button"] = False
-        return context
 
 
 class RemediatorArchiveView(ArchiveMixin, RemediatorView):
