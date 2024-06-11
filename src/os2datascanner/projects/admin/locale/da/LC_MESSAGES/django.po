@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-18 14:51+0200\n"
+"POT-Creation-Date: 2024-06-21 08:52+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -106,10 +106,23 @@ msgstr "slå sidst ændret-funktion fra for alt i dette scan"
 msgid "no scanner job exists with id {id}"
 msgstr "intet scannerjob findes med id {id}"
 
+#: adminapp/management/commands/test_checkup.py:22
+msgid "the primary key of the scheduled checkup to touch"
+msgstr "primærnøglen på det checkup der skal berøres"
+
+#: adminapp/management/commands/test_checkup.py:26
+msgid "print metadata of the touched checkup"
+msgstr "udskriv metadata af det berørte checkup"
+
+#: adminapp/management/commands/test_checkup.py:35
+#, python-brace-format
+msgid "no scheduled checkup exists with id {id}"
+msgstr "intet planlagt checkup findes med id {id}"
+
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
 #: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
-#: import_services/models/os2mo_import_job.py:66
+#: import_services/models/os2mo_import_job.py:68
 #: import_services/models/realm.py:29
 msgid "organization"
 msgstr "organisation"
