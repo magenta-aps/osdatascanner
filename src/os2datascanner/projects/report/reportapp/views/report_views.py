@@ -124,7 +124,7 @@ class ReportView(LoginRequiredMixin, ListView):
 
         context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
         context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
-            (self.request.GET["source_type"] == "smbc" or
+            (self.request.GET.get("source_type") == "smbc" or
                 all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
 
         return context
