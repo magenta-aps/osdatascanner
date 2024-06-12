@@ -16,10 +16,10 @@ class GraphGrant(Grant):
     __match_args__ = ("app_id", "tenant_id", "client_secret",)
 
     app_id = models.UUIDField(
-            default=uuid4, editable=False, verbose_name="app ID")
+            default=uuid4, editable=True, verbose_name="app ID")
 
     tenant_id = models.UUIDField(
-            default=uuid4, editable=False, verbose_name="tenant ID")
+            default=uuid4, editable=True, verbose_name="tenant ID")
 
     _client_secret = models.JSONField(verbose_name="client secret")
     client_secret = wrap_encrypted_field("_client_secret")
