@@ -9,27 +9,14 @@ networks:
 services:
 
   init_SBSYS_DB:
-    image: mcr.microsoft.com/mssql/server:2017-latest
-    volumes:
-      - ./docker/sbsys_db:/docker-entrypoint-initdb.d
+    image: magentaaps/os2datascanner-sbsys-init:dev
+    build:
+      context: .
+      dockerfile: docker/base/Dockerfile
+      target: sbsys-init
     depends_on:
       SBSYS_DB:
         condition: service_healthy
-    command: >
-      bash -c '
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/db_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sagstilstandopslag_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sagsstatus_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/hieraki_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/hierakimedlem_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/adresse_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/arkivafklaringstatus_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/ansaettelsessted_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/fagomraade_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/bruger_init.sql;
-      /opt/mssql-tools/bin/sqlcmd -S SBSYS_DB -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -d master -i docker-entrypoint-initdb.d/sag_init.sql;
-      echo "Set up DB!";
-      '
     profiles:
       - sbsys
 
