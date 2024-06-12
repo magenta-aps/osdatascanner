@@ -1,6 +1,5 @@
 import structlog
 import requests
-from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -35,9 +34,9 @@ class MSGraphImportJob(BackgroundJob):
 
     def _make_token(self):
         return make_token(
-                settings.MSGRAPH_APP_ID,
-                self.grant.tenant_id,
-                settings.MSGRAPH_CLIENT_SECRET)
+                str(self.grant.app_id),
+                str(self.grant.tenant_id),
+                self.grant.client_secret)
 
     @property
     def progress(self):
