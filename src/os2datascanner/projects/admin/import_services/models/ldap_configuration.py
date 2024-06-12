@@ -70,17 +70,43 @@ class LDAPFirstNameAttributeMapper(LDAPUserAttributeMapper):
         super().__init__(name="first name", ldap_attr=ldap_attr, user_attr="firstName")
 
 
-class LDAPMemberOfMapper(LDAPUserAttributeMapper):
-    def __init__(self):
-        # We currently don't allow any customization, it's always just memberOf
-        super().__init__(name="memberOf", ldap_attr="memberOf", user_attr="memberOf")
-
-
 class LDAPSIDMapper(LDAPUserAttributeMapper):
     def __init__(self, ldap_attr: str):
         # Needs to be in binary
         super().__init__(name="objectSid", ldap_attr=ldap_attr,
                          user_attr="objectSid", binary_attr=True)
+
+
+class LDAPGroupFilterMapper:
+    def __init__(self, dn, prefix):
+        self.name = "group_filter_mapper"
+        self.dn = dn
+        self.prefix = prefix
+
+    def to_payload_json(self, config_id):
+        return {
+            "name": "group_filter_mapper",
+            "providerId": "group-ldap-mapper",
+            "providerType": "org.keycloak.storage.ldap.mappers.LDAPStorageMapper",
+            "parentId": config_id,
+            "config": {
+                "groups.dn": [self.dn],
+                "group.name.ldap.attribute": ["cn"],
+                "group.object.classes": ["group"],
+                "preserve.group.inheritance": ["false"],
+                "ignore.missing.groups": ["false"],
+                "membership.ldap.attribute": ["member"],
+                "membership.attribute.type": ["DN"],
+                "membership.user.ldap.attribute": ["sAMAccountName"],
+                "groups.ldap.filter": [f"(cn={self.prefix}*)" if self.prefix else ""],
+                "mode": ["READ_ONLY"],
+                "user.roles.retrieve.strategy": ["LOAD_GROUPS_BY_MEMBER_ATTRIBUTE"],
+                "memberof.ldap.attribute": ["memberOf"],
+                "mapped.group.attributes": ["distinguishedName"],
+                "drop.non.existing.groups.during.sync": ["false"],
+                "groups.path": ["/"]
+            },
+        }
 
 
 # NOTE: all help-texts are copied from the equivalent form in Keycloak admin
@@ -101,6 +127,16 @@ class LDAPConfig(Exported, ImportService):
         ],
         default='ou',
         verbose_name=_("import users into"),
+    )
+    group_filter = models.CharField(
+        max_length=64,
+        help_text=_(
+            "Groups will only be imported, if their name begins with the given string. "
+            "Only works for group based imports. "
+        ),
+        default='',
+        blank=True,
+        verbose_name=_("group prefix filter"),
     )
     username_attribute = models.CharField(
         max_length=64,
@@ -340,7 +376,10 @@ class LDAPConfig(Exported, ImportService):
         return requests.get(url, headers=headers)
 
     @refresh_token
-    def update_or_create_user_attr_mapper(self, mapper: LDAPUserAttributeMapper, token=None):
+    def update_or_create_mapper(
+            self,
+            mapper: LDAPUserAttributeMapper | LDAPGroupFilterMapper,
+            token=None):
 
         headers = {
             'Authorization': f'bearer {token}',
@@ -365,3 +404,20 @@ class LDAPConfig(Exported, ImportService):
             url = (settings.KEYCLOAK_BASE_URL + f'/auth/admin/realms/{str(self.realm)}/components/')
             logger.info(f"No mapper: {mapper.name} found! Creating one..")
             return requests.post(url, data=json.dumps(payload), headers=headers)
+
+    def delete_mapper(self, mapper_name, token=None):
+        headers = {
+            'Authorization': f'bearer {token}',
+            'Content-Type': 'application/json;charset=utf-8',
+        }
+
+        # API call - gets existing mappers in json format - returns a list of dictionaries.
+        existing_mappers = self.get_mappers(token=token).json()
+        # Unpack - if there is an existing one, we need its id.
+        name_to_id = {d["name"]: d["id"] for d in existing_mappers}
+
+        if mapper_id := name_to_id.get(mapper_name):
+            url = (settings.KEYCLOAK_BASE_URL +
+                   f'/auth/admin/realms/{str(self.realm)}/components/{mapper_id}')
+            logger.info(f"Existing mapper: {mapper_name} found! Deleting it..")
+            return requests.delete(url, headers=headers)

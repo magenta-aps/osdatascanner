@@ -32,13 +32,18 @@ def keycloak_dn_selector(d):
 def keycloak_group_dn_selector(d):
     attributes = d.get("attributes", {})
     name = attributes.get("LDAP_ENTRY_DN", [None])[0]
-    groups = attributes.get("memberOf", [])
-    if name and groups:
+    if name:
         dn = RDN.dn_to_sequence(name)
-        for group_name in groups:
-            gdn = RDN.dn_to_sequence(group_name)
-            if gdn:  # Only yield names for valid groups
-                yield RDN.sequence_to_dn(gdn + (dn[-1],))
+        if group_dn := attributes.get("group_dn", None):
+            gdn = RDN.dn_to_sequence(group_dn)
+            yield RDN.sequence_to_dn(gdn + (dn[-1],))
+
+        elif groups := attributes.get("memberOf", []):
+            # XXX: Deprecated - we don't import memberOf anymore
+            for group_name in groups:
+                gdn = RDN.dn_to_sequence(group_name)
+                if gdn:  # Only yield names for valid groups
+                    yield RDN.sequence_to_dn(gdn + (dn[-1],))
 
 
 def _dummy_pc(action, *args):
@@ -70,13 +75,35 @@ def perform_import(
             realm.realm_id, realm.organization.pk, token=token, timeout=1800)
     sync_message.raise_for_status()
 
+    # If the client doesn't have a group_filter_mapper they haven't updated their ldap config
+    mappers = import_service.ldapconfig.get_mappers(token=token).json()
+    has_group_filter = any(mapper['name'] == "group_filter_mapper" for mapper in mappers)
+    if import_service.ldapconfig.import_into == "group" and not has_group_filter:
+        logger.debug("LDAP configuration not updated. Importing without group filter.")
+
     # TODO: In the future this kind of logic should be reimplemented using
     # websockets.
-    # Gets all users in the given realm
     # Timeout set to 30 minutes
-    all_users = list(
-            keycloak_services.iter_users(
-                    realm.realm_id, token=token, timeout=1800, page_size=1000))
+    if import_service.ldapconfig.import_into == "group" and has_group_filter:
+        # Gets all groups in the realm, and then gets every member of the groups
+
+        # Iterator object of all groups in realm
+        group_iter = keycloak_services.iter_groups(realm.realm_id, token=token, timeout=1800)
+
+        def user_iter(groups):
+            for group in groups:
+                members = keycloak_services.iter_group_members(
+                    realm.realm_id, group['id'], group["attributes"]["distinguishedName"][0],
+                    token=token, timeout=1800, page_size=1000
+                )
+                yield from members
+
+        # Gets all users in a group in given realm
+        all_users = user_iter(group_iter)
+    else:
+        # Gets all users in the given realm
+        all_users = keycloak_services.iter_users(
+                        realm.realm_id, token=token, timeout=1800, page_size=1000)
 
     return perform_import_raw(org, all_users, name_selector, progress_callback)
 

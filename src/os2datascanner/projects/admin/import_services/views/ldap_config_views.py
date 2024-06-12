@@ -14,8 +14,8 @@ from os2datascanner.projects.admin.import_services.models import LDAPConfig, Rea
 from os2datascanner.projects.admin.import_services.utils import start_ldap_import
 
 from os2datascanner.projects.admin.import_services import keycloak_services
-from os2datascanner.projects.admin.import_services.models.ldap_configuration import (
-    LDAPUsernameAttributeMapper, LDAPSIDMapper, LDAPMemberOfMapper, LDAPFirstNameAttributeMapper)
+from os2datascanner.projects.admin.import_services.models.ldap_configuration import \
+    LDAPUsernameAttributeMapper, LDAPSIDMapper, LDAPFirstNameAttributeMapper, LDAPGroupFilterMapper
 
 
 class LDAPEditForm(forms.ModelForm):
@@ -31,6 +31,7 @@ class LDAPEditForm(forms.ModelForm):
             'ldap_password',
             'vendor',
             'import_into',
+            'group_filter',
             'username_attribute',
             'rdn_attribute',
             'uuid_attribute',
@@ -67,6 +68,7 @@ class LDAPEditForm(forms.ModelForm):
         fields = [
             'vendor',
             'import_into',
+            'group_filter',
         ]
         return fields
 
@@ -161,21 +163,23 @@ def _keycloak_creation(config_instance):
     # fetch a token
     token = keycloak_services.request_access_token()
 
-    # Create a memberOf attribute mapper on the LDAP user federation in Keycloak upon creation
-    # TODO: We probably shouldn't create one always, as it's just going to make JSON objects larger
-    config_instance.update_or_create_user_attr_mapper(LDAPMemberOfMapper(), token=token)
-
     # Create SID mapper - if one is set.
     if config_instance.object_sid_attribute:
         sid_attr_mapper = LDAPSIDMapper(ldap_attr=config_instance.object_sid_attribute)
-        config_instance.update_or_create_user_attr_mapper(sid_attr_mapper, token=token)
+        config_instance.update_or_create_mapper(sid_attr_mapper, token=token)
 
     # Create first name mapper - if one is set.
     if config_instance.firstname_attribute:
         firstname_attr_mapper = LDAPFirstNameAttributeMapper(
             ldap_attr=config_instance.firstname_attribute
         )
-        config_instance.update_or_create_user_attr_mapper(firstname_attr_mapper, token=token)
+        config_instance.update_or_create_mapper(firstname_attr_mapper, token=token)
+
+    # Create group filter mapper - if one is set.
+    if config_instance.import_into == "group":
+        group_filter_mapper = LDAPGroupFilterMapper(config_instance.users_dn,
+                                                    config_instance.group_filter)
+        config_instance.update_or_create_mapper(group_filter_mapper, token=token)
 
 
 def _keycloak_update(config_instance):
@@ -190,21 +194,30 @@ def _keycloak_update(config_instance):
     request_update_component(realm.pk, *args, token=token)
 
     # Update username attribute mapper. This is created behind the scenes by Keycloak on creation.
-    config_instance.update_or_create_user_attr_mapper(
+    config_instance.update_or_create_mapper(
         LDAPUsernameAttributeMapper(ldap_attr=config_instance.username_attribute), token=token
     )
 
     # Update or create SID mapper - if one is set.
     if config_instance.object_sid_attribute:
         sid_attr_mapper = LDAPSIDMapper(ldap_attr=config_instance.object_sid_attribute)
-        config_instance.update_or_create_user_attr_mapper(sid_attr_mapper, token=token)
+        config_instance.update_or_create_mapper(sid_attr_mapper, token=token)
 
     # Update or create first name mapper - if one is set.
     if config_instance.firstname_attribute:
         firstname_attr_mapper = LDAPFirstNameAttributeMapper(
             ldap_attr=config_instance.firstname_attribute
         )
-        config_instance.update_or_create_user_attr_mapper(firstname_attr_mapper, token=token)
+        config_instance.update_or_create_mapper(firstname_attr_mapper, token=token)
+
+    # Update or create group filter mapper - if one is set.
+    if config_instance.import_into == "group":
+        group_filter_mapper = LDAPGroupFilterMapper(config_instance.users_dn,
+                                                    config_instance.group_filter)
+        config_instance.update_or_create_mapper(group_filter_mapper, token=token)
+
+    # If there exists a memberOf mapper, it should be removed
+    config_instance.delete_mapper("memberOf", token=token)
 
 
 class LDAPUpdateView(LoginRequiredMixin, UpdateView):

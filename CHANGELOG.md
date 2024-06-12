@@ -15,6 +15,9 @@
   - Note that this function is disabled by default, and that the system
     administrator must configure a special service account in order to use it.
 
+- LDAP import jobs can now be configured to only import members of 
+  groups with names beginning with a given string.
+
 ### General improvements
 
 - System logging is now more consistently using structlog and quality of life improvements

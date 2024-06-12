@@ -15,7 +15,9 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=Ted Testsen,OU=Testers,O=Test Corp."
             ],
-            "group_dn": "CN=Group 2,O=Test Corp."
+            "memberOf": [
+                "CN=Group 2,O=Test Corp."
+            ]
         }
     },
     {
@@ -27,19 +29,10 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=Todd Testsen,OU=Testers,O=Test Corp."
             ],
-            "group_dn": "CN=Group A,O=Test Corp."
-        }
-    },
-    {
-        "id": "4f533264-6174-6173-6361-6e6e65720001",
-        "username": "todd@test.invalid",
-        "firstName": "Todd",
-        "lastName": "Testsen",
-        "attributes": {
-            "LDAP_ENTRY_DN": [
-                "CN=Todd Testsen,OU=Testers,O=Test Corp."
-            ],
-            "group_dn": "CN=Group 1,O=Test Corp."
+            "memberOf": [
+                "CN=Group 1,O=Test Corp.",
+                "CN=Group A,O=Test Corp."
+            ]
         }
     },
     {
@@ -51,7 +44,9 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=Thad Testsen,OU=Testers,O=Test Corp."
             ],
-            "group_dn": "CN=Group A,O=Test Corp."
+            "memberOf": [
+                "CN=Group A,O=Test Corp."
+            ]
         }
     },
     {
@@ -61,7 +56,9 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=root,OU=Testers,O=Test Corp."
             ],
-            "group_dn": "CN=Group A,O=Test Corp."
+            "memberOf": [
+                "CN=Group A,O=Test Corp."
+            ]
         }
     },
     {
@@ -69,7 +66,9 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=secret_backdoor,OU=Testers,O=Test Corp."
             ],
-            "group_dn": "CN=Group A,O=Test Corp."
+            "memberOf": [
+                "CN=Group A,O=Test Corp."
+            ]
         }
     },
 ]
@@ -85,20 +84,10 @@ TEST_CORP_TWO = [
             "LDAP_ENTRY_DN": [
                 "CN=Ursula Testsen,OU=TheUCorp,O=Test Corp."
             ],
-            "group_dn": "CN=Group 1,O=Test Corp."
-        }
-    },
-    {
-        "id": "4f533264-6174-6173-6361-6e6e65720010",
-        "username": "ursula@test.invalid",
-        "firstName": "Ursula",
-        "lastName": "Testsen",
-        "email": "ursulas@brevdue.dk",
-        "attributes": {
-            "LDAP_ENTRY_DN": [
-                "CN=Ursula Testsen,OU=TheUCorp,O=Test Corp."
-            ],
-            "group_dn": "CN=Group 2,O=Test Corp."
+            "memberOf": [
+                "CN=Group 1,O=Test Corp.",
+                "CN=Group 2,O=Test Corp."
+            ]
         }
     },
     {
@@ -111,26 +100,21 @@ TEST_CORP_TWO = [
             "LDAP_ENTRY_DN": [
                 "CN=Ulrich Testsen,OU=TheUCorp,O=Test Corp."
             ],
-            "group_dn": "CN=Group 1,O=Test Corp."
+            "memberOf": [
+                "CN=Group 1,O=Test Corp.",
+                "CN=Group 2,O=Test Corp."
+            ]
         }
     },
-    {
-        "id": "4f533264-6174-6173-6361-6e6e65720011",
-        "username": "ulrich@test.invalid",
-        "firstName": "Ulrich",
-        "lastName": "Testsen",
-        "email": "ulrichs@brevdue.dk",
-        "attributes": {
-            "LDAP_ENTRY_DN": [
-                "CN=Ulrich Testsen,OU=TheUCorp,O=Test Corp."
-            ],
-            "group_dn": "CN=Group 2,O=Test Corp."
-        }
-    },
+
 ]
 
 
-class KeycloakImportTest(TestCase):
+class DeprecatedKeycloakImportTest(TestCase):
+    """As of #60117 we don't import memberOf attributes, but instead give
+    users an attribute 'group_dn'. However, until clients update their LDAP configuration,
+    they will still use the old memberOf based logic. Therefore these tests have been preserved,
+    to ensure the deprecated logic still works."""
     dummy_client = None
 
     @classmethod
@@ -182,10 +166,10 @@ class KeycloakImportTest(TestCase):
                     account.username,
                     "username incorrectly imported")
 
-            group = tester.get("attributes", {}).get("group_dn", None)
-            self.assertTrue(
-                    account.units.filter(imported_id=group).exists(),
-                    "user not in group")
+            for group in tester.get("attributes", {}).get("memberOf", []):
+                self.assertTrue(
+                        account.units.filter(imported_id=group).exists(),
+                        "user not in group")
 
     def test_removal(self):
         """Removing a user from Keycloak's JSON output should also remove that
@@ -246,7 +230,9 @@ class KeycloakImportTest(TestCase):
         NEW_CORP = deepcopy(TEST_CORP)
         for tester in NEW_CORP:
             if tester.get("firstName") == "Ted":
-                tester["attributes"]["group_dn"] = "CN=Group 1,O=Test Corp."
+                tester["attributes"]["memberOf"] = [
+                    "CN=Group 1,O=Test Corp."
+                ]
 
         keycloak_actions.perform_import_raw(
                 self.org, NEW_CORP,
@@ -268,8 +254,11 @@ class KeycloakImportTest(TestCase):
 
         NEW_CORP = deepcopy(TEST_CORP)
         for tester in NEW_CORP:
-            if tester["attributes"]["group_dn"] == "CN=Group 2,O=Test Corp.":
-                tester["attributes"]["group_dn"] = None
+            try:
+                tester["attributes"]["memberOf"].remove(
+                        "CN=Group 2,O=Test Corp.")
+            except ValueError:
+                pass
 
         keycloak_actions.perform_import_raw(
                 self.org, NEW_CORP,
@@ -281,7 +270,7 @@ class KeycloakImportTest(TestCase):
                     imported_id="CN=Group 2,O=Test Corp.")
 
     def test_import_user_in_multiple_groups_should_only_get_one_email_alias(self):
-        """ A user can be a member of multiple groups, but it is still only one
+        """ A user can be a memberOf multiple groups, but it is still only one
         user, and should result in only one email-alias (given that the user
         has an email attribute)"""
         keycloak_actions.perform_import_raw(
@@ -306,7 +295,7 @@ class KeycloakImportTest(TestCase):
 
         NEW_CORP = deepcopy(TEST_CORP_TWO)
         # Now only member of one group instead of two.
-        NEW_CORP[0]["attributes"]["group_dn"] = None
+        NEW_CORP[0]["attributes"]["memberOf"] = ["CN=Group 2,O=Test Corp."]
 
         # Import again
         keycloak_actions.perform_import_raw(
@@ -324,7 +313,7 @@ class KeycloakImportTest(TestCase):
                 msg="OU doesn't exist but should")
 
         # Delete Ulrich from the TEST_CORP_TWO
-        del NEW_CORP[2:3]
+        del NEW_CORP[1]
 
         # Import again
         keycloak_actions.perform_import_raw(
