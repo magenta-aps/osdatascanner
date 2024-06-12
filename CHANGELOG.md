@@ -39,6 +39,8 @@
 
 - Increased wait time for retry logic during OS2mo import, to better handle unavailable service(s).
 
+- Scanning SharePoint will again discover all available sites and scan their drives in given tenant.
+
 ## Version 3.22.7, 15th May 2024
 
 "Friendship Bracelet Exchange"
