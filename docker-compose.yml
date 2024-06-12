@@ -134,6 +134,7 @@ services:
       "--reload",
       "--host", "0.0.0.0",
       "--port", "5000",
+      "--reload-dir", "/code/src/os2datascanner",
       # reload when translations are compiled with `docker-compose exec admin django-admin compilemessages`
       "--reload-include", "*.mo",
       "os2datascanner.projects.admin.asgi:application",
@@ -241,6 +242,7 @@ services:
       "--reload",
       "--host", "0.0.0.0",
       "--port", "5000",
+      "--reload-dir", "/code/src/os2datascanner",
       # reload when translations are compiled with `docker-compose exec report django-admin compilemessages`
       "--reload-include", "*.mo",
       "os2datascanner.projects.report.asgi:application",
