@@ -2,42 +2,21 @@
 Views for adding and updating configurations for Microsoft Graph
 for importing organizations.
 """
-import json
-import base64
-from urllib.parse import urlencode
-
 from django import forms
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views import View
-from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
+from os2datascanner.projects.grants.views import MSGraphGrantRequestView
 from os2datascanner.projects.admin.organizations.models import Organization
 from ..models.msgraph_configuration import MSGraphConfiguration
 from os2datascanner.projects.admin.import_services.utils import start_msgraph_import
-
-
-# XXX: this is copied-and-pasted from adminapp
-def make_consent_url(state):
-    if settings.MSGRAPH_APP_ID:
-        return ("https://login.microsoftonline.com/common/adminconsent?"
-                + urlencode({
-                    "client_id": settings.MSGRAPH_APP_ID,
-                    "scope": "https://graph.microsoft.com/.default",
-                    "response_type": "code",
-                    "state": base64.b64encode(json.dumps(state).encode()),
-                    "redirect_uri": (
-                            settings.SITE_URL + "grants/msgraph/receive/")
-                }))
-    else:
-        return None
 
 
 class MSGraphEditForm(forms.ModelForm):
@@ -71,7 +50,7 @@ class MSGraphAddView(View):
         if GraphGrant.objects.filter(organization=org).exists():
             handler = _MSGraphAddView.as_view()
         else:
-            handler = _MSGraphPermissionRequest.as_view(
+            handler = MSGraphGrantRequestView.as_view(
                     redirect_token="add-msgraph",
                     redirect_kwargs=dict(org_id=str(kwargs["org_id"])))
         return handler(request, *args, **kwargs)
@@ -117,35 +96,6 @@ class _MSGraphAddView(LoginRequiredMixin, CreateView):
         form.instance.organization = self.kwargs['organization']
         result = super().form_valid(form)
         return result
-
-
-# XXX: this is mostly copied-and-pasted from adminapp
-class _MSGraphPermissionRequest(LoginRequiredMixin, TemplateView):
-    """
-    Landing page for users who have not been authenticated through Microsoft
-    Online.
-    """
-
-    template_name = "grants/grant_start.html"
-
-    redirect_token = None
-    redirect_kwargs = None
-
-    def get_context_data(self, **kwargs):
-        # Be aware that this currently support import jobs for multiple organizations,
-        # but we only actually support storing MSGraph credentials for one azure application, which
-        # makes it purposeless to set up multiple import jobs.
-        return dict(**super().get_context_data(**kwargs), **{
-            "service_name": "Microsoft Online",
-            "auth_endpoint": make_consent_url(
-                    state={
-                        "red": self.redirect_token,
-                        "rdk": self.redirect_kwargs,
-                        "org": str(self.kwargs["org_id"])
-                    }),
-            "error": self.request.GET.get("error"),
-            "error_description": self.request.GET.get("error_description")
-        })
 
 
 class MSGraphUpdateView(LoginRequiredMixin, UpdateView):

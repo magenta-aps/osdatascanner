@@ -39,6 +39,7 @@ class MSGraphGrantRequestView(LoginRequiredMixin, TemplateView):
     template_name = "grants/grant_start.html"
 
     redirect_token = None
+    redirect_kwargs = None
 
     def get_context_data(self, **kwargs):
         return dict(**super().get_context_data(**kwargs), **{
@@ -46,6 +47,7 @@ class MSGraphGrantRequestView(LoginRequiredMixin, TemplateView):
             "auth_endpoint": make_consent_url(
                     state={
                         "red": self.redirect_token,
+                        "rdk": self.redirect_kwargs,
                         "org": str(UserWrapper(self.request.user).get_org().pk)
                     }),
             "error": self.request.GET.get("error"),
