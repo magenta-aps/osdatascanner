@@ -202,8 +202,7 @@ class OS2moImportJob(BackgroundJob):
 
                     ou_data = self._get_org_unit_data(page_json)
                     count += len(ou_data)
-                    for org_unit in ou_data:
-                        org_unit_list.append(org_unit)
+                    org_unit_list.extend(ou_data)
 
                     logger.info(
                             f"Got {len(ou_data)} org units,"
