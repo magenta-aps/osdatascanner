@@ -184,10 +184,6 @@ class OS2moImportJob(BackgroundJob):
                     page_json = page_response.json()
                     message_buffer.append(page_json)
 
-                    if page_response.status_code == 204:
-                        # No more entries
-                        break
-
                     if (not page_json.get("data")
                             and (errors := page_json.get("errors"))):
                         # Unhelpfully, MO returns HTTP 200 and not 401 or 403
