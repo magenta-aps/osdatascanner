@@ -116,11 +116,16 @@ class ReportView(LoginRequiredMixin, ListView):
                 "A temporary error occurred during the latest check of this result. "
                 "OSdatascanner will automatically check this result again as part of the next scan."
             ),
-            'subtitle': _(""),
+            'subtitle': "",
         }
 
         # pass the dictionary as a single variable
         context["popover_data"] = popover_data
+
+        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
+        context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
+            (self.request.GET.get("source_type") == "smbc" or
+                all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
 
         return context
 
@@ -261,7 +266,6 @@ class UserReportView(ReportView):
             self.request.user.account.organization.has_email_delete_permission())
         context["show_file_delete_button"] = (
             self.request.user.account.organization.has_file_delete_permission())
-        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
 
         return context
 
@@ -307,6 +311,9 @@ class UndistributedView(ReportView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['undistributed_scannerjobs'] = self.scannerjob_filters
+
+        context["show_smb_delete_button"] = False
+        context["show_smb_mass_delete_button"] = False
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -331,6 +338,14 @@ class ArchiveMixin:
             'sort_key',
             'pk')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["show_email_delete_button"] = False
+        context["show_file_delete_button"] = False
+        context["show_smb_delete_button"] = False
+        context["show_smb_mass_delete_button"] = False
+        return context
+
     def dispatch(self, request, *args, **kwargs):
         if settings.ARCHIVE_TAB:
             return super().dispatch(request, *args, **kwargs)
@@ -340,12 +355,6 @@ class ArchiveMixin:
 
 class UserArchiveView(ArchiveMixin, UserReportView):
     """Presents the user with their personal handled results."""
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["show_email_delete_button"] = False
-        context["show_file_delete_button"] = False
-        return context
 
 
 class RemediatorArchiveView(ArchiveMixin, RemediatorView):
@@ -581,14 +590,14 @@ class MassDeleteFileView(HTMXEndpointView, BaseMassView):
 
 class DeleteSMBFileView(HTMXEndpointView, DetailView):
     """ View for sending a delete request for a file
-    through the MSGraph API. """
+    on an SMB share."""
     model = DocumentReport
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         report = self.get_object()
 
-        deleted, problem = try_smb_delete_1(request)
+        deleted, problem = try_smb_delete_1(request, [report.pk])
         if not deleted:
             error_message = _("Failed to delete {pn}: {e}").format(
                 pn=report.matches.handle.presentation_name, e=problem)
@@ -598,3 +607,28 @@ class DeleteSMBFileView(HTMXEndpointView, DetailView):
                 error_message)
 
         return response
+
+
+class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
+    """View for sending delete requests for multiple files
+    on an SMB share."""
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        reports = self.get_queryset()
+        self.delete_files(reports)
+
+        return response
+
+    def delete_files(self, document_reports):
+        deleted, problem = try_smb_delete_1(
+            self.request, document_reports.values_list(
+                "pk", flat=True))
+
+        if not deleted:
+            error_message = _("Failed to delete some reports: {e}").format(
+                e=problem)
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                error_message)

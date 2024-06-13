@@ -86,7 +86,6 @@
                             name='delete-smb-file'
                             title="{% trans 'Deletes file from the shared drive' %}"
                             hx-post="{% url 'delete-smb-file' document_report.pk %}"
-                            hx-vals='{{ document_report|make_smb_deletion_dict|json_dumps }}'
                             hx-push-url="false"
                             hx-swap="none"
                             hx-trigger="click"

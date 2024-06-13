@@ -1,7 +1,5 @@
 import os
-import json
 from urllib.parse import urlsplit
-from hashlib import sha512
 
 from django.apps import apps
 from django import template
@@ -11,8 +9,6 @@ from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.smb import SMBHandle
 from os2datascanner.engine2.model.smbc import SMBCHandle
 
-from os2datascanner.projects.report.reportapp.models.documentreport import (
-        DocumentReport)
 from ..views.report_views import RENDERABLE_RULES
 from django.utils.translation import gettext_lazy as _
 
@@ -160,17 +156,3 @@ def merge_renderable_match_fragments(match_fragments: list):
         return merged_fragment
     else:
         return match_fragments[0]
-
-
-@register.filter
-def json_dumps(obj):
-    return json.dumps(obj)
-
-
-@register.filter
-def make_smb_deletion_dict(report: DocumentReport):
-    return {
-        "path": (path := report.path),
-        "client_hash": sha512(
-                f"{settings.SECRET_KEY};{path}".encode()).hexdigest(),
-    }

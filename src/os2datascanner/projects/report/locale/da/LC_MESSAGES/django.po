@@ -4,12 +4,11 @@
 # OS2datascanner.
 # IBP <ibp@magenta.dk>, 2020.
 # b
-#: reportapp/views/report_views.py:119
 #, fuzzy
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-07 09:59+0200\n"
+"POT-Creation-Date: 2024-06-10 08:44+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -449,7 +448,7 @@ msgid "results"
 msgstr "resultater"
 
 #: reportapp/templates/components/pagination/pagination.html:10
-#: reportapp/templates/components/reports/handle_match.html:100
+#: reportapp/templates/components/reports/handle_match.html:112
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:130
 msgid "of"
 msgstr "af"
@@ -658,16 +657,16 @@ msgstr ""
 "Du er ved at slette markerede emails fra din mailboks. Denne handling kan "
 "ikke fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/handle_match.html:76
+#: reportapp/templates/components/reports/handle_match.html:75
 msgid "Delete marked emails"
 msgstr "Slet markerede emails"
 
-#: reportapp/templates/components/reports/handle_match.html:85
-#: reportapp/templates/components/reports/handle_match.html:86
+#: reportapp/templates/components/reports/handle_match.html:83
+#: reportapp/templates/components/reports/handle_match.html:84
 msgid "Deletes checked files from your online drive"
 msgstr "Sletter markede filer fra dit online drev"
 
-#: reportapp/templates/components/reports/handle_match.html:91
+#: reportapp/templates/components/reports/handle_match.html:89
 msgid ""
 "You are about to delete checked files from your online drive. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -675,11 +674,25 @@ msgstr ""
 "Du er ved at slette markerede filer fra dit online drev. Denne handling kan "
 "ikke fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/handle_match.html:94
+#: reportapp/templates/components/reports/handle_match.html:91
+#: reportapp/templates/components/reports/handle_match.html:107
 msgid "Delete marked files"
 msgstr "Slet markerede filer"
 
+#: reportapp/templates/components/reports/handle_match.html:99
 #: reportapp/templates/components/reports/handle_match.html:100
+msgid "Deletes checked files from your shared drive"
+msgstr "Sletter markede filer fra dit fællesdrev"
+
+#: reportapp/templates/components/reports/handle_match.html:105
+msgid ""
+"You are about to delete checked files from your shared drive. OSdatascanner "
+"cannot reverse this action. Are you sure?"
+msgstr ""
+"Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling "
+"kan ikke fortrydes i OSdatascanner. Er du sikker?"
+
+#: reportapp/templates/components/reports/handle_match.html:112
 msgid "selected"
 msgstr "valgt"
 
@@ -737,8 +750,8 @@ msgid ""
 "You are about to delete the selected file from your shared drive. "
 "OSdatascanner cannot reverse this action. Are you sure?"
 msgstr ""
-"Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling kan ikke "
-"fortrydes i OSdatascanner. Er du sikker?"
+"Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling "
+"kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html:103
 msgid "Opened"
@@ -1775,39 +1788,39 @@ msgstr ""
 "tidligere matchede emails, skal du bruge \"Kategorisér\"-funktionen på din "
 "<a href=\"%(my-account)s\">profile page</a>."
 
-#: reportapp/templatetags/handle_extras.py:97
+#: reportapp/templatetags/handle_extras.py:93
 msgid "File"
 msgstr "Fil"
 
-#: reportapp/templatetags/handle_extras.py:99
+#: reportapp/templatetags/handle_extras.py:95
 msgid "Office 365 File"
 msgstr "Office 365 Fil"
 
-#: reportapp/templatetags/handle_extras.py:101
+#: reportapp/templatetags/handle_extras.py:97
 msgid "MS Teams file"
 msgstr "MS Teams fil"
 
-#: reportapp/templatetags/handle_extras.py:103
+#: reportapp/templatetags/handle_extras.py:99
 msgid "Exchange Mail"
 msgstr "Exchange mail"
 
-#: reportapp/templatetags/handle_extras.py:105
+#: reportapp/templatetags/handle_extras.py:101
 msgid "Gmail"
 msgstr "Gmail"
 
-#: reportapp/templatetags/handle_extras.py:107
+#: reportapp/templatetags/handle_extras.py:103
 msgid "Office 365 Mail"
 msgstr "Office 365 Mail"
 
-#: reportapp/templatetags/handle_extras.py:109
+#: reportapp/templatetags/handle_extras.py:105
 msgid "Web"
 msgstr "Hjemmeside"
 
-#: reportapp/templatetags/handle_extras.py:111
+#: reportapp/templatetags/handle_extras.py:107
 msgid "Office 365 Calendar"
 msgstr "Office 365 Kalender"
 
-#: reportapp/templatetags/handle_extras.py:113
+#: reportapp/templatetags/handle_extras.py:109
 msgid "Unrecognized scan type"
 msgstr "Uidentificerbar scan type"
 
@@ -1835,7 +1848,7 @@ msgstr ""
 
 #: reportapp/views/report_views.py:504 reportapp/views/report_views.py:529
 #: reportapp/views/report_views.py:549 reportapp/views/report_views.py:574
-#: reportapp/views/report_views.py:593
+#: reportapp/views/report_views.py:593 reportapp/views/report_views.py:618
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
