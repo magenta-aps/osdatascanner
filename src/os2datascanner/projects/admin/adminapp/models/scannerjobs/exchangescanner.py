@@ -113,9 +113,9 @@ class ExchangeScanner(Scanner):
                     "admin_user": None,
                     "admin_password": None,
 
-                    "client_id": settings.MSGRAPH_APP_ID,
+                    "client_id": str(self.grant.app_id),
                     "tenant_id": str(self.grant.tenant_id),
-                    "client_secret": settings.MSGRAPH_CLIENT_SECRET,
+                    "client_secret": self.grant.client_secret,
                 }
             # ... but use the Authentication object if we don't (as long as it
             # actually has a username)

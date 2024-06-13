@@ -16,7 +16,6 @@
 import structlog
 
 from django.db import models
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.model.msgraph.mail import (MSGraphMailSource, MSGraphMailAccountSource,
@@ -100,13 +99,12 @@ class MSGraphMailScanner(MSGraphScanner):
 
     def generate_sources_with_accounts(self):  # noqa
         base_source = MSGraphMailSource(
-                client_id=settings.MSGRAPH_APP_ID,
+                client_id=str(self.grant.app_id),
                 tenant_id=str(self.grant.tenant_id),
-                client_secret=settings.MSGRAPH_CLIENT_SECRET,
+                client_secret=self.grant.client_secret,
                 scan_deleted_items_folder=self.scan_deleted_items_folder,
                 scan_syncissues_folder=self.scan_syncissues_folder,
-                scan_attachments=self.scan_attachments
-            )
+                scan_attachments=self.scan_attachments)
         for account in self.compute_covered_accounts():
             for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
                 user_mail_address: str = alias.value
@@ -132,12 +130,11 @@ class MSGraphFileScanner(MSGraphScanner):
 
     def generate_sources_with_accounts(self):  # noqa
         base_source = MSGraphFilesSource(
-            client_id=settings.MSGRAPH_APP_ID,
-            tenant_id=str(self.grant.tenant_id),
-            client_secret=settings.MSGRAPH_CLIENT_SECRET,
-            site_drives=self.scan_site_drives,
-            user_drives=False,
-        )
+                client_id=str(self.grant.app_id),
+                tenant_id=str(self.grant.tenant_id),
+                client_secret=self.grant.client_secret,
+                site_drives=self.scan_site_drives,
+                user_drives=False)
         if self.scan_site_drives:
             # TODO: files in a SharePoint drive do actually have an owner...
             yield None, base_source
@@ -171,10 +168,9 @@ class MSGraphCalendarScanner(MSGraphScanner):
 
     def generate_sources_with_accounts(self):  # noqa
         base_source = MSGraphCalendarSource(
-                client_id=settings.MSGRAPH_APP_ID,
+                client_id=str(self.grant.app_id),
                 tenant_id=str(self.grant.tenant_id),
-                client_secret=settings.MSGRAPH_CLIENT_SECRET,
-            )
+                client_secret=self.grant.client_secret)
         for account in self.compute_covered_accounts():
             for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
                 user_mail_address: str = alias.value
@@ -202,7 +198,6 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
     def generate_sources(self):
 
         yield MSGraphTeamsFilesSource(
-            client_id=settings.MSGRAPH_APP_ID,
-            tenant_id=str(self.grant.tenant_id),
-            client_secret=settings.MSGRAPH_CLIENT_SECRET,
-        )
+                client_id=str(self.grant.app_id),
+                tenant_id=str(self.grant.tenant_id),
+                client_secret=self.grant.client_secret)
