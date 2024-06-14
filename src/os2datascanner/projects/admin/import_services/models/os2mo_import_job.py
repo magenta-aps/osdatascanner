@@ -1,5 +1,7 @@
 from sys import stderr
 import json
+from typing import Any
+
 import requests
 import structlog
 from tenacity import Retrying, stop_after_attempt, wait_exponential
@@ -20,7 +22,7 @@ logger = structlog.get_logger("import_services")
 message_buffer = deque(maxlen=5)
 
 
-def walk_mo_json_response(response: dict, *path):
+def walk_mo_json_response(response: dict, *path) -> Any:
     here, steps = response, path
     try:
         while steps:
@@ -67,14 +69,16 @@ class OS2moImportJob(BackgroundJob):
         related_name='os2moimport'
     )
 
-    def _get_next_cursor(self, json_query_response: dict) -> str:
+    @staticmethod
+    def _get_next_cursor(json_query_response: dict) -> str:
         """Given a JSON response of a OS2mo GraphQL query for org_units,
         returns the next_cursor value."""
         return walk_mo_json_response(
                 json_query_response,
                 "data", "org_units", "page_info", "next_cursor")
 
-    def _get_org_unit_data(self, json_query_response: dict) -> list:
+    @staticmethod
+    def _get_org_unit_data(json_query_response: dict) -> list[dict[str, Any]]:
         """Given a JSON response of a OS2mo GraphQL query for org_units,
         returns a list of objects."""
         return walk_mo_json_response(
