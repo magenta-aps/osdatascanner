@@ -93,6 +93,10 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
                     user=user, smb_url=smb_url)
             smb_ctx.unlink(smb_url)
             deleted_matches.append(report.pk)
+        except smbc.NoEntryError:
+            # We tried to delete this, but it was already gone...? Oh well,
+            # let's just declare victory
+            deleted_matches.append(report.pk)
         except Exception as ex:
             print_exc()
             result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
