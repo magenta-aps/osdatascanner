@@ -82,6 +82,7 @@
                 {% if show_smb_delete_button and type == 'smbc' %}
                   <span class="delete-smb-file">
                     <button class="button button--deletion-button"
+                            type="button"
                             id="{{ document_report.pk }}"
                             name='delete-smb-file'
                             title="{% trans 'Deletes file from the shared drive' %}"
