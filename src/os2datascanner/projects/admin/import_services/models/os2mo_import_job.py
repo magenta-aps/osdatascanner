@@ -134,18 +134,18 @@ class OS2moImportJob(BackgroundJob):
     def job_label(self) -> str:
         return "OS2mo Import Job"
 
+    @staticmethod
     def _retry_post_query(
-            self,
             session: requests.Session,
             token: str,
             os2mo_url_endpoint: str,
-            next_cursor: str) -> dict:
+            next_cursor: str) -> dict[str, Any]:
         for attempt in retry:
             with attempt:
                 resp = session.post(
                         os2mo_url_endpoint,
                         json={
-                            "query": self.QueryOrgUnitsManagersEmployees,
+                            "query": OS2moImportJob.QueryOrgUnitsManagersEmployees,
                             "variables": {
                                 "cursor": next_cursor,
                                 "limit": settings.OS2MO_PAGE_SIZE,
@@ -160,11 +160,7 @@ class OS2moImportJob(BackgroundJob):
                         },
                         timeout=settings.OS2MO_REQUEST_TIMEOUT)
                 resp.raise_for_status()
-                return resp
-        else:
-            raise Exception(
-                    "OS2moImportJob._retry_post_query didn't fail, but didn't"
-                    " succeed (huh?)")
+                return resp.json()
 
     def run(self):  # noqa CCR001
         message_buffer.clear()
@@ -183,9 +179,8 @@ class OS2moImportJob(BackgroundJob):
             try:
                 next_cursor = None
                 while True:
-                    page_response = self._retry_post_query(
+                    page_json = self._retry_post_query(
                             session, token, os2mo_url_endpoint, next_cursor)
-                    page_json = page_response.json()
                     message_buffer.append(page_json)
 
                     if (not page_json.get("data")
