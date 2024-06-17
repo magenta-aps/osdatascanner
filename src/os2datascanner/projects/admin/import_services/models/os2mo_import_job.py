@@ -153,7 +153,8 @@ class OS2moImportJob(BackgroundJob):
                             "content-type": (
                                     "application/json; charset=UTF-8"),
                             "authorization": f"Bearer {token}"
-                        })
+                        },
+                        timeout=settings.OS2MO_REQUEST_TIMEOUT)
                 resp.raise_for_status()
                 return resp
         else:
