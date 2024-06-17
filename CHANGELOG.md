@@ -33,7 +33,7 @@
 
 - The administration system and report module now share a common data model for
   credentials and privileges.
- 
+
 ### Bugfixes
 
 - The "Show/hide all matches" button works as intended, again. 
@@ -43,6 +43,9 @@
 - Increased wait time for retry logic during OS2mo import, to better handle unavailable service(s).
 
 - Scanning SharePoint will again discover all available sites and scan their drives in given tenant.
+
+- OS2mo import jobs should no longer freeze in the event of an unexpected delay
+  from the server.
 
 ## Version 3.22.7, 15th May 2024
 
