@@ -1,9 +1,12 @@
-from unittest.mock import MagicMock
+from requests import Session
+
+from unittest.mock import MagicMock, patch
 
 from django.conf import settings
 from requests import HTTPError
 
 from os2datascanner.projects.admin.import_services.models.os2mo_import_job import OS2moImportJob
+
 
 GQL_RESPONSE = {
     "data": {
@@ -74,3 +77,65 @@ def test__retry_post_query():
         }
     )
     assert r == {"foo": "bar"}
+
+
+@patch(
+    "os2datascanner.projects.admin.import_services.utils.post_import_cleanup"
+)
+@patch(
+    "os2datascanner.projects.admin.organizations.os2mo_import_actions.perform_os2mo_import"
+)
+@patch.object(Session, "post")
+@patch(
+    "os2datascanner.projects.admin.import_services.models.os2mo_import_job.make_token",
+    return_value="fake_token"
+)
+def test_run(
+    mock_make_token: MagicMock,
+    mock_post: MagicMock,
+    mock_perform_os2mo_import: MagicMock,
+    mock_post_import_cleanup: MagicMock,
+):
+    # Arrange
+    mo_response1 = MagicMock()
+    mo_response1.json.return_value = GQL_RESPONSE
+
+    mo_response2 = MagicMock()
+    mo_response2.json.return_value = GQL_RESPONSE  # Ok to reuse response
+
+    mo_response3 = MagicMock()
+    mo_response3.json.return_value = {
+        "data": {
+            "org_units": {
+                "page_info": {
+                    "next_cursor": None
+                },
+                "objects": []
+            }
+        },
+    }
+
+    mock_post.side_effect = [mo_response1, mo_response2, mo_response3]
+
+    class TestableOS2moImportJob(OS2moImportJob):
+        organization = None
+
+        def save(
+            self, force_insert=False, force_update=False, using=None, update_fields=None
+        ):
+            pass
+
+    os2mo_import_job = TestableOS2moImportJob()
+
+    # Act
+    os2mo_import_job.run()
+
+    # Assert
+    mock_perform_os2mo_import.assert_called_once()
+    assert mock_perform_os2mo_import.call_args_list[0].args[0] == [
+        {"some": "mo unit 1"},
+        {"some": "mo unit 2"},
+        {"some": "mo unit 1"},  # Same due to reuse in arrange step above
+        {"some": "mo unit 2"},  # Same due to reuse in arrange step above
+    ]
+    mock_post_import_cleanup.assert_called_once()
