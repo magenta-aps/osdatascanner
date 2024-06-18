@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-06 10:58+0200\n"
+"POT-Creation-Date: 2024-06-18 11:32+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -108,7 +108,7 @@ msgstr "intet scannerjob findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
 #: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
-#: import_services/models/msgraph_import_job.py:29
+#: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:66
 #: import_services/models/realm.py:29
 msgid "organization"
@@ -197,31 +197,31 @@ msgstr ""
 msgid "UNC must follow the UNC format"
 msgstr "UNC skal følge UNC-format"
 
-#: adminapp/models/scannerjobs/msgraph.py:75
+#: adminapp/models/scannerjobs/msgraph.py:74
 msgid "Scan deleted items folder"
 msgstr "Scan slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:76
+#: adminapp/models/scannerjobs/msgraph.py:75
 msgid "Include emails in the deleted post folder"
 msgstr "Inkludér emails i slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:81
+#: adminapp/models/scannerjobs/msgraph.py:80
 msgid "Scan syncissues folder"
 msgstr "Scan synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:82
+#: adminapp/models/scannerjobs/msgraph.py:81
 msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:87
+#: adminapp/models/scannerjobs/msgraph.py:86
 msgid "Scan attachments"
 msgstr "Scan vedhæftninger"
 
-#: adminapp/models/scannerjobs/msgraph.py:88
+#: adminapp/models/scannerjobs/msgraph.py:87
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
-#: adminapp/models/scannerjobs/msgraph.py:191
+#: adminapp/models/scannerjobs/msgraph.py:187
 #: adminapp/models/scannerjobs/webscanner.py:43
 msgid "check dead links"
 msgstr "tjek døde links"

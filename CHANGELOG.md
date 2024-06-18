@@ -1,6 +1,8 @@
 # Changelog
 
-## Next Release
+## Version 3.23.0, 18th June 2024
+
+"Okay then, let's Samba"
 
 ### New in this release
 
@@ -18,7 +20,7 @@
 - LDAP import jobs can now be configured to only import members of 
   groups with names beginning with a given string.
 
-- Support for mass deletion of files on Windoes network drives, as specified 
+- Support for mass deletion of files on Windows network drives, as specified 
   above.
 
 ### General improvements
