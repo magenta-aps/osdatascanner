@@ -615,3 +615,18 @@
 #scanner_search_field {
   margin-right: 2rem;
 }
+
+.smartdelta {
+  float: right;
+
+  background-image: url("../svg/smartdelta.svg");
+  background-size: contain;
+
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+
+  cursor: help;
+
+  padding: 1px;
+}

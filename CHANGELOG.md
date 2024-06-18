@@ -26,6 +26,15 @@
 - Management command "test_checkup" for checking if a handle specified by a 
   ScheduledCheckup can still be reached by the system.
 
+- Initial support for pre-execution of rules:
+
+  - Sources can now perform pre-execution of rules during the exploration
+    stage, allowing the scanner engine to (for example) skip over irrelevant
+    files. This greatly improves scan performance.
+
+  - Pre-execution of rules is still in the preview stage, and is not yet
+    supported by all data sources.
+
 ### General improvements
 
 - All unit tests in the admin module now utilizes pytest instead of Django tests.
