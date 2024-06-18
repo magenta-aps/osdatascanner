@@ -441,6 +441,7 @@ Integration Test Report Application:
     POSTGRES_PASSWORD: os2datascanner
     DATASYNTH_HOST: "datasynth"
     server__token: 'thisIsNotASecret'
+    demo__token: 'demoToken'
     FF_NETWORK_PER_BUILD: "true"
     OS2DS_SERVER_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/api/dev-settings.toml
   needs:
@@ -451,6 +452,31 @@ Integration Test Report Application:
     - cd src/os2datascanner/projects/report
     - bash /code/docker/docker-entrypoint.sh
     - django-admin test os2datascanner.projects.report.tests.integration
+
+Unit Test API server:
+  extends: .test-default
+  image: ${API_IMAGE}
+  needs:
+    - Build API
+  variables:
+    OS2DS_SERVER_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/api/dev-settings.toml
+  script:
+    - cd /code/src/os2datascanner/server/tests
+    - coverage run -m pytest
+      --ignore=/code/src/os2datascanner/server/tests
+      --junitxml $CI_PROJECT_DIR/api-junit.xml
+      -p no:cacheprovider
+      --color=yes
+    - coverage xml -o ${CI_PROJECT_DIR}/api-coverage.xml
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/api-coverage.xml
+    when: always
+    reports:
+      junit: $CI_PROJECT_DIR/api-junit.xml
+      coverage_report: 
+        coverage_format: cobertura
+        path: ${CI_PROJECT_DIR}/api-coverage.xml
 
 Run Engine notice scripts:
   stage: test

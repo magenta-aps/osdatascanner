@@ -1,0 +1,31 @@
+# Traefik static configuration.
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+  [entryPoints.websecure]
+    address = ":443"
+    [entryPoints.websecure.http.tls]
+  
+
+
+
+[certificatesResolvers.le-http.acme]
+  email = "driftgruppen@magenta.dk"
+  storage = "/etc/traefik/acme.json"
+  [certificatesResolvers.le-http.acme.httpChallenge]
+    entryPoint = "web"
+
+[certificatesResolvers.le-dns.acme]
+  email = "driftgruppen@magenta.dk"
+  storage = "/etc/traefik/acme.json"
+  [certificatesResolvers.le-dns.acme.dnsChallenge]
+    provider = "acme-dns"
+    disablePropagationCheck = true
+
+
+[providers]
+  [providers.file]
+    directory = "/etc/traefik/dynamic"
+    watch = true
+[accessLog]
