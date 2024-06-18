@@ -15,68 +15,32 @@
 Unit tests for OS2datascanner.
 """
 
-from django.test import TestCase
-from django.contrib.auth.models import User
-from django.utils.text import slugify
+import pytest
 
-from os2datascanner.projects.admin.core.models.administrator import Administrator
-from os2datascanner.projects.admin.organizations.models.organization import Organization
-from os2datascanner.projects.admin.core.models.client import Client
 from os2datascanner.projects.admin.adminapp.models.authentication import Authentication
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner import FileScanner
 from os2datascanner.projects.admin.adminapp.validate import validate_domain
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
-from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 
-class ScannerTest(TestCase):
+@pytest.mark.django_db
+class TestScanner:
 
     """Test running a scan and domain validation."""
     # TODO: Capture the interaction so these tests can work without an
     # Internet connection! !!!
 
-    def setUp(self):
-        client1 = Client.objects.create(name="client1")
-        self.magenta = Organization.objects.create(
-            name="Magenta",
-            uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c",
-            slug=slugify("Magenta"),
-            client=client1,)
-
-        client2 = Client.objects.create(name="client2")
-        self.example = Organization.objects.create(
-            name="IANA (example.com)",
-            slug=slugify("IANA (example.com)"),
-            uuid="a3575dec-8d92-4266-a8d1-97b7b84817c0",
-            client=client2,)
-
-        self.test_user = User.objects.create_user(
-            username="testuser",
-            password="hemmeligt",)
-
-        self.rule = CustomRule.objects.create(**dummy_rule_dict)
-
-        Administrator.objects.create(
-            user=self.test_user,
-            client=client1,)
-
-        self.invalid_webscanner = WebScanner.objects.create(
-            url="http://www.example.com/",
-            name="invalid webscanner",
-            validation_status=Scanner.INVALID,
-            organization=self.magenta, rule=self.rule)
-
-    def test_unvalidated_scannerjob_cannot_be_started(self):
+    def test_unvalidated_scannerjob_cannot_be_started(
+            self, user_admin, client, invalid_web_scanner):
         """This test method is sufficient for all types of scanners."""
 
-        self.client.login(username="testuser", password="hemmeligt")
-        response = self.client.get("/webscanners/" + str(self.invalid_webscanner.pk) + "/askrun/")
-        self.assertEqual(response.context["ok"], False)
-        self.assertEqual(response.context["error_message"], Scanner.NOT_VALIDATED)
+        client.force_login(user_admin)
+        response = client.get("/webscanners/" + str(invalid_web_scanner.pk) + "/askrun/")
+        assert response.context["ok"] is False
+        assert response.context["error_message"] == Scanner.NOT_VALIDATED
 
-    def test_validate_domain(self):
+    def test_validate_domain(self, test_org, basic_rule):
         """Test validating domains."""
         # Make sure example.com does not validate in any of the possible
         # methods
@@ -86,22 +50,22 @@ class ScannerTest(TestCase):
             webscanner = WebScanner(
                 url="http://www.example.com/",
                 validation_method=validation_method,
-                organization=self.example,
-                pk=2, rule=self.rule
+                organization=test_org,
+                pk=2, rule=basic_rule
             )
             webscanner.save()
-            self.assertFalse(validate_domain(webscanner))
+            assert validate_domain(webscanner) is False
 
-    def test_engine2_filescanner(self):
+    def test_engine2_filescanner(self, test_org, basic_rule):
         authentication = Authentication(username="jens")
         authentication.set_password("rigtig heste batteri haefteklamme")
         scanner = FileScanner(
                 unc="//ORG/SIKKERSRV",
-                organization=self.magenta,
+                organization=test_org,
                 authentication=authentication,
-                alias="K", rule=self.rule)
+                alias="K", rule=basic_rule)
 
         source_generator = scanner.generate_sources()
         engine2_source = next(source_generator)
 
-        self.assertEqual(engine2_source.driveletter, "K")
+        assert engine2_source.driveletter == "K"

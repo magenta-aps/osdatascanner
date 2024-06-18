@@ -1,16 +1,11 @@
-from parameterized import parameterized
+import pytest
 
-from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from os2datascanner.engine2.rules.dummy import AlwaysMatchesRule
-from ..adminapp.models.rules import CustomRule
-from ..adminapp.models.authentication import Authentication
-from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
 
-
-class ExchangeScannerTests(TestCase):
-    @parameterized.expand([
+@pytest.mark.django_db
+class TestExchangeScanner:
+    @pytest.mark.parametrize('userlist_file,expected', [
         (
             SimpleUploadedFile(
                     "userlist.txt",
@@ -27,18 +22,16 @@ class ExchangeScannerTests(TestCase):
             ["egon", "benny", "frank"]
         ),
     ])
-    def test_userlist_formats(self, userlist_file, expected):
-        rule = CustomRule.objects.create(
-                name="ul_format_test_rule",
-                _rule=AlwaysMatchesRule().to_json_object())
-        es = ExchangeScanner.objects.create(name="ul_format_test", rule=rule)
+    def test_userlist_formats(
+            self,
+            exchange_scanner,
+            userlist_file,
+            expected):
 
-        es.authentication = Authentication()
-        es.authentication.username = "admin"
-        es.authentication.set_password("swordfish")
+        exchange_scanner.authentication.set_password("swordfish")
 
-        es.userlist = userlist_file
-        self.assertCountEqual(
-                (source._user for source in es.generate_sources()),
-                expected,
-                "userlist file was not handled correctly")
+        exchange_scanner.userlist = userlist_file
+
+        assert len(
+            [source._user for source in exchange_scanner.generate_sources()]
+            ) == len(expected)

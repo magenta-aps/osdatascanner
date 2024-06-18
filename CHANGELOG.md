@@ -1,5 +1,11 @@
 # Changelog
 
+## Version ???
+
+### General improvements
+
+- All unit tests in the admin module now utilizes pytest instead of Django tests.
+
 ## Version 3.23.0, 18th June 2024
 
 "Okay then, let's Samba"

@@ -1,108 +1,45 @@
-from datetime import datetime
-from dateutil.tz import gettz
-from django.contrib.auth import get_user_model
+import pytest
+
 from django.contrib.auth.models import AnonymousUser
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory
 from django.urls.exceptions import Http404
 
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
-    import Scanner
 from os2datascanner.projects.admin.adminapp.views.scanner_views import ScannerCleanupStaleAccounts
-from os2datascanner.projects.admin.organizations.models import (
-    Account, Organization, OrganizationalUnit)
-from os2datascanner.projects.admin.core.models import Administrator, Client
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
-from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
-
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
-    ScanStatus, CoveredAccount)
-
-from os2datascanner.engine2.pipeline.messages import ScanTagFragment, ScannerFragment
 
 
-class CleanupScannerViewTests(TestCase):
+def get_cleanup_view(user, scanner):
+    request = RequestFactory().get('/')
+    request.user = user
+    response = ScannerCleanupStaleAccounts.as_view()(request, pk=scanner.pk)
+    return response
 
-    def setUp(self):
-        self.factory = RequestFactory()
 
-        self.user = get_user_model().objects.create(username="Fake user")
+@pytest.mark.django_db
+class TestCleanupScannerViews:
 
-        self.client = Client.objects.create(
-            name="OS2datascanner Test",
-            contact_email="info@magenta-aps.dk",
-            contact_phone="+45 3336 9696")
-
-        self.org = Organization.objects.create(
-            name="OS2datascanner Test",
-            contact_email="info@magenta-aps.dk",
-            contact_phone="+45 3336 9696",
-            client_id=self.client.uuid,
-            slug="os2datascanner-test")
-
-        self.rule = CustomRule.objects.create(**dummy_rule_dict)
-
-        self.scanner = Scanner.objects.create(
-            name="Fake scanner", organization=self.org, rule=self.rule)
-        scanner_frag = ScannerFragment(self.scanner.pk, self.scanner.name)
-        scan_tag = ScanTagFragment(datetime.now(tz=gettz()), None, scanner_frag, None)
-        self.scan_status = ScanStatus.objects.create(
-            scan_tag=scan_tag.to_json_object(),
-            scanner=self.scanner
-        )
-
-        orgunit = OrganizationalUnit.objects.create(name="Fake Unit", organization=self.org)
-
-        hansi = Account.objects.create(username="Hansi", organization=self.org)
-        Account.objects.create(username="Fritz", organization=self.org)
-        Account.objects.create(username="Günther", organization=self.org)
-
-        CoveredAccount.objects.bulk_create(
-            [CoveredAccount(account=account,
-                            scanner=self.scanner,
-                            scan_status=self.scan_status) for
-             account in Account.objects.all()]
-        )
-
-        hansi.units.add(orgunit)
-
-    def tearDown(self):
-        self.scanner.delete()
-        self.org.delete()
-        self.client.delete()
-
-    def test_cleanup_view_regular_user(self):
+    def test_cleanup_view_regular_user(self, user, basic_scanner):
         """Only an admin for the organization should be able to initialize a
         cleanup of the scanner. Regular users should be met with a 404 code."""
 
-        self.assertRaises(Http404, self.get_cleanup_view)
+        with pytest.raises(Http404):
+            get_cleanup_view(user, basic_scanner)
 
-    def test_cleanup_view_admin(self):
+    def test_cleanup_view_admin(self, user_admin, basic_scanner):
         """The admin of an organization should be able to initialize a cleanup
         of the scanner."""
-        Administrator.objects.create(user=self.user, client=self.client)
+        response = get_cleanup_view(user_admin, basic_scanner)
 
-        response = self.get_cleanup_view()
+        assert response.status_code == 200
 
-        self.assertEqual(response.status_code, 200)
-
-    def test_cleanup_view_superuser(self):
+    def test_cleanup_view_superuser(self, superuser, basic_scanner):
         """A superuser should be able to initialize a cleanup of any scanner."""
-        self.user.is_superuser = True
+        response = get_cleanup_view(superuser, basic_scanner)
 
-        response = self.get_cleanup_view()
+        assert response.status_code == 200
 
-        self.assertEqual(response.status_code, 200)
-
-    def test_cleanup_view_not_logged_in(self):
+    def test_cleanup_view_not_logged_in(self, basic_scanner):
         """An anonymous user should be redirected to a login page when trying
         to access the view."""
-        self.user = AnonymousUser()
-        response = self.get_cleanup_view()
+        response = get_cleanup_view(AnonymousUser(), basic_scanner)
 
-        self.assertEqual(response.status_code, 302)
-
-    def get_cleanup_view(self):
-        request = self.factory.get('/')
-        request.user = self.user
-        response = ScannerCleanupStaleAccounts.as_view()(request, pk=self.scanner.pk)
-        return response
+        assert response.status_code == 302

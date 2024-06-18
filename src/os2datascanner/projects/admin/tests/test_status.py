@@ -1,19 +1,6 @@
-from django.test import TestCase
-from datetime import datetime
-from dateutil.tz import gettz
-from django.utils.text import slugify
-
-from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.engine2.pipeline import messages
-from os2datascanner.projects.admin.core.models.client import Client
-from os2datascanner.projects.admin.organizations.models.organization import Organization
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import (
-        Scanner, ScanStatus)
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+import pytest
 
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
-
-from .test_utilities import dummy_rule_dict
 
 
 def record_status(status):
@@ -23,171 +10,72 @@ def record_status(status):
             status.to_json_object()))
 
 
-class StatusTest(TestCase):
-    def setUp(self):
-        client1 = Client.objects.create(name="client1")
-        self.organization = Organization.objects.create(
-            name="Magenta",
-            uuid="b560361d-2b1f-4174-bb03-55e8b693ad0c",
-            slug=slugify("Magenta"),
-            client=client1,
-        )
-        self.rule = CustomRule.objects.create(**dummy_rule_dict)
-        self.scanner = Scanner.objects.create(
-                name="Do unspecified action(s)(?)",
-                organization=self.organization, rule=self.rule)
+@pytest.mark.django_db
+class TestStatus:
 
-    def test_estimates(self):
-        ss = ScanStatus(
-                scanner=self.scanner,
-                scan_tag={"time": datetime.now(tz=gettz()).isoformat()})
+    @pytest.mark.parametrize(
+        ('total_sources,explored_sources,total_objects,scanned_objects,'
+         'fraction_explored,fraction_scanned,finished'), [
+            (0, 0, 0, 0, None, None, False),
+            (2, 0, 0, 0, 0.0, None, False),
+            (2, 1, 20, 0, 0.5, None, False),
+            (2, 2, 20, 0, 1.0, 0.0, False),
+            (2, 2, 20, 10, 1.0, 0.5, False),
+            (2, 2, 20, 20, 1.0, 1.0, True),
+            ])
+    def test_estimates(
+            self,
+            basic_scanstatus,
+            total_sources,
+            explored_sources,
+            total_objects,
+            scanned_objects,
+            fraction_explored,
+            fraction_scanned,
+            finished):
 
-        with self.subTest("empty"):
-            self.assertEqual(
-                    ss.fraction_explored,
-                    None,
-                    "exploration fraction should not have been defined yet")
-            self.assertEqual(
-                    ss.fraction_scanned,
-                    None,
-                    "scan fraction should not have been defined yet")
-            self.assertFalse(
-                    ss.finished,
-                    "scan should not have finished yet")
+        basic_scanstatus.total_sources = total_sources
+        basic_scanstatus.explored_sources = explored_sources
+        basic_scanstatus.total_objects = total_objects
+        basic_scanstatus.scanned_objects = scanned_objects
+        basic_scanstatus.save()
 
-        ss.total_sources = 2
-        with self.subTest("start"):
-            self.assertEqual(
-                    ss.fraction_explored,
-                    0.0,
-                    "wrong exploration fraction")
-            self.assertEqual(
-                    ss.fraction_scanned,
-                    None,
-                    "scan fraction should not have been defined yet")
-            self.assertFalse(
-                    ss.finished,
-                    "scan should not have finished yet")
+        assert basic_scanstatus.fraction_explored == fraction_explored
+        assert basic_scanstatus.fraction_scanned == fraction_scanned
+        assert basic_scanstatus.finished == finished
 
-        ss.explored_sources = 1
-        ss.total_objects = 20
-        with self.subTest("exploring"):
-            self.assertEqual(
-                    ss.fraction_explored,
-                    0.5,
-                    "wrong exploration fraction")
-            self.assertEqual(
-                    ss.fraction_scanned,
-                    None,
-                    "scan fraction should not have been defined yet")
-            self.assertFalse(
-                    ss.finished,
-                    "scan should not have finished yet")
-
-        ss.explored_sources = 2
-        with self.subTest("scanning-1"):
-            self.assertEqual(
-                    ss.fraction_explored,
-                    1.0,
-                    "wrong exploration fraction")
-            self.assertEqual(
-                    ss.fraction_scanned,
-                    0.0,
-                    "wrong scan fraction")
-            self.assertFalse(
-                    ss.finished,
-                    "scan should not have finished yet")
-
-        ss.scanned_objects = 10
-        with self.subTest("scanning-2"):
-            self.assertEqual(
-                    ss.fraction_scanned,
-                    0.5,
-                    "wrong scan fraction")
-            self.assertFalse(
-                    ss.finished,
-                    "scan should not have finished yet")
-
-        ss.scanned_objects = 20
-        with self.subTest("scanned"):
-            self.assertEqual(
-                    ss.fraction_scanned,
-                    1.0,
-                    "wrong scan fraction")
-            self.assertTrue(
-                    ss.finished,
-                    "scan should have finished")
-
-    def test_broken(self):
+    def test_broken(self, basic_scanstatus):
         """Trying to derive properties for broken ScanStatus objects should
         fail cleanly."""
-        ss = ScanStatus(
-                scanner=self.scanner,
-                scan_tag={"time": time_now().isoformat()},
-                total_sources=5,
-                explored_sources=5,
-                total_objects=0)
+        basic_scanstatus.total_sources = 5
+        basic_scanstatus.explored_sources = 5
+        basic_scanstatus.save()
 
-        self.assertEqual(
-                ss.fraction_scanned,
-                None,
-                "scan fraction should not have been defined")
+        assert basic_scanstatus.fraction_scanned is None
 
-    def test_no_updates_on_save(self):
-        ss = ScanStatus(
-            scanner=self.scanner,
-            scan_tag={"time": time_now().isoformat()},
-            total_sources=5,
-            explored_sources=5,
-            total_objects=0,
-        )
-        self.scanner.save()
-        ss.save()
-        last_modified = ss.last_modified
+    def test_no_updates_on_save(self, basic_scanstatus, basic_scanner):
+        basic_scanner.save()
+        basic_scanstatus.save()
+        last_modified = basic_scanstatus.last_modified
         # save should not update last_modified field on scannerStatus
-        ss.save()
+        basic_scanstatus.save()
 
-        self.assertEqual(
-            last_modified,
-            ss.last_modified,
-            "scanStatus does update last modifed on save",
-        )
+        assert basic_scanstatus.last_modified == last_modified
 
-        ss.delete()
-        self.scanner.delete()
+    def test_counting_broken_sources(
+            self,
+            basic_scan_tag,
+            basic_scanstatus,
+            status_message_10_objects,
+            status_message_with_error):
 
-    def test_counting_broken_sources(self):
-        dummy_scan_tag = messages.ScanTagFragment(
-                time=time_now(),
-                user=None,
-                scanner=messages.ScannerFragment(
-                        pk=self.scanner.pk,
-                        name=self.scanner.name),
-                organisation=None)
+        basic_scanstatus.total_sources = 5
+        basic_scanstatus.save()
 
-        ss = ScanStatus.objects.create(
-                scanner=self.scanner,
-                scan_tag=dummy_scan_tag.to_json_object(),
-                total_sources=5,
-                explored_sources=0,
-                total_objects=0)
-
-        error = "Exploration error. None: a, b, c, d, e"
-
-        record_status(messages.StatusMessage(
-                scan_tag=dummy_scan_tag,
-                total_objects=20,
-                message="", status_is_error=False))
+        record_status(status_message_10_objects)
 
         for _ in range(0, 4):
-            record_status(messages.StatusMessage(
-                    scan_tag=dummy_scan_tag,
-                    total_objects=0,
-                    message=error,
-                    status_is_error=True))
+            record_status(status_message_with_error)
 
-        ss.refresh_from_db()
-        self.assertEqual(
-                ss.explored_sources,
-                5,
-                "failing Sources were not counted")
+        basic_scanstatus.refresh_from_db()
+        assert basic_scanstatus.explored_sources == 5

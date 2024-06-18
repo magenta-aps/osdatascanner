@@ -1,18 +1,16 @@
-from django.test import TestCase
-
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.regex import RegexRule
 
 from ..adminapp.models.rules import CustomRule, Sensitivity
 
 
-class RuleTest(TestCase):
+class TestRules:
     def test_regexrule_translation(self):
         names = ("Jason", "Timothy", "Davina", "Kristi",)
 
         rules = (RegexRule(name) for name in names)
 
-        r = CustomRule.objects.create(
+        r = CustomRule(
             name="Look for names",
             description="A rule that looks for some names",
             sensitivity=Sensitivity.CRITICAL,
@@ -21,20 +19,11 @@ class RuleTest(TestCase):
 
         e2r = r.make_engine2_rule()
 
-        self.assertEqual(
-                e2r._name,
-                r.name,
-                "names do not match")
-
-        self.assertEqual(
-                e2r._sensitivity.value,
-                1000,
-                "sensitivities do not match")
+        assert e2r._name == r.name
+        assert e2r._sensitivity.value == 1000
 
         for name, rule in zip(names, rules):
-            self.assertEqual([m['match'] for m in rule.match(name)],
-                             [name],
-                             f"generated rule could not find {name}")
+            assert [m['match'] for m in rule.match(name)] == [name]
 
     def test_customrule_translation(self):
         document = """\
@@ -49,7 +38,7 @@ The first steps will be taken on Tuesday. Mwahahahaha ha ha ha ha.
 Yours in nastiness
 Kristjan Evil
 """
-        r = CustomRule.objects.create(
+        r = CustomRule(
                 name="Look for names",
                 _rule={
                     "type": "name",
@@ -62,18 +51,7 @@ Kristjan Evil
 
         e2r = r.make_engine2_rule()
 
-        self.assertEqual(
-                e2r._name,
-                r.name,
-                "names do not match")
-
-        self.assertEqual(
-                e2r._sensitivity.value,
-                1000,
-                "higher engine2 sensitivity was ignored")
-
-        self.assertEqual(
-                {m["match"] for m in e2r.match(document)},
-                {"Kristjan Evil", "David Jensen",
-                 "Jens Davidsen", "Kristjan Evil"},
-                "expected names not found")
+        assert e2r._name == r.name
+        assert e2r._sensitivity.value == 1000
+        assert {m["match"] for m in e2r.match(document)} == {"Kristjan Evil", "David Jensen",
+                                                             "Jens Davidsen", "Kristjan Evil"}
