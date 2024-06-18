@@ -84,6 +84,38 @@ class TestAPIEndpoints:
 
         assert response_status.startswith("400"), "Should have returned 400"
 
+    def test_demo_token_with_correct_credentials(self):
+        """Test scan_1 should scan correcly"""
+        demo_token = settings.server.get("demo_token")
+        env = {
+            "HTTP_AUTHORIZATION": f"Bearer {demo_token}",
+            "CONTENT_LENGTH": 0
+        }
+        body = {
+            "rule": {
+                "type": "cpr",
+            },
+            "source": {
+                "type": "data",
+                "content": "==",
+                "mime": "text/plain",
+                "name": "test.txt"
+            },
+            "configuration": {
+                "skip_mime_types": []
+            }
+        }
+        response_status = None
+
+        def start_response(status, headers):
+            nonlocal response_status
+            response_status = status
+
+        response = scan_1(env, start_response, body)
+        list(response)
+
+        assert response_status.startswith("200"), "Should have returned 200"
+
     def test_demo_token_with_wrong_mime(self):
         """Test scan_1 should return 403 if mime is disallowed"""
         demo_token = settings.server.get("demo_token")

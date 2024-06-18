@@ -63,7 +63,7 @@ def requires_token(func):
                             ("WWW-Authentication",
                              "Bearer realm=\"api\""
                              " error=\"invalid_credentials\"")])
-                return
+                    return
 
         yield from func(env, start_response, body)
     return runner
