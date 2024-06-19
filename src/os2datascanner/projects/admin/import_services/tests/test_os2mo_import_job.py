@@ -74,7 +74,8 @@ def test__retry_post_query():
         headers={
             "content-type": "application/json; charset=UTF-8",
             "authorization": "Bearer fake_token"
-        }
+        },
+        timeout=120,
     )
     assert r == {"foo": "bar"}
 
