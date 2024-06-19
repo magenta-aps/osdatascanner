@@ -1,5 +1,7 @@
 from sys import stderr
 import json
+from typing import Any
+
 import requests
 import structlog
 from tenacity import Retrying, stop_after_attempt, wait_exponential
@@ -20,7 +22,7 @@ logger = structlog.get_logger("import_services")
 message_buffer = deque(maxlen=5)
 
 
-def walk_mo_json_response(response: dict, *path):
+def walk_mo_json_response(response: dict, *path) -> Any:
     here, steps = response, path
     try:
         while steps:
@@ -67,14 +69,16 @@ class OS2moImportJob(BackgroundJob):
         related_name='os2moimport'
     )
 
-    def _get_next_cursor(self, json_query_response: dict) -> str:
+    @staticmethod
+    def _get_next_cursor(json_query_response: dict) -> str:
         """Given a JSON response of a OS2mo GraphQL query for org_units,
         returns the next_cursor value."""
         return walk_mo_json_response(
                 json_query_response,
                 "data", "org_units", "page_info", "next_cursor")
 
-    def _get_org_unit_data(self, json_query_response: dict) -> list:
+    @staticmethod
+    def _get_org_unit_data(json_query_response: dict) -> list[dict[str, Any]]:
         """Given a JSON response of a OS2mo GraphQL query for org_units,
         returns a list of objects."""
         return walk_mo_json_response(
@@ -130,18 +134,18 @@ class OS2moImportJob(BackgroundJob):
     def job_label(self) -> str:
         return "OS2mo Import Job"
 
+    @staticmethod
     def _retry_post_query(
-            self,
             session: requests.Session,
             token: str,
             os2mo_url_endpoint: str,
-            next_cursor: str) -> dict:
+            next_cursor: str) -> dict[str, Any]:
         for attempt in retry:
             with attempt:
                 resp = session.post(
                         os2mo_url_endpoint,
                         json={
-                            "query": self.QueryOrgUnitsManagersEmployees,
+                            "query": OS2moImportJob.QueryOrgUnitsManagersEmployees,
                             "variables": {
                                 "cursor": next_cursor,
                                 "limit": settings.OS2MO_PAGE_SIZE,
@@ -156,11 +160,7 @@ class OS2moImportJob(BackgroundJob):
                         },
                         timeout=settings.OS2MO_REQUEST_TIMEOUT)
                 resp.raise_for_status()
-                return resp
-        else:
-            raise Exception(
-                    "OS2moImportJob._retry_post_query didn't fail, but didn't"
-                    " succeed (huh?)")
+                return resp.json()
 
     def run(self):  # noqa CCR001
         message_buffer.clear()
@@ -179,14 +179,9 @@ class OS2moImportJob(BackgroundJob):
             try:
                 next_cursor = None
                 while True:
-                    page_response = self._retry_post_query(
+                    page_json = self._retry_post_query(
                             session, token, os2mo_url_endpoint, next_cursor)
-                    page_json = page_response.json()
                     message_buffer.append(page_json)
-
-                    if page_response.status_code == 204:
-                        # No more entries
-                        break
 
                     if (not page_json.get("data")
                             and (errors := page_json.get("errors"))):
@@ -206,8 +201,7 @@ class OS2moImportJob(BackgroundJob):
 
                     ou_data = self._get_org_unit_data(page_json)
                     count += len(ou_data)
-                    for org_unit in ou_data:
-                        org_unit_list.append(org_unit)
+                    org_unit_list.extend(ou_data)
 
                     logger.info(
                             f"Got {len(ou_data)} org units,"
