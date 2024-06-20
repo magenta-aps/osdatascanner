@@ -3,14 +3,10 @@ import struct
 import structlog
 from enum import Enum
 from typing import Tuple, Sequence
-from django.db import transaction
+from itertools import chain
 from os2datascanner.utils.ldap import RDN, LDAPNode
-from .utils import group_into, set_imported_fields, create_and_serialize, update_and_serialize, \
-    delete_and_listify
-from ..organizations.broadcast_bulk_events import (BulkCreateEvent, BulkUpdateEvent,
-                                                   BulkDeleteEvent)
+from .utils import prepare_and_publish
 from os2datascanner.utils.section import suppress_django_signals
-from ..organizations.publish import publish_events
 from ..import_services.models.realm import Realm
 from ..import_services import keycloak_services
 from .models import (Alias, Account, Position,
@@ -28,6 +24,7 @@ class Action(Enum):
     DELETE = 1
     ADD = 2
     UPDATE = 3
+    KEEP = 4
 
 
 def keycloak_dn_selector(d):
@@ -305,7 +302,7 @@ def _handle_diff(path, local, remote, org, accounts, progress_callback=_dummy_pc
         # A remote user exists and it doesn't have a local counterpart. Create one
         try:
             acc, created = _node_to_account(org, remote, accounts)
-            return (Action.ADD, acc) if created else (Action.NOTHING, acc)
+            return (Action.ADD, acc) if created else (Action.KEEP, acc)
         except KeyError:
             # Missing required attribute -- skip this object
             progress_callback("diff_ignored", path)
@@ -355,6 +352,7 @@ def _update_alias(account, value, alias_type, id):
                 imported_id=id,
                 account=account,
                 _alias_type=alias_type)
+            yield (Action.KEEP, alias)
             for attr_name, expected in (("_value", value),):
                 if getattr(alias, attr_name) != expected:
                     setattr(alias, attr_name, expected)
@@ -429,62 +427,13 @@ def _update_account_position(account, account_positions, unit):
         return (Action.ADD, position)
 
 
-@transaction.atomic
-def _apply_database_operations(to_add, to_update, to_delete):
-    """Takes a list of objects to be added, updated, and deleted from the database,
-     and bulk applies the changes."""
-    logger.debug("Summarising LDAP transaction:")
-    for manager, instances in group_into(
-            to_delete, Alias, Position, Account, OrganizationalUnit):
-        logger.debug(f"{manager.model.__name__}:"
-                     f" delete [{', '.join(str(i) for i in instances)}]")
-    for manager, instances in group_into(
-            to_update, Alias, Position, Account, OrganizationalUnit,
-            key=lambda k: k[0]):
-        properties = set()
-        for _, props in instances:
-            properties |= set(props)
-        instances = set(str(i) for i, _ in instances)
-        logger.debug(f"{manager.model.__name__}:"
-                     f" update fields ({', '.join(properties)})"
-                     f" of [{', '.join(instances)}]")
-    for manager, instances in group_into(
-            to_add, OrganizationalUnit, Account, Position, Alias):
-        logger.debug(f"{manager.model.__name__}:"
-                     f" add [{', '.join(str(i) for i in instances)}]")
-
-    # Deletes
-    delete_dict = {}
-    for manager, instances in group_into(
-            to_delete, Alias, Position, Account, OrganizationalUnit):
-
-        model_name = manager.model.__name__
-        delete_dict[model_name] = delete_and_listify(manager, instances)
-
-    # Updates
-    # TODO: We're not actually updating "Imported" fields/timestamps. Should we?
-    update_dict = {}
-    for manager, instances in group_into(
-            to_update, Alias, Position, Account, OrganizationalUnit,
-            key=lambda k: k[0]):
-
-        model_name = manager.model.__name__
-        update_dict[model_name] = update_and_serialize(manager, instances)
-
-    # Creates
-    # TODO: Place the order of which objects should be created/updated somewhere reusabled
-    set_imported_fields(to_add)  # Updates imported_time etc.
-    creation_dict = {}
-    for manager, instances in group_into(
-            to_add, OrganizationalUnit, Account, Position, Alias):
-
-        model_name = manager.model.__name__
-        creation_dict[model_name] = create_and_serialize(manager, instances)
-
-    event = [BulkDeleteEvent(delete_dict), BulkCreateEvent(creation_dict),
-             BulkUpdateEvent(update_dict), ]
-    logger.info("Database operations complete")
-    publish_events(event)
+def _filter_positions(account_positions):
+    """Finds every position for each given account that isn't accurate."""
+    for acc in account_positions:
+        for pos in Position.employees.filter(
+                    account=acc, imported=True).exclude(
+                    unit__in=account_positions[acc]):
+            yield (Action.DELETE, pos)
 
 
 @suppress_django_signals
@@ -540,11 +489,13 @@ def perform_import_raw(
 
     # Keeping track of every account found, along with their path and remote node
     accounts = _get_accounts(diff)
+    for (acc, _, _) in accounts:
+        actions[Action.KEEP].append(acc)
 
     for path, local_node, remote_node in diff:
         a, obj = _handle_diff(path, local_node, remote_node, org, accounts, progress_callback)
         actions[a].append(obj)
-        if a in (Action.ADD, Action.NOTHING) and isinstance(obj, Account):
+        if a in (Action.ADD, Action.KEEP) and isinstance(obj, Account):
             # This account wasn't found during _get_accounts. Add it to accounts
             accounts.append((obj, path, remote_node))
 
@@ -556,24 +507,24 @@ def perform_import_raw(
         a, obj = _update_account_position(acc, account_positions, path_to_unit[path[:-1]])
         actions[a].append(obj)
 
-        if acc not in updated_accounts:
-            # Accounts should only be updated once
-            for a, obj in _update_account(acc, path, remote_node):
-                actions[a].append(obj)
-            updated_accounts.add(acc)
+        # Accounts should only be updated once
+        if acc in updated_accounts:
+            continue
+        for a, obj in _update_account(acc, path, remote_node):
+            actions[a].append(obj)
+        updated_accounts.add(acc)
+
+    # Figure out which positions to delete for each user.
+    for action, object in _filter_positions(account_positions):
+        actions[action].append(object)
 
     # Make sure we don't try to delete objects that are still referenced in the remote hierarchy
+    for obj in chain(actions[Action.KEEP], actions[Action.ADD]):
+        iids_to_preserve.add(obj.imported_id)
     actions[Action.DELETE] = [t for t in actions[Action.DELETE]
                               if t.imported_id not in iids_to_preserve]
 
-    # Figure out which positions to delete for each user.
-    for acc in account_positions:
-        positions_to_delete = Position.employees.filter(
-            account=acc, imported=True).exclude(
-            unit__in=account_positions[acc])
-        if positions_to_delete:
-            actions[Action.DELETE].extend(positions_to_delete)
-
-    _apply_database_operations(actions[Action.ADD], actions[Action.UPDATE], actions[Action.DELETE])
+    prepare_and_publish(org, iids_to_preserve,
+                        actions[Action.ADD], [actions[Action.DELETE]], actions[Action.UPDATE])
 
     return len(actions[Action.ADD]), len(actions[Action.UPDATE]), len(actions[Action.DELETE])
