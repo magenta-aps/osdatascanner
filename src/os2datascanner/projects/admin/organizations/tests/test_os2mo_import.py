@@ -1,11 +1,15 @@
 from datetime import datetime
+from uuid import uuid4
 
+import pytest
 from django.test import TestCase
 from more_itertools import one
 
+from os2datascanner.core_organizational_structure.models.aliases import \
+    AliasType
 from os2datascanner.projects.admin.core.models import Client
 from os2datascanner.projects.admin.organizations.models import Organization, \
-    OrganizationalUnit
+    OrganizationalUnit, Account, Position, Alias
 from os2datascanner.projects.admin.organizations.os2mo_import_actions import \
     perform_os2mo_import
 
@@ -246,3 +250,53 @@ class OS2moImportTest(TestCase):
         assert brandon.email == "brandon@kung.fu"
 
         assert len(self.unit2.get_managers()) == 0
+
+    def test_account_delete(self):
+        # Arrange
+
+        # This person is not in MO
+        imported_id = str(uuid4())
+        jerry = Account.objects.create(
+            imported_id=imported_id,
+            imported=True,
+            organization=self.org,
+            username="seinfeld",
+            first_name="Jerry",
+            last_name="Seinfeld",
+            email="jerry@hollywood.com",
+        )
+
+        Position.objects.create(
+            imported=True,
+            account=jerry,
+            unit=self.unit1,
+            role="employee"
+        )
+
+        Position.objects.create(
+            imported=True,
+            account=jerry,
+            unit=self.unit1,
+            role="manager"
+        )
+
+        Alias.objects.create(
+            imported_id=imported_id,
+            imported=True,
+            account=jerry,
+            _alias_type=AliasType.EMAIL.value,
+            _value="jerry@hollywood.com",
+        )
+
+        # Act
+        perform_os2mo_import(MO_ORG_UNITS, self.org)
+
+        # Assert
+        with pytest.raises(Account.DoesNotExist):
+            Account.objects.get(username="seinfeld")
+
+        with pytest.raises(Position.DoesNotExist):
+            Position.objects.get(account=jerry)
+
+        with pytest.raises(Alias.DoesNotExist):
+            Alias.objects.get(account=jerry)
