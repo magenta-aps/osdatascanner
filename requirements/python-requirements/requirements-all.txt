@@ -213,6 +213,8 @@ matplotlib-inline==0.1.6
     # via ipython
 mdurl==0.1.2
     # via markdown-it-py
+more-itertools==10.3.0
+    # via -r requirements-all.in
 mozilla-django-oidc==2.0.0
     # via -r requirements-all.in
 msgpack==1.0.4
