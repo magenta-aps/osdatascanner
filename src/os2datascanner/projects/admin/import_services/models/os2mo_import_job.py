@@ -91,40 +91,40 @@ class OS2moImportJob(BackgroundJob):
     QueryOrgUnitsManagersEmployees = """
     query QueryOrgUnitsManagersEmployees($cursor: Cursor, $limit: int, $email_type: [UUID!]) {
       org_units(limit: $limit, cursor: $cursor) {
+        page_info {
+          next_cursor
+        }
         objects {
-          objects {
-            uuid
+          current {
             name
+            uuid
             parent {
-              uuid
               name
+              uuid
             }
             managers(inherit: true) {
-              employee {
+              person {
                 uuid
-                givenname
+                given_name
                 surname
                 user_key
-                addresses(address_types: $email_type) {
+                addresses(filter: {address_types: $email_type}) {
                   name
                 }
               }
             }
             engagements {
-              employee {
+              person {
                 uuid
-                givenname
+                given_name
                 surname
                 user_key
-                addresses(address_types: $email_type) {
+                addresses(filter: {address_types: $email_type}) {
                   name
                 }
               }
             }
           }
-        }
-        page_info {
-            next_cursor
         }
       }
     }
@@ -166,7 +166,7 @@ class OS2moImportJob(BackgroundJob):
         message_buffer.clear()
 
         # To ensure graphql version consistency with os2mo-endpoint
-        os2mo_url_endpoint = settings.OS2MO_ENDPOINT_BASE + "v7"
+        os2mo_url_endpoint = settings.OS2MO_ENDPOINT_BASE + "v22"
 
         count = 0
         org_unit_list = []
