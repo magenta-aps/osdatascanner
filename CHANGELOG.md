@@ -23,7 +23,9 @@
   are now preserved across restarts.
 
 - Email association bug in the OS2mo importer. The bug affected the sending of
-  email reports.
+- The OS2mo import service now correctly (and consistently) assigns users an
+  email address, so they can now reliably receive notifications from the
+  report module.
 
 ## Version 3.23.0, 18th June 2024
 
