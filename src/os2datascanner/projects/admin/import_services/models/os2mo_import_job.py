@@ -15,6 +15,8 @@ from os2datascanner.utils.oauth2 import mint_cc_token
 from os2datascanner.projects.admin.adminapp.signals import get_pika_thread
 from ...core.models.background_job import JobState, BackgroundJob
 
+# See https://redmine.magenta.dk/issues/61160 for some generel consideration
+# about rewriting the code for the OS2mo import job
 
 logger = structlog.get_logger("import_services")
 
