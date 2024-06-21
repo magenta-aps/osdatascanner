@@ -131,7 +131,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             confirmed_dpo = self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
             if self.request.user.is_superuser or confirmed_dpo:
                 positions = Position.employees.filter(unit=orgunit)
-                self.matches = self.matches.filter(alias_relation__account__positions__in=positions)
+                self.matches = self.matches.filter(
+                    alias_relation__account__positions__in=positions).exclude(
+                    alias_relation__shared=True)
             else:
                 raise OrganizationalUnit.DoesNotExist(
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
@@ -717,6 +719,11 @@ def filter_inapplicable_matches(user, matches, account=None, only_personal=False
             only_notify_superadmin=False)
 
         matches_all = hidden_matches | user_matches
+    elif only_personal:
+        matches_all = matches.filter(
+            alias_relation__in=user.aliases.exclude(
+                _alias_type=AliasType.REMEDIATOR, shared=True),
+            only_notify_superadmin=False)
     else:
         matches_all = matches.filter(
             alias_relation__in=user.aliases.exclude(_alias_type=AliasType.REMEDIATOR),

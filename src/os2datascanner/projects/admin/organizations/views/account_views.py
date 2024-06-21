@@ -122,7 +122,7 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
 class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
     model = Alias
     template_name = "components/modals/alias_create.html"
-    fields = ('_alias_type', '_value')
+    fields = ('_alias_type', '_value', 'shared')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -31,6 +31,7 @@ class OrganizationlUnitManager(TreeManager):
                 filter=Q(
                     positions__account__aliases__match_relation__number_of_matches__gte=1,
                     positions__account__aliases__match_relation__only_notify_superadmin=False),
+                exclude=Q(positions__account__aliases__shared=True),
                 distinct=True),
             handled_ou_matches=Count(
                 'positions__account__aliases__match_relation',

@@ -257,6 +257,7 @@ class ReportView(LoginRequiredMixin, ListView):
 
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
+    type = "personal"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -266,6 +267,7 @@ class UserReportView(ReportView):
             self.request.user.account.organization.has_email_delete_permission())
         context["show_file_delete_button"] = (
             self.request.user.account.organization.has_file_delete_permission())
+        context["include_shared"] = self.request.GET.get('include-shared', 'true')
 
         return context
 
@@ -277,9 +279,18 @@ class UserReportView(ReportView):
             only_notify_superadmin=False)
         return reports
 
+    def apply_filters(self):
+        if not (self.request.GET.get('include-shared', 'true') == 'true'):
+            self.document_reports = self.document_reports.exclude(
+                                        alias_relation__shared=True)
+
+        super().apply_filters()
+
 
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
+
+    type = "remediator"
 
     def base_match_filter(self, reports):
         reports = super().base_match_filter(reports)
@@ -302,6 +313,8 @@ class RemediatorView(ReportView):
 
 class UndistributedView(ReportView):
     """Presents a superuser with all undistributed unhandled results."""
+
+    type = "undistributed"
 
     def base_match_filter(self, reports):
         reports = super().base_match_filter(reports)
