@@ -1,4 +1,9 @@
+from enum import Enum
+from typing import Any
+
 import structlog
+from more_itertools import first, one
+
 from .keycloak_actions import _dummy_pc
 
 from .models import (Account, Alias, Position,
@@ -12,6 +17,11 @@ logger = structlog.get_logger("admin_organizations")
 
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
+
+
+class Role(Enum):
+    EMPLOYEE = "employee"
+    MANAGER = "manager"
 
 
 @suppress_signals.wrap
@@ -38,7 +48,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
     all_uuids = set()
     progress_callback("org_unit_count", len(org_unit_list))
 
-    def evaluate_org_unit(unit_raw: dict) -> (OrganizationalUnit, dict):
+    def evaluate_org_unit(unit_raw: dict[str, Any]) -> (OrganizationalUnit, dict[str, str]):
         """ Evaluates given dictionary (which should be of one ou), decides if corresponding
         local object (if any) is to be updated, a new one is to be created or no actions.
         Returns an OrganizationalUnit object."""
@@ -74,12 +84,12 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         all_uuids.add(unit_imported_id)
         return org_unit, unit_parent_info
 
-    def evaluate_unit_member(member: dict, role: str) -> Account or None:
+    def evaluate_unit_member(member: dict, role: Role) -> Account | None:
         imported_id = member.get("uuid")
         username = member.get("user_key", None)
-        first_name = member.get("givenname", "")
+        first_name = member.get("given_name", "")
         last_name = member.get("surname", "")
-        email = member.get("email", "")
+        email = get_email_address(member)
 
         if not username:
             logger.info(f'Object not a user or empty user key for user: {member}')
@@ -114,10 +124,9 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
 
             all_uuids.add(imported_id)
 
-        # TODO: Don't evaluate on raw strings
-        if role == "employee":
+        if role == Role.EMPLOYEE:
             account_employee_positions[account] = []
-        if role == "manager":
+        if role == Role.MANAGER:
             account_manager_positions[account] = []
         return account
 
@@ -146,26 +155,34 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
             aliases[imported_id] = alias
             all_uuids.add(imported_id)
 
-    def get_email_address(employee_elm: list) -> str:
-        try:
-            empl_email = employee_elm[0].get("addresses")[0].get(
-                "name")
-        except BaseException:
-            empl_email = None
-            logger.info(f'No email in: {employee_elm[0]}')
-        return empl_email
+    def get_email_address(obj: dict[str, Any]) -> str:
+        """
+        Get the email address from an employee or manager object.
 
-    def positions_to_add(acc: Account, unit: OrganizationalUnit, role: str):
+        Args:
+            obj: the GraphQL object containing the person, i.e. an employee
+                 object or a manager object.
+
+        Returns:
+            Email address or the empty string if no email address is found
+        """
+
+        email = first(obj.get("addresses"), dict()).get("name", "")
+        if not email:
+            logger.info(f'No email in: {obj}')
+        return email
+
+    def positions_to_add(acc: Account, unit: OrganizationalUnit, role: Role):
         """ Helper function that appends positions to to_add if not present locally """
         try:
-            Position.objects.get(account=acc, unit=unit, role=role, imported=True)
+            Position.objects.get(account=acc, unit=unit, role=role.value, imported=True)
         except Position.DoesNotExist:
             position = Position(
                 imported=True,
                 account=acc,
                 unit=unit,
-                role=role,)
-            position_hash = hash(str(acc.uuid) + str(unit.uuid) + role)
+                role=role.value,)
+            position_hash = hash(str(acc.uuid) + str(unit.uuid) + role.value)
 
             # There's a chance we've already added this position to the list,
             # due to how the data we receive looks.
@@ -175,9 +192,9 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
 
         # TODO: Comment above also means we're potentially appending the same unit n times,
         # which has no functionality breaking consequences, but is waste of space.
-        if role == "employee":
+        if role == Role.EMPLOYEE:
             account_employee_positions[acc].append(unit)
-        if role == "manager":
+        if role == Role.MANAGER:
             account_manager_positions[acc].append(unit)
 
     def positions_to_delete():
@@ -201,47 +218,49 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
             else:
                 continue
 
-    for data in org_unit_list:
-        for org_unit_raw in data.get("objects"):
-            # Evaluate org units and store their parent-relations.
-            unit, parent_info = evaluate_org_unit(org_unit_raw)
-            parent_id = parent_info.get("uuid") if parent_info else None
-            if parent_id:
-                ou_parent_relations[unit] = parent_id
+    def add_account(
+        obj: dict[str, Any],
+        person_type: Role
+    ) -> None:
+        """
+        Add account for either a MO employee or a MO manager.
 
-            for employees in org_unit_raw.get("engagements"):
-                employee = employees.get("employee", None)
-                if not employee:
-                    logger.info(f'Encountered an empty employee dict in: {unit} \n'
-                                f'Continuing..')
-                    continue
-                # Index zero - an employee comes in list form
-                acc = evaluate_unit_member(member=employee[0], role="employee")
-                if acc:
-                    # TODO: This feels fragile.. and potentially soon needs support for SID
-                    # Look to refactor from MSGraph import actions and generalize logic.
-                    employee_email = get_email_address(employee)
-                    if employee_email:
-                        evaluate_aliases(account=acc, email=employee_email)
+        Args:
+            obj: the GraphQL object containing the person, i.e. an employee
+                 object or a manager object.
+            person_type: the type of person, i.e. an employee or a manager.
+        """
 
-                    positions_to_add(acc=acc, unit=unit, role="employee")
+        try:
+            person = one(obj.get("person"))
+        except ValueError:
+            # This should never happen
+            logger.warn(
+                f"Found {person_type.value} object with a number of persons different from one!"
+            )
+            return
+        acc = evaluate_unit_member(member=person, role=person_type)
+        if acc:
+            # TODO: This feels fragile.. and potentially soon needs support for SID
+            # Look to refactor from MSGraph import actions and generalize logic.
+            employee_email = get_email_address(person)
+            if employee_email:
+                evaluate_aliases(account=acc, email=employee_email)
 
-            for managers in org_unit_raw.get("managers"):
-                manager = managers.get("employee", None)
-                if not manager:
-                    logger.info(f'Encountered an empty employee dict in: {unit} \n'
-                                f'Continuing..')
-                    continue
-                acc = evaluate_unit_member(member=manager[0], role="manager")
+            positions_to_add(acc=acc, unit=unit, role=person_type)
 
-                if acc:
-                    # TODO: This feels fragile.. and potentially soon needs support for SID
-                    # Look to refactor from MSGraph import actions and generalize logic.
-                    manager_email = get_email_address(manager)
-                    if manager_email:
-                        evaluate_aliases(account=acc, email=manager_email)
+    for org_unit_raw in [ou["current"] for ou in org_unit_list]:
+        # Evaluate org units and store their parent-relations.
+        unit, parent_info = evaluate_org_unit(org_unit_raw)
+        parent_id = parent_info.get("uuid") if parent_info else None
+        if parent_id:
+            ou_parent_relations[unit] = parent_id
 
-                    positions_to_add(acc=acc, unit=unit, role="manager")
+        for engagement in org_unit_raw.get("engagements"):
+            add_account(engagement, Role.EMPLOYEE)
+
+        for manager in org_unit_raw.get("managers"):
+            add_account(manager, Role.MANAGER)
 
     # Sort out OU-parent relations
     for ou, parent_id in ou_parent_relations.items():

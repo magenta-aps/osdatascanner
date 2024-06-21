@@ -12,6 +12,7 @@ gunicorn[gevent]
 colorama
 click
 google-api-python-client
+more_itertools
 oauth2client
 parameterized
 pika==1.2.0

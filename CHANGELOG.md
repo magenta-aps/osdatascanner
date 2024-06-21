@@ -14,10 +14,18 @@
 
 - All unit tests in the admin module now utilizes pytest instead of Django tests.
 
+- The OS2mo importer has been updated to use version 22 of OS2mo's GraphQL API
+  and tests of the OS2mo importer code have been added.
+
 ### Bugfixes
 
 - Files uploaded to the administration system in the development environment
   are now preserved across restarts.
+
+- Email association bug in the OS2mo importer. The bug affected the sending of
+- The OS2mo import service now correctly (and consistently) assigns users an
+  email address, so they can now reliably receive notifications from the
+  report module.
 
 ## Version 3.23.0, 18th June 2024
 
