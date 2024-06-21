@@ -22,6 +22,9 @@
 - Files uploaded to the administration system in the development environment
   are now preserved across restarts.
 
+- Email association bug in the OS2mo importer. The bug affected the sending of
+  email reports.
+
 ## Version 3.23.0, 18th June 2024
 
 "Okay then, let's Samba"
