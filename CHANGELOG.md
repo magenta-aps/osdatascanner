@@ -7,6 +7,9 @@
 - Aliases can now be marked as "shared". Results related to a user through such
   an alias will now be counted in user statistics.
 
+- Management command "test_checkup" for checking if a handle specified by a 
+  ScheduledCheckup can still be reached by the system.
+
 ### General improvements
 
 - All unit tests in the admin module now utilizes pytest instead of Django tests.
