@@ -89,7 +89,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         username = member.get("user_key", None)
         first_name = member.get("given_name", "")
         last_name = member.get("surname", "")
-        email = first(member.get("addresses"), dict()).get("name", "")
+        email = get_email_address(member)
 
         if not username:
             logger.info(f'Object not a user or empty user key for user: {member}')
@@ -155,13 +155,22 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
             aliases[imported_id] = alias
             all_uuids.add(imported_id)
 
-    def get_email_address(employee: dict[str, Any]) -> str | None:
-        try:
-            empl_email = first(employee.get("addresses")).get("name")
-        except ValueError:
-            empl_email = None
-            logger.info(f'No email in: {employee}')
-        return empl_email
+    def get_email_address(obj: dict[str, Any]) -> str:
+        """
+        Get the email address from an employee or manager object.
+
+        Args:
+            obj: the GraphQL object containing the person, i.e. an employee
+                 object or a manager object.
+
+        Returns:
+            Email address or the empty string if no email address is found
+        """
+
+        email = first(obj.get("addresses"), dict()).get("name", "")
+        if not email:
+            logger.info(f'No email in: {obj}')
+        return email
 
     def positions_to_add(acc: Account, unit: OrganizationalUnit, role: Role):
         """ Helper function that appends positions to to_add if not present locally """
