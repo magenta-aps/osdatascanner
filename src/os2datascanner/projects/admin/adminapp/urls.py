@@ -58,7 +58,8 @@ from .views.sbsysscanner_views import (SbsysScannerCreate, SbsysScannerList,
                                        SbsysScannerRun, SbsysScannerUpdate)
 
 from .views.rule_views import (RuleList, CustomRuleCreate,
-                               CustomRuleUpdate, CustomRuleDelete)
+                               CustomRuleUpdate, CustomRuleDelete,
+                               CustomRuleConnect)
 
 from .views.scanner_views import (StatusOverview, StatusCompleted,
                                   StatusDelete, StatusTimeline, UserErrorLogView,
@@ -324,6 +325,8 @@ urlpatterns = [
             name='customrule_update'),
     re_path(r'^rules/custom/(?P<pk>\d+)/delete/$', CustomRuleDelete.as_view(),
             name='customrule_delete'),
+    re_path(r'^rules/custom/(?P<pk>\d+)/connect/$', CustomRuleConnect.as_view(),
+            name='connect-rule-to-org'),
     # Login/logout stuff
     re_path(r'^accounts/login/',
             django.contrib.auth.views.LoginView.as_view(

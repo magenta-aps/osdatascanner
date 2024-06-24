@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n l10n %}
 
 
 <div class="content-header">
@@ -13,9 +13,10 @@
         hx-target="#system-rules-card"
         hx-trigger="click from:#rule-filter-button"
         hx-push-url="true">
+    <label for="categories_select2">{% trans "Filter for categories" %}</label>
     <select id="categories_select2" name="categories" multiple>
       {% for category in categories %}
-        <option value="{{ category.pk }}"
+        <option value="{{ category.pk|unlocalize }}"
                 {% if category in selected_categories %}selected{% endif %}>
           {{ category.get_name_display|capfirst }}
         </option>
@@ -30,6 +31,20 @@
       <span>{% trans "filter"|capfirst %}</span>
     </button>
   </form>
+  <label for="selected_org">{% trans "Choose system rules for organization" %}</label>
+  <div class="dropdown">
+    <select id="selected_org"
+            name="selected_org"
+            hx-get="{% url 'rules' %}"
+            hx-swap="outerHTML"
+            hx-target="#system-rules-card"
+            hx-select="#system-rules-card"
+            hx-trigger="change">
+      {% for organization in organizations %}
+        <option value="{{ organization.uuid }}">{{ organization.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
 </div>
 
 <div id="system-rules-card"
@@ -39,6 +54,7 @@
      aria-label="{% trans 'System rules' %}">
   <table class="datatable">
     <colgroup>
+      <col class="datatable__column--checkbox" />
       <col class="datatable__column--name" />
       <col class="datatable__column--categories" />
       <col class="datatable__column--info" />
@@ -46,6 +62,7 @@
     </colgroup>
     <thead>
       <tr>
+        <th class="datatable__column--checkbox"></th>
         <th class="datatable__column--name">{% trans "Name" %}</th>
         <th class="datatable__column--categories">{% trans "Categories" %}</th>
         <th class="datatable__column--info">{% trans "Description" %}</th>
@@ -57,6 +74,25 @@
       {% if systemrule_list %}
         {% for rule in systemrule_list %}
           <tr tabindex="0">
+            <td class="datatable__column--checkbox">
+              <div class="ds-checkbox">
+                <input type="checkbox"
+                       id="table-checkbox-{{ rule.pk|unlocalize }}"
+                       value="{{ rule.pk|unlocalize }}"
+                       name="table-checkbox"
+                       class="datatable-checkbox"
+                       hx-post="{% url "connect-rule-to-org" rule.pk %}"
+                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                       hx-swap="none"
+                       hx-include="[id='selected_org'], [id='table-checkbox-{{ rule.pk|unlocalize }}']"
+                       hx-trigger="change"
+                       {% if rule.connected %}checked{% endif %}
+                       autocomplete="off" />
+                <label for="table-checkbox-{{ rule.pk|unlocalize }}"
+                       aria-label="{% trans 'Enable rule' %}"
+                       title="{% trans 'Enable rule' %}"></label>
+              </div>
+            </td>
             <td class="datatable__column--name">{{ rule.name }}</td>
             <td class="datatable__column--categories">
               {% for category in rule.categories.all %}<span class="category tag">{{ category|capfirst }}</span>{% endfor %}

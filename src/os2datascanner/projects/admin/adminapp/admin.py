@@ -90,6 +90,8 @@ class CustomRuleForm(forms.ModelForm):
 class CustomRuleAdmin(admin.ModelAdmin):
     form = CustomRuleForm
 
+    filter_horizontal = ('categories',)
+
 
 @admin.register(RuleCategory)
 class RuleCategoryAdmin(admin.ModelAdmin):

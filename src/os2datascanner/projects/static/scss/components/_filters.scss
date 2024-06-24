@@ -134,17 +134,17 @@
 
 .rule_filtering_wrapper {
   float: left;
-  width: 100%;
+  max-width: 600px;
   margin-bottom: 2rem;
 
   .rule-filter-form {
     display: flex;
-    max-width: 600px;
     flex-direction: column;
 
     .button {
       max-width: fit-content;
       margin-top: 1rem;
+      margin-bottom: 1rem;
     }
   }
 
@@ -156,6 +156,7 @@
     height: fit-content !important;
     overflow-y: scroll !important;
   }
+
 }
 
 .checkbox_button {

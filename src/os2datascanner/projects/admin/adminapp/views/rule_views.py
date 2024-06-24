@@ -15,8 +15,12 @@ import re
 
 from django import forms
 from django.db import transaction
+from django.db.models import Q, ExpressionWrapper, BooleanField
 from django.utils.translation import gettext_lazy as _
 from django.forms import ValidationError
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import UpdateView
+from django.http import HttpResponse
 
 from os2datascanner.projects.admin.organizations.models import Organization
 
@@ -35,7 +39,7 @@ class RuleList(RestrictedListView):
     context_object_name = 'rules'
     template_name = 'rules.html'
 
-    def get_system_rules(self):
+    def get_system_rules(self, organization):
         system_rules = CustomRule.objects.filter(organization__isnull=True)
         if selected_categories_pks := self.request.GET.getlist("categories"):
             all_categories = RuleCategory.objects.all()
@@ -43,17 +47,33 @@ class RuleList(RestrictedListView):
 
             system_rules = system_rules.exclude(categories__in=unselected_categories)
 
+        system_rules = system_rules.annotate(
+            connected=ExpressionWrapper(
+                Q(organizations=organization),
+                output_field=BooleanField()
+            )
+        )
+
         return system_rules
 
     def get_context_data(self):
         context = super().get_context_data()
+
+        user = UserWrapper(self.request.user)
+        organizations = Organization.objects.filter(user.make_org_Q("uuid"))
+        context["organizations"] = organizations
+
+        if org_pk := self.request.GET.get("selected_org"):
+            selected_org = organizations.get(pk=org_pk)
+        else:
+            selected_org = organizations.first()
 
         context["categories"] = RuleCategory.objects.all()
         context["selected_categories"] = self.request.GET.getlist(
             "categories") or RuleCategory.objects.all()
 
         context["sensitivity"] = Sensitivity
-        context["systemrule_list"] = self.get_system_rules()
+        context["systemrule_list"] = self.get_system_rules(selected_org)
         context["customrule_list"] = self.get_queryset().filter(organization__isnull=False)
 
         return context
@@ -207,3 +227,23 @@ def extract_pattern_fields(form_fields):
 
     return [(field_name, form_fields[field_name]) for field_name in form_fields if
             field_name.startswith('pattern_')]
+
+
+class CustomRuleConnect(LoginRequiredMixin, UpdateView):
+    model = CustomRule
+
+    def post(self, request, *args, **kwargs):
+        response = HttpResponse()
+
+        self.object = self.get_object()
+        organizations = Organization.objects.filter(UserWrapper(request.user).make_org_Q("uuid"))
+        organization = organizations.get(uuid=request.POST.get('selected_org'))
+
+        connection = int(request.POST.get('table-checkbox', '0')) == self.object.pk
+
+        if connection:
+            self.object.organizations.add(organization)
+        else:
+            self.object.organizations.remove(organization)
+
+        return response

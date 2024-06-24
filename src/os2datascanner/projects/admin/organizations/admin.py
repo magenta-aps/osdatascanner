@@ -51,10 +51,17 @@ class OrganizationAdmin(admin.ModelAdmin):
                            'support_name', 'support_value', 'dpo_contact_method',
                            'dpo_name', 'dpo_value')
             }
+        ),
+        (
+            _("System rules"),
+            {
+                "fields": ('system_rules',)
+            }
         )
     ]
     list_display = ('name', 'client', 'contact_email', 'contact_phone',)
     search_fields = ('name', 'client__name')
+    filter_horizontal = ('system_rules',)
 
 
 @admin.register(Account)

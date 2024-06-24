@@ -407,8 +407,12 @@ class ScannerBase(object):
         form.fields['organization'].queryset = org_qs
         form.fields['organization'].empty_label = None
 
+        selected_org = self.request.GET.get('organization') or org_qs.first()
+
+        form.fields['organization'].initial = selected_org
+
         allowed_rules = CustomRule.objects.filter(
-            Q(organization__in=org_qs) | Q(organization__isnull=True))
+            Q(organization__in=org_qs) | Q(organization__isnull=True, organizations=selected_org))
 
         form.fields["rule"] = ModelChoiceField(
             allowed_rules,
