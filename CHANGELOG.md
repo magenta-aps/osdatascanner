@@ -25,6 +25,9 @@
 - The cprrule context-check "bin_check", has been moved to cpr_probability.py,
   where the rest of the cpr utility functions are located.
 
+- Very long paths on results in the report module can now be expanded,
+  showing the full path to the source of a match. 
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"

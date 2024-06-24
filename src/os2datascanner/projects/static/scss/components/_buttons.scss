@@ -267,7 +267,7 @@
 // ***** Miscellaneous button adjacent styling *****
 
 .show-more {
-  display: none;
+  display: none; // display is updated in JavaScript when needed 
   cursor: pointer;
 }
 

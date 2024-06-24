@@ -302,6 +302,7 @@
     }
 
     &--path {
+      font-size: 0.875rem;
       width: 100%;
       word-wrap: break-word;
     }
@@ -509,7 +510,6 @@
 
     // Only show ellipsis on pc-screens.
     @media (min-width: $break-lg) {
-      cursor: default;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

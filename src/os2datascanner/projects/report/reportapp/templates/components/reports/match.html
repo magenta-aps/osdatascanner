@@ -1,7 +1,5 @@
 {% load i18n l10n humanize admin_urls handle_extras %}
-{% block scripts %}
-  <script async src="{% url 'jsi18n' %}"></script>
-{% endblock %}
+<script async src="{% url 'jsi18n' %}"></script>
 {% with type=document_report.matches.handle|find_type_label %}
 
   {% with frag=document_report.matches.matches|merge_renderable_match_fragments %}
@@ -135,10 +133,8 @@
       <td class="datatable__column--path">
         <div class="tooltip">
           <div class="overflow-ellipsis">
-            {{ document_report.matches.handle.presentation_place }}
-            <button class="show-more button--transparent-button"
-                    onclick="togglePath(this)"
-                    type="button">{% trans "Show more" %}</button>
+            <span>{{ document_report.matches.handle.presentation_place }}</span>
+            <button class="show-more button--transparent-button" type="button">{% trans "Show more" %}</button>
           </div>
         </div>
         <div class="hit-link">

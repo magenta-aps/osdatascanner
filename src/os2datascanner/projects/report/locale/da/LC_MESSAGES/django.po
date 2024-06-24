@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-28 11:24+0200\n"
+"POT-Creation-Date: 2024-07-10 15:38+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -619,8 +619,8 @@ msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html:11
 #: reportapp/templates/components/reports/handle_match.html:45
-#: reportapp/templates/components/reports/match.html:185
-#: reportapp/templates/components/reports/match.html:231
+#: reportapp/templates/components/reports/match.html:187
+#: reportapp/templates/components/reports/match.html:233
 msgid ""
 "OS2datascanner will not delete results from the system that was scanned. "
 "Marking a result as handled will only remove the result from OS2datascanner."
@@ -634,8 +634,8 @@ msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
 #: reportapp/templates/components/reports/handle_match.html:19
-#: reportapp/templates/components/reports/match.html:194
-#: reportapp/templates/components/reports/match.html:239
+#: reportapp/templates/components/reports/match.html:196
+#: reportapp/templates/components/reports/match.html:241
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -646,8 +646,8 @@ msgstr ""
 "manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/reports/handle_match.html:26
-#: reportapp/templates/components/reports/match.html:200
-#: reportapp/templates/components/reports/match.html:226
+#: reportapp/templates/components/reports/match.html:202
+#: reportapp/templates/components/reports/match.html:228
 msgid "Revert"
 msgstr "Fortryd"
 
@@ -717,24 +717,24 @@ msgstr ""
 msgid "selected"
 msgstr "valgt"
 
-#: reportapp/templates/components/reports/match.html:16
 #: reportapp/templates/components/reports/match.html:17
+#: reportapp/templates/components/reports/match.html:18
 msgid "Select result"
 msgstr "Vælg resultat"
 
-#: reportapp/templates/components/reports/match.html:43
+#: reportapp/templates/components/reports/match.html:44
 msgid "Open"
 msgstr "Åbn"
 
-#: reportapp/templates/components/reports/match.html:49
+#: reportapp/templates/components/reports/match.html:50
 msgid "Open folder"
 msgstr "Åbn mappe"
 
-#: reportapp/templates/components/reports/match.html:56
+#: reportapp/templates/components/reports/match.html:57
 msgid "Deletes email from your mailbox"
 msgstr "Sletter email fra din mailboks"
 
-#: reportapp/templates/components/reports/match.html:62
+#: reportapp/templates/components/reports/match.html:63
 msgid ""
 "You are about to delete selected email from your mailbox. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -742,19 +742,19 @@ msgstr ""
 "Du er ved at slette valgte email fra din mailboks. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:63
-#: reportapp/templates/components/reports/match.html:79
-#: reportapp/templates/components/reports/match.html:96
+#: reportapp/templates/components/reports/match.html:64
+#: reportapp/templates/components/reports/match.html:80
+#: reportapp/templates/components/reports/match.html:97
 #: reportapp/templates/components/statistics/user_overview_template.html:69
 #: reportapp/templates/components/statistics/user_overview_template.html:70
 msgid "Delete"
 msgstr "Slet"
 
-#: reportapp/templates/components/reports/match.html:72
+#: reportapp/templates/components/reports/match.html:73
 msgid "Deletes file from your online drive"
 msgstr "Sletter fil fra dit online drev"
 
-#: reportapp/templates/components/reports/match.html:78
+#: reportapp/templates/components/reports/match.html:79
 msgid ""
 "You are about to delete selected file from your online drive. OSdatascanner "
 "cannot reverse this action. Are you sure?"
@@ -762,11 +762,11 @@ msgstr ""
 "Du er ved at slette valgte fil fra dit online drev. Denne handling kan ikke "
 "fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:89
+#: reportapp/templates/components/reports/match.html:90
 msgid "Deletes file from the shared drive"
 msgstr "Sletter fil fra dit fælles netværksdrev"
 
-#: reportapp/templates/components/reports/match.html:95
+#: reportapp/templates/components/reports/match.html:96
 msgid ""
 "You are about to delete the selected file from your shared drive. "
 "OSdatascanner cannot reverse this action. Are you sure?"
@@ -774,40 +774,44 @@ msgstr ""
 "Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling "
 "kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:103
+#: reportapp/templates/components/reports/match.html:104
 msgid "Opened"
 msgstr "Åbnet: "
 
-#: reportapp/templates/components/reports/match.html:152
+#: reportapp/templates/components/reports/match.html:139
+msgid "Show more"
+msgstr "Vis mere"
+
+#: reportapp/templates/components/reports/match.html:154
 msgid "Copy folder path"
 msgstr "Kopiér sti til mappe"
 
-#: reportapp/templates/components/reports/match.html:157
+#: reportapp/templates/components/reports/match.html:159
 msgid "Copy path"
 msgstr "Kopiér sti"
 
-#: reportapp/templates/components/reports/match.html:164
+#: reportapp/templates/components/reports/match.html:166
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:186
-#: reportapp/templates/components/reports/match.html:241
+#: reportapp/templates/components/reports/match.html:188
+#: reportapp/templates/components/reports/match.html:243
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/reports/match.html:248
+#: reportapp/templates/components/reports/match.html:250
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:263
+#: reportapp/templates/components/reports/match.html:265
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:264
+#: reportapp/templates/components/reports/match.html:266
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:265
+#: reportapp/templates/components/reports/match.html:267
 msgid "Probability"
 msgstr "Sandsynlighed"
 

@@ -84,6 +84,18 @@ document.addEventListener("click", function (e) {
     document.getElementById("order").value = targ.value;
     document.getElementById("order_by").value = targ.name;
   }
+
+  if (hasClass(targ, "show-more")) {
+    let overflowDiv = targ.parentElement;
+
+    overflowDiv.classList.toggle("full-path");
+
+    if (overflowDiv.classList.contains("full-path")) {
+      targ.innerText = gettext("Show less");
+    } else {
+      targ.innerText = gettext("Show more");
+    }
+  }
 });
 
 // function to use localStorage
@@ -268,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
         new ClipboardJS(document.querySelectorAll("[data-clipboard-text]"));
       }
 
-      showMoreButton();
+      expandOverflowButton();
     }
   });
 
@@ -276,29 +288,15 @@ document.addEventListener("DOMContentLoaded", function () {
     return element.scrollWidth > element.clientWidth;
   }
   
-  function showMoreButton() {
+  function expandOverflowButton() {
     const pathContainers = document.querySelectorAll(".overflow-ellipsis");
     pathContainers.forEach (pathContainer => {
       const moreBtn = pathContainer.querySelector(".show-more");
-  
       
       if (moreBtn && isContentOverflowing(pathContainer)) {
         moreBtn.style.display = "block";
       }
     });
   }
-  
-  showMoreButton();
-  
-  document.togglePath = function(button) {
-    let overflowDiv = button.parentElement;
-    overflowDiv.classList.toggle("full-path");
-  
-    if (overflowDiv.classList.contains("full-path")) {
-      button.innerText = gettext("Show less");
-    } else {
-      button.innerText = gettext("Show more");
-    }
-  };
 });
 
