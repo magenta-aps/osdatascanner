@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-21 08:52+0200\n"
+"POT-Creation-Date: 2024-06-25 16:45+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -122,7 +122,7 @@ msgstr "intet planlagt checkup findes med id {id}"
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
 #: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
-#: import_services/models/os2mo_import_job.py:68
+#: import_services/models/os2mo_import_job.py:70
 #: import_services/models/realm.py:29
 msgid "organization"
 msgstr "organisation"
