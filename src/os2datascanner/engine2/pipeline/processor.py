@@ -155,7 +155,7 @@ def message_received_raw(body, channel, source_manager, *, _check=True):  # noqa
 
     if exception:
         exception_message = format_exception_message(exception, conversion)
-        logger.warning(exception_message)
+        logger.warning(exception_message, exc_info=exception)
 
         for problems_q in ("os2ds_problems", "os2ds_checkups",):
             yield (problems_q, messages.ProblemMessage(

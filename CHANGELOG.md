@@ -30,6 +30,9 @@
 
 - Percentage labels on pie charts are no longer incorrectly displayed.
 
+- The pipeline once again prints helpful error messages when a processing
+  operation times out.
+
 ## Version 3.23.0, 18th June 2024
 
 "Okay then, let's Samba"
