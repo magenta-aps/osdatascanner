@@ -142,8 +142,11 @@ class TimeoutRetrier(CountingRetrier):
             return super().run(
                     self._ctx.wrap(operation),
                     *args, **kwargs)
-        except self._ctx.Timeout:
-            raise TimeoutError
+        except self._ctx.Timeout as ex:
+            secs = self._ctx.seconds
+            raise TimeoutError(
+                    f"The operation {operation} timed out"
+                    f" after {secs} seconds.") from ex
 
 
 class SleepingRetrier(CountingRetrier):
