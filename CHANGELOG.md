@@ -1,11 +1,13 @@
 # Changelog
 
-## Version ???
+## Version 3.23.1, 25th June 2024
+
+"Testing, Testing, Is This Thing On?"
 
 ### New in this release
 
 - Aliases can now be marked as "shared". Results related to a user through such
-  an alias will now be counted in user statistics.
+  an alias will not be attributed to them in user statistics.
 
 - Management command "test_checkup" for checking if a handle specified by a 
   ScheduledCheckup can still be reached by the system.
@@ -21,8 +23,6 @@
 
 - Files uploaded to the administration system in the development environment
   are now preserved across restarts.
-
-- Email association bug in the OS2mo importer. The bug affected the sending of
 
 - The OS2mo import service now correctly (and consistently) assigns users an
   email address, so they can now reliably receive notifications from the
