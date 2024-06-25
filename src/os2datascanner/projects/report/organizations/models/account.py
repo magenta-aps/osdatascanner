@@ -278,6 +278,30 @@ class Account(Core_Account):
         else:
             self.match_status = StatusChoices.OK
 
+    @property
+    def false_positive_rate(self) -> float:
+        from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+        all_matches = DocumentReport.objects.filter(
+            alias_relation__account=self, number_of_matches__gte=1)
+        fp_matches = all_matches.filter(
+            resolution_status=DocumentReport.ResolutionChoices.FALSE_POSITIVE)
+
+        return fp_matches.count() / all_matches.count() if all_matches.count() > 0 else 0
+
+    @property
+    def false_positive_percentage(self) -> float:
+        return round(self.false_positive_rate * 100, 2)
+
+    def false_positive_alarm(self) -> bool:
+        org_fp_rate = self.organization.false_positive_rate
+        acc_fp_rate = self.false_positive_rate
+
+        print(org_fp_rate, acc_fp_rate)
+
+        # If the account's false positive rate is more than twice the
+        # organization's false positive rate, raise the alarm!
+        return acc_fp_rate > 2*org_fp_rate
+
     def count_matches_by_week(self, weeks: int = 52, exclude_shared=False):  # noqa: CCR001
         """
         This method counts the number of (unhandled) matches, the number of

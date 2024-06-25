@@ -243,6 +243,17 @@
         }
       }
 
+      div.matches_container {
+        display: flex;
+        align-items: center;
+      }
+      
+      .warning-symbol {
+        color: var(--color-error);
+        cursor: default;
+        margin-left: 0.5rem;
+      }
+
       @media (min-width: $break-lg) {
         width: 15rem;
 
