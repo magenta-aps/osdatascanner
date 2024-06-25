@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0131_rulecategory_model_and_population'),
+        ('os2datascanner', '0133_rulecategory_model_and_population'),
         ('organizations', '0041_alias_shared'),
     ]
 

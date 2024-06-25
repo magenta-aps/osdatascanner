@@ -1,5 +1,16 @@
 # Changelog
 
+## Next Release
+
+"Rollercoaster of Emotions"
+
+### New in this release
+
+- System rules must now be related to an organization in order for that
+  organization to use the rule in a scanner job. System rules can be related
+  to an organization through the "rules"-page in the admin module, and can
+  be searched using the new categorization system.
+
 ## Version 3.24.1, 29th July 2024
 
 "Get Back Up Again"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-25 15:50+0200\n"
+"POT-Creation-Date: 2024-08-06 08:25+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -27,15 +27,15 @@ msgstr "CPR-reglen kan ikke bruges mere end én gang"
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:144
+#: adminapp/admin.py:147
 msgid "An errorlog cannot both be new and removed"
 msgstr "En fejlbesked kan ikke både være ny og fjernet"
 
-#: adminapp/admin.py:183
+#: adminapp/admin.py:186
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:187
+#: adminapp/admin.py:190
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -44,47 +44,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:192
+#: adminapp/admin.py:195
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:196
+#: adminapp/admin.py:199
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:199
+#: adminapp/admin.py:202
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:203
+#: adminapp/admin.py:206
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:206
+#: adminapp/admin.py:209
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:210
+#: adminapp/admin.py:213
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:228
+#: adminapp/admin.py:231
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:232
+#: adminapp/admin.py:235
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:235
+#: adminapp/admin.py:238
 msgid "Change resolved-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:239
+#: adminapp/admin.py:242
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
@@ -152,8 +152,8 @@ msgstr "Brugerdomæne"
 msgid "Login method"
 msgstr "Login metode"
 
-#: adminapp/models/rules.py:40 adminapp/models/rules.py:98
-#: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:76
+#: adminapp/models/rules.py:40 adminapp/models/rules.py:101
+#: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:37
 #: organizations/templates/organizations/orgunit_list.html:121
 msgid "name"
@@ -188,13 +188,13 @@ msgstr "sygemelding"
 msgid "Danish"
 msgstr "dansk"
 
-#: adminapp/models/rules.py:117
+#: adminapp/models/rules.py:120
 #: adminapp/templates/components/rules/customrule_form.html:64
 #: adminapp/templates/components/rules/regexrule_form.html:135
 msgid "Rule"
 msgstr "Regel"
 
-#: adminapp/models/rules.py:119
+#: adminapp/models/rules.py:124
 msgid "categories"
 msgstr "kategorier"
 
@@ -774,7 +774,7 @@ msgstr "Opret nyt scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html:55
 #: adminapp/templates/components/navigation/navigation.html:41
-#: adminapp/templates/rules.html:19 adminapp/templates/rules.html:39
+#: adminapp/templates/rules.html:33 adminapp/templates/rules.html:53
 msgid "Rules"
 msgstr "Regler"
 
@@ -1047,7 +1047,7 @@ msgstr "Ønsker du virkelig at slette?"
 
 #: adminapp/templates/components/rules/cprrule_confirm_delete.html:17
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:21
-#: adminapp/templates/rules.html:203
+#: adminapp/templates/rules.html:180
 msgid "No"
 msgstr "Nej"
 
@@ -1104,8 +1104,8 @@ msgstr "Gem ændringer"
 #: adminapp/templates/components/scanner/scan_completed.html:156
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
-#: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:84
-#: adminapp/templates/rules.html:85
+#: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:98
+#: adminapp/templates/rules.html:99
 #: organizations/templates/organizations/org_table.html:216
 #: organizations/templates/organizations/org_table.html:217
 #: organizations/templates/organizations/org_table.html:228
@@ -1120,17 +1120,17 @@ msgstr ""
 "Ønsker du virkelig at slette denne regel? Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:13
-#: adminapp/templates/rules.html:200
+#: adminapp/templates/rules.html:170
 msgid "Please note that this rule is currently included in"
 msgstr "Bemærk venligst at denne regel i øjeblikket indgår i"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:14
-#: adminapp/templates/rules.html:202
+#: adminapp/templates/rules.html:172
 msgid "scannerjob and"
 msgstr "scannerjob og"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:15
-#: adminapp/templates/rules.html:203
+#: adminapp/templates/rules.html:173
 msgid "reports."
 msgstr "rapporter."
 
@@ -2116,73 +2116,65 @@ msgstr "Scanresultat"
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
-#: adminapp/templates/rules.html:24 adminapp/templates/rules.html:25
-#: adminapp/templates/rules.html:29
+#: adminapp/templates/rules.html:38 adminapp/templates/rules.html:39
+#: adminapp/templates/rules.html:43
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html:50 adminapp/templates/rules.html:135
-#: adminapp/templates/scanners.html:63
+#: adminapp/templates/rules.html:64 adminapp/templates/scanners.html:63
+#: adminapp/templates/system_rules.html:66
 #: organizations/templates/organizations/account_detail.html:21
 #: organizations/templates/organizations/account_list.html:55
 msgid "Name"
 msgstr "Navn"
 
-#: adminapp/templates/rules.html:51
+#: adminapp/templates/rules.html:65
 #: organizations/templates/organizations/account_detail.html:33
 msgid "Organization"
 msgstr "Organisation"
 
-#: adminapp/templates/rules.html:52 adminapp/templates/rules.html:138
+#: adminapp/templates/rules.html:66 adminapp/templates/system_rules.html:68
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: adminapp/templates/rules.html:53 adminapp/templates/rules.html:139
+#: adminapp/templates/rules.html:67 adminapp/templates/system_rules.html:69
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/templates/rules.html:54 adminapp/templates/scanners.html:77
+#: adminapp/templates/rules.html:68 adminapp/templates/scanners.html:77
 msgid "Action"
 msgstr "Handling"
 
-#: adminapp/templates/rules.html:73 adminapp/templates/rules.html:74
+#: adminapp/templates/rules.html:87 adminapp/templates/rules.html:88
 #: adminapp/templates/scanners.html:88 adminapp/templates/scanners.html:89
 msgid "Edit"
 msgstr "Redigér"
 
-#: adminapp/templates/rules.html:83
+#: adminapp/templates/rules.html:97
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:83 adminapp/templates/scanners.html:207
+#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:207
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:115
+#: adminapp/templates/rules.html:129
 msgid "No rules added yet"
 msgstr "Der er endnu ikke tilføjet nogle regler"
 
-#: adminapp/templates/rules.html:120 adminapp/templates/rules.html:126
-msgid "System rules"
-msgstr "Systemregler"
-
-#: adminapp/templates/rules.html:137
-msgid "Categories"
-msgstr "Kategorier"
-
-#: adminapp/templates/rules.html:177 adminapp/templates/rules.html:188
+#: adminapp/templates/rules.html:147 adminapp/templates/rules.html:158
 msgid "Delete rule"
 msgstr "Slet regel"
 
-#: adminapp/templates/rules.html:196
+#: adminapp/templates/rules.html:166
 msgid "Do you want to delete"
 msgstr "Ønsker du at slette"
 
-#: adminapp/templates/rules.html:197
+#: adminapp/templates/rules.html:167
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:200
+#: adminapp/templates/rules.html:177
 #: organizations/templates/organizations/account_detail.html:70
 msgid "Yes"
 msgstr "Ja"
@@ -2271,6 +2263,43 @@ msgstr "Slet scannerjob"
 #: adminapp/templates/scanners.html:224
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
+
+#: adminapp/templates/system_rules.html:5
+#: adminapp/templates/system_rules.html:54 organizations/admin.py:56
+msgid "System rules"
+msgstr "Systemregler"
+
+#: adminapp/templates/system_rules.html:16
+msgid "Filter for categories"
+msgstr "Filtrér efter kategorier"
+
+#: adminapp/templates/system_rules.html:29
+#: adminapp/templates/system_rules.html:30
+msgid "Filter system rules by the chosen categories."
+msgstr "Filtrér systemreglerne efter de valgte kategorier"
+
+#: adminapp/templates/system_rules.html:31
+#: organizations/templates/organizations/orgunit_list.html:47
+#: organizations/templates/organizations/orgunit_list.html:95
+msgid "filter"
+msgstr "filtrér"
+
+#: adminapp/templates/system_rules.html:34
+msgid "Choose system rules for organization"
+msgstr "Vælg systemregler for organizationen"
+
+#: adminapp/templates/system_rules.html:67
+msgid "Categories"
+msgstr "Kategorier"
+
+#: adminapp/templates/system_rules.html:92
+#: adminapp/templates/system_rules.html:93
+msgid "Enable rule"
+msgstr "Aktivér regel"
+
+#: adminapp/templates/system_rules.html:111
+msgid "No rules found with the chosen categories"
+msgstr "Ingen regler fundet for de valgte kategorier"
 
 #: adminapp/templatetags/utility_tags.py:24
 msgid "day"
@@ -2365,17 +2394,17 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:84
+#: adminapp/views/rule_views.py:118
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:86 adminapp/views/rule_views.py:93
+#: adminapp/views/rule_views.py:120 adminapp/views/rule_views.py:127
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/rule_views.py:91
+#: adminapp/views/rule_views.py:125
 msgid ""
 "The 'surrounding_exceptions'-string must not include any symbols or spaces."
 msgstr ""
@@ -2394,7 +2423,7 @@ msgstr "Scan tidspunkt"
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:569
+#: adminapp/views/scanner_views.py:573
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
@@ -2445,7 +2474,7 @@ msgctxt "Verbose name for core app"
 msgid "Management"
 msgstr "Administration"
 
-#: core/forms.py:32 core/models/client.py:90
+#: core/forms.py:32 core/models/client.py:89
 msgid "enabled features"
 msgstr "aktiverede features"
 
@@ -2453,7 +2482,7 @@ msgstr "aktiverede features"
 msgid "Select a feature to enable it for this client."
 msgstr "Vælg en feature for at aktivere den for denne kunde."
 
-#: core/forms.py:40 core/models/client.py:96
+#: core/forms.py:40 core/models/client.py:95
 msgid "activated scan types"
 msgstr "tilgængelige scannertyper"
 
@@ -2489,7 +2518,7 @@ msgid "user"
 msgstr "bruger"
 
 #: core/models/administrator.py:37 core/models/client.py:115
-#: organizations/models/organization.py:54
+#: organizations/models/organization.py:55
 msgid "client"
 msgstr "kunde"
 
@@ -2541,84 +2570,80 @@ msgstr "kørselsstatus"
 msgid "last status message"
 msgstr "sidste status-besked"
 
-#: core/models/client.py:27
+#: core/models/client.py:26
 msgid "web scan"
 msgstr "webscan"
 
-#: core/models/client.py:28
+#: core/models/client.py:27
 msgid "file scan"
 msgstr "filscan"
 
-#: core/models/client.py:29
+#: core/models/client.py:28
 msgid "Exchange scan"
 msgstr "Exchange-scan"
 
-#: core/models/client.py:30
+#: core/models/client.py:29
 msgid "SBSYS scan"
 msgstr "SBSYS-scan"
 
-#: core/models/client.py:31
+#: core/models/client.py:30
 msgid "Dropbox scan"
 msgstr "Dropbox-scan"
 
-#: core/models/client.py:32
+#: core/models/client.py:31
 msgid "Microsoft Graph - mail scan"
 msgstr "Microsoft Graph - mailscan"
 
-#: core/models/client.py:33
+#: core/models/client.py:32
 msgid "Microsoft Graph - file scan"
 msgstr "Microsoft Graph - filscan"
 
-#: core/models/client.py:34
+#: core/models/client.py:33
 msgid "Google - drive scan"
 msgstr "Google - drevscan"
 
-#: core/models/client.py:35
+#: core/models/client.py:34
 msgid "Google - mail scan"
 msgstr "Google - mailscan"
 
-#: core/models/client.py:36
+#: core/models/client.py:35
 msgid "Microsoft Graph - Teams file scan"
 msgstr "Microsoft Graph - Teams filscan"
 
-#: core/models/client.py:43
+#: core/models/client.py:42
 msgid "administration API"
 msgstr "administrations-API"
 
-#: core/models/client.py:50
+#: core/models/client.py:49
 msgid "structured organization support"
 msgstr "understøttelse af strukturerede organisationer"
 
-#: core/models/client.py:51 import_services/apps.py:8
+#: core/models/client.py:50 import_services/apps.py:8
 #: import_services/models/import_service.py:44
 msgid "import services"
 msgstr "importtjenester"
 
-#: core/models/client.py:52
+#: core/models/client.py:51
 msgid "import services (MS Graph)"
 msgstr "importtjenester (MS Graph)"
 
-#: core/models/client.py:53
+#: core/models/client.py:52
 msgid "import services (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
-#: core/models/client.py:71
+#: core/models/client.py:70
 msgid "client ID"
 msgstr "kunde-ID"
 
-#: core/models/client.py:80
+#: core/models/client.py:79
 msgid "e-mail"
 msgstr "e-mail"
 
-#: core/models/client.py:84
+#: core/models/client.py:83
 msgid "phone number"
 msgstr "telefonnummer"
 
-#: core/models/client.py:99
-msgid "rule categories"
-msgstr "regelkategorier"
-
-#: core/models/client.py:119
+#: core/models/client.py:116
 msgid "clients"
 msgstr "kunder"
 
@@ -3080,9 +3105,13 @@ msgstr "Supportknap indstillinger"
 msgid "Deleted scanner {pk}"
 msgstr "Slettet scanner {pk}"
 
-#: organizations/models/organization.py:60
+#: organizations/models/organization.py:61
 msgid "slug"
 msgstr "slug"
+
+#: organizations/models/organization.py:66
+msgid "system rules"
+msgstr "systemregler"
 
 #: organizations/templates/components/modals/alias_create.html:15
 msgid "Create a new alias for"
@@ -3375,11 +3404,6 @@ msgstr "organisatorisk struktur for"
 msgid "Search for organizational unit"
 msgstr "Søg efter organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:47
-#: organizations/templates/organizations/orgunit_list.html:95
-msgid "filter"
-msgstr "Filtrér"
-
 #: organizations/templates/organizations/orgunit_list.html:62
 msgid "Show organizational units:"
 msgstr "Vis organisatoriske enheder:"
@@ -3513,9 +3537,6 @@ msgstr "Konto ikke fundet."
 
 #~ msgid "Add rules"
 #~ msgstr "Tilføj regler"
-
-#~ msgid "Available rules"
-#~ msgstr "Tilgængelige regler"
 
 #~ msgid "Selected rules"
 #~ msgstr "Valgte regler"

@@ -20,7 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from django.forms import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 from os2datascanner.projects.admin.organizations.models import Organization
 
@@ -42,8 +42,7 @@ class RuleList(RestrictedListView):
     def get_system_rules(self, organization):
         system_rules = CustomRule.objects.filter(organization__isnull=True)
         if selected_categories_pks := self.request.GET.getlist("categories"):
-            all_categories = RuleCategory.objects.all()
-            unselected_categories = all_categories.exclude(pk__in=selected_categories_pks)
+            unselected_categories = RuleCategory.objects.exclude(pk__in=selected_categories_pks)
 
             system_rules = system_rules.exclude(categories__in=unselected_categories)
 
@@ -218,17 +217,6 @@ class CustomRuleDelete(RuleDelete):
     model = CustomRule
 
 
-'''============ Methods required by multiple views ============'''
-
-
-def extract_pattern_fields(form_fields):
-    if not form_fields:
-        return [('pattern_0', '')]
-
-    return [(field_name, form_fields[field_name]) for field_name in form_fields if
-            field_name.startswith('pattern_')]
-
-
 class CustomRuleConnect(LoginRequiredMixin, UpdateView):
     model = CustomRule
 
@@ -237,7 +225,10 @@ class CustomRuleConnect(LoginRequiredMixin, UpdateView):
 
         self.object = self.get_object()
         organizations = Organization.objects.filter(UserWrapper(request.user).make_org_Q("uuid"))
-        organization = organizations.get(uuid=request.POST.get('selected_org'))
+        try:
+            organization = organizations.get(uuid=request.POST.get('selected_org'))
+        except Organization.DoesNotExist:
+            raise Http404("User is not connected to a valid organization.")
 
         connection = int(request.POST.get('table-checkbox', '0')) == self.object.pk
 
@@ -247,3 +238,14 @@ class CustomRuleConnect(LoginRequiredMixin, UpdateView):
             self.object.organizations.remove(organization)
 
         return response
+
+
+'''============ Methods required by multiple views ============'''
+
+
+def extract_pattern_fields(form_fields):
+    if not form_fields:
+        return [('pattern_0', '')]
+
+    return [(field_name, form_fields[field_name]) for field_name in form_fields if
+            field_name.startswith('pattern_')]

@@ -15,7 +15,7 @@ def populate_rule_categories(apps, schema_editor):
 def assign_category_to_cpr_customrule(apps, schema_editor):
     RuleCategory = apps.get_model("os2datascanner", "RuleCategory")
     CustomRule = apps.get_model("os2datascanner", "CustomRule")
-    
+
     cpr_rule = CustomRule.objects.filter(name="CPR regel")
     if cpr_rule:
         categories = RuleCategory.objects.filter(name__in=("number_id", "danish"))
@@ -26,7 +26,7 @@ def assign_category_to_cpr_customrule(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0130_recrunch_and_recensor_ews'),
+        ('os2datascanner', '0132_alter_scanner_authentication'),
     ]
 
     operations = [
