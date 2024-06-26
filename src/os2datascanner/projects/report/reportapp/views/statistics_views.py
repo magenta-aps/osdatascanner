@@ -82,7 +82,11 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 ),
                 default=False
             ),
-            created_month=TruncMonth('created_timestamp', output_field=DateField()),
+            created_month=TruncMonth(
+                        # If created_timestamp isn't set on a document report
+                        # the time is set to timezone.now()
+                        Coalesce('created_timestamp', today),
+                        output_field=DateField()),
             resolved_month=TruncMonth(
                         # If resolution_time isn't set on a report that has been
                         # handled, then assume it was handled in the same month it
