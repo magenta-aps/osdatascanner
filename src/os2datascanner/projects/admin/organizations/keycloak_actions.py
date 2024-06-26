@@ -2,7 +2,7 @@ import base64
 import struct
 import structlog
 from enum import Enum
-from typing import Tuple, Sequence
+from typing import Tuple, Sequence, Iterator, Any
 from itertools import chain
 from os2datascanner.utils.ldap import RDN, LDAPNode
 from .utils import prepare_and_publish
@@ -187,11 +187,14 @@ def _convert_sid(sid):
     return __convert_binary_sid_to_str(b_sid)
 
 
-def _path_to_unit(org, path, units) -> tuple[OrganizationalUnit | None, bool]:
-    """Gets or creates a unit from a path, and returns whether or not the unit was created."""
+def _path_to_unit(org: Organization,
+                  path: Sequence[RDN],
+                  units: dict[Sequence[RDN], OrganizationalUnit]
+                  ) -> tuple[OrganizationalUnit | None, bool]:
+    """Gets or creates a unit from a path, and returns whether or not the unit is new."""
     unit_id = RDN.sequence_to_dn(path)
     unit = units.get(path)
-    created = False
+    initialized = False
     if unit is None:
         try:
             unit = OrganizationalUnit.objects.get(organization=org, imported_id=unit_id)
@@ -214,23 +217,24 @@ def _path_to_unit(org, path, units) -> tuple[OrganizationalUnit | None, bool]:
                     # Clear the MPTT tree fields for now -- they get
                     # recomputed after we do bulk_create
                     lft=0, rght=0, tree_id=0, level=0)
-            created = True
-    return (unit, created)
+            initialized = True
+    return unit, initialized
 
 
-def _node_to_account(org: Organization, node: LDAPNode, accounts) -> tuple[Account | None, bool]:
-    """Gets or creates an account from a node, and returns whether or not it was created."""
+def _node_to_account(org: Organization, node: LDAPNode, accounts: list[Account]
+                     ) -> tuple[Account, bool]:
+    """Gets or creates an account from a node, and returns whether or not it us new."""
     # One Account object can have multiple paths (if it's a member of
     # several groups, for example), so we need to use the true DN as our
     # imported_id here
     account_id = node.properties["attributes"]["LDAP_ENTRY_DN"][0]
     account = None
-    for (acc, _, _) in accounts:
+    for acc in accounts:
         # If the account already exists in accounts, use it
         if acc.imported_id == account_id:
             account = acc
             break
-    created = False
+    initialized = False
     if account is None:
         try:
             account = Account.objects.get(
@@ -238,12 +242,11 @@ def _node_to_account(org: Organization, node: LDAPNode, accounts) -> tuple[Accou
         except Account.DoesNotExist:
             account = Account(organization=org, imported_id=account_id,
                               uuid=node.properties["id"])
-            created = True
+            initialized = True
+    return account, initialized
 
-    return (account, created)
 
-
-def _get_iids_of_hiearchy(hierarchy):
+def _get_iids_of_hiearchy(hierarchy: LDAPNode) -> set[str]:
     """Gets all iids of a LDAP-hiearchy."""
     iids = set()
     for path, r in hierarchy.walk():
@@ -253,7 +256,10 @@ def _get_iids_of_hiearchy(hierarchy):
     return iids
 
 
-def _create_unit_hierarchy(remote_hierarchy, org):
+def _create_unit_hierarchy(remote_hierarchy: LDAPNode,
+                           org: Organization
+                           ) -> tuple[dict[Sequence[RDN], OrganizationalUnit],
+                                      list[OrganizationalUnit]]:
     """For every Organizational Unit in the remote hierarchy, create a corresponding one locally.
      Returns a dict from path to unit and a list of units that were added"""
     path_to_unit = {}
@@ -265,15 +271,21 @@ def _create_unit_hierarchy(remote_hierarchy, org):
         if not node.children:
             # If a node doesn't have children, it's either a user or an uninteresting OU
             continue
-        unit, created = _path_to_unit(org, path, path_to_unit)
+        unit, new = _path_to_unit(org, path, path_to_unit)
         path_to_unit[path] = unit
-        if created:
+        if new:
             new_units.append(unit)
 
     return path_to_unit, new_units
 
 
-def _handle_diff(path, local, remote, org, accounts, progress_callback=_dummy_pc):
+def _handle_diff(path: Sequence[RDN],
+                 local: LDAPNode,
+                 remote: LDAPNode,
+                 org: Organization,
+                 accounts: list[Account],
+                 progress_callback=_dummy_pc
+                 ) -> tuple[Action, OrganizationalUnit | Account | None]:
     """Given a local and remote node with the same path
      finds the necessary action in case of any difference."""
     if not path:
@@ -301,8 +313,8 @@ def _handle_diff(path, local, remote, org, accounts, progress_callback=_dummy_pc
     if remote and not local:
         # A remote user exists and it doesn't have a local counterpart. Create one
         try:
-            acc, created = _node_to_account(org, remote, accounts)
-            return (Action.ADD, acc) if created else (Action.KEEP, acc)
+            acc, new = _node_to_account(org, remote, accounts)
+            return (Action.ADD, acc) if new else (Action.KEEP, acc)
         except KeyError:
             # Missing required attribute -- skip this object
             progress_callback("diff_ignored", path)
@@ -312,7 +324,7 @@ def _handle_diff(path, local, remote, org, accounts, progress_callback=_dummy_pc
     return (Action.NOTHING, None)
 
 
-def _get_accounts(hierarchy):
+def _get_accounts(hierarchy: LDAPNode) -> list[tuple[Account, Sequence[RDN], LDAPNode]]:
     """Returns all accounts in both remote and local hierarchy,
       along with their corresponding path and remote node"""
     accounts = []
@@ -343,7 +355,8 @@ def _get_accounts(hierarchy):
     return accounts
 
 
-def _update_alias(account, value, alias_type, id):
+def _update_alias(account: Account, value, alias_type: AliasType, id: str
+                  ) -> Iterator[tuple[Action, Any]]:
     """Helper function for _update_account.
      Updates the aliases of the given type of the given account."""
     if value:
@@ -372,7 +385,8 @@ def _update_alias(account, value, alias_type, id):
             yield (Action.DELETE, alias)
 
 
-def _update_account(account, path, remote_node):
+def _update_account(account: Account, path: Sequence[RDN], remote_node: LDAPNode
+                    ) -> Iterator[tuple[Action, Any]]:
     """Updates an Accounts properties and aliases to match its remote node."""
     mail_address = remote_node.properties.get("email")
 
@@ -405,7 +419,10 @@ def _update_account(account, path, remote_node):
             yield (Action.UPDATE, (account, (attr_name,)))
 
 
-def _update_account_position(account, account_positions, unit):
+def _update_account_position(account: Account,
+                             account_positions: dict[Account, list[OrganizationalUnit]],
+                             unit: OrganizationalUnit
+                             ) -> Iterator[tuple[Action, Position | None]]:
     """Given an Account and an Organizational Unit, adds the unit to the accounts
      list of units in account_positions.
      Adds a Position object of account in unit, if one doesn't exist already."""
@@ -427,7 +444,8 @@ def _update_account_position(account, account_positions, unit):
         return (Action.ADD, position)
 
 
-def _filter_positions(account_positions):
+def _filter_positions(account_positions: dict[Account, list[OrganizationalUnit]]
+                      ) -> Iterator[tuple[Action, Position]]:
     """Finds every position for each given account that isn't accurate."""
     for acc in account_positions:
         for pos in Position.employees.filter(
@@ -487,23 +505,26 @@ def perform_import_raw(
     diff = list(local_hierarchy.diff(remote_hierarchy))
     progress_callback("diff_computed", len(diff))
 
-    # Keeping track of every account found, along with their path and remote node
-    accounts = _get_accounts(diff)
-    for (acc, _, _) in accounts:
+    # Holds every account found, along with their path and remote node
+    account_path_node = []
+    for acc, path, remote in _get_accounts(diff):
+        account_path_node.append((acc, path, remote))
         actions[Action.KEEP].append(acc)
 
+    accounts = [acc for (acc, _, _) in account_path_node]
     for path, local_node, remote_node in diff:
         a, obj = _handle_diff(path, local_node, remote_node, org, accounts, progress_callback)
         actions[a].append(obj)
         if a in (Action.ADD, Action.KEEP) and isinstance(obj, Account):
             # This account wasn't found during _get_accounts. Add it to accounts
-            accounts.append((obj, path, remote_node))
+            account_path_node.append((obj, path, remote_node))
+            accounts.append(obj)
 
     # dict(account : units they are part of). Is populated in _update_account_position.
     account_positions = {}
     # Each Account should only be updated once. Keep track of those already updated
     updated_accounts = set()
-    for acc, path, remote_node in accounts:
+    for acc, path, remote_node in account_path_node:
         a, obj = _update_account_position(acc, account_positions, path_to_unit[path[:-1]])
         actions[a].append(obj)
 
