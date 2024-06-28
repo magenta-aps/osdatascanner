@@ -24,7 +24,7 @@ SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
                   "Messages through ScanStatus collector")
 
 
-def status_message_received_raw(body):
+def status_message_received_raw(body):  # noqa: CCR001 complexity
     """A status message for a scannerjob is created in Scanner.run().
     Therefore, this method can focus merely on updating the ScanStatus object."""
     message = messages.StatusMessage.from_json_object(body)
@@ -64,6 +64,10 @@ def status_message_received_raw(body):
                 scanned_size=F('scanned_size') + message.object_size,
                 scanned_objects=F('scanned_objects') + 1)
 
+    if message.skipped_by_last_modified:
+        locked_qs.update(skipped_by_last_modified=F("skipped_by_last_modified") +
+                         message.skipped_by_last_modified)
+
     if message.matches_found is not None:
         locked_qs.update(matches_found=F('matches_found') + message.matches_found)
 
@@ -87,6 +91,7 @@ def status_message_received_raw(body):
                     total_objects=scan_status.total_objects,
                     scanned_objects=scan_status.scanned_objects,
                     scanned_size=scan_status.scanned_size,
+                    skipped_by_last_modified=scan_status.skipped_by_last_modified,
                 )
 
         if scan_status.finished:

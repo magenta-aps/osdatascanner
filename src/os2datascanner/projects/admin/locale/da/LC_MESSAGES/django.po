@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-25 16:45+0200\n"
+"POT-Creation-Date: 2024-06-27 10:34+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -344,45 +344,49 @@ msgstr "Fejlbesked"
 msgid "matches found"
 msgstr "resultater fundet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:180
+#: adminapp/models/scannerjobs/scanner_helpers.py:113
+msgid "files skipped by last modified check"
+msgstr "uændrede filer sprunget over af 'Tjek dato for sidste ændring'"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py:191
 #: import_services/models/exported_mixin.py:37
 msgid "last modified"
 msgstr "senest opdateret"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:185
+#: adminapp/models/scannerjobs/scanner_helpers.py:196
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:192
+#: adminapp/models/scannerjobs/scanner_helpers.py:203
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:197
+#: adminapp/models/scannerjobs/scanner_helpers.py:208
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:251
+#: adminapp/models/scannerjobs/scanner_helpers.py:262
 msgid "Start time"
 msgstr "Startet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:254
+#: adminapp/models/scannerjobs/scanner_helpers.py:265
 #: adminapp/models/usererrorlog.py:29
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:255
+#: adminapp/models/scannerjobs/scanner_helpers.py:266
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:311
+#: adminapp/models/scannerjobs/scanner_helpers.py:322
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:319
+#: adminapp/models/scannerjobs/scanner_helpers.py:330
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:320
+#: adminapp/models/scannerjobs/scanner_helpers.py:331
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
@@ -1650,9 +1654,21 @@ msgstr "status for kørende scanner"
 msgid "no ongoing scans"
 msgstr "der er ingen igangværende scanninger"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:25
+#: adminapp/templates/components/scanstatus/status_timeline.html:7
 msgid "Timeline"
 msgstr "Tidslinje"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:22
+msgid "known objects skipped due to no change"
+msgstr "kendte objekter sprunget over grundet ingen ændring"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:23
+msgid "new objects scanned"
+msgstr "nye objekter scannet"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:25
+msgid "All objects scanned"
+msgstr "Alle objekter scannet"
 
 #: adminapp/templates/components/user/login.html:7
 #: adminapp/templates/components/user/login.html:17

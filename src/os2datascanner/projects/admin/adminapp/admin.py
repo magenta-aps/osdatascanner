@@ -216,8 +216,8 @@ class ScanStatusAdmin(admin.ModelAdmin):
                        'estimated_completion_time', 'start_time', 'last_modified',)
     fields = ('scan_tag', 'scanner', 'total_sources', 'explored_sources',
               'fraction_explored', 'total_objects', 'scanned_objects', 'matches_found',
-              'fraction_scanned', 'scanned_size', 'estimated_completion_time',
-              'start_time', 'last_modified', 'resolved',)
+              'skipped_by_last_modified', 'fraction_scanned', 'scanned_size',
+              'estimated_completion_time', 'start_time', 'last_modified', 'resolved',)
 
     actions = ('change_resolvestatus_false', 'change_resolvestatus_true')
 

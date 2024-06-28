@@ -1,5 +1,15 @@
 # Changelog
 
+## Next Release
+
+"Summer Summarum 🌞"
+
+### New in this release
+
+- Extra details of a finished scannerjob now holds information in regard to objects
+  skipped by last modified check. 
+
+  
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"
