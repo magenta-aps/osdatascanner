@@ -66,6 +66,15 @@ class Command(BaseCommand):
                   "(disregarding case):", ", ".join(
                       [f"{d['username_lower']} ({d['count']})" for d in username_counts]))
 
+        if settings.MSGRAPH_ALLOW_WRITE:
+            accounts_missing_categories = accounts.annotate(
+                categories=Count("outlook_settings__outlook_categories")).filter(
+                categories__lt=2)
+            if accounts_missing_categories:
+                print(f"Found {len(accounts_missing_categories)} accounts missing "
+                      "one or more Outlook categories:", ", ".join(
+                          [d["pk"] for d in accounts_missing_categories]))
+
     def diagnose_aliases(self):
         print("\n\n>> Running diagnostics on aliases ...")
         aliases = Alias.objects.all()

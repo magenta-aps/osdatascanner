@@ -21,22 +21,24 @@
           <label for="{{ outlook_settings_form.categorize_email.id_for_label }}"></label>
         </td>
       </tr>
-      <tr>
+      <tr class="hide-on-uncheck"
+          {% if not categorize_check %}hidden{% endif %}>
         <td>{% trans "Match category colour" %}</td>
-        <td class="dropdown">{{ outlook_settings_form.match_colour }}</td>
+        <td class="dropdown">{{ outlook_settings_form.match_category_colour }}</td>
       </tr>
-      <tr>
+      <tr class="hide-on-uncheck"
+          {% if not categorize_check %}hidden{% endif %}>
         <td>{% trans "False positive category colour" %}</td>
-        <td class="dropdown">{{ outlook_settings_form.false_positive_colour }}</td>
+        <td class="dropdown">{{ outlook_settings_form.false_positive_category_colour }}</td>
       </tr>
     </form>
-    <tr>
+    <tr class="hide-on-uncheck"
+        {% if not categorize_check %}hidden{% endif %}>
       <td>{% trans "Categorize all existing" %}</td>
       <td>
         <button class="button"
           name="categorize_existing"
           title="{% trans "Categorizes your emails based on your existing results. Be aware that scannerjob runs will also do this for you, if you've enabled categorizing." %}"
-          {% if not tenant_id_retrievable %}disabled{% endif %}
           hx-post="{% url 'outlook-category-settings' %}"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
           hx-swap="none"
@@ -50,3 +52,18 @@
     </tr>
   </tbody>
 </table>
+
+<script>
+  htmx.onLoad(() => {
+    const checkbox = document.getElementById("id_categorize_email");
+    checkbox.addEventListener("change", () => {
+      const elements = document.getElementsByClassName("hide-on-uncheck");
+      for (let e of elements) {
+        if (checkbox.checked) {
+          e.removeAttribute("hidden");
+        } else {
+          e.setAttribute("hidden", true);
+        }
+      }})
+    })
+</script>
