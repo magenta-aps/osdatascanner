@@ -1,3 +1,5 @@
 def pre_mutation(context):
-    context.config.test_command = "docker-compose exec admin django-admin test "\
-                                  "os2datascanner.projects.admin.tests.test_admin_collector"
+    # Change the path here to the path of the tests you want to do mutation
+    # testing on. Remember to change the [mutmut]-settings in setup.cfg as well.
+    path = "organizations/tests/test_account_outlook_setting.py"
+    context.config.test_command = "docker compose exec report pytest " + path
