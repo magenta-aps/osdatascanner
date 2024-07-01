@@ -1,10 +1,9 @@
 import datetime
 import json
+import pytest
 
-from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Account, Organization, Alias
 from ..models.account import StatusChoices
 from ...reportapp.models.documentreport import DocumentReport
 
@@ -210,37 +209,11 @@ def make_matched_document_reports_for(alias, handled=0, amount=10, created=timez
         dr.alias_relation.add(alias)
 
 
-class AccountTest(TestCase):
+@pytest.mark.django_db
+class TestAccount:
 
-    def setUp(self) -> None:
-        olsenbanden = Organization.objects.create(name='Olsenbanden')
-
-        self.egon_acc = Account.objects.create(username='egon', organization=olsenbanden)
-        self.benny_acc = Account.objects.create(username='benny', organization=olsenbanden)
-        self.kjeld_acc = Account.objects.create(username='kjeld', organization=olsenbanden)
-
-        # Aliases, so the accounts can have documentreports associated
-        self.egon_alias = Alias.objects.create(
-            user=self.egon_acc.user,
-            account=self.egon_acc,
-            _alias_type="email",
-            _value="egon@olsenbanden.com")
-        self.benny_alias = Alias.objects.create(
-            user=self.benny_acc.user,
-            account=self.benny_acc,
-            _alias_type="SID",
-            _value="this_is_a_SID")
-        self.kjeld_alias = Alias.objects.create(
-            user=self.kjeld_acc.user,
-            account=self.kjeld_acc,
-            _alias_type="generic")
-        self.egon_rem_alias = Alias.objects.create(
-            user=self.egon_acc.user,
-            account=self.egon_acc,
-            _alias_type="remediator",
-            _value=0)
-
-    def test_save_with_no_new_matches_and_some_handled(self):
+    def test_save_with_no_new_matches_and_some_handled(
+            self, egon_email_alias, egon_remediator_alias, egon_account):
         """If a user has not recently had new matches, their status should be
         'OK'."""
 
@@ -249,7 +222,7 @@ class AccountTest(TestCase):
 
         # Make documentreport that are > 3 weeks old.
         make_matched_document_reports_for(
-            self.egon_alias,
+            egon_email_alias,
             handled=handled_matches,
             amount=all_matches,
             created=timezone.now() -
@@ -257,116 +230,64 @@ class AccountTest(TestCase):
                 days=100))
 
         # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
+        make_matched_document_reports_for(egon_remediator_alias, handled=5, amount=10)
 
         # This is the real test. This is where .match_count and .match_status are set.
-        self.egon_acc.save()
+        egon_account.save()
 
-        self.assertEqual(
-            self.egon_acc.match_count,
-            all_matches-handled_matches,
-            f"Expected to find {all_matches-handled_matches} unhandled match, "
-            f"but found {self.egon_acc.match_count} instead.")
-        self.assertEqual(
-            self.egon_acc.match_status,
-            StatusChoices.OK,
-            f"Expected match_status to be 'OK', but found "
-            f"{self.egon_acc.match_status.label} instead.")
+        assert egon_account.match_count == all_matches-handled_matches
+        assert egon_account.match_status == StatusChoices.OK
 
-    def test_save_with_some_new_matches_and_some_handled(self):
+    @pytest.mark.parametrize("handled_num,all_num,status", [
+        (100, 100, StatusChoices.GOOD),
+        (0, 0, StatusChoices.GOOD),
+        (0, 100, StatusChoices.BAD),
+        (25, 100, StatusChoices.BAD),
+        (50, 100, StatusChoices.BAD),
+        (75, 100, StatusChoices.OK),
+        (99, 100, StatusChoices.OK),
+    ])
+    def test_save_with_some_new_matches_and_some_handled(
+            self, egon_account, egon_email_alias, handled_num, all_num, status):
         """If a user has not handled at least 75% of their matches the past
         3 weeks, their status should be 'BAD', otherwise it should be 'OK'.
         If the user has no matches at all, their status should be 'GOOD'."""
 
-        # Egon has no unhandled matches at all.
-        egon_handled = 10
-        egon_all = 10
-        make_matched_document_reports_for(self.egon_alias, handled=egon_handled, amount=egon_all)
+        make_matched_document_reports_for(egon_email_alias, handled=handled_num, amount=all_num)
 
-        # Benny has handled 80% of his matches the past 3 weeks.
-        benny_handled = 8
-        benny_all = 10
-        make_matched_document_reports_for(self.benny_alias, handled=benny_handled, amount=benny_all)
+        egon_account.save()
 
-        # Kjeld has only handled 60%.
-        kjeld_handled = 6
-        kjeld_all = 10
-        make_matched_document_reports_for(self.kjeld_alias, handled=kjeld_handled, amount=kjeld_all)
+        assert all_num-handled_num == egon_account.match_count
+        assert egon_account.match_status == status
 
-        # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
-
-        # This is where the match_status and match_count are set.
-        self.egon_acc.save()
-        self.benny_acc.save()
-        self.kjeld_acc.save()
-
-        self.assertEqual(egon_all-egon_handled, self.egon_acc.match_count)
-        self.assertEqual(
-            StatusChoices.GOOD,
-            self.egon_acc.match_status,
-            f"Expected match_status to be 'GOOD', but found "
-            f"{self.egon_acc.match_status.label} instead.")
-        self.assertEqual(benny_all-benny_handled, self.benny_acc.match_count)
-        self.assertEqual(
-            StatusChoices.OK,
-            self.benny_acc.match_status,
-            f"Expected match_status to be 'OK', but found "
-            f"{self.egon_acc.match_status.label} instead.")
-        self.assertEqual(kjeld_all-kjeld_handled, self.kjeld_acc.match_count)
-        self.assertEqual(
-            StatusChoices.BAD,
-            self.kjeld_acc.match_status,
-            f"Expected match_status to be 'BAD', but found "
-            f"{self.egon_acc.match_status.label} instead.")
-
-    def test_save_with_some_new_matches_and_no_handled(self):
-        """If a user has some new matches, and handled none, their status
-        should be 'BAD'"""
-
-        # Kjeld has not done anything.
-        handled = 0
-        all_matches = 10
-        make_matched_document_reports_for(self.kjeld_alias, handled=handled, amount=all_matches)
-        # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
-
-        self.kjeld_acc.save()
-
-        self.assertEqual(all_matches-handled, self.kjeld_acc.match_count)
-        self.assertEqual(
-            StatusChoices.BAD,
-            self.kjeld_acc.match_status,
-            f"Expected match_status to be 'BAD', but found "
-            f"{self.egon_acc.match_status.label} instead.")
-
-    def test_save_with_no_new_matches_and_no_handled(self):
+    def test_save_with_no_new_matches_and_no_handled(self, egon_account, egon_email_alias):
         """If a user has not handled any matches, their status should be 'BAD',
         even if none of their matches are new."""
 
-        # Benny has not done anything
+        # Egon has not done anything
         handled = 0
         all_matches = 10
         make_matched_document_reports_for(
-            self.benny_alias,
+            egon_email_alias,
             handled=handled,
             amount=all_matches,
             created=timezone.now() -
             datetime.timedelta(
                 days=100))
-        # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
 
-        self.benny_acc.save()
+        egon_account.save()
 
-        self.assertEqual(all_matches-handled, self.benny_acc.match_count)
-        self.assertEqual(
-            StatusChoices.BAD,
-            self.benny_acc.match_status,
-            f"Expected match_status to be 'BAD', but found "
-            f"{self.egon_acc.match_status.label} instead.")
+        assert all_matches-handled == egon_account.match_count
+        assert egon_account.match_status == StatusChoices.BAD
 
-    def test_count_matches_by_week_format(self):
+    @pytest.mark.parametrize('num_weeks', [
+        (-3),
+        (0),
+        (10),
+        (104),
+        (None)
+    ])
+    def test_count_matches_by_week_format(self, num_weeks, egon_account):
         """The count_matches_by_week-method should return a list of dicts with
         the following structure:
         [
@@ -380,105 +301,89 @@ class AccountTest(TestCase):
         ]
         """
 
-        egon_weekly_matches = self.egon_acc.count_matches_by_week(weeks=10)
-        kjeld_weekly_matches = self.kjeld_acc.count_matches_by_week(weeks=104)
-        # When no number of weeks are specified, the default is 52.
-        benny_weekly_matches = self.benny_acc.count_matches_by_week()
+        if num_weeks is None:
+            weekly_matches = egon_account.count_matches_by_week()
+        elif num_weeks < 1:
+            with pytest.raises(ValueError):
+                egon_account.count_matches_by_week(weeks=num_weeks)
+            return
+        else:
+            weekly_matches = egon_account.count_matches_by_week(weeks=num_weeks)
 
-        self.assertEqual(len(egon_weekly_matches), 10)
-        self.assertEqual(len(kjeld_weekly_matches), 104)
-        self.assertEqual(len(benny_weekly_matches), 52)
+        assert len(weekly_matches) == num_weeks or 52
+        for key in ("weeknum", "matches", "new", "handled"):
+            assert key in weekly_matches[0].keys()
 
-        self.assertIn("weeknum", egon_weekly_matches[0].keys())
-        self.assertIn("matches", egon_weekly_matches[0].keys())
-        self.assertIn("new", egon_weekly_matches[0].keys())
-        self.assertIn("handled", egon_weekly_matches[0].keys())
-
-    def test_account_count_matches_by_week_created_none(self):
+    def test_account_count_matches_by_week_created_none(self, egon_email_alias, egon_account):
         """Test the Account.count_matches_by_week-method with a report without
         a created timestamp, to make sure the method does not break."""
-        make_matched_document_reports_for(self.kjeld_alias, handled=0, amount=1, created=None)
-        # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
-        kjeld_weekly_matches = self.kjeld_acc.count_matches_by_week(weeks=1)
+        make_matched_document_reports_for(egon_email_alias, handled=0, amount=1, created=None)
+        weekly_matches = egon_account.count_matches_by_week(weeks=1)
 
-        self.assertEqual(kjeld_weekly_matches[0]["matches"], 1)
+        assert weekly_matches[0]["matches"] == 1
 
-    def test_account_count_matches_from_ten_to_one_to_zero(self):
+    def test_account_count_matches_from_ten_to_one_to_zero(self, egon_email_alias, egon_account):
         all_matches = 10
         handled = 0
-        make_matched_document_reports_for(self.kjeld_alias, handled=handled, amount=all_matches)
-        # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
+        make_matched_document_reports_for(egon_email_alias, handled=handled, amount=all_matches)
 
         # Refresh match count.
-        self.kjeld_acc._count_matches()
+        egon_account._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.match_count, all_matches,
-                         "Incorrect match_count on account object!")
+        assert egon_account.match_count == all_matches
 
         # Handle 9/10
 
-        DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(resolution_status=0)
-        dr = DocumentReport.objects.filter(alias_relation=self.kjeld_alias).first()
+        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(resolution_status=0)
+        dr = DocumentReport.objects.filter(alias_relation=egon_email_alias).first()
         dr.resolution_status = None
         dr.save()
         # Refresh match count
-        self.kjeld_acc._count_matches()
+        egon_account._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.match_count, 1,
-                         "Incorrect match_count on account object! All but one should be handled.")
+        assert egon_account.match_count == 1
 
         # Handle all matches
-        DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(resolution_status=0)
+        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(resolution_status=0)
         # Refresh match count
-        self.kjeld_acc._count_matches()
+        egon_account._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.match_count, 0,
-                         "Incorrect match_count on account object! All should be handled.")
+        assert egon_account.match_count == 0
 
-    def test_account_withheld_matches_from_ten_to_one_to_zero(self):
+    def test_account_withheld_matches_from_ten_to_one_to_zero(self, egon_email_alias, egon_account):
         all_matches = 10
         handled = 0
-        make_matched_document_reports_for(self.kjeld_alias, handled=handled, amount=all_matches)
-        # Matches related to a remediator should be ignored:
-        make_matched_document_reports_for(self.egon_rem_alias, handled=5, amount=10)
+        make_matched_document_reports_for(egon_email_alias, handled=handled, amount=all_matches)
 
-        # Mark Kjeld's matches as withheld
-        DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(
+        # Mark Egon's matches as withheld
+        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(
             only_notify_superadmin=True)
 
         # Refresh count
-        self.kjeld_acc._count_matches()
+        egon_account._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.withheld_matches, 10,
-                         "Matches that should be withheld aren't counted as withheld!")
-        self.assertEqual(self.kjeld_acc.match_count, 0,
-                         "Match count is not updated!")
+        assert egon_account.withheld_matches == 10
+        assert egon_account.match_count == 0
 
-        # Distribute 9 of  Kjeld's matches
-        DocumentReport.objects.filter(alias_relation=self.kjeld_alias).update(
+        # Distribute 9 of  Egon's matches
+        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(
             only_notify_superadmin=False)
-        dr = DocumentReport.objects.filter(alias_relation=self.kjeld_alias).first()
+        dr = DocumentReport.objects.filter(alias_relation=egon_email_alias).first()
         dr.only_notify_superadmin = True
         dr.save()
 
         # Refresh count
-        self.kjeld_acc._count_matches()
+        egon_account._count_matches()
         # Assert
-        self.assertEqual(self.kjeld_acc.withheld_matches, 1,
-                         "Matches that shouldn't be withheld are counted as withheld!")
-        self.assertEqual(self.kjeld_acc.match_count, 9,
-                         "Match count is not updated!")
+        assert egon_account.withheld_matches == 1
+        assert egon_account.match_count == 9
 
         # Distribute last one
-        DocumentReport.objects.filter(alias_relation=self.kjeld_alias,
+        DocumentReport.objects.filter(alias_relation=egon_email_alias,
                                       only_notify_superadmin=True).update(
             only_notify_superadmin=False)
         # Refresh count
-        self.kjeld_acc._count_matches()
+        egon_account._count_matches()
         # Assert, nothing should be withheld
-        self.assertEqual(self.kjeld_acc.withheld_matches, 0,
-                         "Matches that shouldn't be withheld are counted as withheld!")
-        self.assertEqual(self.kjeld_acc.match_count, 10,
-                         "Match count is not updated!")
+        assert egon_account.withheld_matches == 0
+        assert egon_account.match_count == 10
