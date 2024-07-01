@@ -89,7 +89,16 @@ class TestDPOStatisticsPageView:
         created_timestamp = view.matches[0].get('created_month')
         now = timezone.now().date()
 
-        assert created_timestamp == timezone.datetime(year=now.year, month=now.month, day=1).date()
+        # If a document report has no created_timestamp it is assigned the date 1970/1/1.
+        assert created_timestamp in {
+            timezone.datetime(
+                year=now.year,
+                month=now.month,
+                day=1).date(),
+            timezone.datetime(
+                1970,
+                1,
+                1).date()}
 
     @pytest.mark.parametrize('month_matches,test_date', [
         ((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), datetime(2020, 11, 28, 14, 21, 59)),
@@ -503,6 +512,29 @@ class TestDPOStatisticsPageView:
 
         assert f'unhandled,{egon_matches+benny_matches+kjeld_matches}' in str(line2_ex)
         assert f'unhandled,{egon_matches+benny_matches+kjeld_matches}' in str(line2_im)
+
+    def test_statisticspage_without_created_timestamp(
+            self, rf, egon_dpo_position, egon_account, egon_email_alias):
+        """The DPO page should still be accessible when document reports
+           have no created_timestamp."""
+
+        create_reports_for(egon_email_alias, num=1, created_at=None)
+
+        response = self.get_dpo_statisticspage_response(rf, egon_account)
+
+        assert response.status_code == 200
+
+    def test_statisticspage_all_matches_older_than_a_year(
+            self, rf, egon_account, egon_dpo_position, egon_email_alias):
+        """When the created timestamp for all matches are older than a year,
+           the DPO page should still be accessible."""
+
+        more_than_a_year = timezone.datetime.now() - timedelta(days=367)
+        create_reports_for(egon_email_alias, num=10, created_at=more_than_a_year)
+
+        response = self.get_dpo_statisticspage_response(rf, egon_account)
+
+        assert response.status_code == 200
 
     # StatisticsPageView()
     def get_dpo_statisticspage_object(self):
