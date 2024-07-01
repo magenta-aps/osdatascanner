@@ -1,34 +1,27 @@
-from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory, TestCase
+import pytest
 
-from ..organizations.models import Account, Organization
+from django.contrib.auth.models import AnonymousUser
+
 from ..reportapp.views.report_views import UserReportView
 
 
-class TestLoginRequired(TestCase):
+@pytest.mark.django_db
+class TestLoginRequired:
 
-    def setUp(self):
-        org = Organization.objects.create(name="Team Saftevand")
-        self.account = Account.objects.create(
-            username='Yvonne', first_name="Yvonne",
-            last_name="Solbærsaft", organization=org)
-        self.factory = RequestFactory()
-
-    def test_index_anonymous_user(self):
+    def test_index_anonymous_user(self, rf):
         # Tries to hit path "/" with no login
-        request = self.factory.get('/')
+        request = rf.get('/')
         request.user = AnonymousUser()
         response = UserReportView.as_view()(request)
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
 
-    def test_index_as_user(self):
+    def test_index_as_user(self, rf, egon_account):
         # Tries to hit path "/" as user
-        request = self.factory.get('/')
-        user = self.account.user
+        request = rf.get('/')
+        user = egon_account.user
         request.user = user
         response = UserReportView.as_view()(request)
 
         # Should get status code 200 OK and index.html template
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("index.html", response.template_name)
-        self.account.delete()
+        assert response.status_code == 200
+        assert "index.html" in response.template_name
