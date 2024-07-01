@@ -1,11 +1,9 @@
 import json
 
-from django.test import TestCase
-
 from ..utils import hash_handle
 
 
-class PipelineCollectorTest(TestCase):
+class TestPipelineCollector:
 
     def test_hash_handle(self):
         """
@@ -31,10 +29,10 @@ class PipelineCollectorTest(TestCase):
                   '"scn":"2019-11-28T14:56:58"}'
 
         # Compare created hex value with expected hex value
-        self.assertEqual(hash_handle(handle=json.loads(handle1)),
-                         'fc0921ba4120f434d0591797bda1d570493de41dc993089f9c35063'
-                         '18292c0b93a2192761c3a075a0f6f70fcd1c7089118892f8a1d6e0f'
-                         '29fcba54198b471399')
+        assert hash_handle(handle=json.loads(handle1)) == (
+                    'fc0921ba4120f434d0591797bda1d570493de41dc993089f9c35063'
+                    '18292c0b93a2192761c3a075a0f6f70fcd1c7089118892f8a1d6e0f'
+                    '29fcba54198b471399'
+            )
         # Compare hex value from handle1 with hex value from handle2
-        self.assertEqual(hash_handle(handle=json.loads(handle1)),
-                         hash_handle(handle=json.loads(handle2)))
+        assert hash_handle(handle=json.loads(handle1)) == hash_handle(handle=json.loads(handle2))
