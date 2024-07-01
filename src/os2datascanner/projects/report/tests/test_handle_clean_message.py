@@ -1,11 +1,9 @@
 import json
-
-from django.test import TestCase
+import pytest
 
 from ..reportapp.management.commands.event_collector import (
     handle_clean_account_message, handle_clean_problem_message)
 from ..reportapp.utils import create_alias_and_match_relations
-from ..organizations.models import Account, Alias, Organization, AliasType
 from ..reportapp.models.documentreport import DocumentReport
 
 # This is a real raw_matches field from test data. This could probably be done
@@ -199,57 +197,42 @@ raw_matches_json_matched = json.loads('''
 ''')
 
 
-class HandleCleanAccountMessageTest(TestCase):
+def create_reports_for(alias, num=10, scanner_job_pk=1, matched=True):
+    for i in range(num):
+        DocumentReport.objects.create(
+            name=f"Report-{i}{'-matched' if matched else ''}",
+            owner=alias._value,
+            scanner_job_pk=scanner_job_pk,
+            path=(f"report-{i}-{scanner_job_pk}-{alias.account.username}"
+                  f"-{'matched' if matched else 'unmatched'}"),
+            raw_matches=raw_matches_json_matched if matched else None)
 
-    def setUp(self):
-        org = Organization.objects.create(name="TestOrg")
-        self.bøffen = Account.objects.create(
-            username="Bøffen", organization=org)
-        self.egon = Account.objects.create(
-            username="egon", organization=org)
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"Report-{i}",
-                owner="bøffen",
-                scanner_job_pk=1,
-                path=f"report-{i}-1-bøffen",
-                raw_matches=raw_matches_json_matched)
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"Report-{i}",
-                owner="egon olsen",
-                scanner_job_pk=1,
-                path=f"report-{i}-1-egon",
-                raw_matches=raw_matches_json_matched)
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"Report-{i}",
-                owner="bøffen",
-                scanner_job_pk=2,
-                path=f"report-{i}-2-bøffen",
-                raw_matches=raw_matches_json_matched)
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"Report-{i}",
-                owner="egon olsen",
-                scanner_job_pk=2,
-                path=f"report-{i}-2-egon",
-                raw_matches=raw_matches_json_matched)
-        bøffen_alias = Alias.objects.create(
-            account=self.bøffen,
-            user=self.bøffen.user,
-            _alias_type=AliasType.GENERIC,
-            _value="bøffen")
-        egon_alias = Alias.objects.create(
-            account=self.egon,
-            user=self.egon.user,
-            _alias_type=AliasType.GENERIC,
-            _value="egon olsen")
+    create_alias_and_match_relations(alias)
 
-        create_alias_and_match_relations(bøffen_alias)
-        create_alias_and_match_relations(egon_alias)
 
-    def test_cleaning_document_reports_single_account_and_scanner(self):
+@pytest.fixture
+def egon_and_bøffen_reports_from_two_scannerjobs(egon_email_alias, bøffen_email_alias):
+    create_reports_for(egon_email_alias, num=10, scanner_job_pk=1)
+    create_reports_for(bøffen_email_alias, num=10, scanner_job_pk=1)
+    create_reports_for(egon_email_alias, num=10, scanner_job_pk=2)
+    create_reports_for(bøffen_email_alias, num=10, scanner_job_pk=2)
+
+
+@pytest.fixture
+def bøffen_matched_and_unmatched_reports_two_scannerjobs(bøffen_email_alias):
+    create_reports_for(bøffen_email_alias, num=10, scanner_job_pk=1, matched=True)
+    create_reports_for(bøffen_email_alias, num=10, scanner_job_pk=1, matched=False)
+    create_reports_for(bøffen_email_alias, num=10, scanner_job_pk=2, matched=False)
+
+
+@pytest.mark.django_db
+class TestHandleCleanAccountMessage:
+
+    def test_cleaning_document_reports_single_account_and_scanner(
+            self,
+            bøffen_account,
+            egon_account,
+            egon_and_bøffen_reports_from_two_scannerjobs):
         """Giving a CleanMessage to the event_message_received_raw-function
         should delete all DocumentReport-objects associated with the given
         account and scanner."""
@@ -257,31 +240,33 @@ class HandleCleanAccountMessageTest(TestCase):
         message = {
             "scanners_accounts_dict": {
               1: {
-                "uuids": [self.bøffen.uuid],
-                "usernames": [self.bøffen.username]
+                "uuids": [bøffen_account.uuid],
+                "usernames": [bøffen_account.username]
               }
             },
             "type": "clean_document_reports"}
 
         handle_clean_account_message(message)
 
-        self.assertEqual(DocumentReport.objects.count(), 30)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                scanner_job_pk=1).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                ).exclude(scanner_job_pk=1).count(),
-            10)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon).count(),
-            20)
+        assert DocumentReport.objects.count() == 30
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+            scanner_job_pk=1
+        ).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+        ).exclude(
+            scanner_job_pk=1
+        ).count() == 10
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account
+        ).count() == 20
 
-    def test_cleaning_document_reports_with_no_scanners(self):
+    def test_cleaning_document_reports_with_no_scanners(
+            self,
+            bøffen_account,
+            egon_account,
+            egon_and_bøffen_reports_from_two_scannerjobs):
         """Giving a CleanMessage to the event_message_received_raw-function
         without a scanner_job_pk should not delete any DocumentReport-objects."""
         message = {
@@ -289,159 +274,134 @@ class HandleCleanAccountMessageTest(TestCase):
             "type": "clean_document_reports"}
 
         handle_clean_account_message(message)
-        self.assertEqual(DocumentReport.objects.count(), 40)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen).count(),
-            20)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon).count(),
-            20)
 
-    def test_cleaning_document_reports_multiple_accounts_single_scanner(self):
+        assert DocumentReport.objects.count() == 40
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account
+        ).count() == 20
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account
+        ).count() == 20
+
+    def test_cleaning_document_reports_multiple_accounts_single_scanner(
+            self,
+            bøffen_account,
+            egon_account,
+            egon_and_bøffen_reports_from_two_scannerjobs):
         """Giving a CleanMessage to the event_message_received_raw-function
         should delete all DocumentReport-objects associated with the given
         accounts and scanner."""
         message = {
             "scanners_accounts_dict": {
               1: {
-                "uuids": [str(self.bøffen.uuid), str(self.egon.uuid)],
-                "usernames": [self.bøffen.username, self.egon.username]
+                "uuids": [str(bøffen_account.uuid), str(egon_account.uuid)],
+                "usernames": [bøffen_account.username, egon_account.username]
               }
             },
             "type": "clean_document_reports"}
 
         handle_clean_account_message(message)
 
-        self.assertEqual(DocumentReport.objects.count(), 20)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                scanner_job_pk=1).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                ).exclude(scanner_job_pk=1).count(),
-            10)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon,
-                scanner_job_pk=1).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon,
-                ).exclude(scanner_job_pk=1).count(),
-            10)
+        assert DocumentReport.objects.count() == 20
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+            scanner_job_pk=1
+        ).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+        ).exclude(
+            scanner_job_pk=1
+        ).count() == 10
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account,
+            scanner_job_pk=1
+        ).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account,
+        ).exclude(
+            scanner_job_pk=1
+        ).count() == 10
 
-    def test_cleaning_document_reports_single_account_multiple_scanners(self):
+    def test_cleaning_document_reports_single_account_multiple_scanners(
+            self,
+            bøffen_account,
+            egon_account,
+            egon_and_bøffen_reports_from_two_scannerjobs):
         """Giving a CleanMessage to the event_message_received_raw-function
         should delete all DocumentReport-objects associated with the given
         account and scanners."""
         message = {
             "scanners_accounts_dict": {
               1: {
-                "uuids": [str(self.bøffen.uuid)],
-                "usernames": [self.bøffen.username]
+                "uuids": [str(bøffen_account.uuid)],
+                "usernames": [bøffen_account.username]
               },
               2: {
-                "uuids": [str(self.bøffen.uuid)],
-                "usernames": [self.bøffen.username]
+                "uuids": [str(bøffen_account.uuid)],
+                "usernames": [bøffen_account.username]
               }
             },
             "type": "clean_document_reports"}
 
         handle_clean_account_message(message)
 
-        self.assertEqual(DocumentReport.objects.count(), 20)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                scanner_job_pk__in=[1, 2]).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                ).exclude(scanner_job_pk__in=[1, 2]).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon,
-                ).count(),
-            20)
+        assert DocumentReport.objects.count() == 20
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+            scanner_job_pk__in=[1, 2]
+        ).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+        ).exclude(
+            scanner_job_pk__in=[1, 2]
+        ).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account
+        ).count() == 20
 
-    def test_cleaning_document_reports_multiple_accounts_and_scanners(self):
+    def test_cleaning_document_reports_multiple_accounts_and_scanners(
+            self,
+            bøffen_account,
+            egon_account,
+            egon_and_bøffen_reports_from_two_scannerjobs):
         """Giving a CleanMessage to the event_message_received_raw-function
         should delete all DocumentReport-objects associated with the given
         accounts and scanners."""
         message = {
             "scanners_accounts_dict": {
               1: {
-                "uuids": [str(self.bøffen.uuid), str(self.egon.uuid)],
-                "usernames": [self.bøffen.username, self.egon.username]
+                "uuids": [str(bøffen_account.uuid), str(egon_account.uuid)],
+                "usernames": [bøffen_account.username, egon_account.username]
               },
               2: {
-                "uuids": [str(self.bøffen.uuid), str(self.egon.uuid)],
-                "usernames": [self.bøffen.username, self.egon.username]
+                "uuids": [str(bøffen_account.uuid), str(egon_account.uuid)],
+                "usernames": [bøffen_account.username, egon_account.username]
               }
             },
             "type": "clean_document_reports"}
 
         handle_clean_account_message(message)
 
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                scanner_job_pk=1).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.bøffen,
-                scanner_job_pk=2).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon,
-                scanner_job_pk=1).count(),
-            0)
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                alias_relation__account=self.egon,
-                scanner_job_pk=2).count(),
-            0)
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+            scanner_job_pk=1).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=bøffen_account,
+            scanner_job_pk=2).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account,
+            scanner_job_pk=1).count() == 0
+        assert DocumentReport.objects.filter(
+            alias_relation__account=egon_account,
+            scanner_job_pk=2).count() == 0
 
 
-class HandleCleanProblemMessageTest(TestCase):
-    def setUp(self):
+@pytest.mark.django_db
+class TestHandleCleanProblemMessage:
 
-        # Create ten matched reports
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"Matched Report-{i}",
-                owner="bøffen",
-                scanner_job_pk=1,
-                path=f"report-{i}-1m-bøffen",
-                raw_matches=raw_matches_json_matched)
-
-        # Create ten unmatched reports
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"Unmatched Report-{i}",
-                owner="bøffen",
-                scanner_job_pk=1,
-                path=f"report-{i}-1u-bøffen")
-
-        # Create ten unmatched reports from second scannerjob
-        for i in range(10):
-            DocumentReport.objects.create(
-                name=f"(2) Unmatched Report-{i}",
-                owner="bøffen",
-                scanner_job_pk=2,
-                path=f"report-{i}-2u-bøffen")
-
-    def test_cleaning_problems_one_scanner(self):
+    def test_cleaning_problems_one_scanner(
+            self,
+            bøffen_matched_and_unmatched_reports_two_scannerjobs):
         """Cleaning problems for one scanner should not touch problems from
         other scanners."""
         message = {
@@ -451,20 +411,20 @@ class HandleCleanProblemMessageTest(TestCase):
         handle_clean_problem_message(message)
 
         # Make sure only the ten unmatched reports were deleted
-        self.assertEqual(DocumentReport.objects.all().count(), 20,
-                         "Expected to find 20 document reports after cleaning")
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                scanner_job_pk=1,
-                number_of_matches=0).count(),
-            0,
-            "Not all problem messages related to scanner were deleted")
+        assert DocumentReport.objects.all().count() == 20
+        assert DocumentReport.objects.filter(
+            scanner_job_pk=1,
+            number_of_matches=0
+        ).count() == 0
 
         # Make sure reports from other scanner are untouched
-        self.assertEqual(DocumentReport.objects.filter(scanner_job_pk=2).count(),
-                         10, "Some reports from unrelated scanner were deleted")
+        assert DocumentReport.objects.filter(
+            scanner_job_pk=2
+        ).count() == 10
 
-    def test_cleaning_problems_for_two_scanners(self):
+    def test_cleaning_problems_for_two_scanners(
+            self,
+            bøffen_matched_and_unmatched_reports_two_scannerjobs):
         """Cleaning problems for multiple scanners should remove problems
         from both."""
         message = {
@@ -474,17 +434,12 @@ class HandleCleanProblemMessageTest(TestCase):
         handle_clean_problem_message(message)
 
         # Make sure only problem reports were deleted
-        self.assertEqual(DocumentReport.objects.all().count(), 10,
-                         "Expected to find 10 document reports after cleaning")
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                scanner_job_pk=1,
-                number_of_matches=0).count(),
-            0,
-            "Not all problem messages related to scanner 1 were deleted")
-        self.assertEqual(
-            DocumentReport.objects.filter(
-                scanner_job_pk=2,
-                number_of_matches=0).count(),
-            0,
-            "Not all problem messages related to scanner 2 were deleted")
+        assert DocumentReport.objects.all().count() == 10
+        assert DocumentReport.objects.filter(
+            scanner_job_pk=1,
+            number_of_matches=0
+        ).count() == 0
+        assert DocumentReport.objects.filter(
+            scanner_job_pk=2,
+            number_of_matches=0
+        ).count() == 0
