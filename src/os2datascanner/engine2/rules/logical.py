@@ -27,6 +27,10 @@ class CompoundRule(Rule):
         super().__init__(**super_kwargs)
         self._components = components
 
+    @property
+    def components(self) -> list[Rule]:
+        return self._components
+
     # It might have been nice to have a special implementation of
     # Rule.sensitivity here that finds the component with the highest
     # sensitivity and returns that, but that doesn't actually make sense: the
