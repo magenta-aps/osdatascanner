@@ -14,15 +14,19 @@ class LastModifiedRule(SimpleRule):
         self._after = after
 
     @property
+    def after(self):
+        return self._after
+
+    @property
     def presentation_raw(self):
         return "last modified after {0}".format(
-                OutputType.LastModified.encode_json_object(self._after))
+                OutputType.LastModified.encode_json_object(self.after))
 
     def match(self, content):
         if content is None:
             return
 
-        if content > self._after:
+        if content > self.after:
             yield {
                 "match": OutputType.LastModified.encode_json_object(content)
             }
@@ -30,7 +34,7 @@ class LastModifiedRule(SimpleRule):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            after=OutputType.LastModified.encode_json_object(self._after),
+            after=OutputType.LastModified.encode_json_object(self.after),
         )
 
     @staticmethod

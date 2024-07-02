@@ -105,13 +105,18 @@
     <div class="content">
       <div class="content-header">
         {% include "components/common/breadcrumb.html" with page="scannerjob"  %}
-        {% if view.edit %}
-          <h1 class="page-title">{% trans "Edit scannerjob" %}</h1>
-        {% endif %}
+        <h1 class="page-title">
+          {% if view.edit %}
+            {% trans "Edit scannerjob" %}
+          {% else %}
+            {% trans "Create new scannerjob" %}
+          {% endif %}
 
-        {% if not view.edit %}
-          <h1 class="page-title">{% trans "Create new scannerjob" %}</h1>
-        {% endif %}
+          {% if supports_rule_preexec %}
+            <span class="smartdelta"
+                  title="{% trans "This scanner can take advantage of the built-in SmartDelta function for ultra-fast scans." %}"></span>
+          {% endif %}
+        </h1>
       </div>
 
       {% if form.non_field_errors %}
@@ -123,6 +128,7 @@
       {% endif %}
 
       <form class="form" role="form" method="post" enctype="multipart/form-data">
+
         <section class="data-form">
           {% csrf_token %}
 

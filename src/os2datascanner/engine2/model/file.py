@@ -6,8 +6,11 @@ from dateutil.tz import gettz
 from functools import cached_property
 from contextlib import contextmanager
 
+from ..rules.rule import Rule
 from ..conversions.types import OutputType
 from ..conversions.utilities.navigable import make_values_navigable
+
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
 class FilesystemSource(Source):
@@ -22,14 +25,34 @@ class FilesystemSource(Source):
     def path(self):
         return self._path
 
-    def handles(self, sm):
-        pathlib_path = Path(self.path)
-        for d in pathlib_path.glob("**"):
+    def _process_file(self, f: Path, base_path: Path, cutoff: datetime | None):
+        if f.is_file():
+            if cutoff:
+                # Note that this is *not* a good implementation of rule
+                # pre-execution: Python filesystem traversal doesn't give us
+                # the result of a stat(2) call. This trivial one is enough to
+                # satisfy the test suite, though
+                stat = f.stat()
+                mod_ts = datetime.fromtimestamp(stat.st_mtime, gettz())
+                if mod_ts < cutoff:
+                    return
+
+            yield FilesystemHandle(self, str(f.relative_to(base_path)))
+
+    def handles(self, sm, *, rule: Rule | None = None):
+        cutoff = None
+        for essential_rule in compute_mss(rule):
+            # (we can't do isinstance() here without making a circular
+            # dependency)
+            if essential_rule.type_label == "last-modified":
+                after = essential_rule.after
+                cutoff = (after if not cutoff else max(cutoff, after))
+
+        base_path = Path(self.path)
+        for d in base_path.glob("**"):
             try:
                 for f in d.iterdir():
-                    if f.is_file():
-                        yield FilesystemHandle(
-                            self, str(f.relative_to(pathlib_path)))
+                    yield from self._process_file(f, base_path, cutoff)
             except PermissionError:
                 continue
 

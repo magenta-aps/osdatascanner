@@ -498,6 +498,10 @@ class ScannerBase(object):
             Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
         context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
             aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+
+        context["supports_rule_preexec"] = getattr(
+                self.model, "supports_rule_preexec", False)
+
         return context
 
 

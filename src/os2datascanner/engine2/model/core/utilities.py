@@ -1,6 +1,19 @@
+from typing import Callable
+import inspect
 import structlog
 
 logger = structlog.get_logger("engine2")
+
+
+def takes_named_arg(func: Callable, argname: str) -> bool:
+    """Indicates whether or not the given function can take the named keyword
+    argument, either because it explicitly defines an argument of that name or
+    because it defines a **kwargs-style argument."""
+    sig = inspect.signature(func)
+    return (argname in sig.parameters
+            or any(
+                    p.kind == inspect.Parameter.VAR_KEYWORD
+                    for p in sig.parameters.values()))
 
 
 class _SourceDescriptor:

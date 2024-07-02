@@ -3,13 +3,17 @@ import structlog
 from io import BytesIO
 from urllib.parse import urlsplit
 from contextlib import contextmanager
+from datetime import datetime, timezone
 from dateutil.parser import isoparse
 from requests import HTTPError
 
 from ... import settings as engine2_settings
-from ..core import Handle, Source, Resource, FileResource
+from ...rules.rule import Rule
+from ..core import Handle, Source, Resource, FileResource, SourceManager
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror, MailFSBuilder
+
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 logger = structlog.get_logger("engine2")
 
@@ -151,8 +155,14 @@ class MSGraphMailAccountSource(DerivedSource):
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
 
-    def _append_msgraph_filters(self, pn, query, sm,
-                                scan_deleted_items, scan_sync_issues):
+    def _append_msgraph_filters(
+            self,
+            pn: str,  # user principal name
+            query: str,  # base query string
+            sm: SourceManager,
+            scan_deleted_items: bool,
+            scan_sync_issues: bool,
+            cutoff: datetime | None = None):
         filters = []
         # The base query gets everything, including the deleted and syncissues folders,
         # but we don't always want this.
@@ -191,11 +201,18 @@ class MSGraphMailAccountSource(DerivedSource):
             except Exception:
                 logger.warning("Conflicts folder does not exist", exc_info=True)
 
+        if cutoff:
+            # Microsoft Graph requires all timestamps to be in UTC and doesn't
+            # support any way of saying that other than "Z". ... groan...
+            ts = cutoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            fs = f"(sentDateTime gt {ts} or lastModifiedDateTime gt {ts})"
+            filters.append(fs)
+
         if filters:
             query += f"&$filter={' and '.join(filters)}"
         return query
 
-    def handles(self, sm):
+    def handles(self, sm, *, rule: Rule | None = None):
         pn = self.handle.relative_path
         ps = engine2_settings.model["msgraph"]["page_size"]
         builder = MailFSBuilder(self, sm, pn)
@@ -203,9 +220,17 @@ class MSGraphMailAccountSource(DerivedSource):
         scan_deleted_items = self.handle.source.scan_deleted_items_folder
         scan_sync_issues = self.handle.source.scan_syncissues_folder
 
+        cutoff = None
+        for essential_rule in compute_mss(rule):
+            # (we can't do isinstance() here without making a circular
+            # dependency)
+            if essential_rule.type_label == "last-modified":
+                after = essential_rule.after
+                cutoff = (after if not cutoff else max(cutoff, after))
+
         # Sort out filters for our query string.
-        query = self._append_msgraph_filters(pn, query, sm,
-                                             scan_deleted_items, scan_sync_issues)
+        query = self._append_msgraph_filters(
+                pn, query, sm, scan_deleted_items, scan_sync_issues, cutoff)
 
         result = sm.open(self).get(query).json()
         yield from (self._wrap(msg, builder) for msg in result["value"])

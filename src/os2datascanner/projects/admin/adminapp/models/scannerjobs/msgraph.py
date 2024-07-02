@@ -87,6 +87,8 @@ class MSGraphMailScanner(MSGraphScanner):
         help_text=_("Scan attached files"),
     )
 
+    supports_rule_preexec = True
+
     def get_type(self):
         return 'msgraph-mail'
 

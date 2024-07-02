@@ -1,5 +1,6 @@
 from .. import settings
-from ..model.core import Source, UnknownSchemeError, DeserialisationError
+from ..model.core import (
+        Source, takes_named_arg, UnknownSchemeError, DeserialisationError)
 from ..model.core.errors import (ModelException,
                                  UncontactableError,
                                  UnauthorisedError,
@@ -81,7 +82,14 @@ def message_received_raw(body, channel, source_manager):  # noqa
     # somewhere else.
     source_manager.configuration = scan_spec.configuration
 
-    it = scan_spec.source.handles(source_manager)
+    handles_method = scan_spec.source.handles
+
+    # Inspect the handles() method to see if it can take any extra hints
+    extra_kwargs = {}
+    if takes_named_arg(handles_method, "rule"):
+        extra_kwargs["rule"] = progress.rule
+
+    it = handles_method(source_manager, **extra_kwargs)
 
     if scan_spec.source.yields_independent_sources:
         # As a special case, we allow meta-Sources to run without timeout

@@ -167,6 +167,8 @@ class Scanner(models.Model):
                                        related_name='scanners_ex_rule',
                                        on_delete=models.PROTECT)
 
+    supports_rule_preexec = False
+
     def verify(self) -> bool:
         """Method documentation"""
         raise NotImplementedError("Scanner.verify")
