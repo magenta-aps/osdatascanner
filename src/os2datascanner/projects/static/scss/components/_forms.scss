@@ -546,6 +546,7 @@
   display: none;
 }
 
+#file-clear-btn,
 #upload-file,
 #upload-file-service,
 #upload-file-email {
@@ -557,6 +558,13 @@
   border: none;
   border-radius: var(--border-radius-small);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+#file-clear-btn {
+  position: absolute;
+  width: 5%;
+  height: 8.5%;
+  margin-left: 20px;
 }
 
 .fileUpload input.upload {
@@ -574,6 +582,10 @@
 
 .fileUpload+* {
   margin-left: .25rem;
+}
+
+#upload-text {
+  width: 50%;
 }
 
 .ui-resizable-handle {

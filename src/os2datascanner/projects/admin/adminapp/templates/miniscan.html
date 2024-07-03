@@ -8,6 +8,7 @@
 {% block scripts %}
   {{ block.super }}
   <script defer src="{% static 'js/scannerjob/validateFileSize.js' %}"></script>
+  <script defer src="{% static 'js/scannerjob/clearFile.js' %}"></script>
   <script defer src="{% static 'js/scannerjob/ruleInput.js' %}"></script>
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
 {% endblock %}
@@ -48,6 +49,11 @@
                    class="upload"
                    onchange="checkFileSize(this, '{{ limit }}' )" />
 
+            <button name="validate-file"
+                    id="file-clear-btn"
+                    onclick="clearFile()">{% trans "Clear file" %}
+            </button>
+
             <div hidden id="file-upload-error-response">
               {% trans "The selected file is too big!" %}
               <br />
@@ -56,6 +62,13 @@
               {% trans "Please, select another (smaller) file to scan." %}
             </div>
           {% endwith %}
+
+          <h2>{% trans "Enter your text below" %}</h2>
+          <input name="text"
+                 id="upload-text"
+                 type="text"
+                 class="upload" />
+
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>
             {% trans "Selected rule: " %}

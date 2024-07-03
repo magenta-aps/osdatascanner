@@ -36,25 +36,20 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
+def mini_scan(item, rule):
+    try:
+        name = item.name
+    except:
+        name = "text"
+    with NamedTemporaryResource(name) as ntr:
 
-def execute_mini_scan(request):  # noqa:CCR001
-    context = {
-        "file_obj": (file_obj := request.FILES.get("file")),
-        "raw_rule": (raw_rule := request.POST.get("rule")),
-        "halfbaked_rule": (halfbaked_rule := json.loads(raw_rule or "null")),
-
-        "replies": (replies := []),
-    }
-
-    rule = None
-    if halfbaked_rule:
-        rule = Rule.from_json_object(halfbaked_rule)
-
-    if file_obj and rule:
-        with NamedTemporaryResource(file_obj.name) as ntr:
+            try:
+                contents = item.read()
+            except:
+                contents = item.encode()
 
             with ntr.open("wb") as fp:
-                fp.write(file_obj.read())
+                fp.write(contents)
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 
@@ -84,10 +79,31 @@ def execute_mini_scan(request):  # noqa:CCR001
                         if not message.matched:
                             continue
 
-                        replies.append(message)
+                        yield message
             else:
                 logger.warning(
                         "Miniscanner -"
                         " Rejected file that exceeded the size limit.")
+
+def execute_mini_scan(request):  # noqa:CCR001
+    context = {
+        "file_obj": (file_obj := request.FILES.get("file")),
+        "text": (text := request.POST.get("text")),
+        "raw_rule": (raw_rule := request.POST.get("rule")),
+        "halfbaked_rule": (halfbaked_rule := json.loads(raw_rule or "null")),
+
+        "replies": (replies := []),
+    }
+
+    rule = None
+    if halfbaked_rule:
+        rule = Rule.from_json_object(halfbaked_rule)
+
+    if file_obj:
+        for m in mini_scan(file_obj, rule):
+            replies.append(m)
+    if text:
+        for m in mini_scan(text, rule):
+            replies.append(m)
 
     return render(request, "components/miniscanner/miniscan_results.html", context)
