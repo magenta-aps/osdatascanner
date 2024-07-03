@@ -5,4 +5,4 @@
 /opt/mssql-tools18/bin/sqlcmd -C -S SBSYS_DB -U sa -P ub3rStr0nGpassword -d master -i /db_init.sql;
 
 # Populate the SBSYS DB (for development and testing)
-python -m os2datascanner.engine2.tests.sbsys.db_init
+python -m os2datascanner.integrations.sbsys.dev_env.db_init
