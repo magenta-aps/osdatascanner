@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-04 11:16+0200\n"
+"POT-Creation-Date: 2024-07-04 12:23+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1999,91 +1999,93 @@ msgstr "OSdatascanner miniscanner"
 #: adminapp/templates/miniscan.html:25
 msgid ""
 "The mini-scanner lets you execute any OSdatascanner rule on a single file, "
-"and returns the results directly to this page."
+"or using the textbox below to enter any given text. It returns the results "
+"directly to this page."
 msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
-"enkel fil. Resultaterne vises længere nede på denne side."
+"enkel fil, eller på en bestemt tekst ved at bruge tekstfeltet nedenunder. "
+"Resultaterne vises længere nede på denne side."
 
-#: adminapp/templates/miniscan.html:31 adminapp/templates/miniscan.html:66
+#: adminapp/templates/miniscan.html:32 adminapp/templates/miniscan.html:67
 msgid "Maximum allowed file size is: "
 msgstr "Den maksimalt tilladte filstørrelse er: "
 
-#: adminapp/templates/miniscan.html:45
+#: adminapp/templates/miniscan.html:46
 msgid "File to scan"
 msgstr "Upload fil"
 
-#: adminapp/templates/miniscan.html:56 adminapp/templates/miniscan.html:57
+#: adminapp/templates/miniscan.html:57 adminapp/templates/miniscan.html:58
 msgid "Clear selected file"
 msgstr "Ryd vaglte fil"
 
-#: adminapp/templates/miniscan.html:60
+#: adminapp/templates/miniscan.html:61
 msgid "Clear file"
 msgstr "Ryd fil"
 
-#: adminapp/templates/miniscan.html:64
+#: adminapp/templates/miniscan.html:65
 msgid "The selected file is too big!"
 msgstr "Den valgte fil er for stor!"
 
-#: adminapp/templates/miniscan.html:68
+#: adminapp/templates/miniscan.html:69
 msgid "Please, select another (smaller) file to scan."
 msgstr "Vælg venligst at scanne en anden (mindre) fil."
 
-#: adminapp/templates/miniscan.html:71
+#: adminapp/templates/miniscan.html:72
 msgid "The selected text is too big!"
 msgstr "Tastet tekst er alt for stor!"
 
-#: adminapp/templates/miniscan.html:72
+#: adminapp/templates/miniscan.html:73
 msgid "Please, enter shorter text to scan."
 msgstr "Skriv venligst noget kortere"
 
-#: adminapp/templates/miniscan.html:76
+#: adminapp/templates/miniscan.html:77
 msgid "Enter your text below"
-msgstr ""
+msgstr "Tast venligst text nedenfor"
 
-#: adminapp/templates/miniscan.html:83
+#: adminapp/templates/miniscan.html:84
 msgid "Rule to execute"
 msgstr "Definér regel"
 
-#: adminapp/templates/miniscan.html:85
+#: adminapp/templates/miniscan.html:86
 msgid "Selected rule: "
 msgstr "Valgte regel: "
 
-#: adminapp/templates/miniscan.html:86
+#: adminapp/templates/miniscan.html:87
 msgid "None"
 msgstr "Ingen"
 
-#: adminapp/templates/miniscan.html:92 adminapp/templates/miniscan.html:93
-#: adminapp/templates/miniscan.html:126
+#: adminapp/templates/miniscan.html:93 adminapp/templates/miniscan.html:94
+#: adminapp/templates/miniscan.html:127
 msgid "Upload a rule from the list"
 msgstr "Indlæs en regel fra listen"
 
-#: adminapp/templates/miniscan.html:93
+#: adminapp/templates/miniscan.html:94
 msgid "Load rule"
 msgstr "Indlæs regel"
 
-#: adminapp/templates/miniscan.html:99 adminapp/templates/miniscan.html:100
-#: adminapp/templates/miniscan.html:101
+#: adminapp/templates/miniscan.html:100 adminapp/templates/miniscan.html:101
+#: adminapp/templates/miniscan.html:102
 msgid "Run"
 msgstr "Kør"
 
-#: adminapp/templates/miniscan.html:99 adminapp/templates/miniscan.html:100
+#: adminapp/templates/miniscan.html:100 adminapp/templates/miniscan.html:101
 msgid "scanner"
 msgstr "scanner"
 
-#: adminapp/templates/miniscan.html:104 adminapp/templates/miniscan.html:105
-#: adminapp/templates/miniscan.html:106
+#: adminapp/templates/miniscan.html:105 adminapp/templates/miniscan.html:106
+#: adminapp/templates/miniscan.html:107
 msgid "Clear"
 msgstr "Ryd"
 
-#: adminapp/templates/miniscan.html:104 adminapp/templates/miniscan.html:105
+#: adminapp/templates/miniscan.html:105 adminapp/templates/miniscan.html:106
 msgid "content"
 msgstr "indhold"
 
-#: adminapp/templates/miniscan.html:109
+#: adminapp/templates/miniscan.html:110
 msgid "Scan result"
 msgstr "Scanresultat"
 
-#: adminapp/templates/miniscan.html:110
+#: adminapp/templates/miniscan.html:111
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
