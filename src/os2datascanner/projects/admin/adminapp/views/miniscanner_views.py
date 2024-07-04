@@ -106,8 +106,4 @@ def execute_mini_scan(request):  # noqa:CCR001
         for m in mini_scan(text, rule):
             replies.append(m)
 
-<<<<<<< HEAD
     return render(request, "components/miniscanner/miniscan_results.html", context)
-=======
-    return render(request, "components/miniscanner/miniscan_results.html", context)
->>>>>>> 00b432eb6 (Added text field support to miniscanner)

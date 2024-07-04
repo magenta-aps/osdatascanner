@@ -51,7 +51,12 @@
 
             <button name="validate-file"
                     id="file-clear-btn"
-                    onclick="clearFile()">{% trans "Clear file" %}
+                    class="button"
+                    aria-label="{% trans 'Clear selected file' %}"
+                    title="{% trans 'Clear selected file' %}"
+                    type="button"
+                    onclick="clearFile()">
+                    <span>{% trans "Clear file" %}</span>
             </button>
 
             <div hidden id="file-upload-error-response">
@@ -62,20 +67,12 @@
               {% trans "Please, select another (smaller) file to scan." %}
             </div>
           {% endwith %}
-<<<<<<< HEAD
 
           <h2>{% trans "Enter your text below" %}</h2>
           <input name="text"
                  id="upload-text"
                  type="text"
-                 class="upload" />
-=======
-          <h2>{% trans "Enter your text below" %}</h2>
-            <input name="text"
-                   id="upload-text"
-                   type="text"
-                   class="upload" />
->>>>>>> 00b432eb6 (Added text field support to miniscanner)
+                 class="upload" /> 
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>
