@@ -102,7 +102,7 @@ def mini_scan(scanItem, rule):
                         " Rejected {} that exceeded the size limit.".format(itemName)
                         )
 
-def execute_mini_scan(request):  # noqa:CCR001
+def execute_mini_scan(request):
     """
     Gets context (item to be scanned, rules to scan for) and performs a scan on the 
     item (file or raw text) recieved. Will cause an internal server error 
