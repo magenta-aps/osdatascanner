@@ -36,20 +36,36 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
-def mini_scan(item, rule):
+def mini_scan(scanItem, rule):
+    """
+    This function will take a scanItem arg as well as a rule arg. It checks
+    the nature of scanItem (i.e. file or text), and performs the scan with
+    the required rule, given as parameter/arg. It yields each result into
+    the replies list in the execute_mini_scan() function.
+    """
+
     try:
-        name = item.name
-    except:
-        name = "text"
-    with NamedTemporaryResource(name) as ntr:
+        itemName = scanItem.name
+    except AttributeError: 
+        # It's not a file does not possess a name attribute. Therefore, it's text.
+        itemName = "text"
+
+    with NamedTemporaryResource(itemName) as ntr:
 
             try:
-                contents = item.read()
-            except:
-                contents = item.encode()
+                binaryScanContents = scanItem.read()
+            except AttributeError: 
+                # It's not a file and can't be read. Therefore, it's text.
+                binaryScanContents = scanItem.encode()
+            except Exception as e: 
+                # In case of a second unknown error
+                logger.warning(
+                    "Miniscanner -"
+                    " Got an unexpected error : {}".format(str(e))
+                )
 
             with ntr.open("wb") as fp:
-                fp.write(contents)
+                fp.write(binaryScanContents)
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 
@@ -83,9 +99,17 @@ def mini_scan(item, rule):
             else:
                 logger.warning(
                         "Miniscanner -"
-                        " Rejected file that exceeded the size limit.")
+                        " Rejected {} that exceeded the size limit.".format(itemName)
+                        )
 
 def execute_mini_scan(request):  # noqa:CCR001
+    """
+    Gets context (item to be scanned, rules to scan for) and performs a scan on the 
+    item (file or raw text) recieved. Will cause an internal server error 
+    (500 error code) if the scan rule does not get sent. This happens when the user is
+    not logged in / gets logged out for inactivity. However this is only backend side 
+    and it does not cause any trouble on the website.
+    """
     context = {
         "file_obj": (file_obj := request.FILES.get("file")),
         "text": (text := request.POST.get("text")),

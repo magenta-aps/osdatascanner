@@ -7,7 +7,8 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script defer src="{% static 'js/scannerjob/validateFileSize.js' %}"></script>
+  <script defer src="{% static 'js/scannerjob/checkFileSize.js' %}"></script>
+  <script defer src="{% static 'js/scannerjob/checkTextSize.js' %}"></script>
   <script defer src="{% static 'js/scannerjob/clearFile.js' %}"></script>
   <script defer src="{% static 'js/scannerjob/ruleInput.js' %}"></script>
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
@@ -49,7 +50,7 @@
                    class="upload"
                    onchange="checkFileSize(this, '{{ limit }}' )" />
 
-            <button name="validate-file"
+            <button name="clear-file"
                     id="file-clear-btn"
                     class="button"
                     aria-label="{% trans 'Clear selected file' %}"
@@ -66,13 +67,18 @@
               <br />
               {% trans "Please, select another (smaller) file to scan." %}
             </div>
+            <div hidden id="text-upload-error-response">
+              {% trans "The selected text is too big!" %}
+              {% trans "Please, enter shorter text to scan." %}
+            </div>
           {% endwith %}
 
           <h2>{% trans "Enter your text below" %}</h2>
           <input name="text"
                  id="upload-text"
                  type="text"
-                 class="upload" /> 
+                 class="upload"
+                 onchange="checkTextSize(this)" /> <!-- Add the {{ limit }} for custom text size limit like above -->
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>
