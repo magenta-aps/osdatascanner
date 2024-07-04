@@ -8,7 +8,6 @@
 {% block scripts %}
   {{ block.super }}
   <script defer src="{% static 'js/miniscanner/checkFileSize.js' %}"></script>
-  <script defer src="{% static 'js/miniscanner/checkTextSize.js' %}"></script>
   <script defer src="{% static 'js/miniscanner/clearFile.js' %}"></script>
   <script defer src="{% static 'js/miniscanner/ruleInput.js' %}"></script>
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
@@ -68,10 +67,6 @@
               <br />
               {% trans "Please, select another (smaller) file to scan." %}
             </div>
-            <div hidden id="text-upload-error-response">
-              {% trans "The selected text is too big!" %}
-              {% trans "Please, enter shorter text to scan." %}
-            </div>
           {% endwith %}
 
           <h2>{% trans "Enter your text below" %}</h2>
@@ -79,7 +74,7 @@
                  id="upload-text"
                  type="text"
                  class="upload"
-                 onchange="checkTextSize(this)" /> <!-- Add the {{ limit }} for custom text size limit like above -->
+                 maxlength="2000" /> <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>

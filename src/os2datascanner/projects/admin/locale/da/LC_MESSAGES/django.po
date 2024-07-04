@@ -2030,10 +2030,6 @@ msgstr "Den valgte fil er for stor!"
 msgid "Please, select another (smaller) file to scan."
 msgstr "Vælg venligst at scanne en anden (mindre) fil."
 
-#: adminapp/templates/miniscan.html:72
-msgid "The selected text is too big!"
-msgstr "Tastet tekst er alt for stor!"
-
 #: adminapp/templates/miniscan.html:73
 msgid "Please, enter shorter text to scan."
 msgstr "Skriv venligst noget kortere"
