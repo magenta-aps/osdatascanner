@@ -1,14 +1,32 @@
 import pytest
 
+from django.conf import settings
+
 from os2datascanner.projects.report.organizations.models.account import Account
 from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
 from os2datascanner.projects.report.organizations.models.organization import Organization
 
 
 @pytest.fixture
+def archive_tab_setting():
+    settings.ARCHIVE_TAB = True
+
+
+@pytest.fixture
 def olsenbanden_organization():
     return Organization.objects.create(
       name="Olsen-banden"
+    )
+
+
+@pytest.fixture
+def superuser_account(olsenbanden_organization):
+    return Account.objects.create(
+        username="admin",
+        first_name="Super",
+        last_name="User",
+        is_superuser=True,
+        organization=olsenbanden_organization
     )
 
 
@@ -62,6 +80,16 @@ def egon_email_alias(egon_account):
 
 
 @pytest.fixture
+def egon_sid_alias(egon_account):
+    return Alias.objects.create(
+      account=egon_account,
+      user=egon_account.user,
+      _alias_type=AliasType.SID,
+      _value="S-1-5-21-82206942009-31-1004"
+    )
+
+
+@pytest.fixture
 def egon_remediator_alias(egon_account):
     return Alias.objects.create(
       account=egon_account,
@@ -98,3 +126,14 @@ def bøffen_email_alias(bøffen_account):
         _value="bøffen@olsenbanden.dk",
         account=bøffen_account,
         user=bøffen_account.user)
+
+
+@pytest.fixture
+def egon_shared_email_alias(egon_account):
+    return Alias.objects.create(
+      account=egon_account,
+      user=egon_account.user,
+      _alias_type=AliasType.EMAIL,
+      _value="olsenbanden@olsenbanden.dk",
+      shared=True
+    )
