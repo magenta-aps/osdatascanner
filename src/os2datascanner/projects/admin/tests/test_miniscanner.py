@@ -42,28 +42,35 @@ def buildRequest(rule, file, text):
     # REMOTE_ADDR value is not important, but its value is called and used in the execute_mini_scan, so it needs to be present
     return request
 
-def testCprRule():
+def testCprRuleFixed():
     file = None
 
     req = buildRequest(cpr_rule, file, "hello")
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" in res
 
+def testCprRuleRandom():
+    file = None
     req = buildRequest(cpr_rule, file, generateDummyContent())
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" in res
 
+def testCprRuleReal():
+    file = None
     req = buildRequest(cpr_rule, file, "1111111118")
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" not in res
 
 
-def testRegexRule():
+def testRegexRuleNegative():
     file = None
 
     req = buildRequest(customRegexRule, file, "This should produce false / nothing found")
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" in res
+
+def testRegexRulePositive():
+    file = None
 
     req = buildRequest(customRegexRule, file, "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM")
     res = execute_mini_scan(req).content.decode()
