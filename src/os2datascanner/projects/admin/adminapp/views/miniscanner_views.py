@@ -36,25 +36,36 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
+def mini_scan(scan_item, rule):
+    """
+    This function will take a scanItem arg as well as a rule arg. It checks
+    the nature of scanItem (i.e. file or text), and performs the scan with
+    the required rule, given as parameter/arg. It yields each result into
+    the replies list in the execute_mini_scan() function.
+    """
 
-def execute_mini_scan(request):  # noqa:CCR001
-    context = {
-        "file_obj": (file_obj := request.FILES.get("file")),
-        "raw_rule": (raw_rule := request.POST.get("rule")),
-        "halfbaked_rule": (halfbaked_rule := json.loads(raw_rule or "null")),
+    try:
+        item_name = scan_item.name
+    except AttributeError: 
+        # It's not a file does not possess a name attribute. Therefore, it's text.
+        item_name = "text"
 
-        "replies": (replies := []),
-    }
+    with NamedTemporaryResource(item_name) as ntr:
 
-    rule = None
-    if halfbaked_rule:
-        rule = Rule.from_json_object(halfbaked_rule)
-
-    if file_obj and rule:
-        with NamedTemporaryResource(file_obj.name) as ntr:
+            try:
+                binary_scan_contents = scan_item.read()
+            except AttributeError: 
+                # It's not a file and can't be read. Therefore, it's text.
+                binary_scan_contents = scan_item.encode()
+            except Exception as e: 
+                # In case of a second unknown error
+                logger.warning(
+                    "Miniscanner -"
+                    " Got an unexpected error : {}".format(str(e))
+                )
 
             with ntr.open("wb") as fp:
-                fp.write(file_obj.read())
+                fp.write(binary_scan_contents)
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 
@@ -84,10 +95,39 @@ def execute_mini_scan(request):  # noqa:CCR001
                         if not message.matched:
                             continue
 
-                        replies.append(message)
+                        yield message
             else:
                 logger.warning(
                         "Miniscanner -"
-                        " Rejected file that exceeded the size limit.")
+                        " Rejected {} that exceeded the size limit.".format(item_name)
+                        )
+
+def execute_mini_scan(request):
+    """
+    Gets context (item to be scanned, rules to scan for) and performs a scan on the 
+    item (file or raw text) recieved. Will cause an internal server error 
+    (500 error code) if the scan rule does not get sent. This happens when the user is
+    not logged in / gets logged out for inactivity. However this is only backend side 
+    and it does not cause any trouble on the website.
+    """
+    context = {
+        "file_obj": (file_obj := request.FILES.get("file")),
+        "text": (text := request.POST.get("text")),
+        "raw_rule": (raw_rule := request.POST.get("rule")),
+        "halfbaked_rule": (halfbaked_rule := json.loads(raw_rule or "null")),
+
+        "replies": (replies := []),
+    }
+
+    rule = None
+    if halfbaked_rule:
+        rule = Rule.from_json_object(halfbaked_rule)
+
+    if file_obj:
+        for m in mini_scan(file_obj, rule):
+            replies.append(m)
+    if text:
+        for m in mini_scan(text, rule):
+            replies.append(m)
 
     return render(request, "components/miniscanner/miniscan_results.html", context)

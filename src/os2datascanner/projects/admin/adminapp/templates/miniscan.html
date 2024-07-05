@@ -7,8 +7,9 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script defer src="{% static 'js/scannerjob/validateFileSize.js' %}"></script>
-  <script defer src="{% static 'js/scannerjob/ruleInput.js' %}"></script>
+  <script defer src="{% static 'js/miniscanner/checkFileSize.js' %}"></script>
+  <script defer src="{% static 'js/miniscanner/clearFile.js' %}"></script>
+  <script defer src="{% static 'js/miniscanner/ruleInput.js' %}"></script>
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
 {% endblock %}
 {% block body %}
@@ -22,7 +23,8 @@
           {% with limit=settings.MINISCAN_FILE_SIZE_LIMIT %}
             {% blocktranslate trimmed %}
               The mini-scanner lets you execute any OSdatascanner rule on a single
-              file, and returns the results directly to this page.
+              file or piece of text.
+              It returns the results directly to this page.
             {% endblocktranslate %}
             <br />
             <br />
@@ -48,6 +50,16 @@
                    class="upload"
                    onchange="checkFileSize(this, '{{ limit }}' )" />
 
+            <button name="clear-file"
+                    id="file-clear-btn"
+                    class="button"
+                    aria-label="{% trans 'Clear selected file' %}"
+                    title="{% trans 'Clear selected file' %}"
+                    type="button"
+                    onclick="clearFile()">
+                    <span>{% trans "Clear file" %}</span>
+            </button>
+
             <div hidden id="file-upload-error-response">
               {% trans "The selected file is too big!" %}
               <br />
@@ -56,6 +68,17 @@
               {% trans "Please, select another (smaller) file to scan." %}
             </div>
           {% endwith %}
+
+          <h2>{% trans "Enter your text below" %}</h2>
+          <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
+          <textarea name="text"
+                 id="upload-text"
+                 type="text"
+                 class="upload"
+                 spellcheck="true"
+                 maxlength="2000"> 
+          </textarea> 
+
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>
             {% trans "Selected rule: " %}
