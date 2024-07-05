@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% if not file_obj and not text%}
+{% if not file_obj and not text %}
   <div id="response" class="error">{% translate "No file or text uploaded." %}</div>
 {% elif file_obj.size > settings.MINISCAN_FILE_SIZE_LIMIT %}
   <div id="response" class="error">
