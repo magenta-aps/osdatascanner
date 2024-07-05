@@ -1999,11 +1999,10 @@ msgstr "OSdatascanner miniscanner"
 #: adminapp/templates/miniscan.html:24
 msgid ""
 "The mini-scanner lets you execute any OSdatascanner rule on a single file, "
-"or using the textbox below to enter any given text. It returns the results "
-"directly to this page."
+"or piece of text. It returns the results directly to this page."
 msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
-"enkel fil, eller på en bestemt tekst ved at bruge tekstfeltet nedenunder. "
+"enkel fil eller tekst-stykke, ved at bruge tekstfeltet nedenunder. "
 "Resultaterne vises længere nede på denne side."
 
 #: adminapp/templates/miniscan.html:31 adminapp/templates/miniscan.html:66
@@ -3388,12 +3387,6 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:188
 msgid "Account not found."
 msgstr "Konto ikke fundet."
-
-#~ msgid "Please, enter shorter text to scan."
-#~ msgstr "Skriv venligst noget kortere"
-
-#~ msgid "Write here"
-#~ msgstr "Skriv her"
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"

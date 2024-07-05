@@ -1,31 +1,29 @@
+
+from random import choices
+import django.core.files.uploadedfile as dj_file
+import json
+from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.projects.admin.adminapp.views.miniscanner_views import *
-from random import choice
 
-class DummyFile():
-    def __init__(self, name, fileContents) -> None:
-        self.contents = fileContents
-        self.name = name
-
-    def read(self):
-        return self.contents.encode()
-
-class FilesObj():
+class DummyObject():
     def __init__(self, objs) -> None:
         self.files = objs
     def get(self, obj):
         return self.files[obj]
-    
-class Post():
-    def __init__(self, objs) -> None:
-        self.items = objs
-    def get(self, obj):
-        return self.items[obj]
-    
-class Meta():
-    def __init__(self, objs) -> None:
-        self.items = objs
-    def get(self, obj):
-        return self.items[obj]
+
+
+class FilesObj(DummyObject):
+    pass
+
+
+class Post(DummyObject):
+    pass
+
+
+class Meta(DummyObject):
+    pass
+
 
 class Request():
     def __init__(self, fileObjsDict, postObjsDict, metaObjsDict) -> None:
@@ -35,10 +33,12 @@ class Request():
 
 def generateDummyContent(n=10):
     CHARACTERS = "abcdefghijklmnopqrstuvwxyzæøå"
-    return '\n'.join([''.join([choice(CHARACTERS) for _ in range(25)]) for _ in range(n)]) # Generates a block of random characters
+    return '\n'.join([''.join(choices(CHARACTERS, k=25)) for _ in range(n)]) # Generates a block of random characters
 
-cpr_rule = '{"name": null, "type": "cpr", "blacklist": ["p-nummer", "p.nr", "p-nr", "customer no", "tullstatistisk", "dhk:tx", "test report no", "tullstatistik", "faknr", "order number", "fakturanummer", "protocol no.", "ordrenummer", "customer-no", "fak-nr", "pnr", "bilagsnummer"], "whitelist": ["cpr"], "exceptions": "", "modulus_11": true, "sensitivity": null, "examine_context": true, "ignore_irrelevant": true}'
-customRegexRule = '{"type":"regex","expression":".*doesthiswordexist"}'
+
+cpr_rule = json.dumps(CPRRule().to_json_object())
+customRegexRule = json.dumps(RegexRule("doesthiswordexist").to_json_object())
+
 
 def buildRequest(rule, file, text):
     """
@@ -93,7 +93,7 @@ def test_text_RegexRulePositive():
 
 
 def test_file_CprRuleFixed():
-    file = DummyFile("file", "hello")
+    file = dj_file.SimpleUploadedFile("file", "hello".encode())
     text = None
 
     req = buildRequest(cpr_rule, file, text)
@@ -101,7 +101,7 @@ def test_file_CprRuleFixed():
     assert "Ingen resultater fundet" in res
 
 def test_file_CprRuleRandom():
-    file = DummyFile("file", generateDummyContent())
+    file = dj_file.SimpleUploadedFile("file", generateDummyContent().encode())
     text = None
 
     req = buildRequest(cpr_rule, file, text)
@@ -110,7 +110,7 @@ def test_file_CprRuleRandom():
     assert "Ingen resultater fundet" in res
 
 def test_file_CprRuleReal():
-    file = DummyFile("file", "1111111118")
+    file = dj_file.SimpleUploadedFile("file", "1111111118".encode())
     text = None
 
     req = buildRequest(cpr_rule, file, text)
@@ -119,7 +119,7 @@ def test_file_CprRuleReal():
 
 
 def test_file_RegexRuleNegative():
-    file = DummyFile("file", "This should produce false")
+    file = dj_file.SimpleUploadedFile("file", "This should produce false".encode())
     text = None
 
     req = buildRequest(customRegexRule, file, text)
@@ -127,7 +127,7 @@ def test_file_RegexRuleNegative():
     assert "Ingen resultater fundet" in res
 
 def test_file_RegexRulePositive():
-    file = DummyFile("file", "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM")
+    file = dj_file.SimpleUploadedFile("file", "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM".encode())
     text = None
 
     req = buildRequest(customRegexRule, file, text)
