@@ -36,7 +36,7 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
-def mini_scan(scanItem, rule):
+def mini_scan(scan_item, rule):
     """
     This function will take a scanItem arg as well as a rule arg. It checks
     the nature of scanItem (i.e. file or text), and performs the scan with
@@ -45,18 +45,18 @@ def mini_scan(scanItem, rule):
     """
 
     try:
-        itemName = scanItem.name
+        item_name = scan_item.name
     except AttributeError: 
         # It's not a file does not possess a name attribute. Therefore, it's text.
-        itemName = "text"
+        item_name = "text"
 
-    with NamedTemporaryResource(itemName) as ntr:
+    with NamedTemporaryResource(item_name) as ntr:
 
             try:
-                binaryScanContents = scanItem.read()
+                binary_scan_contents = scan_item.read()
             except AttributeError: 
                 # It's not a file and can't be read. Therefore, it's text.
-                binaryScanContents = scanItem.encode()
+                binary_scan_contents = scan_item.encode()
             except Exception as e: 
                 # In case of a second unknown error
                 logger.warning(
@@ -65,7 +65,7 @@ def mini_scan(scanItem, rule):
                 )
 
             with ntr.open("wb") as fp:
-                fp.write(binaryScanContents)
+                fp.write(binary_scan_contents)
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 
@@ -99,7 +99,7 @@ def mini_scan(scanItem, rule):
             else:
                 logger.warning(
                         "Miniscanner -"
-                        " Rejected {} that exceeded the size limit.".format(itemName)
+                        " Rejected {} that exceeded the size limit.".format(item_name)
                         )
 
 def execute_mini_scan(request):
