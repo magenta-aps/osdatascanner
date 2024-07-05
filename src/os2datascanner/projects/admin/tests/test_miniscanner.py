@@ -13,23 +13,11 @@ class DummyObject():
         return self.files[obj]
 
 
-class FilesObj(DummyObject):
-    pass
-
-
-class Post(DummyObject):
-    pass
-
-
-class Meta(DummyObject):
-    pass
-
-
 class Request():
     def __init__(self, file_objs_dict, post_objs_dict, meta_objs_dict) -> None:
-        self.FILES = FilesObj(file_objs_dict)
-        self.POST = Post(post_objs_dict)
-        self.META = Meta(meta_objs_dict)
+        self.FILES = DummyObject(file_objs_dict)
+        self.POST = DummyObject(post_objs_dict)
+        self.META = DummyObject(meta_objs_dict)
 
 def generate_dummy_content(n=10):
     CHARACTERS = "abcdefghijklmnopqrstuvwxyzæøå"
