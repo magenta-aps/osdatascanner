@@ -70,12 +70,13 @@
           {% endwith %}
 
           <h2>{% trans "Enter your text below" %}</h2>
+          <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
           <textarea name="text"
                  id="upload-text"
                  type="text"
                  class="upload"
                  spellcheck="true"
-                 maxlength="2000"> <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
+                 maxlength="2000"> 
           </textarea> 
 
           <h2>{% trans "Rule to execute" %}</h2>
