@@ -2016,7 +2016,7 @@ msgstr "Upload fil"
 
 #: adminapp/templates/miniscan.html:56 adminapp/templates/miniscan.html:57
 msgid "Clear selected file"
-msgstr "Ryd vaglte fil"
+msgstr "Ryd valgt fil"
 
 #: adminapp/templates/miniscan.html:60
 msgid "Clear file"
