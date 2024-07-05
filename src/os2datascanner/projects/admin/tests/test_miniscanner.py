@@ -1,6 +1,13 @@
 from os2datascanner.projects.admin.adminapp.views.miniscanner_views import *
 from random import choice
 
+class DummyFile():
+    def __init__(self, name, fileContents) -> None:
+        self.contents = fileContents
+        self.name = name
+
+    def read(self):
+        return self.contents.encode()
 
 class FilesObj():
     def __init__(self, objs) -> None:
@@ -42,36 +49,87 @@ def buildRequest(rule, file, text):
     # REMOTE_ADDR value is not important, but its value is called and used in the execute_mini_scan, so it needs to be present
     return request
 
-def testCprRuleFixed():
+def test_text_CprRuleFixed():
     file = None
+    text = "hello"
 
-    req = buildRequest(cpr_rule, file, "hello")
+    req = buildRequest(cpr_rule, file, text)
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" in res
 
-def testCprRuleRandom():
+def test_text_CprRuleRandom():
     file = None
-    req = buildRequest(cpr_rule, file, generateDummyContent())
+    text = generateDummyContent()
+
+    req = buildRequest(cpr_rule, file, text)
+    # In the absurd case where generateDummyContent() generates 'mycprisxxxxxxxxxx', it won't trigger so this should stay false
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" in res
 
-def testCprRuleReal():
+def test_text_CprRuleReal():
     file = None
-    req = buildRequest(cpr_rule, file, "1111111118")
+    text = "1111111118"
+
+    req = buildRequest(cpr_rule, file, text)
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" not in res
 
 
-def testRegexRuleNegative():
+def test_text_RegexRuleNegative():
     file = None
+    text = "This should produce false / nothing found"
 
-    req = buildRequest(customRegexRule, file, "This should produce false / nothing found")
+    req = buildRequest(customRegexRule, file, text)
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" in res
 
-def testRegexRulePositive():
+def test_text_RegexRulePositive():
     file = None
+    text = "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM"
 
-    req = buildRequest(customRegexRule, file, "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM")
+    req = buildRequest(customRegexRule, file, text)
+    res = execute_mini_scan(req).content.decode()
+    assert "Ingen resultater fundet" not in res
+
+
+def test_file_CprRuleFixed():
+    file = DummyFile("file", "hello")
+    text = None
+
+    req = buildRequest(cpr_rule, file, text)
+    res = execute_mini_scan(req).content.decode()
+    assert "Ingen resultater fundet" in res
+
+def test_file_CprRuleRandom():
+    file = DummyFile("file", generateDummyContent())
+    text = None
+
+    req = buildRequest(cpr_rule, file, text)
+    # In the absurd case where generateDummyContent() generates 'mycprisxxxxxxxxxx', it won't trigger so this should stay false
+    res = execute_mini_scan(req).content.decode()
+    assert "Ingen resultater fundet" in res
+
+def test_file_CprRuleReal():
+    file = DummyFile("file", "1111111118")
+    text = None
+
+    req = buildRequest(cpr_rule, file, text)
+    res = execute_mini_scan(req).content.decode()
+    assert "Ingen resultater fundet" not in res
+
+
+def test_file_RegexRuleNegative():
+    file = DummyFile("file", "This should produce false")
+    text = None
+
+    req = buildRequest(customRegexRule, file, text)
+    res = execute_mini_scan(req).content.decode()
+    assert "Ingen resultater fundet" in res
+
+def test_file_RegexRulePositive():
+    file = DummyFile("file", "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM")
+    text = None
+
+    req = buildRequest(customRegexRule, file, text)
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" not in res
