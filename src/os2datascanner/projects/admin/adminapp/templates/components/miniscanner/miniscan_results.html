@@ -32,19 +32,25 @@
             {% endfor %}
           {% endfor %}
         {% endfor %}
-      {% else %}
+      {% endif %}
+      {% if kle_results %}
+        {% for fileres in kle_results %}
+              <tr>
+                <td>{{ fileres.kle_res.file_path }}</td>
+                <td>
+                  {% for subres in fileres.kle_res.results %}
+                    <p>{{ subres }}</p>
+                  {% endfor %}
+                </td>
+                <td>{% trans "Classification" %}</td>
+              </tr>
+        {% endfor %}
+      {% endif %}
+      {% if not replies and not kle_results %}
         <tr>
           <td colspan="3" style="text-align: center">{% translate "No matches found" %}</td>
         </tr>
       {% endif %}
     </tbody>
-    {% if cl_res %}
-      {% for res in cl_res %}
-        {% for subres in res %}
-          <span>{{ subres }}</span>
-        <hr>
-        {% endfor %}
-      {% endfor %}
-    {% endif %}
   </table>
 {% endif %}

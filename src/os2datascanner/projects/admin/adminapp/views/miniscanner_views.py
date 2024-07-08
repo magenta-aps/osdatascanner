@@ -45,11 +45,8 @@ def mini_scan(item, rule):
 =======
 
 def get_classification_results(file):
-    results = []
     data = classify(kle_default_path, file)[0]
-    print(f"Data : {data}")
-    results.append(data)
-    return results
+    return data
 
 def mini_scan(scan_item, rule, kle:bool):
     """
@@ -61,10 +58,19 @@ def mini_scan(scan_item, rule, kle:bool):
 
 >>>>>>> 77ec79a81 (Added the classification option. WIP. Classifying a file doesn't seem to work ...)
     try:
+<<<<<<< HEAD
         name = item.name
     except:
         name = "text"
     with NamedTemporaryResource(name) as ntr:
+=======
+        item_name = scan_item.name
+    except AttributeError: 
+        # It's not a file does not possess a name attribute. Therefore, it's text.
+        item_name = "text.txt"
+
+    with NamedTemporaryResource(item_name) as ntr:
+>>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
 
             try:
                 contents = item.read()
@@ -75,14 +81,13 @@ def mini_scan(scan_item, rule, kle:bool):
             with ntr.open("wb") as fp:
                 fp.write(contents)
 
-            print(f"Path : {ntr.get_path()}")
 
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
                 yield {"kle_res": 
                        {
                            "file_name": ntr._name,
-                           "file_path": kle_default_path,
+                           "file_path": ntr.get_path(),
                            "results": kle_res
                        }
                       }
@@ -150,6 +155,7 @@ def execute_mini_scan(request):  # noqa:CCR001
     if kle_switch:
         print(f"Defaulting to this kle path : {kle_default_path}")
         context["kle_results"] = (kle_results := [])
+
     if file_obj:
         for m in mini_scan(file_obj, rule, kle_switch):
             if type(m) is dict:
@@ -163,6 +169,10 @@ def execute_mini_scan(request):  # noqa:CCR001
             else:
                 replies.append(m)
 
+<<<<<<< HEAD
     print(json.dumps(context, indent=3))
 
     return render(request, "components/miniscanner/miniscan_results.html", context)
+=======
+    return render(request, "components/miniscanner/miniscan_results.html", context)
+>>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
