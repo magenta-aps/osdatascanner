@@ -64,10 +64,27 @@
           {% endwith %}
 
           <h2>{% trans "Enter your text below" %}</h2>
+<<<<<<< HEAD
           <input name="text"
                  id="upload-text"
                  type="text"
                  class="upload" />
+=======
+          <!-- Hardcoded maxlength to 2000, maybe add \{\{ textLimit \}\} or something similar -->
+          <textarea name="text"
+                 id="upload-text"
+                 type="text"
+                 class="upload"
+                 spellcheck="true"
+                 maxlength="2000"> 
+          </textarea>
+          <br><br>
+          <input name="KLE-switch"
+                  id="kle-switch"
+                  type="checkbox"
+                  class="upload">Enable classification
+          </input>
+>>>>>>> 77ec79a81 (Added the classification option. WIP. Classifying a file doesn't seem to work ...)
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>

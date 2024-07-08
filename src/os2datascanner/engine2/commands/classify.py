@@ -1,20 +1,20 @@
-import sys
 import json
-
-from ..utilities.classification.compat import (
+from os2datascanner.engine2.utilities.classification.compat import (
         taxon_json_taxonomy_to_classification_engine)
 
 
-def main(taxonomy, *files_to_scan):
+def classify(taxonomy, *files_to_scan):
     with open(taxonomy, "rt") as fp:
         engine = taxon_json_taxonomy_to_classification_engine(json.load(fp))
 
+    results = []
+
     for f in files_to_scan:
-        print(f)
+        print(f"File to be classified : {f}")
         with open(f, "rt") as fp:
+            sub_result = []
             for classification, weight in engine.classify(fp.read())[:5]:
-                print("\t", classification.ident, classification.label, weight)
+                sub_result.append(f"\t {classification.ident} {classification.label} {weight}")
+            results.append(sub_result)
 
-
-if __name__ == "__main__":
-    main(*sys.argv[1:])
+    return results
