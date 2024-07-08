@@ -1,15 +1,12 @@
 import pytest
 
-from django.conf import settings
-
 from os2datascanner.projects.report.organizations.models.account import Account
 from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
 from os2datascanner.projects.report.organizations.models.organization import Organization
-
-
-@pytest.fixture
-def archive_tab_setting():
-    settings.ARCHIVE_TAB = True
+from os2datascanner.projects.report.organizations.models.organizational_unit import (
+    OrganizationalUnit)
+from os2datascanner.projects.report.organizations.models.position import Position
+from os2datascanner.core_organizational_structure.models.position import Role
 
 
 @pytest.fixture
@@ -136,4 +133,99 @@ def egon_shared_email_alias(egon_account):
       _alias_type=AliasType.EMAIL,
       _value="olsenbanden@olsenbanden.dk",
       shared=True
+    )
+
+
+@pytest.fixture
+def olsenbanden_ou(olsenbanden_organization):
+    return OrganizationalUnit.objects.create(
+        name="Olsen-banden",
+        organization=olsenbanden_organization
+    )
+
+
+@pytest.fixture
+def olsenbanden_ou_positions(olsenbanden_ou, egon_account, benny_account, kjeld_account):
+    egon = Position.employees.create(account=egon_account, unit=olsenbanden_ou),
+    benny = Position.employees.create(account=benny_account, unit=olsenbanden_ou),
+    kjeld = Position.employees.create(account=kjeld_account, unit=olsenbanden_ou)
+    return egon, benny, kjeld
+
+
+@pytest.fixture
+def kun_egon_ou(egon_account, olsenbanden_organization):
+    ou = OrganizationalUnit.objects.create(name="Kun Egon", organization=olsenbanden_organization)
+    Position.employees.create(account=egon_account, unit=ou)
+    Position.dpos.create(account=egon_account, unit=ou)
+    Position.managers.create(account=egon_account, unit=ou)
+    return ou
+
+
+@pytest.fixture
+def egon_manager_position(egon_account, olsenbanden_ou):
+    return Position.objects.create(
+        account=egon_account,
+        unit=olsenbanden_ou,
+        role=Role.MANAGER
+    )
+
+
+@pytest.fixture
+def egon_dpo_position(egon_account, olsenbanden_ou):
+    return Position.dpos.create(
+        account=egon_account,
+        unit=olsenbanden_ou,
+    )
+
+
+@pytest.fixture
+def benny_dpo_position(benny_account, olsenbanden_ou):
+    return Position.dpos.create(
+        account=benny_account,
+        unit=olsenbanden_ou,
+    )
+
+# MARVEL
+
+
+@pytest.fixture
+def marvel_organization():
+    return Organization.objects.create(name="Marvel Cinematic Universe")
+
+
+@pytest.fixture
+def hulk_account(marvel_organization):
+    return Account.objects.create(
+        username="the_hulk",
+        first_name="Bruce",
+        last_name="Banner",
+        organization=marvel_organization
+    )
+
+
+@pytest.fixture
+def hulk_email_alias(hulk_account):
+    return Alias.objects.create(
+      account=hulk_account,
+      user=hulk_account.user,
+      _alias_type=AliasType.EMAIL,
+      _value="hulk@marvel.com"
+    )
+
+
+@pytest.fixture
+def avengers_ou(marvel_organization):
+    return OrganizationalUnit.objects.create(name="The Avengers", organization=marvel_organization)
+
+
+@pytest.fixture
+def avengers_ou_positions(avengers_ou, hulk_account):
+    return Position.employees.create(account=hulk_account, unit=avengers_ou)
+
+
+@pytest.fixture
+def hulk_dpo_position(hulk_account, avengers_ou):
+    return Position.dpos.create(
+        account=hulk_account,
+        unit=avengers_ou
     )

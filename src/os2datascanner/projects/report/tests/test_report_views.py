@@ -2,6 +2,7 @@ import pytest
 
 from datetime import timedelta
 from django.conf import settings
+from django.test import override_settings
 
 from os2datascanner.utils.system_utilities import time_now
 
@@ -595,7 +596,8 @@ class TestRemediatorArchiveView:
         response = RemediatorArchiveView.as_view()(request)
         assert response.status_code == 302
 
-    def test_remediatorarchiveview_as_non_remediator(self, rf, egon_account, archive_tab_setting):
+    @override_settings(ARCHIVE_TAB=True)
+    def test_remediatorarchiveview_as_non_remediator(self, rf, egon_account):
         """Accessing the RemediatorView with no role should redirect the user
         to the main page."""
 
@@ -604,18 +606,19 @@ class TestRemediatorArchiveView:
         response = RemediatorArchiveView.as_view()(request)
         assert response.status_code == 302
 
+    @override_settings(ARCHIVE_TAB=True)
     def test_remediatorarchiveview_as_remediator(
             self,
             rf,
             egon_account,
-            egon_remediator_alias,
-            archive_tab_setting):
+            egon_remediator_alias):
         """Remediators should be able to access the remediator archive tab."""
         request = rf.get('/archive/remediator/')
         request.user = egon_account.user
         response = RemediatorArchiveView.as_view()(request)
         assert response.status_code == 200
 
+    @override_settings(ARCHIVE_TAB=True)
     @pytest.mark.parametrize('personal_num,remediator_num', [
         (0, 0),
         (1, 0),
@@ -627,7 +630,6 @@ class TestRemediatorArchiveView:
     ])
     def test_remediatorarchiveview_queryset(
             self,
-            archive_tab_setting,
             personal_num,
             remediator_num,
             rf,
@@ -651,8 +653,9 @@ class TestRemediatorArchiveView:
         # But now they should!
         assert qs.count() == remediator_num
 
+    @override_settings(ARCHIVE_TAB=True)
     def test_remediatorview_as_superuser_but_not_remediator(
-            self, archive_tab_setting, superuser_account, rf, egon_remediator_alias):
+            self, superuser_account, rf, egon_remediator_alias):
         """Accessing the RemediatorView as a superuser is allowed, but
         will not show any results."""
 

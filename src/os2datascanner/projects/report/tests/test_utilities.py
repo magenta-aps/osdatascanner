@@ -203,9 +203,11 @@ def create_reports_for(alias,
                        datasource_last_modified=timezone.now(),
                        resolution_status=None,
                        only_notify_superadmin=False,
+                       created_at=None,
                        matched=True):
+    pks = []
     for i in range(num):
-        DocumentReport.objects.create(
+        dr = DocumentReport.objects.create(
             name=f"Report-{i}{'-matched' if matched else ''}",
             owner=alias._value,
             scanner_job_pk=scanner_job_pk,
@@ -213,10 +215,14 @@ def create_reports_for(alias,
             datasource_last_modified=datasource_last_modified,
             path=(f"report-{i}-{scanner_job_pk}-{alias.account.username}"
                   f"-{'matched' if matched else 'unmatched'}-{alias._alias_type}"
-                  f":{alias._value}-s{sensitivity}-dlm{datasource_last_modified}"),
+                  f":{alias._value}-s{sensitivity}-dlm{datasource_last_modified}"
+                  f"-ca{created_at if created_at else 'None'}"),
             raw_matches=raw_matches_json_matched if matched else None,
             organization=alias.account.organization,
             resolution_status=resolution_status,
             only_notify_superadmin=only_notify_superadmin)
+        pks.append(dr.pk)
+    if created_at:
+        DocumentReport.objects.filter(pk__in=pks).update(created_timestamp=created_at)
 
     create_alias_and_match_relations(alias)
