@@ -36,6 +36,7 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
+
 def mini_scan(scan_item, rule):
     """
     This function will take a scanItem arg as well as a rule arg. It checks
@@ -46,69 +47,68 @@ def mini_scan(scan_item, rule):
 
     try:
         item_name = scan_item.name
-    except AttributeError: 
-        # It's not a file does not possess a name attribute. Therefore, it's text.
+    except AttributeError:
+        # It's not a file does not possess a name attribute.
+        # Therefore, it's text.
         item_name = "text"
 
     with NamedTemporaryResource(item_name) as ntr:
+        try:
+            binary_scan_contents = scan_item.read()
+        except AttributeError:
+            # It's not a file and can't be read. Therefore, it's text.
+            binary_scan_contents = scan_item.encode()
+        except Exception as e:
+            # In case of a second unknown error
+            logger.warning(
+                "Miniscanner -"
+                " Got an unexpected error : {}".format(str(e))
+            )
 
-            try:
-                binary_scan_contents = scan_item.read()
-            except AttributeError: 
-                # It's not a file and can't be read. Therefore, it's text.
-                binary_scan_contents = scan_item.encode()
-            except Exception as e: 
-                # In case of a second unknown error
-                logger.warning(
-                    "Miniscanner -"
-                    " Got an unexpected error : {}".format(str(e))
-                )
+        with ntr.open("wb") as fp:
+            fp.write(binary_scan_contents)
 
-            with ntr.open("wb") as fp:
-                fp.write(binary_scan_contents)
+        if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
+            # XXX: it'd be nice to run this with timeout protection, but
+            # that isn't possible in a gunicorn worker
+            handle = FilesystemHandle.make_handle(ntr.get_path())
 
-            if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
+            conv = messages.ConversionMessage(
+                scan_spec=messages.ScanSpecMessage(
+                    scan_tag=messages.ScanTagFragment.make_dummy(),
+                    source=handle.source,
+                    rule=rule,
+                    filter_rule=None,
+                    configuration={},
+                    progress=None),
+                handle=handle,
+                progress=messages.ProgressFragment(
+                    rule=rule,
+                    matches=[]),
+                ).to_json_object()
 
-                # XXX: it'd be nice to run this with timeout protection, but
-                # that isn't possible in a gunicorn worker
-                handle = FilesystemHandle.make_handle(ntr.get_path())
+            for channel, message_ in worker.process(SourceManager(), conv):
+                if channel in ("os2ds_matches",):
+                    message = messages.MatchesMessage.from_json_object(
+                        message_)
 
-                conv = messages.ConversionMessage(
-                    scan_spec=messages.ScanSpecMessage(
-                        scan_tag=messages.ScanTagFragment.make_dummy(),
-                        source=handle.source,
-                        rule=rule,
-                        filter_rule=None,
-                        configuration={},
-                        progress=None),
-                    handle=handle,
-                    progress=messages.ProgressFragment(
-                        rule=rule,
-                        matches=[]),
-                    ).to_json_object()
+                    if not message.matched:
+                        continue
 
-                for channel, message_ in worker.process(SourceManager(), conv):
-                    if channel in ("os2ds_matches",):
-                        message = messages.MatchesMessage.from_json_object(
-                            message_)
+                    yield message
+        else:
+            logger.warning(
+                    "miniscanner rejected too large object",
+                    item_name=item_name)
 
-                        if not message.matched:
-                            continue
-
-                        yield message
-            else:
-                logger.warning(
-                        "Miniscanner -"
-                        " Rejected {} that exceeded the size limit.".format(item_name)
-                        )
 
 def execute_mini_scan(request):
-    """
-    Gets context (item to be scanned, rules to scan for) and performs a scan on the 
-    item (file or raw text) recieved. Will cause an internal server error 
-    (500 error code) if the scan rule does not get sent. This happens when the user is
-    not logged in / gets logged out for inactivity. However this is only backend side 
-    and it does not cause any trouble on the website.
+    """Gets context (item to be scanned, rules to scan for) and performs a scan
+    on the item (file or raw text) recieved. Will cause an internal server
+    error  (500 error code) if the scan rule does not get sent. This happens
+    when the user is not logged in / gets logged out for inactivity. However
+    this is only backend side  and it does not cause any trouble on the
+    website.
     """
     context = {
         "file_obj": (file_obj := request.FILES.get("file")),
