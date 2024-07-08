@@ -125,16 +125,16 @@ to some place in the code, then running relevant tests to make sure _some_
 tests correctly _fail_ with the mutation present. If no tests fail, the 
 sensitivity of the tests are likely too low.
 
-Mutmut eksekveres lokalt. Derfor skal det først installeres:
+Mutmut is executed locally, so it must be installed first:
 
 ```
 pip install mutmut
 ```
 
-Det ønskede forløb konfigureres i filerne `setup.cfg` under `[mutmut]` og 
-`mutmut_config.py`.
+The desired settings are configured in the files `setup.cfg` under `[mutmut]`
+and `mutmut_config.py`.
 
-Når alle indstillinger er konfigureret foretages mutationstesting med 
+When all settings are configured, mutation testing is run with
 
 ```
 mutmut run
