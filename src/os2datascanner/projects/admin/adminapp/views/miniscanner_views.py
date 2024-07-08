@@ -42,11 +42,8 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
 
 def get_classification_results(file):
-    results = []
     data = classify(kle_default_path, file)[0]
-    print(f"Data : {data}")
-    results.append(data)
-    return results
+    return data
 
 def mini_scan(scan_item, rule, kle:bool):
     """
@@ -60,7 +57,7 @@ def mini_scan(scan_item, rule, kle:bool):
         item_name = scan_item.name
     except AttributeError: 
         # It's not a file does not possess a name attribute. Therefore, it's text.
-        item_name = "text"
+        item_name = "text.txt"
 
     with NamedTemporaryResource(item_name) as ntr:
 
@@ -80,14 +77,13 @@ def mini_scan(scan_item, rule, kle:bool):
             with ntr.open("wb") as fp:
                 fp.write(binary_scan_contents)
 
-            print(f"Path : {ntr.get_path()}")
 
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
                 yield {"kle_res": 
                        {
                            "file_name": ntr._name,
-                           "file_path": kle_default_path,
+                           "file_path": ntr.get_path(),
                            "results": kle_res
                        }
                       }
@@ -163,6 +159,7 @@ def execute_mini_scan(request):
     if kle_switch:
         print(f"Defaulting to this kle path : {kle_default_path}")
         context["kle_results"] = (kle_results := [])
+
     if file_obj:
         for m in mini_scan(file_obj, rule, kle_switch):
             if type(m) is dict:
@@ -175,7 +172,5 @@ def execute_mini_scan(request):
                 kle_results.append(m)
             else:
                 replies.append(m)
-
-    print(json.dumps(context, indent=3))
 
     return render(request, "components/miniscanner/miniscan_results.html", context)

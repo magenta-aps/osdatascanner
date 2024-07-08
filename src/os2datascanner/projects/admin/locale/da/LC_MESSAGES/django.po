@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-05 09:09+0200\n"
+"POT-Creation-Date: 2024-07-08 14:42+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -849,6 +849,10 @@ msgstr "Kontekst for match"
 #: adminapp/templates/components/miniscanner/miniscan_results.html:37
 msgid "No matches found"
 msgstr "Ingen resultater fundet"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:45
+msgid "Classification"
+msgstr "Klassifikation"
 
 #: adminapp/templates/components/navigation/navigation.html:11
 msgid "Scanner status"
@@ -1998,8 +2002,8 @@ msgstr "OSdatascanner miniscanner"
 
 #: adminapp/templates/miniscan.html:24
 msgid ""
-"The mini-scanner lets you execute any OSdatascanner rule on a single file, "
-"or piece of text. It returns the results directly to this page."
+"The mini-scanner lets you execute any OSdatascanner rule on a single file or "
+"piece of text. It returns the results directly to this page."
 msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
 "enkel fil eller tekst-stykke, ved at bruge tekstfeltet nedenunder. "
@@ -2033,50 +2037,54 @@ msgstr "Vælg venligst at scanne en anden (mindre) fil."
 msgid "Enter your text below"
 msgstr "Tast venligst text nedenfor"
 
-#: adminapp/templates/miniscan.html:79
+#: adminapp/templates/miniscan.html:85
+msgid "Enable classification (slower)"
+msgstr "Slå klassifikation til (langsomere)"
+
+#: adminapp/templates/miniscan.html:88
 msgid "Rule to execute"
 msgstr "Definér regel"
 
-#: adminapp/templates/miniscan.html:81
+#: adminapp/templates/miniscan.html:90
 msgid "Selected rule: "
 msgstr "Valgte regel: "
 
-#: adminapp/templates/miniscan.html:82
+#: adminapp/templates/miniscan.html:91
 msgid "None"
 msgstr "Ingen"
 
-#: adminapp/templates/miniscan.html:88 adminapp/templates/miniscan.html:89
-#: adminapp/templates/miniscan.html:122
+#: adminapp/templates/miniscan.html:97 adminapp/templates/miniscan.html:98
+#: adminapp/templates/miniscan.html:131
 msgid "Upload a rule from the list"
 msgstr "Indlæs en regel fra listen"
 
-#: adminapp/templates/miniscan.html:89
+#: adminapp/templates/miniscan.html:98
 msgid "Load rule"
 msgstr "Indlæs regel"
 
-#: adminapp/templates/miniscan.html:95 adminapp/templates/miniscan.html:96
-#: adminapp/templates/miniscan.html:97
+#: adminapp/templates/miniscan.html:104 adminapp/templates/miniscan.html:105
+#: adminapp/templates/miniscan.html:106
 msgid "Run"
 msgstr "Kør"
 
-#: adminapp/templates/miniscan.html:95 adminapp/templates/miniscan.html:96
+#: adminapp/templates/miniscan.html:104 adminapp/templates/miniscan.html:105
 msgid "scanner"
 msgstr "scanner"
 
-#: adminapp/templates/miniscan.html:100 adminapp/templates/miniscan.html:101
-#: adminapp/templates/miniscan.html:102
+#: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:110
+#: adminapp/templates/miniscan.html:111
 msgid "Clear"
 msgstr "Ryd"
 
-#: adminapp/templates/miniscan.html:100 adminapp/templates/miniscan.html:101
+#: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:110
 msgid "content"
 msgstr "indhold"
 
-#: adminapp/templates/miniscan.html:105
+#: adminapp/templates/miniscan.html:114
 msgid "Scan result"
 msgstr "Scanresultat"
 
-#: adminapp/templates/miniscan.html:106
+#: adminapp/templates/miniscan.html:115
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
