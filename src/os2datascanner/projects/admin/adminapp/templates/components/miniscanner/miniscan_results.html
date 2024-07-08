@@ -38,5 +38,13 @@
         </tr>
       {% endif %}
     </tbody>
+    {% if cl_res %}
+      {% for res in cl_res %}
+        {% for subres in res %}
+          <span>{{ subres }}</span>
+        <hr>
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
   </table>
 {% endif %}

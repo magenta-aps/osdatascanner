@@ -1,5 +1,6 @@
 import json
 import structlog
+import os
 
 from django.shortcuts import render
 from django.views.generic import TemplateView
@@ -15,7 +16,10 @@ from os2datascanner.engine2.model.utilities.temp_resource import (
         NamedTemporaryResource)
 from os2datascanner.engine2.pipeline import messages, worker
 from os2datascanner.projects.admin import settings
+from os2datascanner.engine2.commands.classify import classify
 
+here = os.path.dirname(os.path.abspath(__file__))
+kle_default_path = os.path.join(here, 'data/OS2KLE.json')
 
 logger = structlog.get_logger("adminapp")
 
@@ -36,7 +40,15 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
-def mini_scan(scan_item, rule):
+
+def get_classification_results(file):
+    results = []
+    data = classify(kle_default_path, file)[0]
+    print(f"Data : {data}")
+    results.append(data)
+    return results
+
+def mini_scan(scan_item, rule, kle:bool):
     """
     This function will take a scanItem arg as well as a rule arg. It checks
     the nature of scanItem (i.e. file or text), and performs the scan with
@@ -64,8 +76,22 @@ def mini_scan(scan_item, rule):
                     " Got an unexpected error : {}".format(str(e))
                 )
 
+
             with ntr.open("wb") as fp:
                 fp.write(binary_scan_contents)
+
+            print(f"Path : {ntr.get_path()}")
+
+            if kle:
+                kle_res = get_classification_results(ntr.get_path())
+                yield {"kle_res": 
+                       {
+                           "file_name": ntr._name,
+                           "file_path": kle_default_path,
+                           "results": kle_res
+                       }
+                      }
+
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 
@@ -111,6 +137,7 @@ def execute_mini_scan(request):
     and it does not cause any trouble on the website.
     """
     context = {
+        "kle": (kle_switch := request.POST.get("KLE-switch") or "off"),
         "file_obj": (file_obj := request.FILES.get("file")),
         "text": (text := request.POST.get("text")),
         "raw_rule": (raw_rule := request.POST.get("rule")),
@@ -123,11 +150,32 @@ def execute_mini_scan(request):
     if halfbaked_rule:
         rule = Rule.from_json_object(halfbaked_rule)
 
+    print(f"KLE-switch : {kle_switch}")
+    print(f"Raw rule : {raw_rule}")
+    print(f"Half rule : {halfbaked_rule}")
+    print(f"Rule : {rule}")
+
+
+    # KLE to bool
+
+    kle_switch = (kle_switch == "on")
+
+    if kle_switch:
+        print(f"Defaulting to this kle path : {kle_default_path}")
+        context["kle_results"] = (kle_results := [])
     if file_obj:
-        for m in mini_scan(file_obj, rule):
-            replies.append(m)
+        for m in mini_scan(file_obj, rule, kle_switch):
+            if type(m) is dict:
+                kle_results.append(m)
+            else:
+                replies.append(m)
     if text:
-        for m in mini_scan(text, rule):
-            replies.append(m)
+        for m in mini_scan(text, rule, kle_switch):
+            if type(m) is dict:
+                kle_results.append(m)
+            else:
+                replies.append(m)
+
+    print(json.dumps(context, indent=3))
 
     return render(request, "components/miniscanner/miniscan_results.html", context)
