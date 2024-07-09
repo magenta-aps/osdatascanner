@@ -53,13 +53,17 @@ def superuser(user):
 
 # First test organization
 @pytest.fixture
-def test_org():
-    client = Client.objects.create(name='test_client',
-                                   contact_email="test@magenta.dk",
-                                   contact_phone="12345678")
+def test_client():
+    return Client.objects.create(name='test_client',
+                                 contact_email="test@magenta.dk",
+                                 contact_phone="12345678")
+
+
+@pytest.fixture
+def test_org(test_client):
     return Organization.objects.create(
         name='test_org',
-        client=client,
+        client=test_client,
         uuid="3d6d288f-b75f-43e2-be33-a43803cd1243")
 
 
