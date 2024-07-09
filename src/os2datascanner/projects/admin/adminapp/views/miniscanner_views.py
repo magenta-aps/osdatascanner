@@ -78,9 +78,22 @@ def mini_scan(scan_item, rule, kle:bool):
         with NamedTemporaryResource(item_name) as ntr:
 >>>>>>> e5e02736a (Fixed miniscan_results.)
             try:
+<<<<<<< HEAD
                 contents = item.read()
             except:
                 contents = item.encode()
+=======
+                binary_scan_contents = scan_item.read()
+            except AttributeError: 
+                # It's not a file and can't be read. Therefore, it's text.
+                binary_scan_contents = scan_item.encode()
+            except Exception as e: 
+                # In case of a second unknown error
+                logger.warning(
+                    "Miniscanner -"
+                    "XX Got an unexpected error : {}XX".format(str(e))
+                )
+>>>>>>> 6c7ae075d (Added tests for KLE classification.)
 
 
             with ntr.open("wb") as fp:
