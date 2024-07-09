@@ -70,7 +70,7 @@ def mini_scan(scan_item, rule, kle:bool):
                 # In case of a second unknown error
                 logger.warning(
                     "Miniscanner -"
-                    " Got an unexpected error : {}".format(str(e))
+                    "XX Got an unexpected error : {}XX".format(str(e))
                 )
 
 

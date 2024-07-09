@@ -26,18 +26,21 @@ def generate_dummy_content(n=10):
 
 cpr_rule = json.dumps(CPRRule().to_json_object())
 custom_regex_rule = json.dumps(RegexRule("doesthiswordexist").to_json_object())
+impossible_regex = json.dumps(RegexRule("$a").to_json_object())
 
 
-def build_request(rule, file, text):
+def build_request(rule, file, text, kle:bool=False):
     """
     Simulate a request to the miniscanner. Does not support file
     scanning, as it requires to pass a file_obj as a parameter.
     """
 
+    kle = "on" if kle else "off"
+
     request = Request(
             {"file": file},
-            {"rule": rule, "text": text},
-            {"REMOTE_ADDR": "localhost:8020"})
+            {"rule": rule, "text": text, "KLE-switch": kle},
+            {"REMOTE_ADDR": "localhost:8020"},)
     # REMOTE_ADDR value is not important, but its value is called and used in
     # the execute_mini_scan, so it needs to be present
     return request
@@ -92,7 +95,9 @@ def test_text_regex_rule_positive():
 
 
 def test_file_cpr_rulefixed():
-    file = dj_file.SimpleUploadedFile("file", "hello".encode())
+    file = dj_file.SimpleUploadedFile(
+        "file",
+        "hello".encode())
     text = None
 
     req = build_request(cpr_rule, file, text)
@@ -101,7 +106,9 @@ def test_file_cpr_rulefixed():
 
 
 def test_file_cpr_rule_random():
-    file = dj_file.SimpleUploadedFile("file", generate_dummy_content().encode())
+    file = dj_file.SimpleUploadedFile(
+        "file",
+        generate_dummy_content().encode())
     text = None
 
     req = build_request(cpr_rule, file, text)
@@ -113,7 +120,9 @@ def test_file_cpr_rule_random():
 
     
 def test_file__cpr_rule_real():
-    file = dj_file.SimpleUploadedFile("file", "1111111118".encode())
+    file = dj_file.SimpleUploadedFile(
+        "file",
+        "1111111118".encode())
     text = None
 
     req = build_request(cpr_rule, file, text)
@@ -122,7 +131,9 @@ def test_file__cpr_rule_real():
 
 
 def test_file__regex_rule_negative():
-    file = dj_file.SimpleUploadedFile("file", "This should produce false".encode())
+    file = dj_file.SimpleUploadedFile(
+        "file",
+        "This should produce false".encode())
     text = None
 
     req = build_request(custom_regex_rule, file, text)
@@ -139,3 +150,54 @@ def test_file__regex_rule_positive():
     req = build_request(custom_regex_rule, file, text)
     res = execute_mini_scan(req).content.decode()
     assert "Ingen resultater fundet" not in res
+
+
+def test_kle_text_positive():
+    file = None
+    text = "Kommune, Skat, Udlejning"
+
+    req = build_request(impossible_regex, file, text, kle=True)
+    res = execute_mini_scan(req).content.decode()
+
+    print(res)
+
+    assert "Ingen resultater fundet" not in res
+
+def test_kle_text_negative():
+    file = None
+    text = "I love regex"
+
+    req = build_request(impossible_regex, file, text, kle=True)
+    res = execute_mini_scan(req).content.decode()
+
+    print(res)
+
+    assert "Ingen resultater fundet" in res
+
+def test_kle_file_positive():
+    file = dj_file.SimpleUploadedFile(
+        "file",
+        "Kommune, Skat, Udlejning".encode()
+    )
+    text = None
+
+    req = build_request(impossible_regex, file, text, kle=True)
+    res = execute_mini_scan(req).content.decode()
+
+    print(res)
+
+    assert "Ingen resultater fundet" not in res
+
+def test_kle_file_negative():
+    file = dj_file.SimpleUploadedFile(
+        "file",
+        "I love regex".encode()
+    )
+    text = None
+
+    req = build_request(impossible_regex, file, text, kle=True)
+    res = execute_mini_scan(req).content.decode()
+
+    print(res)
+
+    assert "Ingen resultater fundet" in res
