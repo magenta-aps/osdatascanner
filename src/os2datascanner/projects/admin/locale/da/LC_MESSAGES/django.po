@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-08 14:42+0200\n"
+"POT-Creation-Date: 2024-07-09 09:13+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -846,13 +846,13 @@ msgstr "Match"
 msgid "Match context"
 msgstr "Kontekst for match"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:37
-msgid "No matches found"
-msgstr "Ingen resultater fundet"
-
 #: adminapp/templates/components/miniscanner/miniscan_results.html:45
 msgid "Classification"
 msgstr "Klassifikation"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:51
+msgid "No matches found"
+msgstr "Ingen resultater fundet"
 
 #: adminapp/templates/components/navigation/navigation.html:11
 msgid "Scanner status"

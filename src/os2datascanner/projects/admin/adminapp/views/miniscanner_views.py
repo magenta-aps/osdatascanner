@@ -59,8 +59,8 @@ def mini_scan(scan_item, rule, kle:bool):
         # It's not a file does not possess a name attribute. Therefore, it's text.
         item_name = "text.txt"
 
-    with NamedTemporaryResource(item_name) as ntr:
-
+    if rule:
+        with NamedTemporaryResource(item_name) as ntr:
             try:
                 binary_scan_contents = scan_item.read()
             except AttributeError: 
@@ -80,14 +80,15 @@ def mini_scan(scan_item, rule, kle:bool):
 
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
-                yield {"kle_res": 
-                       {
-                           "file_name": ntr._name,
-                           "file_path": ntr.get_path(),
-                           "results": kle_res
-                       }
-                      }
-
+                if kle_res:
+                    yield {"kle_res": 
+                        {
+                            "file_name": ntr._name,
+                            "file_path": ntr.get_path(),
+                            "results": kle_res
+                        }
+                        }
+ 
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 
