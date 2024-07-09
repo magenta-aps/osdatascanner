@@ -2365,11 +2365,11 @@ msgid ""
 "Cannot build rule: %(r1)s must be used in conjunction with another rule."
 msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
-#: adminapp/views/views.py:200 import_services/models/exported_mixin.py:31
+#: adminapp/views/views.py:205 import_services/models/exported_mixin.py:31
 msgid "created"
 msgstr "oprettet"
 
-#: adminapp/views/views.py:200
+#: adminapp/views/views.py:205
 msgid "saved"
 msgstr "gemt"
 

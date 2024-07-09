@@ -14,6 +14,8 @@
 - Labels in Outlook are no longer named "OS2datascanner X", but rather
   "OSdatascanner X". Already existing labels are not changed.
 
+- Django version bumped to 4.0.1.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"
