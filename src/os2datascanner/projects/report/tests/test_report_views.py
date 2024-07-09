@@ -14,6 +14,11 @@ from ..reportapp.views.report_views import (
     UserArchiveView, RemediatorArchiveView, UndistributedArchiveView)
 
 
+@pytest.fixture(autouse=True)
+def override_archive_tab_feature_flag():
+    settings.ARCHIVE_TAB = True
+
+
 @pytest.mark.django_db
 class TestUserReportView:
 

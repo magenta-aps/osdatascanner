@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.test import override_settings
 from django.utils import timezone
 from django.urls import reverse
+from django.conf import settings
 
 from os2datascanner.projects.report.organizations.models.organizational_unit import (
     OrganizationalUnit)
@@ -14,6 +15,11 @@ from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.views.statistics_views import (
         UserStatisticsPageView, LeaderStatisticsPageView,
         DPOStatisticsPageView, DPOStatisticsCSVView)
+
+
+@pytest.fixture(autouse=True)
+def override_dpo_csv_export_feature_flag():
+    settings.DPO_CSV_EXPORT = True
 
 
 @pytest.mark.django_db

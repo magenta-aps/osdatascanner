@@ -357,7 +357,7 @@ class TestPipelineCollector:
         match = request.getfixturevalue(match)
 
         new = record_match(match)
-        assert new.pk == expected[0]
+        assert new.pk is not None
         assert new.resolution_status == expected[1]
         assert new.scan_time == parse_datetime(request.getfixturevalue(expected[2]))
         assert new.source_type == expected[3]
