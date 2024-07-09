@@ -69,9 +69,14 @@ def mini_scan(scan_item, rule, kle:bool):
         # It's not a file does not possess a name attribute. Therefore, it's text.
         item_name = "text.txt"
 
+<<<<<<< HEAD
     with NamedTemporaryResource(item_name) as ntr:
 >>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
 
+=======
+    if rule:
+        with NamedTemporaryResource(item_name) as ntr:
+>>>>>>> e5e02736a (Fixed miniscan_results.)
             try:
                 contents = item.read()
             except:
@@ -84,14 +89,15 @@ def mini_scan(scan_item, rule, kle:bool):
 
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
-                yield {"kle_res": 
-                       {
-                           "file_name": ntr._name,
-                           "file_path": ntr.get_path(),
-                           "results": kle_res
-                       }
-                      }
-
+                if kle_res:
+                    yield {"kle_res": 
+                        {
+                            "file_name": ntr._name,
+                            "file_path": ntr.get_path(),
+                            "results": kle_res
+                        }
+                        }
+ 
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
 

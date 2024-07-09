@@ -8,7 +8,7 @@
       {% trans "File too big" %} ({{ size|filesizeformat }} > {{ limit|filesizeformat }})
     {% endwith %}
   </div>
-{% elif not halfbaked_rule %}
+{% elif not halfbaked_rule %} 
   <div id="response" class="error">{% translate "No rule specified." %}</div>
 {% else %}
   <table class="datatable" id="response">
