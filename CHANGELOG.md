@@ -18,6 +18,8 @@
 
 - Extended unit tests for the initial_setup-command using ✧˖°.mutmut.°˖✧.
 
+- Outphased django TestCase in the report module, now using pytest instead.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"
