@@ -40,9 +40,7 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
-<<<<<<< HEAD
 def mini_scan(item, rule):
-=======
 
 def get_classification_results(file):
     data = classify(kle_default_path, file)[0]
@@ -56,7 +54,6 @@ def mini_scan(scan_item, rule, kle:bool):
     the replies list in the execute_mini_scan() function.
     """
 
->>>>>>> 77ec79a81 (Added the classification option. WIP. Classifying a file doesn't seem to work ...)
     try:
 <<<<<<< HEAD
         name = item.name
