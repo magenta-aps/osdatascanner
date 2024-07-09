@@ -16,6 +16,8 @@
 
 - Django version bumped to 4.0.1.
 
+- Extended unit tests for the initial_setup-command using ✧˖°.mutmut.°˖✧.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"
