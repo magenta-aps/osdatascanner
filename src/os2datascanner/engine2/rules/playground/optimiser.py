@@ -183,12 +183,14 @@ def main(input_path, output_path):
     found_redundancy = True
     cycles = 0
 
+
     while found_redundancy:
         cycles += 1
         found_redundancy = False
 
         future = [main]
         containers = [main]
+
 
         while future:
             for k in future:
@@ -197,8 +199,6 @@ def main(input_path, output_path):
 
         containers.extend(get_containers(main))
         containers = list(custom_set(containers))
-
-        print(containers)
 
         print(f"\n******************\n* On cycle n.[{cycles}] *\n******************\n")
         for cont in containers:
