@@ -29,8 +29,8 @@ add_context_filter(
 # if the sourronding context contains some of these, we get suspicious.
 # fmt: off
 # check if these delimiters are balanced
-_pre_delim = ("(", "[", "{", "<", "<?", "<%", "/*", )
-_post_delim = (")", "]", "}", ">", "?>", "%>", "*/", )
+_pre_delim = ("(", "[", "{", "<", )
+_post_delim = (")", "]", "}", ">", )
 # any of these symbols in the context result in probability=0
 _operators = ("+", "-", )
 _symbols = ("!", "#", "%", )

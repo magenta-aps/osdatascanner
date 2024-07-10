@@ -1,7 +1,6 @@
-import unittest
 import pytest
 
-from os2datascanner.engine2.rules.cpr import CPRRule, WordOrSymbol
+from os2datascanner.engine2.rules.cpr import CPRRule, WordOrSymbol, Context
 
 
 content = """
@@ -205,57 +204,161 @@ ALL_MATCHES = [
 ]
 
 
-class RuleTests(unittest.TestCase):
-    def test_cpr_context(self):
-        rules = [
-            (
-                CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=False,
-                        blacklist=[]),
-                ALL_MATCHES,
-                "match all"
-            ),
-            (
-                CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
-                        blacklist=[]),
-                [ALL_MATCHES[i] for i in [0, 1, 2, 3, 5, 6, 19, 20]],
-                "match using context rules"
-            ),
-            (
-                CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
-                        blacklist=[], whitelist=[]),
-                [ALL_MATCHES[i] for i in [0, 2, 3, 5, 6, 19, 20]],
-                "match setting `whitelist=[]`"
-            ),
-            (
-                CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,),
-                [ALL_MATCHES[i] for i in []],
-                "match with blacklist"
-            ),
-            (
-                CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
-                        blacklist=[], whitelist=["anders", "and"]),
-                [ALL_MATCHES[i] for i in [0, 1, 2, 3, 4, 5, 6, 19, 20]],
-                "match setting `whitelist=['anders', 'and']`"
-            ),
-            (
-                CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
-                        blacklist=[], whitelist=[],
-                        exceptions=["0303800018", "0606800002"]),
-                [ALL_MATCHES[i] for i in [0, 3, 6, 19, 20]],
-                "match with some exceptions"
-            ),
-        ]
+class TestCPRRule:
 
-        for rule, expected, description in rules:
-            print(f"testing {description}")
-            with self.subTest(rule):
-                matches = rule.match(content)
-                if expected:
-                    self.assertCountEqual([match for match in matches],
-                                          expected,
-                                          f"test of {description} failed")
-                else:
-                    self.assertFalse(list(matches))
+    @pytest.mark.parametrize("rule,expected,description", [
+        (
+            CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=False,
+                    blacklist=[]),
+            ALL_MATCHES,
+            "match all"
+        ),
+        (
+            CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
+                    blacklist=[]),
+            [ALL_MATCHES[i] for i in [0, 1, 2, 3, 5, 6, 19, 20]],
+            "match using context rules"
+        ),
+        (
+            CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
+                    blacklist=[], whitelist=[]),
+            [ALL_MATCHES[i] for i in [0, 2, 3, 5, 6, 19, 20]],
+            "match setting `whitelist=[]`"
+        ),
+        (
+            CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,),
+            [ALL_MATCHES[i] for i in []],
+            "match with blacklist"
+        ),
+        (
+            CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
+                    blacklist=[], whitelist=["anders", "and"]),
+            [ALL_MATCHES[i] for i in [0, 1, 2, 3, 4, 5, 6, 19, 20]],
+            "match setting `whitelist=['anders', 'and']`"
+        ),
+        (
+            CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
+                    blacklist=[], whitelist=[],
+                    exceptions=["0303800018", "0606800002"]),
+            [ALL_MATCHES[i] for i in [0, 3, 6, 19, 20]],
+            "match with some exceptions"
+        ),
+        (
+            CPRRule(ignore_irrelevant=False, blacklist=[]),
+            [ALL_MATCHES[i] for i in [0, 1, 2, 3, 5, 6, 19, 20]],
+            "match using some default settings"
+        ),
+    ])
+    def test_cpr_context(self, rule, expected, description):
+
+        print(f"testing {description}")
+        matches = rule.match(content)
+        if expected:
+            assert sorted(
+                list(matches),
+                key=lambda x: x["offset"]) == sorted(
+                expected,
+                key=lambda x: x["offset"])
+        else:
+            assert not list(matches)
+
+    def test_cpr_probability(self):
+        rule = CPRRule(examine_context=False, blacklist=[])
+        expected_probs = [0.5] + [1.0]*20
+
+        matches = rule.match(content)
+
+        for match, expected_prob in zip(matches, expected_probs):
+            assert match["probability"] == expected_prob
+
+    @pytest.mark.parametrize("content", [
+        "(1111111118)",
+        "[1111111118]",
+        "{1111111118}",
+        "<1111111118>",
+    ])
+    def test_balanced_delimiters(self, content):
+        rule = CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True)
+        matches = rule._compiled_expression.finditer(content)
+        prob, ctype = rule.examine_context(next(matches))
+
+        # Probability and ctype should not be defined for balanced delimiters
+        assert prob is None
+        assert ctype == []
+
+    @pytest.mark.parametrize("content", [
+        "+1111111118",
+        "-1111111118",
+        "!1111111118",
+        "#1111111118",
+        "%1111111118",
+        "1111111118+",
+        "1111111118-",
+        "1111111118!",
+        "1111111118#",
+        "1111111118%",
+    ])
+    def test_surrounding_symbols(self, content):
+        rule = CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True)
+        matches = rule._compiled_expression.finditer(content)
+        prob, ctype = rule.examine_context(next(matches))
+
+        # Probability and ctype should not be defined for balanced delimiters
+        assert prob == 0.0
+        assert ctype[0][0] == Context.SYMBOL
+
+    @pytest.mark.parametrize("blacklisted_word", [
+        "p-nr", "p.nr", "p-nummer", "pnr", "customer no", "customer-no",
+        "bilagsnummer", "order number", "ordrenummer", "fakturanummer",
+        "faknr", "fak-nr", "tullstatistisk", "tullstatistik", "test report no",
+        "protocol no.", "dhk:tx",
+    ])
+    def test_blacklisted_words(self, blacklisted_word):
+        rule = CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True)
+        matches = list(rule.match(blacklisted_word + " 1111111118"))
+
+        assert not matches
+
+    def test_presentation_raw(self):
+        rule = CPRRule()
+        assert rule.presentation_raw == (
+            "CPR number (with modulus 11, relevance check, and context check)")
+
+    def test_presentation_raw_no_settings(self):
+        rule = CPRRule(modulus_11=False, ignore_irrelevant=False, examine_context=False)
+        assert rule.presentation_raw == "CPR number"
+
+    @pytest.mark.parametrize("content,ignore_irrelevant,prob", [
+        ("1111111118", True, 1.0),
+        ("1111119992", True, 0.1),
+        ("1111118880", True, 0.1),
+        ("1111117779", True, 0.25),
+        ("1111119992", False, 1.0),
+        ("1111118880", False, 1.0),
+        ("1111117779", False, 1.0)
+    ])
+    def test_probability_check(self, content, ignore_irrelevant, prob):
+        rule = CPRRule(ignore_irrelevant=ignore_irrelevant, modulus_11=False, examine_context=False)
+        matches = list(rule.match(content))
+
+        assert matches[0]["probability"] == prob
+
+    @pytest.mark.parametrize("content", [
+        ("1111119990"),
+        ("1111119991"),
+        ("1111119993"),
+        ("1111119994"),
+        ("1111119995"),
+        ("1111119996"),
+        ("1111119997"),
+        ("1111119998"),
+        ("1111119999"),
+    ])
+    def test_probability_non_mod11_number_ignore_irrelevant(self, content):
+        rule = CPRRule(ignore_irrelevant=True, modulus_11=False, examine_context=False)
+        matches = list(rule.match(content))
+
+        assert matches == []
 
 
 @pytest.fixture
