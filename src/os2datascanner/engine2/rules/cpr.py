@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Iterator, List, Match, Optional, Tuple, Dict
 import re
 from functools import partial
@@ -37,6 +38,7 @@ _all_symbols = _operators + _symbols
 # fmt: on
 
 
+@dataclass
 class WordOrSymbol:
     """For future analysis, it is practical to know if a word or symbol was
     found in the context of a match. This class takes the tuple from the regex
@@ -44,28 +46,8 @@ class WordOrSymbol:
     symbol. Crucially, this allows us to remember the order of words and
     symbols in the context."""
 
-    def __init__(self, ws_tuple: Tuple[str, str]):
-        self._word, self._symbol = ws_tuple
-
-    def _value(self):
-        if self._symbol:
-            return self._symbol
-        elif self._word:
-            return self._word
-        else:
-            return ""
-
-    def __str__(self):
-        return self._value()
-
-    def __repr__(self):
-        return f"<WordOrSymbol: {self._value()}>"
-
-    def is_word(self):
-        return bool(self._word)
-
-    def is_symbol(self):
-        return bool(self._symbol)
+    word: str | None
+    symbol: str | None
 
 
 @unique
@@ -226,8 +208,8 @@ class CPRRule(RegexRule):
         # test if a whitelist-string is found in the context words.
         # combine the list of 'pre' & 'post' keys in words dict.
         words_lower = [
-            str(w).lower() for w in chain.from_iterable(
-                words_or_syms.values()) if w.is_word()]
+            w.word.lower() for w in chain.from_iterable(
+                words_or_syms.values()) if w.word]
         if self._whitelist:
             for w in self._whitelist:
                 for cw in words_lower:
@@ -239,9 +221,9 @@ class CPRRule(RegexRule):
         # XXX: This only checks number of delimiters, not type, so. "[111111-1118}" is accepted
         delimiters = 0
         for w in chain.from_iterable(words_or_syms.values()):
-            if not w.is_symbol():
+            if not w.symbol:
                 continue
-            w = str(w)
+            w = w.symbol
             if w in _pre_delim:
                 delimiters += 1
             elif w in _post_delim:
@@ -255,22 +237,17 @@ class CPRRule(RegexRule):
 
         # only do context checking on surrounding words
         for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:
-            if str(w) == "" or self._compiled_expression.match(str(w)):
+            if not w.word or self._compiled_expression.match(w.word):
                 continue
-            # this check is newer reached due to '\w' splitting
-            # elif w.endswith(_all_symbols) or w.startswith(_all_symbols):
-            #     ctype.append((Context.SYMBOL, w))
-            #     print(f"Found symbol: {w}")
-            #     probability = 0.0
             # test if surrounding word is a number (and not looks like a cpr)
-            elif w.is_word() and is_number(str(w)):
+            elif w.word and is_number(w.word):
                 probability = 0.0
-                ctype.append((Context.NUMBER, w))
-            elif w.is_word() and not is_alpha_case(str(w)):
+                ctype.append((Context.NUMBER, w.word))
+            elif w.word and not is_alpha_case(w.word):
                 # test for case, ie Magenta, magenta, MAGENTA are ok, but not MaGenTa
                 # nor magenta10. w must not be empty string
                 probability = 0.0
-                ctype.append((Context.WRONG_CASE, w))
+                ctype.append((Context.WRONG_CASE, w.word))
 
         return probability, ctype
 
@@ -298,13 +275,13 @@ class CPRRule(RegexRule):
         pre_res = re.findall(split_str, pre)
         post_res = re.findall(split_str, post)
         # remove empty strings
-        pre_words = [WordOrSymbol(s) for s in pre_res]
-        post_words = [WordOrSymbol(s) for s in post_res]
+        pre_words = [WordOrSymbol(*s) for s in pre_res]
+        post_words = [WordOrSymbol(*s) for s in post_res]
 
         # XXX Should be set instead?
         words_or_syms = dict(
-            pre=pre_words if len(pre_words) > 0 else [WordOrSymbol(("", ""))],
-            post=post_words if len(post_words) > 0 else [WordOrSymbol(("", ""))],
+            pre=pre_words if len(pre_words) > 0 else [WordOrSymbol("", "")],
+            post=post_words if len(post_words) > 0 else [WordOrSymbol("", "")],
         )
 
         return words_or_syms

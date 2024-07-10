@@ -35,6 +35,9 @@
 - The DPO module no longer crashes if all document reports are more than a 
   year old.
 
+- The CPRRule context check will no longer ignore symbols between words when
+  considering contexts.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"

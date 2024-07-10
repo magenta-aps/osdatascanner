@@ -138,6 +138,10 @@ This is because other non-CPR-like numbers before or after the matched number
 indicates, that the matched number is not really a CPR-number, but rather part 
 of a larger number, which is separated by spaces.
 
+Do note that a number separated from the CPR-number by a symbol, such as a 
+parenthesis, is not considered immediately before or after the CPR-number,
+the _symbol_ is.
+
 ##### Surrounding mixed case words
 
 If the word immediately before or after the matched number is a word with 
