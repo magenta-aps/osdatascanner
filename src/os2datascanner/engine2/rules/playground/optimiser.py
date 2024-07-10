@@ -78,6 +78,7 @@ def check_empty(container:CustomContainer):
         print(f"\tRemoving container of id={container.id}")
         try:
             container.parent.components.remove(container)
+            containers.remove(container)
             found_redundancy = True
         except ValueError:
             print(f"\t[-] Failed to remove container id={container.id}, was already removed from its parent from prior redundancy")
@@ -91,6 +92,7 @@ def check_useless(container:CustomContainer): # Useless aka AND(1), OR(1), etc .
         print(f"\tGiving the parent container id={container.parent.id} his only component")
         try:
             container.parent.components.remove(container)
+            containers.remove(container)
             container.parent.components.append(container.components[0])
             found_redundancy = True
         except ValueError:
@@ -110,6 +112,7 @@ def check_symbol_redundancy(container:CustomContainer):
                 print(f"Found symbol redundancy in container id={container.id}")
                 print(f"\tContainer has {k} and {-k} in its components")
                 container.components.remove(k)
+                containers.remove(container)
                 print(f"\tComponents of container id={container.id} after fix : {container.components}")
                 print("********** [!!] Warning [!!] **********\n")
                 found_redundancy = True
@@ -143,6 +146,25 @@ def containify(container):
                 containers.append(container.components[-1])
                 yield container.components[-1]
 
+def get_containers(main):
+    global cc
+    found = [main]
+    next_up:list[CustomContainer] = [main]
+    while next_up:
+        for cont in next_up:
+            for comp in cont.components:
+                if isinstance(comp, dict):
+                    new = CustomContainer(cc, comp["type"], comp["components"], cont)
+                    found.append(new)
+                    cont.components.remove(comp)
+                    cont.components.append(new)
+                    cc += 1
+                elif isinstance(comp, CustomContainer):
+                    found.append(comp)
+            next_up.remove(cont)
+    return found
+
+DIR = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/"
 IN_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/rule.json"
 OUT_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/clean_rule.json"
 
@@ -172,6 +194,11 @@ def main(input_path, output_path):
             for k in future:
                 future.remove(k)
                 future.extend(list(containify(k)))
+
+        containers.extend(get_containers(main))
+        containers = list(custom_set(containers))
+
+        print(containers)
 
         print(f"\n******************\n* On cycle n.[{cycles}] *\n******************\n")
         for cont in containers:
@@ -228,16 +255,17 @@ def main(input_path, output_path):
                         print("Found redundancy of same type nested containers")
                         try:
                             cont.parent.components.remove(cont)
+                            containers.remove(cont)
                             cont.parent.components.extend(cont.components)
                             print(f"\tResulting components for container id={cont.parent.id} : {cont.parent.components}")
                         except ValueError:
                             print(f"\t[-] Failed to remove container id={cont.id}, was already removed from its parent from prior redundancy")
                         
-            check_empty(cont)
-            check_useless(cont)
-            check_symbol_redundancy(cont)
+                check_empty(cont)
+                check_useless(cont)
+                check_symbol_redundancy(cont)
                       
     dump_rule(main.as_dict(), output_path)
     print("Dumped clean rule")
 
-main(IN_PATH, OUT_PATH)
+main(DIR + "rule.json", DIR + "clean_rule.json")

@@ -3,14 +3,6 @@
   "components": [
     4,
     2,
-    3,
-    {
-      "type": "or",
-      "components": [
-        2,
-        3,
-        4
-      ]
-    }
+    3
   ]
 }

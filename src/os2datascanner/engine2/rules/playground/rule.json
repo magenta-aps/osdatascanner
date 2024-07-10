@@ -9,13 +9,13 @@
       2,
       3,
       {
-        "type": "and",
+        "type": "or",
         "components": [
           4
         ]
       },
       {
-        "type": "and",
+        "type": "or",
         "components": [
           2,
           {
