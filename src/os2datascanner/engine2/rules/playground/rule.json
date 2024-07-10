@@ -1,0 +1,27 @@
+{
+    "type": "and",
+    "components": [
+      4,
+      {
+        "type": "not",
+        "rule": 2
+      },
+      2,
+      3,
+      {
+        "type": "or",
+        "components": [
+          4
+        ]
+      },
+      {
+        "type": "or",
+        "components": [
+          2,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  }
