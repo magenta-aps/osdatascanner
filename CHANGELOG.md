@@ -28,6 +28,13 @@
 - Very long paths on results in the report module can now be expanded,
   showing the full path to the source of a match. 
 
+### Bugfixes
+
+- Documentreports with no created_timestamp no longer crashes the DPO module.
+
+- The DPO module no longer crashes if all document reports are more than a 
+  year old.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"

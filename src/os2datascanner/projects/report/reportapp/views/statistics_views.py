@@ -64,6 +64,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        placeholder_time = timezone.make_aware(timezone.datetime(1970, 1, 1))
         today = timezone.now()
         a_month_ago = today - timedelta(days=30)
 
@@ -82,7 +83,11 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 ),
                 default=False
             ),
-            created_month=TruncMonth('created_timestamp', output_field=DateField()),
+            created_month=TruncMonth(
+                        # If created_timestamp isn't set on a DocumentReport
+                        # the timestamp is set to a default time value.
+                        Coalesce('created_timestamp', placeholder_time),
+                        output_field=DateField()),
             resolved_month=TruncMonth(
                         # If resolution_time isn't set on a report that has been
                         # handled, then assume it was handled in the same month it
@@ -338,7 +343,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         a_year_ago: date = (
                 current_date - timedelta(days=365)).date().replace(day=1)
 
-        if self.matches.exists():
+        if self.matches.exists() and matches_by_month:
             earliest_month = min(
                     key
                     for key in matches_by_month.keys())
