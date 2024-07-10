@@ -4,7 +4,7 @@ from .models import (Account, Alias, Position,
                      Organization, OrganizationalUnit)
 from .models.aliases import AliasType
 from .utils import prepare_and_publish
-from ..adminapp.signals_utils import suppress_signals
+from os2datascanner.utils.section import suppress_django_signals
 from os2datascanner.utils.system_utilities import time_now
 
 logger = structlog.get_logger("admin_organizations")
@@ -14,7 +14,7 @@ EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
 SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
 
 
-@suppress_signals.wrap
+@suppress_django_signals
 def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                            organization: Organization,
                            progress_callback=_dummy_pc):
