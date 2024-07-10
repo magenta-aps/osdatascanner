@@ -15,6 +15,18 @@
         ]
       },
       {
+        "type": "and",
+        "components": [
+          2,
+          {
+            "type": "and",
+            "components": [
+                2, 3, 4
+            ]
+          }
+        ]
+      },
+      {
         "type": "or",
         "components": [
           2,
