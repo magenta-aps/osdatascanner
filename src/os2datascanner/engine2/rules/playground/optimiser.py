@@ -8,7 +8,7 @@ class CustomContainer():
         self.parent = parent
 
         if self.operator not in ["and", "or"]:
-            raise Exception(f"Invalid operator for CustomOperator[id={id}]")
+            raise Exception(f"Invalid operator[op={self.operator}] for CustomOperator[id={id}]")
 
     def as_dict(self):
         return {
@@ -42,8 +42,8 @@ def load_rule(path):
     with open(path) as file:
         return json.loads(file.read())
  
-def dump_rule(obj):
-    with open("/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/clean_rule.json", "wt") as file:
+def dump_rule(obj, output_path):
+    with open(output_path, "wt") as file:
         json.dump(obj, file, indent=2)
 
 def display(data):
@@ -71,24 +71,48 @@ def custom_set(arr):
             mem.append(k)
             yield k
 
-def check_empty(container):
+def check_empty(container:CustomContainer):
     global found_redundancy
-    if container.components == []:
+    if not container.components:
         print(f"Container of id={container.id} has no more components :(")
         print(f"\tRemoving container of id={container.id}")
-        container.parent.components.remove(container)
-        found_redundancy = True
+        try:
+            container.parent.components.remove(container)
+            found_redundancy = True
+        except ValueError:
+            print(f"\t[-] Failed to remove container id={container.id}, was already removed from its parent from prior redundancy")
+        
 
-def check_useless(container): # Useless aka AND(1), OR(1), etc ...
+def check_useless(container:CustomContainer): # Useless aka AND(1), OR(1), etc ...
     global found_redundancy
-    if len(container.components) == 1 and isinstance(container.components[0], int):
+    if len(container.components) == 1:
         print(f"Container of id={container.id} has 1 component left")
         print(f"\tRemoving container id={container.id}")
         print(f"\tGiving the parent container id={container.parent.id} his only component")
-        container.parent.components.remove(container)
-        container.parent.components.append(container.components[0])
-        found_redundancy = True
+        try:
+            container.parent.components.remove(container)
+            container.parent.components.append(container.components[0])
+            found_redundancy = True
+        except ValueError:
+            print(f"\t[-] Failed to remove container id={container.id}, was already removed from its parent from prior redundancy")
+        
 
+def check_symbol_redundancy(container:CustomContainer):
+    global found_redundancy
+    mem = []
+    for k in container.components:
+        mem.append(k)
+        if isinstance(k, int):
+            if -k in mem:
+                print("\n********** [!!] Warning [!!] **********")
+                # Add default symbol to eliminate in case of both existing
+                # If -k and k in components, always remove (+k or -k). Have a default symbol to remove ?
+                print(f"Found symbol redundancy in container id={container.id}")
+                print(f"\tContainer has {k} and {-k} in its components")
+                container.components.remove(k)
+                print(f"\tComponents of container id={container.id} after fix : {container.components}")
+                print("********** [!!] Warning [!!] **********\n")
+                found_redundancy = True
 
 def container_count_op(container:CustomContainer, op):
     c = 0
@@ -103,9 +127,9 @@ def contains_container(cont):
 
 def containify(container):
     """
-    Transorms all {"type": "and" | "or", "components": [...]} 
+    Transforms all {"type": "and" | "or", "components": [...]} 
     into the CustomContainer class, so they become easier to
-    handle in python, rather than dictionaries.
+    handle in python, rather than dictionaries. Not k becomes -k.
     """
 
     global cc, containers
@@ -119,71 +143,59 @@ def containify(container):
                 containers.append(container.components[-1])
                 yield container.components[-1]
 
-rule = load_rule("/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/rule.json")
-display(rule)
+IN_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/rule.json"
+OUT_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/clean_rule.json"
 
-cc = 1
-# not(1 and 2) = not 1 or not 2
-# not(1 or 2) = not 1 and not 2
+containers = []
 
+def main(input_path, output_path):
+    global cc, found_redundancy, cycles, containers
+    rule = load_rule(input_path)
+    display(rule)
 
-"""
-Not {
-    And {
-        1,
-        -2,
-    }
-}
+    cc = 1
 
-Or {
-    1
-    2
-    And {
-        -2
-        3
-    }
-}
-"""
+    main = CustomContainer(id=0, operator=rule["type"], components=rule["components"])
+    main.parent = main
 
-main = CustomContainer(id=0, operator=rule["type"], components=rule["components"])
-main.parent = main
+    found_redundancy = True
+    cycles = 0
 
-found_redundancy = True
-cycles = 0
+    while found_redundancy:
+        cycles += 1
+        found_redundancy = False
 
-while found_redundancy:
-    cycles += 1
-    found_redundancy = False
+        future = [main]
+        containers = [main]
 
-    future = [main]
-    containers = [main]
+        while future:
+            for k in future:
+                future.remove(k)
+                future.extend(list(containify(k)))
 
-    while future:
-        for k in future:
-            future.remove(k)
-            future.extend(list(containify(k)))
+        print(f"\n******************\n* On cycle n.[{cycles}] *\n******************\n")
+        for cont in containers:
+            if isinstance(cont, CustomContainer):
 
-    print(f"\n*****\nOn cycle n*[{cycles}]\n*****\n")
-    for cont in containers:
-        if isinstance(cont, CustomContainer):
+                and_c = container_count_op(cont, "and")
+                or_c = container_count_op(cont, "or")
 
-            and_c = container_count_op(cont, "and")
-            or_c = container_count_op(cont, "or")
-
-            unique_components = list(custom_set(cont.components.copy()))
-            if not list_equality_no_order(cont.components.copy(), unique_components):
-                print(f"Container with id={cont.id} got stripped of duplicate elements in his components")
-                print(f"\tWent from : {cont.components} to {unique_components}")
-                cont.components = unique_components
-                found_redundancy = True
-
-            joined_containers = list(custom_set(cont.components))
-            joined_containers.extend(list(custom_set(cont.parent.components)))
-
-            if not list_equality_no_order(joined_containers, list(custom_set(joined_containers))):
-                if cont.id != 0: # Not main
+                unique_components = list(custom_set(cont.components.copy()))
+                if not list_equality_no_order(cont.components.copy(), unique_components):
+                    print(f"Container with id={cont.id} got stripped of duplicate elements in his components")
+                    print(f"\tWent from : {cont.components} to {unique_components}")
+                    cont.components = unique_components
                     found_redundancy = True
-                    print(f"Found redundancy between containers id={cont.id} and id={cont.parent.id}")
+
+                duplicates = list(find_duplicates(cont.components, cont.parent.components))
+
+                if duplicates and cont.id != 0: # Not main
+                    found_redundancy = True
+                    
+                    if cont.components == cont.parent.components:
+                        print(f"Identical components between container id={cont.id} and id={cont.parent.id}")
+
+                    print(f"Found duplicates between containers id={cont.id} and id={cont.parent.id}")
                     duplicates = list(find_duplicates(cont.components, cont.parent.components))
 
                     if cont.operator == "and" and cont.parent.operator == "or":
@@ -203,16 +215,29 @@ while found_redundancy:
                     # a OR b OR (b AND c) != a OR b OR (c AND True) [-]
                     # a OR b OR (b AND c) == a OR (b AND c) [+]
 
-            nests_containers = contains_container(cont)
+                nests_containers = contains_container(cont)
 
-            if nests_containers:
-                if len(cont.components) == or_c:
-                    pass
-                elif len(cont.components) == and_c:
-                    pass
+                if nests_containers:
+                    if len(cont.components) == or_c:
+                        pass
+                    elif len(cont.components) == and_c:
+                        pass
 
+                else:
+                    if cont.operator == cont.parent.operator and cont.id != 0: # Not main
+                        print("Found redundancy of same type nested containers")
+                        try:
+                            cont.parent.components.remove(cont)
+                            cont.parent.components.extend(cont.components)
+                            print(f"\tResulting components for container id={cont.parent.id} : {cont.parent.components}")
+                        except ValueError:
+                            print(f"\t[-] Failed to remove container id={cont.id}, was already removed from its parent from prior redundancy")
+                        
             check_empty(cont)
             check_useless(cont)
+            check_symbol_redundancy(cont)
+                      
+    dump_rule(main.as_dict(), output_path)
+    print("Dumped clean rule")
 
-dump_rule(main.as_dict())
-print("Dumped clean rule")
+main(IN_PATH, OUT_PATH)

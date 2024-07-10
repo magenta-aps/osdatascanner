@@ -9,18 +9,21 @@
       2,
       3,
       {
-        "type": "or",
+        "type": "and",
         "components": [
           4
         ]
       },
       {
-        "type": "or",
+        "type": "and",
         "components": [
           2,
-          3,
-          2,
-          1
+          {
+            "type": "or",
+            "components": [
+                2, 3, 4
+            ]
+          }
         ]
       }
     ]
