@@ -38,6 +38,11 @@
 - The CPRRule context check will no longer ignore symbols between words when
   considering contexts.
 
+- Deletion operations run as part of an organisational import job can no
+  longer "leak out" and pre-emptively take effect in the report module.
+  This reduces the risk of the admin system and report module falling out of
+  sync.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"
