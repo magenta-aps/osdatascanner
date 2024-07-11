@@ -2838,6 +2838,8 @@ This hotfix release corrects webscan link parsing.
 - LDAP synchronisation no longer fails when Keycloak omits a required field
   whose value would otherwise be empty.
 
+- Allow .odt filescan in demoscanner
+
 ## Version 3.11.2, 10th August 2021
 
 "README.1ST"
