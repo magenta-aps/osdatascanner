@@ -14,6 +14,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import ScanStatus, Scanner
 from os2datascanner.core_organizational_structure.models import \
@@ -43,6 +44,17 @@ def replace_nordics(name: str):
     return name
 
 
+class HourField(models.PositiveIntegerField):
+
+    def formfield(self, **kwargs):
+        return super().formfield(
+            **{
+                "max_value": 23,
+                **kwargs,
+            }
+        )
+
+
 @Broadcasted.register
 class Organization(Core_Organization):
     """ Core logic lives in the core_organizational_structure app.
@@ -64,6 +76,14 @@ class Organization(Core_Organization):
         CustomRule,
         related_name='organizations',
         verbose_name=_('system rules'),
+    )
+    synchronization_hour = HourField(
+        default=17,
+        validators=[
+            MaxValueValidator(23),
+            MinValueValidator(0)
+            ],
+        verbose_name=_('synchronization hour'),
     )
 
     def save(self, *args, **kwargs):
