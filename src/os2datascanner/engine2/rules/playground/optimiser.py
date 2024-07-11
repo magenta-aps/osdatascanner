@@ -80,9 +80,9 @@ def check_empty(container:CustomContainer):
             container.parent.components.remove(container)
             containers.remove(container)
             found_redundancy = True
-        except ValueError:
+        except Exception as e:
             print(f"\t[-] Failed to remove container id={container.id}, was already removed from its parent from prior redundancy")
-        
+            print(f"\tException encountered : {str(e)}")
 
 def check_useless(container:CustomContainer): # Useless aka AND(1), OR(1), etc ...
     global found_redundancy
@@ -95,9 +95,9 @@ def check_useless(container:CustomContainer): # Useless aka AND(1), OR(1), etc .
             containers.remove(container)
             container.parent.components.append(container.components[0])
             found_redundancy = True
-        except ValueError:
+        except Exception as e:
             print(f"\t[-] Failed to remove container id={container.id}, was already removed from its parent from prior redundancy")
-        
+            print(f"\tException encountered : {str(e)}")
 
 def check_symbol_redundancy(container:CustomContainer):
     global found_redundancy
@@ -154,6 +154,9 @@ def get_containers(main):
         for cont in next_up:
             for comp in cont.components:
                 if isinstance(comp, dict):
+                    print("[!] Found a dict instance whilst doing get_containers()")
+                    print(f"\tFound in container id={cont.id}")
+                    print(f"Dict in question : {comp}")
                     new = CustomContainer(cc, comp["type"], comp["components"], cont)
                     found.append(new)
                     cont.components.remove(comp)
@@ -164,9 +167,17 @@ def get_containers(main):
             next_up.remove(cont)
     return found
 
+
+
 DIR = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/"
-IN_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/rule.json"
-OUT_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/clean_rule.json"
+IN_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/input_rule.json"
+OUT_PATH = "/home/magenta/osdatascanner/src/os2datascanner/engine2/rules/playground/output_rule.json"
+
+with open(DIR + "original_rule.json", "rt") as file:
+    obj = json.load(file)
+
+with open(IN_PATH, "wt") as file:
+    json.dump(obj, file)
 
 containers = []
 
@@ -182,6 +193,8 @@ def main(input_path, output_path):
 
     found_redundancy = True
     cycles = 0
+
+    print("\nStart of this main\n")
 
 
     while found_redundancy:
@@ -258,14 +271,20 @@ def main(input_path, output_path):
                             containers.remove(cont)
                             cont.parent.components.extend(cont.components)
                             print(f"\tResulting components for container id={cont.parent.id} : {cont.parent.components}")
-                        except ValueError:
+                        except Exception as e:
                             print(f"\t[-] Failed to remove container id={cont.id}, was already removed from its parent from prior redundancy")
-                        
+                            print(f"\tException encountered : {str(e)}")
+
                 check_empty(cont)
                 check_useless(cont)
                 check_symbol_redundancy(cont)
                       
     dump_rule(main.as_dict(), output_path)
     print("Dumped clean rule")
+    print("\nEnd of this main()\n")
+    return cycles > 1
 
-main(DIR + "rule.json", DIR + "clean_rule.json")
+refactored = True
+while refactored:
+    refactored = main(IN_PATH, IN_PATH)
+
