@@ -19,8 +19,9 @@ from os2datascanner.projects.admin import settings
 from os2datascanner.engine2.commands.classify import classify
 from os2datascanner.utils.resources import get_resource_folder
 
-resources_path = get_resource_folder()
-kle_default_path = resources_path + "/os2kledata/OS2KLE.json"
+resources_path = str(get_resource_folder())
+print(resources_path)
+kle_default_path = resources_path + "/downloads/os2kledata/OS2KLE.json"
 
 logger = structlog.get_logger("adminapp")
 
