@@ -57,7 +57,7 @@
                     title="{% trans 'Clear selected file' %}"
                     type="button"
                     onclick="clearFile()">
-              <span>{% trans "Clear file" %}</span>
+                    <span>{% trans "Clear file" %}</span>
             </button>
 
             <div hidden id="file-upload-error-response">
@@ -70,9 +70,21 @@
           {% endwith %}
 
           <h2>{% trans "Enter your text below" %}</h2>
-          <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
-          <textarea name="text" id="upload-text" type="text" class="upload" spellcheck="true" maxlength="2000">
-</textarea>
+          <!-- Hardcoded maxlength to 2000, maybe add \{\{ textLimit \}\} or something similar -->
+          <textarea name="text"
+                 id="upload-text"
+                 type="text"
+                 class="upload"
+                 spellcheck="true"
+                 placeholder="..."
+                 maxlength="2000"> 
+          </textarea>
+          <br><br>
+          <input name="KLE-switch"
+                  id="kle-switch"
+                  type="checkbox"
+                  class="upload">{% trans "Enable classification (slower)" %}
+          </input>
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>
