@@ -11,7 +11,6 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 
-#
 from abc import ABC
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -19,6 +18,7 @@ from os2datascanner.utils.test_helpers import in_test_environment
 from ..broadcast_bulk_events import BulkCreateEvent, BulkUpdateEvent, BulkDeleteEvent
 from ..publish import publish_events
 
+from os2datascanner.utils.section import suppress_django_signals
 from os2datascanner.core_organizational_structure.utils import get_serializer
 
 
@@ -38,7 +38,8 @@ def post_save_broadcast(sender, instance, created, **kwargs):
     # of disabling signals in migrations.
     if (in_test_environment()
             or not isinstance(instance, Broadcasted)
-            or type(instance).__module__ == "__fake__"):
+            or type(instance).__module__ == "__fake__"
+            or suppress_django_signals):
         return
     serializer = get_serializer(sender)
     serialized_data = serializer(instance).data
@@ -56,7 +57,8 @@ def post_save_broadcast(sender, instance, created, **kwargs):
 def post_delete_broadcast(sender, instance, **kwargs):
     if (in_test_environment()
             or not isinstance(instance, Broadcasted)
-            or type(instance).__module__ == "__fake__"):
+            or type(instance).__module__ == "__fake__"
+            or suppress_django_signals):
         return
 
     broadcastable_dict = {sender.__name__: [str(instance.pk)]}
