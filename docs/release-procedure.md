@@ -9,7 +9,7 @@
 
 #### Run translations and check migrations
 * Run django-admin command for translations
-  * `docker-compose run <report|admin> django-admin makemessages --all`
+  * `docker compose run <report|admin> django-admin makemessages --all`
   * If you have made translations in core_organizational_structure, you'll have to:
   ```
     docker-compose exec admin bash
