@@ -67,7 +67,21 @@
           <input name="text"
                  id="upload-text"
                  type="text"
+<<<<<<< HEAD
                  class="upload" />
+=======
+                 class="upload"
+                 spellcheck="true"
+                 placeholder="..."
+                 maxlength="2000"> 
+          </textarea>
+          <br><br>
+          <input name="KLE-switch"
+                  id="kle-switch"
+                  type="checkbox"
+                  class="upload">{% trans "Enable classification (slower)" %}
+          </input>
+>>>>>>> 610b29719 (Added placeholder='...' to avoid wierd spaces in textfield when reloading page)
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>
