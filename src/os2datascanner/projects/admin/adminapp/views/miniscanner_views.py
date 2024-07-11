@@ -20,7 +20,6 @@ from os2datascanner.engine2.commands.classify import classify
 from os2datascanner.utils.resources import get_resource_folder
 
 resources_path = str(get_resource_folder())
-print(resources_path)
 kle_default_path = resources_path + "/downloads/os2kledata/OS2KLE.json"
 
 logger = structlog.get_logger("adminapp")
@@ -46,7 +45,12 @@ def mini_scan(item, rule):
 
 def get_classification_results(file):
     data = classify(kle_default_path, file)[0]
-    return data
+    res_objs = []
+    for res in data:
+        mini_obj = {}
+        mini_obj["id"], mini_obj["context"], mini_obj["weight"] = res # Unpacking values
+        res_objs.append(mini_obj)
+    return res_objs
 
 def mini_scan(scan_item, rule, kle:bool):
     """
@@ -102,13 +106,7 @@ def mini_scan(scan_item, rule, kle:bool):
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
                 if kle_res:
-                    yield {"kle_res": 
-                        {
-                            "file_name": ntr._name,
-                            "file_path": ntr.get_path(),
-                            "results": kle_res
-                        }
-                        }
+                    yield kle_res
  
 
             if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
@@ -176,14 +174,14 @@ def execute_mini_scan(request):  # noqa:CCR001
 
     if file_obj:
         for m in mini_scan(file_obj, rule, kle_switch):
-            if type(m) is dict:
-                kle_results.append(m)
+            if type(m) is list:
+                kle_results.extend(m)
             else:
                 replies.append(m)
     if text:
         for m in mini_scan(text, rule, kle_switch):
-            if type(m) is dict:
-                kle_results.append(m)
+            if type(m) is list:
+                kle_results.extend(m)
             else:
                 replies.append(m)
 

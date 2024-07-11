@@ -33,24 +33,31 @@
           {% endfor %}
         {% endfor %}
       {% endif %}
-      {% if kle_results %}
-        {% for fileres in kle_results %}
-              <tr>
-                <td>{{ fileres.kle_res.file_path }}</td>
-                <td>
-                  {% for subres in fileres.kle_res.results %}
-                    <p>{{ subres }}</p>
-                  {% endfor %}
-                </td>
-                <td>{% trans "Classification" %}</td>
-              </tr>
-        {% endfor %}
-      {% endif %}
       {% if not replies and not kle_results %}
         <tr>
-          <td colspan="3" style="text-align: center">{% translate "No matches found" %}</td>
+          <td colspan="3" style="text-align: center">{% trans "No matches found" %}</td>
         </tr>
       {% endif %}
     </tbody>
   </table>
+  {% if kle_results %}
+  <table class="datatable">
+    <thead>
+      <tr>
+        <th>{% trans "Classification id" %}</th>
+        <th>{% trans "Theme" %}</th>
+        <th>{% trans "Weight" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dict_obj in kle_results %}
+          <tr>
+            <td>{{ dict_obj.id }}</td>
+            <td>{{ dict_obj.context }}</td>
+            <td>{{ dict_obj.weight }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 {% endif %}
