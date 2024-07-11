@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-09 09:13+0200\n"
+"POT-Creation-Date: 2024-07-11 15:38+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -846,13 +846,21 @@ msgstr "Match"
 msgid "Match context"
 msgstr "Kontekst for match"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:45
-msgid "Classification"
-msgstr "Klassifikation"
-
-#: adminapp/templates/components/miniscanner/miniscan_results.html:51
+#: adminapp/templates/components/miniscanner/miniscan_results.html:38
 msgid "No matches found"
 msgstr "Ingen resultater fundet"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:47
+msgid "Classification id"
+msgstr "Klassifikations id"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:48
+msgid "Theme"
+msgstr "Tema"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:49
+msgid "Weight"
+msgstr "Vægt"
 
 #: adminapp/templates/components/navigation/navigation.html:11
 msgid "Scanner status"
@@ -3395,6 +3403,9 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:188
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Classification"
+#~ msgstr "Klassifikation"
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"

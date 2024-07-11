@@ -14,7 +14,7 @@ def classify(taxonomy, *files_to_scan):
         with open(f, "rt") as fp:
             sub_result = []
             for classification, weight in engine.classify(fp.read())[:5]:
-                sub_result.append(f"\t {classification.ident} {classification.label} {weight}")
+                sub_result.append([classification.ident, classification.label, weight])
             results.append(sub_result)
 
     return results
