@@ -16,7 +16,7 @@ get_tesseract_models
 get_os2kle_model() {
     mkdir -p "$here/downloads/os2kledata"
     pushd "$here/downloads/os2kledata"
-    curl --loadtion -o OS2KLE.json \
+    curl --location -o OS2KLE.json \
         "https://github.com/os2kle/os2kle/blob/master/OS2KLE.json"
 }
 
