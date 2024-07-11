@@ -1,5 +1,8 @@
 from typing import Union, Tuple
 from datetime import date
+from math import ceil
+from itertools import chain
+from re import Match
 
 
 # Updated list of dates with CPR numbers violating the Modulo-11 check. (Last
@@ -102,6 +105,65 @@ def modulus11_check_raw(cpr: str) -> bool:
     for numbers for which the modulus-11 check should not be performed.
     """
     return sum([int(c) * v for c, v in zip(cpr, _mod_11_table)]) % 11 == 0
+
+
+def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cut_off=0.15):
+    """Takes a list of cpr-looking numbers and accepted cpr-numbers,
+    and divides them into 40 "bins" based on position in the scanned object.
+    Each bin is only accepted if more than 15% of numbers in it, is also accepted cpr-numbers,
+    and at least one neighboring bin is accepted.
+    Returns a list of cpr-numbers that are in an accepted bin."""
+
+    def elements_in_bin(start: int, all_elements: list[Match], last_position: int):
+        """Given an iteration start, list of elements (numbers/cprs),
+        and the last position of a bin, returns all elements in the bin."""
+        elems_in_bin = []
+        elem_ind = start
+        while elem_ind < len(all_elements) and all_elements[elem_ind].start(0) < (last_position):
+            elems_in_bin.append(all_elements[elem_ind])
+            elem_ind += 1
+        return elems_in_bin
+
+    if not numbers or not cprs:
+        return []
+
+    # The size of each bin is determined as the last position where 10 digit numbers are found
+    # divided by the number of bins
+    file_size = numbers[-1].end(0)
+    bin_size = ceil(file_size / num_bins)
+
+    bin_accepted = [False] * (num_bins + 1)
+    bin_storage = [[] for _ in range(num_bins + 1)]
+
+    next_num = 0
+    next_cpr = 0
+    for bin_ind in range(1, num_bins+1):
+        # The last position of a bin, is its index times the size of bins
+        bin_end_position = bin_size * bin_ind
+
+        # Find the number of numbers in the current bin
+        bin_number_count = len(elements_in_bin(next_num, numbers, bin_end_position))
+        next_num += bin_number_count
+
+        # Find all cprs in the current bin
+        bin_cprs = elements_in_bin(next_cpr, cprs, bin_end_position)
+        next_cpr += len(bin_cprs)
+        bin_storage[bin_ind].extend(bin_cprs)
+
+        # A bin without numbers, or with more cpr/number ratio higher than cut_off is accepted
+        bin_accepted[bin_ind] = (bin_number_count == 0 or
+                                 len(bin_cprs) / bin_number_count >= cut_off)
+
+        # A bin whose neighbors weren't accepted, isn't accepted
+        bin_accepted[bin_ind-1] = (bin_accepted[bin_ind-1] and
+                                   (bin_accepted[bin_ind-2] or bin_accepted[bin_ind]))
+
+    # Check last bins neighbor
+    bin_accepted[num_bins] = bin_accepted[num_bins] and bin_accepted[num_bins-1]
+
+    filtered_cprs = chain.from_iterable(
+        bin_storage[i] for i in range(1, num_bins+1) if bin_accepted[i])
+    return list(filtered_cprs)
 
 
 class CprProbabilityCalculator(object):
