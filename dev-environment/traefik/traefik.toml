@@ -6,9 +6,6 @@
   [entryPoints.websecure]
     address = ":443"
     [entryPoints.websecure.http.tls]
-  
-
-
 
 [certificatesResolvers.le-http.acme]
   email = "driftgruppen@magenta.dk"
@@ -23,9 +20,9 @@
     provider = "acme-dns"
     disablePropagationCheck = true
 
-
 [providers]
   [providers.file]
     directory = "/etc/traefik/dynamic"
     watch = true
+
 [accessLog]

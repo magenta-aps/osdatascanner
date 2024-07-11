@@ -18,7 +18,8 @@ from os2datascanner.server import settings
 ALLOWED_FILE_FORMATS = [
     'text/plain',
     'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.oasis.opendocument.text'
 ]
 
 # The maximum file size in bytes (201 MB)
