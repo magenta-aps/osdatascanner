@@ -17,9 +17,10 @@ from os2datascanner.engine2.model.utilities.temp_resource import (
 from os2datascanner.engine2.pipeline import messages, worker
 from os2datascanner.projects.admin import settings
 from os2datascanner.engine2.commands.classify import classify
+from os2datascanner.utils.resources import get_resource_folder
 
-here = os.path.dirname(os.path.abspath(__file__))
-kle_default_path = os.path.join(here, 'data/OS2KLE.json')
+resources_path = get_resource_folder()
+kle_default_path = resources_path + "/os2kledata/OS2KLE.json"
 
 logger = structlog.get_logger("adminapp")
 
