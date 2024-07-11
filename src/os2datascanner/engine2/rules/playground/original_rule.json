@@ -1,39 +1,312 @@
 {
   "type": "and",
   "components": [
-    4,
-    {
-      "type": "not",
-      "rule": 2
-    },
-    2,
-    3,
+    1,
     {
       "type": "or",
       "components": [
-        4
-      ]
-    },
-    {
-      "type": "and",
-      "components": [
-        2,
-        {
-          "type": "and",
-          "components": [
-              2, 3, 4
-          ]
-        }
-      ]
-    },
-    {
-      "type": "or",
-      "components": [
+        1,
         2,
         {
           "type": "or",
           "components": [
-              2, 3, 4
+            1,
+            2,
+            {
+              "type": "or",
+              "components": [
+                1,
+                2,
+                {
+                  "type": "or",
+                  "components": [
+                    1,
+                    2,
+                    {
+                      "type": "or",
+                      "components": [
+                        1,
+                        2,{
+                          "type": "or",
+                          "components": [
+                            1,
+                            2,
+                            {
+                              "type": "or",
+                              "components": [
+                                1,
+                                2,
+                                {
+                                  "type": "or",
+                                  "components": [
+                                    1,
+                                    2,
+                                    {
+                                      "type": "or",
+                                      "components": [
+                                        1,
+                                        2,
+                                        {
+                                          "type": "or",
+                                          "components": [
+                                            1,
+                                            2,{
+                                              "type": "or",
+                                              "components": [
+                                                1,
+                                                2,
+                                                {
+                                                  "type": "or",
+                                                  "components": [
+                                                    1,
+                                                    2,
+                                                    {
+                                                      "type": "or",
+                                                      "components": [
+                                                        1,
+                                                        2,
+                                                        {
+                                                          "type": "or",
+                                                          "components": [
+                                                            1,
+                                                            2,
+                                                            {
+                                                              "type": "or",
+                                                              "components": [
+                                                                1,
+                                                                2,
+                                                                {
+                                                                  "type": "or",
+                                                                  "components": [
+                                                                    1,
+                                                                    2,
+                                                                    {
+                                                                      "type": "or",
+                                                                      "components": [
+                                                                        1,
+                                                                        2,
+                                                                        {
+                                                                          "type": "or",
+                                                                          "components": [
+                                                                            1,
+                                                                            2,
+                                                                            {
+                                                                              "type": "or",
+                                                                              "components": [
+                                                                                1,
+                                                                                2,
+                                                                                {
+                                                                                  "type": "or",
+                                                                                  "components": [
+                                                                                    1,
+                                                                                    2,{
+                                                                                      "type": "or",
+                                                                                      "components": [
+                                                                                        1,
+                                                                                        2,
+                                                                                        {
+                                                                                          "type": "or",
+                                                                                          "components": [
+                                                                                            1,
+                                                                                            2,
+                                                                                            {
+                                                                                              "type": "or",
+                                                                                              "components": [
+                                                                                                1,
+                                                                                                2,
+                                                                                                {
+                                                                                                  "type": "or",
+                                                                                                  "components": [
+                                                                                                    1,
+                                                                                                    2,
+                                                                                                    {
+                                                                                                      "type": "or",
+                                                                                                      "components": [
+                                                                                                        1,
+                                                                                                        2,{
+                                                                                                          "type": "or",
+                                                                                                          "components": [
+                                                                                                            1,
+                                                                                                            2,
+                                                                                                            {
+                                                                                                              "type": "or",
+                                                                                                              "components": [
+                                                                                                                1,
+                                                                                                                2,
+                                                                                                                {
+                                                                                                                  "type": "or",
+                                                                                                                  "components": [
+                                                                                                                    1,
+                                                                                                                    2,
+                                                                                                                    {
+                                                                                                                      "type": "or",
+                                                                                                                      "components": [
+                                                                                                                        1,
+                                                                                                                        2,
+                                                                                                                        {
+                                                                                                                          "type": "or",
+                                                                                                                          "components": [
+                                                                                                                            1,
+                                                                                                                            2,
+                                                                                                                            {
+                                                                                                                              "type": "or",
+                                                                                                                              "components": [
+                                                                                                                                1,
+                                                                                                                                2,
+                                                                                                                                {
+                                                                                                                                  "type": "or",
+                                                                                                                                  "components": [
+                                                                                                                                    1,
+                                                                                                                                    2,
+                                                                                                                                    {
+                                                                                                                                      "type": "or",
+                                                                                                                                      "components": [
+                                                                                                                                        1,
+                                                                                                                                        2,
+                                                                                                                                        {
+                                                                                                                                          "type": "or",
+                                                                                                                                          "components": [
+                                                                                                                                            1,
+                                                                                                                                            2,
+                                                                                                                                            {
+                                                                                                                                              "type": "or",
+                                                                                                                                              "components": [
+                                                                                                                                                1,
+                                                                                                                                                2,{
+                                                                                                                                                  "type": "or",
+                                                                                                                                                  "components": [
+                                                                                                                                                    1,
+                                                                                                                                                    2,
+                                                                                                                                                    {
+                                                                                                                                                      "type": "or",
+                                                                                                                                                      "components": [
+                                                                                                                                                        1,
+                                                                                                                                                        2,
+                                                                                                                                                        {
+                                                                                                                                                          "type": "or",
+                                                                                                                                                          "components": [
+                                                                                                                                                            1,
+                                                                                                                                                            2,
+                                                                                                                                                            {
+                                                                                                                                                              "type": "or",
+                                                                                                                                                              "components": [
+                                                                                                                                                                1,
+                                                                                                                                                                2,
+                                                                                                                                                                {
+                                                                                                                                                                  "type": "or",
+                                                                                                                                                                  "components": [
+                                                                                                                                                                    1,
+                                                                                                                                                                    2,{
+                                                                                                                                                                      "type": "or",
+                                                                                                                                                                      "components": [
+                                                                                                                                                                        1,
+                                                                                                                                                                        2,
+                                                                                                                                                                        {
+                                                                                                                                                                          "type": "or",
+                                                                                                                                                                          "components": [
+                                                                                                                                                                            1,
+                                                                                                                                                                            2,
+                                                                                                                                                                            {
+                                                                                                                                                                              "type": "or",
+                                                                                                                                                                              "components": [
+                                                                                                                                                                                1,
+                                                                                                                                                                                2,
+                                                                                                                                                                                {
+                                                                                                                                                                                  "type": "or",
+                                                                                                                                                                                  "components": [
+                                                                                                                                                                                    1,
+                                                                                                                                                                                    2,
+                                                                                                                                                                                    {
+                                                                                                                                                                                      "type": "or",
+                                                                                                                                                                                      "components": [
+                                                                                                                                                                                        1,
+                                                                                                                                                                                        2
+                                                                                                                                                                                      ]
+                                                                                                                                                                                    }
+                                                                                                                                                                                  ]
+                                                                                                                                                                                }
+                                                                                                                                                                              ]
+                                                                                                                                                                            }
+                                                                                                                                                                          ]
+                                                                                                                                                                        }
+                                                                                                                                                                      ]
+                                                                                                                                                                    }
+                                                                                                                                                                  ]
+                                                                                                                                                                }
+                                                                                                                                                              ]
+                                                                                                                                                            }
+                                                                                                                                                          ]
+                                                                                                                                                        }
+                                                                                                                                                      ]
+                                                                                                                                                    }
+                                                                                                                                                  ]
+                                                                                                                                                }
+                                                                                                                                              ]
+                                                                                                                                            }
+                                                                                                                                          ]
+                                                                                                                                        }
+                                                                                                                                      ]
+                                                                                                                                    }
+                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                              ]
+                                                                                                                            }
+                                                                                                                          ]
+                                                                                                                        }
+                                                                                                                      ]
+                                                                                                                    }
+                                                                                                                  ]
+                                                                                                                }
+                                                                                                              ]
+                                                                                                            }
+                                                                                                          ]
+                                                                                                        }
+                                                                                                      ]
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           ]
         }
       ]
