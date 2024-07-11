@@ -84,6 +84,18 @@ document.addEventListener("click", function (e) {
     document.getElementById("order").value = targ.value;
     document.getElementById("order_by").value = targ.name;
   }
+
+  if (hasClass(targ, "show-more")) {
+    let overflowDiv = targ.parentElement;
+
+    overflowDiv.classList.toggle("full-path");
+
+    if (overflowDiv.classList.contains("full-path")) {
+      targ.innerText = gettext("Show less");
+    } else {
+      targ.innerText = gettext("Show more");
+    }
+  }
 });
 
 // function to use localStorage
@@ -267,6 +279,24 @@ document.addEventListener("DOMContentLoaded", function () {
       if (typeof ClipboardJS !== "undefined") {
         new ClipboardJS(document.querySelectorAll("[data-clipboard-text]"));
       }
+
+      expandOverflowButton();
     }
   });
+
+  function isContentOverflowing(element) {
+    return element.scrollWidth > element.clientWidth;
+  }
+  
+  function expandOverflowButton() {
+    const pathContainers = document.querySelectorAll(".overflow-ellipsis");
+    pathContainers.forEach (pathContainer => {
+      const moreBtn = pathContainer.querySelector(".show-more");
+      
+      if (moreBtn && isContentOverflowing(pathContainer)) {
+        moreBtn.style.display = "block";
+      }
+    });
+  }
 });
+

@@ -302,6 +302,7 @@
     }
 
     &--path {
+      font-size: 0.875rem;
       width: 100%;
       word-wrap: break-word;
     }
@@ -496,6 +497,7 @@
   }
 
   .overflow-ellipsis {
+    
     .employee__fullname {
       font-weight: bold;
     }
@@ -512,6 +514,11 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+  }
+
+  .full-path {
+    white-space: normal;
+    word-break: break-all;
   }
 
   &:first-child {
