@@ -26,7 +26,7 @@ class RuleOptimiser():
         """Copies the original rule into
         another file where it is cleaned"""
         obj = load_json(self.IN_PATH, extensive=True)
-        dump_json(obj, OUT_PATH)
+        dump_json(obj, self.OUT_PATH)
 
     def containify(self, container: 'CustomContainer'):
         """Transforms all {"type": "and" | "or", "components": [...]} 
@@ -180,7 +180,7 @@ class RuleOptimiser():
             obj = obj.replace(str(id), rule_ids[id])
         obj = obj.replace("'", '"') # Fixing some double | single quote problems
         obj = json.loads(obj)
-        with open(OUT_PATH, "wt") as file:
+        with open(self.OUT_PATH, "wt") as file:
             json.dump(obj, file)
 
     def run_optimiser(self):
@@ -190,7 +190,7 @@ class RuleOptimiser():
             # Get previous cycles. 
             # While previous optimisation_cycle() found stuff, run it again.
             # Maybe check for risk of infinite recursion
-        self.reformat_rule(OUT_PATH)
+        self.reformat_rule(self.OUT_PATH)
 
 
 class CustomContainer():
@@ -308,7 +308,3 @@ def container_count_op(container:CustomContainer, op):
 def contains_container(cont):
     # Boolean of (cont has any containers directly inside ?)
     return any(isinstance(i, CustomContainer) for i in cont.components)
-
-DIR = "/home/magenta/osdatascanner/src/os2datascanner/utils/optimiser/"
-IN_PATH = "/home/magenta/osdatascanner/src/os2datascanner/utils/optimiser/original_rule.json"
-OUT_PATH = "/home/magenta/osdatascanner/src/os2datascanner/utils/optimiser/output_rule.json"

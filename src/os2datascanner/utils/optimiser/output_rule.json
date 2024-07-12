@@ -16,6 +16,17 @@
                     "dataset": "da_20211018_laegehaandbog_stikord"
                 },
                 {
+                    "type": "ordered-wordlist",
+                    "dataset": "da_20211018_laegehaandbog_stikord"
+                },
+                {
+                    "type": "cpr",
+                    "modulus_11": true,
+                    "ignore_irrelevant": true,
+                    "examine_context": true,
+                    "exceptions": ""
+                },
+                {
                     "type": "address",
                     "whitelist": [],
                     "blacklist": []

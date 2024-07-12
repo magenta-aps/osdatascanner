@@ -11,3 +11,9 @@ def clean_rule(rule_path, output_path):
 
 clean = clean_rule(IN_PATH, OUT_PATH)
 # print(clean)
+
+cont = CustomContainer("or", [1, 2, 3], None)
+
+a = sorted([1, 2, cont])
+
+print(a)
