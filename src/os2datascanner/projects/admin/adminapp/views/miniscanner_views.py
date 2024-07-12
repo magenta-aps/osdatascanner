@@ -76,10 +76,10 @@ def mini_scan(scan_item, rule, kle:bool):
                 logger.warning(
                     "Miniscanner -"
                     "XX Got an unexpected error : {}XX".format(str(e))
-                )
+                )        
 
             with ntr.open("wb") as fp:
-                fp.write(contents)
+                fp.write(binary_scan_contents)
 
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
