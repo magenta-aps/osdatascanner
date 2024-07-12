@@ -286,6 +286,9 @@ class Account(Core_Account):
         Keyword arguments:
           week -- the number of weeks to count matches for.
         """
+        if weeks < 1:
+            raise ValueError("The number of weeks must be at least 1.")
+
         # This is placed here to avoid circular import
         from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 

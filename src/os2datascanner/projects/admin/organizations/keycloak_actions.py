@@ -8,7 +8,7 @@ from .utils import group_into, set_imported_fields, create_and_serialize, update
     delete_and_listify
 from ..organizations.broadcast_bulk_events import (BulkCreateEvent, BulkUpdateEvent,
                                                    BulkDeleteEvent)
-from ..adminapp.signals_utils import suppress_signals
+from os2datascanner.utils.section import suppress_django_signals
 from ..organizations.publish import publish_events
 from ..import_services.models.realm import Realm
 from ..import_services import keycloak_services
@@ -182,7 +182,7 @@ def _convert_sid(sid):
     return __convert_binary_sid_to_str(b_sid)
 
 
-@suppress_signals.wrap
+@suppress_django_signals
 def perform_import_raw(  # noqa: C901, CCR001 too complex
         org: Organization,
         remote,

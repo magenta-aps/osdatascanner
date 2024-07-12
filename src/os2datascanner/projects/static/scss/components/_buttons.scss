@@ -266,6 +266,11 @@
 
 // ***** Miscellaneous button adjacent styling *****
 
+.show-more {
+  display: none; // display is updated in JavaScript when needed 
+  cursor: pointer;
+}
+
 .button-group { // ***** Handles groups of buttons (surprice, surprice) and might need a refactoring (or at least a better name) at a later time *****
   display: flex;
   align-items: center;

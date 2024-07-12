@@ -1,7 +1,7 @@
 import sys
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import (
         Scanner)
@@ -10,7 +10,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import (
 class Command(BaseCommand):
     """Schedule a scanner job for execution by the pipeline, just as the user
     interface's "Run" button does."""
-    help = ugettext(__doc__)
+    help = gettext(__doc__)
 
     def add_arguments(self, parser):
         parser.add_argument(

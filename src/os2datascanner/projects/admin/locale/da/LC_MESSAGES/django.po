@@ -9,19 +9,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-"POT-Creation-Date: 2024-07-03 14:44+0200\n"
-=======
-"POT-Creation-Date: 2024-07-08 14:42+0200\n"
->>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
-=======
-"POT-Creation-Date: 2024-07-09 09:13+0200\n"
->>>>>>> e5e02736a (Fixed miniscan_results.)
-=======
-"POT-Creation-Date: 2024-07-11 15:38+0200\n"
->>>>>>> a76602bf6 (KLE classification implemented in miniscanner. Now loads json file via prepare.sh in /code/resources/downloads/os2kledata/. Add a blank rule like regex() for when only using classification ?)
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -835,8 +822,8 @@ msgid "OSdatascanner version"
 msgstr "OSdatascanner version"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:4
-msgid "No file uploaded."
-msgstr "Ingen fil uploadet."
+msgid "No file or text uploaded."
+msgstr "Ingen fil eller tekst uploadet"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:8
 msgid "File too big"
@@ -844,7 +831,7 @@ msgstr "Valgte fil er for stor"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:12
 msgid "No rule specified."
-msgstr "Ingen regel var givet."
+msgstr "Ingen regel var givet"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:17
 msgid "Location"
@@ -2022,16 +2009,12 @@ msgstr "OSdatascanner miniscanner"
 
 #: adminapp/templates/miniscan.html:24
 msgid ""
-<<<<<<< HEAD
-"The mini-scanner lets you execute any OSdatascanner rule on a single file, "
-"and returns the results directly to this page."
-=======
 "The mini-scanner lets you execute any OSdatascanner rule on a single file or "
 "piece of text. It returns the results directly to this page."
->>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
 msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
-"enkel fil. Resultaterne vises længere nede på denne side."
+"enkel fil eller tekst-stykke. "
+"Resultaterne vises længere nede på denne side."
 
 #: adminapp/templates/miniscan.html:30 adminapp/templates/miniscan.html:60
 msgid "Maximum allowed file size is: "
@@ -2057,52 +2040,6 @@ msgstr "Vælg venligst at scanne en anden (mindre) fil."
 msgid "Enter your text below"
 msgstr ""
 
-<<<<<<< HEAD
-#: adminapp/templates/miniscan.html:72
-msgid "Rule to execute"
-msgstr "Definér regel"
-
-#: adminapp/templates/miniscan.html:74
-msgid "Selected rule: "
-msgstr "Valgte regel: "
-
-#: adminapp/templates/miniscan.html:75
-msgid "None"
-msgstr "Ingen"
-
-#: adminapp/templates/miniscan.html:81 adminapp/templates/miniscan.html:82
-#: adminapp/templates/miniscan.html:115
-msgid "Upload a rule from the list"
-msgstr "Indlæs en regel fra listen"
-
-#: adminapp/templates/miniscan.html:82
-msgid "Load rule"
-msgstr "Indlæs regel"
-
-#: adminapp/templates/miniscan.html:88 adminapp/templates/miniscan.html:89
-#: adminapp/templates/miniscan.html:90
-msgid "Run"
-msgstr "Kør"
-
-#: adminapp/templates/miniscan.html:88 adminapp/templates/miniscan.html:89
-msgid "scanner"
-msgstr "scanner"
-
-#: adminapp/templates/miniscan.html:93 adminapp/templates/miniscan.html:94
-#: adminapp/templates/miniscan.html:95
-msgid "Clear"
-msgstr "Ryd"
-
-#: adminapp/templates/miniscan.html:93 adminapp/templates/miniscan.html:94
-msgid "content"
-msgstr "indhold"
-
-#: adminapp/templates/miniscan.html:98
-msgid "Scan result"
-msgstr "Scanresultat"
-
-#: adminapp/templates/miniscan.html:99
-=======
 #: adminapp/templates/miniscan.html:85
 msgid "Enable classification (slower)"
 msgstr "Slå klassifikation til (langsomere)"
@@ -2151,7 +2088,6 @@ msgid "Scan result"
 msgstr "Scanresultat"
 
 #: adminapp/templates/miniscan.html:115
->>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
@@ -2440,11 +2376,11 @@ msgid ""
 "Cannot build rule: %(r1)s must be used in conjunction with another rule."
 msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
-#: adminapp/views/views.py:200 import_services/models/exported_mixin.py:31
+#: adminapp/views/views.py:205 import_services/models/exported_mixin.py:31
 msgid "created"
 msgstr "oprettet"
 
-#: adminapp/views/views.py:200
+#: adminapp/views/views.py:205
 msgid "saved"
 msgstr "gemt"
 
@@ -3463,13 +3399,11 @@ msgstr "Navnet er allerede i brug."
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
-<<<<<<< HEAD
 #~ msgid "Write here"
 #~ msgstr "Skriv her"
-=======
+
 #~ msgid "Classification"
 #~ msgstr "Klassifikation"
->>>>>>> a76602bf6 (KLE classification implemented in miniscanner. Now loads json file via prepare.sh in /code/resources/downloads/os2kledata/. Add a blank rule like regex() for when only using classification ?)
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"

@@ -1,5 +1,3 @@
-import sys
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
@@ -33,45 +31,49 @@ class Command(BaseCommand):
 
     help = __doc__
 
+    default_password = "setup"
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--client-name",
             type=str,
-            metavar="Client name",
+            metavar="CLIENT_NAME",
             help="Desired name of client",
             default=settings.NOTIFICATION_INSTITUTION,
         )
         parser.add_argument(
             "--org-name",
             type=str,
-            metavar="Organization name",
+            metavar="ORGANIZATION_NAME",
             help="Desired name of organization",
             default=settings.NOTIFICATION_INSTITUTION,
         )
         parser.add_argument(
             "--email",
             type=str,
-            metavar="Contact email",
+            metavar="CONTACT_EMAIL",
             help="Email for contacting client",
             default="",
         )
         parser.add_argument(
             "--phone",
             type=str,
-            metavar="Contact phone number",
+            metavar="CONTACT_PHONE_NUMBER",
             help="Phone number for contacting client",
             default="",
         )
         parser.add_argument(
             "--password",
             type=str,
-            metavar="Password for superuser",
-            default="setup",
+            metavar="SUPERUSER_PASSWORD",
+            help="Password for the superuser",
+            default=self.default_password,
         )
         parser.add_argument(
             "--username",
             type=str,
-            metavar="Username for superuser User and Account",
+            metavar="SUPERUSER_USERNAME",
+            help="Username for the superuser",
             default="os",
         )
 
@@ -84,7 +86,7 @@ class Command(BaseCommand):
         except IntegrityError:
             self.stdout.write(self.style.NOTICE(
                 f"Client with name {client_name} already exists. Command failed"))
-            sys.exit(1)
+            return
         self.stdout.write(self.style.SUCCESS("Client created succesfully"))
 
         self.stdout.write(f"Creating Organization {org_name}")
@@ -93,7 +95,7 @@ class Command(BaseCommand):
         except IntegrityError:
             self.stdout.write(self.style.NOTICE(
                 f"Organization with name {org_name} already exists. Command failed"))
-            sys.exit(1)
+            return
         self.stdout.write(self.style.SUCCESS("Organization created succesfully"))
 
         self.stdout.write(f"Creating superuser {username}")
@@ -102,9 +104,9 @@ class Command(BaseCommand):
         except IntegrityError:
             self.stdout.write(self.style.NOTICE(
                 f"User with name {username} already exists. Command failed"))
-            sys.exit(1)
+            return
         self.stdout.write(self.style.SUCCESS("Superuser created succesfully"))
-        if password == "setup":
+        if password == self.default_password:
             self.stdout.write(self.style.WARNING("Default password used. CHANGE THIS IMMEDIATELY"))
 
         self.stdout.write("Creating & synchronizing corresponding Account")

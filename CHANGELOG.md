@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## Version 3.24.0, 11th July 2024
 
 "Summer Summarum 🌞"
 
@@ -9,10 +9,48 @@
 - Extra details of a finished scannerjob now holds information in regard to objects
   skipped by last modified check. 
 
+- Initial support for pre-execution of rules:
+
+  - Sources can now perform pre-execution of rules during the exploration
+    stage, allowing the scanner engine to (for example) skip over irrelevant
+    files. This greatly improves scan performance.
+
+  - Pre-execution of rules is still in the preview stage, and is not yet
+    supported by all data sources.
+
 ### General improvements
 
 - Labels in Outlook are no longer named "OS2datascanner X", but rather
   "OSdatascanner X". Already existing labels are not changed.
+
+- Django version bumped to 4.0.1.
+
+- Extended unit tests for the initial_setup-command using ✧˖°.mutmut.°˖✧.
+
+- Outphased django TestCase in the report module, now using pytest instead.
+
+- CPRule.match() has been refactored to reduce redundancy.
+
+- The cprrule context-check "bin_check", has been moved to cpr_probability.py,
+  where the rest of the cpr utility functions are located.
+
+- Very long paths on results in the report module can now be expanded,
+  showing the full path to the source of a match. 
+
+### Bugfixes
+
+- Documentreports with no created_timestamp no longer crashes the DPO module.
+
+- The DPO module no longer crashes if all document reports are more than a 
+  year old.
+
+- The CPRRule context check will no longer ignore symbols between words when
+  considering contexts.
+
+- Deletion operations run as part of an organisational import job can no
+  longer "leak out" and pre-emptively take effect in the report module.
+  This reduces the risk of the admin system and report module falling out of
+  sync.
 
 ## Version 3.23.1, 25th June 2024
 
@@ -25,15 +63,6 @@
 
 - Management command "test_checkup" for checking if a handle specified by a 
   ScheduledCheckup can still be reached by the system.
-
-- Initial support for pre-execution of rules:
-
-  - Sources can now perform pre-execution of rules during the exploration
-    stage, allowing the scanner engine to (for example) skip over irrelevant
-    files. This greatly improves scan performance.
-
-  - Pre-execution of rules is still in the preview stage, and is not yet
-    supported by all data sources.
 
 ### General improvements
 
@@ -2808,6 +2837,8 @@ This hotfix release corrects webscan link parsing.
 
 - LDAP synchronisation no longer fails when Keycloak omits a required field
   whose value would otherwise be empty.
+
+- Allow .odt filescan in demoscanner
 
 ## Version 3.11.2, 10th August 2021
 

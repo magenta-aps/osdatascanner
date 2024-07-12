@@ -40,9 +40,7 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
         context["customrule_list"] = CustomRule.objects.annotate(rule_field=F("_rule"))
 
         return context
-
-def mini_scan(item, rule):
-
+      
 def get_classification_results(file):
     data = classify(kle_default_path, file)[0]
     res_objs = []
@@ -61,31 +59,14 @@ def mini_scan(scan_item, rule, kle:bool):
     """
 
     try:
-<<<<<<< HEAD
-        name = item.name
-    except:
-        name = "text"
-    with NamedTemporaryResource(name) as ntr:
-=======
         item_name = scan_item.name
     except AttributeError: 
         # It's not a file does not possess a name attribute. Therefore, it's text.
         item_name = "text.txt"
-
-<<<<<<< HEAD
-    with NamedTemporaryResource(item_name) as ntr:
->>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)
-
-=======
+        
     if rule:
         with NamedTemporaryResource(item_name) as ntr:
->>>>>>> e5e02736a (Fixed miniscan_results.)
             try:
-<<<<<<< HEAD
-                contents = item.read()
-            except:
-                contents = item.encode()
-=======
                 binary_scan_contents = scan_item.read()
             except AttributeError: 
                 # It's not a file and can't be read. Therefore, it's text.
@@ -96,12 +77,9 @@ def mini_scan(scan_item, rule, kle:bool):
                     "Miniscanner -"
                     "XX Got an unexpected error : {}XX".format(str(e))
                 )
->>>>>>> 6c7ae075d (Added tests for KLE classification.)
-
 
             with ntr.open("wb") as fp:
                 fp.write(contents)
-
 
             if kle:
                 kle_res = get_classification_results(ntr.get_path())
@@ -143,7 +121,8 @@ def mini_scan(scan_item, rule, kle:bool):
                         "Miniscanner -"
                         " Rejected file that exceeded the size limit.")
 
-def execute_mini_scan(request):  # noqa:CCR001
+
+def execute_mini_scan(request):
     context = {
         "kle": (kle_switch := request.POST.get("KLE-switch") or "off"),
         "file_obj": (file_obj := request.FILES.get("file")),
@@ -185,10 +164,4 @@ def execute_mini_scan(request):  # noqa:CCR001
             else:
                 replies.append(m)
 
-<<<<<<< HEAD
-    print(json.dumps(context, indent=3))
-
     return render(request, "components/miniscanner/miniscan_results.html", context)
-=======
-    return render(request, "components/miniscanner/miniscan_results.html", context)
->>>>>>> 9b9815d5f (Support for files and text. Now also shows up in the results section.)

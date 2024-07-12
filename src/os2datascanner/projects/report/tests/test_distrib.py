@@ -1,4 +1,4 @@
-from django.test import TestCase
+import pytest
 
 from os2datascanner.engine2.model.file import (
         FilesystemSource, FilesystemHandle)
@@ -6,7 +6,7 @@ from os2datascanner.engine2.rules.dummy import AlwaysMatchesRule
 from os2datascanner.engine2.pipeline import messages
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.models.documentreport import DocumentReport
-from ..organizations.models import Alias, Account, Organization
+from ..organizations.models import Alias, Account, Organization, AliasType
 from .generate_test_data import record_match, record_metadata
 
 
@@ -57,6 +57,13 @@ THHO,Theo,Holm,THHO@vstkom.dk
 WIJO,Wilhelm,Johannsen,WIJO@vstkom.dk"""
 
 
+@pytest.fixture
+def danish_botanists_organization():
+    return Organization.objects.create(
+        name="Danish Botanists"
+    )
+
+
 def create_botanists(org: Organization):
     for r in raw_botanists.splitlines():
         username, first_name, last_name, email = r.split(",")
@@ -66,27 +73,33 @@ def create_botanists(org: Organization):
                 last_name=last_name,
                 organization=org)
         alias = Alias.objects.create(
-                _alias_type="email",
+                _alias_type=AliasType.EMAIL,
                 _value=email,
                 account=account,
                 user=account.user)
         create_alias_and_match_relations(alias)
 
 
-lucky_file = FilesystemHandle(
+@pytest.fixture
+def lucky_file():
+    return FilesystemHandle(
         FilesystemSource("/home/caro/Documents"),
         "Haandbog i den danske Flora.wp")
 
 
-scan_spec = messages.ScanSpecMessage(
+@pytest.fixture
+def lucky_scan_spec(lucky_file):
+    return messages.ScanSpecMessage(
         scan_tag=messages.ScanTagFragment.make_dummy(),
         source=lucky_file.source,
         rule=AlwaysMatchesRule(),
         configuration={}, progress=None, filter_rule=None)
 
 
-match_message = messages.MatchesMessage(
-        scan_spec=scan_spec,
+@pytest.fixture
+def lucky_match_message(lucky_scan_spec, lucky_file):
+    return messages.MatchesMessage(
+        scan_spec=lucky_scan_spec,
         handle=lucky_file,
         matched=True,
         matches=[
@@ -96,55 +109,57 @@ match_message = messages.MatchesMessage(
         ])
 
 
-metadata_message = messages.MetadataMessage(
-        scan_tag=scan_spec.scan_tag,
+@pytest.fixture
+def caro_metadata_message(lucky_scan_spec, lucky_file):
+    return messages.MetadataMessage(
+        scan_tag=lucky_scan_spec.scan_tag,
         handle=lucky_file,
         metadata={
             "email-account": "CARO@vstkom.dk"
         })
 
 
-class MatchDistributionTest(TestCase):
-    def test_distribution(self):
+@pytest.mark.django_db
+class TestMatchDistribution:
+
+    def test_distribution(
+            self,
+            danish_botanists_organization,
+            lucky_match_message,
+            caro_metadata_message):
         """Results received after organisational information has been created
         are correctly assigned to the relevant accounts."""
-        org = Organization.objects.create(name="Vejstrand Kommune")
-        create_botanists(org)
-        record_match(match_message._deep_replace(
-                scan_spec__scan_tag__organisation__uuid=org.uuid))
-        record_metadata(metadata_message._deep_replace(
-                scan_tag__organisation__uuid=org.uuid))
+        create_botanists(danish_botanists_organization)
+        record_match(lucky_match_message._deep_replace(
+                scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid))
+        record_metadata(caro_metadata_message._deep_replace(
+                scan_tag__organisation__uuid=danish_botanists_organization.uuid))
 
-        self.assertEqual(
-                DocumentReport.objects.count(),
-                1,
-                "too many DocumentReports")
+        assert DocumentReport.objects.count() == 1
+
         dr = DocumentReport.objects.get()
 
         caro = Account.objects.get(username="CARO")
-        self.assertIn(
-                dr,
-                caro.aliases.get().match_relation.all(),
-                "alias not connected to user metadata")
 
-    def test_retroactive_distribution(self):
+        assert dr in caro.aliases.get().match_relation.all()
+
+    def test_retroactive_distribution(
+            self,
+            danish_botanists_organization,
+            lucky_match_message,
+            caro_metadata_message):
         """Results received before organisational information are correctly
         assigned to the relevant accounts upon their creation."""
-        org = Organization.objects.create(name="Vejstrand Kommune")
-        record_match(match_message._deep_replace(
-                scan_spec__scan_tag__organisation__uuid=org.uuid))
-        record_metadata(metadata_message._deep_replace(
-                scan_tag__organisation__uuid=org.uuid))
-        create_botanists(org)
+        record_match(lucky_match_message._deep_replace(
+                scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid))
+        record_metadata(caro_metadata_message._deep_replace(
+                scan_tag__organisation__uuid=danish_botanists_organization.uuid))
+        create_botanists(danish_botanists_organization)
 
-        self.assertEqual(
-                DocumentReport.objects.count(),
-                1,
-                "too many DocumentReports")
+        assert DocumentReport.objects.count() == 1
+
         dr = DocumentReport.objects.get()
 
         caro = Account.objects.get(username="CARO")
-        self.assertIn(
-                dr,
-                caro.aliases.get().match_relation.all(),
-                "alias not retroactively connected to user metadata")
+
+        assert dr in caro.aliases.get().match_relation.all()
