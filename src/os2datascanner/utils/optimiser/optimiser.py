@@ -266,14 +266,14 @@ def load_json(path, extensive=False):
 def dump_json(obj, output_path):
     # Dumps python dict object as json to given path
     with open(output_path, "wt") as file:
-        json.dump(obj, file, indent=2)
+        json.dump(obj, file, indent=4)
 
 def display(data):
     # Displays CustomContainer object as a dict
     try:
-        print(json.dumps(data, indent=2))
+        print(json.dumps(data, indent=4))
     except:
-        print(json.dumps(json.loads(data), indent=2))
+        print(json.dumps(json.loads(data), indent=4))
 
 def arr_switch(arr:list, deletion, insertion):
     """Maybe useless, but quite frequently had
