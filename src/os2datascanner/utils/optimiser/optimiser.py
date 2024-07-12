@@ -1,5 +1,14 @@
 import json
 
+rule_ids = {
+    1:'{"type":"cpr","modulus_11":true,"ignore_irrelevant":true,"examine_context":true,"exceptions":""}',
+    2: '{"type":"address","whitelist":[],"blacklist":[]}',
+    3: '{"type":"name","whitelist":[],"blacklist":[],"expansive":false}',
+    4: '{"type":"name","whitelist":[],"blacklist":[],"expansive":true}',
+    5: '{"type":"ordered-wordlist","dataset":"da_20211018_laegehaandbog_stikord"}',
+    6: '{"type":"passport"}'
+}
+
 class RuleOptimiser():
     def __init__(self, default_input_path: str, default_output_path: str) -> None:
         self.IN_PATH = default_input_path
@@ -16,7 +25,7 @@ class RuleOptimiser():
     def setup(self):
         """Copies the original rule into
         another file where it is cleaned"""
-        obj = load_json(self.IN_PATH)
+        obj = load_json(self.IN_PATH, extensive=True)
         dump_json(obj, OUT_PATH)
 
     def containify(self, container: 'CustomContainer'):
@@ -165,6 +174,14 @@ class RuleOptimiser():
         dump_json(main.as_dict(), self.OUT_PATH)
         return self.cycles > 1 # If it did more than 1 cycle, it means it found something
 
+    def reformat_rule(self, path):
+        obj = str(load_json(path))
+        for id in rule_ids:
+            obj = obj.replace(str(id), rule_ids[id])
+        obj = obj.replace("'", '"') # Fixing some double | single quote problems
+        obj = json.loads(obj)
+        with open(OUT_PATH, "wt") as file:
+            json.dump(obj, file)
 
     def run_optimiser(self):
         refactored = True
@@ -173,6 +190,7 @@ class RuleOptimiser():
             # Get previous cycles. 
             # While previous optimisation_cycle() found stuff, run it again.
             # Maybe check for risk of infinite recursion
+        self.reformat_rule(OUT_PATH)
 
 
 class CustomContainer():
@@ -236,10 +254,14 @@ def inverse_extend(arr1, deletions):
             raise ValueError("ValueError occurred in inverse_extend()")
     return arr1
 
-def load_json(path):
+def load_json(path, extensive=False):
     # Loads json object from given path
     with open(path) as file:
-        return json.loads(file.read())
+        obj = file.read()
+        if extensive:
+            for id in rule_ids:
+                obj = obj.replace(rule_ids[id], str(id))
+        return json.loads(obj)
  
 def dump_json(obj, output_path):
     # Dumps python dict object as json to given path
