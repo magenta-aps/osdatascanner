@@ -36,54 +36,70 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
-def mini_scan(item, rule):
+def mini_scan(scan_item, rule):
+    """
+    This function will take a scanItem arg as well as a rule arg. It checks
+    the nature of scanItem (i.e. file or text), and performs the scan with
+    the required rule, given as parameter/arg. It yields each result into
+    the replies list in the execute_mini_scan() function.
+    """
+
     try:
-        name = item.name
-    except:
-        name = "text"
-    with NamedTemporaryResource(name) as ntr:
+        item_name = scan_item.name
+    except AttributeError:
+        # It's not a file does not possess a name attribute.
+        # Therefore, it's text.
+        item_name = "text"
 
-            try:
-                contents = item.read()
-            except:
-                contents = item.encode()
+    with NamedTemporaryResource(item_name) as ntr:
+        try:
+            binary_scan_contents = scan_item.read()
+        except AttributeError:
+            # It's not a file and can't be read. Therefore, it's text.
+            binary_scan_contents = scan_item.encode()
+        except Exception as e:
+            # In case of a second unknown error
+            logger.warning(
+                "Miniscanner -"
+                " Got an unexpected error : {}".format(str(e))
+            )
 
-            with ntr.open("wb") as fp:
-                fp.write(contents)
+        with ntr.open("wb") as fp:
+            fp.write(binary_scan_contents)
 
-            if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
+        if ntr.size() <= settings.MINISCAN_FILE_SIZE_LIMIT:
+            # XXX: it'd be nice to run this with timeout protection, but
+            # that isn't possible in a gunicorn worker
+            handle = FilesystemHandle.make_handle(ntr.get_path())
 
-                # XXX: it'd be nice to run this with timeout protection, but
-                # that isn't possible in a gunicorn worker
-                handle = FilesystemHandle.make_handle(ntr.get_path())
+            conv = messages.ConversionMessage(
+                scan_spec=messages.ScanSpecMessage(
+                    scan_tag=messages.ScanTagFragment.make_dummy(),
+                    source=handle.source,
+                    rule=rule,
+                    filter_rule=None,
+                    configuration={},
+                    progress=None),
+                handle=handle,
+                progress=messages.ProgressFragment(
+                    rule=rule,
+                    matches=[]),
+                ).to_json_object()
 
-                conv = messages.ConversionMessage(
-                    scan_spec=messages.ScanSpecMessage(
-                        scan_tag=messages.ScanTagFragment.make_dummy(),
-                        source=handle.source,
-                        rule=rule,
-                        filter_rule=None,
-                        configuration={},
-                        progress=None),
-                    handle=handle,
-                    progress=messages.ProgressFragment(
-                        rule=rule,
-                        matches=[]),
-                    ).to_json_object()
+            for channel, message_ in worker.process(SourceManager(), conv):
+                if channel in ("os2ds_matches",):
+                    message = messages.MatchesMessage.from_json_object(
+                        message_)
 
-                for channel, message_ in worker.process(SourceManager(), conv):
-                    if channel in ("os2ds_matches",):
-                        message = messages.MatchesMessage.from_json_object(
-                            message_)
+                    if not message.matched:
+                        continue
 
-                        if not message.matched:
-                            continue
+                    yield message
+        else:
+            logger.warning(
+                    "miniscanner rejected too large object",
+                    item_name=item_name)
 
-                        yield message
-            else:
-                logger.warning(
-                        "Miniscanner -"
-                        " Rejected file that exceeded the size limit.")
 
 def execute_mini_scan(request):  # noqa:CCR001
     context = {

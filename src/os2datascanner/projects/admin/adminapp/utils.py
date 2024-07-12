@@ -17,7 +17,7 @@ from typing import NamedTuple
 
 from django.utils import timezone
 
-from .signals import publish_events
+from ..organizations.publish import publish_events
 from ....utils.system_utilities import time_now
 
 

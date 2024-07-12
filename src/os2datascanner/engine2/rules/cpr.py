@@ -1,16 +1,16 @@
+from dataclasses import dataclass
 from typing import Iterator, List, Match, Optional, Tuple, Dict
 import re
 from functools import partial
 from itertools import chain
 from enum import Enum, unique
 import structlog
-from math import ceil
 
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
 from .logical import oxford_comma
 from .utilities.context import make_context, add_context_filter
-from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator
+from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator, cpr_bin_check
 from .utilities.properties import RuleProperties, RulePrecedence
 
 logger = structlog.get_logger("engine2")
@@ -36,6 +36,18 @@ _operators = ("+", "-", )
 _symbols = ("!", "#", "%", )
 _all_symbols = _operators + _symbols
 # fmt: on
+
+
+@dataclass
+class WordOrSymbol:
+    """For future analysis, it is practical to know if a word or symbol was
+    found in the context of a match. This class takes the tuple from the regex
+    findall method as an argument, and remembers whether it is a word or a
+    symbol. Crucially, this allows us to remember the order of words and
+    symbols in the context."""
+
+    word: str | None
+    symbol: str | None
 
 
 @unique
@@ -102,54 +114,6 @@ class CPRRule(RegexRule):
         else:
             return "CPR number"
 
-    def _bin_check(self, numbers, cprs):  # noqa: CCR001, C901 too high cognitive complexity
-        num_elems = len(numbers)
-        num_cprs = len(cprs)
-        if num_cprs == 0:
-            return []
-
-        file_size = numbers[-1].end(0)
-        num_bins = 40
-        bin_size = ceil(file_size / num_bins)
-
-        bin_accepted = [False] * (num_bins + 1)
-        bin_storage = [[] for _ in range(num_bins + 1)]
-
-        cut_off = 0.15
-
-        i_nums = 0
-        i_cprs = 0
-        for i_bin in range(1, num_bins+1):
-            def elements_in_bin(i, max_elems, elems, end_point):
-                elems_in_bin = []
-                while i < max_elems and elems[i].start(0) < (end_point):
-                    elems_in_bin.append(elems[i])
-                    i += 1
-                return elems_in_bin
-
-            # Iterates through all elements in current bin
-            nums_in_bin = len(elements_in_bin(i_nums, num_elems, numbers, bin_size * i_bin))
-            i_nums += nums_in_bin
-
-            # Iterates through all cprs in current bin
-            cprs_in_bin = elements_in_bin(i_cprs, num_cprs, cprs, bin_size * i_bin)
-            i_cprs += len(cprs_in_bin)
-            bin_storage[i_bin].extend(cprs_in_bin)
-
-            # Check if a bin has matches and is above the cut-off limit.
-            bin_accepted[i_bin] = nums_in_bin == 0 or (len(cprs_in_bin) / nums_in_bin >= cut_off)
-
-            # A bin who's neighbors weren't accepted, isn't accepted
-            bin_accepted[i_bin-1] = (bin_accepted[i_bin-1] and
-                                     (bin_accepted[i_bin-2] or bin_accepted[i_bin]))
-
-        # Check last bins neighbor
-        bin_accepted[num_bins] = bin_accepted[num_bins] and bin_accepted[num_bins-1]
-
-        filtered_cprs = chain.from_iterable(
-            bin_storage[i] for i in range(1, num_bins+1) if bin_accepted[i])
-        return list(filtered_cprs)
-
     def match(self, content: str) -> Optional[Iterator[dict]]:  # noqa: CCR001,E501,C901 too high cognitive complexity
         if content is None:
             return
@@ -159,8 +123,35 @@ class CPRRule(RegexRule):
                 logger.debug("Blacklist matched content", matches=m.group(0))
                 return
 
-        def _is_cpr(candidate: Match[str]):  # noqa: CCR001 Cognitive complexity is too high
-            cpr = candidate.group(1).replace(" ", "") + candidate.group(2)
+        def _probability(match: Match[str]):
+            """Given a match, calculates probability of being a cpr number,
+             by using the relevant probability calculations."""
+            cpr = match_to_cpr(match)
+
+            probability = 1.0
+            if self._ignore_irrelevant:
+                probability = calculator.cpr_check(cpr, do_mod11_check=False)
+                if isinstance(probability, str):
+                    logger.debug(f"{cpr} is not valid cpr due to {probability}")
+                    return False
+
+            cpr = cpr[0:4] + "XXXXXX"
+            low, high = match.span()
+            # only examine context if there is any
+            if self._examine_context and len(content) > (high - low):
+                p, ctype = self.examine_context(match)
+                # determine if probability stems from context or calculator
+                probability = p if p is not None else probability
+                ctype = ctype if ctype != [] else Context.PROBABILITY_CALC
+                logger.debug(f"{cpr} with probability {probability} from context "
+                             f"due to {ctype}")
+
+            return probability
+
+        def _is_cpr(candidate: Match[str]):
+            """Given a match, checks expections, modulus 11 check and calculates probability,
+             to determine if it is a cpr number."""
+            cpr = match_to_cpr(candidate)
 
             if cpr in self._exceptions:
                 return False
@@ -171,53 +162,18 @@ class CPRRule(RegexRule):
                     logger.debug(f"{cpr} failed modulus11 check due to {reason}")
                     return False
 
-            probability = 1.0
-            if self._ignore_irrelevant:
-                probability = calculator.cpr_check(cpr, do_mod11_check=False)
-                if isinstance(probability, str):
-                    logger.debug(f"{cpr} is not valid cpr due to {probability}")
-                    return False
-
-            cpr = cpr[0:4] + "XXXXXX"
-            low, high = candidate.span()
-            # only examine context if there is any
-            if self._examine_context and len(content) > (high - low):
-                p, ctype = self.examine_context(candidate)
-                # determine if probability stems from context or calculator
-                probability = p if p is not None else probability
-                ctype = ctype if ctype != [] else Context.PROBABILITY_CALC
-                logger.debug(f"{cpr} with probability {probability} from context "
-                             f"due to {ctype}")
-
-            if probability:
-                return True
-            else:
-                return False
+            return True if _probability(candidate) else False
 
         numbers = [m for m in self._compiled_expression.finditer(content)]
 
         cpr_numbers = [m for m in numbers if _is_cpr(m)]
 
         if self._examine_context:
-            cpr_numbers = self._bin_check(numbers, cpr_numbers)
+            cpr_numbers = cpr_bin_check(numbers, cpr_numbers)
 
         for m in cpr_numbers:
-            cpr = m.group(1).replace(" ", "") + m.group(2)
-
-            probability = 1.0
-            if self._ignore_irrelevant:
-                probability = calculator.cpr_check(cpr, do_mod11_check=False)
-
+            cpr = match_to_cpr(m)
             cpr = cpr[0:4] + "XXXXXX"
-            low, high = m.span()
-            # only examine context if there is any
-            if self._examine_context and len(content) > (high - low):
-                p, ctype = self.examine_context(m)
-                # determine if probability stems from context or calculator
-                probability = p if p is not None else probability
-                ctype = ctype if ctype != [] else Context.PROBABILITY_CALC
-                logger.debug(f"{cpr} with probability {probability} from context "
-                             f"due to {ctype}")
 
             yield {
                 "match": cpr,
@@ -228,7 +184,7 @@ class CPRRule(RegexRule):
                     self.sensitivity.value if self.sensitivity
                     else self.sensitivity
                 ),
-                "probability": probability,
+                "probability": _probability(m),
             }
 
     def examine_context(  # noqa: CCR001, C901 too high cognitive complexity
@@ -246,12 +202,14 @@ class CPRRule(RegexRule):
         """
 
         probability = None
-        words, symbols = self.extract_surrounding_words(match, n_words=3)
+        words_or_syms = self.extract_surrounding_words(match, n_words=3)
         ctype = []
 
-        # test if a whitelist-word is found in the context words.
+        # test if a whitelist-string is found in the context words.
         # combine the list of 'pre' & 'post' keys in words dict.
-        words_lower = [w.lower() for w in chain.from_iterable(words.values())]
+        words_lower = [
+            w.word.lower() for w in chain.from_iterable(
+                words_or_syms.values()) if w.word]
         if self._whitelist:
             for w in self._whitelist:
                 for cw in words_lower:
@@ -260,15 +218,15 @@ class CPRRule(RegexRule):
                         return 1.0, ctype
 
         # test for balanced delimiters
+        # XXX: This only checks number of delimiters, not type, so. "[111111-1118}" is accepted
         delimiters = 0
-        for w in chain.from_iterable(symbols.values()):
-            if w.startswith(_pre_delim):
+        for w in chain.from_iterable(words_or_syms.values()):
+            if not w.symbol:
+                continue
+            w = w.symbol
+            if w in _pre_delim:
                 delimiters += 1
-            elif w.endswith(_pre_delim):
-                delimiters += 1
-            elif w.startswith(_post_delim):
-                delimiters -= 1
-            elif w.endswith(_post_delim):
+            elif w in _post_delim:
                 delimiters -= 1
             elif w in _all_symbols:
                 ctype.append((Context.SYMBOL, w))
@@ -278,24 +236,18 @@ class CPRRule(RegexRule):
             probability = 0.0
 
         # only do context checking on surrounding words
-        for w in [words["pre"][-1], words["post"][0]]:
-            if w == "" or self._compiled_expression.match(w):
+        for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:
+            if not w.word or self._compiled_expression.match(w.word):
                 continue
-            # this check is newer reached due to '\w' splitting
-            elif w.endswith(_all_symbols) or w.startswith(_all_symbols):
-                ctype.append((Context.SYMBOL, w))
-                probability = 0.0
             # test if surrounding word is a number (and not looks like a cpr)
-            elif is_number(w):
+            elif w.word and is_number(w.word):
                 probability = 0.0
-                ctype.append((Context.NUMBER, w))
-            elif not is_alpha_case(w):
+                ctype.append((Context.NUMBER, w.word))
+            elif w.word and not is_alpha_case(w.word):
                 # test for case, ie Magenta, magenta, MAGENTA are ok, but not MaGenTa
                 # nor magenta10. w must not be empty string
                 probability = 0.0
-                ctype.append((Context.WRONG_CASE, w))
-            else:
-                pass
+                ctype.append((Context.WRONG_CASE, w.word))
 
         return probability, ctype
 
@@ -314,30 +266,25 @@ class CPRRule(RegexRule):
         pre = " ".join(content[max(low-50, 0):low].split()[-n_words:])
         post = " ".join(content[high:high+50].split()[:n_words])
 
+        word_regex = r"(\w+(?:[-\./]\w*)*)"
+        symbol_regex = r"([^\w\s\.\"])"
         # split in two capture groups: (word, symbol)
         # Ex: 'The brown, fox' ->
         # [('The', ''), ('brown', ''), ('', ','), ('fox', '')]
-        word_str = r"(\w+(?:[-\./]\w*)*)"
-        symbol_str = r"([^\w\s\.\"])"
-        split_str = r"|".join([word_str, symbol_str])
+        split_str = r"|".join([word_regex, symbol_regex])
         pre_res = re.findall(split_str, pre)
         post_res = re.findall(split_str, post)
         # remove empty strings
-        pre_words = [s[0] for s in pre_res if s[0]]
-        post_words = [s[0] for s in post_res if s[0]]
-        pre_sym = [s[1] for s in pre_res if s[1]]
-        post_sym = [s[1] for s in post_res if s[1]]
+        pre_words = [WordOrSymbol(*s) for s in pre_res]
+        post_words = [WordOrSymbol(*s) for s in post_res]
 
         # XXX Should be set instead?
-        words = dict(
-            pre=pre_words if len(pre_words) > 0 else [""],
-            post=post_words if len(post_words) > 0 else [""],
+        words_or_syms = dict(
+            pre=pre_words if len(pre_words) > 0 else [WordOrSymbol("", "")],
+            post=post_words if len(post_words) > 0 else [WordOrSymbol("", "")],
         )
-        symbols = dict(
-            pre=pre_sym if len(pre_sym) > 0 else [""],
-            post=post_sym if len(post_sym) > 0 else [""],
-        )
-        return words, symbols
+
+        return words_or_syms
 
     def to_json_object(self) -> dict:
         # Deliberately skip the RegexRule implementation of this method (we
@@ -404,3 +351,8 @@ def is_alpha_case(s: str) -> bool:
     s = s.replace("-", "")
     # We could enforce s.isalpha() to prevent ma10ta, but then "nr:" would fail
     return s.istitle() or s.islower() or s.isupper()  # and s.isalpha()
+
+
+def match_to_cpr(match: Match[str]):
+    """Converts a match object into a cpr number without hyphen or space."""
+    return match.group(1).replace(" ", "") + match.group(2)

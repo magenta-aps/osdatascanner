@@ -103,16 +103,8 @@ class RestrictedCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class OrgRestrictedMixin(LoginRequiredMixin, ModelFormMixin):
+class OrgRestrictedMixin(LoginRequiredMixin):
     """Mixin class for views with organization-restricted queryset."""
-
-    def get_form_fields(self):
-        """Get the list of fields to use in the form for the view."""
-        if not self.fields:
-            return []
-        fields = [f for f in self.fields]
-
-        return fields
 
     def get_queryset(self, **kwargs):
         """Get queryset filtered by user's organization."""
@@ -122,7 +114,20 @@ class OrgRestrictedMixin(LoginRequiredMixin, ModelFormMixin):
                     "organization")))
 
 
-class RestrictedUpdateView(UpdateView, OrgRestrictedMixin):
+class OrgRestrictedFormMixin(OrgRestrictedMixin, ModelFormMixin):
+    """Mixin class for views with organizaiton-restricted queryset and form
+    fields."""
+
+    def get_form_fields(self):
+        """Get the list of fields to use in the form for the view."""
+        if not self.fields:
+            return []
+        fields = [f for f in self.fields]
+
+        return fields
+
+
+class RestrictedUpdateView(OrgRestrictedFormMixin, UpdateView):
     """Base class for updateviews restricted by organiztion."""
 
     def post(self, request, *args, **kwargs):
@@ -151,11 +156,11 @@ class RestrictedUpdateView(UpdateView, OrgRestrictedMixin):
         return super().form_valid(form)
 
 
-class RestrictedDetailView(DetailView, OrgRestrictedMixin):
+class RestrictedDetailView(OrgRestrictedMixin, DetailView):
     """Base class for detailviews restricted by organiztion."""
 
 
-class RestrictedDeleteView(DeleteView, OrgRestrictedMixin):
+class RestrictedDeleteView(OrgRestrictedMixin, DeleteView):
     """Base class for deleteviews restricted by organiztion."""
 
     def post(self, request, *args, **kwargs):

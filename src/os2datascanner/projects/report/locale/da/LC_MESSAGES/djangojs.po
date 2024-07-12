@@ -533,3 +533,11 @@ msgstr ""
 #, javascript-format
 msgid "% scanned"
 msgstr ""
+
+#: dist/js/tables/tableBehavior.js:299 js/tables/tableBehavior.js:299
+msgid "Show less"
+msgstr "Vis mindre"
+
+#: dist/js/tables/tableBehavior.js:301 js/tables/tableBehavior.js:301
+msgid "Show more"
+msgstr "Vis mere"

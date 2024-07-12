@@ -114,6 +114,32 @@ docker-compose run report python -m django test os2datascanner.projects.report.t
 Please note that the engine tests can be run using any of the five pipeline
 services as the basis, but a specific one is provided above for easy reference.
 
+### Mutation testing
+
+We utilize [mutmut](https://pypi.org/project/mutmut/) to do 
+[mutation testing](https://en.wikipedia.org/wiki/Mutation_testing) of our test 
+suite.
+
+In a nutshell, mutation testing works by introducing small changes (mutations)
+to some place in the code, then running relevant tests to make sure _some_ 
+tests correctly _fail_ with the mutation present. If no tests fail, the 
+sensitivity of the tests are likely too low.
+
+Mutmut is executed locally, so it must be installed first:
+
+```
+pip install mutmut
+```
+
+The desired settings are configured in the files `setup.cfg` under `[mutmut]`
+and `mutmut_config.py`.
+
+When all settings are configured, mutation testing is run with
+
+```
+mutmut run
+```
+
 ## Benchmark
 
 Like the test-suite, the engine also has a benchmarking suite, which is run

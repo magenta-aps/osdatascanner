@@ -823,8 +823,8 @@ msgid "OSdatascanner version"
 msgstr "OSdatascanner version"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:4
-msgid "No file uploaded."
-msgstr "Ingen fil uploadet."
+msgid "No file or text uploaded."
+msgstr "Ingen fil eller tekst uploadet"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:8
 msgid "File too big"
@@ -832,7 +832,7 @@ msgstr "Valgte fil er for stor"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:12
 msgid "No rule specified."
-msgstr "Ingen regel var givet."
+msgstr "Ingen regel var givet"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html:17
 msgid "Location"
@@ -1998,11 +1998,12 @@ msgstr "OSdatascanner miniscanner"
 
 #: adminapp/templates/miniscan.html:24
 msgid ""
-"The mini-scanner lets you execute any OSdatascanner rule on a single file, "
-"and returns the results directly to this page."
+"The mini-scanner lets you execute any OSdatascanner rule on a single file or "
+"piece of text. It returns the results directly to this page."
 msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
-"enkel fil. Resultaterne vises længere nede på denne side."
+"enkel fil eller tekst-stykke. "
+"Resultaterne vises længere nede på denne side."
 
 #: adminapp/templates/miniscan.html:30 adminapp/templates/miniscan.html:60
 msgid "Maximum allowed file size is: "
@@ -2360,11 +2361,11 @@ msgid ""
 "Cannot build rule: %(r1)s must be used in conjunction with another rule."
 msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
-#: adminapp/views/views.py:200 import_services/models/exported_mixin.py:31
+#: adminapp/views/views.py:205 import_services/models/exported_mixin.py:31
 msgid "created"
 msgstr "oprettet"
 
-#: adminapp/views/views.py:200
+#: adminapp/views/views.py:205
 msgid "saved"
 msgstr "gemt"
 

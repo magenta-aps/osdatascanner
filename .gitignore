@@ -21,6 +21,7 @@ src/os2datascanner/projects/static/dist
 src/os2datascanner/projects/uploads/
 src/os2datascanner/projects/report/media/images/*
 .vscode
+.mutmut-cache
 
 # Translations
 *.mo
