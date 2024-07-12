@@ -1,1 +1,1 @@
-{"type": "and", "components": [{"type": "cpr", "modulus_11": true, "ignore_irrelevant": true, "examine_context": true, "exceptions": ""}, {"type": "ordered-wordlist", "dataset": "da_20211018_laegehaandbog_stikord"}]}
+{"type": "and", "components": [{"type": "cpr", "modulus_11": true, "ignore_irrelevant": true, "examine_context": true, "exceptions": ""}, {"type": "or", "components": [{"type": "ordered-wordlist", "dataset": "da_20211018_laegehaandbog_stikord"}, {"type": "address", "whitelist": [], "blacklist": []}]}]}
