@@ -7,6 +7,17 @@ class RuleOptimiser():
         self.containers: list['CustomContainer'] = []
         self.found_redundancy: bool = True
         self.cycles: int = 0
+        self.setup()
+
+    @property
+    def clean_rule(self):
+        return load_json(self.OUT_PATH)
+
+    def setup(self):
+        """Copies the original rule into
+        another file where it is cleaned"""
+        obj = load_json(self.IN_PATH)
+        dump_json(obj, OUT_PATH)
 
     def containify(self, container: 'CustomContainer'):
         """Transforms all {"type": "and" | "or", "components": [...]} 
@@ -36,8 +47,6 @@ class RuleOptimiser():
             for cont in next_up:
                 for comp in cont.components:
                     if isinstance(comp, dict):
-                        print("[!] Found a dict instance whilst doing get_containers()")
-                        print(f"\tDict in question : {comp}")
                         new = CustomContainer(comp["type"], comp["components"], cont)
                         found.append(new)
                         cont.components.remove(comp)
@@ -52,14 +61,12 @@ class RuleOptimiser():
     def check_empty(self, container:'CustomContainer'):
         # Checks if container has no components i.e. AND(null) | OR(null)
         if not container.components:
-            print(f"Container has no more components :(")
-            print(f"\tRemoving container")
             try:
                 container.parent.components.remove(container)
                 self.containers.remove(container)
                 self.found_redundancy = True
             except ValueError:
-                print(f"\t[-] Failed to remove container, was already removed from its parent from prior redundancy")
+                pass
             return True
         return False
 
@@ -67,15 +74,12 @@ class RuleOptimiser():
     def check_useless(self, container:'CustomContainer'):
         # Useless i.e. AND(1), OR(1), etc ...
         if len(container.components) == 1:
-            print(f"Container has 1 component left")
-            print(f"\tRemoving container")
-            print(f"\tGiving the parent container his only component")
             try:
                 container.parent.components = arr_switch(container.parent.components, container, container.components[0])
                 self.containers.remove(container)
                 self.found_redundancy = True
             except ValueError:
-                print(f"\t[-] Failed to remove container, was already removed from its parent from prior redundancy")
+                pass
             return True
         return False
 
@@ -87,17 +91,8 @@ class RuleOptimiser():
             mem.append(k)
             if isinstance(k, int):
                 if -k in mem:
-                    print("\n********** [!!] Warning [!!] **********")
-                    print(f"Found symbol redundancy in container")
-                    print(f"\tContainer has {k} and {-k} in its components")
-
                     container.parent.components.remove(container)
                     self.containers.remove(container)
-                    return_value = (container.operator == "or")
-                    # Neat little trick above. If 1 or -1, always true. 1 and -1, always false
-
-                    print(f"Container was removed for always returning {return_value}")
-                    print("********** [!!] Warning [!!] **********\n")
                     self.found_redundancy = True
                     return True
         return False
@@ -107,15 +102,12 @@ class RuleOptimiser():
         If a cycle completed, a new one starts if the previous
         one found anything. If not, main() ends."""
         rule = load_json(self.OUT_PATH)
-        display(rule)
 
         main = CustomContainer(operator=rule["type"], components=rule["components"])
         main.parent = main
 
         self.found_redundancy = True
         self.cycles = 0
-
-        print("\nStart of this opt.cycle\n")
 
         while self.found_redundancy:
             self.cycles += 1
@@ -133,14 +125,11 @@ class RuleOptimiser():
             self.containers.extend(self.get_containers(main))
             self.containers = list(remove_duplicates(self.containers))
 
-            print(f"\n******************\n* On cycle n.[{self.cycles}] *\n******************\n")
             for cont in self.containers:
                 if isinstance(cont, CustomContainer):
 
                     unique_components = list(remove_duplicates(cont.components.copy()))
                     if not list_equality_no_order(cont.components.copy(), unique_components):
-                        print(f"Container got stripped of duplicate elements in his components")
-                        print(f"\tWent from : {cont.components} to {unique_components}")
                         cont.components = unique_components
                         self.found_redundancy = True
 
@@ -148,23 +137,13 @@ class RuleOptimiser():
 
                     if duplicates and cont != main:
                         self.found_redundancy = True
-                        
-                        if cont.components == cont.parent.components:
-                            print(f"Identical components between containers")
 
-                        print(f"Found duplicates between containers")
                         duplicates = list(find_duplicates(cont.components, cont.parent.components))
 
                         if cont.operator == "and" and cont.parent.operator == "or":
                             cont.parent.components = inverse_extend(cont.parent.components, duplicates)
-                            print(f"\tRemoved {duplicates} from container")
-                            print(f"\tResulting components for child container : {cont.components}")
-                            print(f"\tResulting components for parent container: {cont.parent.components}")
                         else:
                             cont.components = inverse_extend(cont.components, duplicates)
-                            print(f"\tRemoved {duplicates} from container")
-                            print(f"\tResulting components for container : {cont.components}")
-                            print(f"\tResulting components for container : {cont.parent.components}")
 
                         # On redundancy, always remove duplicate element from child container
                         # except in the case where parent is OR and child is AND.
@@ -173,23 +152,17 @@ class RuleOptimiser():
                         # a OR b OR (b AND c) == a OR (b AND c) [+]
 
                     if cont.operator == cont.parent.operator and cont != main:
-                        print("Found redundancy of same type nested containers")
                         try:
                             cont.parent.components.remove(cont)
                             self.containers.remove(cont)
                             cont.parent.components.extend(cont.components)
-                            print(f"\tResulting components for container : {cont.parent.components}")
                             continue
                         except ValueError:
-                            print(f"\t[-] Failed to remove container, was already removed from its parent from prior redundancy")
-
+                            pass
                     if self.check_empty(cont) or self.check_useless(cont) or self.check_symbol_redundancy(cont):
                         continue
 
         dump_json(main.as_dict(), self.OUT_PATH)
-        print("Dumped clean rule")
-
-        print("\nEnd of this main()\n")
         return self.cycles > 1 # If it did more than 1 cycle, it means it found something
 
 
@@ -260,9 +233,7 @@ def inverse_extend(arr1, deletions):
         try:
             arr1.remove(k)
         except ValueError:
-            print("[!!] Warning [!!]")
-            print(f"\tTried to remove {k} from {arr1}, but got ValueError")
-            print(f"\tThis is not supposed to happen ...")
+            raise ValueError("ValueError occurred in inverse_extend()")
     return arr1
 
 def load_json(path):
@@ -316,16 +287,6 @@ def contains_container(cont):
     # Boolean of (cont has any containers directly inside ?)
     return any(isinstance(i, CustomContainer) for i in cont.components)
 
-def setup():
-    with open(IN_PATH, "rt") as file:
-        obj = json.load(file)
-
-    with open(OUT_PATH, "wt") as file:
-        json.dump(obj, file)
-
 DIR = "/home/magenta/osdatascanner/src/os2datascanner/utils/optimiser/"
 IN_PATH = "/home/magenta/osdatascanner/src/os2datascanner/utils/optimiser/original_rule.json"
 OUT_PATH = "/home/magenta/osdatascanner/src/os2datascanner/utils/optimiser/output_rule.json"
-
-rule_optimiser = RuleOptimiser(IN_PATH, OUT_PATH)
-rule_optimiser.run_optimiser()
