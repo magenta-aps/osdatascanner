@@ -1,6 +1,7 @@
 import unittest
+import pytest
 
-from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.rules.cpr import CPRRule, WordOrSymbol
 
 
 content = """
@@ -47,6 +48,8 @@ Følgende symboler undersøges
 - symboler "!", "#", "%"
 
 @ godtages ikke pga. udgyldig opdeling Anders And 06 06 80-0002
+@ godtages fordi efterfølgende tal er lukket inde i en parantes
+Anders And 070780-0003 (12345)
 """  # noqa: E501
 
 
@@ -191,7 +194,14 @@ ALL_MATCHES = [
      'match': '1412XXXXXX',
      'offset': 1921,
      'probability': 1.0,
-     'sensitivity': None}
+     'sensitivity': None},
+    {'context': 'gende tal er lukket inde i en parantes Anders And XXXXXX-XXXX '
+     '(12345)',
+     'context_offset': 50,
+     'match': '0707XXXXXX',
+     'offset': 2236,
+     'probability': 1.0,
+     'sensitivity': None},
 ]
 
 
@@ -207,13 +217,13 @@ class RuleTests(unittest.TestCase):
             (
                 CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
                         blacklist=[]),
-                [ALL_MATCHES[i] for i in [0, 1, 2, 3, 5, 6, 19]],
+                [ALL_MATCHES[i] for i in [0, 1, 2, 3, 5, 6, 19, 20]],
                 "match using context rules"
             ),
             (
                 CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
                         blacklist=[], whitelist=[]),
-                [ALL_MATCHES[i] for i in [0, 2, 3, 5, 6, 19]],
+                [ALL_MATCHES[i] for i in [0, 2, 3, 5, 6, 19, 20]],
                 "match setting `whitelist=[]`"
             ),
             (
@@ -224,14 +234,14 @@ class RuleTests(unittest.TestCase):
             (
                 CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
                         blacklist=[], whitelist=["anders", "and"]),
-                [ALL_MATCHES[i] for i in [0, 1, 2, 3, 4, 5, 6, 19]],
+                [ALL_MATCHES[i] for i in [0, 1, 2, 3, 4, 5, 6, 19, 20]],
                 "match setting `whitelist=['anders', 'and']`"
             ),
             (
                 CPRRule(modulus_11=True, ignore_irrelevant=False, examine_context=True,
                         blacklist=[], whitelist=[],
                         exceptions=["0303800018", "0606800002"]),
-                [ALL_MATCHES[i] for i in [0, 3, 6, 19]],
+                [ALL_MATCHES[i] for i in [0, 3, 6, 19, 20]],
                 "match with some exceptions"
             ),
         ]
@@ -246,3 +256,33 @@ class RuleTests(unittest.TestCase):
                                           f"test of {description} failed")
                 else:
                     self.assertFalse(list(matches))
+
+
+@pytest.fixture
+def word_tuple():
+    return ("wordiwordi", "")
+
+
+@pytest.fixture
+def symbol_tuple():
+    return ("", "]")
+
+
+class TestWordOrSymbol:
+    def test_word_tuple(self, word_tuple):
+        word_or_sym = WordOrSymbol(*word_tuple)
+
+        assert bool(word_or_sym.word)
+        assert not bool(word_or_sym.symbol)
+
+    def test_symbol_tuple(self, symbol_tuple):
+        word_or_sym = WordOrSymbol(*symbol_tuple)
+
+        assert not bool(word_or_sym.word)
+        assert bool(word_or_sym.symbol)
+
+    def test_empty_tuple(self):
+        word_or_sym = WordOrSymbol(*("", ""))
+
+        assert not bool(word_or_sym.word)
+        assert not bool(word_or_sym.symbol)

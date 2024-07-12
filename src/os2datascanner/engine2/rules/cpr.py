@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Iterator, List, Match, Optional, Tuple, Dict
 import re
 from functools import partial
@@ -35,6 +36,18 @@ _operators = ("+", "-", )
 _symbols = ("!", "#", "%", )
 _all_symbols = _operators + _symbols
 # fmt: on
+
+
+@dataclass
+class WordOrSymbol:
+    """For future analysis, it is practical to know if a word or symbol was
+    found in the context of a match. This class takes the tuple from the regex
+    findall method as an argument, and remembers whether it is a word or a
+    symbol. Crucially, this allows us to remember the order of words and
+    symbols in the context."""
+
+    word: str | None
+    symbol: str | None
 
 
 @unique
@@ -189,12 +202,14 @@ class CPRRule(RegexRule):
         """
 
         probability = None
-        words, symbols = self.extract_surrounding_words(match, n_words=3)
+        words_or_syms = self.extract_surrounding_words(match, n_words=3)
         ctype = []
 
         # test if a whitelist-string is found in the context words.
         # combine the list of 'pre' & 'post' keys in words dict.
-        words_lower = [w.lower() for w in chain.from_iterable(words.values())]
+        words_lower = [
+            w.word.lower() for w in chain.from_iterable(
+                words_or_syms.values()) if w.word]
         if self._whitelist:
             for w in self._whitelist:
                 for cw in words_lower:
@@ -205,7 +220,10 @@ class CPRRule(RegexRule):
         # test for balanced delimiters
         # XXX: This only checks number of delimiters, not type, so. "[111111-1118}" is accepted
         delimiters = 0
-        for w in chain.from_iterable(symbols.values()):
+        for w in chain.from_iterable(words_or_syms.values()):
+            if not w.symbol:
+                continue
+            w = w.symbol
             if w in _pre_delim:
                 delimiters += 1
             elif w in _post_delim:
@@ -217,23 +235,19 @@ class CPRRule(RegexRule):
             ctype.append((Context.UNBALANCED, delimiters))
             probability = 0.0
 
-        # only do context checking on immediately surrounding words
-        for w in [words["pre"][-1], words["post"][0]]:
-            if w == "" or self._compiled_expression.match(w):
+        # only do context checking on surrounding words
+        for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:
+            if not w.word or self._compiled_expression.match(w.word):
                 continue
-            # this check is never reached due to '\w' splitting
-            elif w.endswith(_all_symbols) or w.startswith(_all_symbols):
-                ctype.append((Context.SYMBOL, w))
-                probability = 0.0
             # test if surrounding word is a number (and not looks like a cpr)
-            elif is_number(w):
+            elif w.word and is_number(w.word):
                 probability = 0.0
-                ctype.append((Context.NUMBER, w))
-            elif not is_alpha_case(w):
+                ctype.append((Context.NUMBER, w.word))
+            elif w.word and not is_alpha_case(w.word):
                 # test for case, ie Magenta, magenta, MAGENTA are ok, but not MaGenTa
                 # nor magenta10. w must not be empty string
                 probability = 0.0
-                ctype.append((Context.WRONG_CASE, w))
+                ctype.append((Context.WRONG_CASE, w.word))
 
         return probability, ctype
 
@@ -252,30 +266,25 @@ class CPRRule(RegexRule):
         pre = " ".join(content[max(low-50, 0):low].split()[-n_words:])
         post = " ".join(content[high:high+50].split()[:n_words])
 
+        word_regex = r"(\w+(?:[-\./]\w*)*)"
+        symbol_regex = r"([^\w\s\.\"])"
         # split in two capture groups: (word, symbol)
         # Ex: 'The brown, fox' ->
         # [('The', ''), ('brown', ''), ('', ','), ('fox', '')]
-        word_str = r"(\w+(?:[-\./]\w*)*)"
-        symbol_str = r"([^\w\s\.\"])"
-        split_str = r"|".join([word_str, symbol_str])
+        split_str = r"|".join([word_regex, symbol_regex])
         pre_res = re.findall(split_str, pre)
         post_res = re.findall(split_str, post)
         # remove empty strings
-        pre_words = [s[0] for s in pre_res if s[0]]
-        post_words = [s[0] for s in post_res if s[0]]
-        pre_sym = [s[1] for s in pre_res if s[1]]
-        post_sym = [s[1] for s in post_res if s[1]]
+        pre_words = [WordOrSymbol(*s) for s in pre_res]
+        post_words = [WordOrSymbol(*s) for s in post_res]
 
         # XXX Should be set instead?
-        words = dict(
-            pre=pre_words if len(pre_words) > 0 else [""],
-            post=post_words if len(post_words) > 0 else [""],
+        words_or_syms = dict(
+            pre=pre_words if len(pre_words) > 0 else [WordOrSymbol("", "")],
+            post=post_words if len(post_words) > 0 else [WordOrSymbol("", "")],
         )
-        symbols = dict(
-            pre=pre_sym if len(pre_sym) > 0 else [""],
-            post=post_sym if len(post_sym) > 0 else [""],
-        )
-        return words, symbols
+
+        return words_or_syms
 
     def to_json_object(self) -> dict:
         # Deliberately skip the RegexRule implementation of this method (we

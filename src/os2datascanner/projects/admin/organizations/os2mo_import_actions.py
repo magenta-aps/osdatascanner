@@ -11,7 +11,7 @@ from .models import (Account, Alias, Position,
 from .models.aliases import AliasType
 from os2datascanner.utils.system_utilities import time_now
 from .utils import prepare_and_publish
-from ..adminapp.signals_utils import suppress_signals
+from os2datascanner.utils.section import suppress_django_signals
 
 logger = structlog.get_logger("admin_organizations")
 
@@ -24,7 +24,7 @@ class Role(Enum):
     MANAGER = "manager"
 
 
-@suppress_signals.wrap
+@suppress_django_signals
 def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cognitive complexity
                          organization: Organization,
                          progress_callback=_dummy_pc):

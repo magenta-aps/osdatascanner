@@ -2,7 +2,7 @@ from django.db import models
 
 from os2datascanner.utils.ldap import RDN
 
-from os2datascanner.projects.admin.adminapp.signals import get_pika_thread
+from os2datascanner.projects.admin.organizations.publish import get_pika_thread
 from ...core.models.background_job import BackgroundJob
 from .realm import Realm
 

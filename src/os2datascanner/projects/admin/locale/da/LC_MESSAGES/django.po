@@ -2006,7 +2006,7 @@ msgid ""
 "piece of text. It returns the results directly to this page."
 msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
-"enkel fil eller tekst-stykke, ved at bruge tekstfeltet nedenunder. "
+"enkel fil eller tekst-stykke. "
 "Resultaterne vises længere nede på denne side."
 
 #: adminapp/templates/miniscan.html:31 adminapp/templates/miniscan.html:66

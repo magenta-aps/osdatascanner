@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.projects.grants.models import GraphGrant
-from os2datascanner.projects.admin.adminapp.signals import get_pika_thread
+from os2datascanner.projects.admin.organizations.publish import get_pika_thread
 from os2datascanner.engine2.model.msgraph.utilities import (
         make_token, MSGraphSource)
 from ...core.models.background_job import BackgroundJob
