@@ -37,6 +37,9 @@ SITE_URL = "*"
 SITE_ID = 1
 ALLOWED_HOSTS = []
 SESSION_COOKIE_NAME = "sessionid"
+# Default value - required to be set properly in production.
+# https://docs.djangoproject.com/en/4.2/ref/settings/#csrf-trusted-origins
+CSRF_TRUSTED_ORIGINS = []
 
 REPORT_URL = "*"
 
