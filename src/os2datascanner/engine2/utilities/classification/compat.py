@@ -1,5 +1,6 @@
-from .engine import ClassificationEngine, BonusClassificationEngine
+from os2datascanner.engine2.utilities.classification.engine import ClassificationEngine, BonusClassificationEngine
 
+# docker logs complains and website doesn't work if not specified like this :os2datascanner.engine2.utilities.classification.engine
 
 def taxon_json_taxonomy_to_classification_engine(obj):  # noqa: CCR001
     """Attempts to build a ClassificationEngine object from a Taxon 3.x JSON

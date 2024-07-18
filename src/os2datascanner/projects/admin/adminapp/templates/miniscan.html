@@ -7,9 +7,10 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script defer src="{% static 'js/miniscanner/checkFileSize.js' %}"></script>
-  <script defer src="{% static 'js/miniscanner/clearFile.js' %}"></script>
-  <script defer src="{% static 'js/miniscanner/ruleInput.js' %}"></script>
+  <script defer src="{% static 'js/scannerjob/validateFileSize.js' %}"></script>
+  <script defer src="{% static 'js/scannerjob/clearFile.js' %}"></script>
+  <script defer src="{% static 'js/scannerjob/ruleInput.js' %}"></script>
+
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
 {% endblock %}
 {% block body %}
@@ -58,6 +59,7 @@
                     type="button"
                     onclick="clearFile()">
               <span>{% trans "Clear file" %}</span>
+
             </button>
 
             <div hidden id="file-upload-error-response">
@@ -70,9 +72,22 @@
           {% endwith %}
 
           <h2>{% trans "Enter your text below" %}</h2>
-          <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
-          <textarea name="text" id="upload-text" type="text" class="upload" spellcheck="true" maxlength="2000">
-</textarea>
+
+          <!-- Hardcoded maxlength to 2000, maybe add \{\{ textLimit \}\} or something similar -->
+          <textarea name="text"
+                 id="upload-text"
+                 type="text"
+                 class="upload"
+                 spellcheck="true"
+                 placeholder="..."
+                 maxlength="2000"> 
+          </textarea>
+          <br><br>
+          <input name="KLE-switch"
+                  id="kle-switch"
+                  type="checkbox"
+                  class="upload">{% trans "Enable classification (slower)" %}
+          </input>
 
           <h2>{% trans "Rule to execute" %}</h2>
           <h4>

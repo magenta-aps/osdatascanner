@@ -9,7 +9,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 14:53+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -846,9 +845,21 @@ msgstr "Match"
 msgid "Match context"
 msgstr "Kontekst for match"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:37
+#: adminapp/templates/components/miniscanner/miniscan_results.html:38
 msgid "No matches found"
 msgstr "Ingen resultater fundet"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:47
+msgid "Classification id"
+msgstr "Klassifikations id"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:48
+msgid "Theme"
+msgstr "Tema"
+
+#: adminapp/templates/components/miniscanner/miniscan_results.html:49
+msgid "Weight"
+msgstr "Vægt"
 
 #: adminapp/templates/components/navigation/navigation.html:11
 msgid "Scanner status"
@@ -2005,78 +2016,78 @@ msgstr ""
 "enkel fil eller tekst-stykke. "
 "Resultaterne vises længere nede på denne side."
 
-#: adminapp/templates/miniscan.html:31 adminapp/templates/miniscan.html:66
+#: adminapp/templates/miniscan.html:30 adminapp/templates/miniscan.html:60
 msgid "Maximum allowed file size is: "
 msgstr "Den maksimalt tilladte filstørrelse er: "
 
-#: adminapp/templates/miniscan.html:45
+#: adminapp/templates/miniscan.html:44
 msgid "File to scan"
 msgstr "Upload fil"
 
-#: adminapp/templates/miniscan.html:56 adminapp/templates/miniscan.html:57
-msgid "Clear selected file"
-msgstr "Ryd valgt fil"
-
-#: adminapp/templates/miniscan.html:60
+#: adminapp/templates/miniscan.html:54
 msgid "Clear file"
 msgstr "Ryd fil"
 
-#: adminapp/templates/miniscan.html:64
+#: adminapp/templates/miniscan.html:58
 msgid "The selected file is too big!"
 msgstr "Den valgte fil er for stor!"
 
-#: adminapp/templates/miniscan.html:68
+#: adminapp/templates/miniscan.html:62
 msgid "Please, select another (smaller) file to scan."
 msgstr "Vælg venligst at scanne en anden (mindre) fil."
 
-#: adminapp/templates/miniscan.html:72
+#: adminapp/templates/miniscan.html:66
 msgid "Enter your text below"
-msgstr "Tast venligst text nedenfor"
+msgstr ""
 
-#: adminapp/templates/miniscan.html:77
+#: adminapp/templates/miniscan.html:85
+msgid "Enable classification (slower)"
+msgstr "Slå klassifikation til (langsomere)"
+
+#: adminapp/templates/miniscan.html:88
 msgid "Rule to execute"
 msgstr "Definér regel"
 
-#: adminapp/templates/miniscan.html:79
+#: adminapp/templates/miniscan.html:90
 msgid "Selected rule: "
 msgstr "Valgte regel: "
 
-#: adminapp/templates/miniscan.html:80
+#: adminapp/templates/miniscan.html:91
 msgid "None"
 msgstr "Ingen"
 
-#: adminapp/templates/miniscan.html:86 adminapp/templates/miniscan.html:87
-#: adminapp/templates/miniscan.html:120
+#: adminapp/templates/miniscan.html:97 adminapp/templates/miniscan.html:98
+#: adminapp/templates/miniscan.html:131
 msgid "Upload a rule from the list"
 msgstr "Indlæs en regel fra listen"
 
-#: adminapp/templates/miniscan.html:87
+#: adminapp/templates/miniscan.html:98
 msgid "Load rule"
 msgstr "Indlæs regel"
 
-#: adminapp/templates/miniscan.html:93 adminapp/templates/miniscan.html:94
-#: adminapp/templates/miniscan.html:95
+#: adminapp/templates/miniscan.html:104 adminapp/templates/miniscan.html:105
+#: adminapp/templates/miniscan.html:106
 msgid "Run"
 msgstr "Kør"
 
-#: adminapp/templates/miniscan.html:93 adminapp/templates/miniscan.html:94
+#: adminapp/templates/miniscan.html:104 adminapp/templates/miniscan.html:105
 msgid "scanner"
 msgstr "scanner"
 
-#: adminapp/templates/miniscan.html:98 adminapp/templates/miniscan.html:99
-#: adminapp/templates/miniscan.html:100
+#: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:110
+#: adminapp/templates/miniscan.html:111
 msgid "Clear"
 msgstr "Ryd"
 
-#: adminapp/templates/miniscan.html:98 adminapp/templates/miniscan.html:99
+#: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:110
 msgid "content"
 msgstr "indhold"
 
-#: adminapp/templates/miniscan.html:103
+#: adminapp/templates/miniscan.html:114
 msgid "Scan result"
 msgstr "Scanresultat"
 
-#: adminapp/templates/miniscan.html:104
+#: adminapp/templates/miniscan.html:115
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
@@ -3387,6 +3398,12 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:188
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Write here"
+#~ msgstr "Skriv her"
+
+#~ msgid "Classification"
+#~ msgstr "Klassifikation"
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"

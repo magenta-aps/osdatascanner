@@ -16,5 +16,4 @@ def pre_mutation(context):
         'help = __doc__',  # more help text
     )
     line = context.current_source_line.strip()
-    if line.startswith(exceptions):
         context.skip = True
