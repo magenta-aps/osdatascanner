@@ -94,14 +94,14 @@ class Engine2ContainerTest(unittest.TestCase):
     def test_smbc_url(self):
         with SourceManager() as sm:
             source = TestSourceUtility.from_url(
-                    "smbc://os2:12345_rosebud_password_admin@samba/general")
+                    "smbc://os2:swordfish@samba/general")
             self.process(source, sm)
 
     def test_smbc_snapshot_exclusion(self):
         with SourceManager() as sm:
             source = SMBCSource(
                     "//samba/general/backup",
-                    "os2", "12345_rosebud_password_admin",
+                    "os2", "swordfish",
                     skip_super_hidden=False)
             self.assertEquals(
                     [k.relative_path for k in source.handles(sm)],
