@@ -1,7 +1,7 @@
 def pre_mutation(context):
     # Change the path here to the path of the tests you want to do mutation
     # testing on. Remember to change the [mutmut]-settings in setup.cfg as well.
-    path = "../../engine2/tests/test_navigable.py"
+    path = "tests/test_miniscanner.py"
     module = "admin"
     context.config.test_command = f"docker compose exec {module} pytest {path}"
 
