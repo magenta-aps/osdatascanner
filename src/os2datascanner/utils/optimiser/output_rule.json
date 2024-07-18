@@ -1,0 +1,1 @@
+{"type": "and", "components": [{"type": "cpr", "modulus_11": true, "ignore_irrelevant": true, "examine_context": true, "exceptions": ""}, {"type": "or", "components": [{"type": "address", "whitelist": [], "blacklist": []}, {"type": "name", "whitelist": [], "blacklist": [], "expansive": false}]}]}

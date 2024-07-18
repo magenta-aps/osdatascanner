@@ -36,7 +36,6 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         return context
 
-
 def mini_scan(scan_item, rule):
     """
     This function will take a scanItem arg as well as a rule arg. It checks
@@ -102,14 +101,7 @@ def mini_scan(scan_item, rule):
                     item_name=item_name)
 
 
-def execute_mini_scan(request):
-    """Gets context (item to be scanned, rules to scan for) and performs a scan
-    on the item (file or raw text) recieved. Will cause an internal server
-    error  (500 error code) if the scan rule does not get sent. This happens
-    when the user is not logged in / gets logged out for inactivity. However
-    this is only backend side  and it does not cause any trouble on the
-    website.
-    """
+def execute_mini_scan(request):  # noqa:CCR001
     context = {
         "file_obj": (file_obj := request.FILES.get("file")),
         "text": (text := request.POST.get("text")),
