@@ -205,6 +205,7 @@ FRONTEND_URL = 'https://myfrontendclient.com' # Redirect URL for the client if y
 CERT_FILE = ''
 KEY_FILE = ''
 AUTHN_REQUESTS_SIGNED = false
+WAHT_RESPONSE_SIGNED = false
 
     [SAML2_AUTH.NEW_USER_PROFILE]
     USER_GROUPS = []  # The default group name when a new user logs in
