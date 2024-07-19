@@ -206,6 +206,7 @@ CERT_FILE = ''
 KEY_FILE = ''
 AUTHN_REQUESTS_SIGNED = false
 WANT_RESPONSE_SIGNED = false
+TOKEN_REQUIRED = false
 
     [SAML2_AUTH.NEW_USER_PROFILE]
     USER_GROUPS = []  # The default group name when a new user logs in
