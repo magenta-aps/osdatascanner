@@ -102,9 +102,9 @@ def get_or_create_user_aliases(user_data):  # noqa: D401
 
     saml_attr = settings.SAML2_AUTH.get('ATTRIBUTES_MAP')
 
-    username = get_user_data(saml_attr.get('username'), user_data)
-    email = get_user_data(saml_attr.get('email'), user_data)
-    sid = get_user_data(saml_attr.get('sid'), user_data)
+    username = get_user_data(saml_attr.get('username'), user_data, str)
+    email = get_user_data(saml_attr.get('email'), user_data, str)
+    sid = get_user_data(saml_attr.get('sid'), user_data, str)
     user = User.objects.get(username=username)
 
     # When the user signs in with SSO, create an account if one does not exist.
@@ -176,15 +176,33 @@ def get_or_create_user_aliases_OIDC(user, email, sid):  # noqa: D401
                                     _alias_type=AliasType.SID)
 
 
-def get_user_data(key, user_data):
+def get_user_data(key: str, user_data: dict, expected_type: type):
     """Helper method for retrieving data for a given key."""
-    data = None
-    try:
-        data = user_data.get(key)[0]
-    except TypeError:
-        logger.warning('User data does not contain '
-                       'any value for key {}'.format(key))
-    return data
+    # For reasons of backwards compatibility / paranoia, this function supports
+    # both the original django-saml2-auth data format (where user_data is a
+    # dict of lists of values) and that of the grafana/django-saml2-auth fork
+    # (where user_data is a plain dict of values with the dict of lists stashed
+    # under the user_identity key)
+    match user_data.get(key):
+        case None:
+            logger.warning(
+                    "no value available for the given key",
+                    key=key, user_data=user_data, expected_type=expected_type)
+            return None
+        case v if isinstance(v, expected_type):  # grafana/django-saml2-auth
+            return v
+        case [v, *rest] if isinstance(v, expected_type):  # original behaviour
+            if rest:
+                logger.info(
+                        "multiple values available for the given key,"
+                        " using the first one",
+                        key=key, value=v)
+            return v
+        case v:
+            logger.warning(
+                    "value of the wrong type or shape",
+                    key=key, value=v, expected_type=expected_type)
+            return None
 
 
 def iterate_queryset_in_batches(batch_size, queryset):
