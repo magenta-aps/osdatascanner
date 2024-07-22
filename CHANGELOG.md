@@ -52,6 +52,8 @@
   This reduces the risk of the admin system and report module falling out of
   sync.
 
+- Report: The sensitivity dropdown is the only dropdown hidden per default.
+
 ## Version 3.23.1, 25th June 2024
 
 "Testing, Testing, Is This Thing On?"

@@ -175,6 +175,11 @@ label+.dropdown, label+.input {
     flex-direction: column;
     width: 80%;
     margin: 1rem auto;
+
+    &.report:not(:last-child) {
+      width: fit-content;
+      margin: 1rem 1rem;
+    }
   }
 
   ul>li {

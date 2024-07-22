@@ -58,7 +58,7 @@ function toggleCheckbox(e, checkboxId) { // jshint ignore:line
 }
 
 function hideOptions(toggleElement) { // jshint ignore:line
-  const options = ["sensitivity", "source_type"];
+  const options = ["sensitivity"];
   const toggleElem = document.getElementById(toggleElement);
 
   for (const option of options) {
