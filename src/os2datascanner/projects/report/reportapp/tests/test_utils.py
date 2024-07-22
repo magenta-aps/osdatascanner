@@ -8,11 +8,19 @@ from ..utils import get_or_create_user_aliases
 @pytest.fixture(scope="class")
 def saml_user_data():
     user_data = {
-        'email': ['sam_single@saml.com'],
-        'username': ['Sam'],
-        'first_name': ['Sam Single'],
-        'last_name': ['Sign-On'],
-        'sid': ['S-DIG']}
+        'email': 'sam_single@saml.com',
+        'username': 'Sam',
+        'first_name': 'Sam Single',
+        'last_name': 'Sign-On',
+        'sid': 'S-DIG',
+        'user_identity': {
+            'email': ['sam_single@saml.com'],
+            'username': ['Sam'],
+            'first_name': ['Sam Single'],
+            'surname': ['Sign-On'],
+            'sid': ['S-DIG']
+        }
+    }
     return user_data
 
 
