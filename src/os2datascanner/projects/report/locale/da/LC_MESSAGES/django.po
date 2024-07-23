@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 14:53+0200\n"
+"POT-Creation-Date: 2024-07-23 16:16+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -261,12 +261,11 @@ msgid "sort key"
 msgstr "sortér efter"
 
 #: reportapp/models/documentreport.py:64
-#: reportapp/templates/components/reports/filters.html:185
 msgid "source type"
 msgstr "kildetype"
 
 #: reportapp/models/documentreport.py:66
-#: reportapp/templates/components/reports/filters.html:172
+#: reportapp/templates/components/reports/filters.html:189
 msgid "sensitivity"
 msgstr "følsomhed"
 
@@ -560,49 +559,49 @@ msgstr ""
 msgid "Reset my password"
 msgstr "Nulstil min adgangskode"
 
-#: reportapp/templates/components/reports/filters.html:31
-#: reportapp/templates/components/reports/filters.html:64
-#: reportapp/templates/components/reports/filters.html:98
-#: reportapp/templates/components/reports/filters.html:131
-msgid "Clear"
-msgstr "Ryd"
-
-#: reportapp/templates/components/reports/filters.html:32
+#: reportapp/templates/components/reports/filters.html:23
 msgid "Scan"
 msgstr "Scan"
 
-#: reportapp/templates/components/reports/filters.html:38
+#: reportapp/templates/components/reports/filters.html:35
+#: reportapp/templates/components/reports/filters.html:71
+#: reportapp/templates/components/reports/filters.html:109
+#: reportapp/templates/components/reports/filters.html:147
+msgid "Clear"
+msgstr "Ryd"
+
+#: reportapp/templates/components/reports/filters.html:42
 #: reportapp/templates/components/statistics/dpo_statistics_template.html:35
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"
 
-#: reportapp/templates/components/reports/filters.html:65
-msgid "Sensitivity"
-msgstr "Følsomhed"
-
-#: reportapp/templates/components/reports/filters.html:71
-msgid "All sensitivities"
-msgstr "Alle følsomheder"
-
-#: reportapp/templates/components/reports/filters.html:99
+#: reportapp/templates/components/reports/filters.html:59
 #: reportapp/views/statistics_views.py:477
 msgid "Source Type"
 msgstr "Kildetype"
 
-#: reportapp/templates/components/reports/filters.html:105
+#: reportapp/templates/components/reports/filters.html:78
 msgid "All source types"
 msgstr "Alle kildetyper"
 
-#: reportapp/templates/components/reports/filters.html:132
+#: reportapp/templates/components/reports/filters.html:97
 #: reportapp/views/statistics_views.py:478
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
 
-#: reportapp/templates/components/reports/filters.html:138
+#: reportapp/templates/components/reports/filters.html:116
 msgid "All resolution statuses"
 msgstr "Alle håndteringsstatusser"
 
-#: reportapp/templates/components/reports/filters.html:216
+#: reportapp/templates/components/reports/filters.html:135
+msgid "Sensitivity"
+msgstr "Følsomhed"
+
+#: reportapp/templates/components/reports/filters.html:154
+msgid "All sensitivities"
+msgstr "Alle følsomheder"
+
+#: reportapp/templates/components/reports/filters.html:220
 msgid "Include results, that are less than 30 days old"
 msgstr "Inkludér resultater, der er under 30 dage gamle"
 
@@ -1329,6 +1328,28 @@ msgstr ""
 "Kontakt din systemadministrator, hvis du mener du bør have adgang til denne "
 "applikation."
 
+#: reportapp/templates/django_saml2_auth/error.html:7
+#: reportapp/templates/error_pages/500.html:6
+msgid "Server error"
+msgstr "Serverfejl"
+
+#: reportapp/templates/django_saml2_auth/error.html:11
+msgid "SSO login failed"
+msgstr "SSO-login fejlede"
+
+#: reportapp/templates/django_saml2_auth/error.html:16
+msgid ""
+"An unexpected error occurred while handling the login information received "
+"from the remote server."
+msgstr ""
+"Der opstod en uforventet fejl under behandling af de login-informationer, "
+"OSdatascanner modtog fra serveren."
+
+#: reportapp/templates/django_saml2_auth/error.html:19
+msgid "Contact your system administrator for more information."
+msgstr ""
+"For mere information kan du kontakt organisationens systemadministrator."
+
 #: reportapp/templates/django_saml2_auth/signout.html:6
 msgid "Signed out"
 msgstr "Logget ud"
@@ -1366,10 +1387,6 @@ msgstr "Vi kunne desværre ikke finde siden"
 #: reportapp/templates/error_pages/no-units-error.html:15
 msgid "Go to the front page"
 msgstr "Gå til forsiden"
-
-#: reportapp/templates/error_pages/500.html:6
-msgid "Server error"
-msgstr "Serverfejl"
 
 #: reportapp/templates/error_pages/500.html:10
 msgid "It looks like something went wrong"
