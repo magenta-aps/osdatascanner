@@ -67,6 +67,15 @@ class RuleCreate(RestrictedCreateView):
             validated = ex_string == "" or bool(re.match(r'^\d{10}(,\d{10})*$', ex_string))
             return validated
 
+        def validate_surrounding_words_exceptions(rule):
+            if "surrounding_exceptions" not in rule:
+                return True
+            ex_string = rule.get('surrounding_exceptions')
+            # Check that the "surrounding_exceptions"-string only contains
+            # alphanumeric characters or is an empty string.
+            validated = ex_string == "" or bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
+            return validated
+
         if crule := form.cleaned_data.get('rule'):
             if ('exceptions' not in crule) or validate_exceptions_field(crule):
                 rule._rule = crule
@@ -74,6 +83,13 @@ class RuleCreate(RestrictedCreateView):
                 form.add_error(
                     'rule', _("The 'exceptions'-string must be a "
                               "comma-separated list of 10-digit numbers."))
+                raise ValidationError(_("Formatting error"), code="formatting")
+            if validate_surrounding_words_exceptions(crule):
+                rule._rule = crule
+            else:
+                form.add_error(
+                    'rule', _("The 'surrounding_exceptions'-string must not "
+                              "include any symbols or spaces."))
                 raise ValidationError(_("Formatting error"), code="formatting")
         rule.save()
         return rule
