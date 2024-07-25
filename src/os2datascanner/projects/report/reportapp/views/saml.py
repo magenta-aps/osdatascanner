@@ -8,11 +8,11 @@ from django_saml2_auth import views as dsa_views
 
 
 def metadata(request):
-    client = dsa_views.get_saml_client(
-            settings.SAML2_AUTH["ASSERTION_URL"],
-            dsa_views.acs)
+    sa = settings.SAML2_AUTH
+
+    client = dsa_views.get_saml_client(sa["ASSERTION_URL"], dsa_views.acs)
     config = client.config
-    am = settings.SAML2_AUTH["ATTRIBUTES_MAP"]
+    am = sa["ATTRIBUTES_MAP"]
 
     config.load({
         "name": "OS2datascanner for {ni}".format(
@@ -53,6 +53,14 @@ def metadata(request):
                         friendly_name="last_name"
                     ),
                 ],
+                "authn_requests_signed": sa.get(
+                        "AUTHN_REQUESTS_SIGNED", True),
+                "logout_requests_signed": sa.get(
+                        "LOGOUT_REQUESTS_SIGNED", True),
+                "want_assertions_signed": sa.get(
+                        "WANT_ASSERTIONS_SIGNED", True),
+                "want_response_signed": sa.get(
+                        "WANT_RESPONSE_SIGNED", True),
             },
         },
         "organization": {

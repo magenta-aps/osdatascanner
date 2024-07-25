@@ -97,7 +97,11 @@ FRONTEND_URL = 'http://localhost:8040/' # Redirect URL for the client if you are
 # Remember to set SAML2_ENABLED = true
 #CERT_FILE = '/etc/ssl/certs/signing.crt'
 #KEY_FILE = '/etc/ssl/certs/signing.key'
-#AUTHN_REQUESTS_SIGNED = true
+
+AUTHN_REQUESTS_SIGNED = false
+WANT_ASSERTIONS_SIGNED = false
+WANT_RESPONSE_SIGNED = false
+TOKEN_REQUIRED = false
 
     [SAML2_AUTH.NEW_USER_PROFILE]
     USER_GROUPS = []  # The default group name when a new user logs in

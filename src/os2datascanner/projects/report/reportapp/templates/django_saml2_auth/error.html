@@ -1,0 +1,18 @@
+{% extends 'error_pages/error_base.html' %}
+
+{% load i18n %}
+
+{% block error_page_title %}
+  {% trans "Server error" %}
+{% endblock %}
+
+{% block error_heading %}
+  {% trans "SSO login failed" %}
+{% endblock %}
+
+{% block error_content %}
+  <p>
+    {% blocktrans %}An unexpected error occurred while handling the login information received from the remote server.{% endblocktrans %}
+  </p>
+  <p>{% blocktrans %}Contact your system administrator for more information.{% endblocktrans %}</p>
+{% endblock %}
