@@ -89,6 +89,7 @@ class CPRRule(RegexRule):
                  whitelist: Optional[List[str]] = None,
                  blacklist: Optional[List[str]] = None,
                  exceptions: Optional[List[str]] = None,
+                 surrounding_exceptions: Optional[List[str]] = None,
                  **super_kwargs):
         super().__init__(cpr_regex, **super_kwargs)
         self._modulus_11 = modulus_11
@@ -97,6 +98,8 @@ class CPRRule(RegexRule):
         self._whitelist = self.WHITELIST_WORDS if whitelist is None else set(whitelist)
         self._blacklist = self.BLACKLIST_WORDS if blacklist is None else set(blacklist)
         self._exceptions = frozenset(exceptions) if exceptions else frozenset()
+        self._surrounding_exceptions = frozenset(
+            surrounding_exceptions) if surrounding_exceptions else frozenset()
         self._blacklist_pattern = re.compile("|".join(self._blacklist))
 
     @property
@@ -196,6 +199,7 @@ class CPRRule(RegexRule):
         - There are unmatched delimiters, like () or {}
         - The CPR-nr is surrounded by a number that doesn't resembles a CPR
         - The word before or after is not either: lower-, title- or upper-case.
+        - A blacklisted surrounding_exception word is found around a CPR match
 
         But returns 1.0 if
         - pre-context contains "cpr" or any other whitelist words
@@ -205,7 +209,7 @@ class CPRRule(RegexRule):
         words_or_syms = self.extract_surrounding_words(match, n_words=3)
         ctype = []
 
-        # test if a whitelist-string is found in the context words.
+        # test if a whitelist- or surrounding_exception -string is found in the context words.
         # combine the list of 'pre' & 'post' keys in words dict.
         words_lower = [
             w.word.lower() for w in chain.from_iterable(
@@ -216,6 +220,11 @@ class CPRRule(RegexRule):
                     if w in cw:
                         ctype.append((Context.WHITELIST, cw))
                         return 1.0, ctype
+        if self._surrounding_exceptions:
+            for cw in words_lower:
+                if cw in self._surrounding_exceptions:
+                    ctype.append((Context.BLACKLIST, cw))
+                    return 0.0, ctype
 
         # test for balanced delimiters
         # XXX: This only checks number of delimiters, not type, so. "[111111-1118}" is accepted
@@ -296,7 +305,8 @@ class CPRRule(RegexRule):
             examine_context=self._examine_context,
             whitelist=list(self._whitelist),
             blacklist=list(self._blacklist),
-            exceptions=",".join(self._exceptions)
+            exceptions=",".join(self._exceptions),
+            surrounding_exceptions=",".join(self._surrounding_exceptions)
         )
 
     @staticmethod
@@ -333,7 +343,10 @@ class CPRRule(RegexRule):
             # a comma-separated string. A TODO would be to figure out why.
             exceptions=obj.get("exceptions").split(",") if isinstance(
                     obj.get("exceptions"), str)
-            else obj.get("exceptions"))
+            else obj.get("exceptions"),
+            surrounding_exceptions=obj.get("surrounding_exceptions").split(",") if isinstance(
+                    obj.get("surrounding_exceptions"), str)
+            else obj.get("surrounding_exceptions"))
 
 
 def is_number(s: str) -> bool:

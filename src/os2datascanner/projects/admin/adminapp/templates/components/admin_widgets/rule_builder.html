@@ -92,6 +92,16 @@
       {% trans "Exceptions:" %}
       <input type="text" id="exceptions_input" placeholder="XXXXXXXXXX,XXXXXXXXXX" />
     </label>
+    <label>
+      {% trans "Surrounding exceptions:" %}
+      <input type="text"
+             id="surrounding_exceptions_input"
+             placeholder="{% trans 'word1,word2' %}" />
+    </label>
+    <span class="help-tooltip"
+          title="{% trans 'Enter specific words that prevents the scanner from marking a 10-digit number as a match if found within the first 3 surrounding words. ' %}">
+      {% include "components/svg-icons/help.svg" %}
+    </span>
     )
   </span>
   <span id="RegexRule">

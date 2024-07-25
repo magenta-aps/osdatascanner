@@ -77,6 +77,7 @@ function selectOptions(obj, selector) {
       setCheckbox(1, obj.ignore_irrelevant, selector);
       setCheckbox(2, obj.examine_context, selector);
       setTextbox("exceptions_input", obj.exceptions, selector);
+      setTextbox("surrounding_exceptions_input", obj.surrounding_exceptions, selector);
       break;
     case "name":
       setCheckbox(0, obj.expansive, selector);
@@ -195,12 +196,14 @@ function makeRule(elem) {
     case "CPRRule":
       tickboxes = elem.querySelectorAll("input[type='checkbox']");
       exceptions = elem.querySelector("#exceptions_input");
+      surroundingExceptions = elem.querySelector("#surrounding_exceptions_input");
       return {
         "type": "cpr",
         "modulus_11": tickboxes[0].checked,
         "ignore_irrelevant": tickboxes[1].checked,
         "examine_context": tickboxes[2].checked,
-        "exceptions": exceptions.value
+        "exceptions": exceptions.value,
+        "surrounding_exceptions": surroundingExceptions.value.toLowerCase()
       };
     case "RegexRule":
       return {

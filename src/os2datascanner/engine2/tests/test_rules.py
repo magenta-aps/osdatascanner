@@ -92,6 +92,17 @@ Vejstrand Kommune, 240501-0006""",
                 ["2205XXXXXX", "2405XXXXXX"],
             ),
             (
+                CPRRule(
+                    modulus_11=True, ignore_irrelevant=True, examine_context=True,
+                    surrounding_exceptions=["account"]
+                ),
+                """
+Vejstrand Kommune, Børn- og Ungeforvaltningen, Account: 2205995008
+Vejstrand Kommune, Børn- og Ungeforvaltningen, Num: 2305000003
+240501-0006""",
+                ["2305XXXXXX", "2405XXXXXX"],
+            ),
+            (
                 RegexRule("((four|six)( [aopt]+)?|(one|seven) [aopt]+)"),
                 """
 one
