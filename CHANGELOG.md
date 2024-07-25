@@ -1,5 +1,34 @@
 # Changelog
 
+## Version 3.24.1, 29th July 2024
+
+"Get Back Up Again"
+
+### New in this release
+
+- The port to Django 4.2 LTS has now been completed.
+
+### General improvements
+
+- The CI pipeline and the development test environment no longer specify
+  incompatible settings for the built-in Samba server.
+
+- The source type filter is now displayed by default in the report module.
+
+- The DPO view now includes statistics for all subunits of the selected
+  organisational unit, which should give more consistent results.
+
+### Notes
+
+Due to [an unfortunate bug in newer versions of PySAML2](https://github.com/IdentityPython/pysaml2/issues/921),
+some SSO identity providers may not work with OSdatascanner at present. We
+have, however, tested it with both traditional on-premises ADFS and with
+Microsoft Online, and both of these implementations behave as expected.
+
+If you encounter a SSO compatibility problem, we recommend that you configure
+your identity provider to suppress XML Schema typing information in its SAML
+output until this bug is addressed.
+
 ## Version 3.24.0, 11th July 2024
 
 "Summer Summarum 🌞"
@@ -36,8 +65,6 @@
 
 - Very long paths on results in the report module can now be expanded,
   showing the full path to the source of a match. 
-
-- DPO overview now shows stats for descendant OUs for a selected OU. 
 
 ### Bugfixes
 
