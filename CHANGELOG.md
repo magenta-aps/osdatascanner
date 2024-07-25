@@ -37,6 +37,8 @@
 - Very long paths on results in the report module can now be expanded,
   showing the full path to the source of a match. 
 
+- DPO overview now shows stats for descendant OUs for a selected OU. 
+
 ### Bugfixes
 
 - Documentreports with no created_timestamp no longer crashes the DPO module.

@@ -109,13 +109,18 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             org = request.user.account.organization
             self.matches = self.matches.filter(organization=org)
             org_units = OrganizationalUnit.objects.filter(organization=org)
+
+            if self.request.user.is_superuser:
+                self.user_units = org_units.order_by("name")
+            else:
+                self.user_units = self.request.user.account.get_dpo_units().order_by("name")
+
+            # Include descendants of the selected org unit
+            self.descendant_units = OrganizationalUnit.objects.filter(
+                pk__in=[unit.pk for unit in org_units.get_descendants(include_self=True)]
+            )
         else:
             raise Account.DoesNotExist(_("The user does not have an account."))
-
-        if self.request.user.is_superuser:
-            self.user_units = org_units.order_by("name")
-        else:
-            self.user_units = self.request.user.account.get_dpo_units().order_by("name")
 
     def get(self, request, *args, **kwargs):
         self._check_access(request)
@@ -135,7 +140,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
             confirmed_dpo = self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
             if self.request.user.is_superuser or confirmed_dpo:
-                positions = Position.employees.filter(unit=orgunit)
+                selected_unit = self.user_units.get(uuid=orgunit)
+                descendant_units = selected_unit.get_descendants(include_self=True)
+                positions = Position.employees.filter(unit__in=descendant_units)
                 self.matches = self.matches.filter(
                     alias_relation__account__positions__in=positions).exclude(
                     alias_relation__shared=True)
