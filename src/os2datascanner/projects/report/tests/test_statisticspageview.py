@@ -287,6 +287,76 @@ class TestDPOStatisticsPageView:
         assert response_ob.context_data.get('match_data').get(
             'unhandled').get('count') == egon_matches
 
+    @pytest.mark.parametrize('børge_matches,kjeld_matches', [
+        (0, 0),
+        (1, 0),
+        (0, 1),
+        (1, 1),
+        (0, 10),
+        (10, 0),
+        (10, 10),
+    ])
+    def test_filter_descendant_orgunits(
+            self,
+            børges_værelse_ou_positions,
+            rf,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            børge_matches,
+            kjeld_matches,
+            børge_email_alias,
+            kjeld_email_alias,
+            superuser_account):
+        """When filtering for an orgunit, we should see results from that unit
+        and all its descendants."""
+
+        # Arrange
+        create_reports_for(børge_email_alias, num=børge_matches)
+        create_reports_for(kjeld_email_alias, num=kjeld_matches)
+
+        # Act
+        response = self.get_dpo_statisticspage_response(
+            rf, superuser_account, params=f'?orgunit={str(olsenbanden_ou.uuid)}')
+
+        # Assert
+        assert response.context_data.get('match_data').get(
+            'unhandled').get('count') == børge_matches + kjeld_matches
+
+    @pytest.mark.parametrize('kjeld_matches, yvonne_matches', [
+        (0, 0),
+        (1, 0),
+        (0, 1),
+        (1, 1),
+        (0, 10),
+        (10, 0),
+        (10, 10),
+    ])
+    def test_filter_descendant_orgunits_with_multiple_positions(
+            self,
+            rf,
+            kjeld_email_alias,
+            yvonne_email_alias,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            olsenbanden_ou,
+            kjeld_matches,
+            yvonne_matches,
+            superuser_account):
+        """When an account is related to an OU and that OU's child OU, their
+        results should only be counted once."""
+
+        # Arrange
+        create_reports_for(kjeld_email_alias, num=kjeld_matches)
+        create_reports_for(yvonne_email_alias, num=yvonne_matches)
+
+        # Act
+        response = self.get_dpo_statisticspage_response(
+            rf, superuser_account, params=f'?orgunit={str(olsenbanden_ou.uuid)}')
+
+        # Assert
+        assert response.context_data.get('match_data').get(
+            'unhandled').get('count') == kjeld_matches + yvonne_matches
+
     @pytest.mark.parametrize('egon_matches,hulk_matches', [
         (0, 0),
         (1, 0),
