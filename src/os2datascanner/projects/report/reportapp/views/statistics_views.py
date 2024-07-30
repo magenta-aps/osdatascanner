@@ -104,21 +104,16 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
     def _check_access(self, request):
         if self.request.user.account:
-            # Only allow the user to see reports and units from their own
-            # organization
-            org = request.user.account.organization
-            self.matches = self.matches.filter(organization=org)
-            org_units = OrganizationalUnit.objects.filter(organization=org)
 
             if self.request.user.is_superuser:
-                self.user_units = org_units.order_by("name")
+                self.user_units = OrganizationalUnit.objects.all().order_by("name")
             else:
+                # Only allow the user to see reports and units from their own
+                # organization
+                org = request.user.account.organization
+                self.matches = self.matches.filter(organization=org)
                 self.user_units = self.request.user.account.get_dpo_units().order_by("name")
 
-            # Include descendants of the selected org unit
-            self.descendant_units = OrganizationalUnit.objects.filter(
-                pk__in=[unit.pk for unit in org_units.get_descendants(include_self=True)]
-            )
         else:
             raise Account.DoesNotExist(_("The user does not have an account."))
 
@@ -143,8 +138,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 selected_unit = self.user_units.get(uuid=orgunit)
                 descendant_units = selected_unit.get_descendants(include_self=True)
                 positions = Position.employees.filter(unit__in=descendant_units)
+                accounts = Account.objects.filter(positions__in=positions).distinct()
                 self.matches = self.matches.filter(
-                    alias_relation__account__positions__in=positions).exclude(
+                    alias_relation__account__in=accounts).exclude(
                     alias_relation__shared=True)
             else:
                 raise OrganizationalUnit.DoesNotExist(
@@ -195,8 +191,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         context['scannerjobs'] = (self.scannerjob_filters,
                                   self.request.GET.get('scannerjob', 'all'))
 
-        allowed_orgunits = OrganizationalUnit.objects.all() if self.request.user.is_superuser \
-            else self.request.user.account.get_dpo_units()
+        allowed_orgunits = self.user_units
 
         context['orgunits'] = (allowed_orgunits.order_by("name").values("name", "uuid"),
                                self.request.GET.get('orgunit', 'all'))
