@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 13:46+0200\n"
+"POT-Creation-Date: 2024-07-25 15:50+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -571,7 +571,7 @@ msgstr "pas"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:45
 #: adminapp/templates/components/admin_widgets/rule_builder.html:86
-#: adminapp/templates/components/admin_widgets/rule_builder.html:132
+#: adminapp/templates/components/admin_widgets/rule_builder.html:134
 #: adminapp/templatetags/utility_tags.py:62
 msgid "and"
 msgstr "og"
@@ -581,13 +581,13 @@ msgid "or"
 msgstr "eller"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:77
-#: adminapp/templates/components/admin_widgets/rule_builder.html:110
-#: adminapp/templates/components/admin_widgets/rule_builder.html:127
+#: adminapp/templates/components/admin_widgets/rule_builder.html:112
+#: adminapp/templates/components/admin_widgets/rule_builder.html:129
 msgid "with"
 msgstr "med"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:80
-#: adminapp/templates/components/admin_widgets/rule_builder.html:130
+#: adminapp/templates/components/admin_widgets/rule_builder.html:132
 msgid "modulus 11-,"
 msgstr "modulus 11-,"
 
@@ -607,37 +607,36 @@ msgstr "Undtagelser:"
 msgid "Surrounding exceptions:"
 msgstr "Omkringliggende undtagelser"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:97
+#: adminapp/templates/components/admin_widgets/rule_builder.html:99
 msgid "word1,word2"
 msgstr "Ord1,Ord2"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:100
+#: adminapp/templates/components/admin_widgets/rule_builder.html:102
 msgid ""
 "Enter specific words that prevents the scanner from marking a 10-digit "
 "number as a match if found within the first 3 surrounding words. "
 msgstr ""
-"Indtast specifikke ord, der forhindrer scanneren i at markere et "
-"10-cifret nummer som et match, hvis det findes blandt de første "
-"3 omkringliggende ord. "
+"Indtast specifikke ord, der forhindrer scanneren i at markere et 10-cifret "
+"nummer som et match, hvis det findes blandt de første 3 omkringliggende ord. "
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:106
+#: adminapp/templates/components/admin_widgets/rule_builder.html:108
 msgid "Regular expression"
 msgstr "Regulært udtryk"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:113
+#: adminapp/templates/components/admin_widgets/rule_builder.html:115
 msgid "expanded matching"
 msgstr "udvidet søgning"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:119
+#: adminapp/templates/components/admin_widgets/rule_builder.html:121
 msgid "field name"
 msgstr "navn på felt"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:121
+#: adminapp/templates/components/admin_widgets/rule_builder.html:123
 msgctxt "verb"
 msgid "matches"
 msgstr "resultater fundet"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:135
+#: adminapp/templates/components/admin_widgets/rule_builder.html:137
 msgid "context check"
 msgstr "konteksttjek"
 
@@ -2347,15 +2346,16 @@ msgid ""
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:86 adminapp/views/rule_views.py:94
+#: adminapp/views/rule_views.py:86 adminapp/views/rule_views.py:93
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/rule_views.py:92
+#: adminapp/views/rule_views.py:91
 msgid ""
 "The 'surrounding_exceptions'-string must not include any symbols or spaces."
 msgstr ""
-"Listen af omkringliggende undtagelser må ikke indeholde symboler eller mellemrum."
+"Listen af omkringliggende undtagelser må ikke indeholde symboler eller "
+"mellemrum."
 
 #: adminapp/views/scanner_views.py:69
 msgid "The page does not exist"
