@@ -1,6 +1,7 @@
 import structlog
 
 from ..conversions.types import decode_dict, OutputType
+from ...utils.replace_regions import replace_regions
 from . import messages
 from .. import settings
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
@@ -20,24 +21,45 @@ PREFETCH_COUNT = 8
 
 def censor_context(context, rules):
     """Given a text and an iterable of rules, will censor the text,
-    using the get_censor_intervals method of each SimpleTextRule."""
+    using the get_censor_intervals method of each rule."""
     censor_intervals = []
     for r in rules:
         if hasattr(r, "get_censor_intervals"):
             censor_intervals.extend(r.get_censor_intervals(context))
 
-    censor_intervals.sort()
-    censored_context = ""
-    next_interval = 0
-    mx = -1
-    for i, char in enumerate(context):
-        while next_interval < len(censor_intervals) and i >= censor_intervals[next_interval][0]:
-            mx = max(mx, censor_intervals[next_interval][1])
-            next_interval += 1
+    # Make sure no interval extends beyond the context
+    censor_intervals = [(max(0, start), min(end, len(context))) for start, end in censor_intervals]
+    # Make sure every interval starts before it ends,
+    # and sort them in increasing order of beginning
+    censor_intervals = sorted(filter(lambda start, end: start < end, censor_intervals))
 
-        censored_context += char if i >= mx else 'X'
+    if censor_intervals:
+        # Combine overlapping intervals
 
-    return censored_context
+        # The beginning and end of current interval
+        interval_start, interval_end = censor_intervals[0]
+        intervals = []
+
+        for start, end in censor_intervals:
+            if start >= interval_end:
+                # If the next interval doesn't overlap with the current one,
+                # save the current one and start a new
+                intervals.append((interval_start, interval_end))
+                interval_start = start
+                interval_end = end
+
+            else:
+                # If the next interval overlaps with the current one, combine them
+                interval_end = max(interval_end, end)
+
+        intervals.append((interval_start, interval_end))
+
+        return "".join(replace_regions(
+            context,
+            *[(start, 'X' * (end - start), end) for start, end in intervals]))
+
+    else:
+        return context
 
 
 def postprocess_match(
