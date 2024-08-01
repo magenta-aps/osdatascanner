@@ -205,20 +205,20 @@ def olsenbanden_ou_positions(olsenbanden_ou, egon_account, benny_account, kjeld_
     egon = Position.employees.create(account=egon_account, unit=olsenbanden_ou),
     benny = Position.employees.create(account=benny_account, unit=olsenbanden_ou),
     kjeld = Position.employees.create(account=kjeld_account, unit=olsenbanden_ou)
-    return egon, benny, kjeld
+    return {"egon": egon, "benny": benny, "kjeld": kjeld}
 
 
 @pytest.fixture
 def kjelds_hus_ou_positions(kjelds_hus, yvonne_account, kjeld_account):
     yvonne = Position.employees.create(account=yvonne_account, unit=kjelds_hus),
     kjeld = Position.employees.create(account=kjeld_account, unit=kjelds_hus)
-    return yvonne, kjeld
+    return {"yvonne": yvonne, "kjeld": kjeld}
 
 
 @pytest.fixture
 def børges_værelse_ou_positions(børges_værelse, børge_account):
     børge = Position.employees.create(account=børge_account, unit=børges_værelse)
-    return børge
+    return {"børge": børge}
 
 
 @pytest.fixture
@@ -289,7 +289,8 @@ def avengers_ou(marvel_organization):
 
 @pytest.fixture
 def avengers_ou_positions(avengers_ou, hulk_account):
-    return Position.employees.create(account=hulk_account, unit=avengers_ou)
+    hulk = Position.employees.create(account=hulk_account, unit=avengers_ou)
+    return {"hulk": hulk}
 
 
 @pytest.fixture
