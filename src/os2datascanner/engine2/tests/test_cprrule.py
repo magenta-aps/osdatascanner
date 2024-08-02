@@ -338,27 +338,39 @@ class TestCPRRule:
         ("1111117779", False, 1.0)
     ])
     def test_probability_check(self, content, ignore_irrelevant, prob):
-        rule = CPRRule(ignore_irrelevant=ignore_irrelevant, modulus_11=False, examine_context=False)
+        rule = CPRRule(ignore_irrelevant=ignore_irrelevant, modulus_11=True, examine_context=False)
         matches = list(rule.match(content))
 
         assert matches[0]["probability"] == prob
 
-    @pytest.mark.parametrize("content", [
-        ("1111119990"),
-        ("1111119991"),
-        ("1111119993"),
-        ("1111119994"),
-        ("1111119995"),
-        ("1111119996"),
-        ("1111119997"),
-        ("1111119998"),
-        ("1111119999"),
+    @pytest.mark.parametrize("content,mod11,result", [
+        ("1111119990", True, []),
+        ("1111119991", True, []),
+        ("1111119993", True, []),
+        ("1111119994", True, []),
+        ("1111119995", True, []),
+        ("1111119996", True, []),
+        ("1111119997", True, []),
+        ("1111119998", True, []),
+        ("1111119999", True, []),
+        ("1111119990", False, []),
+        ("1111119991", False, []),
+        ("1111119992", False, [
+            {'match': '1111XXXXXX',
+             'offset': 0,
+             'context': 'XXXXXX-XXXX',
+             'context_offset': 0,
+             'sensitivity': None,
+             'probability': 0.1}
+            ]),
     ])
-    def test_probability_non_mod11_number_ignore_irrelevant(self, content):
-        rule = CPRRule(ignore_irrelevant=True, modulus_11=False, examine_context=False)
+    def test_probability_number_ignore_irrelevant(self, content, mod11, result):
+        rule = CPRRule(ignore_irrelevant=True, modulus_11=mod11, examine_context=False)
         matches = list(rule.match(content))
 
-        assert matches == []
+        print(matches)
+
+        assert matches == result
 
 
 @pytest.fixture

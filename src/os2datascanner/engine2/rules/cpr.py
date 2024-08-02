@@ -133,13 +133,14 @@ class CPRRule(RegexRule):
 
             probability = 1.0
             if self._ignore_irrelevant:
-                probability = calculator.cpr_check(cpr, do_mod11_check=False)
+                probability = calculator.cpr_check(cpr, do_mod11_check=self._modulus_11)
                 if isinstance(probability, str):
                     logger.debug(f"{cpr} is not valid cpr due to {probability}")
                     return False
 
             cpr = cpr[0:4] + "XXXXXX"
             low, high = match.span()
+            print(low, high, high-low, len(content))
             # only examine context if there is any
             if self._examine_context and len(content) > (high - low):
                 p, ctype = self.examine_context(match)
@@ -208,6 +209,10 @@ class CPRRule(RegexRule):
         probability = None
         words_or_syms = self.extract_surrounding_words(match, n_words=3)
         ctype = []
+
+        if not words_or_syms:
+            # Return earlier if no surrounding words or symbols are found
+            return probability, ctype
 
         # test if a whitelist- or surrounding_exception -string is found in the context words.
         # combine the list of 'pre' & 'post' keys in words dict.
@@ -368,4 +373,4 @@ def is_alpha_case(s: str) -> bool:
 
 def match_to_cpr(match: Match[str]):
     """Converts a match object into a cpr number without hyphen or space."""
-    return match.group(1).replace(" ", "") + match.group(2)
+    return match.group(1) + match.group(2)

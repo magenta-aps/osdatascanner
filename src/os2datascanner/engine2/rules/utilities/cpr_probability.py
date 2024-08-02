@@ -228,7 +228,7 @@ class CprProbabilityCalculator(object):
             legal_7s = [5, 6, 7, 8]
         return legal_7s
 
-    def _calc_all_cprs(self, birth_date: date) -> list:
+    def _calc_all_cprs(self, birth_date: date, mod11_check: bool = True) -> list:
         """Calculate all valid CPRs for a given birth date.
 
         :param birh_date: The birh date to check.
@@ -247,8 +247,11 @@ class CprProbabilityCalculator(object):
                     + str(index_7)
                     + str(i).zfill(3)
                 )
-                valid = modulus11_check_raw(cpr_candidate)
-                if valid:
+                if mod11_check:
+                    valid = modulus11_check_raw(cpr_candidate)
+                    if valid:
+                        legal_cprs.append(cpr_candidate)
+                else:
                     legal_cprs.append(cpr_candidate)
 
         self.cached_cprs[cache_key] = legal_cprs
@@ -296,7 +299,7 @@ class CprProbabilityCalculator(object):
                 birth_date not in CPR_EXCEPTION_DATES):
             return "Modulus 11 does not match"
 
-        legal_cprs = self._calc_all_cprs(birth_date)
+        legal_cprs = self._calc_all_cprs(birth_date, mod11_check=do_mod11_check)
         try:
             index_number = legal_cprs.index(cpr)
         except ValueError:
