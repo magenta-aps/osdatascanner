@@ -59,6 +59,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('os2datascanner', '0046_verbose_name_translations'),
+        ('organizations', '0003_add_imported_mixin')
     ]
 
     operations = [

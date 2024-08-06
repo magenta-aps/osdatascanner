@@ -1,6 +1,7 @@
 import pytest
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from os2datascanner.projects.grants.models import GraphGrant
@@ -14,7 +15,7 @@ from os2datascanner.engine2.pipeline.messages import (
     ProblemMessage)
 from os2datascanner.engine2.rules.regex import RegexRule
 
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule, Sensitivity
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
     Organization, OrganizationalUnit, Account, Position, Alias)
@@ -38,6 +39,11 @@ def USERERRORLOG_True(settings):
 
 
 # Users
+@pytest.fixture
+def anonymous_user():
+    return AnonymousUser()
+
+
 @pytest.fixture
 def user():
     return get_user_model().objects.create(username='mr_userman', password='hunter2')
@@ -77,8 +83,10 @@ def user_admin(test_org):
 
 
 @pytest.fixture
-def basic_rule():
-    return CustomRule.objects.create(**dummy_rule_dict)
+def basic_rule(test_org):
+    rule = CustomRule.objects.create(**dummy_rule_dict)
+    rule.organizations.add(test_org)
+    return rule
 
 
 @pytest.fixture
@@ -87,6 +95,7 @@ def org_rule(test_org):
         name="org_rule",
         description="org_rule",
         organization=test_org,
+        sensitivity=Sensitivity.CRITICAL,
         _rule=RegexRule(r"[A-Z]{10}").to_json_object(),
     )
 

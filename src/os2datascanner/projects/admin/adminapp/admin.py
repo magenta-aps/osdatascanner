@@ -23,7 +23,7 @@ from .models.authentication import Authentication
 from .models.apikey import APIKey
 from .models.scannerjobs.scanner_helpers import CoveredAccount
 from .models.usererrorlog import UserErrorLog
-from .models.rules import CustomRule
+from .models.rules import CustomRule, RuleCategory
 from .models.scannerjobs.scanner import (ScanStatus,
                                          ScheduledCheckup,
                                          ScanStatusSnapshot)
@@ -89,6 +89,13 @@ class CustomRuleForm(forms.ModelForm):
 @admin.register(CustomRule)
 class CustomRuleAdmin(admin.ModelAdmin):
     form = CustomRuleForm
+
+    filter_horizontal = ('categories',)
+
+
+@admin.register(RuleCategory)
+class RuleCategoryAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(WebScanner)

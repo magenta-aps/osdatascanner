@@ -1,0 +1,116 @@
+{% load i18n l10n %}
+
+
+<div class="content-header">
+  <h1 class="page-title">{% trans "System rules" %}</h1>
+</div>
+
+<div class="rule_filtering_wrapper">
+  <form class="rule-filter-form"
+        hx-get="{% url 'rules' %}"
+        hx-swap="outerHTML"
+        hx-select="#system-rules-card"
+        hx-target="#system-rules-card"
+        hx-trigger="click from:#rule-filter-button"
+        hx-push-url="true">
+    <label for="categories_select2">{% trans "Filter for categories" %}</label>
+    <select id="categories_select2" name="categories" multiple>
+      {% for category in categories %}
+        <option value="{{ category.pk|unlocalize }}"
+                {% if category in selected_categories %}selected{% endif %}>
+          {{ category.get_name_display|capfirst }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <button type="button"
+            class="button"
+            id="rule-filter-button"
+            aria-label="{% trans "Filter system rules by the chosen categories." %}"
+            title="{% trans "Filter system rules by the chosen categories." %}">
+      <span>{% trans "filter"|capfirst %}</span>
+    </button>
+  </form>
+  <label for="selected_org">{% trans "Choose system rules for organization" %}</label>
+  <div class="dropdown">
+    <select id="selected_org"
+            name="selected_org"
+            hx-get="{% url 'rules' %}"
+            hx-swap="outerHTML"
+            hx-target="#system-rules-card"
+            hx-select="#system-rules-card"
+            hx-trigger="change">
+      {% for organization in organizations %}
+        <option value="{{ organization.uuid }}">{{ organization.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<div id="system-rules-card"
+     class="datatable-wrapper card lg"
+     role="region"
+     tabindex="0"
+     aria-label="{% trans 'System rules' %}">
+  <table class="datatable">
+    <colgroup>
+      <col class="datatable__column--checkbox" />
+      <col class="datatable__column--name" />
+      <col class="datatable__column--categories" />
+      <col class="datatable__column--info" />
+      <col class="datatable__column--sensitivity" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="datatable__column--checkbox"></th>
+        <th class="datatable__column--name">{% trans "Name" %}</th>
+        <th class="datatable__column--categories">{% trans "Categories" %}</th>
+        <th class="datatable__column--info">{% trans "Description" %}</th>
+        <th class="datatable__column--sensitivity">{% trans "Sensitivity" %}</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% if systemrule_list %}
+        {% for rule in systemrule_list %}
+          <tr tabindex="0">
+            <td class="datatable__column--checkbox">
+              <div class="ds-checkbox">
+                <input type="checkbox"
+                       id="table-checkbox-{{ rule.pk|unlocalize }}"
+                       value="{{ rule.pk|unlocalize }}"
+                       name="table-checkbox"
+                       class="datatable-checkbox"
+                       hx-post="{% url "connect-rule-to-org" rule.pk %}"
+                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                       hx-swap="none"
+                       hx-include="[id='selected_org'], [id='table-checkbox-{{ rule.pk|unlocalize }}']"
+                       hx-trigger="change"
+                       {% if rule.connected %}checked{% endif %}
+                       autocomplete="off" />
+                <label for="table-checkbox-{{ rule.pk|unlocalize }}"
+                       aria-label="{% trans 'Enable rule' %}"
+                       title="{% trans 'Enable rule' %}"></label>
+              </div>
+            </td>
+            <td class="datatable__column--name">{{ rule.name }}</td>
+            <td class="datatable__column--categories">
+              {% for category in rule.categories.all %}<span class="category tag">{{ category|capfirst }}</span>{% endfor %}
+            </td>
+            <td class="datatable__column--info">{{ rule.description }}</td>
+            <td class="datatable__column--sensitivity">
+              <span class="flex">
+                <span class="flex--width">{% include "components/rules/sensitivity_icon.html" %}</span>
+                <span>{{ rule.get_sensitivity_display }}</span>
+              </span>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr tabindex="0">
+          <td class="nothing_found_row" colspan="4">{% trans "No rules found with the chosen categories" %}</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>

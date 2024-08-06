@@ -437,29 +437,6 @@
 	}
 }
 
-.status_wrapper {
-	padding: 0.5rem 1rem;
-	width: fit-content;
-	max-height: 2.125rem;
-	font-weight: bold;
-	border-radius: 50px;
-
-	&[data-status="0"] {
-		background-color: var(--color-status-good);
-		color: var(--color-checkmark);
-	}
-
-	&[data-status="1"] {
-		background-color: var(--color-status-ok);
-		color: var(--color-ok);
-	}
-
-	&[data-status="2"] {
-		background-color: var(--color-status-bad);
-		color: var(--color-error);
-	}
-}
-
 .statistic_wrapper.user-overview {
 	display: flex;
 	flex-wrap: nowrap;

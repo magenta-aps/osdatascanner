@@ -208,6 +208,10 @@
       }
     }
 
+    &--categories {
+      width: 100%;
+    }
+
     &--matchcount {
       width: 5.5rem;
       display: none;
@@ -408,6 +412,11 @@
     &:hover {
       color: var(--color-primary-dark);
     }
+  }
+
+  .nothing_found_row {
+    text-align: center;
+    font-style: italic;
   }
 }
 

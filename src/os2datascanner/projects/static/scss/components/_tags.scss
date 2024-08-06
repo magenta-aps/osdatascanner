@@ -1,0 +1,33 @@
+.tag {
+	padding: 0.5rem 1rem;
+	max-height: 2.125rem;
+	border-radius: 50px;
+  cursor: default;
+  font-weight: bold;
+
+  &.status {
+    width: fit-content;
+
+    &[data-status="0"] {
+      background-color: var(--color-status-good);
+      color: var(--color-checkmark);
+    }
+
+    &[data-status="1"] {
+      background-color: var(--color-status-ok);
+      color: var(--color-ok);
+    }
+
+    &[data-status="2"] {
+      background-color: var(--color-status-bad);
+      color: var(--color-error);
+    }
+  }
+
+  &.category {
+    display: inline-block;
+    background-color: var(--color-status-ok);
+    color: var(--color-ok);
+    margin: 0.1rem;
+  }
+}

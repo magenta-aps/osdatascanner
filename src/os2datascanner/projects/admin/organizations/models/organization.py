@@ -19,6 +19,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Sc
 from os2datascanner.core_organizational_structure.models import \
     OrganizationSerializer as Core_OrganizationSerializer
 from .broadcasted_mixin import Broadcasted
+from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
 
 
 from os2datascanner.core_organizational_structure.models import Organization as Core_Organization
@@ -58,6 +59,11 @@ class Organization(Core_Organization):
         allow_unicode=True,
         unique=True,
         verbose_name=_('slug'),
+    )
+    system_rules = models.ManyToManyField(
+        CustomRule,
+        related_name='organizations',
+        verbose_name=_('system rules'),
     )
 
     def save(self, *args, **kwargs):
