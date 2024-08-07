@@ -62,7 +62,7 @@ class RuleList(RestrictedListView):
         organizations = Organization.objects.filter(user.make_org_Q("uuid"))
         context["organizations"] = organizations
 
-        if org_pk := self.request.GET.get("XXselected_orgXX"):
+        if org_pk := self.request.GET.get("selected_org"):
             selected_org = organizations.get(pk=org_pk)
         else:
             selected_org = organizations.first()
