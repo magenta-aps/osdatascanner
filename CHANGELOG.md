@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 3.24.3, ???
+
+### General improvements
+
+- Minor refactor of the create rule view, added tests for all rule views.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"

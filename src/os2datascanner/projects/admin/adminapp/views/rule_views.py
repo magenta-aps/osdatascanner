@@ -62,7 +62,7 @@ class RuleList(RestrictedListView):
         organizations = Organization.objects.filter(user.make_org_Q("uuid"))
         context["organizations"] = organizations
 
-        if org_pk := self.request.GET.get("XXselected_orgXX"):
+        if org_pk := self.request.GET.get("selected_org"):
             selected_org = organizations.get(pk=org_pk)
         else:
             selected_org = organizations.first()
@@ -106,7 +106,9 @@ class RuleCreate(RestrictedCreateView):
             ex_string = rule.get('surrounding_exceptions')
             # Check that the "surrounding_exceptions"-string only contains
             # alphanumeric characters or is an empty string.
-            validated = ex_string == "" or bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
+            # TODO: But ... The regex does not only allow alphanumeric characters.
+            # Do we only want alphanumeric characters or not?
+            validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
             return validated
 
         if crule := form.cleaned_data.get('rule'):
@@ -165,7 +167,6 @@ class RuleUpdate(RestrictedUpdateView):
     """Update a rule view."""
 
     model = Rule
-    edit = True
     fields = ['name', 'description', 'sensitivity', 'organization']
 
     def get_form(self, form_class=None):
@@ -236,14 +237,3 @@ class CustomRuleConnect(LoginRequiredMixin, UpdateView):
             self.object.organizations.remove(organization)
 
         return response
-
-
-'''============ Methods required by multiple views ============'''
-
-
-def extract_pattern_fields(form_fields):
-    if not form_fields:
-        return [('pattern_0', '')]
-
-    return [(field_name, form_fields[field_name]) for field_name in form_fields if
-            field_name.startswith('pattern_')]
