@@ -136,6 +136,8 @@
 
   svg {
     fill: var(--color-checkmark);
+    min-width: 1.5rem;
+    min-height: 1.5rem;
   }
 
   .width {
