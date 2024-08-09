@@ -41,7 +41,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "-f", "--force",
             action="store_true",
-            help="Run organization synchronization regardless of schedulation.",
+            help="Ignore scheduling information and synchronize immediately.",
         )
 
     def handle(self, *args, force: bool = False, **kwargs):
@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
     def schedule_check(self, org):
 
-        if not org.synchronization_hour:
+        if not org.synchronization_time:
             # Org doesn't have mail notifications scheduled/have disabled it.
             self.stdout.write(f"Organization {org.name} has no set synchronization hour.",
                               style_func=self.style.WARNING)
@@ -73,4 +73,4 @@ class Command(BaseCommand):
 
         else:
             current_hour = time_now().hour
-            return current_hour == org.synchronization_hour
+            return current_hour == org.synchronization_time.hour

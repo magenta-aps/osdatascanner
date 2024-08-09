@@ -11,10 +11,10 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from django import forms
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import ScanStatus, Scanner
 from os2datascanner.core_organizational_structure.models import \
@@ -44,15 +44,12 @@ def replace_nordics(name: str):
     return name
 
 
-class HourField(models.PositiveIntegerField):
+class HourField(models.TimeField):
+    """ Allow the user to pick time of day in the format HH:MM. """
 
     def formfield(self, **kwargs):
-        return super().formfield(
-            **{
-                "max_value": 23,
-                **kwargs,
-            }
-        )
+        kwargs['widget'] = forms.TimeInput(format='%H:%M', attrs={'type': 'time', 'step': '3600'})
+        return super().formfield(**kwargs)
 
 
 @Broadcasted.register
@@ -77,13 +74,9 @@ class Organization(Core_Organization):
         related_name='organizations',
         verbose_name=_('system rules'),
     )
-    synchronization_hour = HourField(
-        default=17,
-        validators=[
-            MaxValueValidator(23),
-            MinValueValidator(0)
-            ],
-        verbose_name=_('synchronization hour'),
+    synchronization_time = HourField(
+        default="17:00",
+        verbose_name=_('synchronization time'),
     )
 
     def save(self, *args, **kwargs):

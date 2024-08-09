@@ -277,7 +277,7 @@ class UpdateOrganizationViewTests(TestCase):
             'outlook_categorize_email_permission': OutlookCategorizeChoices.NONE,
             'outlook_delete_email_permission': False,
             'onedrive_delete_permission': False,
-            'synchronization_hour': 17,
+            'synchronization_time': "17:00",
         })
 
         success_url = reverse_lazy('organization-list')
@@ -350,7 +350,7 @@ class UpdateOrganizationViewTests(TestCase):
             'outlook_categorize_email_permission': OutlookCategorizeChoices.NONE,
             'outlook_delete_email_permission': False,
             'onedrive_delete_permission': False,
-            'synchronization_hour': 17,
+            'synchronization_time': "17:00",
         })
 
         success_url = reverse_lazy('organization-list')
