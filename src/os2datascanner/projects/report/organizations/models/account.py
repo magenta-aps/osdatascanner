@@ -296,8 +296,6 @@ class Account(Core_Account):
         org_fp_rate = self.organization.false_positive_rate
         acc_fp_rate = self.false_positive_rate
 
-        print(org_fp_rate, acc_fp_rate)
-
         # If the account's false positive rate is more than twice the
         # organization's false positive rate, raise the alarm!
         return acc_fp_rate > 2*org_fp_rate
