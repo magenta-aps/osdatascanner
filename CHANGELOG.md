@@ -11,6 +11,10 @@
   to an organization through the "rules"-page in the admin module, and can
   be searched using the new categorization system.
 
+- Users can now see their false positive rate on the "My Overview"-page.
+  This overview is also visible to managers. Managers are also warned if a 
+  user has a positive rate more than twice the rate of the organization.
+
 ## Version 3.24.1, 29th July 2024
 
 "Get Back Up Again"

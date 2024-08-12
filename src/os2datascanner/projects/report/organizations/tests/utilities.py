@@ -3,6 +3,7 @@ import json
 from django.utils import timezone
 
 from ...reportapp.models.documentreport import DocumentReport
+from ..models.organization import Organization
 
 # This is a real raw_matches field from test data. This could probably be done
 # in a better way.
@@ -195,11 +196,17 @@ raw_matches_json_matched = json.loads('''
 ''')
 
 
-def make_matched_document_reports_for(alias, handled=0, amount=10, created=timezone.now()):
+def make_matched_document_reports_for(
+        alias,
+        handled=0,
+        amount=10,
+        created=timezone.now(),
+        organization=None):
     for i in range(amount):
         dr = DocumentReport.objects.create(raw_matches=raw_matches_json_matched)
         dr.created_timestamp = created
         if i < handled:
             dr.resolution_status = 0
+        dr.organization = organization if organization else Organization.objects.first()
         dr.save()
         dr.alias_relation.add(alias)

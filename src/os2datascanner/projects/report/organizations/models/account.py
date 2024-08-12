@@ -282,7 +282,7 @@ class Account(Core_Account):
     def false_positive_rate(self) -> float:
         from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
         all_matches = DocumentReport.objects.filter(
-            alias_relation__account=self, number_of_matches__gte=1)
+            alias_relation__account=self, number_of_matches__gte=1, resolution_status__isnull=False)
         fp_matches = all_matches.filter(
             resolution_status=DocumentReport.ResolutionChoices.FALSE_POSITIVE)
 

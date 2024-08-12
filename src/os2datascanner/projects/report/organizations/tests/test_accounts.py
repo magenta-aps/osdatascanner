@@ -2,8 +2,9 @@ import datetime
 import pytest
 
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
-from ..models.account import StatusChoices
+from ..models.account import StatusChoices, Account
 from ...reportapp.models.documentreport import DocumentReport
 from .utilities import make_matched_document_reports_for
 
@@ -202,7 +203,7 @@ class TestAccount:
             false_positives,
             rate):
 
-        make_matched_document_reports_for(egon_email_alias, handled=0, amount=all_matches)
+        make_matched_document_reports_for(egon_email_alias, handled=all_matches, amount=all_matches)
         for report in DocumentReport.objects.filter(
                 alias_relation=egon_email_alias)[:false_positives]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
@@ -229,8 +230,14 @@ class TestAccount:
             egon_fp,
             alarm):
 
-        make_matched_document_reports_for(egon_email_alias, handled=0, amount=egon_matches)
-        make_matched_document_reports_for(benny_email_alias, handled=0, amount=benny_matches)
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=egon_matches,
+            amount=egon_matches)
+        make_matched_document_reports_for(
+            benny_email_alias,
+            handled=benny_matches,
+            amount=benny_matches)
 
         for report in DocumentReport.objects.filter(alias_relation=benny_email_alias)[:benny_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
@@ -241,3 +248,123 @@ class TestAccount:
             report.save()
 
         assert egon_account.false_positive_alarm() == alarm
+
+
+@pytest.mark.django_db
+class TestUserAccountConnection:
+    """Creating or interacting with an account should also create or alter a User."""
+
+    def test_create_account_and_user(self, olsenbanden_organization):
+        account = Account.objects.create(
+            username="manden_med_planen",
+            first_name="Egon",
+            last_name="Olsen",
+            is_superuser=True,
+            organization=olsenbanden_organization
+        )
+
+        user = account.user
+
+        assert user.username == account.username
+        assert user.first_name == account.first_name
+        assert user.last_name == account.last_name
+        assert user.is_superuser == account.is_superuser
+
+    def test_create_empty_account_and_user(self, olsenbanden_organization):
+        account = Account.objects.create(
+            username="username_mc_username",
+            organization=olsenbanden_organization
+        )
+
+        user = account.user
+
+        assert user.first_name == ""
+        assert user.last_name == ""
+        assert user.is_superuser is False
+
+    # @pytest.mark.parametrize('field,value', [
+    #     ('first_name', 'Jan'),
+    #     ('last_name', 'Egeland'),
+    #     ('username', 'super_muscle_pumping_crying_god'),
+    #     ('is_superuser', True)
+    # ])
+    # def test_alter_account_and_user(self, egon_account, field, value):
+    #     # This does not actually happen -- should it?
+    #     setattr(egon_account, field, value)
+    #     egon_account.save()
+
+    #     user = egon_account.user
+    #     assert getattr(user, field) == value
+
+    def test_delete_user_with_account(self, egon_account):
+        username = egon_account.username
+
+        egon_account.delete()
+
+        assert not get_user_model().objects.filter(username=username).exists()
+
+    def test_bulk_create_account_and_user(self, olsenbanden_organization):
+        accounts = Account.objects.bulk_create([
+            Account(
+                username='manden_med_planen',
+                first_name='Egon',
+                last_name='Olsen',
+                is_superuser=True,
+                organization=olsenbanden_organization
+            )
+        ])
+
+        account = accounts[0]
+
+        user = account.user
+
+        assert user.username == account.username
+        assert user.first_name == account.first_name
+        assert user.last_name == account.last_name
+        assert user.is_superuser == account.is_superuser
+
+    def test_bulk_create_empty_account_and_user(self, olsenbanden_organization):
+        accounts = Account.objects.bulk_create([
+            Account(
+                username='username_mc_username',
+                organization=olsenbanden_organization
+            )
+        ])
+
+        account = accounts[0]
+
+        user = account.user
+
+        assert user.first_name == ""
+        assert user.last_name == ""
+        assert user.is_superuser is False
+
+    @pytest.mark.parametrize('field,value', [
+        ('first_name', 'Jan'),
+        ('last_name', 'Egeland'),
+        ('username', 'super_muscle_pumping_crying_god'),
+        ('is_superuser', True)
+    ])
+    def test_bulk_update_account_and_user(self, egon_account, field, value):
+        setattr(egon_account, field, value)
+
+        Account.objects.bulk_update([egon_account], fields=[field])
+
+        user = egon_account.user
+        assert getattr(user, field) == value
+
+    def test_bulk_update_empty_account_and_user(self, olsenbanden_organization):
+        account = Account.objects.create(
+            username="username_mc_username",
+            organization=olsenbanden_organization
+        )
+
+        account.username = "new_username"
+
+        Account.objects.bulk_update([account], fields=['username'])
+
+        user = account.user
+
+        assert user.first_name == ""
+        assert user.last_name == ""
+        assert user.is_superuser is False

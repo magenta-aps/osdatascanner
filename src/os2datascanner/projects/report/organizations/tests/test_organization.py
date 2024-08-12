@@ -24,8 +24,14 @@ class TestOrganization:
             egon_fp,
             benny_fp,
             rate):
-        make_matched_document_reports_for(egon_email_alias, handled=0, amount=egon_matches)
-        make_matched_document_reports_for(benny_email_alias, handled=0, amount=benny_matches)
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=egon_matches,
+            amount=egon_matches)
+        make_matched_document_reports_for(
+            benny_email_alias,
+            handled=benny_matches,
+            amount=benny_matches)
 
         for report in DocumentReport.objects.filter(alias_relation=benny_email_alias)[:benny_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE

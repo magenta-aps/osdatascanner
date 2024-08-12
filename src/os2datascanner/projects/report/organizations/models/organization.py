@@ -72,10 +72,12 @@ class Organization(Core_Organization):
     def false_positive_rate(self) -> float:
         from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
         all_matches = DocumentReport.objects.filter(
-            alias_relation__account__organization=self,
+            organization=self,
+            resolution_status__isnull=False,
             number_of_matches__gte=1)
         fp_matches = all_matches.filter(
             resolution_status=DocumentReport.ResolutionChoices.FALSE_POSITIVE)
+        print("all_matches", all_matches.count())
 
         return fp_matches.count() / all_matches.count() if all_matches.count() > 0 else 0
 
