@@ -143,6 +143,18 @@ MO_ORG_UNITS = [
             "managers": [],
             "engagements": []
         }
+    },
+    {
+        "current": {
+            "name": "Unit 3",
+            "uuid": "473ad333-c4d5-447c-a858-d03b021caba9",
+            "parent": {
+                "name": "Top level unit",
+                "uuid": "23b6386a-6142-4495-975c-92ff41dd4100"
+            },
+            "managers": [{"person": None}],  # Vacant manager
+            "engagements": []
+        }
     }
 ]
 
@@ -170,6 +182,7 @@ class OS2moImportTest(TestCase):
         self.top_level_unit = OrganizationalUnit.objects.get(name="Top level unit")
         self.unit1 = OrganizationalUnit.objects.get(name="Unit 1")
         self.unit2 = OrganizationalUnit.objects.get(name="Unit 2")
+        self.unit3 = OrganizationalUnit.objects.get(name="Unit 3")
 
     def tearDown(self):
         self.org.delete()
@@ -200,6 +213,13 @@ class OS2moImportTest(TestCase):
         assert self.unit2.last_import_requested.date() == today
         assert self.unit2.parent.name == "Top level unit"
 
+        assert self.unit3.imported_id == "473ad333-c4d5-447c-a858-d03b021caba9"
+        assert self.unit3.organization == self.org
+        assert self.unit3.imported
+        assert self.unit3.last_import.date() == today
+        assert self.unit3.last_import_requested.date() == today
+        assert self.unit3.parent.name == "Top level unit"
+
     def test_employee_import(self):
         # Assert
 
@@ -229,6 +249,7 @@ class OS2moImportTest(TestCase):
         assert eddie.email == ""
 
         assert len(self.unit2.get_employees()) == 0
+        assert len(self.unit3.get_employees()) == 0
 
     def test_manager_import(self):
         # Assert
@@ -250,6 +271,7 @@ class OS2moImportTest(TestCase):
         assert brandon.email == "brandon@kung.fu"
 
         assert len(self.unit2.get_managers()) == 0
+        assert len(self.unit3.get_managers()) == 0
 
     def test_account_delete(self):
         # Arrange
