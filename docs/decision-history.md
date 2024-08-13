@@ -151,6 +151,20 @@ mixed case -- that is, a word which is not lowercase (`magenta`), uppercase
 This is because mixed case words indicate, that the string is randomly 
 generated, maybe part of an encrypted string or similar.
 
+##### Surrounding words
+
+Similar to the `Blacklist` context check, this context check invalidates a 
+match based on the presence of specified words. 
+However, in this case, the match is only invalidated if any of these words 
+are found within three words of the matched number. 
+
+This approach allows for the exclusion of matches that are not true CPR 
+numbers based on their surrounding context, without excluding all CPR-like 
+numbers in the scanned source.
+
+This feature was implemented in response to a customer request to enable 
+the exclusion of matches based on their surrounding context.
+
 #### Exceptions
 
 When adding a new CPRRule to a CustomRule, it is possible to define a list of 
