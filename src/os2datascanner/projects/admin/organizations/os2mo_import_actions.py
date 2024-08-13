@@ -231,8 +231,12 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
             person_type: the type of person, i.e. an employee or a manager.
         """
 
+        persons = obj.get("person")
+        if persons is None:
+            return
+
         try:
-            person = one(obj.get("person"))
+            person = one(persons)
         except ValueError:
             # This should never happen
             logger.warn(
