@@ -43,15 +43,16 @@ MSGRAPH_TENANT_ID = ""
 SMB_ALLOW_WRITE = true
 
 # KEYCLOAK
+# TODO: These settings require a os2datascanner client, and a osdatascanner realm in Keycloak.
 OIDC_RP_CLIENT_ID = "os2datascanner"
 # endpoints
-OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/magenta/protocol/openid-connect/auth"
-OIDC_OP_TOKEN_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/magenta/protocol/openid-connect/token"
-OIDC_OP_USER_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/magenta/protocol/openid-connect/userinfo"
+OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/auth"
+OIDC_OP_TOKEN_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/token"
+OIDC_OP_USER_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/userinfo"
 # signing algorithm and key
-OIDC_OP_JWKS_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/magenta/protocol/openid-connect/certs"
+OIDC_OP_JWKS_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/certs"
 # login and logout urls
-LOGOUT_URL = "http://localkeycloak.os2datascanner:8090/auth/realms/magenta/protocol/openid-connect/logout"
+LOGOUT_URL = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/logout"
 # Redirect urls
 LOGIN_REDIRECT_URL = "http://localhost:8040/"
 
