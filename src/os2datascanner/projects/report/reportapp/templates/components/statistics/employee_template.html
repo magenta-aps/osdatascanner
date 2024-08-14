@@ -8,13 +8,22 @@
     </div>
   </td>
   <td class="datatable__column--matchcount">
-    {{ employee.match_count }}
-    {% if employee.withheld_matches > 0 %}
-      <div class="withheld-matches"
-           title="{% blocktranslate with withheld=employee.withheld_matches %}The user has {{ withheld }} matches, which have not been distributed to the user yet. This can be done by a superuser in the report module.{% endblocktranslate %}">
-        {{ employee.withheld_matches }} <span>{% trans "withheld" %}</span>
+    <div class="matches_container">
+      <div class="matches">
+        {{ employee.match_count }}
+        {% if employee.withheld_matches > 0 %}
+          <div class="withheld-matches"
+               title="{% blocktranslate with withheld=employee.withheld_matches %}The user has {{ withheld }} matches, which have not been distributed to the user yet. This can be done by a superuser in the report module.{% endblocktranslate %}">
+            {{ employee.withheld_matches }} <span>{% trans "withheld" %}</span>
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
+      {% if employee.false_positive_alarm %}
+        <span class="warning-symbol material-symbols-outlined" title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
+          warning
+        </span>
+      {% endif %}
+    </div>
   </td>
   <td class="datatable__column--matchstatus">
     <div class="status tag" data-status="{{ employee.match_status }}">{{ employee.status }}</div>

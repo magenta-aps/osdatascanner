@@ -96,6 +96,7 @@
           <canvas class="line_chart"
                   id="line_chart_all_matches_development__{{ account.uuid }}"></canvas>
         </div>
+        {% trans "False positive percentage:" %} {{ account.false_positive_percentage }}%
       </div>
     </div>
     {{ matches_by_week|json_script:"matches_by_week" }}
