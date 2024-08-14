@@ -46,6 +46,7 @@ class Command(BaseCommand):
         print("\n\n>> Running diagnostics on accounts ...")
         accounts = Account.objects.all()
         accounts_without_username = accounts.filter(username="").values("pk")
+        accounts_without_email = accounts.filter(email="").values("pk")
         imported_accounts = accounts.filter(imported=True)
         imported_accounts_no_positions = imported_accounts.filter(
             positions__isnull=True).values("pk")
@@ -57,6 +58,10 @@ class Command(BaseCommand):
         if accounts_without_username:
             print(f"Found {len(accounts_without_username)} accounts without a username:", ", ".join(
                 [str(d["pk"]) for d in accounts_without_username]))
+
+        if accounts_without_email:
+            print(f"Found {len(accounts_without_email)} accounts without an email:", ", ".join(
+                [str(d["pk"]) for d in accounts_without_email]))
 
         if imported_accounts_no_positions:
             print(f"Found {len(imported_accounts_no_positions)} imported accounts without "

@@ -46,6 +46,7 @@ class Command(BaseCommand):
         print("\n\n>> Running diagnostics on accounts ...")
         accounts = Account.objects.all()
         accounts_without_username = accounts.filter(username="").values("pk")
+        accounts_without_email = accounts.filter(email="").values("pk")
         accounts_without_user = accounts.filter(user__isnull=True).values("username", "pk")
         username_counts = accounts.annotate(username_lower=Lower("username")
                                             ).values("username_lower").order_by(
@@ -56,6 +57,10 @@ class Command(BaseCommand):
         if accounts_without_username:
             print(f"Found {len(accounts_without_username)} accounts without a username:", ", ".join(
                 [d["pk"] for d in accounts_without_username]))
+
+        if accounts_without_email:
+            print(f"Found {len(accounts_without_email)} accounts without an email:", ", ".join(
+                [str(d["pk"]) for d in accounts_without_email]))
 
         if accounts_without_user:
             print(f"Found {len(accounts_without_user)} accounts without a user:", ", ".join(
