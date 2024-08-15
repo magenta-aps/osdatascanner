@@ -17,8 +17,9 @@
 import termplotlib as tpl
 from os import environ
 
+
 from django.core.management.base import BaseCommand
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from django.db.models.functions import Lower
 from django.conf import settings
 
@@ -43,7 +44,7 @@ class Command(BaseCommand):
             help="Only run diagnostics on a specific part of the report module.")
 
     def diagnose_accounts(self):
-        print("\n\n>> Running diagnostics on accounts ...")
+        self.stdout.write("\n\n>> Running diagnostics on accounts ...")
         accounts = Account.objects.all()
         accounts_without_username = accounts.filter(username="").values("pk")
         accounts_without_email = accounts.filter(email="").values("pk")
@@ -52,36 +53,41 @@ class Command(BaseCommand):
                                             ).values("username_lower").order_by(
         ).annotate(count=Count("username_lower")).order_by("-count").filter(count__gte=2)
 
-        print(f"Found a total of {accounts.count()} accounts.")
+        self.stdout.write(f"Found a total of {accounts.count()} accounts.")
 
         if accounts_without_username:
-            print(f"Found {len(accounts_without_username)} accounts without a username:", ", ".join(
-                [d["pk"] for d in accounts_without_username]))
+            self.stdout.write(f"Found {len(accounts_without_username)} "
+                              "accounts without a username: " + ", ".join(
+                                  [str(d["pk"]) for d in accounts_without_username]))
 
         if accounts_without_email:
-            print(f"Found {len(accounts_without_email)} accounts without an email:", ", ".join(
-                [str(d["pk"]) for d in accounts_without_email]))
+            self.stdout.write(f"Found {len(accounts_without_email)} "
+                              "accounts without an email:" + ", ".join(
+                                  [str(d["pk"]) for d in accounts_without_email]))
 
         if accounts_without_user:
-            print(f"Found {len(accounts_without_user)} accounts without a user:", ", ".join(
-                [f'''{d['username']} ({d['pk']})''' for d in accounts_without_user]))
+            self.stdout.write(f"Found {len(accounts_without_user)} "
+                              "accounts without a user: " + ", ".join(
+                                  [f'''{d['username']} ({str(d['pk'])})'''
+                                   for d in accounts_without_user]))
 
         if username_counts:
-            print(f"Found {len(username_counts)} cases of duplicate usernames "
-                  "(disregarding case):", ", ".join(
-                      [f"{d['username_lower']} ({d['count']})" for d in username_counts]))
+            self.stdout.write(f"Found {len(username_counts)} cases of duplicate usernames "
+                              "(disregarding case): " + ", ".join(
+                                  [f"{d['username_lower']} ({d['count']})"
+                                   for d in username_counts]))
 
         if settings.MSGRAPH_ALLOW_WRITE:
             accounts_missing_categories = accounts.annotate(
                 categories=Count("outlook_settings__outlook_categories")).filter(
-                categories__lt=2)
+                categories__lt=2).values("pk")
             if accounts_missing_categories:
-                print(f"Found {len(accounts_missing_categories)} accounts missing "
-                      "one or more Outlook categories:", ", ".join(
-                          [d["pk"] for d in accounts_missing_categories]))
+                self.stdout.write(f"Found {len(accounts_missing_categories)} accounts missing "
+                                  "one or more Outlook categories: " + (" ".join(
+                                      [str(d["pk"]) for d in accounts_missing_categories])))
 
     def diagnose_aliases(self):
-        print("\n\n>> Running diagnostics on aliases ...")
+        self.stdout.write("\n\n>> Running diagnostics on aliases ...")
         aliases = Alias.objects.all()
         alias_types = aliases.values(
             "_alias_type").order_by().annotate(count=Count("_alias_type"))
@@ -92,36 +98,37 @@ class Command(BaseCommand):
             user=F("account__user")).values('pk')
 
         nl = '\n  '
-        print(
+        self.stdout.write(
             f"Found a total of {aliases.count()} aliases: \n  "
             f"{nl.join([f'''{a['_alias_type']}: {a['count']}''' for a in alias_types])}")
 
         if aliases_with_no_account:
-            print(f"Found {len(aliases_with_no_account)} aliases with no account:",
-                  ", ".join([str(d['pk']) for d in aliases_with_no_account]))
+            self.stdout.write(f"Found {len(aliases_with_no_account)} aliases with no account: " +
+                              ", ".join([str(d['pk']) for d in aliases_with_no_account]))
 
         if aliases_with_mismatched_account_user:
-            print(f"Found {len(aliases_with_mismatched_account_user)} aliases "
-                  "with mismatched accounts and users:",
-                  ", ".join([str(d['pk']) for d in aliases_with_mismatched_account_user]))
+            self.stdout.write(f"Found {len(aliases_with_mismatched_account_user)} aliases "
+                              "with mismatched accounts and users: " +
+                              ", ".join(
+                                [str(d['pk']) for d in aliases_with_mismatched_account_user]))
 
     def diagnose_problems(self):
-        print("\n\n>> Running diagnostics on problems ...")
+        self.stdout.write("\n\n>> Running diagnostics on problems ...")
         all_problems = DocumentReport.objects.filter(raw_problem__isnull=False)
         problems = all_problems.values("raw_problem__message").order_by().annotate(
             count=Count("raw_problem__message")).order_by("-count")
 
         if problems:
-            print(
+            self.stdout.write(
                 f"Found {len(problems)} different problems ({all_problems.count()} "
                 "problems in total). Now presenting the 5 most common:")
 
             for message_dict in problems[:5]:
-                print(
+                self.stdout.write(
                     f"  ({message_dict['count']} counts) {message_dict['raw_problem__message']}")
 
     def diagnose_reports(self):
-        print("\n\n>> Running diagnostics on reports ...")
+        self.stdout.write("\n\n>> Running diagnostics on reports ...")
         reports = DocumentReport.objects.all()
         matches = reports.filter(number_of_matches__gte=1)
         handled = matches.filter(
@@ -132,11 +139,11 @@ class Command(BaseCommand):
             "scanner_job_pk", "scanner_job_name").order_by().annotate(
             count=Count("pk")).order_by("-count")
 
-        print(f"Found {reports.count()} reports in total, {matches.count()} of which "
-              f"contain matches, {unhandled.count()} of which are unhandled.")
+        self.stdout.write(f"Found {reports.count()} reports in total, {matches.count()} of which "
+                          f"contain matches, {unhandled.count()} of which are unhandled.")
 
         if handled:
-            print("\nMatches are handled in the following way:")
+            self.stdout.write("\nMatches are handled in the following way:")
             labels = [
                 DocumentReport.ResolutionChoices(
                     res_dict['resolution_status']).label for res_dict in handled]
@@ -147,7 +154,7 @@ class Command(BaseCommand):
             fig.show()
 
         if matches:
-            print("\nMatches come from the following scannerjobs:")
+            self.stdout.write("\nMatches come from the following scannerjobs:")
             labels = [
                 f"{scannerjob['scanner_job_name']} ({scannerjob['scanner_job_pk']})"
                 for scannerjob in scannerjobs]
@@ -165,12 +172,13 @@ class Command(BaseCommand):
         no_both_timestamps = no_created_timestamp & no_resolution_time
 
         if no_created_timestamp.count():
-            print(f"Found {no_created_timestamp.count()} reports without a 'created_timestamp'.")
+            self.stdout.write(
+                f"Found {no_created_timestamp.count()} reports without a 'created_timestamp'.")
         if no_resolution_time.count():
-            print(f"Found {no_resolution_time.count()} handled reports without"
-                  f" a 'resolution_time'.")
+            self.stdout.write(f"Found {no_resolution_time.count()} handled reports without"
+                              f" a 'resolution_time'.")
         if no_both_timestamps.count():
-            print(
+            self.stdout.write(
                 f"Found {no_both_timestamps.count()} handled reports without "
                 f"both a 'created_timestamp' and a 'resolution_time'.")
 
@@ -180,96 +188,104 @@ class Command(BaseCommand):
             created_timestamp__gt=F("resolution_time"))
 
         if impossible_timestamps.count():
-            print(
+            self.stdout.write(
                 f"Found {impossible_timestamps.count()} handled reports, where"
                 f" the 'resolution_time' is earlier than the 'created_timestamp'.")
 
-        # Check for remediator reports
-        remediator_matches = matches.filter(alias_relation__isnull=True)
+        # Check for unrelated reports
+        unrelated_matches = matches.filter(alias_relation__isnull=True)
 
-        if remediator_matches.count():
-            print(f"Found {remediator_matches.count()} matched reports "
-                  "delegated to a remediator.")
+        if unrelated_matches.count():
+            self.stdout.write(f"Found {unrelated_matches.count()} matched reports "
+                              "without a relation to an alias.")
 
         # Top five matched accounts
         account_matches = matches.values("alias_relation__account__username").order_by(
             ).annotate(count=Count("alias_relation__account__username")).order_by("-count")
 
         if account_matches:
-            print("\nPresenting the five accounts with most matched reports:")
+            self.stdout.write("\nPresenting the five accounts with most matched reports:")
             nl = '\n  '
-            print(" ", nl.join(
+            self.stdout.write(" " + nl.join(
                 [f"{acc['alias_relation__account__username']}: {acc['count']} "
                  "matched reports" for acc in account_matches[:5] if acc['count']]))
 
     def diagnose_units(self):
-        print("\n\n>> Running diagnostics on units ...")
+        self.stdout.write("\n\n>> Running diagnostics on units ...")
         units = OrganizationalUnit.objects.count()
 
-        print(f"Found {units} units.")
+        self.stdout.write(f"Found {units} units.")
 
     def diagnose_organizations(self):
-        print("\n\n>> Running diagnostics on organizations ...")
+        self.stdout.write("\n\n>> Running diagnostics on organizations ...")
         orgs = Organization.objects.all()
 
-        print(f"Found {len(orgs)} organizations.")
+        self.stdout.write(f"Found {len(orgs)} organizations.")
 
-        if os2 := orgs.filter(name="OS2datascanner").first():
-            print(
-                f"The organization with UUID {os2.pk} is called 'OS2datascanner'."
+        for os in orgs.filter(Q(name="OS2datascanner") | Q(name="OSdatascanner")):
+            self.stdout.write(
+                f"The organization with UUID {os.pk} is called '{os.name}'."
                 " Should this be changed?'")
 
-        print("\nOverview of organizations:")
+        self.stdout.write("\nOverview of organizations:")
         for org in orgs:
-            print(org.name)
-            print(
+            self.stdout.write(org.name)
+            self.stdout.write(
                 f"  Notification schedule: {org.email_notification_schedule}")
-            print("  Contact information:")
-            print("  * Email:", org.contact_email)
-            print("  * Phone:", org.contact_phone)
-            print("  Settings:")
-            print("  * MSGraph Write Permissions:", org.get_msgraph_write_permissions_display())
-            print("  * Leadertab access:", org.get_leadertab_access_display())
-            print("  * DPO-tab access:", org.get_dpotab_access_display())
-            print("  * Show Support Button:", org.show_support_button)
-            print("  * Support Contact Method:", org.get_support_contact_method_display())
-            print("  * Support Name:", org.support_name)
-            print("  * Support Value:", org.support_value)
-            print("  * DPO Contact Method:", org.get_dpo_contact_method_display())
-            print("  * DPO Name:", org.dpo_name)
-            print("  * DPO Value:", org.dpo_value)
+
+            self.stdout.write("  Contact information:")
+            self.stdout.write(f"  * Email: {org.contact_email}")
+            self.stdout.write(f"  * Phone: {org.contact_phone}")
+
+            self.stdout.write("  Settings:")
+            self.stdout.write(
+                f"  * Outlook delete email permission: {org.outlook_delete_email_permission}")
+            self.stdout.write(
+                f"  * Outlook categorize email permission: "
+                f"{org.get_outlook_categorize_email_permission_display()}")
+            self.stdout.write(f"  * Onedrive delete permission: {org.onedrive_delete_permission}")
+            self.stdout.write(f"  * Leadertab access: {org.get_leadertab_access_display()}")
+            self.stdout.write(f"  * DPO-tab access: {org.get_dpotab_access_display()}")
+            self.stdout.write(f"  * Show Support Button: {org.show_support_button}")
+            self.stdout.write(
+                f"  * Support Contact Method: {org.get_support_contact_method_display()}")
+            self.stdout.write(f"  * Support Name: {org.support_name}")
+            self.stdout.write(f"  * Support Value: {org.support_value}")
+            self.stdout.write(f"  * DPO Contact Method: {org.get_dpo_contact_method_display()}")
+            self.stdout.write(f"  * DPO Name: {org.dpo_name}")
+            self.stdout.write(f"  * DPO Value: {org.dpo_value}")
 
     def diagnose_settings(self):
-        print("\n\n>> Running diagnostics on settings ...")
+        self.stdout.write("\n\n>> Running diagnostics on settings ...")
         if settings.DEBUG:
-            print("\nWARNING: DEBUG is ON for this installation!")
+            self.stdout.write("\nWARNING: DEBUG is ON for this installation!")
 
         def print_settings(*attributes):
             for attribute in attributes:
-                print(f"{attribute} = {getattr(settings, attribute)!r}")
+                self.stdout.write(f"{attribute} = {getattr(settings, attribute)!r}")
 
-        print("\n//INSTALLATION-WIDE SETTINGS//")
+        self.stdout.write("\n//INSTALLATION-WIDE SETTINGS//")
 
-        print("\n# [mode]")
+        self.stdout.write("\n# [mode]")
         print_settings("KEYCLOAK_ENABLED", "SAML2_ENABLED")
 
-        print("\n# [functionality]")
+        self.stdout.write("\n# [functionality]")
         print_settings("HANDLE_DROPDOWN", "ALLOW_CONTACT_MAGENTA",
                        "ARCHIVE_TAB")
 
-        print("\n# [msgraph]")
+        self.stdout.write("\n# [msgraph]")
         print_settings("MSGRAPH_ALLOW_WRITE")
 
-        print("\n# [logging]")
+        self.stdout.write("\n# [logging]")
         print_settings("LOG_LEVEL")
 
-        print("\n# [other]")
+        self.stdout.write("\n# [other]")
         print_settings()
 
-        print("\n//ENVIRONMENT VARIABLES//")
+        self.stdout.write("\n//ENVIRONMENT VARIABLES//")
 
         for key, val in dict(environ).items():
-            print(f"{key} = {val!r}")
+            self.stdout.write(f"{key} = {val!r}")
 
     def handle(self, only, **options):
 

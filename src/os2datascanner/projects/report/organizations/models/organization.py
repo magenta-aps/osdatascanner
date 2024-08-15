@@ -77,7 +77,6 @@ class Organization(Core_Organization):
             number_of_matches__gte=1)
         fp_matches = all_matches.filter(
             resolution_status=DocumentReport.ResolutionChoices.FALSE_POSITIVE)
-        print("all_matches", all_matches.count())
 
         return fp_matches.count() / all_matches.count() if all_matches.count() > 0 else 0
 

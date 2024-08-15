@@ -12,7 +12,9 @@ from os2datascanner.core_organizational_structure.models.position import Role
 @pytest.fixture
 def olsenbanden_organization():
     return Organization.objects.create(
-      name="Olsen-banden"
+      name="Olsen-banden",
+      dpo_name="Egon Olsen",
+      dpo_value="egon@olsenbanden.dk"
     )
 
 
@@ -299,3 +301,15 @@ def hulk_dpo_position(hulk_account, avengers_ou):
         account=hulk_account,
         unit=avengers_ou
     )
+
+# More test orgs
+
+
+@pytest.fixture
+def os2datascanner_org():
+    return Organization.objects.create(name="OS2datascanner")
+
+
+@pytest.fixture
+def osdatascanner_org():
+    return Organization.objects.create(name="OSdatascanner")
