@@ -1,10 +1,13 @@
 # Changelog
 
-## Next Release
+## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"
 
 ### New in this release
+
+- OSdatascanner is once again on Django version 3.2, and the old SAML-library
+  is back in use.
 
 - System rules must now be related to an organization in order for that
   organization to use the rule in a scanner job. System rules can be related
