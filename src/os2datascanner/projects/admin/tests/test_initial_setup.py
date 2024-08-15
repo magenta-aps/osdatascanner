@@ -8,6 +8,7 @@ from django.conf import settings
 from ..core.models.client import Client
 from ..organizations.models.organization import Organization
 from ..organizations.models.account import Account
+from ..adminapp.models.rules import CustomRule
 
 
 @pytest.mark.django_db
@@ -122,3 +123,13 @@ class TestInitialSetup:
         stdout = self.call_command()
 
         assert "Default password used. CHANGE THIS IMMEDIATELY" in stdout
+
+    def test_cpr_rule_org_is_set(self):
+        """When creating cprrule, test whether it's associated with the correct organization."""
+
+        # Act
+        self.call_command()
+        rule = CustomRule.objects.get(name="CPR regel")
+
+        # Assert
+        assert rule.organizations.get() == Organization.objects.get(name="DUMMY")
