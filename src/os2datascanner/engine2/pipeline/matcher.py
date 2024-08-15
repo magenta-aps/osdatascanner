@@ -31,7 +31,7 @@ def censor_context(context, rules):
     censor_intervals = [(max(0, start), min(end, len(context))) for start, end in censor_intervals]
     # Make sure every interval starts before it ends,
     # and sort them in increasing order of beginning
-    censor_intervals = sorted(filter(lambda start, end: start < end, censor_intervals))
+    censor_intervals = sorted((start, end) for start, end in censor_intervals if start < end)
 
     if censor_intervals:
         # Combine overlapping intervals
