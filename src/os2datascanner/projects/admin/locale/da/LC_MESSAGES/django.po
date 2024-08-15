@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 08:25+0200\n"
+"POT-Creation-Date: 2024-08-15 09:47+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -774,7 +774,7 @@ msgstr "Opret nyt scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html:55
 #: adminapp/templates/components/navigation/navigation.html:41
-#: adminapp/templates/rules.html:33 adminapp/templates/rules.html:53
+#: adminapp/templates/rules.html:32 adminapp/templates/rules.html:52
 msgid "Rules"
 msgstr "Regler"
 
@@ -1047,7 +1047,7 @@ msgstr "Ønsker du virkelig at slette?"
 
 #: adminapp/templates/components/rules/cprrule_confirm_delete.html:17
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:21
-#: adminapp/templates/rules.html:180
+#: adminapp/templates/rules.html:179
 msgid "No"
 msgstr "Nej"
 
@@ -1104,8 +1104,8 @@ msgstr "Gem ændringer"
 #: adminapp/templates/components/scanner/scan_completed.html:156
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
-#: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:98
-#: adminapp/templates/rules.html:99
+#: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:97
+#: adminapp/templates/rules.html:98
 #: organizations/templates/organizations/org_table.html:216
 #: organizations/templates/organizations/org_table.html:217
 #: organizations/templates/organizations/org_table.html:228
@@ -1120,17 +1120,17 @@ msgstr ""
 "Ønsker du virkelig at slette denne regel? Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:13
-#: adminapp/templates/rules.html:170
+#: adminapp/templates/rules.html:169
 msgid "Please note that this rule is currently included in"
 msgstr "Bemærk venligst at denne regel i øjeblikket indgår i"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:14
-#: adminapp/templates/rules.html:172
+#: adminapp/templates/rules.html:171
 msgid "scannerjob and"
 msgstr "scannerjob og"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:15
-#: adminapp/templates/rules.html:173
+#: adminapp/templates/rules.html:172
 msgid "reports."
 msgstr "rapporter."
 
@@ -2116,65 +2116,65 @@ msgstr "Scanresultat"
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
-#: adminapp/templates/rules.html:38 adminapp/templates/rules.html:39
-#: adminapp/templates/rules.html:43
+#: adminapp/templates/rules.html:37 adminapp/templates/rules.html:38
+#: adminapp/templates/rules.html:42
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html:64 adminapp/templates/scanners.html:63
+#: adminapp/templates/rules.html:63 adminapp/templates/scanners.html:63
 #: adminapp/templates/system_rules.html:66
 #: organizations/templates/organizations/account_detail.html:21
 #: organizations/templates/organizations/account_list.html:55
 msgid "Name"
 msgstr "Navn"
 
-#: adminapp/templates/rules.html:65
+#: adminapp/templates/rules.html:64
 #: organizations/templates/organizations/account_detail.html:33
 msgid "Organization"
 msgstr "Organisation"
 
-#: adminapp/templates/rules.html:66 adminapp/templates/system_rules.html:68
+#: adminapp/templates/rules.html:65 adminapp/templates/system_rules.html:68
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: adminapp/templates/rules.html:67 adminapp/templates/system_rules.html:69
+#: adminapp/templates/rules.html:66 adminapp/templates/system_rules.html:69
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/templates/rules.html:68 adminapp/templates/scanners.html:77
+#: adminapp/templates/rules.html:67 adminapp/templates/scanners.html:77
 msgid "Action"
 msgstr "Handling"
 
-#: adminapp/templates/rules.html:87 adminapp/templates/rules.html:88
+#: adminapp/templates/rules.html:86 adminapp/templates/rules.html:87
 #: adminapp/templates/scanners.html:88 adminapp/templates/scanners.html:89
 msgid "Edit"
 msgstr "Redigér"
 
-#: adminapp/templates/rules.html:97
+#: adminapp/templates/rules.html:96
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:207
+#: adminapp/templates/rules.html:96 adminapp/templates/scanners.html:207
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:129
+#: adminapp/templates/rules.html:128
 msgid "No rules added yet"
 msgstr "Der er endnu ikke tilføjet nogle regler"
 
-#: adminapp/templates/rules.html:147 adminapp/templates/rules.html:158
+#: adminapp/templates/rules.html:146 adminapp/templates/rules.html:157
 msgid "Delete rule"
 msgstr "Slet regel"
 
-#: adminapp/templates/rules.html:166
+#: adminapp/templates/rules.html:165
 msgid "Do you want to delete"
 msgstr "Ønsker du at slette"
 
-#: adminapp/templates/rules.html:167
+#: adminapp/templates/rules.html:166
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:177
+#: adminapp/templates/rules.html:176
 #: organizations/templates/organizations/account_detail.html:70
 msgid "Yes"
 msgstr "Ja"
@@ -2394,17 +2394,17 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:118
+#: adminapp/views/rule_views.py:117
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:120 adminapp/views/rule_views.py:127
+#: adminapp/views/rule_views.py:119 adminapp/views/rule_views.py:126
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/rule_views.py:125
+#: adminapp/views/rule_views.py:124
 msgid ""
 "The 'surrounding_exceptions'-string must not include any symbols or spaces."
 msgstr ""
