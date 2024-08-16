@@ -78,7 +78,9 @@ def test_org(test_client):
     return Organization.objects.create(
         name='test_org',
         client=test_client,
-        uuid=UUID("3d6d288f-b75f-43e2-be33-a43803cd1243"))
+        uuid=UUID("3d6d288f-b75f-43e2-be33-a43803cd1243"),
+        dpo_name="Mr. DPO-man",
+        dpo_value="dpo@testorg.com")
 
 
 @pytest.fixture
@@ -675,3 +677,16 @@ def basic_usererrorlog2(basic_scanstatus2, test_org2):
         organization=test_org2,
         is_new=True
     )
+
+
+# More test orgs
+
+
+@pytest.fixture
+def os2datascanner_org(test_client):
+    return Organization.objects.create(name="OS2datascanner", client=test_client)
+
+
+@pytest.fixture
+def osdatascanner_org(test_client):
+    return Organization.objects.create(name="OSdatascanner", client=test_client)
