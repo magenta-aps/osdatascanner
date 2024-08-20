@@ -200,6 +200,7 @@
   input:disabled,
   select:disabled {
     background-color: var(--color-disabled-widget-bg);
+    background: var(--color-disabled-widget-bg);
     cursor: not-allowed;
   }
 
