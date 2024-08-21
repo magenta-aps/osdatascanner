@@ -590,6 +590,34 @@ Then build both containers again, but build the OS2mo-container with the command
 
     FIXTURE=aalborg docker compose up --build
 
+
+## Prerequisites for setting up an Office 365 scannerjob
+
+To be able to scan files and emails from Office 365 using OSdatascanner, 
+you'll need to complete the following steps:
+
+1. Register an Azure Application:  
+    Begin by registering an Azure Application in your Azure portal. This 
+    application will allow OSdatascanner to retrieve data from your Office 365 
+    environment.
+
+2. Grant Required Permissions:  
+    Once the Azure Application is registered, ensure that it has been granted 
+    the necessary permissions to access Office 365 data.
+
+3. Provide OSdatascanner with Application Details:  
+    After setting up the Azure Application and assigning the required permissions, 
+    you'll need to update OSdatascanner with the application's details.
+
+    Open the *dev-settings.toml* file for both the admin and report folders.
+
+    Locate the section labeled [msgraph] and insert the following values from your
+    Azure Application:
+
+    * Application ID (Client ID)
+    * Directory ID (Tenant ID)
+    * Client Secret
+
 ## Linting and static analysis
 
 The coding standards below should be followed by all new and edited code for
