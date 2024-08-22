@@ -14,6 +14,8 @@
         {% blocktrans %}<strong>We're sorry but <em>OSDatascanner</em> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>{% endblocktrans %}
       </noscript>
 
+      {% include "components/common/page_load_indicator.html" %}
+
       {% block additional_styles %}
       {% endblock additional_styles %}
 
@@ -26,9 +28,18 @@
         </footer>
       {% endblock footer %}
 
-      <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
-
-      {% include "components/common/scripts.html" %}
+      {% block scripts %}
+        <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+        <script src="{% static '3rdparty/clipboard.min.js' %} "></script>
+        <script src="{% static '3rdparty/htmx.min.js' %}"></script>
+        <script src="{% static 'js/index.js' %} "></script>
+        <script src="{% static 'js/tables/tableBehavior.js' %} "></script>
+        <script src="{% static 'js/reports/show-more.js' %} "></script>
+        <script src="{% static 'js/filters/options.js' %} "></script>
+        <script src="{% static 'js/reports/distributeElement.js' %}"></script>
+        <script src="{% static 'js/modals/snackBars.js' %}"></script>
+        <script src="{% static 'js/modals/popover.js' %}"></script>
+      {% endblock scripts %}
 
     </body>
   </html>
