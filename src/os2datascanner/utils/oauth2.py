@@ -9,11 +9,11 @@ def _default_wrapper(function, *args, **kwargs):
     return function(*args, **kwargs)
 
 
-def mint_cc_token(
+def mint_cc_token_raw(
         endpoint: str,  # URL
         client_id: str,
         client_secret: str,
-        *, wrapper=None, post_timeout=60, **kwargs):
+        *, wrapper=None, post_timeout=60, **kwargs) -> requests.Response:
     """Retrieves a token from the given endpoint following the OAuth 2.0
     client credentials flow.
 
@@ -32,10 +32,15 @@ def mint_cc_token(
             },
             timeout=post_timeout)
     response.raise_for_status()
-    logger.info(f"Collected new token from {endpoint}")
-    return response.json()["access_token"]
+    return response
+
+
+def mint_cc_token(*args, **kwargs) -> str:
+    """As mint_cc_token_raw, but automatically unpacks and returns the token
+    from the JSON body of the response."""
+    return mint_cc_token_raw(*args, **kwargs).json()["access_token"]
 
 
 __all__ = [
-    "mint_cc_token",
+    "mint_cc_token_raw", "mint_cc_token",
 ]
