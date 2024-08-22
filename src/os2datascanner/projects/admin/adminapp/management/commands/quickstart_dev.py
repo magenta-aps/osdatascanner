@@ -76,7 +76,7 @@ class Command(BaseCommand):
 
         # Create development client and organization
         client, _ = Client.objects.get_or_create(name="Development Client")
-        Organization.objects.get_or_create(name="OSdatascanner", client=client)
+        org, _ = Organization.objects.get_or_create(name="OSdatascanner", client=client)
 
         self.stdout.write("Synchronizing Organization to Report module ...")
         creation_dict = {"Organization": OrganizationSerializer(
@@ -86,6 +86,10 @@ class Command(BaseCommand):
         publish_events([event])
         self.stdout.write(self.style.SUCCESS(f"Sent Organization create message!:"
                                              f" \n {creation_dict}"))
+
+        self.stdout.write("Connecting CPR rule to organization ...")
+        cpr_rule = CustomRule.objects.get(name="CPR regel")
+        org.system_rules.add(cpr_rule)
 
         self.stdout.write("Creating superuser dev/dev!")
         user, created = User.objects.get_or_create(
