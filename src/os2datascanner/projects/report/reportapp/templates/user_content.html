@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+
+{% load i18n %}
+{% load l10n %}
+
+{% block content-header %}
+  <h1 class="page-title">{% trans "Results" %}</h1>
+  {{ page_obj.paginator.count }} {% trans "results" %}
+{% endblock content-header %}
+
+{% block content %}
+  {% include "components/reports/filters.html" %}
+  {% if page_obj.paginator.count == 0 %}
+    <p class="no-results">{% trans "No results were found" %}</p>
+  {% else %}
+    {% include "components/reports/match_table.html" %}
+  {% endif %}
+{% endblock content %}

@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+
+{% load i18n %}
+{% load l10n %}
+
+{% block content-header %}
+  {% if not user.account.is_remediator %}
+    {% comment %}
+      That's right. Nothing.
+    {% endcomment %}
+  {% else %}
+    <h1 class="page-title">{% trans "Results" %}</h1>
+    {{ page_obj.paginator.count }} {% trans "results" %}
+  {% endif %}
+{% endblock content-header %}
+
+{% block content %}
+  {% if not user.account.is_remediator %}
+    {% include "error_pages/remediator-error-page.html" %}
+  {% else %}
+    {% include "components/reports/filters.html" %}
+    {% if page_obj.paginator.count == 0 %}
+      <p class="no-results">{% trans "No results were found" %}</p>
+    {% else %}
+      {% include "components/reports/match_table.html" %}
+    {% endif %}
+  {% endif %}
+{% endblock content %}
