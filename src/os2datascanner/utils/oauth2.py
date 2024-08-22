@@ -1,5 +1,9 @@
-import structlog
+from os import getenv
+from sys import stderr
 import requests
+import structlog
+
+from os2datascanner.utils.debug import add_debug_function
 
 
 logger = structlog.get_logger("utils")
@@ -7,6 +11,9 @@ logger = structlog.get_logger("utils")
 
 def _default_wrapper(function, *args, **kwargs):
     return function(*args, **kwargs)
+
+
+__ltr = None
 
 
 def mint_cc_token_raw(
@@ -21,6 +28,8 @@ def mint_cc_token_raw(
     from two: the wrapper argument can be set to wrap this operation in (for
     example) a retrier, and the post_timeout argument can be set to specify a
     timeout for the HTTP POST request."""
+    global __ltr
+
     response = (wrapper or _default_wrapper)(
             requests.post,
             endpoint,
@@ -31,6 +40,8 @@ def mint_cc_token_raw(
                 **kwargs
             },
             timeout=post_timeout)
+    __ltr = response
+
     response.raise_for_status()
     return response
 
@@ -44,3 +55,10 @@ def mint_cc_token(*args, **kwargs) -> str:
 __all__ = [
     "mint_cc_token_raw", "mint_cc_token",
 ]
+
+
+if getenv("OSDS_DEBUG_OAUTH2", None):
+    @add_debug_function
+    def print_last_cc_token(signum, frame):
+        print("[OSDS_DEBUG_OAUTH2] Last token response:", file=stderr)
+        print(f"  {__ltr.json() if __ltr else None}", file=stderr)
