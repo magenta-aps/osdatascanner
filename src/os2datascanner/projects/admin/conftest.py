@@ -1,5 +1,7 @@
 import pytest
 
+from uuid import UUID
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -70,7 +72,7 @@ def test_org(test_client):
     return Organization.objects.create(
         name='test_org',
         client=test_client,
-        uuid="3d6d288f-b75f-43e2-be33-a43803cd1243")
+        uuid=UUID("3d6d288f-b75f-43e2-be33-a43803cd1243"))
 
 
 @pytest.fixture

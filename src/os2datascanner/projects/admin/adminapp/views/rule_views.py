@@ -106,24 +106,24 @@ class RuleCreate(RestrictedCreateView):
             ex_string = rule.get('surrounding_exceptions')
             # Check that the "surrounding_exceptions"-string only contains
             # alphanumeric characters or is an empty string.
-            validated = ex_string == "" or bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
+            # TODO: But ... The regex does not only allow alphanumeric characters.
+            # Do we only want alphanumeric characters or not?
+            validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
             return validated
 
         if crule := form.cleaned_data.get('rule'):
-            if ('exceptions' not in crule) or validate_exceptions_field(crule):
-                rule._rule = crule
-            else:
+            if not validate_exceptions_field(crule):
                 form.add_error(
                     'rule', _("The 'exceptions'-string must be a "
                               "comma-separated list of 10-digit numbers."))
                 raise ValidationError(_("Formatting error"), code="formatting")
-            if validate_surrounding_words_exceptions(crule):
-                rule._rule = crule
-            else:
+            elif not validate_surrounding_words_exceptions(crule):
                 form.add_error(
                     'rule', _("The 'surrounding_exceptions'-string must not "
                               "include any symbols or spaces."))
                 raise ValidationError(_("Formatting error"), code="formatting")
+            else:
+                rule._rule = crule
         rule.save()
         return rule
 
@@ -167,7 +167,6 @@ class RuleUpdate(RestrictedUpdateView):
     """Update a rule view."""
 
     model = Rule
-    edit = True
     fields = ['name', 'description', 'sensitivity', 'organization']
 
     def get_form(self, form_class=None):
@@ -238,14 +237,3 @@ class CustomRuleConnect(LoginRequiredMixin, UpdateView):
             self.object.organizations.remove(organization)
 
         return response
-
-
-'''============ Methods required by multiple views ============'''
-
-
-def extract_pattern_fields(form_fields):
-    if not form_fields:
-        return [('pattern_0', '')]
-
-    return [(field_name, form_fields[field_name]) for field_name in form_fields if
-            field_name.startswith('pattern_')]
