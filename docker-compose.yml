@@ -204,6 +204,7 @@ services:
       target: admin
     environment:
       - AMQP_BROADCAST_SYNC=false
+      - OSDS_DEBUG_OAUTH2=true
     command: python manage.py run_background_jobs
     tty:
       true
@@ -355,6 +356,7 @@ services:
       - SCHEDULE_ON_CPU=0
       - QUEUE_SUFFIX
       - ENABLE_RUSAGE=true
+      - OSDS_DEBUG_OAUTH2=true
     tty:
       true
     volumes:

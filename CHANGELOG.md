@@ -1,10 +1,14 @@
 # Changelog
 
-## Version 3.24.3, ???
+## Next Release
 
 ### General improvements
 
 - Minor refactor of the create rule view, added tests for all rule views.
+
+- An optional extension to the `SIGUSR1` debug function allows for OAuth 2.0
+  client credentials to be extracted from a running system and tested
+  elsewhere.
 
 ## Version 3.24.2, 15th August 2024
 
