@@ -29,6 +29,9 @@
   number fulfills the modulus-11 check, if that setting is also set to True
   on the rule.
 
+- Refactored result-page templates in the report module to extend base
+  templates.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"
