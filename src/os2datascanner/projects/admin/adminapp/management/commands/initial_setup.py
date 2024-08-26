@@ -8,6 +8,7 @@ from ....organizations.models.organization import Organization, OrganizationSeri
 from ....organizations.models.account import Account, AccountSerializer
 from ....organizations.broadcast_bulk_events import BulkCreateEvent
 from ....organizations.publish import publish_events
+from ....adminapp.models.rules import CustomRule
 
 
 def setup_user(username, password, email):
@@ -124,6 +125,12 @@ class Command(BaseCommand):
         publish_events([BulkCreateEvent(creation_dict)])
         self.stdout.write(self.style.SUCCESS("Sent Organization and Account create message!:"))
         self.stdout.write(f"{creation_dict}")
+
+        self.stdout.write("Add Organization to CPR rule...")
+        rule = CustomRule.objects.get(name="CPR regel")
+        organization = Organization.objects.first()
+        rule.organizations.add(organization)
+        self.stdout.write(self.style.SUCCESS(f"{organization} added to CPR rule!"))
 
         self.stdout.write(self.style.SUCCESS(
             "Done! Run initial_setup in the Report module to create superuser there"))
