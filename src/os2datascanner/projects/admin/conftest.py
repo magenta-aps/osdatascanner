@@ -5,6 +5,7 @@ from uuid import UUID
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 
 from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.engine2.model.file import (
@@ -36,8 +37,13 @@ from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 
 # SETTINGS OVERRIDE
 @pytest.fixture
-def USERERRORLOG_True(settings):
-    settings.USERERRORLOG = True
+def temp_settings():
+    return settings
+
+
+@pytest.fixture
+def USERERRORLOG_True(temp_settings):
+    temp_settings.USERERRORLOG = True
 
 
 # Users

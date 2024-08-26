@@ -10,6 +10,9 @@
   client credentials to be extracted from a running system and tested
   elsewhere.
 
+- The quickstart_dev-command now connects the "CPR Regel"-rule to the created
+  organization.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"

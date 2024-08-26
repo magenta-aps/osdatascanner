@@ -116,6 +116,9 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Account for dev already exists!")
 
+        self.stdout.write("Connecting CPR rule to organization ...")
+        org.system_rules.add(cpr)
+
         alias, c2 = Alias.objects.get_or_create(
             account=account,
             _alias_type=AliasType.REMEDIATOR,

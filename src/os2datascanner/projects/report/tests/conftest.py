@@ -1,5 +1,7 @@
 import pytest
 
+from django.conf import settings
+
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.rule import Sensitivity
@@ -49,3 +51,8 @@ def scan_tag1(time1, org_frag):
 def common_rule():
     return RegexRule("Vores hemmelige adgangskode er",
                      sensitivity=Sensitivity.WARNING)
+
+
+@pytest.fixture
+def temp_settings():
+    return settings
