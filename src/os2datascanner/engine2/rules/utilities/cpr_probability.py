@@ -128,10 +128,14 @@ def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0
     if not numbers or not cprs:
         return []
 
-    # The size of each bin is determined as the last position where 10 digit numbers are found
-    # divided by the number of bins
-    file_size = numbers[-1].end(0)
-    bin_size = ceil(file_size / num_bins)
+    content_start_pos = numbers[0].start(0)
+    content_end_pos = numbers[-1].end(0)
+    content_size = content_end_pos - content_start_pos
+    bin_size = ceil(content_size / num_bins)
+
+    if len(numbers) < num_bins:
+        # There are too few numbers, so bin check doesn't make sense. Return all cprs
+        return cprs
 
     bin_accepted = [False] * (num_bins + 1)
     bin_storage = [[] for _ in range(num_bins + 1)]
@@ -139,8 +143,8 @@ def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0
     next_num = 0
     next_cpr = 0
     for bin_ind in range(1, num_bins+1):
-        # The last position of a bin, is its index times the size of bins
-        bin_end_position = bin_size * bin_ind
+        # The last position of a bin, is its index times the size of bins plus the content offset
+        bin_end_position = bin_size * bin_ind + content_start_pos
 
         # Find the count of numbers in the current bin
         bin_number_count = len(elements_in_bin(next_num, numbers, bin_end_position))
@@ -151,15 +155,17 @@ def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0
         next_cpr += len(bin_cprs)
         bin_storage[bin_ind].extend(bin_cprs)
 
-        # A bin without numbers, or with more cpr/number ratio higher than cutoff is accepted
+        # A bin without numbers, or with a cpr/number ratio higher than cutoff is accepted
         bin_accepted[bin_ind] = (bin_number_count == 0 or
                                  len(bin_cprs) / bin_number_count >= cutoff)
 
-        # A bin whose neighbors weren't accepted, isn't accepted
+        # We now know if bin_ind is above the cutoff,
+        # so now we can determine if bin_ind-1 should be accepted.
         bin_accepted[bin_ind-1] = (bin_accepted[bin_ind-1] and
                                    (bin_accepted[bin_ind-2] or bin_accepted[bin_ind]))
 
-    # Check last bins neighbor
+    # We haven't checked whether the neighbor of the final bin is accepted yet.
+    # Do that now (but only if the number of bins is more than 1).
     bin_accepted[num_bins] = (bin_accepted[num_bins] and
                               (bin_accepted[num_bins-1] or num_bins == 1))
 

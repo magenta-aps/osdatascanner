@@ -166,8 +166,8 @@ class TestBinCheck:
         numbers = cprs = list(re.finditer(cpr_regex, content))
 
         # Pre conditions
-        assert len(numbers) == 1, "Incorrect number of 10-digit numbers found during arrangement"
-        assert len(cprs) == 1, "Incorrect number of cpr numbers found during arrangement"
+        assert len(numbers) == 1, "Incorrect number of 10-digit numbers found while arranging"
+        assert len(cprs) == 1, "Incorrect number of cpr numbers found while arranging"
 
         # Act
         result = cpr_bin_check(numbers, cprs, num_bins=1, cutoff=1)
@@ -175,54 +175,137 @@ class TestBinCheck:
         # Assert
         assert result == cprs
 
-    def test_cutoff(self):
+    @pytest.mark.parametrize(
+        "text,is_cpr,cutoff,expected",
+        [
+            ("111111-1118 111111-1118", [False, True], 0.6, [False, False]),
+            ("111111-1118 111111-1118", [True, False], 0.4, [True, False]),
+            ("111111-1118 111111-1118", [False, True], 0.5, [False, True]),
+            ("111111-1118 111111-1118", [False, False], 0.0, [False, False]),
+            ("111111-1118 111111-1118", [False, True], 0.0, [False, True]),
+            ("111111-1118 111111-1118", [True, False], -0.5, [True, False]),
+            ("111111-1118 111111-1118", [True, True], 1.0, [True, True]),
+            ("111111-1118 111111-1118", [True, True], 1.5, [False, False]),
+            ("111111-1118", [True], 1.0, [True]),
+            ("111111-1118", [True], 1.1, [False]),
+            ("111111-1118 111111-1118 111111-1118", [True, True, False], 0.6, [True, True, False]),
+        ]
+    )
+    def test_cutoff(self, text, is_cpr, cutoff, expected):
         """If the ratio between number of matches and 10 digit numbers is below cutoff,
         then that bin should be rejected"""
         # Arrange
-        content = "111111-1118 111111-1118"
-        numbers = list(re.finditer(cpr_regex, content))
-        cprs = numbers[0:1]
-
-        # Pre conditions
-        assert len(numbers) == 2, "Incorrect number of 10-digit numbers found during arrangement"
-        assert len(cprs) == 1, "Incorrect number of cpr numbers found during arrangement"
+        numbers = list(re.finditer(cpr_regex, text))
+        cprs = [cpr for cpr, b in zip(numbers, is_cpr) if b]
 
         # Act
-        result = cpr_bin_check(numbers, cprs, num_bins=1, cutoff=0.6)
+        result = cpr_bin_check(numbers, cprs, num_bins=1, cutoff=cutoff)
 
         # Assert
-        assert result == []
+        assert len(result) == sum(expected)
+        for num, b in zip(numbers, expected):
+            assert (num in result) == b
 
-    def test_last_bin(self):
+    @pytest.mark.parametrize(
+        "text,is_cpr",
+        [
+            ("111111-1118    111111-1118", [False, True]),
+            ("111111-1118    111111-1118", [True, True]),
+            ("111111-1118    111111-1118    111111-1118", [True, False, True]),
+            ("111111-1118    111111-1118    111111-1118", [True, True, True]),
+            ("111111-1118    111111-1118    111111-1118", [False, False, True]),
+            ("111111-1118    111111-1118    111111-1118", [False, True, True]),
+        ]
+    )
+    def test_last_bin(self, text, is_cpr):
         """The last bin should only be accepted if the second to last bin is accepted."""
-        content = "111111-1110 space 111111-1111 space 111111-1112 space 111111-1113"
-        numbers = list(re.finditer(cpr_regex, content))
-        cprs = numbers[0:2] + [numbers[3]]  # Set first two, and last as cpr-numbers
-
-        # Pre conditions
-        assert len(numbers) == 4, "Incorrect number of 10-digit numbers found during arrangement"
-        assert len(cprs) == 3, "Incorrect number of cpr numbers found during arrangement"
+        numbers = list(re.finditer(cpr_regex, text))
+        cprs = [cpr for cpr, b in zip(numbers, is_cpr) if b]
 
         # Act
-        result = cpr_bin_check(numbers, cprs, num_bins=4, cutoff=1)
+        result = cpr_bin_check(numbers, cprs, num_bins=len(numbers), cutoff=1)
 
         # Assert
-        assert len(result) == 2
-        assert result[0].group(0) == "111111-1110"
-        assert result[1].group(0) == "111111-1111"
+        assert (numbers[-1] in result) == (numbers[-2] in result)
 
-    def test_first_bin(self):
+    @pytest.mark.parametrize(
+        "text,is_cpr",
+        [
+            ("111111-1118    111111-1118", [True, False]),
+            ("111111-1118    111111-1118", [True, True]),
+            ("111111-1118    111111-1118    111111-1118", [True, False, True]),
+            ("111111-1118    111111-1118    111111-1118", [True, False, False]),
+            ("111111-1118    111111-1118    111111-1118", [True, True, False]),
+            ("111111-1118    111111-1118    111111-1118", [True, True, True]),
+        ]
+    )
+    def test_first_bin(self, text, is_cpr):
         """The first bin should only be accepted if the second bin is accepted."""
-        content = "111111-1110 space 111111-1111"
-        numbers = list(re.finditer(cpr_regex, content))
-        cprs = numbers[0:1]
-
-        # Pre conditions
-        assert len(numbers) == 2, "Incorrect number of 10-digit numbers found during arrangement"
-        assert len(cprs) == 1, "Incorrect number of cpr numbers found during arrangement"
+        numbers = list(re.finditer(cpr_regex, text))
+        cprs = [cpr for cpr, b in zip(numbers, is_cpr) if b]
 
         # Act
-        result = cpr_bin_check(numbers, cprs, num_bins=2, cutoff=1)
+        result = cpr_bin_check(numbers, cprs, num_bins=len(numbers), cutoff=1)
 
         # Assert
-        assert result == []
+        assert (numbers[0] in result) == (numbers[1] in result)
+
+    @pytest.mark.parametrize(
+        "text,is_cpr,num_bins,expected",
+        [
+            ("111111-1118 111111-1118 111111-1118", [True, False, True], 4, [True, False, True]),
+            ("111111-1118 111111-1118 111111-1118", [True, False, True], 3, [False, False, False]),
+        ]
+    )
+    def test_minimum_number_of_bins(self, text, is_cpr, num_bins, expected):
+        """When the number of bins is higher than the number of 10-digit numbers found,
+        bin_check should just return all cprs without filtering."""
+        numbers = list(re.finditer(cpr_regex, text))
+        cprs = [cpr for cpr, b in zip(numbers, is_cpr) if b]
+
+        # Act
+        result = cpr_bin_check(numbers, cprs, num_bins=num_bins, cutoff=1)
+
+        # Assert
+        for num, b in zip(numbers, expected):
+            assert (num in result) == b
+
+    @pytest.mark.parametrize(
+        "text,is_cpr,cutoff,num_bins,expected",
+        [("Lorem ipsum dolor sit amet 111111-1118 111111-1118 111111-1118",
+          [True, True, False],
+          1.0,
+          3,
+          [True, True, False]),
+         ("111111-1118 111111-1118 Lorem ipsum dolor sit 111111-1118 111111-1118",
+          [True, True, False, True],
+          1.0,
+          3,
+          [True, True, False, False]),
+         ("Lorem ipsum dolor sit amet, consectetur adipis 111111-1118",
+          [True],
+          1.0,
+          1,
+          [True]),
+         ("111111-1118 Lorem ipsum dolor sit amet, consectetur adipis",
+          [True],
+          1.0,
+          1,
+          [True]),
+         ("Lorem ipsum dolor sit amet 111111-1118, consectetur adipis",
+          [True],
+          1.0,
+          1,
+          [True])]
+    )
+    def test_bin_check(self, text, is_cpr, cutoff, num_bins, expected):
+        """Assorted tests"""
+        numbers = list(re.finditer(cpr_regex, text))
+        cprs = [cpr for cpr, b in zip(numbers, is_cpr) if b]
+
+        # Act
+        result = cpr_bin_check(numbers, cprs, num_bins=num_bins, cutoff=cutoff)
+
+        # Assert
+        for num, b in zip(numbers, expected):
+            assert (num in result) == b
