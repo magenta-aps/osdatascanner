@@ -15,7 +15,7 @@ import re
 
 from django import forms
 from django.db import transaction
-from django.db.models import Q, ExpressionWrapper, BooleanField
+from django.db.models import Exists, OuterRef
 from django.utils.translation import gettext_lazy as _
 from django.forms import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -47,10 +47,11 @@ class RuleList(RestrictedListView):
             system_rules = system_rules.exclude(categories__in=unselected_categories)
 
         system_rules = system_rules.annotate(
-            connected=ExpressionWrapper(
-                Q(organizations=organization),
-                output_field=BooleanField()
-            )
+            # Check if each rule is connected to the organization.
+            connected=Exists(
+                CustomRule.organizations.through.objects.filter(
+                    organization_id=organization.uuid,
+                    customrule_id=OuterRef('pk'))),
         )
 
         return system_rules

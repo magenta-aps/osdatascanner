@@ -39,7 +39,8 @@
             hx-swap="outerHTML"
             hx-target="#system-rules-card"
             hx-select="#system-rules-card"
-            hx-trigger="change">
+            hx-trigger="change"
+            hx-push-url="true">
       {% for organization in organizations %}
         <option value="{{ organization.uuid }}">{{ organization.name }}</option>
       {% endfor %}
