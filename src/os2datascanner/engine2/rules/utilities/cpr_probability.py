@@ -133,10 +133,6 @@ def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0
     content_size = content_end_pos - content_start_pos
     bin_size = ceil(content_size / num_bins)
 
-    if len(numbers) < num_bins:
-        # There are too few numbers, so bin check doesn't make sense. Return all cprs
-        return cprs
-
     bin_accepted = [False] * (num_bins + 1)
     bin_storage = [[] for _ in range(num_bins + 1)]
 

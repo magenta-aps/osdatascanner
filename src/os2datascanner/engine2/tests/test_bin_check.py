@@ -251,26 +251,6 @@ class TestBinCheck:
         assert (numbers[0] in result) == (numbers[1] in result)
 
     @pytest.mark.parametrize(
-        "text,is_cpr,num_bins,expected",
-        [
-            ("111111-1118 111111-1118 111111-1118", [True, False, True], 4, [True, False, True]),
-            ("111111-1118 111111-1118 111111-1118", [True, False, True], 3, [False, False, False]),
-        ]
-    )
-    def test_minimum_number_of_bins(self, text, is_cpr, num_bins, expected):
-        """When the number of bins is higher than the number of 10-digit numbers found,
-        bin_check should just return all cprs without filtering."""
-        numbers = list(re.finditer(cpr_regex, text))
-        cprs = [cpr for cpr, b in zip(numbers, is_cpr) if b]
-
-        # Act
-        result = cpr_bin_check(numbers, cprs, num_bins=num_bins, cutoff=1)
-
-        # Assert
-        for num, b in zip(numbers, expected):
-            assert (num in result) == b
-
-    @pytest.mark.parametrize(
         "text,is_cpr,cutoff,num_bins,expected",
         [("Lorem ipsum dolor sit amet 111111-1118 111111-1118 111111-1118",
           [True, True, False],
@@ -296,7 +276,12 @@ class TestBinCheck:
           [True],
           1.0,
           1,
-          [True])]
+          [True]),
+         ("111111-1118 Lorem ipsum dolor sit amet 111111-1118, consectetur adipis 111111-1118",
+          [True, False, True],
+          0.15,
+          40,
+          [True, False, True])]
     )
     def test_bin_check(self, text, is_cpr, cutoff, num_bins, expected):
         """Assorted tests"""
