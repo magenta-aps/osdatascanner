@@ -50,18 +50,18 @@
           </div>
         </div>
 
+        <div class="form__row__item">
+          <div class="form__row__item__checkboxcontainer ds-checkbox">
+            {{ form.show_support_button }}
+
+            <label class="required-form"
+                   for="{{ form.show_support_button.id_for_label }}">{{ form.show_support_button.label }}</label>
+
+          </div>
+        </div>
+
         <div class="form__row--support">
           <span class="form__row__title">{% trans "Support settings" %}</span>
-
-          <div class="form__row__item">
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.show_support_button }}
- 
-              <label class="required-form"
-                     for="{{ form.show_support_button.id_for_label }}">{{ form.show_support_button.label }}</label>
- 
-            </div>
-          </div>
  
           <div class="form__row__item">
             <label class="required-form"

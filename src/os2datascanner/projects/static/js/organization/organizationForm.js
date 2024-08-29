@@ -6,7 +6,8 @@ function enableDPOOptions() {
       'id_dpo_value'
     ].forEach(id => {
       const field = document.getElementById(id);
-      field.disabled = false;
+      field.style.display = "block";
+      field.previousElementSibling.style.display = "block";
     });
   }
 }
@@ -17,7 +18,8 @@ function disableDPOOptions() {
     'id_dpo_value'
   ].forEach(id => {
     const field = document.getElementById(id);
-    field.disabled = true;
+    field.style.display = "none";
+    field.previousElementSibling.style.display = "none";
   });
 }
 
@@ -29,7 +31,8 @@ function enableSupportOptions() {
       'id_support_value'
     ].forEach(id => {
       const field = document.getElementById(id);
-      field.disabled = false;
+      field.style.display = "block";
+      field.previousElementSibling.style.display = "block";
     });
   }
 }
@@ -40,31 +43,28 @@ function disableSupportOptions() {
     'id_support_value'
   ].forEach(id => {
     const field = document.getElementById(id);
-    field.disabled = true;
+    field.style.display = "none";
+    field.previousElementSibling.style.display = "none";
   });
 }
 
 function hideSupportOption() {
   [
-    'id_support_contact_method',
-    'id_support_name',
-    'id_support_value',
-    'id_dpo_contact_method',
-    'id_dpo_name',
-    'id_dpo_value'
-  ].forEach(id => {
-    const field = document.getElementById(id);
-    field.disabled = true;
+    'form__row--support',
+    'form__row--dpo'
+  ].forEach(cNames => {
+    const field = document.getElementsByClassName(cNames)[0];
+    field.style.display = "none";
   });
 }
 
 function showSupportOption() {
   [
-    'id_support_contact_method',
-    'id_dpo_contact_method',
-  ].forEach(id => {
-    const field = document.getElementById(id);
-    field.disabled = false;
+    'form__row--support',
+    'form__row--dpo'
+  ].forEach(cNames => {
+    const field = document.getElementsByClassName(cNames)[0];
+    field.style.display = "block";
   });
   enableDPOOptions();
   enableSupportOptions();
