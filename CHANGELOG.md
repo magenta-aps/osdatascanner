@@ -46,6 +46,10 @@
 
 - Address rule now supports whitelisting of street names or specific addresses.
 
+- Changes to organizational structure are no longer published to the report
+  module if the database transaction fails due to a constraint in the admin
+  module.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"
