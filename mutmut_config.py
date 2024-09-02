@@ -9,11 +9,14 @@ def pre_mutation(context):
     exceptions = (
         # Logging messages
         'log.',
+        'logger.',
         'self.stdout.write(',
+        'logger = structlog.get_logger(',
         # Other
         'metavar=',  # metavars of management commands
         'help=',  # help text
         'help = __doc__',  # more help text
+        '@unique',  # A unique decorator does not need a test
     )
     line = context.current_source_line.strip()
     if line.startswith(exceptions):
