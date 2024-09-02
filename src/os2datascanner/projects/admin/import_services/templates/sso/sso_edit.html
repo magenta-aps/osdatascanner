@@ -1,0 +1,68 @@
+{% extends 'organizations/base.html' %}
+
+{% load i18n %}
+
+{% block title %}
+  {% trans "Single SignOn (SSO) configuration" %}
+{% endblock %}
+
+{% block content %}
+  {# Todo: Make this the blue spinner component? #}
+  <div class="spinner"></div>
+
+
+  <div class="aside">
+    <h1>
+      {% if is_new %}
+        {% trans 'add'|capfirst %}
+      {% else %}
+        {% trans 'update'|capfirst %}
+      {% endif %}
+      {% trans 'Single SignOn (SSO) configuration for'|capfirst %} {{ organization }}
+    </h1>
+  </div>
+
+  <form class="form" id="identity-provider-form" method="post">
+    {% csrf_token %}
+    <div class="data-form">
+      <h3>{% trans "identity provider setup"|capfirst %}</h3>
+
+      {% for field in form %}
+        <div class="form__group{% if field.errors %} has-error{% endif %}">
+          <div class="flex flex--bottom">
+            {{ field.label_tag }}
+            {% if field.help_text %}
+              <div class="help">
+                <div class="help-icon">
+                  <span class="helptext">{{ field.help_text|safe }}</span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          {% if field.name == "metadata_url" %}
+            <div>
+              {{ field }}
+              <but type="button" class="button button--cta-button" hx-post=" {% if is_new %} {% url 'add-sso' org_id=organization.pk %} {% else %} {% url 'edit-sso' org_id=organization.pk %} {% endif %} " hx-trigger="click" hx-target="#identity-provider-form" hx-select="#identity-provider-form" hx-swap="outerHTML" hx-vals='{"realm": "{{ realm }}"}' hx-indicator="div.spinner">
+              {% trans "Fetch metadata"|capfirst %}
+              </but>
+            </div>
+          {% else %}
+            {{ field }}
+          {% endif %}
+          {% if field.errors %}{{ field.errors }}{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="data-form">
+      <h3>{% trans "claim setup"|capfirst %}</h3>
+      {% for mapper in mappers %}{{ mapper.as_p }}{% endfor %}
+    </div>
+
+    <button type="submit"
+            class="button button--cta-button"
+            aria-label="{% trans 'save SSO configuration'|capfirst %}"
+            title="{% trans 'save SSO configuration'|capfirst %}"
+            name="save">{% trans "save SSO configuration"|capfirst %}</button>
+  </form>
+{% endblock %}

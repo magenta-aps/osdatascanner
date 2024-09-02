@@ -135,45 +135,77 @@ def user_is(roles, role_cls):
 
 
 class OIDCAuthenticationBackend(auth.OIDCAuthenticationBackend):
-    def create_user(self, claims):
-        user = super(OIDCAuthenticationBackend, self).create_user(claims)
-        get_claim_user_info(claims, user)
-        user.save()
-        get_or_create_user_aliases_OIDC(
-            user,
-            email=claims.get('email', ''),
-            sid=claims.get('sid', ''))
+    def filter_users_by_claims(self, claims):
+        """ Defines how the OIDC process is supposed to identify Django-users by claims."""
 
-        # self.update_groups(user, claims)
+        username = claims.get('preferred_username')
+        if not username:
+            return self.UserModel.objects.none()
+
+        try:
+            account = Account.objects.get(user__username=username)
+            return [account.user]
+
+        except Account.DoesNotExist:
+            return self.UserModel.objects.none()
+
+    def create_user(self, claims):
+        username = claims.get('preferred_username')
+        first_name = claims.get("given_name", "")
+        last_name = claims.get("family_name", "")
+        email = claims.get("email", "")
+        sid = claims.get("objectSid", "")
+
+        # Also slight copy pasta from SAML implementation - and we still have the flaw
+        # of not being able to deal with multiple Organizations
+        if Organization.objects.count() == 1:
+            related_org = Organization.objects.first()
+            account = Account.objects.create(
+                username=username, first_name=first_name, last_name=last_name, email=email,
+                organization=related_org
+            )
+
+            user = account.user
+            if email:
+                relate_matches_to_user(user, account, email, AliasType.EMAIL)
+
+            if sid:
+                relate_matches_to_user(user, account, sid, AliasType.SID)
+
+        else:
+            raise RuntimeError("Was not able to determine correct Organization for the user!")
 
         return user
 
     def update_user(self, user, claims):
-        get_claim_user_info(claims, user)
-        user.save()
-        get_or_create_user_aliases_OIDC(
-            user,
-            email=claims.get('email', ''),
-            sid=claims.get('sid', ''))
-        # self.update_groups(user, claims)
+        # TODO: handle name updates, for when creation of user is allowed(?)
+        # first_name = claims.get("given_name", "") <-- unused, but available like so.
+        # last_name = claims.get("family_name", "")
+        email = claims.get("email", "")
+        sid = claims.get("objectSid", "")
+
+        # Todo: This is copy pasta from SAML implementation, end goal is removing SAML.
+        # When the user signs in with SSO, create an account if one does not exist.
+        # This only works if there is only one organization in the database.
+        account = Account.objects.filter(user=user).first()
+        if not account:
+            if Organization.objects.count() == 1:
+                related_org = Organization.objects.first()
+            else:
+                raise RuntimeError("Was not able to determine correct Organization for the user!")
+            account = Account.objects.create(
+                organization=related_org,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name)
+
+        if email:
+            relate_matches_to_user(user, account, email, AliasType.EMAIL)
+
+        if sid:
+            relate_matches_to_user(user, account, sid, AliasType.SID)
 
         return user
-
-
-def get_claim_user_info(claims, user):
-    user.username = claims.get('preferred_username', '')
-    user.first_name = claims.get('given_name', '')
-    user.last_name = claims.get('family_name', '')
-
-
-def get_or_create_user_aliases_OIDC(user, email, sid):  # noqa: D401
-    """ This method creates or updates the users aliases  """
-    if email:
-        Alias.objects.get_or_create(user=user, _value=email,
-                                    _alias_type=AliasType.EMAIL)
-    if sid:
-        Alias.objects.get_or_create(user=user, _value=sid,
-                                    _alias_type=AliasType.SID)
 
 
 def get_user_data(key: str, user_data: dict, expected_type: type):

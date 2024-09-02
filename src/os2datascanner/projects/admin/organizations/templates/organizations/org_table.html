@@ -232,6 +232,21 @@
                         </form>
                       {% endif %}
                     {% endif %}
+                    {% if organization.realm and organization.realm.providers.exists %}
+                      <a href="{% url 'edit-sso' organization.pk %}"
+                         class="button button--icon-button"
+                         aria-label="{% trans 'Edit Single SignOn configuration' %}"
+                         title="{% trans 'Edit Single SignOn configuration' %}">
+                        <i id="key" class="material-icons">key</i>
+                      </a>
+                    {% else %}
+                      <a href="{% url 'add-sso' organization.pk %}"
+                         class="button button--icon-button"
+                         aria-label="{% trans 'Configure Single SignOn' %}"
+                         title="{% trans 'Configure Single SignOn' %}">
+                        <i id="key" class="material-icons">key</i>
+                      </a>
+                    {% endif %}
                   </div>
                 </td>
               </tr>

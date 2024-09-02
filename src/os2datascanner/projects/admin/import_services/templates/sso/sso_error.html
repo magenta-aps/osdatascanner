@@ -1,0 +1,24 @@
+{% extends 'error_pages/error_base.html' %}
+
+
+{% load i18n %}
+
+{% block title %}
+  {% trans "Single SignOn (SSO) configuration" %}
+{% endblock %}
+
+{% block error_heading %}
+  {% trans "Oh! Might be too soon.." %}
+{% endblock %}
+
+{% block error_content %}
+  <p>{% trans "It is unclear how to properly set up Single Sign-On with current configuration." %}</p>
+
+  <p>
+    {% blocktrans trimmed %}
+        You might be missing configuration in regard to importing organizational structure,
+          allowing SSO initiated user creation or Keycloak enabling.
+    {% endblocktrans %}
+  </p>
+
+{% endblock %}

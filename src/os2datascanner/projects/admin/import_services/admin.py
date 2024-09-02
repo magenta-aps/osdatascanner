@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import LDAPConfig, MSGraphConfiguration, OS2moConfiguration, Realm
+from .models import (LDAPConfig, MSGraphConfiguration,
+                     OS2moConfiguration, Realm,
+                     KeycloakClient, IdentityProvider,
+                     IdPMappers, AuthenticationFlow,
+                     FlowExecution)
 
 
 # Register your models here.
@@ -28,3 +32,10 @@ class RealmAdmin(admin.ModelAdmin):
     """ Controls behaviour in Django Admin
                for the Realm model"""
     list_display = ('realm_id', 'organization',)
+
+
+admin.site.register(KeycloakClient)
+admin.site.register(IdentityProvider)
+admin.site.register(IdPMappers)
+admin.site.register(AuthenticationFlow)
+admin.site.register(FlowExecution)

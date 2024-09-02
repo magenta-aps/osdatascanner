@@ -128,41 +128,7 @@ AMQP_PWD = "<amqp user password>"
     USER = "<user name for dedicated admin db-user>"
     PASSWORD = "<user password for dedicated admin db-user>"
     HOST = "<database service name>"
-
-# The full documentation can be found here: https://github.com/fangli/django-saml2-auth
-[SAML2_AUTH]
-
-# Metadata is required
-# NB!!  Choose EITHER remote url or local file path
-METADATA_AUTO_CONF_URL = '[The auto(dynamic) metadata configuration URL of SAML2]'
-METADATA_LOCAL_FILE_PATH = '[The metadata configuration file path]'
 ```
-
-
-## SAML
-
-OS2datascanner - Single Sign On via SAML 2.0
-
-The OS2datascanner report module must have the following details from the
-organisation's identity provider in order for SSO logins to work:
-
-* The federation metadata file (or a URL to find it).
-* Logout Response URL.
-* NameID Format.
-
-In turn, the identity provider must have the following details from the
-OS2datascanner installation:
-
-* Entity ID: `https://os2datascanner.installation.domain/saml2_auth/acs/`
-* Reply URL: `https://os2datascanner.installation.domain/saml2_auth/acs/`
-* Logout URL: `https://os2datascanner.installation.domain/accounts/logout/`
-* User attributes:
-    * `username`: `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name`,
-    * `first_name`: `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname`,
-    * `last_name`: `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname`,
-    * `sid`: `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/securityidentifier`,
-* The public key of the OS2datascanner installation's certificate, for SAML authentication
-
 
 ## Gunicorn
 

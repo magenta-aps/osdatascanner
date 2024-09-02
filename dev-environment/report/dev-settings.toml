@@ -6,6 +6,7 @@ MEDIA_ROOT = ["*"," src", "os2datascanner", "projects", "report"]
 # [mode]
 DEBUG = true
 SAML2_ENABLED = false
+KEYCLOAK_ENABLED = false
 
 # [logging]
 LOG_LEVEL = "INFO"
@@ -44,16 +45,17 @@ MSGRAPH_TENANT_ID = ""
 SMB_ALLOW_WRITE = true
 
 # KEYCLOAK
-# TODO: These settings require a os2datascanner client, and a osdatascanner realm in Keycloak.
-OIDC_RP_CLIENT_ID = "os2datascanner"
+# These settings require a os2datascanner client, and a osdatascanner realm in Keycloak.
 # endpoints
-OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/auth"
-OIDC_OP_TOKEN_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/token"
-OIDC_OP_USER_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/userinfo"
+OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/auth"
+OIDC_OP_TOKEN_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/token"
+OIDC_OP_USER_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/userinfo"
 # signing algorithm and key
-OIDC_OP_JWKS_ENDPOINT = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/certs"
+OIDC_OP_JWKS_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/certs"
 # login and logout urls
-LOGOUT_URL = "http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/protocol/openid-connect/logout"
+LOGOUT_URL = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/logout"
+
+
 # Redirect urls
 LOGIN_REDIRECT_URL = "http://localhost:8040/"
 

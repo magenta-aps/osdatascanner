@@ -3,6 +3,7 @@ DECRYPTION_HEX = "4b8930847cba7196a46ede3456fe33df564427a30910dd1ef9bc805f26559a
 
 # [mode]
 DEBUG = true
+KEYCLOAK_ENABLED = false
 
 # [logging]
 LOG_LEVEL = "INFO"
@@ -22,7 +23,7 @@ REPORT_URL = "http://localhost:8040/"
 SESSION_COOKIE_NAME = "admin_sessionid"
 
 # [keycloak]
-KEYCLOAK_BASE_URL = "http://localkeycloak.os2datascanner:8090"
+KEYCLOAK_BASE_URL = "http://localhost:8090"
 KEYCLOAK_ADMIN_SECRET = "thisIsNotASecret"
 
 # [Prometheus pushgateway]
