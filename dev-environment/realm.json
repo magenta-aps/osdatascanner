@@ -27,10 +27,14 @@
   "clients": [
     {
       "clientId": "os2datascanner_admin",
+      "name": "os2datascanner_admin",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "thisIsNotASecret",
-      "serviceAccountsEnabled": true
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "protocol": "openid-connect"
     }
   ]
 }

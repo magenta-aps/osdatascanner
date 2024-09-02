@@ -458,10 +458,11 @@ services:
       - SIMPLESAMLPHP_BASEURLPATH=http://localhost:8080/simplesaml/
       - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8040/saml2_auth/acs/
       - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8040/saml2_auth/acs/
-# Replace the three env variables above with these below, if you wish to test Keycloak.
-#      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localkeycloak.os2datascanner:8090/auth/realms/magenta
-#      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localkeycloak.os2datascanner:8090/auth/realms/magenta/broker/saml/endpoint
-#      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localkeycloak.os2datascanner:8090/auth/realms/magenta/broker/saml/endpoint
+      # Replace the three env variables above with these below, if you wish to test Keycloak.
+      # Be aware they require an osdatascammer realm etc.
+#      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner
+#      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/broker/saml/endpoint
+#      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/broker/saml/endpoint
     volumes:
       - ./dev-environment/authsources.php:/var/www/simplesamlphp/config/authsources.php
     ports:
@@ -484,36 +485,50 @@ services:
       - sso
 
   localkeycloak.os2datascanner:
-    image: quay.io/keycloak/keycloak:12.0.0
+    image: quay.io/keycloak/keycloak:21.1.0
 
     # Import of realm is done with migration commands below
     # because we need to predefine the Master realm.
     # Using the KEYCLOAK_IMPORT env variable or the -Dkeycloak.import flag will not
     # work, as it will create a Master realm, then try but fail to create a
     # new Master realm from our json file.
+    # The Quarkus-based Keycloak version (from 17.0.0) automatically
+    # imports any realm files located in /opt/keycloak/data/import/ during startup - but it's
+    # the same undesirable behaviour as mentioned above. Hence, we're sticking to migration commands
 
-    # migration.strategy=OVERWRITE_EXISTING will drop & create if changes has occurred
-    # and is set to our default setting.
-    # IGNORE_EXISTING will not import if a realm of this name already exists
-    # which could be useful if you need to test other Keycloak settings.
-    command: [ "-Djboss.socket.binding.port-offset=10",
-               "-Dkeycloak.migration.action=import",
-               "-Dkeycloak.migration.provider=singleFile",
-               "-Dkeycloak.migration.file=/realm.json",
-               "-Dkeycloak.migration.strategy=IGNORE_EXISTING",
-             ]
+    command: [
+
+      "start-dev", # Starts in dev mode - should not be used in production.
+      "--http-port", "8090", # Quarkus distribution uses 8080 as the default port, but we like 90
+
+      # Quarkus distribution removed /auth from URl's
+      # ... but we're not quite ready to remove it ourselves yet, due to differences in dev/prod
+      # When production Keycloak is ready to be upgraded too, we can remove this and adjust
+      # API calls accordingly.
+      "--http-relative-path", "/auth",
+
+      #  Below options are kinda legacy, you could use:   "--import-realm",
+      # ... and mount to keycloaks default import path, but then you're not able to
+      # override the master realm, which we do. There's quite a debate online regarding this.
+      "-Dkeycloak.migration.action=import",
+      "-Dkeycloak.migration.provider=singleFile",
+      "-Dkeycloak.migration.file=/realm.json",
+      # migration.strategy=OVERWRITE_EXISTING will drop & create
+      # migration.strategy=IGNORE_EXISTING will not import if a realm of this name already exists
+      "-Dkeycloak.migration.strategy=IGNORE_EXISTING",
+      ]
     ports:
       - 8090:8090
     environment:
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
       # PROXY_ADDRESS_FORWARDING: "true"
-      DB_USER: keycloak
-      DB_PASSWORD: keycloak
-      DB_ADDR: postgres-keycloak
-      DB_DATABASE: keycloak
-      DB_SCHEMA: public
-      DB_VENDOR: POSTGRES
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak/keycloak
+      KC_DB: postgres
+      KC_DB_SCHEMA: public
+      KC_LOG_LEVEL: DEBUG
     volumes:
       - ./dev-environment/realm.json:/realm.json
     depends_on:
@@ -522,7 +537,7 @@ services:
       - ldap
       - sso
 
-  ldap_server:
+  ldap-server:
     image: osixia/openldap
     environment:
       LDAP_ADMIN_PASSWORD: testMAG
@@ -537,15 +552,15 @@ services:
     profiles:
       - ldap
 
-  ldap_server_admin:
+  ldap-server-admin:
     image: osixia/phpldapadmin
     ports:
     - 8100:80
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: ldap_server
+      PHPLDAPADMIN_LDAP_HOSTS: ldap-server
       PHPLDAPADMIN_HTTPS: 'false'
     depends_on:
-      - ldap_server
+      - ldap-server
     profiles:
       - ldap
 
