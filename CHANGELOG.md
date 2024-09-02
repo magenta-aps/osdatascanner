@@ -10,7 +10,7 @@
   all accounts without an email-value.
 
 - Minor refactor of the create rule view, added tests for all rule views.
-
+  
 - An optional extension to the `SIGUSR1` debug function allows for OAuth 2.0
   client credentials to be extracted from a running system and tested
   elsewhere.
@@ -19,6 +19,10 @@
   organization.
 
 - Keycloak bumped from version 12.0.0 to 21.1.0.
+
+- The examine_context check on the Danish CPR-rule will now only check if a
+  number fulfills the modulus-11 check, if that setting is also set to True
+  on the rule.
 
 ## Version 3.24.2, 15th August 2024
 

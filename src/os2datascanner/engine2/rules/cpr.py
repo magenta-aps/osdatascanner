@@ -140,7 +140,6 @@ class CPRRule(RegexRule):
 
             cpr = cpr[0:4] + "XXXXXX"
             low, high = match.span()
-            print(low, high, high-low, len(content))
             # only examine context if there is any
             if self._examine_context and len(content) > (high - low):
                 p, ctype = self.examine_context(match)

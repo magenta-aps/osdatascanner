@@ -251,7 +251,6 @@ class TestCPRRule:
     ])
     def test_cpr_context(self, rule, expected, description):
 
-        print(f"testing {description}")
         matches = rule.match(content)
         if expected:
             assert sorted(
