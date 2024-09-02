@@ -28,6 +28,11 @@
 - The examine_context check on the Danish CPR-rule will now only check if a
   number fulfills the modulus-11 check, if that setting is also set to True
   on the rule.
+  
+### Bugfixes
+
+- System rules no longer show up multiple times, if multiple organizations
+  have connected them to their organization.
 
 - Refactored result-page templates in the report module to extend base
   templates.
