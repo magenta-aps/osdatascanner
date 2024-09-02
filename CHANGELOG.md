@@ -18,6 +18,8 @@
 - The quickstart_dev-command now connects the "CPR Regel"-rule to the created
   organization.
 
+- Keycloak bumped from version 12.0.0 to 21.1.0.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"
