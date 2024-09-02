@@ -195,32 +195,141 @@ raw_matches_json_matched = json.loads('''
 }
 ''')
 
+raw_problem_json = json.loads('''
+{
+   "handle":{
+      "path":"Sammenl%E6gningsudvalget",
+      "type":"smbc",
+      "hints":null,
+      "source":{
+         "unc":"//samba/e2test",
+         "type":"smbc",
+         "user":null,
+         "domain":null,
+         "password":null,
+         "driveletter":null,
+         "unc_is_home_root":false,
+         "skip_super_hidden":false
+      }
+   },
+   "origin":"os2ds_problems",
+   "source":{
+      "unc":"//samba/e2test",
+      "type":"smbc",
+      "user":null,
+      "domain":null,
+      "password":null,
+      "driveletter":null,
+      "unc_is_home_root":false,
+      "skip_super_hidden":false
+   },
+   "message":"Exploration error. MemoryError: 12, Cannot allocate memory",
+   "missing":false,
+   "scan_tag":{
+      "time":"2024-08-15T08:27:20+02:00",
+      "user":"dev",
+      "scanner":{
+         "pk":1,
+         "name":"Lille Samba",
+         "test":false,
+         "keep_fp":true
+      },
+      "destination":"pipeline_collector",
+      "organisation":{
+         "name":"OSdatascanner",
+         "uuid":"365ddcab-c998-466e-b3fa-d8ed124a349d"
+      }
+   }
+}
+''')
 
-def create_reports_for(alias,
+raw_problem2_json = json.loads('''
+{
+   "handle":{
+      "path":"Sammenl%E6gningsudvalget",
+      "type":"smbc",
+      "hints":null,
+      "source":{
+         "unc":"//samba/e2test",
+         "type":"smbc",
+         "user":null,
+         "domain":null,
+         "password":null,
+         "driveletter":null,
+         "unc_is_home_root":false,
+         "skip_super_hidden":false
+      }
+   },
+   "origin":"os2ds_problems",
+   "source":{
+      "unc":"//samba/e2test",
+      "type":"smbc",
+      "user":null,
+      "domain":null,
+      "password":null,
+      "driveletter":null,
+      "unc_is_home_root":false,
+      "skip_super_hidden":false
+   },
+   "message":"Unknown Error: This is definitely an error",
+   "missing":false,
+   "scan_tag":{
+      "time":"2024-08-15T08:27:20+02:00",
+      "user":"dev",
+      "scanner":{
+         "pk":1,
+         "name":"Lille Samba",
+         "test":false,
+         "keep_fp":true
+      },
+      "destination":"pipeline_collector",
+      "organisation":{
+         "name":"OSdatascanner",
+         "uuid":"365ddcab-c998-466e-b3fa-d8ed124a349d"
+      }
+   }
+}
+''')
+
+
+def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                        num=10,
                        scanner_job_pk=1,
+                       scanner_job_name="Local nginx",
                        sensitivity=1000,
                        datasource_last_modified=timezone.now(),
                        resolution_status=None,
                        only_notify_superadmin=False,
                        created_at=None,
-                       matched=True):
+                       matched=True,
+                       problem=False):
     pks = []
     for i in range(num):
+        if problem == 1:
+            problem_message = raw_problem_json
+        elif problem == 2:
+            problem_message = raw_problem2_json
+        else:
+            problem_message = None
+
         dr = DocumentReport.objects.create(
             name=f"Report-{i}{'-matched' if matched else ''}",
             owner=alias._value,
             scanner_job_pk=scanner_job_pk,
+            scanner_job_name=scanner_job_name,
             sensitivity=sensitivity,
             datasource_last_modified=datasource_last_modified,
             path=(f"report-{i}-{scanner_job_pk}-{alias.account.username}"
                   f"-{'matched' if matched else 'unmatched'}-{alias._alias_type}"
                   f":{alias._value}-s{sensitivity}-dlm{datasource_last_modified}"
-                  f"-ca{created_at if created_at else 'None'}"),
+                  f"-ca{created_at if created_at else 'None'}"
+                  f"-prob{problem if problem else 'None'}"
+                  f"-rs{resolution_status if resolution_status is not None else 'None'}"),
             raw_matches=raw_matches_json_matched if matched else None,
             organization=alias.account.organization,
             resolution_status=resolution_status,
-            only_notify_superadmin=only_notify_superadmin)
+            only_notify_superadmin=only_notify_superadmin,
+            raw_problem=problem_message)
         pks.append(dr.pk)
     if created_at:
         DocumentReport.objects.filter(pk__in=pks).update(created_timestamp=created_at)

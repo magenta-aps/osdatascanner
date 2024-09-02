@@ -17,8 +17,9 @@
 import termplotlib as tpl
 from os import environ
 
+
 from django.core.management.base import BaseCommand
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from django.db.models.functions import Lower
 from django.conf import settings
 
@@ -46,6 +47,8 @@ class Command(BaseCommand):
         print("\n\n>> Running diagnostics on accounts ...")
         accounts = Account.objects.all()
         accounts_without_username = accounts.filter(username="").values("pk")
+        accounts_without_email = accounts.filter(email="").values("pk")
+        accounts_with_null_email = accounts.filter(email__isnull=True).values("pk")
         accounts_without_user = accounts.filter(user__isnull=True).values("username", "pk")
         username_counts = accounts.annotate(username_lower=Lower("username")
                                             ).values("username_lower").order_by(
@@ -54,26 +57,38 @@ class Command(BaseCommand):
         print(f"Found a total of {accounts.count()} accounts.")
 
         if accounts_without_username:
-            print(f"Found {len(accounts_without_username)} accounts without a username:", ", ".join(
-                [d["pk"] for d in accounts_without_username]))
+            print(f"Found {len(accounts_without_username)} "
+                  "accounts without a username: " + ", ".join(
+                                  [str(d["pk"]) for d in accounts_without_username]))
+
+        if accounts_without_email:
+            print(f"Found {len(accounts_without_email)} accounts with email = '': " +
+                  ", ".join([str(d["pk"]) for d in accounts_without_email]))
+
+        if accounts_with_null_email:
+            print(f"Found {len(accounts_with_null_email)} accounts with email = None: " +
+                  ", ".join([str(d["pk"]) for d in accounts_with_null_email]))
 
         if accounts_without_user:
-            print(f"Found {len(accounts_without_user)} accounts without a user:", ", ".join(
-                [f'''{d['username']} ({d['pk']})''' for d in accounts_without_user]))
+            print(f"Found {len(accounts_without_user)} "
+                  "accounts without a user: " + ", ".join(
+                                  [f'''{d['username']} ({str(d['pk'])})'''
+                                   for d in accounts_without_user]))
 
         if username_counts:
             print(f"Found {len(username_counts)} cases of duplicate usernames "
-                  "(disregarding case):", ", ".join(
-                      [f"{d['username_lower']} ({d['count']})" for d in username_counts]))
+                  "(disregarding case): " + ", ".join(
+                                  [f"{d['username_lower']} ({d['count']})"
+                                   for d in username_counts]))
 
         if settings.MSGRAPH_ALLOW_WRITE:
             accounts_missing_categories = accounts.annotate(
                 categories=Count("outlook_settings__outlook_categories")).filter(
-                categories__lt=2)
+                categories__lt=2).values("pk")
             if accounts_missing_categories:
                 print(f"Found {len(accounts_missing_categories)} accounts missing "
-                      "one or more Outlook categories:", ", ".join(
-                          [d["pk"] for d in accounts_missing_categories]))
+                      "one or more Outlook categories: " + (" ".join(
+                                      [str(d["pk"]) for d in accounts_missing_categories])))
 
     def diagnose_aliases(self):
         print("\n\n>> Running diagnostics on aliases ...")
@@ -92,13 +107,14 @@ class Command(BaseCommand):
             f"{nl.join([f'''{a['_alias_type']}: {a['count']}''' for a in alias_types])}")
 
         if aliases_with_no_account:
-            print(f"Found {len(aliases_with_no_account)} aliases with no account:",
+            print(f"Found {len(aliases_with_no_account)} aliases with no account: " +
                   ", ".join([str(d['pk']) for d in aliases_with_no_account]))
 
         if aliases_with_mismatched_account_user:
             print(f"Found {len(aliases_with_mismatched_account_user)} aliases "
-                  "with mismatched accounts and users:",
-                  ", ".join([str(d['pk']) for d in aliases_with_mismatched_account_user]))
+                  "with mismatched accounts and users: " +
+                  ", ".join(
+                                [str(d['pk']) for d in aliases_with_mismatched_account_user]))
 
     def diagnose_problems(self):
         print("\n\n>> Running diagnostics on problems ...")
@@ -160,7 +176,8 @@ class Command(BaseCommand):
         no_both_timestamps = no_created_timestamp & no_resolution_time
 
         if no_created_timestamp.count():
-            print(f"Found {no_created_timestamp.count()} reports without a 'created_timestamp'.")
+            print(
+                f"Found {no_created_timestamp.count()} reports without a 'created_timestamp'.")
         if no_resolution_time.count():
             print(f"Found {no_resolution_time.count()} handled reports without"
                   f" a 'resolution_time'.")
@@ -179,12 +196,12 @@ class Command(BaseCommand):
                 f"Found {impossible_timestamps.count()} handled reports, where"
                 f" the 'resolution_time' is earlier than the 'created_timestamp'.")
 
-        # Check for remediator reports
-        remediator_matches = matches.filter(alias_relation__isnull=True)
+        # Check for unrelated reports
+        unrelated_matches = matches.filter(alias_relation__isnull=True)
 
-        if remediator_matches.count():
-            print(f"Found {remediator_matches.count()} matched reports "
-                  "delegated to a remediator.")
+        if unrelated_matches.count():
+            print(f"Found {unrelated_matches.count()} matched reports "
+                  "without a relation to an alias.")
 
         # Top five matched accounts
         account_matches = matches.values("alias_relation__account__username").order_by(
@@ -193,7 +210,7 @@ class Command(BaseCommand):
         if account_matches:
             print("\nPresenting the five accounts with most matched reports:")
             nl = '\n  '
-            print(" ", nl.join(
+            print(" " + nl.join(
                 [f"{acc['alias_relation__account__username']}: {acc['count']} "
                  "matched reports" for acc in account_matches[:5] if acc['count']]))
 
@@ -209,9 +226,9 @@ class Command(BaseCommand):
 
         print(f"Found {len(orgs)} organizations.")
 
-        if os2 := orgs.filter(name="OS2datascanner").first():
+        for os in orgs.filter(Q(name="OS2datascanner") | Q(name="OSdatascanner")):
             print(
-                f"The organization with UUID {os2.pk} is called 'OS2datascanner'."
+                f"The organization with UUID {os.pk} is called '{os.name}'."
                 " Should this be changed?'")
 
         print("\nOverview of organizations:")
@@ -219,20 +236,28 @@ class Command(BaseCommand):
             print(org.name)
             print(
                 f"  Notification schedule: {org.email_notification_schedule}")
+
             print("  Contact information:")
-            print("  * Email:", org.contact_email)
-            print("  * Phone:", org.contact_phone)
+            print(f"  * Email: {org.contact_email}")
+            print(f"  * Phone: {org.contact_phone}")
+
             print("  Settings:")
-            print("  * MSGraph Write Permissions:", org.get_msgraph_write_permissions_display())
-            print("  * Leadertab access:", org.get_leadertab_access_display())
-            print("  * DPO-tab access:", org.get_dpotab_access_display())
-            print("  * Show Support Button:", org.show_support_button)
-            print("  * Support Contact Method:", org.get_support_contact_method_display())
-            print("  * Support Name:", org.support_name)
-            print("  * Support Value:", org.support_value)
-            print("  * DPO Contact Method:", org.get_dpo_contact_method_display())
-            print("  * DPO Name:", org.dpo_name)
-            print("  * DPO Value:", org.dpo_value)
+            print(
+                f"  * Outlook delete email permission: {org.outlook_delete_email_permission}")
+            print(
+                f"  * Outlook categorize email permission: "
+                f"{org.get_outlook_categorize_email_permission_display()}")
+            print(f"  * Onedrive delete permission: {org.onedrive_delete_permission}")
+            print(f"  * Leadertab access: {org.get_leadertab_access_display()}")
+            print(f"  * DPO-tab access: {org.get_dpotab_access_display()}")
+            print(f"  * Show Support Button: {org.show_support_button}")
+            print(
+                f"  * Support Contact Method: {org.get_support_contact_method_display()}")
+            print(f"  * Support Name: {org.support_name}")
+            print(f"  * Support Value: {org.support_value}")
+            print(f"  * DPO Contact Method: {org.get_dpo_contact_method_display()}")
+            print(f"  * DPO Name: {org.dpo_name}")
+            print(f"  * DPO Value: {org.dpo_value}")
 
     def diagnose_settings(self):
         print("\n\n>> Running diagnostics on settings ...")

@@ -18,7 +18,7 @@ import json
 from os import environ
 
 from django.core.management.base import BaseCommand
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.conf import settings
 
 from ....organizations.models import Account, Alias, OrganizationalUnit, Organization
@@ -46,6 +46,8 @@ class Command(BaseCommand):
         print("\n\n>> Running diagnostics on accounts ...")
         accounts = Account.objects.all()
         accounts_without_username = accounts.filter(username="").values("pk")
+        accounts_without_email = accounts.filter(email="").values("pk")
+        accounts_with_null_email = accounts.filter(email__isnull=True).values("pk")
         imported_accounts = accounts.filter(imported=True)
         imported_accounts_no_positions = imported_accounts.filter(
             positions__isnull=True).values("pk")
@@ -55,13 +57,22 @@ class Command(BaseCommand):
             f"{imported_accounts.count()} are imported.")
 
         if accounts_without_username:
-            print(f"Found {len(accounts_without_username)} accounts without a username:", ", ".join(
-                [str(d["pk"]) for d in accounts_without_username]))
+            print(f"Found {len(accounts_without_username)} "
+                  "accounts without a username: " +
+                  ", ".join([str(d["pk"]) for d in accounts_without_username]))
+
+        if accounts_without_email:
+            print(f"Found {len(accounts_without_email)} accounts with email = '': " +
+                  ", ".join([str(d["pk"]) for d in accounts_without_email]))
+
+        if accounts_with_null_email:
+            print(f"Found {len(accounts_with_null_email)} accounts with email = None: " +
+                  ", ".join([str(d["pk"]) for d in accounts_with_null_email]))
 
         if imported_accounts_no_positions:
-            print(f"Found {len(imported_accounts_no_positions)} imported accounts without "
-                  "relation to an OrganizationalUnit:", ", ".join(
-                       [str(d["pk"]) for d in imported_accounts_no_positions]))
+            print(f"Found {len(imported_accounts_no_positions)} imported "
+                  "accounts without relation to an OrganizationalUnit: " +
+                  ", ".join([str(d["pk"]) for d in imported_accounts_no_positions]))
 
     def diagnose_aliases(self):
         print("\n\n>> Running diagnostics on aliases ...")
@@ -75,6 +86,7 @@ class Command(BaseCommand):
             f"Found a total of {aliases.count()} aliases: \n  "
             f"{nl.join([f'''{a['_alias_type']}: {a['count']}''' for a in alias_types])}")
 
+        # This cannot actually happen due to db constraints. Remove?
         if aliases_with_no_account:
             print(f"Found {len(aliases_with_no_account)} aliases with no account:",
                   ", ".join([str(d['pk']) for d in aliases_with_no_account]))
@@ -106,9 +118,9 @@ class Command(BaseCommand):
 
         print(f"Found {len(orgs)} organizations.")
 
-        if os2 := orgs.filter(name="OS2datascanner").first():
+        for os in orgs.filter(Q(name="OS2datascanner") | Q(name="OSdatascanner")):
             print(
-                f"The organization with UUID {os2.pk} is called 'OS2datascanner'."
+                f"The organization with UUID {os.pk} is called '{os.name}'."
                 " Should this be changed?'")
 
         print("\nOverview of organizations:")
@@ -117,24 +129,27 @@ class Command(BaseCommand):
             print(
                 f"  Notification schedule: {org.email_notification_schedule}")
             print("  Contact information:")
-            print("  * Email:", org.contact_email)
-            print("  * Phone:", org.contact_phone)
-            print("  Settings:")
-            print("  * Outlook delete email permission:", org.outlook_delete_email_permission)
-            print("  * Outlook categorize email permission:",
-                  org.get_outlook_categorize_email_permission_display())
-            print("  * OneDrive/SharePoint delete permission", org.onedrive_delete_permission)
-            print("  * Leadertab access:", org.get_leadertab_access_display())
+            print(f"  * Email: {org.contact_email}")
+            print(f"  * Phone: {org.contact_phone}")
+            print("Settings:")
             print(
-                "  * DPO-tab access:",
-                org.get_dpotab_access_display())
-            print("  * Show Support Button:", org.show_support_button)
-            print("  * Support Contact Method:", org.get_support_contact_method_display())
-            print("  * Support Name:", org.support_name)
-            print("  * Support Value:", org.support_value)
-            print("  * DPO Contact Method:", org.get_dpo_contact_method_display())
-            print("  * DPO Name:", org.dpo_name)
-            print("  * DPO Value:", org.dpo_value)
+                f"  * Outlook delete email permission: {org.outlook_delete_email_permission}")
+            print(
+                f"  * Outlook categorize email permission: "
+                f"{org.get_outlook_categorize_email_permission_display()}")
+            print(
+                f"  * OneDrive/SharePoint delete permission: {org.onedrive_delete_permission}")
+            print(f"  * Leadertab access: {org.get_leadertab_access_display()}")
+            print(
+                f"  * DPO-tab access: {org.get_dpotab_access_display()}")
+            print(f"  * Show Support Button: {org.show_support_button}")
+            print(
+                f"  * Support Contact Method: {org.get_support_contact_method_display()}")
+            print(f"  * Support Name: {org.support_name}")
+            print(f"  * Support Value: {org.support_value}")
+            print(f"  * DPO Contact Method: {org.get_dpo_contact_method_display()}")
+            print(f"  * DPO Name: {org.dpo_name}")
+            print(f"  * DPO Value: {org.dpo_value}")
 
     def diagnose_rules(self):
         print("\n\n>> Running diagnostics on rules ...")

@@ -1,8 +1,13 @@
 # Changelog
 
-## Next Release
+## Version 3.24.3, ???
+
+"Why do Birds Suddenly Appear?"
 
 ### General improvements
+
+- The diagnostics command in both the admin and report module will now list
+  all accounts without an email-value.
 
 - Minor refactor of the create rule view, added tests for all rule views.
 
