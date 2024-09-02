@@ -144,7 +144,7 @@ class Organization(models.Model):
         choices=SupportContactChoices.choices,
         default=SupportContactChoices.NONE,
         verbose_name=_("support contact method"),
-        blank=True
+        blank=False
     )
     support_name = models.CharField(
         max_length=100, default="IT",
@@ -157,7 +157,7 @@ class Organization(models.Model):
         choices=DPOContactChoices.choices,
         default=DPOContactChoices.NONE,
         verbose_name=_("DPO contact method"),
-        blank=True
+        blank=False
     )
     dpo_name = models.CharField(
         max_length=100, default="",

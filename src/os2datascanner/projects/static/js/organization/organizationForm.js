@@ -6,8 +6,7 @@ function enableDPOOptions() {
       'id_dpo_value'
     ].forEach(id => {
       const field = document.getElementById(id);
-      field.style.display = "block";
-      field.previousElementSibling.style.display = "block";
+      field.parentElement.parentElement.style.display = "block";
     });
   }
 }
@@ -18,8 +17,7 @@ function disableDPOOptions() {
     'id_dpo_value'
   ].forEach(id => {
     const field = document.getElementById(id);
-    field.style.display = "none";
-    field.previousElementSibling.style.display = "none";
+    field.parentElement.parentElement.style.display = "none";
   });
 }
 
@@ -31,8 +29,7 @@ function enableSupportOptions() {
       'id_support_value'
     ].forEach(id => {
       const field = document.getElementById(id);
-      field.style.display = "block";
-      field.previousElementSibling.style.display = "block";
+      field.parentElement.parentElement.style.display = "block";
     });
   }
 }
@@ -43,29 +40,19 @@ function disableSupportOptions() {
     'id_support_value'
   ].forEach(id => {
     const field = document.getElementById(id);
-    field.style.display = "none";
-    field.previousElementSibling.style.display = "none";
+    field.parentElement.parentElement.style.display = "none";
   });
 }
 
 function hideSupportOption() {
-  [
-    'form__row--support',
-    'form__row--dpo'
-  ].forEach(cNames => {
-    const field = document.getElementsByClassName(cNames)[0];
+  
+    const field = document.getElementsByClassName("form__row--support-settings")[0];
     field.style.display = "none";
-  });
 }
 
 function showSupportOption() {
-  [
-    'form__row--support',
-    'form__row--dpo'
-  ].forEach(cNames => {
-    const field = document.getElementsByClassName(cNames)[0];
+    const field = document.getElementsByClassName("form__row--support-settings")[0];
     field.style.display = "block";
-  });
   enableDPOOptions();
   enableSupportOptions();
 }
