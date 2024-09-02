@@ -93,7 +93,16 @@ class TestDiagnosticsCommand:
 
         call_command("diagnostics", only=["Account"])
 
-        match = re.search(r'Found (\d+) accounts without an email.', capfd.readouterr()[0])
+        match = re.search(r'Found (\d+) accounts with email = \'\'', capfd.readouterr()[0])
+
+        assert match.group(1) == "3"
+
+    def test_count_accounts_with_null_email(self, fritz, günther, hansi, capfd):
+        Account.objects.all().update(email=None)
+
+        call_command("diagnostics", only=["Account"])
+
+        match = re.search(r'Found (\d+) accounts with email = None', capfd.readouterr()[0])
 
         assert match.group(1) == "3"
 
