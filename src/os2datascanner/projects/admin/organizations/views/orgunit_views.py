@@ -1,6 +1,4 @@
 from django.db.models import Q, Count, Prefetch
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
 
 from ...adminapp.views.views import RestrictedListView
 from ..models import OrganizationalUnit, Account, Position
@@ -9,32 +7,6 @@ from ...adminapp.views.scanner_views import EmptyPagePaginator
 from ..utils import ClientAdminMixin
 
 from os2datascanner.core_organizational_structure.models.position import Role
-
-
-class ManagerDropdownView(ClientAdminMixin, TemplateView):
-    template_name = 'organizations/manager_dropdown.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        orgunit = get_object_or_404(OrganizationalUnit, pk=self.kwargs['pk'])
-        managers = orgunit.get_managers()
-        context['orgunit'] = orgunit
-        context['accounts'] = (Account.objects.filter(organization=self.kwargs['org']).
-                               order_by("first_name", "last_name").difference(managers))
-        return context
-
-
-class DPODropdownView(ClientAdminMixin, TemplateView):
-    template_name = 'organizations/dpo_dropdown.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        orgunit = get_object_or_404(OrganizationalUnit, pk=self.kwargs['pk'])
-        dpos = orgunit.get_dpos()
-        context['orgunit'] = orgunit
-        context['accounts'] = (Account.objects.filter(organization=self.kwargs['org']).
-                               order_by("first_name", "last_name").difference(dpos))
-        return context
 
 
 class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):

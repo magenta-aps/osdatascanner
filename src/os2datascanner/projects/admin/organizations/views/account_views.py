@@ -6,8 +6,9 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
+from django.shortcuts import get_object_or_404
 
-from ..models import Account, Alias
+from ..models import Account, Alias, OrganizationalUnit
 from ..models.aliases import AliasType
 from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
@@ -164,3 +165,49 @@ class AliasDeleteView(LoginRequiredMixin, ClientAdminMixin, DeleteView):
             kwargs={
                 'org_slug': self.kwargs.get('org_slug'),
                 'pk': self.kwargs.get('acc_uuid')})
+
+
+class ManagerDropdownView(ClientAdminMixin, RestrictedListView):
+    model = Account
+    template_name = 'organizations/dpo_manager_dropdown.html'
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+
+        org = self.kwargs['org']
+        orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
+        managers = orgunit.get_managers()
+
+        return qs.filter(organization=org).difference(managers).order_by("first_name", "last_name")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org = self.kwargs['org']
+        orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
+        context['orgunit'] = orgunit
+        context['label'] = "Choose new manager"
+        context['element_name'] = "add-manager"
+        return context
+
+
+class DPODropdownView(ClientAdminMixin, RestrictedListView):
+    model = Account
+    template_name = 'organizations/dpo_manager_dropdown.html'
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+
+        org = self.kwargs['org']
+        orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
+        dpos = orgunit.get_dpos()
+
+        return qs.filter(organization=org).difference(dpos).order_by("first_name", "last_name")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org = self.kwargs['org']
+        orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
+        context['orgunit'] = orgunit
+        context['label'] = "Choose new DPO"
+        context['element_name'] = "add-dpo"
+        return context
