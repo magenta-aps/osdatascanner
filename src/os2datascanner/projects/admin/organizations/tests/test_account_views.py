@@ -3,7 +3,17 @@ import urllib
 
 from django.urls import reverse_lazy
 
-from os2datascanner.projects.admin.organizations.models import Alias
+from os2datascanner.projects.admin.organizations.models import Alias, Organization, \
+    OrganizationalUnit, Position
+
+
+@pytest.fixture()
+def user_types(superuser, user_admin, user, other_admin):
+    return {
+        "superuser": superuser,
+        "admin": user_admin,
+        "regular_user": user,
+        "other_admin": other_admin}
 
 
 @pytest.mark.django_db
@@ -97,19 +107,16 @@ class TestAccountListView:
             self,
             access_user,
             expected_codes,
-            superuser,
-            user_admin,
-            user,
             url,
             other_url,
             nisserne,
-            client):
+            client,
+            user_types):
         # Arrange
-        users = {"superuser": superuser, "admin": user_admin, "regular_user": user}
         if access_user == "anonymous":
             client.logout()
         else:
-            client.force_login(users[access_user])
+            client.force_login(user_types[access_user])
 
         # Act
         response1 = client.get(url)
@@ -146,18 +153,15 @@ class TestAccountDetailView:
             access_user,
             method,
             expected_codes,
-            superuser,
-            user_admin,
-            user,
             fritz_url,
             egon_url,
-            client):
+            client,
+            user_types):
         # Arrange
-        users = {"superuser": superuser, "admin": user_admin, "regular_user": user}
         if access_user == "anonymous":
             client.logout()
         else:
-            client.force_login(users[access_user])
+            client.force_login(user_types[access_user])
 
         # Act
         if method == "GET":
@@ -217,23 +221,15 @@ class TestAccountDetailView:
             access_user,
             expected_code,
             expected_aliases,
-            superuser,
-            user_admin,
-            user,
-            other_admin,
             fritz_url,
             fritz,
-            client):
+            client,
+            user_types):
         # Arrange
-        users = {
-            "superuser": superuser,
-            "admin": user_admin,
-            "regular_user": user,
-            "other_admin": other_admin}
         if access_user == "anonymous":
             client.logout()
         else:
-            client.force_login(users[access_user])
+            client.force_login(user_types[access_user])
 
         # Act
         response = client.post(
@@ -260,24 +256,16 @@ class TestAccountDetailView:
             access_user,
             expected_code,
             expected_aliases,
-            superuser,
-            user_admin,
-            user,
-            other_admin,
             fritz_url,
             fritz,
             basic_scanner,
-            client):
+            client,
+            user_types):
         # Arrange
-        users = {
-            "superuser": superuser,
-            "admin": user_admin,
-            "regular_user": user,
-            "other_admin": other_admin}
         if access_user == "anonymous":
             client.logout()
         else:
-            client.force_login(users[access_user])
+            client.force_login(user_types[access_user])
 
         # Act
         response = client.post(
@@ -304,25 +292,17 @@ class TestAccountDetailView:
             access_user,
             expected_code,
             expected_aliases,
-            superuser,
-            user_admin,
-            user,
-            other_admin,
             fritz_url,
             fritz,
             fritz_remediator_alias,
             basic_scanner,
-            client):
+            client,
+            user_types):
         # Arrange
-        users = {
-            "superuser": superuser,
-            "admin": user_admin,
-            "regular_user": user,
-            "other_admin": other_admin}
         if access_user == "anonymous":
             client.logout()
         else:
-            client.force_login(users[access_user])
+            client.force_login(user_types[access_user])
 
         # Act
         response = client.post(
@@ -337,3 +317,269 @@ class TestAccountDetailView:
             account=fritz,
             _alias_type="remediator",
             _value=basic_scanner.pk).count() == expected_aliases
+
+
+@pytest.mark.django_db
+class TestManagerDropdownView:
+    def url(self, org: Organization, ou: OrganizationalUnit) -> str:
+        return reverse_lazy('manager-dropdown', kwargs={'org_slug': org.slug, 'pk': ou.uuid})
+
+    @pytest.mark.parametrize("access_user,expected_code", [
+        ("admin", 200),
+        ("superuser", 200),
+        ("other_admin", 404),
+        ("regular_user", 404),
+        ("anonymous", 302)])
+    def test_get_all_accounts(
+            self,
+            test_org,
+            nisserne,
+            fritz,
+            gammel_nok,
+            access_user,
+            client,
+            expected_code,
+            user_types):
+        """If an orgunit doesn't have a manager, all accounts in the organization should show up"""
+        # Arrange
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(user_types[access_user])
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+
+        # Assert
+        assert response.status_code == expected_code
+        if expected_code == 200:
+            accounts = response.context.get('object_list', [])
+            assert fritz in accounts
+            assert gammel_nok in accounts
+
+    @pytest.mark.parametrize("access_user,expected_code", [
+        ("admin", 404),
+        ("superuser", 404),
+        ("other_admin", 404),
+        ("regular_user", 404),
+        ("anonymous", 302)])
+    def test_get_mismatched_orgunit_ou(
+            self,
+            test_org,
+            olsen_banden,
+            access_user,
+            client,
+            expected_code,
+            user_types):
+        """If the requested orgunit isn't part of the org, a 404 response should be given"""
+        # Arrange
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(user_types[access_user])
+
+        # Act
+        response = client.get(self.url(test_org, olsen_banden))
+
+        # Assert
+        assert response.status_code == expected_code
+
+    def test_no_accounts(self, test_org, nisserne, client, superuser):
+        """If an organization doesn't have any accounts, none should be returned"""
+        # Arrange
+        client.force_login(superuser)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context['object_list']
+
+        # Assert
+        assert len(accounts) == 0
+
+    def test_filter_manager_out(self, test_org, nisserne, fritz, hansi, client, superuser):
+        """If an orgunit already has a manager, they shouldn't show up."""
+        # Arrange
+        client.force_login(superuser)
+        Position.managers.create(account=hansi, unit=nisserne)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert fritz in accounts
+        assert hansi not in accounts
+
+    def test_multiple_managers(self, test_org, nisserne, fritz, hansi, günther, client, superuser):
+        """If an orgunit already has multiple managers, none of them should show up."""
+        # Arrange
+        client.force_login(superuser)
+        Position.managers.create(account=hansi, unit=nisserne)
+        Position.managers.create(account=günther, unit=nisserne)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert fritz in accounts
+        assert hansi not in accounts
+        assert günther not in accounts
+
+    def test_dont_filter_out_dpos(self, test_org, nisserne, hansi, client, superuser):
+        """An account shouldn't be filtered out because they are DPO."""
+        # Arrange
+        client.force_login(superuser)
+        Position.dpos.create(account=hansi, unit=nisserne)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert hansi in accounts
+
+    def test_manager_and_dpo(self, test_org, nisserne, fritz, hansi, fritz_boss, client, superuser):
+        """If an account is a manager but also a dpo, they still shouldn't show up."""
+        # Arrange
+        client.force_login(superuser)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert fritz not in accounts
+        assert hansi in accounts
+
+
+@pytest.mark.django_db
+class TestDPODropdownView:
+    def url(self, org: Organization, ou: OrganizationalUnit) -> str:
+        return reverse_lazy('dpo-dropdown', kwargs={'org_slug': org.slug, 'pk': ou.uuid})
+
+    @pytest.mark.parametrize("access_user,expected_code", [
+        ("admin", 200),
+        ("superuser", 200),
+        ("other_admin", 404),
+        ("regular_user", 404),
+        ("anonymous", 302)])
+    def test_get_all_accounts(
+            self,
+            test_org,
+            nisserne,
+            fritz,
+            gammel_nok,
+            access_user,
+            client,
+            expected_code,
+            user_types):
+        """If an orgunit doesn't have a dpo, all accounts in the organization should show up"""
+        # Arrange
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(user_types[access_user])
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+
+        assert response.status_code == expected_code
+        if expected_code == 200:
+            accounts = response.context.get('object_list', [])
+            assert fritz in accounts
+            assert gammel_nok in accounts
+
+    @pytest.mark.parametrize("access_user,expected_code", [
+        ("admin", 404),
+        ("superuser", 404),
+        ("other_admin", 404),
+        ("regular_user", 404),
+        ("anonymous", 302)])
+    def test_get_mismatched_orgunit_ou(
+            self,
+            test_org,
+            olsen_banden,
+            access_user,
+            client,
+            expected_code,
+            user_types):
+        """If the requested orgunit isn't part of the org, a 404 response should be given"""
+        # Arrange
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(user_types[access_user])
+
+        # Act
+        response = client.get(self.url(test_org, olsen_banden))
+
+        assert response.status_code == expected_code
+
+    def test_no_accounts(self, test_org, nisserne, client, superuser):
+        """If an organization doesn't have any accounts, none should be returned"""
+        # Arrange
+        client.force_login(superuser)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context['object_list']
+
+        # Assert
+        assert len(accounts) == 0
+
+    def test_filter_manager_out(self, test_org, nisserne, fritz, hansi, client, superuser):
+        """If an orgunit already has a dpo, they shouldn't show up."""
+        # Arrange
+        client.force_login(superuser)
+        Position.dpos.create(account=hansi, unit=nisserne)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert fritz in accounts
+        assert hansi not in accounts
+
+    def test_multiple_managers(self, test_org, nisserne, fritz, hansi, günther, client, superuser):
+        """If an orgunit already has multiple dpos, none of them should show up."""
+        # Arrange
+        client.force_login(superuser)
+        Position.dpos.create(account=hansi, unit=nisserne)
+        Position.dpos.create(account=günther, unit=nisserne)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert fritz in accounts
+        assert hansi not in accounts
+        assert günther not in accounts
+
+    def test_dont_filter_out_dpos(self, test_org, nisserne, hansi, client, superuser):
+        """An account shouldn't be filtered out because they are a manager."""
+        # Arrange
+        client.force_login(superuser)
+        Position.managers.create(account=hansi, unit=nisserne)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert hansi in accounts
+
+    def test_manager_and_dpo(self, test_org, nisserne, fritz, hansi, fritz_boss, client, superuser):
+        """If an account is a dpo but also a manager, they still shouldn't show up."""
+        # Arrange
+        client.force_login(superuser)
+
+        # Act
+        response = client.get(self.url(test_org, nisserne))
+        accounts = response.context.get('object_list', [])
+
+        # Assert
+        assert fritz not in accounts
+        assert hansi in accounts
