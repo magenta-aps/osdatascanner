@@ -25,7 +25,7 @@ Checkboxes can be pre-filled before submitting the MR by replacing
 - [ ] Workflow:
     - [ ] The title of this MR contains the relevant ticket no., formatted like `[#12345]`
     - [ ] The corresponding Redmine ticket has been set to `Needs review`, assigned to the principal reviewer and contains a link to MR
-    - [ ] The MR has been labelled with either ~bug (if it is a bugfix) or ~enhancement (if it is a feature)
+    - [ ] The MR has been labelled with either ~bug (if it is a bugfix) or ~feature (if it is a feature)
 - [ ] Maintainability:
     - [ ] I have rebased/squashed the code into a minimal amount of atomic commits that reference the ticket ID (eg. `[#12345] Implement featureX in Y`)
     - [ ] I have ensured the MR does not introduce indentation or charset issues
