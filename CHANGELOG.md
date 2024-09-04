@@ -37,6 +37,11 @@
 - Refactored result-page templates in the report module to extend base
   templates.
 
+### Bugfixes
+
+- Scannerjob validation status can no longer be bypassed by scheduling its run.
+
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"

@@ -32,7 +32,8 @@ def should_scanner_start(scanner: Scanner,
                          now: bool = False):
     schedule_datetime = scanner.schedule_datetime
     return (schedule_datetime is not None
-            and (current_qhr <= schedule_datetime < next_qhr or now))
+            and (current_qhr <= schedule_datetime < next_qhr or now)
+            and scanner.validation_status)
 
 
 class Command(BaseCommand):
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--now",
             action="store_true",
-            help="run the scanner now if scheduled for today")
+            help="If scannerjob is validated, run the scanner now if scheduled for today")
 
     def handle(self, *args, now, **options):
 
