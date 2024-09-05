@@ -75,7 +75,9 @@ class Command(BaseCommand):
         web_url = "http://nginx/"
 
         # Create development client and organization
-        client, _ = Client.objects.get_or_create(name="Development Client")
+        client, _ = Client.objects.get_or_create(name="Development Client",
+                                                 contact_email="dev@dev.com",
+                                                 contact_phone="12345678")
         Organization.objects.get_or_create(name="OSdatascanner", client=client)
 
         self.stdout.write("Synchronizing Organization to Report module ...")
