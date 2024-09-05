@@ -4,6 +4,11 @@
 
 "Why do Birds Suddenly Appear?"
 
+### New in this release
+
+- The hour of organizational import can now be configured on the Organization
+  page.
+
 ### General improvements
 
 - The diagnostics command in both the admin and report module will now list

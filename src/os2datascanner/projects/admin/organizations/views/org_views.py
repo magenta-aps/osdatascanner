@@ -89,7 +89,8 @@ class UpdateOrganizationView(RestrictedUpdateView):
               'support_contact_method', 'support_name', 'support_value',
               'dpo_contact_method', 'dpo_name', 'dpo_value',
               'outlook_categorize_email_permission', 'outlook_delete_email_permission',
-              'onedrive_delete_permission', 'email_header_banner', 'email_notification_schedule']
+              'onedrive_delete_permission', 'email_header_banner', 'email_notification_schedule',
+              'synchronization_time']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

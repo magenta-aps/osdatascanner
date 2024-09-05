@@ -812,9 +812,9 @@ msgstr "tilføj organisation"
 
 #: adminapp/templates/components/common/breadcrumb.html:81
 #: organizations/templates/organizations/org_update.html:6
-#: organizations/templates/organizations/org_update.html:166
-#: organizations/templates/organizations/org_update.html:167
-#: organizations/templates/organizations/org_update.html:168
+#: organizations/templates/organizations/org_update.html:175
+#: organizations/templates/organizations/org_update.html:176
+#: organizations/templates/organizations/org_update.html:177
 msgid "update organization"
 msgstr "opdatér organisation"
 
@@ -3113,6 +3113,10 @@ msgstr "slug"
 msgid "system rules"
 msgstr "systemregler"
 
+#: organizations/models/organization.py:80
+msgid "synchronization hour"
+msgstr "Synkroniseringstime"
+
 #: organizations/templates/components/modals/alias_create.html:15
 msgid "Create a new alias for"
 msgstr "Opret et nyt alias for"
@@ -3389,10 +3393,14 @@ msgid "DPO settings"
 msgstr "DPO indstillinger"
 
 #: organizations/templates/organizations/org_update.html:104
+msgid "Synchronization settings"
+msgstr "Synkroniseringsindstillinger"
+
+#: organizations/templates/organizations/org_update.html:113
 msgid "Microsoft Tenant Settings"
 msgstr "Microsoft Tenant Indstillinger"
 
-#: organizations/templates/organizations/org_update.html:128
+#: organizations/templates/organizations/org_update.html:137
 msgid "Allow deletion"
 msgstr "Tillad sletning"
 
