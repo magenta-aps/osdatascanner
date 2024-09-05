@@ -116,7 +116,19 @@
     </label>
     )
   </span>
-  <span id="CustomRule_Address"></span>
+  <span id="CustomRule_Address">
+    {# TODO: Don't use br to "style" this  #}
+    <br>
+    {% trans "Street name exceptions:" %}
+    <input type="text"
+           id="whitelist"
+           placeholder="{% trans 'Roadway, Wayroad' %}" />
+    <br>
+    {% trans "Specific address exceptions:" %}
+    <input type="text"
+           id="whitelist_address"
+           placeholder="{% trans 'Roadway 1, Roadway 10' %}" />
+  </span>
   <span id="EmailHeader">
     <input type="text" placeholder="{% trans 'field name' %}" />
     <span class="logical-rule">
