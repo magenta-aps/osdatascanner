@@ -12,7 +12,8 @@ def scanner_daily(basic_rule):
     return Scanner.objects.create(
         name="daily scanner",
         schedule="RRULE:FREQ=DAILY;",
-        rule=basic_rule)
+        rule=basic_rule,
+        validation_status=True)
 
 
 @pytest.mark.django_db
@@ -112,6 +113,24 @@ class TestCron:
 
         # Act
         start = should_scanner_start(scanner_daily, current_qhr, next_qhr, now=False)
+
+        # Assert
+        assert start is False
+
+    def test_scanner_validation_invalid(self, scanner_daily, monkeypatch):
+
+        # Arrange
+        scanner_daily.validation_status = False
+        scanner_daily.save()
+
+        time = time_now().replace(hour=13, minute=37)
+        monkeypatch.setattr(Scanner, "schedule_datetime", time)
+
+        current_qhr = time
+        next_qhr = current_qhr + datetime.timedelta(minutes=15)
+
+        # Act
+        start = should_scanner_start(scanner_daily, current_qhr, next_qhr)
 
         # Assert
         assert start is False
