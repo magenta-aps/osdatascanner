@@ -22,6 +22,6 @@ class TestLoginRequired:
         request.user = user
         response = UserReportView.as_view()(request)
 
-        # Should get status code 200 OK and index.html template
+        # Should get status code 200 OK and user_content.html template
         assert response.status_code == 200
-        assert "index.html" in response.template_name
+        assert "user_content.html" in response.template_name

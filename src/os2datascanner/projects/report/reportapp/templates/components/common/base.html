@@ -2,82 +2,45 @@
 {% load i18n %}
 <!DOCTYPE html>
 {% language 'da' %}
-  <html lang="da" class="{% block rendertype %}{% endblock %}">
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="generator" content="OSdatascanner {{ version }}">
-      <meta name="author" content="">
+  <html lang="da" class="{% block rendertype %}{% endblock rendertype %}">
+ 
+    {% include "components/common/header.html" %}
 
-      <title>
-        {% block title %}{% endblock %}
-      | OSdatascanner</title>
+    {% include "components/common/banner.html" %}
 
-      {% block styling %}
-        <link href="{% static 'css/master.css' %}" rel="stylesheet">
-      {% endblock %}
+    <body class="{% block body_class %}{% endblock body_class %} page">
 
-      <link rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="{% static 'favicons/favicon-32x32.png' %}">
-      <link rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="{% static 'favicons/favicon-16x16.png' %}">
-      <meta name="theme-color" content="#4DBA87">
-      <meta name="apple-mobile-web-app-capable" content="no">
-      <meta name="apple-mobile-web-app-status-bar-style" content="default">
-      <link rel="apple-touch-icon"
-            href="{% static 'favicons/apple-touch-icon.png' %}">
-      <link rel="mask-icon"
-            href="{% static 'favicons/safari-pinned-tab.svg' %}"
-            color="#4DBA87">
-      <meta name="msapplication-TileImage"
-            content="{% static 'favicons/msapplication-icon-144x144.png' %}">
-      <meta name="msapplication-TileColor" content="#000000">
+      <noscript>
+        {% blocktrans %}<strong>We're sorry but <em>OSDatascanner</em> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>{% endblocktrans %}
+      </noscript>
 
-      {% block extra_head_html %}{% endblock %}
+      {% include "components/common/page_load_indicator.html" %}
 
-    </head>
-    <body class="{% block body_class %}{% endblock %} page">
+      {% block additional_styles %}
+      {% endblock additional_styles %}
 
-      {% block additional_styles %}{% endblock %}
+      {% block body %}
+      {% endblock body %}
 
-      {% block body %}{% endblock %}
-
-      <div>
-        <!-- Modal dialog -->
-        {% block modal %}{% endblock %}
-        <!-- End modal dialog -->
-      </div>
-
-      {% block footer %}{% endblock %}
-
-      <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+      {% block footer %}
+        <footer class="subtle_footer">
+          {% trans "OSdatascanner version" %} {{ version }}
+        </footer>
+      {% endblock footer %}
 
       {% block scripts %}
+        <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+        <script src="{% static '3rdparty/clipboard.min.js' %} "></script>
+        <script src="{% static '3rdparty/htmx.min.js' %}"></script>
+        <script src="{% static 'js/index.js' %} "></script>
+        <script src="{% static 'js/tables/tableBehavior.js' %} "></script>
+        <script src="{% static 'js/reports/show-more.js' %} "></script>
+        <script src="{% static 'js/filters/options.js' %} "></script>
+        <script src="{% static 'js/reports/distributeElement.js' %}"></script>
+        <script src="{% static 'js/modals/snackBars.js' %}"></script>
+        <script src="{% static 'js/modals/popover.js' %}"></script>
+      {% endblock scripts %}
 
-        <!-- TODO: Since the following scripts are in a 'scripts' block, are they supposed to be overwritten by templates? -->
-
-        {% if not settings.DEBUG %}
-
-          <!-- TODO: Is jquery.modal not used in development? -->
-          <!-- ANSWER: Yes, sometimes in some templates (ex. os2datascanner/rules.html). This setup potentially loads jquery.modal twice, though. -->
-          <script src="{% static '3rdparty/jquery.modal.min.js' %} "></script>
-
-          <script src="{% static '3rdparty/bootstrap.min.js' %}"></script>
-
-        {% else %}
-
-          <script src="{% static '3rdparty/bootstrap.js' %}"></script>
-
-        {% endif %}
-        <script src="{% static 'js/main.js' %}"></script>
-      {% endblock %}
-
-      <!-- TODO: Do 'scripts' and 'jquery_script' need to be separate blocks? -->
-      {% block jquery_script %}{% endblock %}
     </body>
   </html>
 {% endlanguage %}

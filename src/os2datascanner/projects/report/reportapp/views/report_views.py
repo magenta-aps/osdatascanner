@@ -258,6 +258,7 @@ class ReportView(LoginRequiredMixin, ListView):
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
     type = "personal"
+    template_name = "user_content.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -291,6 +292,7 @@ class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
 
     type = "remediator"
+    template_name = "remediator_content.html"
 
     def base_match_filter(self, reports):
         reports = super().base_match_filter(reports)
@@ -315,6 +317,7 @@ class UndistributedView(ReportView):
     """Presents a superuser with all undistributed unhandled results."""
 
     type = "undistributed"
+    template_name = "undistributed_content.html"
 
     def base_match_filter(self, reports):
         reports = super().base_match_filter(reports)
