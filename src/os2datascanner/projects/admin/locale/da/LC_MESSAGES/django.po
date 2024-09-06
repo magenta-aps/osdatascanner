@@ -3135,7 +3135,7 @@ msgstr "systemregler"
 
 #: organizations/models/organization.py:79
 msgid "synchronization time"
-msgstr "Synkroniseringstime"
+msgstr "synkroniseringstidspunkt"
 
 #: organizations/templates/components/modals/alias_create.html:15
 msgid "Create a new alias for"
@@ -3483,11 +3483,20 @@ msgstr "Navnet er allerede i brug."
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
+#: organizations/views/account_views.py:176
+msgid "Choose Account"
+msgstr "Vælg konto"
+
 #~ msgid "Roadway, Wayroad"
 #~ msgstr "Vejsti, Stivej"
 
-#~ msgid "Roadway 1, Roadway 10"
-#~ msgstr "Vejsti 1, Vejsti 10"
+#: organizations/views/account_views.py:205
+msgid "Roadway 1, Roadway 10"
+msgstr "Vejsti 1, Vejsti 10"
+
+#: organizations/views/account_views.py:213
+msgid "Choose new DPO"
+msgstr "Vælg ny DPO"
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"

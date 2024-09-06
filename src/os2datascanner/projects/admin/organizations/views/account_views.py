@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 
 from ..models import Account, Alias, OrganizationalUnit
 from ..models.aliases import AliasType
@@ -167,47 +168,50 @@ class AliasDeleteView(LoginRequiredMixin, ClientAdminMixin, DeleteView):
                 'pk': self.kwargs.get('acc_uuid')})
 
 
-class ManagerDropdownView(ClientAdminMixin, RestrictedListView):
+class AccountDropdownView(ClientAdminMixin, RestrictedListView):
     model = Account
-    template_name = 'organizations/dpo_manager_dropdown.html'
+    template_name = 'components/dpo_manager_dropdown.html'
+    context_object_name = "accounts"
+
+    label = _("Choose Account")
+    element_name = "add-account"
+
+    def accounts_to_exclude(self, orgunit):
+        return []
 
     def get_queryset(self, **kwargs):
         qs = super().get_queryset(**kwargs)
 
         org = self.kwargs['org']
         orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
-        managers = orgunit.get_managers()
 
-        return qs.filter(organization=org).difference(managers).order_by("first_name", "last_name")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        org = self.kwargs['org']
-        orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
-        context['orgunit'] = orgunit
-        context['label'] = "Choose new manager"
-        context['element_name'] = "add-manager"
-        return context
-
-
-class DPODropdownView(ClientAdminMixin, RestrictedListView):
-    model = Account
-    template_name = 'organizations/dpo_manager_dropdown.html'
-
-    def get_queryset(self, **kwargs):
-        qs = super().get_queryset(**kwargs)
-
-        org = self.kwargs['org']
-        orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
-        dpos = orgunit.get_dpos()
-
-        return qs.filter(organization=org).difference(dpos).order_by("first_name", "last_name")
+        return qs.filter(
+            organization=org).difference(
+            self.accounts_to_exclude(orgunit)).order_by(
+            "first_name",
+            "last_name")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org = self.kwargs['org']
         orgunit = get_object_or_404(OrganizationalUnit, organization=org, pk=self.kwargs['pk'])
         context['orgunit'] = orgunit
-        context['label'] = "Choose new DPO"
-        context['element_name'] = "add-dpo"
+        context['label'] = self.label
+        context['element_name'] = self.element_name
         return context
+
+
+class ManagerDropdownView(AccountDropdownView):
+    label = _("Choose new manager")
+    element_name = "add-manager"
+
+    def accounts_to_exclude(self, orgunit):
+        return orgunit.get_managers()
+
+
+class DPODropdownView(AccountDropdownView):
+    label = _("Choose new DPO")
+    element_name = "add-dpo"
+
+    def accounts_to_exclude(self, orgunit):
+        return orgunit.get_dpos()

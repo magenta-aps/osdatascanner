@@ -2,8 +2,8 @@
 {% load orgunit_tags %}
 
 <select class="select_options" name={{ element_name }} hx-post="" hx-swap="outerHTML" hx-target="#orgunit__{{ orgunit.pk }}" hx-select="#orgunit__{{ orgunit.pk }}" hx-trigger="change" hx-vals='{"orgunit": "{{ orgunit.pk }}"}'>
-  <option value="">{% trans label %}</option>
-  {% for account in object_list %}
+  <option value="">{{ label }}</option>
+  {% for account in accounts %}
     <option value="{{ account.uuid }}">
       {{ account.get_full_name }}
       {% if account.username %}({{ account.username }}){% endif %}
