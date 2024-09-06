@@ -242,8 +242,6 @@ class TestCPRRule:
         matches = []
         for string in content:
             matches.extend(rule.match(string))
-        for match in matches:
-            print(match)
         if expected:
             assert sorted(
                 list(matches),
@@ -360,8 +358,6 @@ class TestCPRRule:
     def test_probability_number_ignore_irrelevant(self, content, mod11, result):
         rule = CPRRule(ignore_irrelevant=True, modulus_11=mod11, examine_context=False)
         matches = list(rule.match(content))
-
-        print(matches)
 
         assert matches == result
 
