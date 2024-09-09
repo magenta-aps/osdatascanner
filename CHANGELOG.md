@@ -4,6 +4,12 @@
 
 "Not To SharePoint The Finger, But..."
 
+### General improvements
+
+- It's now possible to import managers from LDAP via group import. This can
+  be configured via a checkbox on the LDAP-configuration page, when import 
+  based on groups is selected.
+
 ### Bugfixes
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.

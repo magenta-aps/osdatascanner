@@ -102,7 +102,7 @@ class LDAPGroupFilterMapper:
                 "mode": ["READ_ONLY"],
                 "user.roles.retrieve.strategy": ["LOAD_GROUPS_BY_MEMBER_ATTRIBUTE"],
                 "memberof.ldap.attribute": ["memberOf"],
-                "mapped.group.attributes": ["distinguishedName"],
+                "mapped.group.attributes": ["distinguishedName, managedBy"],
                 "drop.non.existing.groups.during.sync": ["false"],
                 "groups.path": ["/"]
             },
@@ -137,6 +137,14 @@ class LDAPConfig(Exported, ImportService):
         default='',
         blank=True,
         verbose_name=_("group prefix filter"),
+    )
+    import_managers = models.BooleanField(
+        default=False,
+        help_text=_(
+            "If true, any imported group with a managedBy attribute will have that user "
+            "added as a manager"
+        ),
+        verbose_name=_('Set managing users as managers'),
     )
     username_attribute = models.CharField(
         max_length=64,

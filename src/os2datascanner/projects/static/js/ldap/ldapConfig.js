@@ -87,3 +87,16 @@ function testAuth(e) {
 
     oReq.send("url=" + connectionProtocol + connectionUrl + "&bind_dn=" + bindDn  + "&bind_credential=" + credential);
 }
+
+// hide checkbox if import is not by group
+const importInto = document.getElementById("id_import_into");
+importInto.addEventListener("change", () => {
+    const importManagers = document.getElementById("id_import_managers");
+    if (importInto.value === "group") {
+        importManagers.disabled = false;
+        importManagers.closest(".form__group").style.display = "block";
+    } else {
+        importManagers.disabled = true;
+        importManagers.closest(".form__group").style.display = "none";
+    }
+});
