@@ -28,7 +28,9 @@
 - The examine_context check on the Danish CPR-rule will now only check if a
   number fulfills the modulus-11 check, if that setting is also set to True
   on the rule.
-  
+
+- Keycloak import job have been refactored to increase readability.
+
 ### Bugfixes
 
 - System rules no longer show up multiple times, if multiple organizations
@@ -40,7 +42,6 @@
 ### Bugfixes
 
 - Scannerjob validation status can no longer be bypassed by scheduling its run.
-
 
 ## Version 3.24.2, 15th August 2024
 
@@ -268,7 +269,6 @@ output until this bug is addressed.
 - Deleting a mail folder in Exchange will now cause OSdatascanner to resolve
   all matches in that folder as having been deleted. (Note that this
   functionality does not appear to work reliably in Office 365.)
-
 
 ## Version 3.22.6, 25th April 2024
 

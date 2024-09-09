@@ -1,15 +1,12 @@
 import base64
 import struct
 import structlog
-from typing import Tuple, Sequence
-from django.db import transaction
+from enum import Enum
+from typing import Tuple, Sequence, Iterator, Any
+from itertools import chain
 from os2datascanner.utils.ldap import RDN, LDAPNode
-from .utils import group_into, set_imported_fields, create_and_serialize, update_and_serialize, \
-    delete_and_listify
-from ..organizations.broadcast_bulk_events import (BulkCreateEvent, BulkUpdateEvent,
-                                                   BulkDeleteEvent)
+from .utils import prepare_and_publish
 from os2datascanner.utils.section import suppress_django_signals
-from ..organizations.publish import publish_events
 from ..import_services.models.realm import Realm
 from ..import_services import keycloak_services
 from .models import (Alias, Account, Position,
@@ -20,6 +17,14 @@ logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
 SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
+
+
+class Action(Enum):
+    NOTHING = 0
+    DELETE = 1
+    ADD = 2
+    UPDATE = 3
+    KEEP = 4
 
 
 def keycloak_dn_selector(d):
@@ -182,8 +187,275 @@ def _convert_sid(sid):
     return __convert_binary_sid_to_str(b_sid)
 
 
+def _path_to_unit(org: Organization,
+                  path: Sequence[RDN],
+                  units: dict[Sequence[RDN], OrganizationalUnit]
+                  ) -> tuple[OrganizationalUnit | None, bool]:
+    """Gets or creates a unit from a path, and returns whether or not the unit is new."""
+    unit_id = RDN.sequence_to_dn(path)
+    unit = units.get(path)
+    initialized = False
+    if unit is None:
+        try:
+            unit = OrganizationalUnit.objects.get(organization=org, imported_id=unit_id)
+        except OrganizationalUnit.DoesNotExist:
+            label = path[-1].value if path else ""
+
+            # We can't just call path_to_unit(o, path[:-1]) here, because
+            # we have to make sure that our units actually match what the
+            # hierarchy specifies without creating extra nodes
+            parent = None
+            if path:
+                path_fragment = path[:-1]
+                while path_fragment and not parent:
+                    parent = units.get(path_fragment)
+                    path_fragment = path_fragment[:-1]
+
+            unit = OrganizationalUnit(
+                    imported_id=unit_id,
+                    name=label, parent=parent, organization=org,
+                    # Clear the MPTT tree fields for now -- they get
+                    # recomputed after we do bulk_create
+                    lft=0, rght=0, tree_id=0, level=0)
+            initialized = True
+    return unit, initialized
+
+
+def _node_to_account(org: Organization, node: LDAPNode, accounts: list[Account]
+                     ) -> tuple[Account, bool]:
+    """Gets or creates an account from a node, and returns whether or not it us new."""
+    # One Account object can have multiple paths (if it's a member of
+    # several groups, for example), so we need to use the true DN as our
+    # imported_id here
+    account_id = node.properties["attributes"]["LDAP_ENTRY_DN"][0]
+    account = None
+    for acc in accounts:
+        # If the account already exists in accounts, use it
+        if acc.imported_id == account_id:
+            account = acc
+            break
+    initialized = False
+    if account is None:
+        try:
+            account = Account.objects.get(
+                    organization=org, imported_id=account_id)
+        except Account.DoesNotExist:
+            account = Account(organization=org, imported_id=account_id,
+                              uuid=node.properties["id"])
+            initialized = True
+    return account, initialized
+
+
+def _get_iids_of_hiearchy(hierarchy: LDAPNode) -> set[str]:
+    """Gets all iids of a LDAP-hiearchy."""
+    iids = set()
+    for path, r in hierarchy.walk():
+        if not path:
+            continue
+        iids.add(_node_to_iid(path, r))
+    return iids
+
+
+def _create_unit_hierarchy(remote_hierarchy: LDAPNode,
+                           org: Organization
+                           ) -> tuple[dict[Sequence[RDN], OrganizationalUnit],
+                                      list[OrganizationalUnit]]:
+    """For every Organizational Unit in the remote hierarchy, create a corresponding one locally.
+     Returns a dict from path to unit and a list of units that were added"""
+    path_to_unit = {}
+    new_units = []
+    for path, node in remote_hierarchy.walk():
+        if not path:
+            continue
+
+        if not node.children:
+            # If a node doesn't have children, it's either a user or an uninteresting OU
+            continue
+        unit, new = _path_to_unit(org, path, path_to_unit)
+        path_to_unit[path] = unit
+        if new:
+            new_units.append(unit)
+
+    return path_to_unit, new_units
+
+
+def _handle_diff(path: Sequence[RDN],
+                 local: LDAPNode,
+                 remote: LDAPNode,
+                 org: Organization,
+                 accounts: list[Account],
+                 progress_callback=_dummy_pc
+                 ) -> tuple[Action, OrganizationalUnit | Account | None]:
+    """Given a local and remote node with the same path
+     finds the necessary action in case of any difference."""
+    if not path:
+        # Ignore the contentless root node
+        progress_callback("diff_ignored", path)
+        return (Action.NOTHING, None)
+
+    # Keycloak's UserRepresentation type has no required fields(!); we
+    # can't do anything useful if we don't have the very basics, though
+    if remote and not all(n in remote.properties for n in ("id", "attributes", "username",)):
+        progress_callback("diff_ignored", path)
+        return (Action.NOTHING, None)
+
+    iid = _node_to_iid(path, remote or local)
+
+    if local and not remote:
+        # A local object with no remote counterpart
+        logger.debug(f"local node: {local}, remote node: {remote}, deleting")
+        try:
+            obj = (Account.objects.get(imported_id=iid))
+        except Account.DoesNotExist:
+            obj = (OrganizationalUnit.objects.get(imported_id=iid))
+        return (Action.DELETE, obj)
+
+    if remote and not local:
+        # A remote user exists and it doesn't have a local counterpart. Create one
+        try:
+            acc, new = _node_to_account(org, remote, accounts)
+            return (Action.ADD, acc) if new else (Action.KEEP, acc)
+        except KeyError:
+            # Missing required attribute -- skip this object
+            progress_callback("diff_ignored", path)
+            return (Action.NOTHING, None)
+
+    # A remote user exists and it has a local counterpart. Don't do anything (yet)
+    return (Action.NOTHING, None)
+
+
+def _get_accounts(hierarchy: LDAPNode) -> list[tuple[Account, Sequence[RDN], LDAPNode]]:
+    """Returns all accounts in both remote and local hierarchy,
+      along with their corresponding path and remote node"""
+    accounts = []
+
+    for path, local, remote in hierarchy:
+        if not path or not local or not remote or remote.children:
+            # This is either not an account or it doesn't exist in remote or local. Skip it
+            continue
+
+        # Keycloak's UserRepresentation type has no required fields(!); we
+        # can't do anything useful if we don't have the very basics, though
+        if remote and not all(n in remote.properties for n in ("id", "attributes", "username",)):
+            continue
+
+        iid = _node_to_iid(path, remote or local)
+        try:
+            account = Account.objects.get(imported_id=iid)
+        except Account.DoesNotExist:
+            # This can only happen if an Account has changed its
+            # imported ID without changing its position in the tree
+            # (i.e., a user's DN has changed, but their group
+            # membership has not). Retrieve the object by the old ID --
+            # we'll update it in a moment
+            account = Account.objects.get(
+                    imported_id=_node_to_iid(path, local))
+
+        accounts.append((account, path, remote))
+    return accounts
+
+
+def _update_alias(account: Account, value, alias_type: AliasType, id: str
+                  ) -> Iterator[tuple[Action, Any]]:
+    """Helper function for _update_account.
+     Updates the aliases of the given type of the given account."""
+    if value:
+        try:
+            alias = Alias.objects.get(
+                imported_id=id,
+                account=account,
+                _alias_type=alias_type)
+            yield (Action.KEEP, alias)
+            for attr_name, expected in (("_value", value),):
+                if getattr(alias, attr_name) != expected:
+                    setattr(alias, attr_name, expected)
+                    yield (Action.UPDATE, (alias, (attr_name,)))
+        except Alias.DoesNotExist:
+            alias = Alias(
+                imported_id=id,
+                account=account,
+                _alias_type=alias_type,
+                _value=value
+            )
+            yield (Action.ADD, alias)
+    elif not value:
+        for alias in Alias.objects.filter(account=account,
+                                          imported=True,
+                                          _alias_type=alias_type):
+            yield (Action.DELETE, alias)
+
+
+def _update_account(account: Account, path: Sequence[RDN], remote_node: LDAPNode
+                    ) -> Iterator[tuple[Action, Any]]:
+    """Updates an Accounts properties and aliases to match its remote node."""
+    mail_address = remote_node.properties.get("email")
+
+    # SID is hidden a level further down, we'll have to unpack...
+    object_sid = None
+    sid_attr = remote_node.properties.get("attributes", {}).get("objectSid")
+    if sid_attr:
+        object_sid = _convert_sid(sid_attr[0])
+
+    imported_id = f"{account.imported_id}{EMAIL_ALIAS_IMPORTED_ID_SUFFIX}"
+    imported_id_sid = f"{account.imported_id}{SID_ALIAS_IMPORTED_ID_SUFFIX}"
+
+    for action in _update_alias(account, mail_address, AliasType.EMAIL, imported_id):
+        yield action
+    for action in _update_alias(account, object_sid, AliasType.SID, imported_id_sid):
+        yield action
+
+    iid = _node_to_iid(path, remote_node)
+    # Update the other properties of the account
+    for attr_name, expected in (
+            ("imported_id", iid),
+            ("username", remote_node.properties["username"]),
+            # Our database schema requires the name properties, so use the
+            # empty string as the dummy value instead of None
+            ("first_name", remote_node.properties.get("firstName", "")),
+            ("last_name", remote_node.properties.get("lastName", "")),
+            ("email", remote_node.properties.get("email", ""))):
+        if getattr(account, attr_name) != expected:
+            setattr(account, attr_name, expected)
+            yield (Action.UPDATE, (account, (attr_name,)))
+
+
+def _update_account_position(account: Account,
+                             account_positions: dict[Account, list[OrganizationalUnit]],
+                             unit: OrganizationalUnit
+                             ) -> Iterator[tuple[Action, Position | None]]:
+    """Given an Account and an Organizational Unit, adds the unit to the accounts
+     list of units in account_positions.
+     Adds a Position object of account in unit, if one doesn't exist already."""
+    if account not in account_positions:
+        account_positions[account] = []
+    account_positions[account].append(unit)
+
+    if Position.employees.filter(
+                account__imported_id=account.imported_id,
+                unit=unit, imported=True).exists():
+        # account is already an employee of unit. No need to do anything
+        return (Action.NOTHING, None)
+    else:
+        position = Position(
+            imported=True,
+            account=account,
+            unit=unit)
+        # Position is missing. Add it
+        return (Action.ADD, position)
+
+
+def _filter_positions(account_positions: dict[Account, list[OrganizationalUnit]]
+                      ) -> Iterator[tuple[Action, Position]]:
+    """Finds every position for each given account that isn't accurate."""
+    for acc in account_positions:
+        for pos in Position.employees.filter(
+                    account=acc, imported=True).exclude(
+                    unit__in=account_positions[acc]):
+            yield (Action.DELETE, pos)
+
+
 @suppress_django_signals
-def perform_import_raw(  # noqa: C901, CCR001 too complex
+def perform_import_raw(
         org: Organization,
         remote,
         name_selector,
@@ -204,7 +476,6 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
 
     # Convert the local objects to a LDAPNode so that we can use its diff
     # operation
-
     local_hierarchy = (
             _unit_to_node(local_top)
             if local_top
@@ -213,78 +484,10 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
     remote_hierarchy = LDAPNode.from_iterator(
             remote, name_selector=name_selector)
 
-    to_add = []
-    to_delete = []
-    to_update = []
+    # Dict keeping track of what actions should be applied to the database
+    actions = {a: [] for a in Action}
 
-    units = {}
-    accounts = {}
-    account_positions = {}
-
-    def path_to_unit(
-            o: Organization,
-            path: Sequence[RDN]) -> OrganizationalUnit:
-        unit_id = RDN.sequence_to_dn(path)
-        unit = units.get(path)
-        if unit is None:
-            try:
-                unit = OrganizationalUnit.objects.get(
-                        organization=o, imported_id=unit_id)
-            except OrganizationalUnit.DoesNotExist:
-                label = path[-1].value if path else ""
-
-                # We can't just call path_to_unit(o, path[:-1]) here, because
-                # we have to make sure that our units actually match what the
-                # hierarchy specifies without creating extra nodes
-                parent = None
-                if path:
-                    path_fragment = path[:-1]
-                    while path_fragment and not parent:
-                        parent = units.get(path_fragment)
-                        path_fragment = path_fragment[:-1]
-
-                unit = OrganizationalUnit(
-                        imported_id=unit_id,
-                        name=label, parent=parent, organization=o,
-                        # Clear the MPTT tree fields for now -- they get
-                        # recomputed after we do bulk_create
-                        lft=0, rght=0, tree_id=0, level=0)
-                to_add.append(unit)
-            units[path] = unit
-        return unit
-
-    def node_to_account(
-            o: Organization,
-            node: LDAPNode) -> Account:
-        # One Account object can have multiple paths (if it's a member of
-        # several groups, for example), so we need to use the true DN as our
-        # imported_id here
-        account_id = node.properties["attributes"]["LDAP_ENTRY_DN"][0]
-        account = accounts.get(account_id)
-        if account is None:
-            try:
-                account = Account.objects.get(
-                        organization=o, imported_id=account_id)
-            except Account.DoesNotExist:
-                account = Account(organization=o, imported_id=account_id,
-                                  uuid=node.properties["id"])
-                to_add.append(account)
-            accounts[account_id] = account
-        return account
-
-    logger.info("Building remote hierarchy")
-
-    # Make sure that we have an OrganizationalUnit hierarchy that reflects the
-    # remote one
-    iids_to_preserve = set()
-    for path, r in remote_hierarchy.walk():
-        if not path:
-            continue
-
-        iids_to_preserve.add(_node_to_iid(path, r))
-        if not r.children:
-            continue
-        path_to_unit(org, path)
+    iids_to_preserve = _get_iids_of_hiearchy(remote_hierarchy)
 
     if not iids_to_preserve:
         logger.warning(
@@ -293,230 +496,56 @@ def perform_import_raw(  # noqa: C901, CCR001 too complex
                 " are correct?")
         return 0, 0, 0
 
+    # Make sure that we have an OrganizationalUnit hierarchy that reflects the remote one
+    path_to_unit, new_units = _create_unit_hierarchy(remote_hierarchy, org)
+    actions[Action.ADD].extend(new_units)
+
     logger.info("Constructing raw diff")
 
     diff = list(local_hierarchy.diff(remote_hierarchy))
     progress_callback("diff_computed", len(diff))
 
-    changed_accounts = {}
+    # Holds every account found, along with their path and remote node
+    account_path_node = []
+    for acc, path, remote in _get_accounts(diff):
+        account_path_node.append((acc, path, remote))
+        actions[Action.KEEP].append(acc)
 
-    logger.info("Building database operations")
+    accounts = [acc for (acc, _, _) in account_path_node]
+    for path, local_node, remote_node in diff:
+        a, obj = _handle_diff(path, local_node, remote_node, org, accounts, progress_callback)
+        actions[a].append(obj)
+        if a in (Action.ADD, Action.KEEP) and isinstance(obj, Account):
+            # This account wasn't found during _get_accounts. Add it to accounts
+            account_path_node.append((obj, path, remote_node))
+            accounts.append(obj)
 
-    # See what's changed
-    for path, l, r in diff:
-        if not path:
-            # Ignore the contentless root node
-            progress_callback("diff_ignored", path)
+    # dict(account : units they are part of). Is populated in _update_account_position.
+    account_positions = {}
+    # Each Account should only be updated once. Keep track of those already updated
+    updated_accounts = set()
+    for acc, path, remote_node in account_path_node:
+        a, obj = _update_account_position(acc, account_positions, path_to_unit[path[:-1]])
+        actions[a].append(obj)
+
+        # Accounts should only be updated once
+        if acc in updated_accounts:
             continue
+        for a, obj in _update_account(acc, path, remote_node):
+            actions[a].append(obj)
+        updated_accounts.add(acc)
 
-        iid = _node_to_iid(path, r or l)
-
-        # Keycloak's UserRepresentation type has no required fields(!); we
-        # can't do anything useful if we don't have the very basics, though
-        if r and not all(n in r.properties for n in ("id", "attributes", "username",)):
-            progress_callback("diff_ignored", path)
-            continue
-
-        if l and not r:
-            # A local object with no remote counterpart
-            logger.debug(f"l: {l}, r: {r}, deleting")
-            try:
-                to_delete.append(Account.objects.get(imported_id=iid))
-            except Account.DoesNotExist:
-                to_delete.append(
-                        OrganizationalUnit.objects.get(imported_id=iid))
-        elif not (r or l).children:
-            # A remote user exists...
-            if not l:
-                logger.debug(f"l: {l}, r: {r}, creating")
-                # ... and it has no local counterpart. Create one
-                try:
-                    account = node_to_account(org, r)
-                except KeyError:
-                    # Missing required attribute -- skip this object
-                    progress_callback("diff_ignored", path)
-                    continue
-            else:
-                # ... and it has a local counterpart. Retrieve it
-                logger.debug(f"l: {l}, r: {r}, updating (maybe)")
-                try:
-                    account = Account.objects.get(imported_id=iid)
-                except Account.DoesNotExist:
-                    # This can only happen if an Account has changed its
-                    # imported ID without changing its position in the tree
-                    # (i.e., a user's DN has changed, but their group
-                    # membership has not). Retrieve the object by the old ID --
-                    # we'll update it in a moment
-                    account = Account.objects.get(
-                            imported_id=_node_to_iid(path, l))
-
-            if iid not in changed_accounts:
-                changed_accounts[iid] = (r, account)
-
-            unit = path_to_unit(org, path[:-1])
-
-            if account not in account_positions:
-                account_positions[account] = []
-
-            try:
-                Position.employees.get(
-                        # Use account.imported_id here and not iid to handle
-                        # the case above where the imported ID is changing
-                        account__imported_id=account.imported_id,
-                        unit=unit, imported=True)
-            except Position.DoesNotExist:
-                position = Position(
-                    imported=True,
-                    account=account,
-                    unit=unit)
-                to_add.append(position)
-
-            account_positions[account].append(unit)
-            progress_callback("diff_handled", path)
-
-    for iid, (remote_node, account) in changed_accounts.items():
-        mail_address = remote_node.properties.get("email")
-
-        # SID is hidden a level further down, we'll have to unpack...
-        object_sid = None
-        sid_attr = remote_node.properties.get("attributes", {}).get("objectSid")
-        if sid_attr:
-            object_sid = _convert_sid(sid_attr[0])
-
-        imported_id = f"{account.imported_id}{EMAIL_ALIAS_IMPORTED_ID_SUFFIX}"
-        imported_id_sid = f"{account.imported_id}{SID_ALIAS_IMPORTED_ID_SUFFIX}"
-
-        # The user has an email. Create or update if necessary
-        if mail_address:
-            try:
-                alias = Alias.objects.get(
-                    imported_id=imported_id,
-                    account=account,
-                    _alias_type=AliasType.EMAIL)
-                for attr_name, expected in (("_value", mail_address),):
-                    if getattr(alias, attr_name) != expected:
-                        setattr(alias, attr_name, expected)
-                        to_update.append((alias, (attr_name,)))
-            except Alias.DoesNotExist:
-                alias = Alias(
-                    imported_id=imported_id,
-                    account=account,
-                    _alias_type=AliasType.EMAIL,
-                    _value=mail_address
-                )
-                if alias not in to_add:
-                    to_add.append(alias)
-        elif not mail_address:
-            # The user no longer has an email - delete previously imported ones
-            to_delete.extend(Alias.objects.filter(account=account,
-                                                  imported=True,
-                                                  _alias_type=AliasType.EMAIL))
-        # The user has an SID. Create or update if necessary
-        if object_sid:
-            try:
-                alias = Alias.objects.get(
-                    imported_id=imported_id_sid,
-                    account=account,
-                    _alias_type=AliasType.SID)
-                for attr_name, expected in (("_value", object_sid),):
-                    if getattr(alias, attr_name) != expected:
-                        setattr(alias, attr_name, expected)
-                        to_update.append((alias, (attr_name,)))
-            except Alias.DoesNotExist:
-                alias = Alias(
-                    imported_id=imported_id_sid,
-                    account=account,
-                    _alias_type=AliasType.SID,
-                    _value=object_sid
-                )
-                if alias not in to_add:
-                    to_add.append(alias)
-        elif not object_sid:
-            # The user no longer has an SID - delete previously imported ones
-            to_delete.extend(Alias.objects.filter(account=account,
-                                                  imported=True,
-                                                  _alias_type=AliasType.SID))
-
-        # Update the other properties of the account
-        for attr_name, expected in (
-                ("imported_id", iid),
-                ("username", remote_node.properties["username"]),
-                # Our database schema requires the name properties, so use the
-                # empty string as the dummy value instead of None
-                ("first_name", remote_node.properties.get("firstName", "")),
-                ("last_name", remote_node.properties.get("lastName", "")),
-                ("email", remote_node.properties.get("email", ""))):
-            if getattr(account, attr_name) != expected:
-                setattr(account, attr_name, expected)
-                to_update.append((account, (attr_name,)))
-
-    # Make sure we don't try to delete objects that are still referenced in the
-    # remote hierarchy
-    to_delete = [t for t in to_delete if t.imported_id not in iids_to_preserve]
     # Figure out which positions to delete for each user.
-    for acc in account_positions:
-        positions_to_delete = Position.employees.filter(
-            account=acc, imported=True).exclude(
-            unit__in=account_positions[acc])
-        if positions_to_delete:
-            to_delete.extend(positions_to_delete)
+    for action, object in _filter_positions(account_positions):
+        actions[action].append(object)
 
-    logger.info("Applying database operations")
+    # Make sure we don't try to delete objects that are still referenced in the remote hierarchy
+    for obj in chain(actions[Action.KEEP], actions[Action.ADD]):
+        iids_to_preserve.add(obj.imported_id)
+    actions[Action.DELETE] = [t for t in actions[Action.DELETE]
+                              if t.imported_id not in iids_to_preserve]
 
-    with transaction.atomic():
-        import logging
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug("Summarising LDAP transaction:")
-            for manager, instances in group_into(
-                    to_delete, Alias, Position, Account, OrganizationalUnit):
-                logger.debug(f"{manager.model.__name__}:"
-                             f" delete [{', '.join(str(i) for i in instances)}]")
-            for manager, instances in group_into(
-                    to_update, Alias, Position, Account, OrganizationalUnit,
-                    key=lambda k: k[0]):
-                properties = set()
-                for _, props in instances:
-                    properties |= set(props)
-                instances = set(str(i) for i, _ in instances)
-                logger.debug(f"{manager.model.__name__}:"
-                             f" update fields ({', '.join(properties)})"
-                             f" of [{', '.join(instances)}]")
-            for manager, instances in group_into(
-                    to_add, OrganizationalUnit, Account, Position, Alias):
-                logger.debug(f"{manager.model.__name__}:"
-                             f" add [{', '.join(str(i) for i in instances)}]")
+    prepare_and_publish(org, iids_to_preserve,
+                        actions[Action.ADD], [actions[Action.DELETE]], actions[Action.UPDATE])
 
-        # Deletes
-        delete_dict = {}
-        for manager, instances in group_into(
-                to_delete, Alias, Position, Account, OrganizationalUnit):
-
-            model_name = manager.model.__name__
-            delete_dict[model_name] = delete_and_listify(manager, instances)
-
-        # Updates
-        # TODO: We're not actually updating "Imported" fields/timestamps. Should we?
-        update_dict = {}
-        for manager, instances in group_into(
-                to_update, Alias, Position, Account, OrganizationalUnit,
-                key=lambda k: k[0]):
-
-            model_name = manager.model.__name__
-            update_dict[model_name] = update_and_serialize(manager, instances)
-
-        # Creates
-        # TODO: Place the order of which objects should be created/updated somewhere reusabled
-        set_imported_fields(to_add)  # Updates imported_time etc.
-        creation_dict = {}
-        for manager, instances in group_into(
-                to_add, OrganizationalUnit, Account, Position, Alias):
-
-            model_name = manager.model.__name__
-            creation_dict[model_name] = create_and_serialize(manager, instances)
-
-        event = [BulkDeleteEvent(delete_dict), BulkCreateEvent(creation_dict),
-                 BulkUpdateEvent(update_dict), ]
-        logger.info("Database operations complete")
-        publish_events(event)
-
-    return len(to_add), len(to_update), len(to_delete)
+    return len(actions[Action.ADD]), len(actions[Action.UPDATE]), len(actions[Action.DELETE])
