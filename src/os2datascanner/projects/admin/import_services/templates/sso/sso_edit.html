@@ -33,18 +33,22 @@
             {{ field.label_tag }}
             {% if field.help_text %}
               <div class="help">
-                <div class="help-icon">
-                  <span class="helptext">{{ field.help_text|safe }}</span>
-                </div>
+                <div class="help-icon" title="{{ field.help_text|safe }}"></div>
               </div>
             {% endif %}
           </div>
           {% if field.name == "metadata_url" %}
             <div>
               {{ field }}
-              <but type="button" class="button button--cta-button" hx-post=" {% if is_new %} {% url 'add-sso' org_id=organization.pk %} {% else %} {% url 'edit-sso' org_id=organization.pk %} {% endif %} " hx-trigger="click" hx-target="#identity-provider-form" hx-select="#identity-provider-form" hx-swap="outerHTML" hx-vals='{"realm": "{{ realm }}"}' hx-indicator="div.spinner">
-              {% trans "Fetch metadata"|capfirst %}
-              </but>
+              <button type="button"
+                      class="button button--cta-button"
+                      hx-post=" {% if is_new %} {% url 'add-sso' org_id=organization.pk %} {% else %} {% url 'edit-sso' org_id=organization.pk %} {% endif %} "
+                      hx-trigger="click"
+                      hx-target="#identity-provider-form"
+                      hx-select="#identity-provider-form"
+                      hx-swap="outerHTML"
+                      hx-vals='{"realm": "{{ realm }}"}'
+                      hx-indicator="div.spinner">{% trans "Fetch metadata"|capfirst %}</button>
             </div>
           {% else %}
             {{ field }}

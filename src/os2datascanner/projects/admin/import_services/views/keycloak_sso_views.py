@@ -90,6 +90,7 @@ class IdPForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.label_suffix = ""  # Remove colon suffix.
         # Visible because customer will need it for their ADFS configuration
         # Not editable, because it's a Keycloak thing.
         self.fields["entity_id"].disabled = True
@@ -104,6 +105,7 @@ class IdPMapperForm(ModelForm):
     def __init__(self, keycloak_attr, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.label_suffix = ""  # Remove colon suffix.
         # User should never modify this attribute, it's tied to Keycloak user objects.
         self.fields["keycloak_attr"].initial = keycloak_attr
         self.fields["keycloak_attr"].disabled = True
@@ -122,7 +124,7 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
     form_class = IdPForm
 
     def dispatch(self, request, *args, **kwargs):
-        org = get_object_or_404(Organization, pk=kwargs['org_id'])
+        org = self.kwargs["organization"]
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
@@ -134,26 +136,24 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
                 ):
             return HttpResponseRedirect(reverse_lazy("sso-error"))
 
-        return super().dispatch(request, *args, **kwargs)
-
-    def setup(self, request, *args, **kwargs):
-        organization = get_object_or_404(Organization, pk=kwargs['org_id'])
-
         realm, created = Realm.objects.get_or_create(
-            realm_id=organization.slug,
-            organization=organization,
+            realm_id=org.slug,
+            organization=org,
             defaults={'last_modified': now()},
         )
         if created:
             create_realm(realm.pk)
 
+        self.kwargs['realm'] = realm
+        return super().dispatch(request, *args, **kwargs)
+
+    def setup(self, request, *args, **kwargs):
+        organization = get_object_or_404(Organization, pk=kwargs['org_id'])
         kwargs['organization'] = organization
-        kwargs['realm'] = realm
         return super().setup(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"
-
         if is_htmx:
             token = request_access_token()
 
@@ -195,7 +195,6 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
         realm = self.kwargs["realm"]
         form.instance.realm = realm
         org = self.kwargs["organization"]
-
         token = request_access_token()
 
         # Create a Keycloak client - That's what represents the report module as a "resource".

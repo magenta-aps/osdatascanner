@@ -317,7 +317,7 @@ class IdentityProvider(models.Model):
                 "entityId": self.entity_id,
                 "idpEntityId": self.idp_entity_id,
                 "singleSignOnServiceUrl": self.single_sign_on_service_url,
-                "singleLogoutServiceUrl": self.single_logout_service_url,
+                "singleLogoutServiceUrl": self.single_logout_service_url or "",
                 "attributeConsumingServiceName": "",
                 "backchannelSupported": "false",
                 "nameIDPolicyFormat": self.nameid_policy_format,
@@ -334,7 +334,7 @@ class IdentityProvider(models.Model):
                 "loginHint": "false",
                 "allowedClockSkew": self.allowed_clock_skew,
                 "attributeConsumingServiceIndex": 0,
-                "principalAttribute": self.principal_attr,
+                "principalAttribute": self.principal_attr or "",
                 # 'force' to always update the user during every login with this identity provider.
                 "syncMode": "FORCE",
             },
