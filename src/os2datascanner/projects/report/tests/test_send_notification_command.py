@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from io import StringIO
 from django.conf import settings
@@ -108,6 +110,9 @@ class TestEmailNotification:
 
     def test_schedule_check(self, send_notifications_command, olsenbanden_organization):
         olsenbanden_organization.email_notification_schedule = "RRULE:FREQ=DAILY"
+        # Set an arbitrary day that's at least before _now_, as we wouldn't be including the
+        # start day.
+        olsenbanden_organization.dtstart = datetime.date(2024, 1, 1)
         olsenbanden_organization.save()
 
         # Check that a daily schedule will return True.
@@ -128,3 +133,21 @@ class TestEmailNotification:
         olsenbanden_organization.email_notification_schedule = None
         olsenbanden_organization.save()
         assert not send_notifications_command.schedule_check(olsenbanden_organization)
+
+    def test_schedule_check_weekly(self, olsenbanden_organization):
+
+        # Arrange
+        olsenbanden_organization.email_notification_schedule = \
+            "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO"
+
+        # That's a monday
+        a_rainy_monday_in_september = datetime.date(2024, 9, 9)
+        olsenbanden_organization.dtstart = a_rainy_monday_in_september
+        olsenbanden_organization.save()
+
+        rainy_plus_1_week = a_rainy_monday_in_september + datetime.timedelta(weeks=1)
+        rainy_plus_2_weeks = a_rainy_monday_in_september + datetime.timedelta(weeks=2)
+
+        # Act / Assert
+        assert not olsenbanden_organization.get_next_email_schedule_date == rainy_plus_1_week
+        assert olsenbanden_organization.get_next_email_schedule_date == rainy_plus_2_weeks

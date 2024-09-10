@@ -11,6 +11,7 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+import datetime
 from django.db.models import ImageField
 from recurrence.fields import RecurrenceField
 from uuid import uuid4
@@ -92,8 +93,12 @@ class Organization(models.Model):
         null=True,
         blank=True,
         default="RRULE:FREQ=WEEKLY;BYDAY=FR",
+        include_dtstart=False,
         verbose_name=_('Email notification interval')
     )
+
+    dtstart = models.DateField(default=datetime.date.today, verbose_name=_('schedule start time'))
+
     email_header_banner = ImageField(null=True, blank=True,
                                      verbose_name=_("Email header banner"))
     # Outlook settings
@@ -197,6 +202,18 @@ class Organization(models.Model):
         self.clean()
         return super().save(*args, **kwargs)
 
+    @property
+    def get_next_email_schedule_date(self):
+        if not self.email_notification_schedule:
+            return None
+
+        if schedule := self.email_notification_schedule.after(
+                datetime.datetime.combine(datetime.date.today(), datetime.time()),
+                inc=True,
+                dtstart=datetime.datetime.combine(self.dtstart, datetime.time())):
+
+            return schedule.date()
+
     class Meta:
         abstract = True
         verbose_name = _('organization')
@@ -220,4 +237,4 @@ class OrganizationSerializer(BaseSerializer):
                   'show_support_button', 'support_contact_method', 'support_name',
                   'support_value', 'dpo_contact_method', 'dpo_name', 'dpo_value',
                   'outlook_delete_email_permission', 'outlook_categorize_email_permission',
-                  'onedrive_delete_permission', 'email_header_banner']
+                  'onedrive_delete_permission', 'email_header_banner', 'dtstart']
