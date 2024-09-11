@@ -157,8 +157,10 @@ def prepare_and_publish(
         event = [BulkDeleteEvent(delete_dict), BulkCreateEvent(creation_dict),
                  BulkUpdateEvent(update_dict), ]
         logger.info("Database operations complete")
-        logger.info("Publishing events..")
-        publish_events(event)
+
+    # Make sure we publish events _after_ the transaction is completed.
+    logger.info("Publishing events..")
+    publish_events(event)
 
 
 def user_allowed(user, org_slug):
