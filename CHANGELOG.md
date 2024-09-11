@@ -39,9 +39,10 @@
 - Refactored result-page templates in the report module to extend base
   templates.
 
-### Bugfixes
-
 - Scannerjob validation status can no longer be bypassed by scheduling its run.
+
+- Usages of RecurrenceField are now provided a start-time for consistent interval patterns.
+  Thus scheduling scanners or email notifications on f.e. an "every second week" basis now works.
 
 ## Version 3.24.2, 15th August 2024
 

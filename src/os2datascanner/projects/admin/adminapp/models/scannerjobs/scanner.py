@@ -106,7 +106,13 @@ class Scanner(models.Model):
         max_length=1024,
         null=True,
         blank=True,
+        include_dtstart=False,
         verbose_name=_('planned execution')
+    )
+
+    dtstart = models.DateField(
+        default=datetime.date.today,
+        verbose_name=_('schedule start time')
     )
 
     do_ocr = models.BooleanField(
@@ -183,14 +189,15 @@ class Scanner(models.Model):
     def schedule_date(self) -> datetime.date | None:
         """Returns the date for the next scheduled execution of this scanner,
         if there is one."""
-        today = time_now().date()
-        for oc in self.schedule.occurrences():
-            # Check that the date is at least today -- otherwise we might pick
-            # an old one-off scan and declare that the next scan will have been
-            # yesterday
-            if (date := oc.date()) >= today:
-                return date
-        return None
+        if not self.schedule:
+            return None
+
+        if schedule := self.schedule.after(
+                datetime.datetime.combine(datetime.date.today(), datetime.time()),
+                inc=True,
+                dtstart=datetime.datetime.combine(self.dtstart, datetime.time())):
+
+            return schedule.date()
 
     # First possible start time
     FIRST_START_TIME = datetime.time(hour=19, minute=0)

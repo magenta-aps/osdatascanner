@@ -14,7 +14,6 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
-import datetime
 from datetime import timedelta
 from os.path import basename
 from email.mime.image import MIMEImage
@@ -180,8 +179,9 @@ class Command(BaseCommand):
         else:
             # Recurrence field datetime is naive, which means we can't use an aware
             # datetime object.
-            scheduled_next_date = org.email_notification_schedule.after(
-                datetime.datetime.now().replace(second=0, microsecond=0), inc=True).date()
+
+            scheduled_next_date = org.get_next_email_schedule_date
+
             # We can when we're only concerned with the date.
             today_date = time_now().date()
 
