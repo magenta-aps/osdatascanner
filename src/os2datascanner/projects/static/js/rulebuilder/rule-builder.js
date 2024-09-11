@@ -232,8 +232,8 @@ function makeRule(elem) {
       let specificAddressExceptions = elem.querySelector("#whitelist_address");
       return {
         "type": "address",
-        "whitelist": streetnameExceptions.value.split(','),
-        "whitelist_address": specificAddressExceptions.value.split(','),
+        "whitelist": streetnameExceptions.value ? streetnameExceptions.value.split(',') : [],
+        "whitelist_address": specificAddressExceptions.value ? specificAddressExceptions.value.split(',') : [],
         "blacklist": [],
       };
     case "EmailHeader":

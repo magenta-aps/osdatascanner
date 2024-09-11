@@ -157,14 +157,8 @@ class AddressRule(SimpleRule):
         return AddressRule(
             # Remove beginning and trailing whitespaces likely to occur because
             # it's more natural to write: "Address 1, Address 2"
-            whitelist=[address.strip() for address in obj.get("whitelist", [])]
-            if obj.get("whitelist") else [],
-
-            whitelist_address=[address.strip() for address in
-                               obj.get("whitelist_address", [])]
-            if obj.get("whitelist_address") else [],
-
+            whitelist=[address.strip() for address in obj.get("whitelist", [])],
+            whitelist_address=[address.strip() for address in obj.get("whitelist_address", [])],
             blacklist=frozenset(obj.get("blacklist", [])),
-
             sensitivity=Sensitivity.make_from_dict(obj)
         )
