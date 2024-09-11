@@ -44,6 +44,8 @@
 - Usages of RecurrenceField are now provided a start-time for consistent interval patterns.
   Thus scheduling scanners or email notifications on f.e. an "every second week" basis now works.
 
+- Address rule now supports whitelisting of street names or specific addresses.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"

@@ -222,6 +222,16 @@ matches Danish addresses by the rules specified [here] [7].
 For validation, matched streets are compared to a list of Danish street names.
 The found street names must be contained in this list for the rule to match.
 
+#### Whitelist
+
+Is the broadest kind of whitelisting currently available to this rule.
+This will whitelist any house number on given street name.
+
+
+#### Whitelist Address
+
+It's quite common for business addresses to be present in f.e. a footer on every page of a website.
+By using whitelist address, you can whitelist specific street name + house number combinations.
 
 
 [1]: https://cpr.dk/media/12066/personnummeret-i-cpr.pdf "Method for performing a modulus-11 check."

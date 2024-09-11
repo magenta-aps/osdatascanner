@@ -1,8 +1,11 @@
 import regex
+import structlog
 
 from ..conversions.types import OutputType
 from .rule import Rule, SimpleRule, Sensitivity
 from .datasets.loader import common as common_loader
+
+logger = structlog.get_logger("engine2")
 
 
 # see https://regex101.com/r/zJBsXw/9 for examples of matches
@@ -78,14 +81,15 @@ class AddressRule(SimpleRule):
     """
     operates_on = OutputType.Text
     type_label = "address"
-    eq_properties = ("_whitelist", "_blacklist",)
+    eq_properties = ("_whitelist", "_blacklist", "_whitelist_address")
 
-    def __init__(self, whitelist=None, blacklist=None, **super_kwargs):
+    def __init__(self, whitelist=None, blacklist=None, whitelist_address=None, **super_kwargs):
         super().__init__(**super_kwargs)
 
         self.street_names = None
 
         self._whitelist = frozenset(n.upper() for n in (whitelist or []))
+        self._whitelist_address = frozenset(n.upper() for n in (whitelist_address or []))
         self._blacklist = frozenset(n.upper() for n in (blacklist or []))
 
     def _load_datasets(self):
@@ -105,8 +109,7 @@ class AddressRule(SimpleRule):
 
         def is_address_fragment(fragment, candidates):
             fragment = fragment.upper()
-            return (fragment in candidates
-                    and fragment not in self._whitelist)
+            return fragment in candidates
 
         # First, check for full address
         addresses = match_full_address(text)
@@ -120,7 +123,14 @@ class AddressRule(SimpleRule):
             street_match = is_address_fragment(street_name, self.street_names)
             street_name_up = street_name.upper()
             is_blacklisted = any([street_name_up in b for b in self._blacklist])
-            if (street_match and house_number) or is_blacklisted:
+
+            if street_name_up in self._whitelist:
+                logger.info("Street name in whitelist, no match")
+                continue
+            elif f"{street_name} {house_number}".upper() in self._whitelist_address:
+                logger.info("Specific address in whitelist address, no match")
+                continue
+            elif (street_match and house_number) or is_blacklisted:
                 sensitivity = Sensitivity.CRITICAL
             elif street_match:
                 sensitivity = Sensitivity.PROBLEM
@@ -136,13 +146,19 @@ class AddressRule(SimpleRule):
         return dict(
             **super().to_json_object(),
             whitelist=list(self._whitelist),
+            whitelist_address=list(self._whitelist_address),
             blacklist=list(self._blacklist),
         )
 
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj):
+
         return AddressRule(
-                whitelist=frozenset(obj["whitelist"]),
-                blacklist=frozenset(obj["blacklist"]),
-                sensitivity=Sensitivity.make_from_dict(obj))
+            # Remove beginning and trailing whitespaces likely to occur because
+            # it's more natural to write: "Address 1, Address 2"
+            whitelist=[address.strip() for address in obj.get("whitelist", [])],
+            whitelist_address=[address.strip() for address in obj.get("whitelist_address", [])],
+            blacklist=frozenset(obj.get("blacklist", [])),
+            sensitivity=Sensitivity.make_from_dict(obj)
+        )

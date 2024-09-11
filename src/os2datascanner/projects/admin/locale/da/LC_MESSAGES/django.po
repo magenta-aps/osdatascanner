@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-15 09:47+0200\n"
+"POT-Creation-Date: 2024-09-11 15:07+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -268,27 +268,31 @@ msgstr "tjek døde links"
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: adminapp/models/scannerjobs/scanner.py:109
+#: adminapp/models/scannerjobs/scanner.py:110
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
-#: adminapp/models/scannerjobs/scanner.py:114
+#: adminapp/models/scannerjobs/scanner.py:115
+msgid "schedule start time"
+msgstr "skema starttidspunkt"
+
+#: adminapp/models/scannerjobs/scanner.py:120
 msgid "scan images"
 msgstr "scan billeder"
 
-#: adminapp/models/scannerjobs/scanner.py:119
+#: adminapp/models/scannerjobs/scanner.py:125
 msgid "check date of last modification"
 msgstr "tjek dato for sidste ændring"
 
-#: adminapp/models/scannerjobs/scanner.py:124
+#: adminapp/models/scannerjobs/scanner.py:130
 msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
-#: adminapp/models/scannerjobs/scanner.py:129
+#: adminapp/models/scannerjobs/scanner.py:135
 msgid "keep false positives"
 msgstr "behold falske positive"
 
-#: adminapp/models/scannerjobs/scanner.py:130
+#: adminapp/models/scannerjobs/scanner.py:136
 msgid ""
 "Retain false positives in the report module, regardless of the current state "
 "of the matched sources."
@@ -296,40 +300,40 @@ msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
 
-#: adminapp/models/scannerjobs/scanner.py:141
+#: adminapp/models/scannerjobs/scanner.py:147
 msgid "rule"
 msgstr "regel"
 
-#: adminapp/models/scannerjobs/scanner.py:149
+#: adminapp/models/scannerjobs/scanner.py:155
 msgid "Unverified"
 msgstr "Ugyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:150
+#: adminapp/models/scannerjobs/scanner.py:156
 msgid "Verified"
 msgstr "Gyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:156
+#: adminapp/models/scannerjobs/scanner.py:162
 msgid "username"
 msgstr "brugernavn"
 
-#: adminapp/models/scannerjobs/scanner.py:161
+#: adminapp/models/scannerjobs/scanner.py:167
 msgid "validation status"
 msgstr "valideringstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:166
+#: adminapp/models/scannerjobs/scanner.py:172
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:218
+#: adminapp/models/scannerjobs/scanner.py:225
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:221
+#: adminapp/models/scannerjobs/scanner.py:228
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:224
+#: adminapp/models/scannerjobs/scanner.py:231
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
@@ -592,7 +596,7 @@ msgstr "pas"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:45
 #: adminapp/templates/components/admin_widgets/rule_builder.html:86
-#: adminapp/templates/components/admin_widgets/rule_builder.html:134
+#: adminapp/templates/components/admin_widgets/rule_builder.html:146
 #: adminapp/templatetags/utility_tags.py:62
 msgid "and"
 msgstr "og"
@@ -603,12 +607,12 @@ msgstr "eller"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:77
 #: adminapp/templates/components/admin_widgets/rule_builder.html:112
-#: adminapp/templates/components/admin_widgets/rule_builder.html:129
+#: adminapp/templates/components/admin_widgets/rule_builder.html:141
 msgid "with"
 msgstr "med"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html:80
-#: adminapp/templates/components/admin_widgets/rule_builder.html:132
+#: adminapp/templates/components/admin_widgets/rule_builder.html:144
 msgid "modulus 11-,"
 msgstr "modulus 11-,"
 
@@ -648,16 +652,32 @@ msgstr "Regulært udtryk"
 msgid "expanded matching"
 msgstr "udvidet søgning"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:121
+#: adminapp/templates/components/admin_widgets/rule_builder.html:122
+msgid "Street name exceptions:"
+msgstr "Undtagelser af vejnavne:"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:125
+msgid "Electric Avenue, Privet Drive, Downing Street"
+msgstr "Rabalderstræde, Ligustervænget, Prins Jørgens Gård"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:127
+msgid "Specific address exceptions:"
+msgstr "Undtagelser af specifikke adresser:"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:130
+msgid "Electric Avenue 1, Privet Drive 10, Downing Street 100"
+msgstr "Rabalderstræde 1, Ligustervænget 10, Prins Jørgens Gård 100"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html:133
 msgid "field name"
 msgstr "navn på felt"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:123
+#: adminapp/templates/components/admin_widgets/rule_builder.html:135
 msgctxt "verb"
 msgid "matches"
 msgstr "resultater fundet"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:137
+#: adminapp/templates/components/admin_widgets/rule_builder.html:149
 msgid "context check"
 msgstr "konteksttjek"
 
@@ -2122,7 +2142,7 @@ msgid "Add rule"
 msgstr "Tilføj regel"
 
 #: adminapp/templates/rules.html:63 adminapp/templates/scanners.html:63
-#: adminapp/templates/system_rules.html:66
+#: adminapp/templates/system_rules.html:67
 #: organizations/templates/organizations/account_detail.html:21
 #: organizations/templates/organizations/account_list.html:55
 msgid "Name"
@@ -2133,11 +2153,11 @@ msgstr "Navn"
 msgid "Organization"
 msgstr "Organisation"
 
-#: adminapp/templates/rules.html:65 adminapp/templates/system_rules.html:68
+#: adminapp/templates/rules.html:65 adminapp/templates/system_rules.html:69
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: adminapp/templates/rules.html:66 adminapp/templates/system_rules.html:69
+#: adminapp/templates/rules.html:66 adminapp/templates/system_rules.html:70
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
@@ -2265,7 +2285,7 @@ msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
 #: adminapp/templates/system_rules.html:5
-#: adminapp/templates/system_rules.html:54 organizations/admin.py:56
+#: adminapp/templates/system_rules.html:55 organizations/admin.py:56
 msgid "System rules"
 msgstr "Systemregler"
 
@@ -2288,16 +2308,16 @@ msgstr "filtrér"
 msgid "Choose system rules for organization"
 msgstr "Vælg systemregler for organizationen"
 
-#: adminapp/templates/system_rules.html:67
+#: adminapp/templates/system_rules.html:68
 msgid "Categories"
 msgstr "Kategorier"
 
-#: adminapp/templates/system_rules.html:92
 #: adminapp/templates/system_rules.html:93
+#: adminapp/templates/system_rules.html:94
 msgid "Enable rule"
 msgstr "Aktivér regel"
 
-#: adminapp/templates/system_rules.html:111
+#: adminapp/templates/system_rules.html:112
 msgid "No rules found with the chosen categories"
 msgstr "Ingen regler fundet for de valgte kategorier"
 
@@ -2394,17 +2414,17 @@ msgstr "f.eks. //network-domain/top-folder"
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/rule_views.py:117
+#: adminapp/views/rule_views.py:118
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/rule_views.py:119 adminapp/views/rule_views.py:126
+#: adminapp/views/rule_views.py:120 adminapp/views/rule_views.py:125
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/rule_views.py:124
+#: adminapp/views/rule_views.py:123
 msgid ""
 "The 'surrounding_exceptions'-string must not include any symbols or spaces."
 msgstr ""
@@ -2518,7 +2538,7 @@ msgid "user"
 msgstr "bruger"
 
 #: core/models/administrator.py:37 core/models/client.py:115
-#: organizations/models/organization.py:55
+#: organizations/models/organization.py:64
 msgid "client"
 msgstr "kunde"
 
@@ -3105,16 +3125,16 @@ msgstr "Supportknap indstillinger"
 msgid "Deleted scanner {pk}"
 msgstr "Slettet scanner {pk}"
 
-#: organizations/models/organization.py:61
+#: organizations/models/organization.py:70
 msgid "slug"
 msgstr "slug"
 
-#: organizations/models/organization.py:66
+#: organizations/models/organization.py:75
 msgid "system rules"
 msgstr "systemregler"
 
-#: organizations/models/organization.py:80
-msgid "synchronization hour"
+#: organizations/models/organization.py:79
+msgid "synchronization time"
 msgstr "Synkroniseringstime"
 
 #: organizations/templates/components/modals/alias_create.html:15
@@ -3470,6 +3490,12 @@ msgstr "Navnet er allerede i brug."
 #: organizations/utils.py:188
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#~ msgid "Roadway, Wayroad"
+#~ msgstr "Vejsti, Stivej"
+
+#~ msgid "Roadway 1, Roadway 10"
+#~ msgstr "Vejsti 1, Vejsti 10"
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"

@@ -92,6 +92,10 @@ function selectOptions(obj, selector) {
     case "email-header":
       inputs[0].value = obj.property;
       break;
+    case "address":
+      setTextbox("whitelist", obj.whitelist, selector);
+      setTextbox("whitelist_address", obj.whitelist_address, selector);
+      break;
   }
 
 }
@@ -224,9 +228,12 @@ function makeRule(elem) {
         "expansive": tickboxes[0].checked,
       };
     case "CustomRule_Address":
+      let streetnameExceptions = elem.querySelector("#whitelist");
+      let specificAddressExceptions = elem.querySelector("#whitelist_address");
       return {
         "type": "address",
-        "whitelist": [],
+        "whitelist": streetnameExceptions.value ? streetnameExceptions.value.split(',') : [],
+        "whitelist_address": specificAddressExceptions.value ? specificAddressExceptions.value.split(',') : [],
         "blacklist": [],
       };
     case "EmailHeader":
