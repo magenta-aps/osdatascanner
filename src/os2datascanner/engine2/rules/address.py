@@ -145,22 +145,23 @@ class AddressRule(SimpleRule):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            whitelist=",".join(self._whitelist),
-            whitelist_address=",".join(self._whitelist_address),
+            whitelist=list(self._whitelist),
+            whitelist_address=list(self._whitelist_address),
             blacklist=list(self._blacklist),
         )
 
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj):
+
         return AddressRule(
             # Remove beginning and trailing whitespaces likely to occur because
             # it's more natural to write: "Address 1, Address 2"
-            whitelist=[address.strip() for address in obj.get("whitelist", "").split(",")]
+            whitelist=[address.strip() for address in obj.get("whitelist", [])]
             if obj.get("whitelist") else [],
 
             whitelist_address=[address.strip() for address in
-                               obj.get("whitelist_address", "").split(",")]
+                               obj.get("whitelist_address", [])]
             if obj.get("whitelist_address") else [],
 
             blacklist=frozenset(obj.get("blacklist", [])),
