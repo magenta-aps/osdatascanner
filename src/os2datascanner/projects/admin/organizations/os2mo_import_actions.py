@@ -206,22 +206,17 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         """Helper function that figures out which position objects are to be deleted.
         Adds positions to to_delete list.
         Returns nothing."""
-        for empl_acc in account_employee_positions:
+        for empl_acc, units in account_employee_positions.items():
             employee_positions_to_delete = Position.employees.filter(
-                account=empl_acc, imported=True).exclude(
-                unit__in=account_employee_positions[empl_acc])
-            if positions_to_delete:
+                account=empl_acc, imported=True).exclude(unit__in=units)
+            if employee_positions_to_delete:
                 to_delete.append(employee_positions_to_delete)
-            else:
-                continue
-        for man_acc in account_manager_positions:
+
+        for man_acc, units in account_manager_positions.items():
             manager_positions_to_delete = Position.managers.filter(
-                account=man_acc, imported=True).exclude(
-                unit__in=account_manager_positions[man_acc])
-            if positions_to_delete:
+                account=man_acc, imported=True).exclude(unit__in=units)
+            if manager_positions_to_delete:
                 to_delete.append(manager_positions_to_delete)
-            else:
-                continue
 
     def add_account(
         obj: dict[str, Any],
