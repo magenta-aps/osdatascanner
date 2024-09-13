@@ -53,25 +53,25 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
     all_uuids = set()
     progress_callback("org_unit_count", len(org_unit_list))
 
-    def evaluate_org_unit(unit_raw: dict[str, Any]) -> (OrganizationalUnit, dict[str, str]):
+    def evaluate_org_unit(
+            unit_raw: dict[str, Any]) -> (OrganizationalUnit, dict[str, str]):
         """ Evaluates given dictionary (which should be of one ou), decides if corresponding
         local object (if any) is to be updated, a new one is to be created or no actions.
         Returns an OrganizationalUnit object."""
         unit_imported_id = unit_raw.get("uuid")
         unit_name = unit_raw.get("name")
-        unit_parent_info = unit_raw.get("parent")
-        unit_parent_id = unit_parent_info.get("uuid", None) if unit_parent_info else None
 
         try:
             org_unit = OrganizationalUnit.objects.get(
                 organization=organization, imported_id=unit_imported_id)
-            for attr_name, expected in (
-                    ("name", unit_name),
-                    ("parent_id", unit_parent_id)
-            ):
-                if getattr(org_unit, attr_name) != expected:
-                    setattr(org_unit, attr_name, expected)
-                    to_update.append((org_unit, (attr_name,)))
+
+            if org_unit.name != unit_name:
+                org_unit.name = unit_name
+                to_update.append((org_unit, ("name",)))
+
+            # Don't do anything with parent_id at this point -- that's an
+            # imported ID and we need a database primary key. We handle that
+            # just before we submit changes for execution
 
         except OrganizationalUnit.DoesNotExist:
             org_unit = OrganizationalUnit(
@@ -87,7 +87,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
 
         ous[unit_imported_id] = org_unit
         all_uuids.add(unit_imported_id)
-        return org_unit, unit_parent_info
+        return org_unit, unit_raw.get("parent")
 
     def evaluate_unit_member(member: dict, role: Role) -> Account | None:
         imported_id = member.get("uuid")
