@@ -55,7 +55,7 @@ def month_delta(series_start: date, here: date):
 
 class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
     context_object_name = "matches"  # object_list renamed to something more relevant
-    template_name = "statistics.html"
+    template_name = "dpo_statistics_template.html"
     model = DocumentReport
     scannerjob_filters = None
 
@@ -497,7 +497,7 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
 
 
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
-    template_name = "statistics.html"
+    template_name = "leader_statistics_template.html"
     paginator_class = EmptyPagePaginator
     paginate_by = 200
     model = Account
@@ -589,7 +589,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):
-    template_name = "statistics.html"
+    template_name = "user_overview_template.html"
     model = Account
     context_object_name = "account"
 
