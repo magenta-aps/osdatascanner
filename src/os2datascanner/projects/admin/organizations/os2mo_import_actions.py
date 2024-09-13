@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 import structlog
 from more_itertools import first, one
@@ -24,16 +24,21 @@ class Role(Enum):
     MANAGER = "manager"
 
 
+ImportedID = str
+
+
 @suppress_django_signals
 def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cognitive complexity
                          organization: Organization,
                          progress_callback=_dummy_pc):
-    accounts = {}
-    aliases = {}
-    account_employee_positions = {}
-    account_manager_positions = {}
-    ous = {}
-    ou_parent_relations = {}
+    accounts: Mapping[ImportedID, Account] = {}
+    aliases: Mapping[ImportedID, Alias] = {}
+    account_employee_positions: Mapping[
+            Account, Sequence[OrganizationalUnit]] = {}
+    account_manager_positions: Mapping[
+            Account, Sequence[OrganizationalUnit]] = {}
+    ous: Mapping[ImportedID, OrganizationalUnit] = {}
+    ou_parent_relations: Mapping[OrganizationalUnit, ImportedID] = {}
 
     now = time_now()
 
