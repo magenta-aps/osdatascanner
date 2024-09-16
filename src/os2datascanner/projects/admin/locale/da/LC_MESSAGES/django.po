@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-11 15:07+0200\n"
+"POT-Creation-Date: 2024-09-16 09:39+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3479,7 +3479,7 @@ msgstr "Ingen organisatoriske enheder"
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 
-#: organizations/utils.py:188
+#: organizations/utils.py:190
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
@@ -3487,16 +3487,19 @@ msgstr "Konto ikke fundet."
 msgid "Choose Account"
 msgstr "Vælg konto"
 
-#~ msgid "Roadway, Wayroad"
-#~ msgstr "Vejsti, Stivej"
-
 #: organizations/views/account_views.py:205
-msgid "Roadway 1, Roadway 10"
-msgstr "Vejsti 1, Vejsti 10"
+msgid "Choose new manager"
+msgstr "Vælg ny leder"
 
 #: organizations/views/account_views.py:213
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
+
+#~ msgid "Roadway, Wayroad"
+#~ msgstr "Vejsti, Stivej"
+
+#~ msgid "Roadway 1, Roadway 10"
+#~ msgstr "Vejsti 1, Vejsti 10"
 
 #~ msgid "grants"
 #~ msgstr "bevillinger"
