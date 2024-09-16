@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-11 15:07+0200\n"
+"POT-Creation-Date: 2024-09-16 09:39+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3135,7 +3135,7 @@ msgstr "systemregler"
 
 #: organizations/models/organization.py:79
 msgid "synchronization time"
-msgstr "Synkroniseringstime"
+msgstr "synkroniseringstidspunkt"
 
 #: organizations/templates/components/modals/alias_create.html:15
 msgid "Create a new alias for"
@@ -3226,14 +3226,14 @@ msgstr "Aliasser"
 #: organizations/templates/organizations/account_detail.html:97
 #: organizations/templates/organizations/account_detail.html:154
 #: organizations/templates/organizations/orgunit_list.html:142
-#: organizations/templates/organizations/orgunit_list.html:182
+#: organizations/templates/organizations/orgunit_list.html:169
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:104
 #: organizations/templates/organizations/account_detail.html:163
 #: organizations/templates/organizations/orgunit_list.html:149
-#: organizations/templates/organizations/orgunit_list.html:189
+#: organizations/templates/organizations/orgunit_list.html:176
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
@@ -3458,27 +3458,19 @@ msgstr "konti tilknyttet"
 
 #: organizations/templates/organizations/orgunit_list.html:142
 #: organizations/templates/organizations/orgunit_list.html:149
-#: organizations/templates/organizations/orgunit_list.html:182
+#: organizations/templates/organizations/orgunit_list.html:169
 msgid "as manager of"
 msgstr "som leder af"
 
-#: organizations/templates/organizations/orgunit_list.html:166
-msgid "Choose new manager"
-msgstr "Vælg ny leder"
-
-#: organizations/templates/organizations/orgunit_list.html:189
+#: organizations/templates/organizations/orgunit_list.html:176
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:206
-msgid "Choose new DPO"
-msgstr "Vælg ny DPO"
-
-#: organizations/templates/organizations/orgunit_list.html:221
+#: organizations/templates/organizations/orgunit_list.html:196
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:229
+#: organizations/templates/organizations/orgunit_list.html:204
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
@@ -3487,9 +3479,21 @@ msgstr "Ingen organisatoriske enheder"
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 
-#: organizations/utils.py:188
+#: organizations/utils.py:190
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#: organizations/views/account_views.py:176
+msgid "Choose Account"
+msgstr "Vælg konto"
+
+#: organizations/views/account_views.py:205
+msgid "Choose new manager"
+msgstr "Vælg ny leder"
+
+#: organizations/views/account_views.py:213
+msgid "Choose new DPO"
+msgstr "Vælg ny DPO"
 
 #~ msgid "Roadway, Wayroad"
 #~ msgstr "Vejsti, Stivej"

@@ -50,6 +50,9 @@
   module if the database transaction fails due to a constraint in the admin
   module.
 
+- The dropdowns for adding managers and dpos to organizational units, won't be loaded
+  until they are pressed. This should greatly decrease loading times for big organizations.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"
