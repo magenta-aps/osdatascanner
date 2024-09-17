@@ -53,6 +53,9 @@
 - The dropdowns for adding managers and dpos to organizational units, won't be loaded
   until they are pressed. This should greatly decrease loading times for big organizations.
 
+- The primary keys of organisational units are no longer refreshed for no
+  reason when performing an OS2mo import.
+
 ## Version 3.24.2, 15th August 2024
 
 "Rollercoaster of Emotions"
