@@ -34,7 +34,7 @@ class DictLookupRule(SimpleRule):
     @classmethod
     def from_json_object(cls, obj):
         if not obj['rule']:
-            raise ValueError("Couldn't construct NotRule: No rule given")
+            raise ValueError("Couldn't construct DictLookupRule: No rule given")
         return cls(
                 prop=obj["property"],
                 rule=Rule.from_json_object(obj["rule"]),

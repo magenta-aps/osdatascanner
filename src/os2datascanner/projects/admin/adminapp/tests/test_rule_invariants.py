@@ -1,6 +1,6 @@
 import pytest
 
-from os2datascanner.engine2.rules.logical import OrRule
+from os2datascanner.engine2.rules.logical import OrRule, AndRule
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules.name import NameRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
@@ -94,3 +94,23 @@ class TestRuleInvariant:
 
         with pytest.raises(RuleInvariantViolationError):
             invariant_checker.check_invariants(rule)
+
+    def test_components_invariant_violated_for_empty_or_rule(self, invariant_checker):
+
+        rule = OrRule(name="Empty Or Rule")
+
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
+
+    def test_components_invariant_violated_for_empty_and_rule(self, invariant_checker):
+
+        rule = AndRule(name="Empty And Rule")
+
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
+
+    def test_components_invariant_holds_with_one_component(self, invariant_checker, cpr_rule):
+
+        rule = OrRule(cpr_rule, name="Or Rule")
+
+        assert invariant_checker.check_invariants(rule)

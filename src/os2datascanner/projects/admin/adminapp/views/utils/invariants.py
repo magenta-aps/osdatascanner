@@ -113,28 +113,31 @@ def precedence_invariant(rule: Rule) -> bool | None:
 
 @functools.cache
 @register_invariant()
-def standalone_invariant(rule: Rule) -> bool | None:
+def standalone_invariant(rule: Rule, is_top_rule: bool = True) -> bool | None:
     """
     Invariant which checks that a given rule may be used without
     being combined with other rules.
 
     :param rule:
     """
+
     match rule:
+        case CompoundRule() if len(rule._components) == 0:
+            standalone = True
         case CompoundRule() if len(rule._components) == 1:
-            return standalone_invariant(rule._components[0])
+            standalone = standalone_invariant(rule._components[0], is_top_rule=False)
         case CompoundRule():
-            return all(standalone_invariant(c)
-                       for c in rule._components)
+            standalone = any(standalone_invariant(c, is_top_rule=False)
+                             for c in rule._components)
         case SimpleRule() | Rule():
-            pass
+            standalone = rule.properties.standalone
         case _:
             rule_invariant_type_error(rule)
 
-    if not rule.properties.standalone:
+    if is_top_rule and not standalone:
         raise RuleInvariantViolationError("standalone", rules=[rule])
 
-    return True
+    return standalone
 
 
 @functools.cache
