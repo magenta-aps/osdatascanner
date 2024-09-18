@@ -89,7 +89,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         all_uuids.add(unit_imported_id)
         return org_unit, unit_raw.get("parent")
 
-    def evaluate_unit_member(member: dict, role: Role) -> Account | None:
+    def evaluate_unit_member(member: dict) -> Account | None:
         imported_id = member.get("uuid")
         username = member.get("user_key", None)
         first_name = member.get("given_name", "")
@@ -128,11 +128,6 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
                 accounts[imported_id] = account
 
             all_uuids.add(imported_id)
-
-        if role == Role.EMPLOYEE:
-            account_employee_positions[account] = []
-        if role == Role.MANAGER:
-            account_manager_positions[account] = []
         return account
 
     def evaluate_aliases(account: Account, email: str):
@@ -198,9 +193,9 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         # TODO: Comment above also means we're potentially appending the same unit n times,
         # which has no functionality breaking consequences, but is waste of space.
         if role == Role.EMPLOYEE:
-            account_employee_positions[acc].append(unit)
+            account_employee_positions.setdefault(acc, []).append(unit)
         if role == Role.MANAGER:
-            account_manager_positions[acc].append(unit)
+            account_manager_positions.setdefault(acc, []).append(unit)
 
     def positions_to_delete():
         """Helper function that figures out which position objects are to be deleted.
@@ -243,7 +238,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
                 f"Found {person_type.value} object with a number of persons different from one!"
             )
             return
-        acc = evaluate_unit_member(member=person, role=person_type)
+        acc = evaluate_unit_member(member=person)
         if acc:
             # TODO: This feels fragile.. and potentially soon needs support for SID
             # Look to refactor from MSGraph import actions and generalize logic.

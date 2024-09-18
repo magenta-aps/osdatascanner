@@ -155,6 +155,37 @@ MO_ORG_UNITS = [
             "managers": [{"person": None}],  # Vacant manager
             "engagements": []
         }
+    },
+    {
+        "current": {
+            "name": "Unit 4",
+            "uuid": "444ad987-c4d5-447c-a858-d03b021huga5",
+            "parent": {
+                "name": "Top level unit",
+                "uuid": "23b6386a-6142-4495-975c-92ff41dd4100"
+            },
+            "managers": [
+                {
+                    "person": [
+                        {
+                            "uuid": "e57001bb-9bc1-40ae-bb89-657d115125b7",
+                            "given_name": "Bruce",
+                            "surname": "Lee",
+                            "user_key": "bruce",
+                            "addresses": [
+                                {
+                                    "name": "bruce@kung.fu"
+                                },
+                                {
+                                    "name": "bruce@kung.fu"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "engagements": []
+        }
     }
 ]
 
@@ -183,6 +214,7 @@ class OS2moImportTest(TestCase):
         self.unit1 = OrganizationalUnit.objects.get(name="Unit 1")
         self.unit2 = OrganizationalUnit.objects.get(name="Unit 2")
         self.unit3 = OrganizationalUnit.objects.get(name="Unit 3")
+        self.unit4 = OrganizationalUnit.objects.get(name="Unit 4")
 
     def tearDown(self):
         self.org.delete()
@@ -272,6 +304,42 @@ class OS2moImportTest(TestCase):
 
         assert len(self.unit2.get_managers()) == 0
         assert len(self.unit3.get_managers()) == 0
+
+    def test_sequential_import_manager_positions(self):
+        # Arrange
+        # First import is done in setup method, but we'll verify here
+        # that Bruce is indeed manager of two OU's.
+        bruce = Account.objects.get(username="bruce")
+        bruce_manager_top_level_unit = Position.managers.get(
+            unit=self.top_level_unit, account=bruce)
+        bruce_manager_unit_4 = Position.managers.get(unit=self.unit4, account=bruce)
+
+        # Act (Import again)
+        perform_os2mo_import(MO_ORG_UNITS, self.org)
+
+        # Assert (check that's still the case)
+        assert bruce_manager_top_level_unit == Position.managers.get(
+            unit=self.top_level_unit, account=bruce)
+        assert bruce_manager_unit_4 == Position.managers.get(
+            unit=self.unit4, account=bruce)
+
+    def test_sequential_import_employee_positions(self):
+        # Arrange
+        # First import is done in setup method, but we'll verify here
+        # that Chuck is indeed employee of two OU's.
+        chuck = Account.objects.get(username="chuck")
+        chuck_employee_top_level_unit = Position.employees.get(
+            unit=self.top_level_unit, account=chuck)
+        chuck_employee_unit_1 = Position.employees.get(unit=self.unit1, account=chuck)
+
+        # Act (Import again)
+        perform_os2mo_import(MO_ORG_UNITS, self.org)
+
+        # Assert (check that's still the case)
+        assert chuck_employee_top_level_unit == Position.employees.get(
+            unit=self.top_level_unit, account=chuck)
+        assert chuck_employee_unit_1 == Position.employees.get(
+            unit=self.unit1, account=chuck)
 
     def test_account_delete(self):
         # Arrange
