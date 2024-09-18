@@ -11,7 +11,9 @@ def oxford_comma(parts: Sequence, conjunction: str, *, key=lambda c: str(c)) -> 
     To my parents, Ayn Rand, and God. (with oxford)
 
     """
-    if len(parts) == 1:
+    if len(parts) == 0:
+        raise ValueError("Can't combine empty list of words")
+    elif len(parts) == 1:
         return key(parts[0])
     else:
         start = [key(p) for p in parts[0:-1]]
@@ -81,11 +83,12 @@ class AllRule(CompoundRule):
 
     @property
     def presentation_raw(self):
-        if len(self._components) == 2:
-            conjunction = "or"
+        if len(self._components) == 0:
+            return "Empty AllRule"
+        elif len(self._components) in {1, 2}:
+            return "({0})".format(oxford_comma(self._components, "or"))
         else:
-            conjunction = "or any of"
-        return "({0})".format(oxford_comma(self._components, conjunction))
+            return "({0})".format(oxford_comma(self._components, "or any of"))
 
     @classmethod
     def make(cls, *components, satisfied: bool = False):
@@ -131,7 +134,10 @@ class AndRule(CompoundRule):
 
     @property
     def presentation_raw(self):
-        return "({0})".format(oxford_comma(self._components, "and"))
+        if len(self._components) > 0:
+            return "({0})".format(oxford_comma(self._components, "and"))
+        else:
+            return "Empty AndRule"
 
     @classmethod
     def make(cls, *components):
@@ -159,7 +165,10 @@ class OrRule(CompoundRule):
 
     @property
     def presentation_raw(self):
-        return "({0})".format(oxford_comma(self._components, "or"))
+        if len(self._components) > 0:
+            return "({0})".format(oxford_comma(self._components, "or"))
+        else:
+            return "Empty OrRule"
 
     @classmethod
     def make(cls, *components):
@@ -215,6 +224,8 @@ class NotRule(Rule):
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj):
+        if not obj['rule']:
+            raise ValueError("Couldn't construct NotRule: No rule given")
         return NotRule(
             Rule.from_json_object(obj["rule"]),
             sensitivity=Sensitivity.make_from_dict(obj),

@@ -124,7 +124,7 @@ def standalone_invariant(rule: Rule) -> bool | None:
         case CompoundRule() if len(rule._components) == 1:
             return standalone_invariant(rule._components[0])
         case CompoundRule():
-            return any(standalone_invariant(c)
+            return all(standalone_invariant(c)
                        for c in rule._components)
         case SimpleRule() | Rule():
             pass
@@ -172,6 +172,25 @@ def outputtype_invariant(rule: Rule) -> bool | None:
     return True
 
 
+@functools.cache
+@register_invariant()
+def components_invariant(rule: Rule) -> bool | None:
+    """
+    Invariant which checks that a compoundrule has at least one component.
+    """
+
+    match rule:
+        case CompoundRule():
+            if not rule._components:
+                raise RuleInvariantViolationError("components", rules=[rule])
+            return all(components_invariant(c) for c in rule._components)
+        case SimpleRule() | Rule():
+            return True
+        case _:
+            rule_invariant_type_error(rule)
+    return True
+
+
 class RuleInvariantChecker:
     """
     Utility class for checking invariants.
@@ -179,6 +198,7 @@ class RuleInvariantChecker:
     default_invariants = [
         "precedence_invariant",
         "standalone_invariant",
+        "components_invariant",
         ]
 
     def __init__(self, *invariants: list) -> None:
