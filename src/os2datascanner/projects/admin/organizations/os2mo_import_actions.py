@@ -129,10 +129,11 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
 
             all_uuids.add(imported_id)
 
+        # Create an entry in corresponding Account-Role-Position-dict, if it doesn't already exist.
         if role == Role.EMPLOYEE:
-            account_employee_positions[account] = []
+            account_employee_positions.setdefault(account, [])
         if role == Role.MANAGER:
-            account_manager_positions[account] = []
+            account_manager_positions.setdefault(account, [])
         return account
 
     def evaluate_aliases(account: Account, email: str):

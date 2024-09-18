@@ -326,7 +326,7 @@ class OS2moImportTest(TestCase):
     def test_sequential_import_employee_positions(self):
         # Arrange
         # First import is done in setup method, but we'll verify here
-        # that Bruce is indeed manager of two OU's.
+        # that Chuck is indeed employee of two OU's.
         chuck = Account.objects.get(username="chuck")
         chuck_employee_top_level_unit = Position.employees.get(
             unit=self.top_level_unit, account=chuck)
