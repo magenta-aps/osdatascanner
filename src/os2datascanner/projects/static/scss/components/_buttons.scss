@@ -27,6 +27,7 @@
   padding: 0.5rem 0.75rem;
   border: var(--btn-border-default) var(--color-btn-neutral);
   border-radius: var(--border-radius-button);
+  min-width: fit-content;
 
   // Visual
   color: var(--color-text-main);
@@ -38,7 +39,6 @@
   font-weight: normal;
   line-height: 1;
   text-decoration: none;
-  word-break: normal;
 
   // Miscellaneous
   cursor: pointer;

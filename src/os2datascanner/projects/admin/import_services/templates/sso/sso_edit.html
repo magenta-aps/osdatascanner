@@ -25,42 +25,97 @@
   <form class="form" id="identity-provider-form" method="post">
     {% csrf_token %}
     <div class="data-form">
-      <h3>{% trans "identity provider setup"|capfirst %}</h3>
+      <fieldset class="form__fieldset">
+        <div class="form__row--ldap-provider-setup">
+          <span class="form__row__title">{% trans "identity provider setup"|capfirst %}</span>
 
-      {% for field in form %}
-        <div class="form__group{% if field.errors %} has-error{% endif %}">
-          <div class="flex flex--bottom">
-            {{ field.label_tag }}
-            {% if field.help_text %}
-              <div class="help">
-                <div class="help-icon" title="{{ field.help_text|safe }}"></div>
+          {% for field in form %}
+            <div class="form__row__item">
+              <div class="form__group{% if field.errors %} has-error{% endif %}">
+ 
+ 
+                {% if field.name == "metadata_url" %}
+                  <div class="flex">
+                    {{ field.label_tag }}
+                    {% if field.help_text %}
+                      <div class="help">
+                        <div class="help-icon" title="{{ field.help_text|safe }}"></div>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="field-with-button__container">
+                    {{ field }}
+                    <button type="button"
+                            class="button button--text-button"
+                            hx-post=" {% if is_new %} {% url 'add-sso' org_id=organization.pk %} {% else %} {% url 'edit-sso' org_id=organization.pk %} {% endif %} "
+                            hx-trigger="click"
+                            hx-target="#identity-provider-form"
+                            hx-select="#identity-provider-form"
+                            hx-swap="outerHTML"
+                            hx-vals='{"realm": "{{ realm }}"}'
+                            hx-indicator="div.spinner">{% trans "Fetch metadata"|capfirst %}</button>
+                  </div>
+ 
+                {% elif field.field.widget.input_type == 'checkbox' %}
+                  <div class="form-checkbox-container">
+                    <div class="ds-checkbox">
+                      <input type="checkbox"
+                             id="id_{{ field.name }}"
+                             name="{{ field.name }}"
+                             value="{{ field.name }}"
+                             {% if field.field.disabled %}disabled{% endif %}
+                             {% if field.value %}checked="checked"{% endif %}>
+                      <label for="id_{{ field.name }}">{{ field.label }}</label>
+ 
+                    </div>
+                    {% if field.help_text %}
+                      <div class="help">
+                        <div class="help-icon" title="{{ field.help_text|safe }}"></div>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                {% else %}
+                  <div class="flex">
+                    {{ field.label_tag }}
+                    {% if field.help_text %}
+                      <div class="help">
+                        <div class="help-icon" title="{{ field.help_text|safe }}"></div>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  {{ field }}
+ 
+                {% endif %}
+ 
+                {% if field.errors %}{{ field.errors }}{% endif %}
               </div>
-            {% endif %}
-          </div>
-          {% if field.name == "metadata_url" %}
-            <div>
-              {{ field }}
-              <button type="button"
-                      class="button button--cta-button"
-                      hx-post=" {% if is_new %} {% url 'add-sso' org_id=organization.pk %} {% else %} {% url 'edit-sso' org_id=organization.pk %} {% endif %} "
-                      hx-trigger="click"
-                      hx-target="#identity-provider-form"
-                      hx-select="#identity-provider-form"
-                      hx-swap="outerHTML"
-                      hx-vals='{"realm": "{{ realm }}"}'
-                      hx-indicator="div.spinner">{% trans "Fetch metadata"|capfirst %}</button>
             </div>
-          {% else %}
-            {{ field }}
-          {% endif %}
-          {% if field.errors %}{{ field.errors }}{% endif %}
+ 
+          {% endfor %}
+ 
+
         </div>
-      {% endfor %}
+
+      </fieldset>
+
     </div>
 
     <div class="data-form">
-      <h3>{% trans "claim setup"|capfirst %}</h3>
-      {% for mapper in mappers %}{{ mapper.as_p }}{% endfor %}
+      <fieldset class="form__fieldset">
+        <div class="form__row--ldap-claim-setup">
+          <span class="form__row__title">{% trans "claim setup"|capfirst %}</span>
+
+          {% for mapper in mappers %}
+            <div class="form__row__item">
+              <div class="form__group">{{ mapper.as_p }}</div>
+ 
+            </div>
+          {% endfor %}
+        </div>
+      </fieldset>
     </div>
 
     <button type="submit"

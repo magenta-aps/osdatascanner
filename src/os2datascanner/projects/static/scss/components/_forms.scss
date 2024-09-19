@@ -15,23 +15,24 @@
     }
   }
 
-  &__fieldset {
-    max-width: 65rem;
-  }
-
   &__row {
     &__item {
       padding-top: 0.5rem;
-  
-      input, select {
-        margin-top: 0.5rem !important; 
+
+      input,
+      select {
+        margin-top: 0.5rem !important;
       }
     }
-  
+
     &--general,
     &--tab-access,
     &--support-button,
-    &--outlook {
+    &--support,
+    &--dpo,
+    &--outlook,
+    &--ldap-provider-setup, 
+    &--ldap-claim-setup {
       margin: 3rem 0;
       display: flex;
       flex-direction: column;
@@ -42,14 +43,19 @@
     &--support-settings {
       margin: 0;
     }
-  
+
+    &--ldap-provider-setup,
+    &--ldap-claim-setup {
+      margin: 0;
+    }
+
     &--outlook {
       gap: 1rem;
-  
+
       .form__row__item {
         padding-top: 0.5rem;
-  
-        >label:first-child {
+
+        > label:first-child {
           font-weight: 600;
           margin-bottom: 1rem;
         }
@@ -66,6 +72,41 @@
           display: flex;
           align-items: center;
           gap: 0.5rem;
+        }
+      }
+    }
+
+    &--ldap-provider-setup {
+      .form-checkbox-container {
+        display: flex;
+        gap: 0.5rem;
+        margin: 8px 0 0 0;
+
+        .ds-checkbox,
+        .help {
+          margin: 0;
+        }
+      }
+
+      .form__row__item:last-child {
+        margin-top: 0.5rem;
+      }
+    }
+
+    &--ldap-claim-setup {
+      gap: 1rem;
+      
+      .form__group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        p {
+          margin: 0;
+
+          &:not(:first-child) {
+            padding-top: 0.5rem;
+          }
         }
       }
     }
@@ -91,14 +132,24 @@
         flex: 0 1 auto;
       }
 
-      .button { // temporary button styling until forms get their makeover
+      .button {
+        // temporary button styling until forms get their makeover
         margin-left: 0.5rem;
         padding: 0.75rem;
       }
     }
+
+    .field-with-button__container {
+      display: flex;
+      gap: 0.5rem;
+
+      > .button {
+        margin-top: 0.5rem;
+      }
+    }
   }
 
-  .form__group+.form__group {
+  .form__group + .form__group {
     margin-top: 1rem;
   }
 
@@ -117,30 +168,30 @@
     color: var(--color-text-main);
   }
 
-  label+input,
-  label+.input-group {
+  label + input,
+  label + .input-group {
     margin-top: 0.5rem;
   }
 
-  input+label,
-  select+label {
+  input + label,
+  select + label {
     margin-top: 1rem;
   }
 
-  .form__group+.form__group,
-  .form__group+.form__error,
-  .form__error+.form__group {
+  .form__group + .form__group,
+  .form__group + .form__error,
+  .form__error + .form__group {
     margin-top: 1rem;
   }
 
-  input[type=checkbox]+label {
+  input[type="checkbox"] + label {
     display: flex;
   }
 
   // input [type=text],[type=password]
-  input[type=text],
-  input[type=password], 
-  input[type=email] {
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] {
     background-color: #fff;
     border: none;
     border-radius: var(--border-radius-small);
@@ -148,14 +199,14 @@
     font-size: 1rem;
     line-height: 1;
     outline: none;
-    padding: .75rem;
+    padding: 0.75rem;
     transition: var(--transition-default);
     width: 100%;
   }
 
-  input[type=text]:focus,
-  input[type=password]:focus,
-  input[type=email]:focus {
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus {
     box-shadow: inset 0 0 0 4px #5ca4cd40;
   }
 
@@ -165,14 +216,14 @@
     font-weight: normal;
     cursor: pointer;
     color: var(--color-text-main);
-    padding: .75rem 2.25rem .75rem .75rem;
+    padding: 0.75rem 2.25rem 0.75rem 0.75rem;
     width: 100%;
     max-width: 100%;
     /* useful when width is set to anything other than 100% */
     box-sizing: border-box;
     margin: 0;
     border: none !important;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     border-radius: 0;
     -moz-appearance: none;
     -webkit-appearance: none;
@@ -182,18 +233,22 @@
   		for the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also swap in a different svg icon or an external image reference
   		
   	*/
-    background-image: url('../svg/chevron-down.svg'),
-      linear-gradient(to bottom, var(--color-widget-bg) 0%, var(--color-widget-bg) 100%);
+    background-image: url("../svg/chevron-down.svg"),
+      linear-gradient(
+        to bottom,
+        var(--color-widget-bg) 0%,
+        var(--color-widget-bg) 100%
+      );
     background-repeat: no-repeat, repeat;
     /* arrow icon position (.75rem from the right, 50% vertical) , then gradient position*/
-    background-position: right .75rem top 50%, 0 0;
+    background-position: right 0.75rem top 50%, 0 0;
     /* icon size, then gradient */
-    background-size: .75rem auto, 100%;
+    background-size: 0.75rem auto, 100%;
     transition: var(--transition-default);
 
     &[multiple] {
       background-image: none;
-      padding-right: .75rem;
+      padding-right: 0.75rem;
     }
   }
 
@@ -217,7 +272,7 @@
     font-size: 1rem;
     line-height: 1;
     outline: none;
-    padding: .75rem;
+    padding: 0.75rem;
     transition: var(--transition-default);
     width: 90%;
 
@@ -234,7 +289,7 @@
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     min-height: 10rem;
     width: 100%;
-    padding: .75rem;
+    padding: 0.75rem;
     line-height: 1.5;
     resize: vertical;
   }
@@ -254,8 +309,8 @@
   .radio {
     display: grid;
     grid-template-columns: min-content auto;
-    grid-gap: .5rem;
-    font-size: .9rem;
+    grid-gap: 0.5rem;
+    font-size: 0.9rem;
     color: var(--color-text-main);
     margin-right: 5rem;
     cursor: pointer;
@@ -274,10 +329,10 @@
       width: 0;
       height: 0;
 
-      &:focus+.radio__control {
-
+      &:focus + .radio__control {
         &--notify {
-          box-shadow: 0 0 0 0.05em #fff, 0 0 0.15em 0.1rem var(--color-notification);
+          box-shadow: 0 0 0 0.05em #fff,
+            0 0 0.15em 0.1rem var(--color-notification);
         }
 
         &--critical {
@@ -301,47 +356,47 @@
       place-items: center;
     }
 
-    input+.radio__control--notify::before {
+    input + .radio__control--notify::before {
       content: "";
-      width: .5rem;
-      height: .5rem;
+      width: 0.5rem;
+      height: 0.5rem;
       box-shadow: inset 0.5rem 0.5rem var(--color-notification);
       border-radius: 50%;
       transition: 180ms transform ease-in-out;
       transform: scale(0);
     }
 
-    input+.radio__control--warning::before {
+    input + .radio__control--warning::before {
       content: "";
-      width: .5rem;
-      height: .5rem;
+      width: 0.5rem;
+      height: 0.5rem;
       box-shadow: inset 0.5rem 0.5rem var(--color-warning);
       border-radius: 50%;
       transition: 180ms transform ease-in-out;
       transform: scale(0);
     }
 
-    input+.radio__control--problem::before {
+    input + .radio__control--problem::before {
       content: "";
-      width: .5rem;
-      height: .5rem;
+      width: 0.5rem;
+      height: 0.5rem;
       box-shadow: inset 0.5rem 0.5rem var(--color-problem);
       border-radius: 50%;
       transition: 180ms transform ease-in-out;
       transform: scale(0);
     }
 
-    input+.radio__control--critical::before {
+    input + .radio__control--critical::before {
       content: "";
-      width: .5rem;
-      height: .5rem;
+      width: 0.5rem;
+      height: 0.5rem;
       box-shadow: inset 0.5rem 0.5rem var(--color-error);
       border-radius: 50%;
       transition: 180ms transform ease-in-out;
       transform: scale(0);
     }
 
-    input:checked+.radio__control::before {
+    input:checked + .radio__control::before {
       transform: scale(1);
     }
   }
@@ -372,7 +427,7 @@
 
   // help text
   .help {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     width: 1rem;
   }
 
@@ -380,8 +435,8 @@
     position: relative;
     display: inline-block;
     background-image: url("../svg/question-circle.svg");
-    width: .8rem;
-    height: .8rem;
+    width: 0.8rem;
+    height: 0.8rem;
     background-size: 100% 100%;
     cursor: pointer;
 
@@ -391,8 +446,8 @@
       background-color: #000;
       color: #fff;
       text-align: center;
-      border-radius: .35rem;
-      padding: .5rem .5rem;
+      border-radius: 0.35rem;
+      padding: 0.5rem 0.5rem;
       position: absolute;
       top: 1rem;
       z-index: 15;
@@ -402,7 +457,6 @@
       visibility: visible;
     }
   }
-
 
   &__help-text {
     display: block;
@@ -442,14 +496,13 @@
     z-index: -1;
   }
 
-  input+label {
+  input + label {
     cursor: pointer;
     padding-left: 1.75em;
     margin-top: 0;
   }
 
-  input[type="checkbox"]+label {
-
+  input[type="checkbox"] + label {
     &::before,
     &::after {
       :root {
@@ -485,19 +538,19 @@
     }
   }
 
-  input[type=checkbox]:focus+label::before {
+  input[type="checkbox"]:focus + label::before {
     border-color: #12496e;
   }
 
   &:hover {
-    input[type="checkbox"]+label {
+    input[type="checkbox"] + label {
       &::before {
         border-color: #12496e;
       }
     }
   }
 
-  input[type="checkbox"]:checked+label {
+  input[type="checkbox"]:checked + label {
     &::before {
       background-color: #12496e;
       border-color: transparent;
@@ -508,7 +561,7 @@
     }
   }
 
-  input[type="checkbox"]:disabled+label {
+  input[type="checkbox"]:disabled + label {
     opacity: 0.5;
 
     &::before {
@@ -551,10 +604,9 @@
 #upload-file,
 #upload-file-service,
 #upload-file-email {
-  padding: .75rem;
+  padding: 0.75rem;
   width: 50%;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.1);
   background-color: #fff;
   border: none;
   border-radius: var(--border-radius-small);
@@ -581,8 +633,8 @@
   filter: alpha(opacity=0);
 }
 
-.fileUpload+* {
-  margin-left: .25rem;
+.fileUpload + * {
+  margin-left: 0.25rem;
 }
 
 #upload-text {
@@ -619,10 +671,10 @@
     margin: 0 0.2rem;
     cursor: pointer;
 
-  &:hover {
-    background-color: var(--color-primary-light);
+    &:hover {
+      background-color: var(--color-primary-light);
+    }
   }
-}
 }
 
 #scanner_search_field {

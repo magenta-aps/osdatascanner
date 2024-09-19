@@ -1,6 +1,6 @@
 :root {
   --datatable-cell-padding: 2em;
-  --color-warning-light: #FFEDB6;
+  --color-warning-light: #ffedb6;
 }
 
 .datatable-wrapper {
@@ -20,25 +20,25 @@
   }
 
   &.sm {
-    >.datatable {
+    > .datatable {
       min-width: 35rem;
     }
   }
 
   &.md {
-    >.datatable {
+    > .datatable {
       min-width: 45rem;
     }
   }
 
   &.lg {
-    >.datatable {
+    > .datatable {
       min-width: 55rem;
     }
   }
 
   &.xl {
-    >.datatable {
+    > .datatable {
       min-width: 75rem;
     }
   }
@@ -60,15 +60,21 @@
   &.lg.card,
   &.xl.card {
     // use gradients to signify that the table is scrollable
-    background-image: 
-      linear-gradient(to right, white var(--datatable-cell-padding),rgba(255, 255, 255, 0)),
+    background-image: linear-gradient(
+        to right,
+        white var(--datatable-cell-padding),
+        rgba(255, 255, 255, 0)
+      ),
       linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
-      linear-gradient(to left, white var(--datatable-cell-padding),rgba(255, 255, 255, 0)),
+      linear-gradient(
+        to left,
+        white var(--datatable-cell-padding),
+        rgba(255, 255, 255, 0)
+      ),
       linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
     background-repeat: no-repeat;
     background-position: left top, left top, 100% 0, 100% 0;
-    background-size: 
-      calc(var(--datatable-cell-padding) * 4) 100%,
+    background-size: calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%,
       calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%;
@@ -193,7 +199,7 @@
       word-wrap: break-word;
       white-space: none;
 
-      &>div {
+      & > div {
         min-width: 12rem;
       }
 
@@ -247,7 +253,7 @@
         display: flex;
         align-items: center;
       }
-      
+
       .warning-symbol {
         color: var(--color-error);
         cursor: default;
@@ -517,7 +523,6 @@
   }
 
   .overflow-ellipsis {
-    
     .employee__fullname {
       font-weight: bold;
     }
@@ -798,7 +803,7 @@
   position: absolute;
   font-size: 0.85rem;
   padding: 0.375rem 0.5rem;
-  border: 1px solid rgba(0, 0, 0, .2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: var(--border-radius-button);
   background-color: var(--color-body-bg);
   color: var(--color-text-secondary);
@@ -814,12 +819,14 @@
 .table {
   &__icon {
     &--warning {
-      color: var(--color-warning); // Specific styling for the warning icon in tables
+      color: var(
+        --color-warning
+      ); // Specific styling for the warning icon in tables
     }
   }
 }
 
-.tableUI__container{
+.tableUI__container {
   display: flex;
   align-items: center;
   margin-top: 1rem;
@@ -846,7 +853,7 @@
 
 // Redmine ticket: [#59413]
 
-// NOTE: 
+// NOTE:
 // Change the class name from "datatablex" to "datatable" after all tables have been refactored.
 // Remember to do the same in all relevant HTML docs.
 .datatablex {
@@ -858,11 +865,11 @@
   &__card-container {
     // Layout
     overflow: hidden; // Hides overflow from the scrollbar and the background-gradient
-    
+
     // Box model
     margin-bottom: 0;
     border-radius: 0;
-    
+
     // Visual
     background-color: var(--color-widget-bg);
     box-shadow: var(--box-shadow-widget);
@@ -873,55 +880,56 @@
       border-radius: var(--border-radius-widget);
     }
   }
-  
+
   &__wrapper {
     // Layout
-    overflow-x: auto;    
-    
+    overflow-x: auto;
+
     // Box model
     max-width: 100%;
     height: inherit;
     clear: both;
-    
+
     // Visual
-    background-image: // use gradients to signify that the table is scrollable 
+    background-image: // use gradients to signify that the table is scrollable
       linear-gradient(
         to right,
         white var(--datatable-cell-padding),
         rgba(255, 255, 255, 0)
-        ),
-        linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
+      ),
+      linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
       linear-gradient(
         to left,
         white var(--datatable-cell-padding),
         rgba(255, 255, 255, 0)
-        ),
-        linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
+      ),
+      linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
     background-repeat: no-repeat;
     background-position: left top, left top, 100% 0, 100% 0;
-    background-size: 
-    calc(var(--datatable-cell-padding) * 4) 100%,
+    background-size: calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%,
       calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%;
-      background-attachment: local, scroll, local, scroll;
-    }
-    
-    
-  &__row { // Styles for all th + td inside datatables
+    background-attachment: local, scroll, local, scroll;
+  }
+
+  &__row {
+    // Styles for all th + td inside datatables
     th:first-child,
     td:first-child {
       padding-left: var(--datatable-cell-padding);
     }
-      
+
     th:last-child,
     td:last-child {
       padding-right: var(--datatable-cell-padding);
     }
-      
-    th, td {
+
+    th,
+    td {
       line-height: normal;
-      padding: var(--datatable-cell-padding) calc(var(--datatable-cell-padding) / 2);
+      padding: var(--datatable-cell-padding)
+        calc(var(--datatable-cell-padding) / 2);
       vertical-align: middle;
     }
 
@@ -930,8 +938,9 @@
       transition: opacity 200ms ease-in-out;
     }
   }
-  
-  a:not(.button) { // So far only used in the org-table on Admin
+
+  a:not(.button) {
+    // So far only used in the org-table on Admin
     text-decoration: none;
     font-weight: 500;
     color: var(--color-primary);
@@ -955,26 +964,34 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 .org-table {
   // Table SCSS vars:
   $fixed-column_width: 8.5rem; // The "fixed" column of this specific table
-  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width}); 
+  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width});
   $table_min-width: 70rem; // The size for this specific table
 
   // Column SCSS vars:
   $width_25: calc(#{$table_width} * 0.25);
   $min-width_25: calc(#{$table_min-width} * 0.25);
 
-  $width_50: calc(#{$table_width} * 0.50);
-  $min-width_50: calc(#{$table_min-width} * 0.50);
+  $width_50: calc(#{$table_width} * 0.5);
+  $min-width_50: calc(#{$table_min-width} * 0.5);
 
   // Styles:
   min-width: $table_min-width;
 
   .column {
     &--name {
-      width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+      width: clamp(
+        calc(#{$min-width_25}),
+        calc(#{$width_25}),
+        calc(#{$width_25})
+      );
     }
-    
+
     &--info {
-      width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+      width: clamp(
+        calc(#{$min-width_25}),
+        calc(#{$width_25}),
+        calc(#{$width_25})
+      );
 
       .info {
         // Local SCSS vars
@@ -990,7 +1007,7 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        
+
         &__label {
           color: var(--color-text-secondary);
           font-size: $text-size;
@@ -1008,11 +1025,50 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--import {
-      width: clamp(calc(#{$min-width_50}), calc(#{$width_50}), calc(#{$width_50}));
+      width: clamp(
+        calc(#{$min-width_50}),
+        calc(#{$width_50}),
+        calc(#{$width_50})
+      );
     }
 
-    &--actions { // The "fixed" column of this specific table
+    &--actions {
+      // The "fixed" column of this specific table
       width: $fixed-column_width;
+
+      #sso-button {
+        /* A "diy" icon made with existing icons from the Material Symbols library*/
+        #sso-icon-container {
+          $standard-icon-size: 1.5rem; // Same as the standard icon font size
+          width: $standard-icon-size; 
+          height: $standard-icon-size; 
+          
+          position: relative;
+
+          i {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+
+            &#cloud {
+              z-index: 1;
+            }
+
+            &#key {
+              z-index: 2; // Place it on top of cloud icon to imitate "cut-out" effect
+              padding-top: 0.25rem;
+              color: var(--color-btn-neutral);
+              font-variation-settings: 
+                "GRAD" -25, 
+                "opsz" 20,
+              ;
+              font-size: 18px;
+              text-align: center;
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -1025,7 +1081,6 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
 // TBA
 
-
 // ****************************************
 // ***** ORGANIZATIONS ACCOUNTS TABLE *****
 // ****************************************
@@ -1034,18 +1089,16 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
 // TBA
 
-
 // ************************
 // ***** RULES TABLES *****
 // ************************
 
 // Redmine ticket: [#60287]
 
-  // "CUSTOM RULES":
-  // "SYSTEM RULES":
+// "CUSTOM RULES":
+// "SYSTEM RULES":
 
 // TBA
-
 
 // **************************
 // ***** SCANNER TABLES *****
@@ -1057,16 +1110,16 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
   // Table SCSS vars:
   // $fixed-column_width: 16rem; // The "fixed" column of this specific table
   $fixed-column_width: 210px; // The "fixed" column of this specific table
-  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width}); 
-  $table_min-width: 60rem; 
+  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width});
+  $table_min-width: 60rem;
 
   // Column SCSS vars:
   $width_25: calc(#{$table_width} * 0.25);
   $min-width_25: calc(#{$table_min-width} * 0.25);
-  
+
   $width_35: calc(#{$table_width} * 0.35);
   $min-width_35: calc(#{$table_min-width} * 0.35);
-  
+
   $width_40: calc(#{$table_width} * 0.4);
   $min-width_40: calc(#{$table_min-width} * 0.4);
 
@@ -1074,7 +1127,7 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
   min-width: $table_min-width;
 
   .column {
-    @mixin flex-center { 
+    @mixin flex-center {
       /* We might end up moving this out of here and make it available for all 
       datatables. Why write 3 lines of code when you can write one? */
       display: flex;
@@ -1085,7 +1138,11 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
     $uniform_gap-size: 0.25rem;
 
     &--name {
-      width: clamp(calc(#{$min-width_35}), calc(#{$width_35}), calc(#{$width_35}));
+      width: clamp(
+        calc(#{$min-width_35}),
+        calc(#{$width_35}),
+        calc(#{$width_35})
+      );
 
       .name {
         &__container {
@@ -1114,33 +1171,40 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--validation {
-      width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+      width: clamp(
+        calc(#{$min-width_25}),
+        calc(#{$width_25}),
+        calc(#{$width_25})
+      );
 
-      .status {        
+      .status {
         @mixin pill-variant($bgColor, $textColor) {
           background-color: $bgColor;
           color: $textColor;
         }
 
         @include flex-center;
-        
+
         border-radius: 50px;
         height: 2.125rem;
-        width: 6.75rem; 
+        width: 6.75rem;
         /* NOTE: This fixed width is a tiny bit bigger than the "natural" width of 
         the "ugyldig"/"invalid" label/badge, so that both types of label/badge have 
         matching width. If the wording changes, then this should be updated as well 
         to fit whatever the "natural" width of the bigger one is. */
-                
+
         &--valid {
-          @include pill-variant(var(--color-status-good), var(--color-checkmark));
+          @include pill-variant(
+            var(--color-status-good),
+            var(--color-checkmark)
+          );
         }
 
         &--invalid {
           @include pill-variant(var(--color-status-bad), var(--color-clear));
         }
 
-        &__wrapper {          
+        &__wrapper {
           @include flex-center;
           gap: $uniform_gap-size;
           padding: 0 1rem 0 0.625rem; // Asymmetrical padding to compensate for visual weight
@@ -1149,14 +1213,20 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
         &__label {
           $font-size: 0.875rem;
           font-size: $font-size;
-          margin-top: calc(#{$font-size} * 0.115); // Google's recommended alignment correction for text next to icons
+          margin-top: calc(
+            #{$font-size} * 0.115
+          ); // Google's recommended alignment correction for text next to icons
           font-weight: 500;
         }
       }
     }
 
     &--automatic {
-      width: clamp(calc(#{$min-width_40}), calc(#{$width_40}), calc(#{$width_40}));
+      width: clamp(
+        calc(#{$min-width_40}),
+        calc(#{$width_40}),
+        calc(#{$width_40})
+      );
 
       .status {
         display: flex;
@@ -1165,7 +1235,7 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
         &__icon {
           &.material-symbols {
-            font-variation-settings: 'wght' 300;
+            font-variation-settings: "wght" 300;
             color: var(--color-text-secondary);
           }
         }
@@ -1180,7 +1250,8 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
       }
     }
 
-    &--actions { // The "fixed" column of this specific table
+    &--actions {
+      // The "fixed" column of this specific table
       width: $fixed-column_width;
 
       .button-group {
@@ -1188,16 +1259,16 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
         think it's worth waiting until after we've refactored all datatables */
         flex-wrap: nowrap;
 
-        .button {          
+        .button {
           .material-symbols {
             color: var(--color-primary-dark);
           }
-          
+
           &:hover {
             background-color: var(--color-primary-dark) !important;
-            
+
             .material-symbols {
-              font-variation-settings: 'wght' 500, 'GRAD' -25 !important;
+              font-variation-settings: "wght" 500, "GRAD" -25 !important;
               color: var(--color-text-white);
             }
           }
@@ -1221,7 +1292,7 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
     $min-width_25: calc(#{$table_min-width} * 0.25);
     $width_25: calc(#{$table_width} * 0.25);
-    
+
     $min-width_30: calc(#{$table_min-width} * 0.3);
     $width_30: calc(#{$table_width} * 0.3);
 
@@ -1230,33 +1301,50 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
     .column {
       &--name {
-        width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
-      } 
+        width: clamp(
+          calc(#{$min-width_25}),
+          calc(#{$width_25}),
+          calc(#{$width_25})
+        );
+      }
 
       &--url {
-        width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
-        
-        .tooltip { // This could be remade as an mixin and made available for all datatables
+        width: clamp(
+          calc(#{$min-width_25}),
+          calc(#{$width_25}),
+          calc(#{$width_25})
+        );
+
+        .tooltip {
+          // This could be remade as an mixin and made available for all datatables
           .overflow-ellipsis {
             word-break: break-all;
 
             // Only applying the ellipsis on pc-screens
             @media (min-width: $break-lg) {
               overflow: hidden;
-              text-overflow: ellipsis;              
+              text-overflow: ellipsis;
               white-space: nowrap;
-              width: calc(#{$width_25}*0.95);
+              width: calc(#{$width_25}* 0.95);
             }
           }
         }
       }
 
       &--validation {
-        width: clamp(calc(#{$min-width_20}), calc(#{$width_20}), calc(#{$width_20}));
+        width: clamp(
+          calc(#{$min-width_20}),
+          calc(#{$width_20}),
+          calc(#{$width_20})
+        );
       }
 
       &--automatic {
-        width: clamp(calc(#{$min-width_30}), calc(#{$width_30}), calc(#{$width_30}));
+        width: clamp(
+          calc(#{$min-width_30}),
+          calc(#{$width_30}),
+          calc(#{$width_30})
+        );
       }
 
       // The width for "--actions" is not overwritten.
@@ -1278,8 +1366,8 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
     $min-width_25: calc(#{$table_min-width} * 0.25);
     $width_25: calc(#{$table_width} * 0.25);
-    
-    $min-width_35: calc(#{$table_min-width} * 0.35);    
+
+    $min-width_35: calc(#{$table_min-width} * 0.35);
     $width_35: calc(#{$table_width} * 0.35);
 
     // Styles:
@@ -1287,16 +1375,28 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
     .column {
       &--name {
-        width: clamp(calc(#{$min-width_25}), calc(#{$width_25}), calc(#{$width_25}));
+        width: clamp(
+          calc(#{$min-width_25}),
+          calc(#{$width_25}),
+          calc(#{$width_25})
+        );
       }
 
-      &--drive, 
+      &--drive,
       &--validation {
-        width: clamp(calc(#{$min-width_20}), calc(#{$width_20}), calc(#{$width_20}));
+        width: clamp(
+          calc(#{$min-width_20}),
+          calc(#{$width_20}),
+          calc(#{$width_20})
+        );
       }
 
       &--automatic {
-        width: clamp(calc(#{$min-width_35}), calc(#{$width_35}), calc(#{$width_35}));
+        width: clamp(
+          calc(#{$min-width_35}),
+          calc(#{$width_35}),
+          calc(#{$width_35})
+        );
       }
 
       // The width for "--actions" is not overwritten.
@@ -1304,19 +1404,17 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
   }
 }
 
-
 // ******************************
 // ***** SCAN STATUS TABLES *****
 // ******************************
 
 // Redmine ticket: [#60289]
 
-  // ONGOING SCANS:
-  // FINISHED SCANS:
-  // ERROR MESSAGES:
+// ONGOING SCANS:
+// FINISHED SCANS:
+// ERROR MESSAGES:
 
 // TBA
-
 
 // ***************************************
 // ***** TABLES IN THE REPORT MODULE *****
@@ -1330,20 +1428,19 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
 // ***** REPORT *****
 
-  // PERSONAL:
-  // REMEDIATOR:
-  // UNDISTRIBUTED:
+// PERSONAL:
+// REMEDIATOR:
+// UNDISTRIBUTED:
 
 // TBA
 
 // ***** ARCHIVE *****
 
-  // PERSONAL:
-  // REMEDIATOR:
-  // UNDISTRIBUTED:
+// PERSONAL:
+// REMEDIATOR:
+// UNDISTRIBUTED:
 
 // TBA
-
 
 // *********************************
 // ***** LEADER OVERVIEW TABLE *****
