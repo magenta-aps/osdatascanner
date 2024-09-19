@@ -10,6 +10,9 @@
   be configured via a checkbox on the LDAP-configuration page, when import 
   based on groups is selected.
 
+- Refactored login and password-related templates to extend common template.
+  Login-page once again has a blue background.
+
 ### Bugfixes
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.

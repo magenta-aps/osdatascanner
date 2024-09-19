@@ -1,7 +1,7 @@
+{% extends "components/common/bannerless.html" %}
 {% load i18n %}
-{% include "components/common/header.html" %}
 
-<section class="login-card">
+{% block body %}
   <form method="post" action="{% url 'login' %}" class="form">
     {% csrf_token %}
     <h2>
@@ -55,7 +55,4 @@
       <div class="form__group logo">{% include "components/common/logo-o.html" %}</div>
     </fieldset>
   </form>
-</section>
-
-</body>
-</html>
+{% endblock body %}
