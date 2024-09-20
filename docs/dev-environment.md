@@ -531,6 +531,17 @@ adding new entry "cn=Mikkel Testsen,ou=Test Department,dc=magenta,dc=test"
 adding new entry "cn=Hamish MacTester,ou=Test Department,dc=magenta,dc=test"
 ```
 
+### `--profile cron`
+
+The `cron` profile starts two instances of [`supercronic`](https://github.com/aptible/supercronic),
+one for the admin system and one for the report module, for testing that task
+scheduling works properly.
+
+These services are not enabled by default because settings that make sense in
+production ("start this scanner at midnight", "send emails out every day at
+10am", or "synchronise this organisation every day at 3pm") don't normally make
+sense in the development environment.
+
 ## Setting up OS2mo-importjob
 
 OS2datascanner's development environment incorporates OS2mo organisational import
