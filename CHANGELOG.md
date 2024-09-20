@@ -1,5 +1,13 @@
 # Changelog
 
+## Next Release
+
+"Peter Piper Picked a Pie ... to share, at some point"
+
+### Bugfixes
+
+- Scanning SharePoint now investigates all document libraries, instead of only the primary.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"

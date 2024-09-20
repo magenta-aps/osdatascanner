@@ -41,13 +41,13 @@ class MSGraphFilesSource(MSGraphSource):
                     # For some reason, this returns id key as 3 comma seperated values ...
                     # tenant, site id, some other id.
                     site_id = site.get("id").split(",")[1]
-                    site_w_drive = sm.open(self).get(
-                        f"sites/{site_id}?$select=*,drive&$expand=drive").json()
 
-                    # Grab the "drive" found navigating this site
-                    drive = site_w_drive.get("drive")
-
-                    yield self._make_drive_handle(drive)
+                    # It's possible for a SharePoint site to have multiple "Document Libraries"
+                    # each of these have their own OneDrive
+                    drives = sm.open(self).paginated_get(
+                        f"sites/{site_id}/drives")
+                    for drive in drives:
+                        yield self._make_drive_handle(drive)
 
         if self._user_drives:
             if self._userlist is None:
