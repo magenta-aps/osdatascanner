@@ -19,6 +19,9 @@
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.
 
+- The development environment now has an optional profile that can be used to
+  test scheduled operations.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"
