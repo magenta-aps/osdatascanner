@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 3.24.3, ???
+## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"
 
