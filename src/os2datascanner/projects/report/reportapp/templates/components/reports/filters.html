@@ -38,7 +38,7 @@
             <div class="match_filtering dropdown">
               <select name="scannerjob" id="scannerjobs" autocomplete="off">
                 <option value="all"
-                        {% if scannerjobs|last == "all" %}selected="selected"{% endif %}>
+                        {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
                   {% trans "All scannerjobs" %}
                 </option>
  

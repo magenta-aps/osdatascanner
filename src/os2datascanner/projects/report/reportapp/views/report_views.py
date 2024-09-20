@@ -203,8 +203,8 @@ class ReportView(LoginRequiredMixin, ListView):
                     'scanner_job_name', 'total', 'filtered_total', 'scanner_job_pk'
                 ).order_by('scanner_job_name')
 
-        context['scannerjobs'] = (self.scannerjob_filters,
-                                  self.request.GET.get('scannerjob', 'all'))
+        context['scannerjob_choices'] = self.scannerjob_filters
+        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         context['30_days'] = self.request.GET.get('30-days', 'true')
 
@@ -216,16 +216,16 @@ class ReportView(LoginRequiredMixin, ListView):
                 'sensitivity', 'total'
             )
 
-        context['sensitivities'] = (((Sensitivity(s["sensitivity"]),
-                                    s["total"]) for s in sensitivities),
-                                    self.request.GET.get('sensitivities', 'all'))
+        context['sensitivity_choices'] = ((Sensitivity(s["sensitivity"]),
+                                           s["total"]) for s in sensitivities)
+        context['chosen_senitivity'] = self.request.GET.get('sensitivities', 'all')
 
-        context['source_types'] = (self.all_reports.order_by("source_type").values(
+        context['source_type_choices'] = self.all_reports.order_by("source_type").values(
             "source_type"
         ).annotate(
             total=Count("source_type", filter=sensitivity_filter & scannerjob_filter),
-        ).values("source_type", "total"),
-                                   self.request.GET.get('source_type', 'all'))
+        ).values("source_type", "total")
+        context['chosen_source_type'] = self.request.GET.get('source_type', 'all')
 
         resolution_status = self.all_reports.order_by(
                 'resolution_status').values(
@@ -239,9 +239,8 @@ class ReportView(LoginRequiredMixin, ListView):
                 method['resolution_status']).label if method['resolution_status'] \
                 or method['resolution_status'] == 0 else None
 
-        context['resolution_status'] = (
-            resolution_status, self.request.GET.get(
-                'resolution_status', 'all'))
+        context['resolution_status_choices'] = resolution_status
+        context['chosen_resolution_status'] = self.request.GET.get('resolution_status', 'all')
 
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
