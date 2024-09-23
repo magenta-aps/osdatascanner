@@ -234,6 +234,18 @@ It's quite common for business addresses to be present in f.e. a footer on every
 By using whitelist address, you can whitelist specific street name + house number combinations.
 
 
+## Pre-commit hooks
+
+The OSdatascanner repository contains a number of pre-commit hooks, which are intended to be used 
+for linting and testing.
+
+### Linting
+
+We use `flake8` [8] for linting of Python. We have tried to use `ruff` [9] as an alternative, but 
+as it lacks parity with Pylint, it cannot fully substitute flake8. <br>
+Pylint rules which have been implemented: https://github.com/astral-sh/ruff/issues/970
+
+
 [1]: https://cpr.dk/media/12066/personnummeret-i-cpr.pdf "Method for performing a modulus-11 check."
 
 [2]: https://cpr.dk/cpr-systemet/personnumre-uden-kontrolciffer-modulus-11-kontrol "CPR-numbers exempt from modulus-11 check."
@@ -247,3 +259,7 @@ By using whitelist address, you can whitelist specific street name + house numbe
 [6]: https://redmine.magenta.dk/issues/58526 "[For Internal Use] Ticket for adding exception list to CPRRule."
 
 [7]: https://danmarksadresser.dk/regler-og-vejledning/adresser/ "Description of the construction of Danish addresses."
+
+[8]: https://flake8.pycqa.org/en/latest/ "Flake8 linter for python code"
+
+[9]: https://github.com/astral-sh/ruff "Ruff linter instead of flake8"
