@@ -1,34 +1,25 @@
 import lxml.html
-import datetime # noqa
+import datetime
 import requests
-import unittest
+import re
 
 from os2datascanner.engine2.rules.utilities.cpr_probability import CPR_EXCEPTION_DATES
 
 
-class CPRTest(unittest.TestCase):
+class TestNoticeCPRChanges:
     def test_is_exception_dates_up_to_date(self):
         """
         Compare our list of exception dates to the official list from the
         CPR Office.
+        Last updated: 2024/09/23
         """
         def parsedate(s: str) -> datetime.date:
             """
-            Quick-and-dirty parser for strings such as "1. januar 1991"
+            Quick-and-dirty parser for turning a year into a date, ie "1991" -> 1991 January 1st
             """
-            danish_months = (
-                "januar", "februar", "marts", "april", "maj", "juni",
-                "juli", "august", "september", "oktober", "november",
-                "december",
-            )
+            year = s.strip()
 
-            day, month, year = s.strip().replace(".", "").split()
-
-            return datetime.date(
-                int(year),
-                danish_months.index(month) + 1,
-                int(day)
-            )
+            return datetime.date(int(year), 1, 1)
 
         r = requests.get(
             "https://cpr.dk/cpr-systemet/"
@@ -42,7 +33,7 @@ class CPRTest(unittest.TestCase):
         dates = {
             parsedate(cell.text_content())
             for cell in doc.findall('*//*[@class="web-page"]//td')
-            if cell.text.strip()
+            if cell.text.strip() and re.fullmatch(r"\d{4}", cell.text.strip())
         }
 
-        self.assertEquals(dates, CPR_EXCEPTION_DATES)
+        assert dates == CPR_EXCEPTION_DATES
