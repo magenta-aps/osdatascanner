@@ -287,6 +287,26 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
                     "{0}: wrong evaluation count".format(input_string),
                 )
 
+    def test_or_rule_one_component(self):
+        """Even though users shouldn't be allowed to create rules with one components,
+        they should still be able to run without problems."""
+        representations = {
+            "text": "Testing Testing"
+        }
+        rule = OrRule(RegexRule("Test"))
+        conclusion, evaluations = rule.try_match(representations.get)
+        assert conclusion
+
+    def test_and_rule_one_component(self):
+        """Even though users shouldn't be allowed to create rules with one components,
+        they should still be able to run without problems."""
+        representations = {
+            "text": "Testing Testing"
+        }
+        rule = AndRule(RegexRule("Test"))
+        conclusion, evaluations = rule.try_match(representations.get)
+        assert conclusion
+
     def test_resume(self):
         """Resuming execution of a rule after its try_match method has returned
         should complete the execution correctly."""

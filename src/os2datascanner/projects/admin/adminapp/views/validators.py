@@ -19,7 +19,7 @@ error_table = {
     "standalone":
     _("Cannot build rule: %(r1)s must be used in conjunction with another rule."),
     "components":
-    _("Cannot build rule: %(r1)s must include components.")
+    _("Cannot build rule: %(r1)s must include at least 2 components.")
 }
 
 

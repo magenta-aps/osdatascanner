@@ -8,7 +8,8 @@ from itertools import pairwise
 from typing import Callable
 
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule
-from os2datascanner.engine2.rules.logical import CompoundRule
+from os2datascanner.engine2.rules.logical import CompoundRule, NotRule
+from os2datascanner.engine2.rules.dict_lookup import DictLookupRule
 
 """
 Function signature for a rule invariant.
@@ -108,8 +109,6 @@ def precedence_invariant(rule: Rule) -> bool | None:
             if not (r1.properties.precedence <= r2.properties.precedence):
                 raise RuleInvariantViolationError("precedence", rules=[r1, r2])
 
-    return True
-
 
 @functools.cache
 @register_invariant()
@@ -123,12 +122,12 @@ def standalone_invariant(rule: Rule, is_top_rule: bool = True) -> bool | None:
 
     match rule:
         case CompoundRule() if len(rule._components) == 0:
-            standalone = True
-        case CompoundRule() if len(rule._components) == 1:
-            standalone = standalone_invariant(rule._components[0], is_top_rule=False)
+            standalone = False
         case CompoundRule():
             standalone = any(standalone_invariant(c, is_top_rule=False)
                              for c in rule._components)
+        case NotRule() | DictLookupRule():
+            standalone = standalone_invariant(rule._rule, is_top_rule=False)
         case SimpleRule() | Rule():
             standalone = rule.properties.standalone
         case _:
@@ -184,9 +183,13 @@ def components_invariant(rule: Rule) -> bool | None:
 
     match rule:
         case CompoundRule():
-            if not rule._components:
+            if len(rule._components) < 2:
                 raise RuleInvariantViolationError("components", rules=[rule])
             return all(components_invariant(c) for c in rule._components)
+        case NotRule() | DictLookupRule():
+            if not rule._rule:
+                raise RuleInvariantViolationError("components", rules=[rule])
+            return components_invariant(rule._rule)
         case SimpleRule() | Rule():
             return True
         case _:
@@ -212,8 +215,12 @@ class RuleInvariantChecker:
     def check_invariants(self, rule: Rule) -> bool:
         """
         Utility function for checking multiple invariants on a rule.
+        Returns True if no invariant raises an exception.
 
         :param rule:
         """
 
-        return all(invariant(rule) for invariant in self._invariants)
+        for invariant in self._invariants:
+            invariant(rule)
+
+        return True

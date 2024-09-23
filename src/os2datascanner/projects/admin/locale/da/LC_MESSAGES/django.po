@@ -2478,6 +2478,11 @@ msgid ""
 "Cannot build rule: %(r1)s must be used in conjunction with another rule."
 msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
+#: adminapp/views/validators.py:22
+#, python-format
+msgid "Cannot build rule: %(r1)s must include at least 2 components."
+msgstr "Kan ikke bygge regel: %(r1)s skal have mindst 2 delregler."
+
 #: adminapp/views/views.py:205 import_services/models/exported_mixin.py:31
 msgid "created"
 msgstr "oprettet"

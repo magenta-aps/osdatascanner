@@ -27,6 +27,8 @@ def oxford_comma(parts: Sequence, conjunction: str, *, key=lambda c: str(c)) -> 
 class CompoundRule(Rule):
     def __init__(self, *components, **super_kwargs):
         super().__init__(**super_kwargs)
+        if len(components) == 0:
+            raise ValueError("CompoundRule with zero components")
         self._components = components
 
     @property
@@ -57,9 +59,15 @@ class CompoundRule(Rule):
             return cls(*components)
 
     def split(self):
-        fst, rest = self._components[0], self._components[1:]
-        head, pve, nve = fst.split()
-        return head, self.make(pve, *rest), self.make(nve, *rest)
+        match self._components:
+            case [head]:
+                # Trivial case: just defer to the only component
+                return head.split()
+            case [head, *tail]:
+                next_rule, pve, nve = head.split()
+                return next_rule, self.make(pve, *tail), self.make(nve, *tail)
+            case _:
+                raise ValueError
 
     def to_json_object(self):
         return dict(
@@ -85,7 +93,7 @@ class AllRule(CompoundRule):
     def presentation_raw(self):
         if len(self._components) == 0:
             return "Empty AllRule"
-        elif len(self._components) in {1, 2}:
+        elif len(self._components) < 3:
             return "({0})".format(oxford_comma(self._components, "or"))
         else:
             return "({0})".format(oxford_comma(self._components, "or any of"))
@@ -134,10 +142,7 @@ class AndRule(CompoundRule):
 
     @property
     def presentation_raw(self):
-        if len(self._components) > 0:
-            return "({0})".format(oxford_comma(self._components, "and"))
-        else:
-            return "Empty AndRule"
+        return "({0})".format(oxford_comma(self._components, "and"))
 
     @classmethod
     def make(cls, *components):
@@ -165,10 +170,7 @@ class OrRule(CompoundRule):
 
     @property
     def presentation_raw(self):
-        if len(self._components) > 0:
-            return "({0})".format(oxford_comma(self._components, "or"))
-        else:
-            return "Empty OrRule"
+        return "({0})".format(oxford_comma(self._components, "or"))
 
     @classmethod
     def make(cls, *components):
@@ -197,6 +199,8 @@ class NotRule(Rule):
 
     def __init__(self, rule, **super_kwargs):
         super().__init__(**super_kwargs)
+        if not rule:
+            raise ValueError("Couldn't construct NotRule: No rule given")
         self._rule = rule
 
     @property
@@ -224,8 +228,6 @@ class NotRule(Rule):
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj):
-        if not obj['rule']:
-            raise ValueError("Couldn't construct NotRule: No rule given")
         return NotRule(
             Rule.from_json_object(obj["rule"]),
             sensitivity=Sensitivity.make_from_dict(obj),
