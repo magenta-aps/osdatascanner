@@ -32,6 +32,7 @@ class LDAPEditForm(forms.ModelForm):
             'vendor',
             'import_into',
             'group_filter',
+            'import_managers',
             'username_attribute',
             'rdn_attribute',
             'uuid_attribute',
@@ -69,6 +70,7 @@ class LDAPEditForm(forms.ModelForm):
             'vendor',
             'import_into',
             'group_filter',
+            'import_managers',
         ]
         return fields
 

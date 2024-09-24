@@ -55,7 +55,7 @@ def _dummy_pc(action, *args):
     pass
 
 
-def perform_import(
+def perform_import(  # noqa: CCR001, too high cognitive complexity
         realm: Realm,
         progress_callback=_dummy_pc) -> Tuple[int, int, int]:
     """Collects the user hierarchy from the specified realm and creates
@@ -67,6 +67,7 @@ def perform_import(
     removed."""
     org = realm.organization
     import_service = org.importservice
+    account_dn_managed_units_paths = {}
     if not import_service or not import_service.ldapconfig:
         return 0, 0, 0
 
@@ -92,8 +93,18 @@ def perform_import(
     if import_service.ldapconfig.import_into == "group" and has_group_filter:
         # Gets all groups in the realm, and then gets every member of the groups
 
-        # Iterator object of all groups in realm
-        group_iter = keycloak_services.iter_groups(realm.realm_id, token=token, timeout=1800)
+        # List object of all groups in realm
+        group_list = list(keycloak_services.iter_groups(realm.realm_id, token=token, timeout=1800))
+
+        # If the import_managers attribute is enabled, get the group managers
+        if import_service.ldapconfig.import_managers:
+            for group in group_list:
+                if group["attributes"].get("managedBy"):
+                    if account_dn_managed_units_paths.get(
+                            group["attributes"]["managedBy"][0]) is None:
+                        account_dn_managed_units_paths[group["attributes"]["managedBy"][0]] = []
+                    account_dn_managed_units_paths[group["attributes"]["managedBy"][0]].append(
+                        RDN.dn_to_sequence(group["attributes"]["distinguishedName"][0]))
 
         def user_iter(groups):
             for group in groups:
@@ -104,13 +115,19 @@ def perform_import(
                 yield from members
 
         # Gets all users in a group in given realm
-        all_users = user_iter(group_iter)
+        all_users = user_iter(iter(group_list))
     else:
         # Gets all users in the given realm
         all_users = keycloak_services.iter_users(
                         realm.realm_id, token=token, timeout=1800, page_size=1000)
 
-    return perform_import_raw(org, all_users, name_selector, progress_callback)
+    return perform_import_raw(
+        org,
+        all_users,
+        name_selector,
+        progress_callback=progress_callback,
+        account_dn_managed_units_paths=account_dn_managed_units_paths,
+        do_manager_import=import_service.ldapconfig.import_managers)
 
 
 def _account_to_node(a: Account) -> LDAPNode:
@@ -454,12 +471,52 @@ def _filter_positions(account_positions: dict[Account, list[OrganizationalUnit]]
             yield (Action.DELETE, pos)
 
 
+def _update_manager_positions(accounts: set[Account],
+                              account_dn_managed_units_paths: dict[str, list[Sequence[RDN]]],
+                              org: Organization,
+                              path_to_unit: dict[Sequence[RDN], OrganizationalUnit]
+                              ) -> Iterator[tuple[Action, Position]]:
+    """Creates a Position object for every group with managedBy and user in a group
+    in remote_hierarchy."""
+
+    for account in accounts:
+        units = [unit.imported_id for unit in account.get_managed_units()]
+        for group_dn in account_dn_managed_units_paths.get(account.imported_id, []):
+            if group_dn not in units and not Position.managers.filter(
+                account=account, unit=_path_to_unit(
+                    org, group_dn, path_to_unit)[0], imported=True).exists():
+                position = Position(
+                            imported=True,
+                            account=account,
+                            unit=_path_to_unit(org, group_dn, path_to_unit)[0],
+                            role="manager")
+                # Position is missing. Add it
+                yield (Action.ADD, position)
+
+
+def _filter_manager_positions(
+        accounts: set[Account], account_dn_managed_units_paths: dict[str, list[Sequence[RDN]]]
+        ) -> Iterator[Position]:
+    """Finds every manager position for each given account that isn't accurate."""
+    for account in accounts:
+        units_imported_ids = [unit.imported_id for unit in account.get_managed_units()]
+        account_dn_managed_units_paths_units = [
+            RDN.sequence_to_dn(unit) for unit in account_dn_managed_units_paths.get(
+                account.imported_id, [])]
+        for unit in units_imported_ids:
+            if unit not in account_dn_managed_units_paths_units:
+                yield from Position.managers.filter(
+                        account=account, unit__imported_id=unit, imported=True)
+
+
 @suppress_django_signals
-def perform_import_raw(
+def perform_import_raw(  # noqa: CCR001, too high cognitive complexity
         org: Organization,
         remote,
         name_selector,
-        progress_callback=_dummy_pc):
+        progress_callback=_dummy_pc,
+        account_dn_managed_units_paths=None,
+        do_manager_import=False):
     """The main body of the perform_import function, spun out into a separate
     function to allow for easier testing. Constructs a LDAPNode hierarchy from
     a Keycloak JSON response, compares it to an organisation's local hierarchy,
@@ -538,6 +595,19 @@ def perform_import_raw(
     # Figure out which positions to delete for each user.
     for action, object in _filter_positions(account_positions):
         actions[action].append(object)
+
+    # If we have managedBy accounts, we need to update the manager positions
+    if do_manager_import:
+        for action, position in _update_manager_positions(
+                updated_accounts,
+                account_dn_managed_units_paths,
+                org=org,
+                path_to_unit=path_to_unit):
+            actions[action].append(position)
+
+        for position in _filter_manager_positions(
+                updated_accounts, account_dn_managed_units_paths):
+            actions[Action.DELETE].append(position)
 
     # Make sure we don't try to delete objects that are still referenced in the remote hierarchy
     for obj in chain(actions[Action.KEEP], actions[Action.ADD]):

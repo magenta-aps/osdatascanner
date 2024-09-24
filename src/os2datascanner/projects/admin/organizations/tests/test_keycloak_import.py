@@ -225,6 +225,13 @@ def ulf(ulf_dict, test_org):
     )
 
 
+@pytest.fixture
+def account_dn_managed_units_paths(TEST_CORP):
+    return {TEST_CORP[0]["attributes"]["LDAP_ENTRY_DN"][0]: [
+                RDN.dn_to_sequence(TEST_CORP[0]["attributes"]["group_dn"])]
+            }
+
+
 @pytest.mark.django_db
 class TestKeycloakImport:
 
@@ -630,3 +637,48 @@ class TestKeycloakImport:
         for user in Account.objects.filter(organization=test_org):
             assert (user.first_name, user.last_name) == (
                 "Tadeusz", "Soplica"), "property update failed"
+
+    def test_import_and_creation_of_managers(
+            self, account_dn_managed_units_paths, TEST_CORP, test_org):
+        """It should be possible to add managers based on the Keycloak output."""
+
+        keycloak_actions.perform_import_raw(
+            test_org, TEST_CORP,
+            keycloak_actions.keycloak_group_dn_selector,
+            account_dn_managed_units_paths=account_dn_managed_units_paths,
+            do_manager_import=True)
+
+        # Get Ted Testsen
+        account = Account.objects.get(uuid=TEST_CORP[0]["id"])
+
+        # Get Group 1.
+        unit = OrganizationalUnit.objects.get(imported_id=TEST_CORP[0]["attributes"]["group_dn"])
+
+        manager = Position.managers.get(account=account, unit=unit)
+
+        assert manager == account.positions.get(role="manager", unit=unit), "manager not imported"
+
+    def test_empty_manager_update(self, account_dn_managed_units_paths, TEST_CORP, test_org):
+        """It should be possible to remove managers based on the Keycloak output.
+        If there are none remotely, but local managers still exist, they should be deleted."""
+
+        # Import, create manager Position for Ted Testsen
+        keycloak_actions.perform_import_raw(
+            test_org, TEST_CORP,
+            keycloak_actions.keycloak_group_dn_selector,
+            account_dn_managed_units_paths=account_dn_managed_units_paths,
+            do_manager_import=True)
+
+        # Import again, with no managers
+        keycloak_actions.perform_import_raw(
+            test_org, TEST_CORP,
+            keycloak_actions.keycloak_group_dn_selector,
+            account_dn_managed_units_paths={},
+            do_manager_import=True)
+
+        # Get manager account
+        account = Account.objects.get(uuid=TEST_CORP[0]["id"])
+        unit = OrganizationalUnit.objects.get(imported_id=TEST_CORP[0]["attributes"]["group_dn"])
+
+        assert Position.managers.filter(
+            account=account, unit=unit).exists() is False, "manager not removed"

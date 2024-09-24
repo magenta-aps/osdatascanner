@@ -215,7 +215,7 @@ def get_groups(realm, timeout=5, max_elements=500, start_with=0, token=None):
 
 def iter_api_call(realm, function, token=None, timeout=5, page_size=500, **kwargs):
     """Given a get_xxxx function, yields all results know to Keycloak,
-    makins as many API calls as necessary given the specified page size."""
+    making as many API calls as necessary given the specified page size."""
     offset = 0
 
     while rq := function(
@@ -236,8 +236,8 @@ def iter_api_call(realm, function, token=None, timeout=5, page_size=500, **kwarg
 
 
 def iter_group_members(realm, group_id, group_dn=None, token=None, timeout=5, page_size=500):
-    """Yields all members of given group,
-    and saves the dn of the group as an attribute of the members"""
+    """Yields all members of given group, and saves the dn of the group as an attribute
+    of the members"""
 
     for member in iter_api_call(realm, get_group_members, token=token, timeout=timeout,
                                 page_size=page_size, group_id=group_id):
