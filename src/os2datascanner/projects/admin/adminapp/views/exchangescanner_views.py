@@ -43,8 +43,11 @@ class OrganizationalUnitListing(ListAPIView):
         organization_id = self.request.query_params.get('organizationId', None)
 
         if organization_id:
+            # Filter by organization and exclude hidden units
             queryList = OrganizationalUnit.objects.filter(
-                    organization=organization_id)
+                organization=organization_id,
+                hidden=False
+            )
         else:
             queryList = []
 

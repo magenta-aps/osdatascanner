@@ -7,8 +7,7 @@ from .models import Organization, OrganizationalUnit, Account, Position, Alias
 
 # Register your models here.
 
-for model in [OrganizationalUnit, Position]:
-    admin.site.register(model, ImportedAdmin)
+admin.site.register(Position, ImportedAdmin)
 
 
 @admin.register(Alias)
@@ -62,6 +61,11 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'client', 'contact_email', 'contact_phone',)
     search_fields = ('name', 'client__name')
     filter_horizontal = ('system_rules',)
+
+
+@admin.register(OrganizationalUnit)
+class OrganizationalUnitAdmin(ImportedAdmin):
+    list_display = ('name', 'hidden', 'parent', 'organization', 'uuid')
 
 
 @admin.register(Account)

@@ -89,6 +89,19 @@
     <span class="text-grey">{% trans "organizational hierarchy"|capfirst %}</span>
   {% endif %}
 
+  {% if page == 'edit_orgunit_visibility' %}
+    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
+
+    <i id="chevron_right" class="material-icons">chevron_right</i>
+
+    <a href="{% url 'orgunit-list' org_slug=organization.slug %}"
+       class="link-color">{% trans "organizational hierarchy"|capfirst %}</a>
+
+    <i id="chevron_right" class="material-icons">chevron_right</i>
+
+    <span class="text-grey">{% trans "Edit visibility"|capfirst %}</span>
+  {% endif %}
+
   {% if page == 'accounts' %}
     <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
 
@@ -102,7 +115,7 @@
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 
-    <a href="{% url "accounts" account.organization.slug %}"
+    <a href="{% url 'accounts' account.organization.slug %}"
        class="link-color">{% trans "accounts"|capfirst %}</a>
 
     <i id="chevron_right" class="material-icons">chevron_right</i>

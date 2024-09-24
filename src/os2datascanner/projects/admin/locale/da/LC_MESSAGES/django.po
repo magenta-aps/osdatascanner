@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-11 10:53+0100\n"
+"POT-Creation-Date: 2024-11-11 16:10+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -155,7 +155,7 @@ msgstr "Login metode"
 #: adminapp/models/rules.py:40 adminapp/models/rules.py:101
 #: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:37
-#: organizations/templates/organizations/orgunit_list.html:155
+#: organizations/templates/organizations/orgunit_list.html:203
 msgid "name"
 msgstr "navn"
 
@@ -822,10 +822,11 @@ msgstr "Opret ny regel"
 #: adminapp/templates/components/common/breadcrumb.html:77
 #: adminapp/templates/components/common/breadcrumb.html:85
 #: adminapp/templates/components/common/breadcrumb.html:93
-#: adminapp/templates/components/common/breadcrumb.html:101
+#: adminapp/templates/components/common/breadcrumb.html:106
 #: adminapp/templates/components/common/breadcrumb.html:114
-#: adminapp/templates/components/common/breadcrumb.html:126
-#: adminapp/templates/components/common/breadcrumb.html:138
+#: adminapp/templates/components/common/breadcrumb.html:127
+#: adminapp/templates/components/common/breadcrumb.html:139
+#: adminapp/templates/components/common/breadcrumb.html:151
 #: adminapp/templates/components/navigation/navigation.html:48
 #: organizations/apps.py:8
 #: organizations/templates/organizations/org_list.html:7
@@ -847,38 +848,45 @@ msgid "update organization"
 msgstr "opdatér organisation"
 
 #: adminapp/templates/components/common/breadcrumb.html:89
+#: adminapp/templates/components/common/breadcrumb.html:98
 #: organizations/templates/organizations/orgunit_list.html:6
 msgid "organizational hierarchy"
 msgstr "organisatorisk struktur"
 
-#: adminapp/templates/components/common/breadcrumb.html:97
-#: adminapp/templates/components/common/breadcrumb.html:106
+#: adminapp/templates/components/common/breadcrumb.html:102
+#: organizations/templates/organizations/edit_visibility_page.html:8
+#: organizations/templates/organizations/orgunit_list.html:181
+msgid "Edit visibility"
+msgstr "Redigér synlighed"
+
+#: adminapp/templates/components/common/breadcrumb.html:110
+#: adminapp/templates/components/common/breadcrumb.html:119
 #: organizations/templates/organizations/account_list.html:5
-#: organizations/templates/organizations/orgunit_list.html:156
+#: organizations/templates/organizations/orgunit_list.html:206
 msgid "accounts"
 msgstr "konti"
 
-#: adminapp/templates/components/common/breadcrumb.html:119
+#: adminapp/templates/components/common/breadcrumb.html:132
 msgid "add LDAP configuration"
 msgstr "tilføj LDAP-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:121
+#: adminapp/templates/components/common/breadcrumb.html:134
 msgid "update LDAP configuration"
 msgstr "opdatér LDAP-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:131
+#: adminapp/templates/components/common/breadcrumb.html:144
 msgid "add MS Graph configuration"
 msgstr "Tilføj Microsoft Graph konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:133
+#: adminapp/templates/components/common/breadcrumb.html:146
 msgid "update MS Graph configuration"
 msgstr "opdatér Microsoft Graph konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:143
+#: adminapp/templates/components/common/breadcrumb.html:156
 msgid "add OS2mo configuration"
 msgstr "tilføj OS2mo-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:145
+#: adminapp/templates/components/common/breadcrumb.html:158
 msgid "update OS2mo configuration"
 msgstr "opdatér OS2mo-konfiguration"
 
@@ -1495,7 +1503,7 @@ msgstr "vælg brugere fra"
 #: adminapp/templates/components/scanner/scanner_form.html:513
 #: adminapp/templates/components/scanner/scanner_form.html:616
 #: import_services/models/ldap_configuration.py:126
-#: organizations/templates/organizations/orgunit_list.html:142
+#: organizations/templates/organizations/orgunit_list.html:194
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
@@ -2302,7 +2310,7 @@ msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
 #: adminapp/templates/system_rules.html:5
-#: adminapp/templates/system_rules.html:55 organizations/admin.py:56
+#: adminapp/templates/system_rules.html:55 organizations/admin.py:55
 msgid "System rules"
 msgstr "Systemregler"
 
@@ -2316,8 +2324,8 @@ msgid "Filter system rules by the chosen categories."
 msgstr "Filtrér systemreglerne efter de valgte kategorier"
 
 #: adminapp/templates/system_rules.html:31
-#: organizations/templates/organizations/orgunit_list.html:81
-#: organizations/templates/organizations/orgunit_list.html:129
+#: organizations/templates/organizations/orgunit_list.html:89
+#: organizations/templates/organizations/orgunit_list.html:161
 msgid "filter"
 msgstr "filtrér"
 
@@ -2378,24 +2386,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:214
+#: adminapp/views/exchangescanner_views.py:217
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:215
+#: adminapp/views/exchangescanner_views.py:218
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:225
+#: adminapp/views/exchangescanner_views.py:228
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:231
+#: adminapp/views/exchangescanner_views.py:234
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:236
+#: adminapp/views/exchangescanner_views.py:239
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2403,22 +2411,22 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:255
+#: adminapp/views/exchangescanner_views.py:258
 msgid "The domain is invalid"
 msgstr "Domænet er ugyldigt"
 
-#: adminapp/views/exchangescanner_views.py:264
+#: adminapp/views/exchangescanner_views.py:267
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:268
+#: adminapp/views/exchangescanner_views.py:271
 #: adminapp/views/filescanner_views.py:178
 #: organizations/templates/organizations/account_detail.html:25
 #: organizations/templates/organizations/account_list.html:56
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:273
+#: adminapp/views/exchangescanner_views.py:276
 #: adminapp/views/filescanner_views.py:179
 msgid "Password"
 msgstr "Adgangskode"
@@ -3286,11 +3294,11 @@ msgstr ""
 msgid "return to organizations page"
 msgstr "vend tilbage til organisationer-siden"
 
-#: organizations/admin.py:42
+#: organizations/admin.py:41
 msgid "Tab access"
 msgstr "Menu-adgang"
 
-#: organizations/admin.py:48
+#: organizations/admin.py:47
 #: organizations/templates/organizations/org_update.html:59
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
@@ -3404,17 +3412,17 @@ msgstr "Aliasser"
 
 #: organizations/templates/organizations/account_detail.html:97
 #: organizations/templates/organizations/account_detail.html:154
-#: organizations/templates/organizations/orgunit_list.html:34
-#: organizations/templates/organizations/orgunit_list.html:176
-#: organizations/templates/organizations/orgunit_list.html:203
+#: organizations/templates/organizations/orgunit_list.html:39
+#: organizations/templates/organizations/orgunit_list.html:266
+#: organizations/templates/organizations/orgunit_list.html:297
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:104
 #: organizations/templates/organizations/account_detail.html:163
-#: organizations/templates/organizations/orgunit_list.html:41
-#: organizations/templates/organizations/orgunit_list.html:183
-#: organizations/templates/organizations/orgunit_list.html:210
+#: organizations/templates/organizations/orgunit_list.html:46
+#: organizations/templates/organizations/orgunit_list.html:273
+#: organizations/templates/organizations/orgunit_list.html:304
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
@@ -3469,6 +3477,60 @@ msgstr "Søg efter konto"
 #: organizations/templates/organizations/account_list.html:74
 msgid "No accounts found!"
 msgstr "Ingen konti fundet"
+
+#: organizations/templates/organizations/edit_visibility_page.html:16
+msgid "edit organizational unit visibility for"
+msgstr "redigér organisatorisk enheds synlighed for"
+
+#: organizations/templates/organizations/edit_visibility_page.html:27
+msgid "Choose organizational units"
+msgstr "Vælg organisatoriske enheder"
+
+#: organizations/templates/organizations/edit_visibility_page.html:30
+msgid ""
+"Select the organizational units that should be visible throughout the Admin "
+"and Report module from the list below. Any changes will be visible to all "
+"users once saved."
+msgstr ""
+"Vælg hvilke organisatoriske enheder, der skal være synlige på tværs af "
+"Admin- og Rapportmodulet fra listen nedenfor. Gemte ændringer bliver synlige "
+"for alle brugerer med det samme."
+
+#: organizations/templates/organizations/edit_visibility_page.html:41
+#: organizations/templates/organizations/edit_visibility_page.html:56
+msgid "This button handles toggling of visibility for all organizational units"
+msgstr ""
+"Denne knap håndterer valg/fravalg af synlighed for alle organisatoriske "
+"enheder"
+
+#: organizations/templates/organizations/edit_visibility_page.html:42
+msgid "Make all organizational units visible"
+msgstr "Gør alle organisatoriske enhededer synlige"
+
+#: organizations/templates/organizations/edit_visibility_page.html:49
+msgid "Make all visible"
+msgstr "Markér alle som  synlige"
+
+#: organizations/templates/organizations/edit_visibility_page.html:57
+msgid "Make all organizational units hidden"
+msgstr "Gør alle organisatoriske enheder skjulte"
+
+#: organizations/templates/organizations/edit_visibility_page.html:64
+msgid "Make all hidden"
+msgstr "Markér alle som skjulte"
+
+#: organizations/templates/organizations/edit_visibility_page.html:74
+msgid "Search for unit"
+msgstr "Søg efter enhed"
+
+#: organizations/templates/organizations/edit_visibility_page.html:109
+#: organizations/templates/organizations/edit_visibility_page.html:110
+msgid "return to the organizational structure overview"
+msgstr "retunér til siden for organisatorisk struktur"
+
+#: organizations/templates/organizations/edit_visibility_page.html:114
+msgid "go back"
+msgstr "gå tilbage"
 
 #: organizations/templates/organizations/org_add.html:52
 #: organizations/templates/organizations/org_add.html:53
@@ -3609,69 +3671,114 @@ msgstr "Microsoft Tenant Indstillinger"
 msgid "Allow deletion"
 msgstr "Tillad sletning"
 
-#: organizations/templates/organizations/orgunit_list.html:23
+#: organizations/templates/organizations/orgunit_list.html:24
 msgid "organizational hierarchy for"
 msgstr "organisatorisk struktur for"
 
-#: organizations/templates/organizations/orgunit_list.html:25
+#: organizations/templates/organizations/orgunit_list.html:28
 msgid "universal DPOs"
 msgstr "universelle DPO'er"
 
-#: organizations/templates/organizations/orgunit_list.html:27
+#: organizations/templates/organizations/orgunit_list.html:31
 msgid ""
 "A universal DPO has access to the DPO-module for all organizational units"
 msgstr ""
 "En universel DPO bliver givet adgang til DPO-modulet for alle "
 "organisatoriske enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:34
-#: organizations/templates/organizations/orgunit_list.html:41
+#: organizations/templates/organizations/orgunit_list.html:39
+#: organizations/templates/organizations/orgunit_list.html:46
 msgid "as universal DPO of"
 msgstr "som universel DPO for"
 
-#: organizations/templates/organizations/orgunit_list.html:73
+#: organizations/templates/organizations/orgunit_list.html:81
 msgid "Search for organizational unit"
 msgstr "Søg efter organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:96
+#: organizations/templates/organizations/orgunit_list.html:105
 msgid "Show organizational units:"
 msgstr "Vis organisatoriske enheder:"
 
-#: organizations/templates/organizations/orgunit_list.html:107
+#: organizations/templates/organizations/orgunit_list.html:117
 msgid "with "
 msgstr "med"
 
-#: organizations/templates/organizations/orgunit_list.html:122
+#: organizations/templates/organizations/orgunit_list.html:138
+msgid "Show hidden units"
+msgstr "Vis skjulte enheder"
+
+#: organizations/templates/organizations/orgunit_list.html:153
 msgid "Show empty units"
 msgstr "Vis tomme enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:157
+#: organizations/templates/organizations/orgunit_list.html:171
+#: organizations/templates/organizations/orgunit_list.html:172
+msgid ""
+"Change which organizational units should be visible throughout both Admin "
+"and Report"
+msgstr ""
+"Lav ændringer i hvilke organisatoriske enheder, der skal være synlige på "
+"tværs af både Admin og Rapport"
+
+#: organizations/templates/organizations/orgunit_list.html:203
+msgid "Name of organizational unit"
+msgstr "Navn på organisatorisk enhed"
+
+#: organizations/templates/organizations/orgunit_list.html:205
+msgid "Affiliated accounts for this organizational unit"
+msgstr "Tilknyttede konti for denne organisatoriske enhed"
+
+#: organizations/templates/organizations/orgunit_list.html:208
+msgid "visibility"
+msgstr "synlighed"
+
+#: organizations/templates/organizations/orgunit_list.html:209
 msgid "managers"
 msgstr "ledere"
 
-#: organizations/templates/organizations/orgunit_list.html:158
+#: organizations/templates/organizations/orgunit_list.html:210
 msgid "DPOs"
 msgstr "DPOer"
 
-#: organizations/templates/organizations/orgunit_list.html:170
-msgid "accounts associated."
-msgstr "konti tilknyttet"
+#: organizations/templates/organizations/orgunit_list.html:226
+msgid "There are currently"
+msgstr "Der er i øjeblikket"
 
-#: organizations/templates/organizations/orgunit_list.html:176
-#: organizations/templates/organizations/orgunit_list.html:183
-#: organizations/templates/organizations/orgunit_list.html:203
+#: organizations/templates/organizations/orgunit_list.html:226
+msgid "accounts associated with"
+msgstr "konti tilknyttet til"
+
+#: organizations/templates/organizations/orgunit_list.html:226
+msgid "There are currently none accounts associated with"
+msgstr "Der er i øjeblikket ingen konti tilknyttet til"
+
+#: organizations/templates/organizations/orgunit_list.html:232
+msgid "associated"
+msgstr "tilknyttet"
+
+#: organizations/templates/organizations/orgunit_list.html:243
+msgid "has been set to be hidden"
+msgstr "er indstilet til at være skjult"
+
+#: organizations/templates/organizations/orgunit_list.html:252
+msgid "has been set to be visible"
+msgstr "er indstilet til at være synlig"
+
+#: organizations/templates/organizations/orgunit_list.html:266
+#: organizations/templates/organizations/orgunit_list.html:273
+#: organizations/templates/organizations/orgunit_list.html:297
 msgid "as manager of"
 msgstr "som leder af"
 
-#: organizations/templates/organizations/orgunit_list.html:210
+#: organizations/templates/organizations/orgunit_list.html:304
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:230
+#: organizations/templates/organizations/orgunit_list.html:326
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:238
+#: organizations/templates/organizations/orgunit_list.html:335
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
@@ -3751,6 +3858,33 @@ msgstr "OSdatascanner bruger attribut"
 msgid "Claim attribute"
 msgstr "Claim attribut"
 
+#~ msgid "Show all"
+#~ msgstr "Vis alle"
+
+#~ msgid "Hide all"
+#~ msgstr "Skjul alle"
+
+#~ msgid "Select/deselect all organizational units at once"
+#~ msgstr "Vælg/fravælg alle organisatoriske enheder på én gang"
+
+#~ msgid "select all"
+#~ msgstr "vælg alle"
+
+#~ msgid "unselect all"
+#~ msgstr "fravælg alle"
+
+#~ msgid "save changes and update visibility settings"
+#~ msgstr "gem ændringer og opdatér synligheds indstillinger"
+
+#~ msgid "save"
+#~ msgstr "gem"
+
+#~ msgid "reset and discard all changes"
+#~ msgstr "nulstil og kassér alle ændringer"
+
+#~ msgid "reset"
+#~ msgstr "nulstil"
+
 #~ msgid "Support settings"
 #~ msgstr "Support indstillinger"
 
@@ -3822,9 +3956,6 @@ msgstr "Claim attribut"
 
 #~ msgid "-- Please select a rule below --"
 #~ msgstr "-- Vælg venligst en regel herunder --"
-
-#~ msgid "Select all"
-#~ msgstr "Vælg alle"
 
 #~ msgid "Add LDAP configuration"
 #~ msgstr "Tilføj LDAP-konfiguration"

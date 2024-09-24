@@ -540,11 +540,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['user_units'] = self.user_units
+        context['user_units'] = self.user_units.filter(hidden=False)
         context["org_unit"] = self.org_unit
         context["employee_count"] = self.employee_count
-
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
 

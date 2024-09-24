@@ -12,6 +12,4 @@ function setAddButtons(buttons) {
 htmx.onLoad(function (content) {
   let addButtons = content.querySelectorAll(".add_button");
   setAddButtons(addButtons);
-
-  revealHighlighted(content);
 });

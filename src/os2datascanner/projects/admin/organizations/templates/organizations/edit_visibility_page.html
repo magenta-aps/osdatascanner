@@ -1,0 +1,117 @@
+{% extends 'organizations/base.html' %}
+{% load i18n %}
+ 
+{% load static %}
+ 
+
+{% block title %}
+  {% trans "Edit visibility"|capfirst %}
+{% endblock %}
+ 
+
+{% block content %}
+  {% include "components/common/breadcrumb.html" with page="edit_orgunit_visibility" %}
+
+  <div class="aside">
+    <h1>{% trans "edit organizational unit visibility for"|capfirst %} {{ organization }}</h1>
+  </div>
+
+  <form class="form" role="form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="paginate_by" value="{{ paginate_by }}">
+    {% csrf_token %}
+
+    <section class="data-form">
+      <fieldset class="form__fieldset">
+        <div class="form__content">
+          <div class="form__content__header">
+            <h3 class="header__title">{% trans "Choose organizational units" %}</h3>
+
+            <p class="header__subtitle">
+              {% trans "Select the organizational units that should be visible throughout the Admin and Report module from the list below. Any changes will be visible to all users once saved." %}
+            </p>
+          </div>
+
+          <div id="ou-visibility-form" class="form__content__body">
+            <div class="form__ui-container">
+              <div class="ui-group ui-group--left">
+                <!-- "make all OU visible" button -->
+                <button type="button"
+                        class="button button--modal-ui button--cta-button button--icon-text-button"
+                        id="all_orgunits_visible"
+                        aria-label="{% trans 'This button handles toggling of visibility for all organizational units' %}"
+                        title="{% trans 'Make all organizational units visible' %}"
+                        hx-post="{% url 'edit-orgunit-visibility-view' org_slug=organization.slug %}"
+                        hx-vals='{"set_all_visibility": true, "visibility": "true"}'
+                        hx-target="#ou-list-hidden"
+                        hx-swap="innerHTML"
+                        hx-trigger="click">
+                  <i class="material-symbols">visibility</i>
+                  <span>{% trans "Make all visible"|capfirst %}</span>
+                </button>
+
+                <!-- "hide all OU" button -->
+                <button type="button"
+                        class="button button--modal-ui button--outline-button button--icon-text-button"
+                        id="all_orgunits_hidden"
+                        aria-label="{% trans 'This button handles toggling of visibility for all organizational units' %}"
+                        title="{% trans 'Make all organizational units hidden' %}"
+                        hx-post="{% url 'edit-orgunit-visibility-view' org_slug=organization.slug %}"
+                        hx-vals='{"set_all_visibility": true, "visibility": "false"}'
+                        hx-target="#ou-list-hidden"
+                        hx-swap="innerHTML"
+                        hx-trigger="click">
+                  <i class="material-symbols">visibility_off</i>
+                  <span>{% trans "Make all hidden"|capfirst %}</span>
+                </button>
+              </div>
+
+              <div class="ui-group ui-group--right">
+                <!-- search field -->
+                <div id="ou-visibility_search_field" class="search_field_wrapper">
+                  <input type="search"
+                         name="search_field"
+                         id="search_field"
+                         placeholder="{% trans 'Search for unit' %}"
+                         value="{{ search_field }}"
+                         autocomplete="off"
+                         hx-get="{{ request.path }}"
+                         hx-target="#ou-list-hidden"
+                         hx-select=".orgunit-list"
+                         hx-swap="innerHTML"
+                         hx-push-url="true"
+                         hx-trigger="keyup delay:200ms, search" />
+                </div>
+              </div>
+            </div>
+
+            <div id="ou-list-hidden" class="form__group">{% include "organizations/edit_visibility_orgunit_list.html" %}</div>
+          </div>
+
+          <div class="form__content__footer">
+            <!-- pagination -->
+            {% comment %}
+              We desperately need to refactor this. A component shouldn't be so specific 
+              it requires an empty table tag around it to work D:
+            {% endcomment %}
+            <table id="ou-visibility-form-pagitation">
+              {% include "components/pagination/pagination.html" %}
+            </table>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <div class="content-footer">
+      <a href="{% url 'orgunit-list' org_slug=organization.slug %}"
+         class="button button--cta-button button--icon-text-button"
+         id="return_button"
+         aria-label="{% trans 'return to the organizational structure overview'|capfirst %}"
+         title="{% trans 'return to the organizational structure overview'|capfirst %}"
+         name="return">
+        <i id="undo" class="material-symbols">undo</i>
+
+        <span>{% trans "go back"|capfirst %}</span>
+      </a>
+    </div>
+  </form>
+{% endblock %}
