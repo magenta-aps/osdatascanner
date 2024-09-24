@@ -1,5 +1,13 @@
 # Changelog
 
+## Next Release
+
+"Not To SharePoint The Finger, But..."
+
+### Bugfixes
+
+- Scanning SharePoint now investigates all document libraries, instead of only the primary.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"
