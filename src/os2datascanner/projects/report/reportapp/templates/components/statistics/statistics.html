@@ -2,20 +2,6 @@
 
 {% load static %}
 
-{% block body %}
-  <body>
-    <main class="wrapper">
-      {% if request.path == "/statistics/dpo/" %}
-        {% include "components/statistics/dpo_statistics_template.html" %}
-      {% elif request.path == "/statistics/leader/" %}
-        {% include "components/statistics/leader_statistics_template.html" %}
-      {% elif "/statistics/user/" in request.path %}
-        {% include "components/statistics/user_overview_template.html" %}
-      {% endif %}
-    </main>
-  </body>
-{% endblock body %}
-
 {% block scripts %}
   {{ block.super }}
   <script src="{% url 'jsi18n' %}"></script>
@@ -23,11 +9,6 @@
   <script src="{% static '3rdparty/chartjs-plugin-datalabels.min.js' %}"></script>
   <script src="{% static '3rdparty/hammerjs.min.js' %}"></script>
   <script src="{% static '3rdparty/chartjs-plugin-zoom.min.js' %}"></script>
-  {% if request.path == "/statistics/dpo/" %}
-    <script src="{% static 'js/charts/chartHelpers.js' %}"></script>
-  {% elif request.path == "/statistics/leader/" %}
-    <script src="{% static 'js/leaderview/leaderOverview.js' %}"></script>
-  {% endif %}
   <script src="{% static 'js/charts/pieCharts.js' %}"></script>
   <script src="{% static 'js/charts/doughnutCharts.js' %}"></script>
   <script src="{% static 'js/charts/lineCharts.js' %}"></script>

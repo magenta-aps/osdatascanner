@@ -13,6 +13,8 @@
 - Refactored login and password-related templates to extend common template.
   Login-page once again has a blue background.
 
+- Refactored statistics templates to extend common template.
+
 ### Bugfixes
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.
