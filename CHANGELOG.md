@@ -2,7 +2,7 @@
 
 ## Next Release
 
-"Peter Piper Picked a Pie ... to share, at some point"
+"Not To SharePoint The Finger, But..."
 
 ### Bugfixes
 
