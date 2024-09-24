@@ -589,7 +589,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):
-    template_name = "user_overview_template.html"
+    template_name = "user_statistics_template.html"
     model = Account
     context_object_name = "account"
 
