@@ -140,14 +140,16 @@ class TestEmailNotification:
         olsenbanden_organization.email_notification_schedule = \
             "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO"
 
-        # That's a monday
-        a_rainy_monday_in_september = datetime.date(2024, 9, 9)
-        olsenbanden_organization.dtstart = a_rainy_monday_in_september
+        # This week's monday
+        today = datetime.date.today()
+        monday = today - datetime.timedelta(days=today.weekday())
+
+        olsenbanden_organization.dtstart = monday
         olsenbanden_organization.save()
 
-        rainy_plus_1_week = a_rainy_monday_in_september + datetime.timedelta(weeks=1)
-        rainy_plus_2_weeks = a_rainy_monday_in_september + datetime.timedelta(weeks=2)
+        monday_plus_1_week = monday + datetime.timedelta(weeks=1)
+        monday_plus_2_weeks = monday + datetime.timedelta(weeks=2)
 
         # Act / Assert
-        assert not olsenbanden_organization.get_next_email_schedule_date == rainy_plus_1_week
-        assert olsenbanden_organization.get_next_email_schedule_date == rainy_plus_2_weeks
+        assert not olsenbanden_organization.get_next_email_schedule_date == monday_plus_1_week
+        assert olsenbanden_organization.get_next_email_schedule_date == monday_plus_2_weeks
