@@ -62,7 +62,8 @@ class AddOrganizationView(RestrictedCreateView):
     def form_valid(self, form):
         client_id = self.kwargs['client_id']
         form.instance.client = Client.objects.get(pk=client_id)
-        if Organization.objects.filter(name=form.instance.name).exists():
+        if Organization.objects.filter(
+                slug=Organization.convert_name_to_slug(form.instance.name)).exists():
             form.add_error('name', _('That name is already taken.'))
             return self.form_invalid(form)
         else:
@@ -105,12 +106,22 @@ class UpdateOrganizationView(RestrictedUpdateView):
         # form.error_css_class = # TODO: add if relevant?
         return form
 
+    def form_valid(self, form):
+        slug = self.kwargs['slug']
+        if Organization.objects.filter(
+            slug=Organization.convert_name_to_slug(form.instance.name)).exclude(
+                slug=slug).exists():
+            form.add_error('name', _('That name is already taken.'))
+            return self.form_invalid(form)
+        else:
+            return super().form_valid(form)
+
     def get_queryset(self):
         return super().get_queryset(org_path="uuid")
 
 
 class DeleteOrganizationView(RestrictedDeleteView):
-    """Delete an ogranization view."""
+    """Delete an organization view."""
     model = Organization
     success_url = '/organizations/'
 
