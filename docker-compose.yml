@@ -218,6 +218,29 @@ services:
       - default
       - os2mo_default
 
+  admin_cron:
+    image: magentaaps/os2datascanner-admin:dev
+    build:
+      context: .
+      dockerfile: docker/base/Dockerfile
+      target: admin
+    command: supercronic /code/docker/crontab
+    environment:
+      - TZ=Europe/Copenhagen
+    volumes:
+      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
+      - ./src/os2datascanner:/code/src/os2datascanner
+      - ./dev-environment/uploads:/code/uploads
+    depends_on:
+      admin_migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      queue:
+        condition: service_healthy
+    profiles:
+      - cron
+
   report_migrate:
     image: magentaaps/os2datascanner-report:dev
     build:
@@ -322,6 +345,28 @@ services:
       - ./dev-environment/report/dev-settings.toml:/user-settings.toml
       - ./src/os2datascanner:/code/src/os2datascanner
     depends_on: *report_dependencies
+
+  report_cron:
+    image: magentaaps/os2datascanner-report:dev
+    build:
+      context: .
+      dockerfile: docker/base/Dockerfile
+      target: report
+    command: supercronic /code/docker/crontab
+    environment:
+      - TZ=Europe/Copenhagen
+    volumes:
+      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
+      - ./src/os2datascanner:/code/src/os2datascanner
+    depends_on:
+      report_migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      queue:
+        condition: service_healthy
+    profiles:
+      - cron
 
   explorer:
     image: magentaaps/os2datascanner-engine:dev
@@ -609,44 +654,6 @@ services:
       - 8025:8025
 
 x-disabled:
-  admin_cron:
-    image: magentaaps/os2datascanner-admin:dev
-    build:
-      context: .
-      dockerfile: docker/base/Dockerfile
-      target: admin
-    command: supercronic /code/docker/crontab --now
-    environment:
-      - OS2DS_SKIP_DJANGO_MIGRATIONS=1
-      - TZ=Europe/Copenhagen
-      - LOG_LEVEL=debug
-    volumes:
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
-      - ./dev-environment/uploads:/code/uploads
-    depends_on:
-      - db
-      - admin
-      - queue
-
-  report_cron:
-    image: magentaaps/os2datascanner-report:dev
-    build:
-      context: .
-      dockerfile: docker/base/Dockerfile
-      target: report
-    command: supercronic /code/docker/crontab
-    environment:
-      - OS2DS_SKIP_DJANGO_MIGRATIONS=1
-      - TZ=Europe/Copenhagen
-    volumes:
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
-    depends_on:
-      - db
-      - report
-      - queue
-
   processor:
     image: magentaaps/os2datascanner-engine:dev
     build:
