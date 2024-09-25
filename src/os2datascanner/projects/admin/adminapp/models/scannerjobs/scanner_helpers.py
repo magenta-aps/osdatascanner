@@ -209,6 +209,11 @@ class ScanStatus(AbstractScanStatus):
         default=False
     )
 
+    email_sent = models.BooleanField(
+        verbose_name=_("has an email notification been sent"),
+        default=False
+    )
+
     @property
     def estimated_completion_time(self) -> datetime.datetime | None:
         """Returns an estimate of the completion time of the scan, based on a

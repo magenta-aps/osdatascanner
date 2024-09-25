@@ -73,8 +73,8 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
 
     # Get the frequency setting and decide whether to create a snapshot
     snapshot_param = settings.SNAPSHOT_PARAMETER
-    scan_status = locked_qs.first()
-    if scan_status:
+
+    if scan_status := locked_qs.first():
         n_total = scan_status.total_objects
         if n_total and n_total > 0:
             # Calculate a frequency for how often to take a snapshot.
@@ -94,10 +94,12 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                     skipped_by_last_modified=scan_status.skipped_by_last_modified,
                 )
 
-        if scan_status.finished:
+        if scan_status.finished and not scan_status.email_sent:
             # Send email upon scannerjob completion
             logger.info("Sending notification mail for finished scannerjob.")
             send_mail_upon_completion(scanner, scan_status)
+            scan_status.email_sent = True
+            scan_status.save()
 
     yield from []
 
