@@ -27,6 +27,8 @@
 - Validation errors under the organization support button settings 
   section are now shown.
 
+- Each ScanStatus can now only trigger a single email notification for a completed scanner.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"
