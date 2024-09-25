@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-20 12:36+0200\n"
+"POT-Creation-Date: 2024-09-25 13:51+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -394,28 +394,32 @@ msgstr "tilknyttet scannerjob"
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:262
+#: adminapp/models/scannerjobs/scanner_helpers.py:213
+msgid "has an email notification been sent"
+msgstr "er en email notifikation blevet sendt"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py:267
 msgid "Start time"
 msgstr "Startet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:265
+#: adminapp/models/scannerjobs/scanner_helpers.py:270
 #: adminapp/models/usererrorlog.py:29
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:266
+#: adminapp/models/scannerjobs/scanner_helpers.py:271
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:322
+#: adminapp/models/scannerjobs/scanner_helpers.py:327
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:330
+#: adminapp/models/scannerjobs/scanner_helpers.py:335
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:331
+#: adminapp/models/scannerjobs/scanner_helpers.py:336
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
@@ -2769,6 +2773,17 @@ msgstr "gruppe præfix filter"
 
 #: import_services/models/ldap_configuration.py:144
 msgid ""
+"If true, any imported group with a managedBy attribute will have that user "
+"added as a manager"
+msgstr "Hvis sandt, vil alle importerede grupper med et managedBy attribut "
+"få sat den pågældende bruger som leder"
+
+#: import_services/models/ldap_configuration.py:147
+msgid "Set managing users as managers"
+msgstr "Set leder-brugere som ledere"
+
+#: import_services/models/ldap_configuration.py:152
+msgid ""
 "Name of LDAP attribute, which is mapped as username. For many LDAP server "
 "vendors it can be 'uid'. For Active Directory it can be 'sAMAccountName' or "
 "'cn'. The attribute should be filled for all LDAP user records you want to "
@@ -2779,11 +2794,11 @@ msgstr ""
 "eller 'cn'. Attributten skal findes for alle de brugere, der skal importeres "
 "fra LDAP."
 
-#: import_services/models/ldap_configuration.py:150
+#: import_services/models/ldap_configuration.py:158
 msgid "username LDAP attribute"
 msgstr "LDAP-attribut for brugernavn"
 
-#: import_services/models/ldap_configuration.py:155
+#: import_services/models/ldap_configuration.py:163
 msgid ""
 "Name of the LDAP attribute which is mapped as first name. For many LDAP "
 "server vendors it can be 'givenName'"
@@ -2791,11 +2806,11 @@ msgstr ""
 "Navnet på den LDAP-attribut der bruges som fornavn på brugere. Typisk "
 "defineret som 'givenName'"
 
-#: import_services/models/ldap_configuration.py:158
+#: import_services/models/ldap_configuration.py:166
 msgid "First name LDAP attribute"
 msgstr "LDAP-attribut for fornavn"
 
-#: import_services/models/ldap_configuration.py:168
+#: import_services/models/ldap_configuration.py:176
 msgid ""
 "Name of LDAP attribute, which is used as RDN of typical user DN. Usually, "
 "but not necessarily, the same as username LDAP attribute. For example for "
@@ -2808,11 +2823,11 @@ msgstr ""
 "meget almindeligt at bruge 'cn' som RDN-attribut mens brugernavns-"
 "attributten ofte er 'sAMAccountName'"
 
-#: import_services/models/ldap_configuration.py:173
+#: import_services/models/ldap_configuration.py:181
 msgid "RDN LDAP attribute"
 msgstr "LDAP-attribut for RDN"
 
-#: import_services/models/ldap_configuration.py:178
+#: import_services/models/ldap_configuration.py:186
 msgid ""
 "Name of LDAP attribute, which is used as unique object identifier (UUID) for "
 "objects in LDAP. For many LDAP server vendors, it is 'entryUUID'; however "
@@ -2826,11 +2841,11 @@ msgstr ""
 "'objectGUID'. Understøtter din LDAP-server ikke UUID-værdier, kan du i "
 "stedet benytte en anden unik værdi, såsom 'uid' eller 'entryDN'."
 
-#: import_services/models/ldap_configuration.py:186
+#: import_services/models/ldap_configuration.py:194
 msgid "UUID LDAP attribute"
 msgstr "LDAP-attribut for UUID"
 
-#: import_services/models/ldap_configuration.py:193
+#: import_services/models/ldap_configuration.py:201
 msgid ""
 "Name of LDAP attribute, which stores the object security identifier. (SID) "
 "Often this is stored as 'objectSid' or 'securityIdentifier'. Without this "
@@ -2841,11 +2856,11 @@ msgstr ""
 "Typisk findes denne som 'objectSid' eller 'securityIdentifier'. Uden denne "
 "attribut, kan OSdatascanner ikke identificere ejerskab af on-premise filer."
 
-#: import_services/models/ldap_configuration.py:198
+#: import_services/models/ldap_configuration.py:206
 msgid "Object security identifier"
 msgstr "Object security identifier (SID)"
 
-#: import_services/models/ldap_configuration.py:202
+#: import_services/models/ldap_configuration.py:210
 msgid ""
 "All values of LDAP objectClass attribute for users in LDAP divided by comma. "
 "For example: 'inetOrgPerson, organizationalPerson'. User records are only "
@@ -2855,11 +2870,11 @@ msgstr ""
 "LDAP. For eksempel: 'inetOrgPerson, organizationalPerson'. Brugere bliver "
 "kun importeret, hvis de har samtlige klasser i listen."
 
-#: import_services/models/ldap_configuration.py:207
+#: import_services/models/ldap_configuration.py:215
 msgid "user object classes"
 msgstr "klasser for bruger-objekter"
 
-#: import_services/models/ldap_configuration.py:213
+#: import_services/models/ldap_configuration.py:221
 msgid ""
 "Additional LDAP Filter for filtering searched users. Leave this empty if you "
 "don't need additional filter. Make sure that it starts with '(' and ends "
@@ -2869,11 +2884,11 @@ msgstr ""
 "hvis du ikke har brug for yderligere filtrering. Sikr dig at denne værdi "
 "starter med '(' og slutter med ')'"
 
-#: import_services/models/ldap_configuration.py:217
+#: import_services/models/ldap_configuration.py:225
 msgid "custom LDAP user filter"
 msgstr "brugerdefineret LDAP brugerfilter"
 
-#: import_services/models/ldap_configuration.py:225
+#: import_services/models/ldap_configuration.py:233
 msgid ""
 "Choose between an encrypted connection protocol (ldaps) or an unencrypted "
 "one (ldap). Only select the unencrypted protocol if absolutely necessary."
@@ -2881,19 +2896,19 @@ msgstr ""
 "Vælg mellem en krypteret forbindelsesprotokol (ldaps) eller en ukrypteret "
 "(ldap). Det anbefales at vælge den krypterede protokol."
 
-#: import_services/models/ldap_configuration.py:229
+#: import_services/models/ldap_configuration.py:237
 msgid "connection protocol"
 msgstr "forbindelsesprotokol"
 
-#: import_services/models/ldap_configuration.py:234
+#: import_services/models/ldap_configuration.py:242
 msgid "Connection URL to the LDAP server. "
 msgstr "Forbindelses-URL til LDAP-serveren."
 
-#: import_services/models/ldap_configuration.py:236
+#: import_services/models/ldap_configuration.py:244
 msgid "connection URL"
 msgstr "forbindelses-URL"
 
-#: import_services/models/ldap_configuration.py:240
+#: import_services/models/ldap_configuration.py:248
 msgid ""
 "Distinguished name for the (top) OU in which to search for users. Groups "
 "present under this OU will not necessarily be imported, as OSdatascanner "
@@ -2903,19 +2918,19 @@ msgstr ""
 "brugere. Grupper under denne OU bliver ikke nødvendigvis importeret, da "
 "OSdatascanner opbygger grupper ud fra brugernes gruppemedlemskab."
 
-#: import_services/models/ldap_configuration.py:245
+#: import_services/models/ldap_configuration.py:253
 msgid "DN for users (OU)"
 msgstr "DN for brugere (OU)"
 
-#: import_services/models/ldap_configuration.py:249
+#: import_services/models/ldap_configuration.py:257
 msgid "one level"
 msgstr "kun øverste lag"
 
-#: import_services/models/ldap_configuration.py:250
+#: import_services/models/ldap_configuration.py:258
 msgid "subtree"
 msgstr "hele undertræet"
 
-#: import_services/models/ldap_configuration.py:253
+#: import_services/models/ldap_configuration.py:261
 msgid ""
 "For one level, the search applies only for users in the DNs specified by "
 "User DNs. For subtree, the search applies to the whole subtree. See LDAP "
@@ -2926,24 +2941,24 @@ msgstr ""
 "angivne OU, samt alle underliggende OU'er. Se LDAP dokumentationen for flere "
 "detaljer."
 
-#: import_services/models/ldap_configuration.py:258
+#: import_services/models/ldap_configuration.py:266
 msgid "search scope"
 msgstr "omfang af søgningen"
 
-#: import_services/models/ldap_configuration.py:262
+#: import_services/models/ldap_configuration.py:270
 msgid "Distinguished name for the service account allowing access to LDAP"
 msgstr "'Distinguished name' for servicekontoen, der giver adgang til LDAP"
 
-#: import_services/models/ldap_configuration.py:264
+#: import_services/models/ldap_configuration.py:272
 msgid "LDAP service account user name"
 msgstr "brugernavn for servicekontoen til LDAP"
 
-#: import_services/models/ldap_configuration.py:302
+#: import_services/models/ldap_configuration.py:310
 #: import_services/templates/import_services/ldap_edit.html:6
 msgid "LDAP configuration"
 msgstr "LDAP-konfiguration"
 
-#: import_services/models/ldap_configuration.py:303
+#: import_services/models/ldap_configuration.py:311
 msgid "LDAP configurations"
 msgstr "LDAP-konfigurationer"
 
