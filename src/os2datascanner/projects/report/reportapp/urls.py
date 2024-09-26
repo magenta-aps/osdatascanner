@@ -62,8 +62,12 @@ urlpatterns = [
 if settings.SAML2_ENABLED:
     urlpatterns.append(re_path(r"^saml2_auth/metadata.xml$", metadata, name="saml_metadata"))
     urlpatterns.append(re_path(r"^saml2_auth/", include("django_saml2_auth.urls")))
-    urlpatterns.append(re_path(r"^accounts/login/$", django_saml2_auth.views.signin))
-    urlpatterns.append(re_path(r'^accounts/logout/$', django_saml2_auth.views.signout))
+    urlpatterns.append(re_path(r"^accounts/login/$", django_saml2_auth.views.signin, name="login"))
+    urlpatterns.append(
+        re_path(
+            r'^accounts/logout/$',
+            django_saml2_auth.views.signout,
+            name="logout"))
 
 if settings.KEYCLOAK_ENABLED:
     settings.LOGIN_URL = "oidc_authentication_init"
