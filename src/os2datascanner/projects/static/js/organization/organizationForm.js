@@ -6,7 +6,7 @@ function enableDPOOptions() {
       'id_dpo_value'
     ].forEach(id => {
       const field = document.getElementById(id);
-      field.disabled = false;
+      field.parentElement.parentElement.style.display = "block";
     });
   }
 }
@@ -17,7 +17,7 @@ function disableDPOOptions() {
     'id_dpo_value'
   ].forEach(id => {
     const field = document.getElementById(id);
-    field.disabled = true;
+    field.parentElement.parentElement.style.display = "none";
   });
 }
 
@@ -29,7 +29,7 @@ function enableSupportOptions() {
       'id_support_value'
     ].forEach(id => {
       const field = document.getElementById(id);
-      field.disabled = false;
+      field.parentElement.parentElement.style.display = "block";
     });
   }
 }
@@ -40,32 +40,19 @@ function disableSupportOptions() {
     'id_support_value'
   ].forEach(id => {
     const field = document.getElementById(id);
-    field.disabled = true;
+    field.parentElement.parentElement.style.display = "none";
   });
 }
 
 function hideSupportOption() {
-  [
-    'id_support_contact_method',
-    'id_support_name',
-    'id_support_value',
-    'id_dpo_contact_method',
-    'id_dpo_name',
-    'id_dpo_value'
-  ].forEach(id => {
-    const field = document.getElementById(id);
-    field.disabled = true;
-  });
+  
+    const field = document.getElementsByClassName("form__row--support-settings")[0];
+    field.style.display = "none";
 }
 
 function showSupportOption() {
-  [
-    'id_support_contact_method',
-    'id_dpo_contact_method',
-  ].forEach(id => {
-    const field = document.getElementById(id);
-    field.disabled = false;
-  });
+    const field = document.getElementsByClassName("form__row--support-settings")[0];
+    field.style.display = "block";
   enableDPOOptions();
   enableSupportOptions();
 }

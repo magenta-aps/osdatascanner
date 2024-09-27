@@ -15,12 +15,17 @@
 
 - Refactored statistics templates to extend common template.
 
+- Support button settings are now hidden when disabled.
+
 ### Bugfixes
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.
 
 - The development environment now has an optional profile that can be used to
   test scheduled operations.
+
+- Validation errors under the organization support button settings 
+  section are now shown.
 
 ## Version 3.24.3, 20th September 2024
 

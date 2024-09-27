@@ -30,8 +30,7 @@
   
     &--general,
     &--tab-access,
-    &--support,
-    &--dpo,
+    &--support-button,
     &--outlook {
       margin: 3rem 0;
       display: flex;
@@ -39,8 +38,9 @@
       gap: 0.5rem;
     }
 
-    &--general {
-      margin: 0 0 3rem;
+    &--general,
+    &--support-settings {
+      margin: 0;
     }
   
     &--outlook {

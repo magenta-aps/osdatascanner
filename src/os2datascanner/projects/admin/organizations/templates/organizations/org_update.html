@@ -50,53 +50,63 @@
           </div>
         </div>
 
-        <div class="form__row--support">
-          <span class="form__row__title">{% trans "Support settings" %}</span>
-
+        <div class="form__row--support-button">
+          <span class="form__row__title">{% trans "Support button settings" %}</span>
           <div class="form__row__item">
             <div class="form__row__item__checkboxcontainer ds-checkbox">
               {{ form.show_support_button }}
- 
+
               <label class="required-form"
                      for="{{ form.show_support_button.id_for_label }}">{{ form.show_support_button.label }}</label>
- 
+
             </div>
           </div>
+          <div class="form__row--support-settings">
+            <div class="form__row__item">
+              <label class="required-form"
+                     for="{{ form.support_contact_method.id_for_label }}">
+                {{ form.support_contact_method.label }}
+              </label>
+              {{ form.support_contact_method }}
+            </div>
  
-          <div class="form__row__item">
-            <label class="required-form"
-                   for="{{ form.support_contact_method.id_for_label }}">{{ form.support_contact_method.label }}</label>
-            {{ form.support_contact_method }}
-          </div>
- 
-          <div class="form__row__item">
-            <label class="required-form" for="{{ form.support_name.id_for_label }}">{{ form.support_name.label }}</label>
-            {{ form.support_name }}
-          </div>
+            <div class="form__row__item">
+              <div class="{% if form.support_name.errors %} has-error {% endif %}">
+                <label class="required-form" for="{{ form.support_name.id_for_label }}">{{ form.support_name.label }}</label>
+                {{ form.support_name }}
+                {{ form.support_name.errors }}
+              </div>
+            </div>
 
-          <div class="form__row__item">
-            <label class="required-form" for="{{ form.support_value.id_for_label }}">{{ form.support_value.label }}</label>
-            {{ form.support_value }}
-          </div>
-        </div>
+            <div class="form__row__item">
+              <div class="{% if form.support_value.errors %} has-error {% endif %}">
+                <label class="required-form" for="{{ form.support_value.id_for_label }}">{{ form.support_value.label }}</label>
+                {{ form.support_value }}
+                {{ form.support_value.errors }}
+              </div>
+            </div>
 
-        <div class="form__row--dpo">
-          <span class="form__row__title">{% trans "DPO settings" %}</span>
+            <div class="form__row__item">
+              <label class="required-form"
+                     for="{{ form.dpo_contact_method.id_for_label }}">{{ form.dpo_contact_method.label }}</label>
+              {{ form.dpo_contact_method }}
+            </div>
  
-          <div class="form__row__item">
-            <label class="required-form"
-                   for="{{ form.dpo_contact_method.id_for_label }}">{{ form.dpo_contact_method.label }}</label>
-            {{ form.dpo_contact_method }}
-          </div>
+            <div class="form__row__item">
+              <div class="{% if form.dpo_name.errors %} has-error {% endif %}">
+                <label class="required-form" for="{{ form.dpo_name.id_for_label }}">{{ form.dpo_name.label }}</label>
+                {{ form.dpo_name }}
+                {{ form.dpo_name.errors }}
+              </div>
+            </div>
  
-          <div class="form__row__item">
-            <label class="required-form" for="{{ form.dpo_name.id_for_label }}">{{ form.dpo_name.label }}</label>
-            {{ form.dpo_name }}
-          </div>
- 
-          <div class="form__row__item">
-            <label class="required-form" for="{{ form.dpo_value.id_for_label }}">{{ form.dpo_value.label }}</label>
-            {{ form.dpo_value }}
+            <div class="form__row__item">
+              <div class="{% if form.dpo_value.errors %} has-error {% endif %}">
+                <label class="required-form" for="{{ form.dpo_value.id_for_label }}">{{ form.dpo_value.label }}</label>
+                {{ form.dpo_value }}
+                {{ form.dpo_value.errors }}
+              </div>
+            </div>
           </div>
         </div>
 
