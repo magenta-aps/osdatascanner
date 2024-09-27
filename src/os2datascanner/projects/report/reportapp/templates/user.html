@@ -127,9 +127,7 @@
       <h2>{% trans "Login Information" %}</h2>
       <table class="userprofile-table login-info">
         <tbody>
-          {% settings_value "SAML2_ENABLED" as saml2_enabled %}
-          {% settings_value "KEYCLOAK_ENABLED" as keycloak_enabled %}
-          {% if not saml2_enabled and not keycloak_enabled and account == request.user.account %}
+          {% if user.password %}
             <tr>
               <td>{% trans "Password" %}</td>
               <td>

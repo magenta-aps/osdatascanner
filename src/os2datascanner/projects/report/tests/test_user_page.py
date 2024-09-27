@@ -52,6 +52,9 @@ class TestAccountView:
         """A superuser should be able to see their superuser checkmark."""
         view = self.get_userpage_object(rf, superuser_account)
 
+        # For debugging, so you can see that the response is translated for some reason???
+        print(view.rendered_content)
+
         assert '<td>Superuser</td>' in view.rendered_content
 
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
@@ -64,8 +67,15 @@ class TestAccountView:
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_user_can_see_link_to_password_change(self, egon_account, rf):
         """Users should be able to see a link to password change."""
+        # User needs a password
+        user = egon_account.user
+        user.set_password('password')
+        user.save()
+
         view = self.get_userpage_object(rf, egon_account)
+
         url = '<a class="password-change" href="%s">Change</a>' % reverse('password_change')
+        print(view.rendered_content)
         assert url in view.rendered_content
 
     def test_access_other_user_account(self, client, egon_account, benny_account):
@@ -87,7 +97,7 @@ class TestAccountView:
     # Helper functions
 
     def get_userpage_object(self, rf, account):
-        request = rf.get('/account')
+        request = rf.get(reverse("account-me"))
         request.user = account.user
         response = AccountView.as_view()(request)
         return response

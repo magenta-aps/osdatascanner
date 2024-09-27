@@ -460,7 +460,7 @@ msgid "User profile"
 msgstr "Brugerprofil"
 
 #: reportapp/templates/components/navigation/navigation.html:64
-#: reportapp/templates/components/user/user_corner_menu.html:38
+#: reportapp/templates/components/user/user_corner_menu.html:29
 msgid "Logout"
 msgstr "Log ud"
 
@@ -966,7 +966,7 @@ msgid "Username"
 msgstr "Brugernavn"
 
 #: reportapp/templates/components/user/login.html:26
-#: reportapp/templates/components/user/user_content.html:130
+#: reportapp/templates/user.html:132
 msgid "Password"
 msgstr "Adgangskode"
 
@@ -1033,81 +1033,7 @@ msgstr ""
 msgid "Categorize"
 msgstr "Kategorisér"
 
-#: reportapp/templates/components/user/user_content.html:5
-msgid "Account"
-msgstr "Konto"
-
-#: reportapp/templates/components/user/user_content.html:12
-msgid "Account information"
-msgstr "Brugerinformation"
-
-#: reportapp/templates/components/user/user_content.html:24
-msgid "E-mail"
-msgstr "E-mail"
-
-#: reportapp/templates/components/user/user_content.html:28
-msgid "Organization"
-msgstr "Organisation"
-
-#: reportapp/templates/components/user/user_content.html:35
-msgid "Manager for"
-msgstr "Leder for"
-
-#: reportapp/templates/components/user/user_content.html:45
-msgid "DPO for"
-msgstr "DPO for"
-
-#: reportapp/templates/components/user/user_content.html:53
-msgid "Contact Person"
-msgstr "Kontaktperson"
-
-#: reportapp/templates/components/user/user_content.html:66
-msgid ""
-"By checking this box, users will be presented with your email address for "
-"DPO-related questions."
-msgstr ""
-"Ved at markere dette felt vil brugere blive henvist til din e-mail adresse "
-"med DPO-relaterede spørgsmål."
-
-#: reportapp/templates/components/user/user_content.html:74
-msgid "User Rights"
-msgstr "Rettigheder"
-
-#: reportapp/templates/components/user/user_content.html:79
-msgid "Active"
-msgstr "Aktiv"
-
-#: reportapp/templates/components/user/user_content.html:83
-#: reportapp/templates/components/user/user_content.html:94
-#: reportapp/templates/components/user/user_content.html:105
-msgid "Yes"
-msgstr "Ja"
-
-#: reportapp/templates/components/user/user_content.html:90
-msgid "Staff"
-msgstr "Adgangsbevilget"
-
-#: reportapp/templates/components/user/user_content.html:101
-msgid "Superuser"
-msgstr "Superbruger"
-
-#: reportapp/templates/components/user/user_content.html:111
-msgid "Aliases"
-msgstr "Aliasser"
-
-#: reportapp/templates/components/user/user_content.html:125
-msgid "Login Information"
-msgstr "Login Information"
-
-#: reportapp/templates/components/user/user_content.html:132
-msgid "Change"
-msgstr "Skift"
-
-#: reportapp/templates/components/user/user_content.html:137
-msgid "User since"
-msgstr "Bruger siden"
-
-#: reportapp/templates/components/user/user_corner_menu.html:37
+#: reportapp/templates/components/user/user_corner_menu.html:28
 msgid "Show Account"
 msgstr "Vis konto"
 
@@ -1822,6 +1748,79 @@ msgid ""
 msgstr ""
 "Er du sikker på, at du vil dele matches ud til brugerne? Denne handling kan "
 "ikke fortrydes."
+
+#: reportapp/templates/user.html:7
+msgid "Account"
+msgstr "Konto"
+
+#: reportapp/templates/user.html:14
+msgid "Account information"
+msgstr "Brugerinformation"
+
+#: reportapp/templates/user.html:26
+msgid "E-mail"
+msgstr "E-mail"
+
+#: reportapp/templates/user.html:30
+msgid "Organization"
+msgstr "Organisation"
+
+#: reportapp/templates/user.html:37
+msgid "Manager for"
+msgstr "Leder for"
+
+#: reportapp/templates/user.html:47
+msgid "DPO for"
+msgstr "DPO for"
+
+#: reportapp/templates/user.html:55
+msgid "Contact Person"
+msgstr "Kontaktperson"
+
+#: reportapp/templates/user.html:68
+msgid ""
+"By checking this box, users will be presented with your email address for "
+"DPO-related questions."
+msgstr ""
+"Ved at markere dette felt vil brugere blive henvist til din e-mail adresse "
+"med DPO-relaterede spørgsmål."
+
+#: reportapp/templates/user.html:76
+msgid "User Rights"
+msgstr "Rettigheder"
+
+#: reportapp/templates/user.html:81
+msgid "Active"
+msgstr "Aktiv"
+
+#: reportapp/templates/user.html:85 reportapp/templates/user.html:96
+#: reportapp/templates/user.html:107
+msgid "Yes"
+msgstr "Ja"
+
+#: reportapp/templates/user.html:92
+msgid "Staff"
+msgstr "Adgangsbevilget"
+
+#: reportapp/templates/user.html:103
+msgid "Superuser"
+msgstr "Superbruger"
+
+#: reportapp/templates/user.html:113
+msgid "Aliases"
+msgstr "Aliasser"
+
+#: reportapp/templates/user.html:127
+msgid "Login Information"
+msgstr "Login Information"
+
+#: reportapp/templates/user.html:134
+msgid "Change"
+msgstr "Skift"
+
+#: reportapp/templates/user.html:139
+msgid "User since"
+msgstr "Bruger siden"
 
 #: reportapp/templates/user_statistics_template.html:12
 msgid "Development overview for"
