@@ -152,4 +152,7 @@ class TestEmailNotification:
 
         # Act / Assert
         assert not olsenbanden_organization.get_next_email_schedule_date == monday_plus_1_week
-        assert olsenbanden_organization.get_next_email_schedule_date == monday_plus_2_weeks
+        if today.weekday() == 0:  # It is monday today
+            assert olsenbanden_organization.get_next_email_schedule_date == today
+        else:
+            assert olsenbanden_organization.get_next_email_schedule_date == monday_plus_2_weeks
