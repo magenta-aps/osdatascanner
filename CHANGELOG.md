@@ -34,6 +34,9 @@
 
 - Each ScanStatus can now only trigger a single email notification for a completed scanner.
 
+- The user is now informed whether a rule is associated with a scanner, and shown, that
+  the rule can't be deleted until the associated scanners are updated or deleted.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"

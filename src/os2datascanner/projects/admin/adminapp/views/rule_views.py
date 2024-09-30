@@ -21,12 +21,15 @@ from django.forms import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView
 from django.http import HttpResponse, Http404
+from django.shortcuts import redirect
+from django.contrib import messages
 
 from os2datascanner.projects.admin.organizations.models import Organization
 
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDeleteView
 from .validators import customrule_validator
+from ..models.scannerjobs.scanner import Scanner
 from ..models.sensitivity_level import Sensitivity
 from ..models.rules import Rule, CustomRule, RuleCategory
 from ...utilities import UserWrapper
@@ -74,7 +77,8 @@ class RuleList(RestrictedListView):
 
         context["sensitivity"] = Sensitivity
         context["systemrule_list"] = self.get_system_rules(selected_org)
-        context["customrule_list"] = self.get_queryset().filter(organization__isnull=False)
+        context["customrule_list"] = self.get_queryset().filter(organization__isnull=False
+                                                                ).prefetch_related("scanners")
 
         return context
 
@@ -211,6 +215,18 @@ class RuleDelete(RestrictedDeleteView):
     """Delete a rule view."""
     model = Rule
     success_url = '/rules/'
+
+    def delete(self, request, *args, **kwargs):
+        if Scanner.objects.filter(rule=self.get_object()).exists():
+            messages.add_message(
+                request,
+                messages.WARNING,
+                _("This rule cannot be deleted, because it's associated with a scanner."),
+                extra_tags="manual_close"
+            )
+            return redirect(self.success_url)
+
+        return super().delete(request, *args, **kwargs)
 
 
 class CustomRuleDelete(RuleDelete):
