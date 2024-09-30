@@ -74,10 +74,13 @@
                     hx-indicator="#report-page-indicator">{% trans "Reset" %}</button>
             {% if settings.DPO_CSV_EXPORT %}
               <hr class="button-group__divider">
-              <a href="/statistics/dpo/csv/"
-                 class="button button--transparent-button"
-                 aria-label="{% trans 'Export DPO data as a csv-file' %}"
-                 title="{% trans 'Click here to export DPO data as a csv-file' %}">{% trans "Export CSV" %}</a>
+              <button type="submit"
+                      formaction="{% url 'statistics-dpo-export' %}"
+                      class="button button--transparent-button"
+                      aria-label="{% trans 'Export DPO data as a csv-file' %}"
+                      title="{% trans 'Click here to export DPO data as a csv-file' %}">
+                {% trans "Export CSV" %}
+              </button>
             {% endif %}
           </div>
         </div>

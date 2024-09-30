@@ -20,8 +20,9 @@ from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.postgres.aggregates import StringAgg
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q, Count, DateField, When, Case
+from django.db.models import Q, Count, DateField, When, Case, CharField, Value
 from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404, HttpResponse
 from django.utils.translation import gettext_lazy as _
@@ -32,7 +33,7 @@ from django.urls import reverse_lazy
 from django.conf import settings
 
 from ..models.documentreport import DocumentReport
-from ...organizations.models.account import Account
+from ...organizations.models.account import Account, StatusChoices
 from ...organizations.models.aliases import AliasType
 from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
@@ -428,7 +429,7 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
             orgunit = self.user_units.get(uuid=orgunit_id)
         self.exported_filename += f"_orgunit_{orgunit.name}" if orgunit else ''
 
-        # Gets Respone from CSVExportMixin
+        # Gets Response from CSVExportMixin
         response = super().get(request)
 
         return response
@@ -507,10 +508,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         qs = super().get_queryset()
 
         if self.org_unit:
-            all_units = self.org_unit.get_descendants(include_self=True)
-            positions = Position.employees.filter(unit__in=all_units)
+            self.descendant_units = self.org_unit.get_descendants(include_self=True)
+            positions = Position.employees.filter(unit__in=self.descendant_units)
             qs = qs.filter(positions__in=positions).distinct()
         else:
+            self.descendant_units = OrganizationalUnit.objects.none()
             qs = Account.objects.none()
 
         if search_field := self.request.GET.get('search_field', None):
@@ -564,7 +566,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         return qs
 
-    def get(self, request, *args, **kwargs):
+    def set_user_units_and_org_unit(self, request):
         if self.request.user.is_superuser:
             self.user_units = OrganizationalUnit.objects.all().order_by("name")
         else:
@@ -575,6 +577,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         else:
             self.org_unit = self.user_units.first() or None
 
+    def get(self, request, *args, **kwargs):
+        self.set_user_units_and_org_unit(request)
         response = super().get(request, *args, **kwargs)
 
         return response
@@ -586,6 +590,52 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                     "Only managers and superusers have access to this page.")
         return super(LeaderStatisticsPageView, self).dispatch(
             request, *args, **kwargs)
+
+
+class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
+    exported_fields = {
+        _("First name"): 'first_name',
+        _("Last name"): 'last_name',
+        _("Username"): 'username',
+        _("Matches"): 'match_count',
+        _("Status"): 'match_status',
+        _("Organizational units"): 'unit_list',
+    }
+    exported_filename = 'os2datascanner_leaderpage_statistics'
+
+    def order_employees(self, qs):
+        # Overriding order_employees of parent class, because it is super slow.
+        # The user can always sort the data themselves in their own spreadsheet editor
+        return qs
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.annotate(
+            unit_list=Coalesce(
+                StringAgg(
+                    'units__name',
+                    delimiter=', ',
+                    ordering='units__name',
+                    output_field=CharField(),
+                    filter=Q(units__in=self.descendant_units)
+                ),
+                Value('')
+            )
+        )
+        return qs
+
+    def get_rows(self):
+        rows = super().get_rows()
+        for row in rows:
+            row['match_status'] = StatusChoices(row['match_status']).label
+        return rows
+
+    def get(self, request, *args, **kwargs):
+        if not settings.LEADER_CSV_EXPORT:
+            raise PermissionDenied
+        self.set_user_units_and_org_unit(request)
+        response = super().get(request, *args, **kwargs)
+        return response
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):

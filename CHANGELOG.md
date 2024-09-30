@@ -4,6 +4,11 @@
 
 "Not To SharePoint The Finger, But..."
 
+### New in this release
+
+- Leaders can now export the number of matches and the status of their employees as a csv-file.
+  This feature is by default disabled, but can be enabled through the LEADER_CSV_EXPORT setting.
+
 ### General improvements
 
 - It's now possible to import managers from LDAP via group import. This can
