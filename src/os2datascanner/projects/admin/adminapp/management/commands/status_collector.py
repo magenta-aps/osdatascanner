@@ -43,7 +43,7 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
         scan_tag=body["scan_tag"]
     )
     # Queryset is evaluated immediately with .first() to lock the database entry.
-    locked_qs.first()
+    scan_status = locked_qs.first()
 
     if message.total_objects is not None:
         # An explorer has finished exploring a Source
@@ -73,7 +73,7 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
 
     # Get the frequency setting and decide whether to create a snapshot
     snapshot_param = settings.SNAPSHOT_PARAMETER
-    scan_status = locked_qs.first()
+
     if scan_status:
         n_total = scan_status.total_objects
         if n_total and n_total > 0:
@@ -95,9 +95,16 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                 )
 
         if scan_status.finished:
-            # Send email upon scannerjob completion
-            logger.info("Sending notification mail for finished scannerjob.")
-            send_mail_upon_completion(scanner, scan_status)
+            if not scan_status.email_sent:
+                # Send email upon scannerjob completion
+                logger.info("Sending notification mail for finished scannerjob.")
+                send_mail_upon_completion(scanner, scan_status)
+                scan_status.email_sent = True
+                scan_status.save()
+            else:
+                logger.warning(
+                    "BUG: received status message for a ScanStatus marked as complete!",
+                    scan_status=scan_status, message=message)
 
     yield from []
 
