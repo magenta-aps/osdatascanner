@@ -3,6 +3,7 @@ import pytest
 
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError
 
 from ..models.account import StatusChoices, Account
 from ...reportapp.models.documentreport import DocumentReport
@@ -248,6 +249,13 @@ class TestAccount:
             report.save()
 
         assert egon_account.false_positive_alarm() == alarm
+
+    def test_account_username_org_constraint(self, olsenbanden_organization, egon_account):
+        with pytest.raises(IntegrityError):
+            Account.objects.create(
+                username=egon_account.username,
+                organization=olsenbanden_organization
+            )
 
 
 @pytest.mark.django_db

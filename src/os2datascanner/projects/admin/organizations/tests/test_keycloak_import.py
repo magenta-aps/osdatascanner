@@ -294,21 +294,25 @@ class TestKeycloakImport:
 
     def test_get_accounts_with_missing_attributes(self, TEST_CORP, test_org):
         """Running _get_accounts where a node is missing important fields (id, username, attributes)
-        shouldn't return that accounts, but should still return the rest."""
+        shouldn't return that account, but should still return the rest."""
 
         nodes = []
         expected = []
         for acc in TEST_CORP:
-            account, new = Account.objects.get_or_create(
-                imported_id=acc['attributes']['LDAP_ENTRY_DN'][0], organization=test_org)
-            if new and all(n in acc for n in ("id", "attributes", "username",)):
+            account, new = Account.objects.get_or_create(username=acc.get(
+                'username', ""), imported_id=acc['attributes']['LDAP_ENTRY_DN'][0],
+                organization=test_org)
+            if new and all(attr in acc for attr in ("id", "attributes", "username",)):
+                # We only expect to receive accounts with all attributes present
                 expected.append(account)
 
             if new:
+                # Create a node for each entry in TEST_CORP, so we can create a hierachy
                 node = LDAPNode.make(acc.get("username", ""), *(), **acc)
                 nodes.append(node)
 
         def iterator(nodes):
+            # A hierachy mocking the one we create during an actual import
             for node in nodes:
                 path = RDN.dn_to_sequence(node.properties['attributes']['LDAP_ENTRY_DN'][0])
                 yield path, node, node

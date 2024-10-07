@@ -79,14 +79,17 @@ class TestDiagnosticsCommand:
         assert match.group(2) == "1"
 
     def test_count_accounts_without_username(
-            self, fritz, günther, hansi, capfd):
-        Account.objects.all().update(username="")
+            self, fritz, günther, hansi, egon, capfd):
+        egon.username = ""
+        egon.save()
+        fritz.username = ""
+        fritz.save()
 
         call_command("diagnostics", only=["Account"])
 
         match = re.search(r'Found (\d+) accounts without a username.', capfd.readouterr()[0])
 
-        assert match.group(1) == "3"
+        assert match.group(1) == "2"
 
     def test_count_accounts_without_email(self, fritz, günther, hansi, capfd):
         Account.objects.all().update(email="")

@@ -6,10 +6,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0045_alter_org_support_options'),
+        ('organizations', '0046_account_is_universal_dpo'),
     ]
 
     operations = [
+        migrations.AlterModelOptions(
+            name='account',
+            options={'verbose_name': 'account', 'verbose_name_plural': 'accounts'},
+        ),
         migrations.AlterUniqueTogether(
             name='account',
             unique_together={('organization', 'username')},
