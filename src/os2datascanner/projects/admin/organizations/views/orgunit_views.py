@@ -59,6 +59,10 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
         context = super().get_context_data(**kwargs)
         context['organization'] = self.kwargs['org']
         context['FEATURES'] = Feature.__members__
+        context['uni_dpos'] = Account.objects.filter(
+            organization=self.kwargs['org'],
+            is_universal_dpo=True
+        )
         context['search_targets'] = [
             unit.uuid for unit in self.object_list] if self.request.GET.get(
             "search_field", None) else []
@@ -95,6 +99,16 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
             orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
             rem_dpo = Account.objects.get(uuid=rem_dpo_uuid)
             Position.dpos.filter(account=rem_dpo, unit=orgunit).delete()
+
+        if new_uni_dpo_uuid := request.POST.get("add-uni-dpo", None):
+            new_uni_dpo = Account.objects.get(uuid=new_uni_dpo_uuid)
+            new_uni_dpo.is_universal_dpo = True
+            new_uni_dpo.save()
+
+        if rem_uni_dpo_uuid := request.POST.get("rem-uni-dpo", None):
+            rem_uni_dpo = Account.objects.get(uuid=rem_uni_dpo_uuid)
+            rem_uni_dpo.is_universal_dpo = False
+            rem_uni_dpo.save()
 
         response = self.get(request, *args, **kwargs)
 

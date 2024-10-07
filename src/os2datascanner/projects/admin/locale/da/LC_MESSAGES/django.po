@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-10 09:24+0200\n"
+"POT-Creation-Date: 2024-09-25 13:51+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -155,7 +155,7 @@ msgstr "Login metode"
 #: adminapp/models/rules.py:40 adminapp/models/rules.py:101
 #: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:37
-#: organizations/templates/organizations/orgunit_list.html:127
+#: organizations/templates/organizations/orgunit_list.html:121
 msgid "name"
 msgstr "navn"
 
@@ -850,7 +850,7 @@ msgstr "organisatorisk struktur"
 #: adminapp/templates/components/common/breadcrumb.html:97
 #: adminapp/templates/components/common/breadcrumb.html:106
 #: organizations/templates/organizations/account_list.html:5
-#: organizations/templates/organizations/orgunit_list.html:128
+#: organizations/templates/organizations/orgunit_list.html:122
 msgid "accounts"
 msgstr "konti"
 
@@ -1491,7 +1491,7 @@ msgstr "vælg brugere fra"
 #: adminapp/templates/components/scanner/scanner_form.html:513
 #: adminapp/templates/components/scanner/scanner_form.html:616
 #: import_services/models/ldap_configuration.py:126
-#: organizations/templates/organizations/orgunit_list.html:114
+#: organizations/templates/organizations/orgunit_list.html:108
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
@@ -2312,8 +2312,8 @@ msgid "Filter system rules by the chosen categories."
 msgstr "Filtrér systemreglerne efter de valgte kategorier"
 
 #: adminapp/templates/system_rules.html:31
-#: organizations/templates/organizations/orgunit_list.html:47
-#: organizations/templates/organizations/orgunit_list.html:95
+#: organizations/templates/organizations/orgunit_list.html:79
+#: organizations/templates/organizations/orgunit_list.html:127
 msgid "filter"
 msgstr "filtrér"
 
@@ -3213,6 +3213,10 @@ msgstr "Gem alias og luk"
 msgid "Save"
 msgstr "Gem"
 
+#: organizations/templates/components/uni_dpo_dropdown.html:10
+msgid "Add universal DPO"
+msgstr "Tilføj universel DPO"
+
 #: organizations/templates/organizations/account_detail.html:10
 msgid "Account"
 msgstr "Konto"
@@ -3255,15 +3259,15 @@ msgstr "Aliasser"
 
 #: organizations/templates/organizations/account_detail.html:97
 #: organizations/templates/organizations/account_detail.html:154
-#: organizations/templates/organizations/orgunit_list.html:148
-#: organizations/templates/organizations/orgunit_list.html:175
+#: organizations/templates/organizations/orgunit_list.html:142
+#: organizations/templates/organizations/orgunit_list.html:169
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:104
 #: organizations/templates/organizations/account_detail.html:163
-#: organizations/templates/organizations/orgunit_list.html:155
-#: organizations/templates/organizations/orgunit_list.html:182
+#: organizations/templates/organizations/orgunit_list.html:149
+#: organizations/templates/organizations/orgunit_list.html:176
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
@@ -3450,49 +3454,65 @@ msgstr "Tillad sletning"
 msgid "organizational hierarchy for"
 msgstr "organisatorisk struktur for"
 
-#: organizations/templates/organizations/orgunit_list.html:39
+#: organizations/templates/organizations/orgunit_list.html:25
+msgid "universal DPOs"
+msgstr "universelle DPO'er"
+
+#: organizations/templates/organizations/orgunit_list.html:27
+msgid ""
+"A universal DPO has access to the DPO-module for all organizational units"
+msgstr ""
+"En universel DPO bliver givet adgang til DPO-modulet for alle "
+"organisatoriske enheder"
+
+#: organizations/templates/organizations/orgunit_list.html:33
+#: organizations/templates/organizations/orgunit_list.html:40
+msgid "as universal DPO of"
+msgstr "som universel DPO for"
+
+#: organizations/templates/organizations/orgunit_list.html:71
 msgid "Search for organizational unit"
 msgstr "Søg efter organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:62
+#: organizations/templates/organizations/orgunit_list.html:94
 msgid "Show organizational units:"
 msgstr "Vis organisatoriske enheder:"
 
-#: organizations/templates/organizations/orgunit_list.html:73
+#: organizations/templates/organizations/orgunit_list.html:105
 msgid "with "
 msgstr "med"
 
-#: organizations/templates/organizations/orgunit_list.html:88
+#: organizations/templates/organizations/orgunit_list.html:120
 msgid "Show empty units"
 msgstr "Vis tomme enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:129
+#: organizations/templates/organizations/orgunit_list.html:123
 msgid "managers"
 msgstr "ledere"
 
-#: organizations/templates/organizations/orgunit_list.html:130
+#: organizations/templates/organizations/orgunit_list.html:124
 msgid "DPOs"
 msgstr "DPOer"
 
-#: organizations/templates/organizations/orgunit_list.html:142
+#: organizations/templates/organizations/orgunit_list.html:136
 msgid "accounts associated."
 msgstr "konti tilknyttet"
 
-#: organizations/templates/organizations/orgunit_list.html:148
-#: organizations/templates/organizations/orgunit_list.html:155
-#: organizations/templates/organizations/orgunit_list.html:175
+#: organizations/templates/organizations/orgunit_list.html:142
+#: organizations/templates/organizations/orgunit_list.html:149
+#: organizations/templates/organizations/orgunit_list.html:169
 msgid "as manager of"
 msgstr "som leder af"
 
-#: organizations/templates/organizations/orgunit_list.html:182
+#: organizations/templates/organizations/orgunit_list.html:176
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:202
+#: organizations/templates/organizations/orgunit_list.html:196
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:210
+#: organizations/templates/organizations/orgunit_list.html:204
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 

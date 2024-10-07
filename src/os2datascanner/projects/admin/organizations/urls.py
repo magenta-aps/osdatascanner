@@ -15,6 +15,8 @@ urlpatterns = [
          name='manager-dropdown'),
     path('<slug:org_slug>/units/<uuid:pk>/dpo-dropdown', views.DPODropdownView.as_view(),
          name='dpo-dropdown'),
+    path('<slug:org_slug>/uni-dpo-dropdown', views.OrgDPODropdownView.as_view(),
+         name='uni-dpo-dropdown'),
     path('<slug:slug>/delete', views.DeleteOrganizationView.as_view(), name='delete-organization'),
     path('<slug:slug>/org_delete_blocked', views.OrganizationDeletionBlocked.as_view(),
          name='org_delete_block'),
