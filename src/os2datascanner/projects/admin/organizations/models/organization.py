@@ -37,7 +37,7 @@ char_dict = {
 
 
 def replace_nordics(name: str):
-    """ Replaces 'æ', 'ø' and 'å' with 'ae', 'oe' and 'aa'. """
+    """ Replaces 'æ', 'ø' and 'å' with '&aelig', '&oslash' and '&aring.'"""
     global char_dict
     for char in char_dict:
         name = name.replace(char, char_dict[char])
@@ -79,9 +79,14 @@ class Organization(Core_Organization):
         verbose_name=_('synchronization time'),
     )
 
+    @staticmethod
+    def convert_name_to_slug(name: str) -> str:
+        """Converts Organization name to slug"""
+        encoded_name = replace_nordics(name)
+        return slugify(encoded_name, allow_unicode=True)
+
     def save(self, *args, **kwargs):
-        encoded_name = replace_nordics(self.name)
-        self.slug = slugify(encoded_name, allow_unicode=True)
+        self.slug = self.convert_name_to_slug(self.name)
         return super().save(*args, **kwargs)
 
     @property
