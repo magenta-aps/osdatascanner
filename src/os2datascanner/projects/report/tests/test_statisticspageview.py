@@ -402,8 +402,8 @@ class TestDPOStatisticsPageView:
         response1 = self.get_dpo_statisticspage_response(rf, egon_account, params='?scannerjob=1')
         response2 = self.get_dpo_statisticspage_response(rf, egon_account, params='?scannerjob=2')
 
-        assert response1.context_data.get('scannerjobs')[-1] == "1"
-        assert response2.context_data.get('scannerjobs')[-1] == "2"
+        assert response1.context_data.get('chosen_scannerjob') == "1"
+        assert response2.context_data.get('chosen_scannerjob') == "2"
 
         assert response1.context_data.get('match_data').get(
             'unhandled').get('count') == scanner1_matches
@@ -446,8 +446,8 @@ class TestDPOStatisticsPageView:
         response_ke = self.get_dpo_statisticspage_response(
             rf, egon_account, params=f'?orgunit={str(kun_egon_ou.uuid)}')
 
-        assert response_ob.context_data.get('orgunits')[-1] == str(olsenbanden_ou.uuid)
-        assert response_ke.context_data.get('orgunits')[-1] == str(kun_egon_ou.uuid)
+        assert response_ob.context_data.get('chosen_orgunit') == str(olsenbanden_ou.uuid)
+        assert response_ke.context_data.get('chosen_orgunit') == str(kun_egon_ou.uuid)
 
         assert response_ob.context_data.get('match_data').get('unhandled').get(
             'count') == egon_matches + benny_matches + kjeld_matches

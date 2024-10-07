@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 3.25.2, ???
+
+### General improvements
+
+- Dropdowns in HTML templates are no longer built from tuples and indices,
+  but rather from a separate entry in the context_data-dictionary.
+
 ## Version 3.25.1, 24th October 2024
 
 This minor bugfix release ensures that LDAP-based import jobs send their

@@ -31,12 +31,12 @@
                   data-compareto="all"
                   autocomplete="off">
             <option value="all"
-                    {% if scannerjobs|last == "all" %}selected="selected"{% endif %}>
+                    {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
               {% trans "All scannerjobs" %}
             </option>
-            {% for scan in scannerjobs|first %}
+            {% for scan in scannerjob_choices %}
               <option value="{{ scan.scanner_job_pk|unlocalize }}"
-                      {% if scannerjobs|last == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
+                      {% if chosen_scannerjob == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
                 {{ scan.scanner_job_name }}
               </option>
             {% endfor %}
@@ -47,10 +47,10 @@
           <label for="orgunits">{% trans "organizational unit"|capfirst %}</label>
           <select name="orgunit" id="orgunits" data-compareto="all" autocomplete="off">
             <option value="all"
-                    {% if orgunits|last == "all" %}selected="selected"{% endif %}>{% trans "All" %}</option>
-            {% for unit in orgunits|first %}
+                    {% if chosen_orgunit == "all" %}selected="selected"{% endif %}>{% trans "All" %}</option>
+            {% for unit in orgunit_choices %}
               <option value="{{ unit.uuid }}"
-                      {% if orgunits|last == unit.uuid|stringformat:"s" %}selected="selected"{% endif %}>
+                      {% if chosen_orgunit == unit.uuid|stringformat:"s" %}selected="selected"{% endif %}>
                 {{ unit.name }}
               </option>
             {% endfor %}
