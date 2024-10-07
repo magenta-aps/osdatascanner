@@ -105,6 +105,8 @@ class Account(models.Model):
         verbose_name = _('account')
         verbose_name_plural = _('accounts')
 
+        unique_together = ('organization', 'username')
+
     def __str__(self):
         return self.username
 

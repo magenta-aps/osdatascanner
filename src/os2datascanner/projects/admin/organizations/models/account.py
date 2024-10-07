@@ -48,7 +48,7 @@ class Account(Core_Account, Imported):
                 scanners.append({'name': _(f'Deleted scanner {pk}'), 'pk': pk})
         return scanners
 
-    class Meta:
+    class Meta(Core_Account.Meta):
         indexes = [
             GinIndex(
                 SearchVector(
