@@ -37,6 +37,16 @@ IGNORABLE_SMBC_EXCEPTIONS = (
 exclude write errors or connection errors."""
 
 
+def _trivial_read(ctx: smbc.Context, url: str) -> bytes | None:
+    """Attempts to read and return the complete binary content of the specified
+    file. Returns None in the event of anything resembling an error."""
+    try:
+        with _SMBCFile(ctx.open(url)) as fp:
+            return fp.read()
+    except Exception:
+        return None
+
+
 class Mode(enum.IntFlag):
     """A convenience enumeration for manipulating SMB file mode flags."""
     # description of flags mapping
@@ -49,7 +59,7 @@ class Mode(enum.IntFlag):
     DIRECTORY = 0x10
     ARCHIVE = 0x20
     # Windows defines DEVICE = 0x40, but CIFS/SMB doesn't
-    NORMAL = 0x80
+    NORMAL = 0x80  # excludes all other flags
     TEMPORARY = 0x100
     SPARSE = 0x200
     REPARSE_POINT = 0x400
@@ -59,9 +69,22 @@ class Mode(enum.IntFlag):
     ENCRYPTED = 0x4000
 
     @staticmethod
-    def for_url(context: smbc.Context, url: str) -> Optional['Mode']:
+    def for_url(
+            context: smbc.Context, url: str,
+            *,
+            allow_fake_mode: bool = False) -> Optional['Mode']:
         """Attempts to convert the mode flags retrieved from the given smb://
-        URL to a Mode."""
+        URL to a Mode.
+
+        (If the allow_fake_mode flag is set, and the URL produced by appending
+        ".mode-override" to the given URL points at a text representation of
+        a hexadecimal value, then that value will replace the mode flags.)"""
+        if allow_fake_mode:
+            if (_fake_mode := _trivial_read(context, url + ".mode-override")):
+                try:
+                    return Mode(int(_fake_mode.decode().strip(), 16))
+                except ValueError:  # also catches UnicodeDecodeError
+                    pass
         try:
             mode_ = context.getxattr(url, XATTR_DOS_ATTRIBUTES)
             logger.debug(f"mode flags for {url}: {mode_}")
