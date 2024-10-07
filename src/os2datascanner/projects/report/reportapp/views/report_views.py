@@ -218,7 +218,7 @@ class ReportView(LoginRequiredMixin, ListView):
 
         context['sensitivity_choices'] = ((Sensitivity(s["sensitivity"]),
                                            s["total"]) for s in sensitivities)
-        context['chosen_senitivity'] = self.request.GET.get('sensitivities', 'all')
+        context['chosen_sensitivity'] = self.request.GET.get('sensitivities', 'all')
 
         context['source_type_choices'] = self.all_reports.order_by("source_type").values(
             "source_type"
