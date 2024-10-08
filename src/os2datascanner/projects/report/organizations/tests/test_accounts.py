@@ -33,10 +33,7 @@ class TestAccount:
         # Matches related to a remediator should be ignored:
         make_matched_document_reports_for(egon_remediator_alias, handled=5, amount=10)
 
-        # This is the real test. This is where .match_count and .match_status are set.
-        egon_account.save()
-
-        assert egon_account.match_count == all_matches-handled_matches
+        assert egon_account.match_count == all_matches - handled_matches
         assert egon_account.match_status == StatusChoices.OK
 
     @pytest.mark.parametrize("handled_num,all_num,status", [
@@ -128,8 +125,6 @@ class TestAccount:
         handled = 0
         make_matched_document_reports_for(egon_email_alias, handled=handled, amount=all_matches)
 
-        # Refresh match count.
-        egon_account._count_matches()
         # Assert
         assert egon_account.match_count == all_matches
 
@@ -139,15 +134,13 @@ class TestAccount:
         dr = DocumentReport.objects.filter(alias_relation=egon_email_alias).first()
         dr.resolution_status = None
         dr.save()
-        # Refresh match count
-        egon_account._count_matches()
+
         # Assert
         assert egon_account.match_count == 1
 
         # Handle all matches
         DocumentReport.objects.filter(alias_relation=egon_email_alias).update(resolution_status=0)
-        # Refresh match count
-        egon_account._count_matches()
+
         # Assert
         assert egon_account.match_count == 0
 
@@ -160,8 +153,6 @@ class TestAccount:
         DocumentReport.objects.filter(alias_relation=egon_email_alias).update(
             only_notify_superadmin=True)
 
-        # Refresh count
-        egon_account._count_matches()
         # Assert
         assert egon_account.withheld_matches == 10
         assert egon_account.match_count == 0
@@ -173,8 +164,6 @@ class TestAccount:
         dr.only_notify_superadmin = True
         dr.save()
 
-        # Refresh count
-        egon_account._count_matches()
         # Assert
         assert egon_account.withheld_matches == 1
         assert egon_account.match_count == 9
@@ -183,8 +172,7 @@ class TestAccount:
         DocumentReport.objects.filter(alias_relation=egon_email_alias,
                                       only_notify_superadmin=True).update(
             only_notify_superadmin=False)
-        # Refresh count
-        egon_account._count_matches()
+
         # Assert, nothing should be withheld
         assert egon_account.withheld_matches == 0
         assert egon_account.match_count == 10

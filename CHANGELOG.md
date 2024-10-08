@@ -157,6 +157,9 @@ the risk of violating database constraints.)
 - The organisational import processes now optionally support the immediate
   enforcement of database constraints, useful for troubleshooting.
 
+- The Account model in the Report module had some fields that were derived from other tables.
+  These fields have been removed, greatly decreasing the sorting time on the leader page.
+
 ### Bugfixes
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.
