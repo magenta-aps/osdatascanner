@@ -9,7 +9,6 @@ def replace_regions(content: str, *regions: tuple[int, str, int]) -> Iterator[st
     Each tuple's offsets should be relative to the original string; this
     function takes care of fixing them up as the content changes."""
     consumed = 0
-    print(regions)
     for (start, replacement, end) in regions:
         region_size = end - start
 
