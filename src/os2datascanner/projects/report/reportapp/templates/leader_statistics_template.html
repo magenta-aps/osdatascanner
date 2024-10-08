@@ -38,18 +38,32 @@
           <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}" />
           <input type="hidden" name="order" id="order" value="{{ order }}" />
           <div class="org_filtering_wrapper">
-            <div>
+            <div class = "stat_form">
               <div>
-                <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
+                <div>
+                  <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
+                </div>
+                <div class="org_filtering dropdown">
+                  <select name="org_unit" id="org_units" autocomplete="off">
+                    {% for unit in user_units %}
+                      <option value="{{ unit.uuid }}"
+                              {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
-              <div class="org_filtering dropdown">
-                <select name="org_unit" id="org_units" autocomplete="off">
-                  {% for unit in user_units %}
-                    <option value="{{ unit.uuid }}"
-                            {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+
+              {% if settings.LEADER_CSV_EXPORT %}
+                <div class="form__buttons">
+                  <button type="submit"
+                          formaction="{% url 'statistics-leader-export' %}"
+                          class="button button--transparent-button"
+                          aria-label="{% trans 'Export leader data as a csv-file' %}"
+                          title="{% trans 'Click here to export leader data as a csv-file' %}">
+                    {% trans "Export CSV" %}
+                  </button>
+                </div>
+              {% endif %}
             </div>
 
             <div class="search_field_wrapper right">

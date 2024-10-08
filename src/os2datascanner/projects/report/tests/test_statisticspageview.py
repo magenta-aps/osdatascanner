@@ -1,4 +1,5 @@
 import pytest
+import csv
 from datetime import datetime, timedelta
 
 from django.core.exceptions import PermissionDenied
@@ -13,13 +14,14 @@ from os2datascanner.projects.report.tests.test_utilities import create_reports_f
 
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.views.statistics_views import (
-        UserStatisticsPageView, LeaderStatisticsPageView,
+        UserStatisticsPageView, LeaderStatisticsPageView, LeaderStatisticsCSVView,
         DPOStatisticsPageView, DPOStatisticsCSVView)
 
 
 @pytest.fixture(autouse=True)
 def override_dpo_csv_export_feature_flag():
     settings.DPO_CSV_EXPORT = True
+    settings.LEADER_CSV_EXPORT = True
 
 
 @pytest.mark.django_db
@@ -70,12 +72,194 @@ class TestLeaderStatisticsPageView:
 
         assert response.status_code == 403
 
+    def test_leader_export_as_manager(self, rf, egon_account, egon_manager_position):
+        """A user with a 'manager'-position to an organizational unit should
+        be able to export leader data."""
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+
+        assert response.status_code == 200
+
+    def test_leader_export_as_superuser(self, superuser_account, rf):
+        """A superuser should be able to export leader data."""
+
+        response = self.get_leader_statistics_csv_response(rf, superuser_account)
+
+        assert response.status_code == 200
+
+    def test_leader_export_with_no_privileges(self, egon_account, rf):
+        """A user with no privileges should not be able to export leader data."""
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+
+        assert response.status_code == 403
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    @pytest.mark.parametrize('egon_matches,benny_matches,kjeld_matches', [
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 1),
+        (1, 1, 1),
+        (0, 10, 10),
+        (10, 0, 0),
+        (10, 10, 10),
+    ])
+    def test_leader_csv_export(
+            self,
+            egon_account,
+            benny_account,
+            kjeld_account,
+            egon_manager_position,
+            egon_email_alias,
+            benny_email_alias,
+            kjeld_email_alias,
+            olsenbanden_ou_positions,
+            olsenbanden_ou,
+            rf,
+            egon_matches,
+            benny_matches,
+            kjeld_matches):
+        """It should be possible to filter exported leader data based on orgunit."""
+
+        create_reports_for(egon_email_alias, num=egon_matches)
+        create_reports_for(benny_email_alias, num=benny_matches)
+        create_reports_for(kjeld_email_alias, num=kjeld_matches)
+
+        for acc in [egon_account, benny_account, kjeld_account]:
+            acc.save()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        rows = sorted(csv.DictReader(line.decode() for line in response.streaming_content),
+                      key=lambda row: row['First name'])
+
+        assert len(rows) == 3
+        benny_row, egon_row, kjeld_row = rows
+        assert benny_row['First name'] == "Benny"
+        assert int(benny_row['Matches']) == benny_matches
+        assert egon_row['First name'] == "Egon"
+        assert int(egon_row['Matches']) == egon_matches
+        assert kjeld_row['First name'] == "Kjeld"
+        assert int(kjeld_row['Matches']) == kjeld_matches
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_export_orgunit_filter(
+            self,
+            egon_account,
+            benny_account,
+            egon_manager_position,
+            egon_email_alias,
+            benny_email_alias,
+            olsenbanden_ou_positions,
+            olsenbanden_ou,
+            kun_egon_ou,
+            rf):
+        """It should be possible to filter exported leader data based on orgunit."""
+
+        create_reports_for(egon_email_alias)
+        create_reports_for(benny_email_alias)
+
+        for acc in [egon_account, benny_account]:
+            acc.save()
+
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(kun_egon_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+
+        assert len(rows) == 1
+        assert rows[0]['First name'] == "Egon"
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_export_orgunit_descendants(
+            self,
+            egon_account,
+            kjeld_account,
+            børge_account,
+            egon_manager_position,
+            egon_email_alias,
+            kjeld_email_alias,
+            børge_email_alias,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            børges_værelse_ou_positions,
+            rf):
+        """When exporting data for a ou, it should include every descendant ou as well."""
+        create_reports_for(egon_email_alias)
+        create_reports_for(kjeld_email_alias)
+        create_reports_for(børge_email_alias)
+
+        for acc in [egon_account, kjeld_account, børge_account]:
+            acc.save()
+
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+
+        # We ignore Benny and Yvonne, since we haven't given them any matches
+        names = {row['First name'] for row in rows if int(row['Matches']) > 0}
+        assert {"Egon", "Kjeld", "Børge"} == names
+
     # Helper functions
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_orgunit_export(
+            self,
+            egon_account,
+            egon_manager_position,
+            kjeld_account,
+            kjeld_email_alias,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            rf):
+        """When exporting data, every ou of the users should be included."""
+        create_reports_for(kjeld_email_alias)
+        kjeld_account.save()
+
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert "Olsen-banden" in rows[0]['Organizational units']
+        assert "Kjelds Hus" in rows[0]['Organizational units']
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_ignore_irrelevant_orgunits(
+            self,
+            kjeld_account,
+            kjeld_manager_position,
+            kjeld_email_alias,
+            kjelds_hus,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            rf):
+        """When exporting data, only orgunits that are descendants of the chosen orgunit
+        should be included in the orgunit-lists."""
+        create_reports_for(kjeld_email_alias)
+        kjeld_account.save()
+
+        response = self.get_leader_statistics_csv_response(
+            rf, kjeld_account, params=f"?org_unit={str(kjelds_hus.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert "Olsen-banden" not in rows[0]['Organizational units']
+        assert "Kjelds Hus" in rows[0]['Organizational units']
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-leader') + params)
         request.user = account.user
         return LeaderStatisticsPageView.as_view()(request, **kwargs)
+
+    def get_leader_statistics_csv_response(self, rf, account, params='', **kwargs):
+        request = rf.get(reverse('statistics-leader-export') + params)
+        request.user = account.user
+        return LeaderStatisticsCSVView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db

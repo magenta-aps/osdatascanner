@@ -256,6 +256,15 @@ def benny_dpo_position(benny_account, olsenbanden_ou):
         unit=olsenbanden_ou,
     )
 
+
+@pytest.fixture
+def kjeld_manager_position(kjeld_account, kjelds_hus):
+    return Position.objects.create(
+        account=kjeld_account,
+        unit=kjelds_hus,
+        role=Role.MANAGER
+    )
+
 # MARVEL
 
 
