@@ -101,6 +101,8 @@ class SMBCSource(Source):
     type_label = "smbc"
     eq_properties = ("_unc", "_user", "_password", "_domain")
 
+    allow_fake_mode: bool = False  # Not serialised, only useful for testing
+
     def __init__(
             self, unc: str,
             user: Optional[str] = None, password: Optional[str] = None,
@@ -149,7 +151,10 @@ class SMBCSource(Source):
 
         (Note that the policy decision about whether or not to *actually* skip
         a skippable file is not implemented here.)"""
-        mode = Mode.for_url(context, url)
+        logger.debug(
+                "SMBCSource.is_skippable",
+                context=context, url=url, path=path, name=name)
+        mode = Mode.for_url(context, url, allow_fake_mode=cls.allow_fake_mode)
 
         if mode is not None:
             # If the Mode.NORMAL bit is set *along with* other bits...
