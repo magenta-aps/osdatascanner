@@ -8,7 +8,6 @@ from urllib.parse import quote
 from pathlib import PureWindowsPath
 from datetime import datetime
 import operator
-import warnings
 from functools import reduce
 from contextlib import contextmanager
 
@@ -160,11 +159,12 @@ class SMBCSource(Source):
                     # set...
                     or mode & ~ModeMask):
                 # ... then something has gone very badly wrong
-                warnings.warn(
+                logger.warning(
                         "incoherent mode flags detected"
-                        " (Samba bug #14101?)")
+                        " (Samba bug #14101?)",
+                        path=path, mode=mode)
                 if name.startswith("~"):
-                    logger.info("skipping perhaps-hidden object {path}")
+                    logger.info("skipping perhaps-hidden object", path=path)
                     return True
 
             # If this object is super-hidden -- that is, if it has the hidden
@@ -172,13 +172,13 @@ class SMBCSource(Source):
             # start of its name -- then ignore it
             if (mode & Mode.HIDDEN
                     and (mode & Mode.SYSTEM or name.startswith("~"))):
-                logger.info(f"skipping super-hidden object {path}")
+                logger.info("skipping super-hidden object", path=path)
                 return True
 
         # Special-case the ~snapshot folder, which we should never scan
         # (XXX: revisit this once we know the Samba bug is fixed)
         if name == "~snapshot":
-            logger.info(f"skipping snapshot directory {path}")
+            logger.info("skipping snapshot directory", path=path)
             return True
 
         return False
@@ -220,7 +220,8 @@ class SMBCSource(Source):
                         # A memory error here means that the path is using
                         # deprecated encoding. Skip the path and keep going!
                         logger.warning(
-                            f"Skipping handle with memory error at {url_here}")
+                                "Skipping handle with memory error",
+                                url_here=url_here)
                         yield (handle_here, e)
                         return
                     for dent in obj.getdents():
