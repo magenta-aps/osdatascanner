@@ -198,6 +198,9 @@ class SMBCSource(Source):
         def handle_dirent(parents, entity, owner_sid: str = None):
             name = entity.name
 
+            if name in (".", ".."):
+                return
+
             here = parents + [entity]
             path = '/'.join([h.name for h in here])
             url_here = url + "/" + path
@@ -212,7 +215,7 @@ class SMBCSource(Source):
                 hints["owner_sid"] = owner_sid
 
             handle_here = SMBCHandle(self, path, hints=hints)
-            if entity.smbc_type == smbc.DIR and name not in (".", ".."):
+            if entity.smbc_type == smbc.DIR:
                 try:
                     try:
                         obj = context.opendir(url_here)
