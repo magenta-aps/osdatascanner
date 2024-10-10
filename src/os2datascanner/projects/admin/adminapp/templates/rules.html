@@ -45,6 +45,7 @@
         </div>
       </div>
 
+      {% include "components/feedback/snackbarNew.html" %}
       {% if customrule_list %}
         <div class="datatable-wrapper card xl"
              role="region"
@@ -95,12 +96,12 @@
                                 class="button button--icon-button"
                                 onclick="return confirm(`{% trans 'Do you really want to delete this rule?' %}\n\n{{ rule.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
                                 aria-label="{% trans 'Delete' %}"
-                                title="{% trans 'Delete' %}">
+                                title="{% if rule.scanners.exists %}{% trans 'This rule cannot be deleted, as it is used in the following scanners' %}: {{ rule.scanners.all|join:', ' }}. {% trans 'Update or delete the scanners first in order to delete the rule' %}.{% else %}{% trans 'Delete' %}{% endif %}"
+                                {% if rule.scanners.exists %}disabled{% endif %}>
                           <i id="delete_forever" class="material-icons">delete_forever</i>
                         </button>
                       </form>
                     </div>
-
                   </td>
                 </tr>
                 <tr class="expandable-row"
