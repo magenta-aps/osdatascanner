@@ -127,16 +127,40 @@
   }
 }
 
+.uni-dpos-container {
+  margin-bottom: 1rem;
+
+  .uni-dpos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    ul {
+      list-style-type: none;
+
+      li {
+        display: inline;
+        margin: 0;
+
+        &.add_uni_dpo {
+          margin-left: 0.3rem;
+        }
+      }
+    }
+  }
+}
+
 .dynamic_li {
   cursor: pointer;
 
-  &:not(:nth-last-of-type(2))::after {
-    content: ", ";
+  &:not(:nth-last-of-type(2)) {
+    span::after {
+      content: ", ";
+    }
   }
 
   &:hover {
     text-decoration: line-through;
-
   }
 }
 

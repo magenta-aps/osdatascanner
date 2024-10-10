@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<select class="select_options"
+        name="add-uni-dpo"
+        hx-post=""
+        hx-swap="outerHTML"
+        hx-target="#uni_dpos"
+        hx-select="#uni_dpos"
+        hx-trigger="change">
+  <option value="">{% trans "Add universal DPO" %}</option>
+  {% for account in uni_dpo_accounts %}
+    <option value="{{ account.uuid }}">
+      {{ account.get_full_name }}
+      {% if account.username %}({{ account.username }}){% endif %}
+    </option>
+  {% endfor %}
+</select>

@@ -215,3 +215,21 @@ class DPODropdownView(AccountDropdownView):
 
     def accounts_to_exclude(self, orgunit):
         return orgunit.get_dpos()
+
+
+class OrgDPODropdownView(ClientAdminMixin, RestrictedListView):
+    model = Account
+    template_name = 'components/uni_dpo_dropdown.html'
+    context_object_name = "uni_dpo_accounts"
+
+    def get_queryset(self, **kwargs):
+        qs = super().get_queryset(**kwargs)
+        return qs.filter(
+            organization=self.kwargs['org'],
+            is_universal_dpo=False).order_by(
+            "first_name",
+            "last_name")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

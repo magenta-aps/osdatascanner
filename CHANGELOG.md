@@ -22,6 +22,9 @@
 
 - Support button settings are now hidden when disabled.
 
+- Universal DPOs can now be assigned on the org unit page. Universal DPOs can view all org units,
+  without having to be assigned to each one.
+
 ### Bugfixes
 
 - Scanning SharePoint now investigates all document libraries, instead of only the primary.

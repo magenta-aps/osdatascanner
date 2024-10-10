@@ -113,7 +113,11 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 # organization
                 org = request.user.account.organization
                 self.matches = self.matches.filter(organization=org)
-                self.user_units = self.request.user.account.get_dpo_units().order_by("name")
+                if self.request.user.account.is_universal_dpo:
+                    self.user_units = OrganizationalUnit.objects.filter(
+                        organization=self.request.user.account.organization).order_by("name")
+                else:
+                    self.user_units = self.request.user.account.get_dpo_units().order_by("name")
 
         else:
             raise Account.DoesNotExist(_("The user does not have an account."))
@@ -134,8 +138,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 scanner_job_pk=scannerjob)
 
         if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
-            confirmed_dpo = self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
-            if self.request.user.is_superuser or confirmed_dpo:
+            confirmed_dpo = (self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
+                             or self.request.user.account.is_universal_dpo)
+            if (self.request.user.is_superuser or confirmed_dpo):
                 selected_unit = self.user_units.get(uuid=orgunit)
                 descendant_units = selected_unit.get_descendants(include_self=True)
                 positions = Position.employees.filter(unit__in=descendant_units)

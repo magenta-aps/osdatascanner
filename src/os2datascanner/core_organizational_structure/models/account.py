@@ -79,6 +79,10 @@ class Account(models.Model):
         blank=True,
         related_name="managed_accounts",
     )
+    is_universal_dpo = models.BooleanField(
+        verbose_name=_('universal dpo status'),
+        default=False
+    )
     is_superuser = models.BooleanField(
         verbose_name=_('superuser_status'),
         default=False
@@ -132,7 +136,7 @@ class Account(models.Model):
 
     @cached_property
     def is_dpo(self):
-        return self.get_dpo_units().exists()
+        return self.is_universal_dpo or self.get_dpo_units().exists()
 
     @cached_property
     def is_remediator(self):
@@ -159,4 +163,5 @@ class AccountSerializer(serializers.ModelSerializer):
             "organization",
             "manager",
             "is_superuser",
-            "email"]
+            "email",
+            "is_universal_dpo"]

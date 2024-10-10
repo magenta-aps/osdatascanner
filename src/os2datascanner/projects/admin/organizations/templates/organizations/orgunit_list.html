@@ -21,185 +21,219 @@
 
     {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
       <h1>{% trans "organizational hierarchy for"|capfirst %} {{ organization }}</h1>
-      <form name="orgunit_filters"
-            id="orgunit_filters"
-            class="orgunit_filtering_wrapper"
-            hx-get="{% url 'orgunit-list' organization.slug %}"
-            hx-trigger="keyup delay:200ms from:#search_field"
-            hx-swap="outerHTML"
-            hx-select=".orgunit-list"
-            hx-target=".orgunit-list"
-            hx-include="[id='dropdown_options']"
-            hx-indicator="#orgunit-page-indicator">
-        <div class="orgunit_input_container">
-          <div class="orgunit_input_wrapper search_field_wrapper">
-            <input type="search"
-                   name="search_field"
-                   id="search_field"
-                   placeholder="{% trans 'Search for organizational unit' %}"
-                   value="{{ request.GET.search_field }}"
-                   autocomplete="off" />
-          </div>
-          <div class="org_unit_filter_button">
-            <button class="filter-button filter-button--org_unit expand"
-                    type="button"
-                    onclick="toggleOptionbox('org_structure_filter_options')">
-              <span>{% trans "filter"|capfirst %}</span>
-              <svg class="icon">
-                <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
-              </svg>
-            </button>
-            <div id="org_structure_filter_options"
-                 class="filter-container"
-                 style="display: none">
-              <div class="filter-container-options filter-container-options--org_unit">
-                {% comment %}
+      <div class="uni-dpos-container">
+        <b>{% trans "universal DPOs"|capfirst %}:</b>
+        <span class="help-tooltip"
+              title="{% trans 'A universal DPO has access to the DPO-module for all organizational units' %}.">
+          {% include "components/svg-icons/help.svg" %}
+        </span>
+        <div id="uni_dpos" class="uni-dpos">
+          <ul>
+            {% for uni_dpo in uni_dpos %}
+              <li class="dynamic_li"
+                  title="{% trans 'Click to remove' %} {{ uni_dpo.get_full_name }} {% trans 'as universal DPO of' %} {{ organization }}."
+                  hx-post=""
+                  hx-target="#uni_dpos"
+                  hx-select="#uni_dpos"
+                  hx-swap="outerHTML"
+                  hx-trigger="click"
+                  hx-vals='{"rem-uni-dpo": "{{ uni_dpo.uuid }}"}'
+                  hx-confirm="{% trans 'Are you sure you want to remove' %} {{ uni_dpo.get_full_name }} {% trans 'as universal DPO of' %} {{ organization }}?">
+                <span>{{ uni_dpo.get_full_name }}</span>
+              </li>
+            {% endfor %}
+            <li class="add_uni_dpo dynamic_li">
+              <button type="button"
+                      class="add_button button button--icon-button"
+                      hx-get="{% url 'uni-dpo-dropdown' organization.slug %}"
+                      hx-swap="outerHTML"
+                      hx-target="this"
+                      hx-push-url="false">
+                <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="orgunit_filtering_wrapper">
+        <form name="orgunit_filters"
+              id="orgunit_filters"
+              hx-get="{% url 'orgunit-list' organization.slug %}"
+              hx-trigger="keyup delay:200ms from:#search_field"
+              hx-swap="outerHTML"
+              hx-select=".orgunit-list"
+              hx-target=".orgunit-list"
+              hx-include="[id='dropdown_options']"
+              hx-indicator="#orgunit-page-indicator">
+          <div class="orgunit_input_container">
+            <div class="orgunit_input_wrapper search_field_wrapper">
+              <input type="search"
+                     name="search_field"
+                     id="search_field"
+                     placeholder="{% trans 'Search for organizational unit' %}"
+                     value="{{ request.GET.search_field }}"
+                     autocomplete="off" />
+            </div>
+            <div class="org_unit_filter_button">
+              <button class="filter-button filter-button--org_unit expand"
+                      type="button"
+                      onclick="toggleOptionbox('org_structure_filter_options')">
+                <span>{% trans "filter"|capfirst %}</span>
+                <svg class="icon">
+                  <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
+                </svg>
+              </button>
+              <div id="org_structure_filter_options"
+                   class="filter-container"
+                   style="display: none">
+                <div class="filter-container-options filter-container-options--org_unit">
+                  {% comment %}
                   Added hidden value, to show all roles the first time the user visits the page, despite all unchecked boxes
-                {% endcomment %}
-                <input type="hidden" name="roles" value="_" />
-                <ul>
-                  <div class="filter_header">{% trans "Show organizational units:" %}</div>
-                </ul>
-                {% for role in roles %}
+                  {% endcomment %}
+                  <input type="hidden" name="roles" value="_" />
                   <ul>
-                    <div class="filter_checkbox">
-                      <input value="{{ role.0 }}"
-                             name="roles"
-                             type="checkbox"
-                             id="{{ role.0 }}_checkbox"
-                             {% if role.0 in checked_roles %}checked{% endif %}
-                             autocomplete="off">
-                      <label for="{{ role.0 }}_checkbox">{% trans "with "|capfirst %} {{ role.1 }}</label>
-                      <button class="checkbox_button"
-                              id="{{ role.0 }}_checkbox_button"
-                              onclick="toggleCheckbox(event, '{{ role.0 }}_checkbox')">
-                      </div>
-                    </ul>
-                  {% endfor %}
-                  <ul>
-                    <div class="filter_checkbox">
-                      <input type="checkbox"
-                             name="show_empty"
-                             id="show_empty"
-                             value="on"
-                             autocomplete="off"
-                             {% if show_empty %}checked{% endif %}>
-                      <label for="show_empty">{% trans "Show empty units" %}</label>
-                      <button class="checkbox_button"
-                              id="show_empty_checkbox_button"
-                              onclick="toggleCheckbox(event, 'show_empty')">
-                      </div>
-                    </ul>
+                    <div class="filter_header">{% trans "Show organizational units:" %}</div>
+                  </ul>
+                  {% for role in roles %}
                     <ul>
-                      <button type="submit" class="button--cta button">{% trans "filter"|capfirst %}</button>
-                    </ul>
+                      <div class="filter_checkbox">
+                        <input value="{{ role.0 }}"
+                               name="roles"
+                               type="checkbox"
+                               id="{{ role.0 }}_checkbox"
+                               {% if role.0 in checked_roles %}checked{% endif %}
+                               autocomplete="off">
+                        <label for="{{ role.0 }}_checkbox">{% trans "with "|capfirst %} {{ role.1 }}</label>
+                        <button class="checkbox_button"
+                                id="{{ role.0 }}_checkbox_button"
+                                onclick="toggleCheckbox(event, '{{ role.0 }}_checkbox')">
+                        </div>
+                      </ul>
+                    {% endfor %}
+                    <ul>
+                      <div class="filter_checkbox">
+                        <input type="checkbox"
+                               name="show_empty"
+                               id="show_empty"
+                               value="on"
+                               autocomplete="off"
+                               {% if show_empty %}checked{% endif %}>
+                        <label for="show_empty">{% trans "Show empty units" %}</label>
+                        <button class="checkbox_button"
+                                id="show_empty_checkbox_button"
+                                onclick="toggleCheckbox(event, 'show_empty')">
+                        </div>
+                      </ul>
+                      <ul>
+                        <button type="submit" class="button--cta button">{% trans "filter"|capfirst %}</button>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </form>
-        {% endif %}
-      </div>
-      {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
-        <div class="datatable-wrapper card orgunit-list"
-             role="region"
-             tabindex="0"
-             aria-label="{% trans 'organizational units'|capfirst %}"
-             hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-             hx-indicator="#orgunit-page-indicator"
-             hx-push-url='true'>
-          <table class="datatable">
-            <colgroup>
-              <col class="datatable__column--name">
-              <col class="datatable__column--info">
-              <col class="datatable__column--managers">
-              <col class="datatable__column--dpos">
-            </colgroup>
-            <thead>
-              <tr class="table-topbar topbar-stick sticky">
-                <th class="datatable__column--name">{% trans "name"|capfirst %}</th>
-                <th class="datatable__column--info">{% trans "accounts"|capfirst %}</th>
-                <th class="datatable__column--managers">{% trans "managers"|capfirst %}</th>
-                <th class="datatable__column--dpos">{% trans "DPOs" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% if object_list.exists %}
-                {% for orgunit in object_list %}
-                  <tr id="orgunit__{{ orgunit.pk }}">
-                    <td class="datatable__column--name orgunit_name">
-                      <div>{{ orgunit.name }}</div>
-                      {% if orgunit.parent %}<div class="parent">({{ orgunit.parent.name }})</div>{% endif %}
-                    </td>
-                    <td class="datatable__column--info orgunit_members">
-                      {{ orgunit.employee_count }} {% trans "accounts associated." %}
-                    </td>
-                    <td class="datatable__column--managers orgunit_managers">
-                      <ul>
-                        {% for manager_pos in orgunit.managers %}
-                          <li class="dynamic_li"
-                              title="{% trans 'Click to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
-                              hx-post=""
-                              hx-swap="outerHTML"
-                              hx-target="#orgunit__{{ orgunit.pk }}"
-                              hx-select="#orgunit__{{ orgunit.pk }}"
-                              hx-trigger="click"
-                              hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-manager": "{{ manager_pos.account.uuid }}"}'
-                              hx-confirm="{% trans 'Are you sure you want to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}?">
-                            <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-                            <!-- djlint:off -->{{ manager_pos.account.get_full_name }}</li><!-- djlint:on -->
-                          {% endfor %}
-                          <li class="add_manager">
-                            <button type="button"
-                                    class="add_button button button--icon-button"
-                                    hx-get="{% url 'manager-dropdown' organization.slug orgunit.pk %}"
-                                    hx-swap="outerHTML"
-                                    hx-target="this"
-                                    hx-push-url="false">
-                              <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
-                            </button>
-                          </li>
-                        </ul>
+            </form>
+          {% endif %}
+        </div>
+        {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
+          <div class="datatable-wrapper card orgunit-list"
+               role="region"
+               tabindex="0"
+               aria-label="{% trans 'organizational units'|capfirst %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               hx-indicator="#orgunit-page-indicator"
+               hx-push-url='true'>
+            <table class="datatable">
+              <colgroup>
+                <col class="datatable__column--name">
+                <col class="datatable__column--info">
+                <col class="datatable__column--managers">
+                <col class="datatable__column--dpos">
+              </colgroup>
+              <thead>
+                <tr class="table-topbar topbar-stick sticky">
+                  <th class="datatable__column--name">{% trans "name"|capfirst %}</th>
+                  <th class="datatable__column--info">{% trans "accounts"|capfirst %}</th>
+                  <th class="datatable__column--managers">{% trans "managers"|capfirst %}</th>
+                  <th class="datatable__column--dpos">{% trans "DPOs" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if object_list.exists %}
+                  {% for orgunit in object_list %}
+                    <tr id="orgunit__{{ orgunit.pk }}">
+                      <td class="datatable__column--name orgunit_name">
+                        <div>{{ orgunit.name }}</div>
+                        {% if orgunit.parent %}<div class="parent">({{ orgunit.parent.name }})</div>{% endif %}
                       </td>
-                      <td class="datatable__column--dpos orgunit_managers">
+                      <td class="datatable__column--info orgunit_members">
+                        {{ orgunit.employee_count }} {% trans "accounts associated." %}
+                      </td>
+                      <td class="datatable__column--managers orgunit_managers">
                         <ul>
-                          {% for dpo_pos in orgunit.dpos %}
+                          {% for manager_pos in orgunit.managers %}
                             <li class="dynamic_li"
-                                title="{% trans 'Click to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
+                                title="{% trans 'Click to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-target="#orgunit__{{ orgunit.pk }}"
                                 hx-select="#orgunit__{{ orgunit.pk }}"
                                 hx-trigger="click"
-                                hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-dpo": "{{ dpo_pos.account.uuid }}"}'
-                                hx-confirm="{% trans 'Are you sure you want to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as DPO of' %} {{ orgunit }}?">
-                              {{ dpo_pos.account.get_full_name }}
+                                hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-manager": "{{ manager_pos.account.uuid }}"}'
+                                hx-confirm="{% trans 'Are you sure you want to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}?">
+                              <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                              <!-- djlint:off --><span>{{ manager_pos.account.get_full_name }}</span></li><!-- djlint:on -->
+                            {% endfor %}
+                            <li class="add_manager">
+                              <button type="button"
+                                      class="add_button button button--icon-button"
+                                      hx-get="{% url 'manager-dropdown' organization.slug orgunit.pk %}"
+                                      hx-swap="outerHTML"
+                                      hx-target="this"
+                                      hx-push-url="false">
+                                <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
+                              </button>
                             </li>
-                          {% endfor %}
-                          <li class="add_dpo">
-                            <button type="button"
-                                    class="add_button button button--icon-button"
-                                    hx-get="{% url 'dpo-dropdown' organization.slug orgunit.pk %}"
-                                    hx-swap="outerHTML"
-                                    hx-target="this"
-                                    hx-push-url="false">
-                              <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
-                            </button>
-                          </li>
-                        </ul>
-                      </td>
+                          </ul>
+                        </td>
+                        <td class="datatable__column--dpos orgunit_managers">
+                          <ul>
+                            {% for dpo_pos in orgunit.dpos %}
+                              <li class="dynamic_li"
+                                  title="{% trans 'Click to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
+                                  hx-post=""
+                                  hx-swap="outerHTML"
+                                  hx-target="#orgunit__{{ orgunit.pk }}"
+                                  hx-select="#orgunit__{{ orgunit.pk }}"
+                                  hx-trigger="click"
+                                  hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-dpo": "{{ dpo_pos.account.uuid }}"}'
+                                  hx-confirm="{% trans 'Are you sure you want to remove' %} {{ dpo_pos.account.get_full_name }} {% trans 'as DPO of' %} {{ orgunit }}?">
+                                <span>{{ dpo_pos.account.get_full_name }}</span>
+                              </li>
+                            {% endfor %}
+                            <li class="add_dpo">
+                              <button type="button"
+                                      class="add_button button button--icon-button"
+                                      hx-get="{% url 'dpo-dropdown' organization.slug orgunit.pk %}"
+                                      hx-swap="outerHTML"
+                                      hx-target="this"
+                                      hx-push-url="false">
+                                <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
+                              </button>
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td class="nothing_found_row" colspan="4">{% trans "No organizational units found ..." %}</td>
                     </tr>
-                  {% endfor %}
-                {% else %}
-                  <tr>
-                    <td class="nothing_found_row" colspan="4">{% trans "No organizational units found ..." %}</td>
-                  </tr>
-                {% endif %}
-              </tbody>
-              {% include "components/pagination/pagination.html" %}
-            </table>
-          </div>
-        {% else %}
-          <div class="root">{% trans "No organizational units." %}</div>
-        {% endif %}
-      {% endblock %}
+                  {% endif %}
+                </tbody>
+                {% include "components/pagination/pagination.html" %}
+              </table>
+            </div>
+          {% else %}
+            <div class="root">{% trans "No organizational units." %}</div>
+          {% endif %}
+        {% endblock %}
