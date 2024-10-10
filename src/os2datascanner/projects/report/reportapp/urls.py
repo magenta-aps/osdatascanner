@@ -19,6 +19,7 @@ from .views.report_views import (
     UserReportView, UserArchiveView, RemediatorView, RemediatorArchiveView,
     UndistributedView, UndistributedArchiveView)
 from .views.user_views import AccountView, AccountOutlookSettingView
+from .views.scannerjob_views import ScannerjobListView
 from .views.manual_views import ManualMainView
 from .views.support_views import SupportButtonView
 
@@ -45,6 +46,7 @@ urlpatterns = [
     path('statistics/user/<uuid:pk>', UserStatisticsPageView.as_view(),
          name='statistics-user-id'),
     path('statistics/employee/<uuid:pk>', EmployeeView.as_view(), name='employee'),
+    path('scannerjobs/', ScannerjobListView.as_view(), name="scannerjobs"),
     re_path(r'^health/', lambda r: HttpResponse()),
     re_path(r'^version/?$', lambda r: HttpResponse(__version__)),
     re_path(r'^help/$', ManualMainView.as_view(), name="guide"),

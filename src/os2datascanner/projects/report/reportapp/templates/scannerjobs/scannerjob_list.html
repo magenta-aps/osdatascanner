@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block body %}
+  {{ block.super }}
+
+  {% if page_obj.paginator.count == 0 %}
+    <p class="no-results">{% trans "No scannerjobs were found" %}</p>
+  {% else %}
+    {% include "components/scannerjobs/scannerjob_table.html" %}
+  {% endif %}
+
+{% endblock body %}
