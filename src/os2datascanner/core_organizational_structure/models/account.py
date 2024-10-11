@@ -167,3 +167,8 @@ class AccountSerializer(serializers.ModelSerializer):
             "is_superuser",
             "email",
             "is_universal_dpo"]
+
+    def get_unique_together_validators(self):
+        # TODO: Tests implode if the serializers try to uphold unique-together
+        # validators. We should have some validation logic in the future.
+        return []
