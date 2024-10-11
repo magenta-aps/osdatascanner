@@ -14,7 +14,7 @@ class ScannerjobListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["scannerjobs"] = self.object_list.values(
-            "scanner_job_pk", "scanner_job_name").order_by().annotate(
+            "scanner_job_pk", "scanner_job_name", "source_type").order_by().annotate(
                 count=Count("scanner_job_name"))
         return context
 

@@ -1,13 +1,55 @@
 {% extends "index.html" %}
 {% load i18n %}
+{% load handle_extras %}
 
-{% block body %}
-  {{ block.super }}
+{% block content %}
 
   {% if page_obj.paginator.count == 0 %}
     <p class="no-results">{% trans "No scannerjobs were found" %}</p>
   {% else %}
-    {% include "components/scannerjobs/scannerjob_table.html" %}
+    <div class="datatable-wrapper card lg"
+         role="region"
+         tabindex="0"
+         aria-label="{% trans "Scannerjobs" %}">
+      <table class="datatable scannerjobs">
+        <colgroup>
+          <col class="datatable__column--name">
+          <col class="datatable__column--source">
+          <col class="datatable__column--matchcount">
+          <col class="datatable__column--actions">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="datatable__column--name">{% trans "Name" %}</th>
+            <th class="datatable__column--source">{% trans "Source" %}</th>
+            <th class="datatable__column--matchcount">{% trans "Matches" %}</th>
+            <th class="datatable__column--actions">
+              <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for scannerjob in scannerjobs %}
+            <tr>
+              <td class="datatable__column--name">{{ scannerjob.scanner_job_name }}</td>
+              <td class="datatable__column--source">
+                <span class="icon-filetype icon-filetype--{{ scannerjob.source_type }}"
+                      title="{% find_scan_type scannerjob.source_type %}">
+                  {% with svg_icon=scannerjob.source_type|find_svg_icon %}
+                    {% include svg_icon %}
+                  {% endwith %}
+                </span>
+              </td>
+              <td class="datatable__column--matchcount">{{ scannerjob.count }}</td>
+              <td class="datatable__column--actions">ACTION</td>
+            </tr>
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+    </div>
   {% endif %}
 
-{% endblock body %}
+{% endblock content %}
