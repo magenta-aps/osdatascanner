@@ -3,33 +3,30 @@
 {% load handle_extras %}
 
 {% block content %}
+  <div class="datatable-wrapper card lg"
+       role="region"
+       tabindex="0"
+       aria-label="{% trans "Scannerjobs" %}">
+    <table class="datatable scannerjobs">
+      <colgroup>
+        <col class="datatable__column--name">
+        <col class="datatable__column--source">
+        <col class="datatable__column--matchcount">
+        <col class="datatable__column--actions">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="datatable__column--name">{% trans "Name" %}</th>
+          <th class="datatable__column--source">{% trans "Source" %}</th>
+          <th class="datatable__column--matchcount">{% trans "Matches" %}</th>
+          <th class="datatable__column--actions">
+            <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
+          </th>
+        </tr>
+      </thead>
 
-  {% if page_obj.paginator.count == 0 %}
-    <p class="no-results">{% trans "No scannerjobs were found" %}</p>
-  {% else %}
-    <div class="datatable-wrapper card lg"
-         role="region"
-         tabindex="0"
-         aria-label="{% trans "Scannerjobs" %}">
-      <table class="datatable scannerjobs">
-        <colgroup>
-          <col class="datatable__column--name">
-          <col class="datatable__column--source">
-          <col class="datatable__column--matchcount">
-          <col class="datatable__column--actions">
-        </colgroup>
-        <thead>
-          <tr>
-            <th class="datatable__column--name">{% trans "Name" %}</th>
-            <th class="datatable__column--source">{% trans "Source" %}</th>
-            <th class="datatable__column--matchcount">{% trans "Matches" %}</th>
-            <th class="datatable__column--actions">
-              <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
+      <tbody>
+        {% if scannerjobs %}
           {% for scannerjob in scannerjobs %}
             <tr>
               <td class="datatable__column--name">{{ scannerjob.scanner_job_name }}</td>
@@ -42,14 +39,34 @@
                 </span>
               </td>
               <td class="datatable__column--matchcount">{{ scannerjob.count }}</td>
-              <td class="datatable__column--actions">ACTION</td>
+              <td class="datatable__column--actions">
+                <div class="action-wrapper button-group">
+                  <form action="{% url "delete_scannerjob" scannerjob.scanner_job_pk %}"
+                        method="post"
+                        style="display: inline-block">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit"
+                            class="button button--icon-button button--transparent-button"
+                            onclick="return confirm(`{% trans "Do you really want to delete all reports from this scanner?" %}\n\n{{ scannerjob.scanner_job_name }}\n\n{% trans "The action cannot be reversed" %}`)"
+                            aria-label="{% trans "Delete reports from scanner job" %}"
+                            title="{% trans "Delete reports from scanner job" %}">
+                      <i id="delete" class="material-symbols">delete</i>
+                    </button>
+                  </form>
+                </div>
+              </td>
             </tr>
           {% endfor %}
+        {% else %}
+          <tr>
+            <td class="datatable__column--nodata" colspan="6">{% trans "No scanner jobs found." %}</td>
+          </tr>
+        {% endif %}
 
-        </tbody>
+      </tbody>
 
-      </table>
-    </div>
-  {% endif %}
+    </table>
+  </div>
 
 {% endblock content %}

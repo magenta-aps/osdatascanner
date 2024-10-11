@@ -1,5 +1,7 @@
 from django.views.generic import ListView
 from django.db.models import Count
+from django.urls import reverse_lazy
+from django.shortcuts import redirect
 
 from ..models.documentreport import DocumentReport
 
@@ -21,3 +23,20 @@ class ScannerjobListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         self.kwargs["org"] = request.user.account.organization
         return super().dispatch(request, *args, **kwargs)
+
+
+class ScannerjobDeleteView(ListView):
+    model = DocumentReport
+
+    def get_queryset(self):
+        all_reports = super().get_queryset().filter(organization=self.kwargs["org"])
+        return all_reports.filter(scanner_job_pk=self.kwargs["pk"])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.kwargs["org"] = request.user.account.organization
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        qs.delete()
+        return redirect(reverse_lazy('scannerjobs'))
