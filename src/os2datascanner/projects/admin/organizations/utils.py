@@ -1,9 +1,10 @@
 import structlog
 from itertools import chain
 from django.apps import apps
-from django.db import transaction
+from django.db import connection, transaction
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.core_organizational_structure.utils import get_serializer
@@ -106,6 +107,9 @@ def prepare_and_publish(
     """ In a transaction, sorts out to_add, to_delete and to_update.
         Creates objects in the admin module and publishes broadcast events."""
     with transaction.atomic():
+        if settings.PREPNPUB_IMMEDIATE_CONSTRAINTS:
+            logger.warning("Enabling immediate database constraints")
+            connection.cursor().execute("SET CONSTRAINTS ALL IMMEDIATE")
         logger.debug(f"Entered prepare_and_publish with to_delete containing: \n"
                      f"{to_delete}")
         # Deletes

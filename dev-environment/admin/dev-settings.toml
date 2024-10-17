@@ -67,6 +67,8 @@ ENABLE_SBSYSSCAN = true
 ENABLE_MINISCAN = true
 MINISCAN_REQUIRES_LOGIN = false
 
+PREPNPUB_IMMEDIATE_CONSTRAINTS = true
+
 # [email]
 DEFAULT_FROM_EMAIL = "os2datascanner@magenta.dk"
 ADMIN_EMAIL = "os2datascanner@magenta.dk"
