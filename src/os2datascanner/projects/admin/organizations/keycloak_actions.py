@@ -1,6 +1,7 @@
 import base64
 import struct
 import structlog
+from copy import copy
 from enum import Enum
 from typing import Tuple, Sequence, Iterator, Any
 from itertools import chain
@@ -240,7 +241,7 @@ def _path_to_unit(org: Organization,
 
 def _node_to_account(org: Organization, node: LDAPNode, accounts: list[Account]
                      ) -> tuple[Account, bool]:
-    """Gets or creates an account from a node, and returns whether or not it us new."""
+    """Gets or creates an account from a node, and returns whether or not it is new."""
     # One Account object can have multiple paths (if it's a member of
     # several groups, for example), so we need to use the true DN as our
     # imported_id here
@@ -328,7 +329,7 @@ def _handle_diff(path: Sequence[RDN],
         return (Action.DELETE, obj)
 
     if remote and not local:
-        # A remote user exists and it doesn't have a local counterpart. Create one
+        # A remote user exists, and it doesn't have a local counterpart. Create one
         try:
             acc, new = _node_to_account(org, remote, accounts)
             return (Action.ADD, acc) if new else (Action.KEEP, acc)
@@ -432,6 +433,15 @@ def _update_account(account: Account, path: Sequence[RDN], remote_node: LDAPNode
             ("last_name", remote_node.properties.get("lastName", "")),
             ("email", remote_node.properties.get("email", ""))):
         if getattr(account, attr_name) != expected:
+            # TODO: Decide if we want to keep using DN's as imported_id (consider either Keycloak given user id or LDAP id) # noqa E501 (line length)
+            # Because we use DN's as imported_id, these can change when AD changes are made.
+            # F.e. renaming or deleting an OU, moving the user, etc.
+            # In this case, we'll still want to keep the existing account object (and of course
+            # update it), but to do so, we're dependent on KEEP'ing its existing imported_id to
+            # avoid deleting it during prepare_and_publish's deletion logic. Hence, a copy is made,
+            # before we set the _actual_ object's new imported_id.
+            if attr_name == "imported_id":
+                yield(Action.KEEP, copy(account))
             setattr(account, attr_name, expected)
             yield (Action.UPDATE, (account, (attr_name,)))
 
