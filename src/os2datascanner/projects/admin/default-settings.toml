@@ -261,6 +261,11 @@ MINISCAN_REQUIRES_LOGIN = true
 # The largest file size the mini-scanner should accept (in bytes)
 MINISCAN_FILE_SIZE_LIMIT = 1048576
 
+# Should the prepare_and_publish function, responsible for saving imported
+# organisational data and broadcasting it to the report module, run its
+# transaction without deferred constraints? (useful for debugging)
+PREPNPUB_IMMEDIATE_CONSTRAINTS = false
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"
