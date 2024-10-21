@@ -440,6 +440,8 @@ def _update_account(account: Account, path: Sequence[RDN], remote_node: LDAPNode
             # update it), but to do so, we're dependent on KEEP'ing its existing imported_id to
             # avoid deleting it during prepare_and_publish's deletion logic. Hence, a copy is made,
             # before we set the _actual_ object's new imported_id.
+            # XXX: We are unsure why this still works? This should be handled by
+            # prepare_and_publish.
             if attr_name == "imported_id":
                 yield(Action.KEEP, copy(account))
             setattr(account, attr_name, expected)

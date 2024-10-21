@@ -252,8 +252,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
         # Evaluate org units and store their parent-relations.
         unit, parent_info = evaluate_org_unit(org_unit_raw)
         parent_id = parent_info.get("uuid") if parent_info else None
-        if parent_id:
-            ou_parent_relations[unit] = parent_id
+        ou_parent_relations[unit] = parent_id
 
         for engagement in org_unit_raw.get("engagements"):
             add_account(engagement, Role.EMPLOYEE)

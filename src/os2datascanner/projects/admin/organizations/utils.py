@@ -112,6 +112,28 @@ def prepare_and_publish(
             connection.cursor().execute("SET CONSTRAINTS ALL IMMEDIATE")
         logger.debug(f"Entered prepare_and_publish with to_delete containing: \n"
                      f"{to_delete}")
+
+        # Creates
+        # TODO: Place the order of which objects should be created/updated somewhere reusable
+        set_imported_fields(to_add)  # Updates imported_time etc.
+        creation_dict = {}
+        for manager, instances in group_into(
+                to_add, OrganizationalUnit, Account, Position, Alias):
+            model_name = manager.model.__name__
+            creation_dict[model_name] = create_and_serialize(manager, instances)
+
+        # Updates
+        # TODO: We're not actually updating "Imported" fields/timestamps. Should we?
+        update_dict = {}
+        logger.debug(f"Entered prepare_and_publish with to_update containing: \n"
+                     f"{to_update}")
+        for manager, instances in group_into(
+                to_update, Alias, Position, Account, OrganizationalUnit,
+                key=lambda k: k[0]):
+            logger.debug(f"Iterating updates for manager {manager}")
+            model_name = manager.model.__name__
+            update_dict[model_name] = update_and_serialize(manager, instances)
+
         # Deletes
         delete_dict = {}
         for model, selector_expr in [
@@ -137,29 +159,9 @@ def prepare_and_publish(
                          f" Instances: {instances}")
             delete_dict[model_name] = delete_and_listify(manager, instances)
 
-        # Creates
-        # TODO: Place the order of which objects should be created/updated somewhere reusable
-        set_imported_fields(to_add)  # Updates imported_time etc.
-        creation_dict = {}
-        for manager, instances in group_into(
-                to_add, OrganizationalUnit, Account, Position, Alias):
-            model_name = manager.model.__name__
-            creation_dict[model_name] = create_and_serialize(manager, instances)
-
-        # Updates
-        # TODO: We're not actually updating "Imported" fields/timestamps. Should we?
-        update_dict = {}
-        logger.debug(f"Entered prepare_and_publish with to_update containing: \n"
-                     f"{to_update}")
-        for manager, instances in group_into(
-                to_update, Alias, Position, Account, OrganizationalUnit,
-                key=lambda k: k[0]):
-            logger.debug(f"Iterating updates for manager {manager}")
-            model_name = manager.model.__name__
-            update_dict[model_name] = update_and_serialize(manager, instances)
-
-        event = [BulkDeleteEvent(delete_dict), BulkCreateEvent(creation_dict),
-                 BulkUpdateEvent(update_dict), ]
+        event = [BulkCreateEvent(creation_dict),
+                 BulkUpdateEvent(update_dict),
+                 BulkDeleteEvent(delete_dict), ]
         logger.info("Database operations complete")
 
     # Make sure we publish events _after_ the transaction is completed.
