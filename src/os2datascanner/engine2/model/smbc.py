@@ -1,14 +1,11 @@
 import io
 from os import stat_result, O_RDONLY
-import enum
 import structlog
 import smbc
 from typing import Optional
 from urllib.parse import quote
 from pathlib import PureWindowsPath
 from datetime import datetime
-import operator
-from functools import reduce
 from contextlib import contextmanager
 
 from ..utilities.backoff import DefaultRetrier
@@ -46,62 +43,11 @@ def _trivial_read(ctx: smbc.Context, url: str) -> bytes | None:
         return None
 
 
-class Mode(enum.IntFlag):
-    """A convenience enumeration for manipulating SMB file mode flags."""
-    # description of flags mapping
-    # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-smb/65e0c225-5925-44b0-8104-6b91339c709f
-    NONE = 0x0
-    READ_ONLY = 0x01
-    HIDDEN = 0x02
-    SYSTEM = 0x04
-    # Windows defines VOLUME_ID = 0x08, but CIFS/SMB doesn't
-    DIRECTORY = 0x10
-    ARCHIVE = 0x20
-    # Windows defines DEVICE = 0x40, but CIFS/SMB doesn't
-    NORMAL = 0x80  # excludes all other flags
-    TEMPORARY = 0x100
-    SPARSE = 0x200
-    REPARSE_POINT = 0x400
-    COMPRESSED = 0x800
-    OFFLINE = 0x1000
-    NONINDEXED = 0x2000
-    ENCRYPTED = 0x4000
-
-    @staticmethod
-    def for_url(
-            context: smbc.Context, url: str,
-            *,
-            allow_fake_mode: bool = False) -> Optional['Mode']:
-        """Attempts to convert the mode flags retrieved from the given smb://
-        URL to a Mode.
-
-        (If the allow_fake_mode flag is set, and the URL produced by appending
-        ".mode-override" to the given URL points at a text representation of
-        a hexadecimal value, then that value will replace the mode flags.)"""
-        if allow_fake_mode:
-            if (_fake_mode := _trivial_read(context, url + ".mode-override")):
-                try:
-                    return Mode(int(_fake_mode.decode().strip(), 16))
-                except ValueError:  # also catches UnicodeDecodeError
-                    pass
-        try:
-            mode_ = context.getxattr(url, XATTR_DOS_ATTRIBUTES)
-            logger.debug(f"mode flags for {url}: {mode_}")
-            return Mode(int(mode_, 16))
-        except (ValueError, *IGNORABLE_SMBC_EXCEPTIONS, MemoryError) as exc:
-            logger.info(f"Exception thrown: {exc}\n for {url}\n"
-                        f"Ignoring and continuing")
-            return None
-
-
-ModeMask = reduce(operator.or_, Mode, Mode.NONE)
-
-
 class SMBCSource(Source):
     type_label = "smbc"
     eq_properties = ("_unc", "_user", "_password", "_domain")
 
-    allow_fake_mode: bool = False  # Not serialised, only useful for testing
+    allow_fake_attr: bool = False  # Not serialised, only useful for testing
 
     def __init__(
             self, unc: str,
@@ -145,7 +91,7 @@ class SMBCSource(Source):
         return SMBCSource(self.unc, None, None, None, self.driveletter)
 
     @classmethod
-    def is_skippable(cls, context, url, path, name):
+    def is_skippable(cls, fi: smbc.FileInfo, url: str):
         """Evaluates whether or not the given file is skippable: i.e., whether
         its attributes and other properties indicate that we should ignore it.
 
@@ -153,37 +99,42 @@ class SMBCSource(Source):
         a skippable file is not implemented here.)"""
         logger.debug(
                 "SMBCSource.is_skippable",
-                context=context, url=url, path=path, name=name)
-        mode = Mode.for_url(context, url, allow_fake_mode=cls.allow_fake_mode)
+                url=url, attr=fi.attrs)
 
-        if mode is not None:
-            # If the Mode.NORMAL bit is set *along with* other bits...
-            if ((mode & Mode.NORMAL
-                    and mode != Mode.NORMAL)
+        name = fi.name
+        attr = fi.attrs
+        if attr is not None:
+            # If the smbc.Attribute.NORMAL bit is set *along with* other bits...
+            if ((attr & smbc.Attribute.NORMAL
+                    and attr != smbc.Attribute.NORMAL)
                     # ... or if a bit not permitted by the specification is
                     # set...
-                    or mode & ~ModeMask):
+                    or attr & ~smbc.AttributeMask):
                 # ... then something has gone very badly wrong
                 logger.warning(
-                        "incoherent mode flags detected"
-                        " (Samba bug #14101?)",
-                        path=path, mode=mode)
+                        "incoherent attributes detected",
+                        url=url, attr=attr)
                 if name.startswith("~"):
-                    logger.info("skipping perhaps-hidden object", path=path)
+                    logger.info(
+                            "skipping perhaps-hidden object",
+                            url=url, attr=attr)
                     return True
 
             # If this object is super-hidden -- that is, if it has the hidden
             # bit set plus either the system bit or the "~" character at the
             # start of its name -- then ignore it
-            if (mode & Mode.HIDDEN
-                    and (mode & Mode.SYSTEM or name.startswith("~"))):
-                logger.info("skipping super-hidden object", path=path)
+            if (attr & smbc.Attribute.HIDDEN
+                    and (attr & smbc.Attribute.SYSTEM
+                         or name.startswith("~"))):
+                logger.info(
+                        "skipping super-hidden object",
+                        url=url, attr=attr)
                 return True
 
         # Special-case the ~snapshot folder, which we should never scan
         # (XXX: revisit this once we know the Samba bug is fixed)
         if name == "~snapshot":
-            logger.info("skipping snapshot directory", path=path)
+            logger.info("skipping snapshot directory", url=url)
             return True
 
         return False
@@ -200,19 +151,18 @@ class SMBCSource(Source):
     def handles(self, sm):  # noqa: C901,E501,CCR001
         url, context = sm.open(self)
 
-        def handle_dirent(parents, entity, owner_sid: str = None):
-            name = entity.name
+        def handle_fileinfo(parents, fi, owner_sid: str = None):
+            name = fi.name
 
             if name in (".", ".."):
                 return
 
-            here = parents + [entity]
+            here = parents + [fi]
             path = '/'.join([h.name for h in here])
             url_here = url + "/" + path
 
             if (self._skip_super_hidden
-                    and SMBCSource.is_skippable(
-                            context, url_here, path, name)):
+                    and SMBCSource.is_skippable(fi, url_here)):
                 return
 
             hints = {}
@@ -220,7 +170,7 @@ class SMBCSource(Source):
                 hints["owner_sid"] = owner_sid
 
             handle_here = SMBCHandle(self, path, hints=hints)
-            if entity.smbc_type == smbc.DIR:
+            if fi.attrs & smbc.Attribute.DIRECTORY:
                 try:
                     try:
                         obj = context.opendir(url_here)
@@ -232,11 +182,12 @@ class SMBCSource(Source):
                                 url_here=url_here)
                         yield (handle_here, e)
                         return
-                    for dent in obj.getdents():
-                        yield from handle_dirent(here, dent, owner_sid)
+                    while (fileinfo_raw := obj.readdirplus()):
+                        fileinfo = smbc.FileInfo.from_raw_tuple(fileinfo_raw)
+                        yield from handle_fileinfo(here, fileinfo, owner_sid)
                 except (ValueError, *IGNORABLE_SMBC_EXCEPTIONS):
                     pass
-            elif entity.smbc_type == smbc.FILE:
+            elif fi.attrs == smbc.Attribute.NORMAL:
                 yield handle_here
 
         try:
@@ -249,17 +200,18 @@ class SMBCSource(Source):
                 raise ex
 
         # Iterate over every folder lying directly under the provided UNC
-        for dent in obj.getdents():
-            if dent.name not in (".", "..",):
+        while (fileinfo_raw := obj.readdirplus()):
+            fileinfo = smbc.FileInfo.from_raw_tuple(fileinfo_raw)
+            if fileinfo.name not in (".", "..",):
                 # If we know that the provided UNC is a folder containing user
                 # home folders, then compute the owner of each folder here.
                 # handle_dirent can use this as a hint so SMBCResource doesn't
                 # have to retrieve ownership metadata for individual files
                 if self._unc_is_home_root:
-                    owner = self._get_owner_for(url, context, dent.name)
+                    owner = self._get_owner_for(url, context, fileinfo.name)
                 else:
                     owner = None
-                yield from handle_dirent([], dent, owner)
+                yield from handle_fileinfo([], fileinfo, owner)
 
     # For our own purposes, we need to be able to make a "smb://" URL to give
     # to pysmbc. That URL doesn't need to contain authentication details,

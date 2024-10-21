@@ -9,38 +9,49 @@ class TestSMBC:
                     "//samba/general/smb-metadata",
                     "os2", "swordfish",
                     skip_super_hidden=False)
-            assert set(source.handles(sm)) == set([
-                    smbc.SMBCHandle(source, "~hidden.mode-override"),
-                    smbc.SMBCHandle(source, "~normal/test-vector"),
-                    smbc.SMBCHandle(source, "normal/test-vector"),
-                    smbc.SMBCHandle(source, "hidden.mode-override"),
-                    smbc.SMBCHandle(source, "system-hidden/test-vector"),
-                    smbc.SMBCHandle(source, "~hidden/test-vector"),
-                    smbc.SMBCHandle(source, "hidden/test-vector"),
-                    smbc.SMBCHandle(source, "system-hidden.mode-override"),
-                    smbc.SMBCHandle(source, "~system-hidden/test-vector"),
-                    smbc.SMBCHandle(source, "~system-hidden.mode-override"),
-                    ])
+
+            source_handles = set(source.handles(sm))
+            expected_handles = {
+                smbc.SMBCHandle(source, "~hidden.attr-override"),
+                smbc.SMBCHandle(source, "~normal/test-vector"),
+                smbc.SMBCHandle(source, "normal/test-vector"),
+                smbc.SMBCHandle(source, "hidden.attr-override"),
+                smbc.SMBCHandle(source, "system-hidden/test-vector"),
+                smbc.SMBCHandle(source, "~hidden/test-vector"),
+                smbc.SMBCHandle(source, "hidden/test-vector"),
+                smbc.SMBCHandle(source, "system-hidden.attr-override"),
+                smbc.SMBCHandle(source, "~system-hidden/test-vector"),
+                smbc.SMBCHandle(source, "~system-hidden.attr-override"),
+            }
+            assert source_handles == expected_handles
 
     def test_super_hidden_exploration(self):
-        smbc.SMBCSource.allow_fake_mode = True
+        smbc.SMBCSource.allow_fake_attr = True
         try:
             with SourceManager() as sm:
                 source = smbc.SMBCSource(
                         "//samba/general/smb-metadata",
                         "os2", "swordfish",
                         skip_super_hidden=True)
-                assert set(source.handles(sm)) == set([
-                    smbc.SMBCHandle(source, "~hidden.mode-override"),
+
+                source_handles = set(source.handles(sm))
+                expected_handles = {
+                    smbc.SMBCHandle(source, "~hidden.attr-override"),
                     smbc.SMBCHandle(source, "~normal/test-vector"),
                     smbc.SMBCHandle(source, "normal/test-vector"),
-                    smbc.SMBCHandle(source, "hidden.mode-override"),
-                    # smbc.SMBCHandle(source, "system-hidden/test-vector"),
-                    # smbc.SMBCHandle(source, "~hidden/test-vector"),
+                    smbc.SMBCHandle(source, "hidden.attr-override"),
                     smbc.SMBCHandle(source, "hidden/test-vector"),
-                    smbc.SMBCHandle(source, "system-hidden.mode-override"),
+                    smbc.SMBCHandle(source, "system-hidden.attr-override"),
+                    smbc.SMBCHandle(source, "~system-hidden.attr-override"),
+
+                    # Hidden by overridden SYSTEM attribute plus leading ~
+                    # smbc.SMBCHandle(source, "~hidden/test-vector"),
+                    # Hidden by overridden HIDDEN | SYSTEM attributes
+                    # smbc.SMBCHandle(source, "system-hidden/test-vector"),
+                    # Hidden by overridden HIDDEN | SYSTEM attributes (the
+                    # leading ~ is just the cherry on the top)
                     # smbc.SMBCHandle(source, "~system-hidden/test-vector"),
-                    smbc.SMBCHandle(source, "~system-hidden.mode-override"),
-                    ])
+                }
+                assert source_handles == expected_handles
         finally:
-            smbc.SMBCSource.allow_fake_mode = False
+            smbc.SMBCSource.allow_fake_attr = False
