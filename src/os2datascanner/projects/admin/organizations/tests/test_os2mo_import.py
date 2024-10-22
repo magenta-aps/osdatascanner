@@ -403,3 +403,99 @@ class TestOS2moImport:
 
         with pytest.raises(Alias.DoesNotExist):
             Alias.objects.get(account=jerry)
+
+    def test_deletion_of_parent_ou_and_creation_of_child(self, mo_org, mo_org_units_list):
+        """
+        As seen in #61857, the following can happen simultaneously:
+            1. An OU is moved to the root.
+            2. A child OU is created under that OU.
+            3. The previous parent OU is deleted.
+        In this case, the moved OU should have its parent set to None, the
+        deleted OU should be deleted, and the child OU should be created
+        without issue.
+        """
+
+        # Arrange
+        _, unit1, _, _, _ = self.import_from_list(mo_org_units_list, mo_org)
+
+        new_list = [
+            {
+                "current": {
+                    "name": "Unit 1",
+                    "uuid": "7fc7769e-00e1-4bad-aa8e-9ce91bde9f64",
+                    "parent": None,
+                    "managers": [
+                        {
+                            "person": [
+                                {
+                                    "uuid": "0d125092-701a-45d6-9062-a547f5c376ca",
+                                    "given_name": "Brandon",
+                                    "surname": "Lee",
+                                    "user_key": "brandon",
+                                    "addresses": [
+                                        {
+                                            "name": "brandon@kung.fu"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                    "engagements": [
+                        {
+                            "person": [
+                                {
+                                    "uuid": "b5d2cc7b-6d57-4326-9336-ce3372b6887c",
+                                    "given_name": "Chuck",
+                                    "surname": "Norris",
+                                    "user_key": "chuck",
+                                    "addresses": [
+                                        {
+                                            "name": "chuck@karate.org"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                        {
+                            "person": [
+                                {
+                                    "uuid": "677e622b-653f-4aa2-9386-18113c8b8461",
+                                    "given_name": "Eddie",
+                                    "surname": "Murphy",
+                                    "user_key": "eddie",
+                                    "addresses": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+            {
+                "current": {
+                    "name": "Unit 5",
+                    "uuid": "57e39d7b-63db-4bc3-a811-29cc02ceafb0",
+                    "parent": {
+                        "name": "Unit 1",
+                        "uuid": "7fc7769e-00e1-4bad-aa8e-9ce91bde9f64"
+                        },
+                    "managers": [],
+                    "engagements": []
+                    }
+                },
+            ]
+
+        # Act
+        perform_os2mo_import(new_list, mo_org)
+
+        # Assert
+        unit1.refresh_from_db()
+
+        # Parent unit is none
+        assert unit1.parent is None
+
+        # Top unit is deleted
+        assert not OrganizationalUnit.objects.filter(name="Top level unit").exists()
+
+        # Child is created
+        assert OrganizationalUnit.objects.filter(name="Unit 5").exists()
