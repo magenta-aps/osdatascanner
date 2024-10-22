@@ -585,10 +585,13 @@ class Scanner(models.Model):
         scanner job, but which are no longer covered."""
         from os2datascanner.projects.admin.organizations.models import Account  # noqa: avoid circular import
 
-        all_caccs = CoveredAccount.objects.filter(scanner=self)
-        all_accs = Account.objects.filter(
-                pk__in=all_caccs.values_list("account_id", flat=True))
-        return all_accs.difference(self.compute_covered_accounts())
+        covered_account_ids = CoveredAccount.objects.filter(scanner=self).values_list("account_id",
+                                                                                      flat=True)
+        stale_accounts = Account.objects.filter(pk__in=covered_account_ids).exclude(
+            pk__in=self.compute_covered_accounts().values_list("pk", flat=True)
+        )
+
+        return stale_accounts
 
     def record_covered_accounts(self, scan_status: ScanStatus):
         """Creates CoveredAccount relations for accounts covered
