@@ -46,6 +46,8 @@
 - During LDAP import, accounts that have had their distinguishedName changed no longer 
   risk deletion, which could cause OSdatascanner database conflicts.
 
+- Load time on scanner tabs using CoveredAccounts has been improved.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"
