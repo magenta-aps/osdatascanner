@@ -1,11 +1,14 @@
 import io
 from os import stat_result, O_RDONLY
+import enum
 import structlog
 import smbc
 from typing import Optional
 from urllib.parse import quote
 from pathlib import PureWindowsPath
 from datetime import datetime
+from operator import or_
+from functools import reduce
 from contextlib import contextmanager
 
 from ..utilities.backoff import DefaultRetrier
@@ -33,6 +36,41 @@ IGNORABLE_SMBC_EXCEPTIONS = (
 exclude write errors or connection errors."""
 
 
+# Only used by the SMB attribute override code
+def _parse_int_flag_expr(
+        etype: enum.IntFlag, expr: str,
+        *,
+        suppress_errors: bool = True) -> enum.IntFlag | None:
+    """Given an IntFlag enumeration (with members A, B, C, ...) and a string
+    expression of the form "A | C | F"..., computes the final value of that
+    expression as a member of the enumeration.
+
+    (This is essentially a very limited version of the eval() builtin, where
+    the only available variables are the members of the enumeration and the
+    only operator available is operator.or_.)
+
+    >>> _parse_int_flag_expr(
+    ...     enum.IntFlag("Type", names=["HIDDEN", "SYSTEM", "DIRECTORY"]),
+    ...     "HIDDEN | DIRECTORY")
+    ...
+    <Type.HIDDEN|DIRECTORY: 5>
+
+    If part of the expression refers to a non-existent member of the
+    enumeration, a KeyError will be raised, unless the suppress_errors keyword
+    argument is set to False."""
+
+    available_attrs = etype.__members__
+    tokens = []
+    for k in expr.split("|"):
+        try:
+            tokens.append(available_attrs[k.strip()])
+        except KeyError:
+            if not suppress_errors:
+                raise
+    return reduce(or_, tokens, etype(0))
+
+
+# Only used by the SMB attribute override code
 def _trivial_read(ctx: smbc.Context, url: str) -> bytes | None:
     """Attempts to read and return the complete binary content of the specified
     file. Returns None in the event of anything resembling an error."""
@@ -40,6 +78,8 @@ def _trivial_read(ctx: smbc.Context, url: str) -> bytes | None:
         with _SMBCFile(ctx.open(url)) as fp:
             return fp.read()
     except Exception:
+        # Normally this would be bad practice, but we only use this function
+        # for testing
         return None
 
 
@@ -91,7 +131,8 @@ class SMBCSource(Source):
         return SMBCSource(self.unc, None, None, None, self.driveletter)
 
     @classmethod
-    def is_skippable(cls, fi: smbc.FileInfo, url: str):
+    def is_skippable(  # noqa CCR001
+            cls, context: smbc.Context, fi: smbc.FileInfo, url: str):
         """Evaluates whether or not the given file is skippable: i.e., whether
         its attributes and other properties indicate that we should ignore it.
 
@@ -103,6 +144,16 @@ class SMBCSource(Source):
 
         name = fi.name
         attr = fi.attrs
+        if cls.allow_fake_attr:
+            if raw_attr := _trivial_read(context, url + ".attr-override"):
+                # Load this file's SMB attributes from the override file next
+                # to it
+                attr = _parse_int_flag_expr(smbc.Attribute, raw_attr.decode())
+
+                logger.info(
+                        "SMBCSource.is_skippable overriding attributes",
+                        url=url, attr=attr)
+
         if attr is not None:
             # If the smbc.Attribute.NORMAL bit is set *along with* other bits...
             if ((attr & smbc.Attribute.NORMAL
@@ -162,7 +213,7 @@ class SMBCSource(Source):
             url_here = url + "/" + path
 
             if (self._skip_super_hidden
-                    and SMBCSource.is_skippable(fi, url_here)):
+                    and SMBCSource.is_skippable(context, fi, url_here)):
                 return
 
             hints = {}
