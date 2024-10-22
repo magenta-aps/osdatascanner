@@ -48,6 +48,12 @@
 
 - Load time on scanner tabs using CoveredAccounts has been improved.
 
+- Organizational units imported from OS2mo are now correctly detached from
+  their parents if they are moved to the root of the remote hierarchy.
+ 
+- Import jobs now execute create and update before delete, to avoid incorrectly cascade deleting. 
+  F.e. OrganizationalUnit's whose _former_ parent has been deleted.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"
