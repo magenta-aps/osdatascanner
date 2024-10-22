@@ -263,7 +263,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
     # Sort out OU-parent relations
     for ou, parent_id in ou_parent_relations.items():
         if ou.parent != ous.get(parent_id):
-            ou.parent = ous.get(parent_id)
+            ou.parent = ous.get(parent_id) if parent_id else None
             to_update.append((ou, ("parent",)))
 
     # Append positions to to_delete
