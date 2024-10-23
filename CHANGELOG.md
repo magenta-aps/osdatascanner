@@ -54,6 +54,10 @@
 - Import jobs now execute create and update before delete, to avoid incorrectly cascade deleting. 
   F.e. OrganizationalUnit's whose _former_ parent has been deleted.
 
+- The file scanner's "skip super-hidden files" configuration option now
+  retrieves file attributes in a different way and so should be dramatically
+  more reliable.
+
 ## Version 3.24.3, 20th September 2024
 
 "Why do Birds Suddenly Appear?"

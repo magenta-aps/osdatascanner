@@ -39,7 +39,7 @@ pydantic
 pydantic-settings
 pymssql
 pypdf
-pysmbc
+pysmbc@git+https://github.com/magenta-af/pysmbc.git@T2
 pytest
 pytest-xdist
 pytest-benchmark
