@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## 3.25.0, 24th October 2024
 
 "Not To SharePoint The Finger, But..."
 
@@ -9,11 +9,14 @@
 - Leaders can now export the number of matches and the status of their employees as a csv-file.
   This feature is by default disabled, but can be enabled through the LEADER_CSV_EXPORT setting.
 
-### General improvements
-
 - It's now possible to import managers from LDAP via group import. This can
   be configured via a checkbox on the LDAP-configuration page, when import 
   based on groups is selected.
+
+- Universal DPOs can now be assigned on the org unit page. Universal DPOs can view all org units,
+  without having to be assigned to each one.
+
+### General improvements
 
 - Refactored login and password-related templates to extend common template.
   Login-page once again has a blue background.
@@ -21,9 +24,6 @@
 - Refactored statistics templates to extend common template.
 
 - Support button settings are now hidden when disabled.
-
-- Universal DPOs can now be assigned on the org unit page. Universal DPOs can view all org units,
-  without having to be assigned to each one.
 
 - The organisational import processes now optionally support the immediate
   enforcement of database constraints, useful for troubleshooting.
