@@ -74,6 +74,8 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
     # Get the frequency setting and decide whether to create a snapshot
     snapshot_param = settings.SNAPSHOT_PARAMETER
 
+    # We've just updated using locked_qs, refresh our saved instance before proceeding.
+    scan_status.refresh_from_db()
     if scan_status:
         n_total = scan_status.total_objects
         if n_total and n_total > 0:
