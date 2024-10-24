@@ -112,6 +112,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 # Only allow the user to see reports and units from their own
                 # organization
                 org = request.user.account.organization
+                self.kwargs["org"] = org
                 self.matches = self.matches.filter(organization=org)
                 if self.request.user.account.is_universal_dpo:
                     self.user_units = OrganizationalUnit.objects.filter(
@@ -157,6 +158,8 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             self.scannerjob_filters = DocumentReport.objects.filter(
                 number_of_matches__gte=1).order_by('scanner_job_pk').values(
                 "scanner_job_name", "scanner_job_pk").distinct()
+            if org := self.kwargs["org"]:
+                self.scannerjob_filters = self.scannerjob_filters.filter(organization=org)
 
         (context['match_data'],
          source_type_data,
