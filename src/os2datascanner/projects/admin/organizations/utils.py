@@ -103,7 +103,37 @@ def delete_and_listify(manager, instances):
 
 def prepare_and_publish(
         org: Organization,
-        all_uuids, to_add, to_delete, to_update):
+        all_uuids, to_add, to_delete, to_update,
+        *,
+        # XXX: Remove this keyword argument and make all import jobs use the
+        # same import order!
+        delete_first=False):
+
+    def do_deletion(to_delete, delete_dict):
+        for model, selector_expr in [
+                (Alias, "account__organization"),
+                (Account, "organization"),
+                (OrganizationalUnit, "organization")]:
+            relevant_objects = (
+                    model.objects.filter(**{selector_expr: org})
+                    .exclude(imported=False))
+            # TODO: This isn't safe in a multi-tenant environment.
+            # Technically there's a miniscule risk that two objects of different model types
+            # share UUID, which could mean an object that should be deleted, won't be.
+            to_delete.append(
+                    relevant_objects.exclude(imported_id__in=all_uuids))
+            logger.debug(f"to_delete post append of {model}: {to_delete}")
+
+        # Look in Position
+        to_delete = list(chain(*to_delete))
+        for manager, instances in group_into(
+                to_delete, Alias, Position, Account, OrganizationalUnit):
+            model_name = manager.model.__name__
+
+            logger.debug(f"Processing to_delete for model {manager} "
+                         f" Instances: {instances}")
+            delete_dict[model_name] = delete_and_listify(manager, instances)
+
     """ In a transaction, sorts out to_add, to_delete and to_update.
         Creates objects in the admin module and publishes broadcast events."""
     with transaction.atomic():
@@ -112,6 +142,11 @@ def prepare_and_publish(
             connection.cursor().execute("SET CONSTRAINTS ALL IMMEDIATE")
         logger.debug(f"Entered prepare_and_publish with to_delete containing: \n"
                      f"{to_delete}")
+
+        delete_dict = {}
+
+        if delete_first:
+            do_deletion(to_delete, delete_dict)
 
         # Creates
         # TODO: Place the order of which objects should be created/updated somewhere reusable
@@ -134,30 +169,8 @@ def prepare_and_publish(
             model_name = manager.model.__name__
             update_dict[model_name] = update_and_serialize(manager, instances)
 
-        # Deletes
-        delete_dict = {}
-        for model, selector_expr in [
-                (Alias, "account__organization"),
-                (Account, "organization"),
-                (OrganizationalUnit, "organization")]:
-            relevant_objects = (
-                    model.objects.filter(**{selector_expr: org})
-                    .exclude(imported=False))
-            # TODO: This isn't safe in a multi-tenant environment.
-            # Technically there's a miniscule risk that two objects of different model types
-            # share UUID, which could mean an object that should be deleted, won't be.
-            to_delete.append(relevant_objects.exclude(imported_id__in=all_uuids))
-            logger.debug(f"to_delete post append of {model}: {to_delete}")
-
-        # Look in Position
-        to_delete = list(chain(*to_delete))
-        for manager, instances in group_into(
-                to_delete, Alias, Position, Account, OrganizationalUnit):
-            model_name = manager.model.__name__
-
-            logger.debug(f"Processing to_delete for model {manager} "
-                         f" Instances: {instances}")
-            delete_dict[model_name] = delete_and_listify(manager, instances)
+        if not delete_first:
+            do_deletion(to_delete, delete_dict)
 
         event = [BulkCreateEvent(creation_dict),
                  BulkUpdateEvent(update_dict),

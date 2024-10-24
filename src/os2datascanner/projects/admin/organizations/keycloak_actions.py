@@ -628,6 +628,7 @@ def perform_import_raw(  # noqa: CCR001, too high cognitive complexity
                               if t.imported_id not in iids_to_preserve]
 
     prepare_and_publish(org, iids_to_preserve,
-                        actions[Action.ADD], [actions[Action.DELETE]], actions[Action.UPDATE])
+                        actions[Action.ADD], [actions[Action.DELETE]], actions[Action.UPDATE],
+                        delete_first=True)
 
     return len(actions[Action.ADD]), len(actions[Action.UPDATE]), len(actions[Action.DELETE])
