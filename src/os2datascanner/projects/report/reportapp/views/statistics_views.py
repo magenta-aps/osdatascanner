@@ -158,7 +158,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             self.scannerjob_filters = DocumentReport.objects.filter(
                 number_of_matches__gte=1).order_by('scanner_job_pk').values(
                 "scanner_job_name", "scanner_job_pk").distinct()
-            if org := self.kwargs["org"]:
+            if org := self.kwargs.get("org"):
                 self.scannerjob_filters = self.scannerjob_filters.filter(organization=org)
 
         (context['match_data'],
