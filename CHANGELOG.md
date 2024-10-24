@@ -1,6 +1,14 @@
 # Changelog
 
-## 3.25.0, 24th October 2024
+## Version 3.25.1, 24th October 2024
+
+This minor bugfix release ensures that LDAP-based import jobs send their
+notification messages to the report module in the order they did before
+version 3.25.0. (LDAP-based import jobs track the identity of objects
+relative to the LDAP hierarchy, so deletion must occur first to avoid
+the risk of violating database constraints.)
+
+## Version 3.25.0, 24th October 2024
 
 "Not To SharePoint The Finger, But..."
 
