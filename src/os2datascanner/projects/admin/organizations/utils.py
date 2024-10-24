@@ -173,8 +173,11 @@ def prepare_and_publish(
             do_deletion(to_delete, delete_dict)
 
         event = [BulkCreateEvent(creation_dict),
-                 BulkUpdateEvent(update_dict),
-                 BulkDeleteEvent(delete_dict), ]
+                 BulkUpdateEvent(update_dict)]
+        event.insert(
+                0 if delete_first else 2,
+                BulkDeleteEvent(delete_dict))
+
         logger.info("Database operations complete")
 
     # Make sure we publish events _after_ the transaction is completed.
