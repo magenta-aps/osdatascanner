@@ -58,7 +58,8 @@ class TestPipelineCollector:
                         matches=positive_corrupt_match_message,
                         problem=None,
                         scan_time=positive_corrupt_match_message.scan_spec.scan_tag.time,
-                        scanner=None)
+                        scanner=None,
+                        ss=None)
         except DataError:
             # Expected behaviour
             pass
@@ -76,7 +77,7 @@ class TestPipelineCollector:
         basic_scanstatus.scan_tag = basic_problem_message.scan_tag.to_json_object()
         basic_scanstatus.save()
 
-        create_usererrorlog(basic_problem_message)
+        create_usererrorlog(basic_problem_message, basic_scanstatus)
 
         assert UserErrorLog.objects.all().exists()
         assert UserErrorLog.objects.first().error_message == basic_problem_message.message
