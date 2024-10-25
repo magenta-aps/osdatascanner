@@ -1,9 +1,15 @@
+import structlog
+
 from django.views.generic import ListView
 from django.db.models import Count
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
+from django.core.exceptions import PermissionDenied
 
 from ..models.documentreport import DocumentReport
+
+
+logger = structlog.get_logger()
 
 
 class ScannerjobListView(ListView):
@@ -21,8 +27,11 @@ class ScannerjobListView(ListView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        self.kwargs["org"] = request.user.account.organization
-        return super().dispatch(request, *args, **kwargs)
+        if request.user.is_superuser:
+            self.kwargs["org"] = request.user.account.organization
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
 
 class ScannerjobDeleteView(ListView):
@@ -33,10 +42,16 @@ class ScannerjobDeleteView(ListView):
         return all_reports.filter(scanner_job_pk=self.kwargs["pk"])
 
     def dispatch(self, request, *args, **kwargs):
-        self.kwargs["org"] = request.user.account.organization
-        return super().dispatch(request, *args, **kwargs)
+        if request.user.is_superuser:
+            self.kwargs["org"] = request.user.account.organization
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset()
-        qs.delete()
+        out = qs.delete()
+        logger.info(
+            f"Delete issued to {self.__class__.__name__}: {out[0]} objects deleted: {out[1]}"
+        )
         return redirect(reverse_lazy('scannerjobs'))
