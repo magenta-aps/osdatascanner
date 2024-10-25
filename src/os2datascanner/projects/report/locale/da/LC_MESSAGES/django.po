@@ -1918,14 +1918,14 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:529 reportapp/views/report_views.py:554
-#: reportapp/views/report_views.py:574 reportapp/views/report_views.py:599
-#: reportapp/views/report_views.py:618
+#: reportapp/views/report_views.py:528 reportapp/views/report_views.py:553
+#: reportapp/views/report_views.py:573 reportapp/views/report_views.py:598
+#: reportapp/views/report_views.py:617
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:645
+#: reportapp/views/report_views.py:644
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"

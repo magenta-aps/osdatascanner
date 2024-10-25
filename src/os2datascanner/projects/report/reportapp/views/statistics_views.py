@@ -197,13 +197,13 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             context['unhandled_by_source'][src_type] = {
                 'label': values['label'], 'count': values['unhandled']}
 
-        context['scannerjobs'] = (self.scannerjob_filters,
-                                  self.request.GET.get('scannerjob', 'all'))
+        context['scannerjob_choices'] = self.scannerjob_filters
+        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         allowed_orgunits = self.user_units
 
-        context['orgunits'] = (allowed_orgunits.order_by("name").values("name", "uuid"),
-                               self.request.GET.get('orgunit', 'all'))
+        context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
+        context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')
 
         return context
 

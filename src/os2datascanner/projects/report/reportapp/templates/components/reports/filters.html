@@ -38,13 +38,13 @@
             <div class="match_filtering dropdown">
               <select name="scannerjob" id="scannerjobs" autocomplete="off">
                 <option value="all"
-                        {% if scannerjobs|last == "all" %}selected="selected"{% endif %}>
+                        {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
                   {% trans "All scannerjobs" %}
                 </option>
  
-                {% for scan in scannerjobs|first %}
+                {% for scan in scannerjob_choices %}
                   <option value="{{ scan.scanner_job_pk|unlocalize }}"
-                          {% if request.GET.scannerjob == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
+                          {% if chosen_scannerjob == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
                     {{ scan.scanner_job_name }} ({{ scan.filtered_total }})
                   </option>
                 {% endfor %}
@@ -74,13 +74,13 @@
             <div class="match_filtering dropdown">
               <select name="source_type" id="source_type" autocomplete="off">
                 <option value="all"
-                        {% if source_types|last == "all" %}selected="selected"{% endif %}>
+                        {% if chosen_source_type == "all" %}selected="selected"{% endif %}>
                   {% trans "All source types" %}
                 </option>
  
-                {% for source_type in source_types|first %}
+                {% for source_type in source_type_choices %}
                   <option value="{{ source_type.source_type }}"
-                          {% if request.GET.source_type == source_type.source_type %}selected="selected"{% endif %}>
+                          {% if chosen_source_type == source_type.source_type %}selected="selected"{% endif %}>
                     {% find_scan_type source_type.source_type %}
                     ({{ source_type.total }})
                   </option>
@@ -112,13 +112,13 @@
               <div class="match_filtering dropdown">
                 <select name="resolution_status" id="resolution_status" autocomplete="off">
                   <option value="all"
-                          {% if resolution_status|last == "all" %}selected="selected"{% endif %}>
+                          {% if chosen_resolution_status == "all" %}selected="selected"{% endif %}>
                     {% trans "All resolution statuses" %}
                   </option>
  
-                  {% for method in resolution_status|first %}
+                  {% for method in resolution_status_choices %}
                     <option value="{{ method.resolution_status|stringformat:'i' }}"
-                            {% if resolution_status|last == method.resolution_status|stringformat:"i" %}selected="selected"{% endif %}>
+                            {% if chosen_resolution_status == method.resolution_status|stringformat:"i" %}selected="selected"{% endif %}>
                       {{ method.resolution_label }} ({{ method.total }})
                     </option>
                   {% endfor %}
@@ -150,12 +150,12 @@
             <div class="match_filtering dropdown">
               <select name="sensitivities" id="sensitivities" autocomplete="off">
                 <option value="all"
-                        {% if sensitivities|last == "all" %}selected="selected"{% endif %}>
+                        {% if chosen_sensitivity == "all" %}selected="selected"{% endif %}>
                   {% trans "All sensitivities" %}
                 </option>
-                {% for sensitivity in sensitivities|first %}
+                {% for sensitivity in sensitivity_choices %}
                   <option value="{{ sensitivity.0.value|stringformat:"i" }}"
-                          {% if sensitivities|last == sensitivity.0.value|stringformat:"i" %}selected="selected"{% endif %}>
+                          {% if chosen_sensitivity == sensitivity.0.value|stringformat:"i" %}selected="selected"{% endif %}>
                     {{ sensitivity.0.presentation }}
                     ({{ sensitivity.1 }})
                   </option>
