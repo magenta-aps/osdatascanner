@@ -1,5 +1,4 @@
 {% load i18n l10n humanize admin_urls handle_extras %}
-<script async src="{% url 'jsi18n' %}"></script>
 {% with type=document_report.matches.handle|find_type_label %}
 
   {% with frag=document_report.matches.matches|merge_renderable_match_fragments %}
