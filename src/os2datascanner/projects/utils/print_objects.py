@@ -68,6 +68,49 @@ def parse_fl_string(flt):
     return lhs, rhs
 
 
+def build_queryset_from(
+        model: type,
+        filt_ops: list[list[str]]) -> QuerySet:
+    manager = model.objects
+    model_name = model._meta.object_name
+
+    if hasattr(manager, "select_subclasses"):
+        queryset = manager.select_subclasses().all()
+    else:
+        queryset = manager.all()
+
+    print(f" table:        {model_name}, {queryset.count()} row(s)")
+
+    for verb, fexpr, *rest in (filt_ops or ()):
+        lhs, rhs = parse_fl_string(fexpr)
+        try:
+            match (verb, *rest):
+                case ("filter",):
+                    queryset = queryset.filter(**{lhs: rhs})
+                case ("exclude",):
+                    queryset = queryset.exclude(**{lhs: rhs})
+                case ("annotate",):
+                    queryset = queryset.annotate(**{lhs: rhs})
+                case ("alias",):
+                    queryset = queryset.alias(**{lhs: rhs})
+                case _:
+                    raise ValueError(
+                            "BUG: didn't understand the verb"
+                            f" {verb}")
+        except FieldError:
+            eprint(
+                    f"""Django didn't like the field lookup "{lhs}"."""
+                    " Valid fields at this point are:")
+            for field in get_possible_fields(queryset):
+                eprint(f"\t{field}")
+            sys.exit(2)
+
+    if filt_ops:
+        print(f" after filter: {queryset.count()} row(s)")
+
+    return queryset
+
+
 class CollectorActionFactory:
     class Action(argparse.Action):
         def __init__(self, *args, caf_list, caf_prefix, **kwargs):
@@ -233,41 +276,7 @@ class Command(BaseCommand):
             self, *,
             order_by, order_by_desc, limit, offset, model, fields,
             filt_ops, with_sql, format, distinct, **kwargs):
-        model_name = model._meta.object_name
-        manager = model.objects
-
-        if hasattr(manager, "select_subclasses"):
-            queryset = manager.select_subclasses().all()
-        else:
-            queryset = manager.all()
-
-        print(f" table:        {model_name}, {queryset.count()} row(s)")
-
-        for verb, fexpr, *rest in (filt_ops or ()):
-            lhs, rhs = parse_fl_string(fexpr)
-            try:
-                match (verb, *rest):
-                    case ("filter",):
-                        queryset = queryset.filter(**{lhs: rhs})
-                    case ("exclude",):
-                        queryset = queryset.exclude(**{lhs: rhs})
-                    case ("annotate",):
-                        queryset = queryset.annotate(**{lhs: rhs})
-                    case ("alias",):
-                        queryset = queryset.alias(**{lhs: rhs})
-                    case _:
-                        raise ValueError(
-                                "BUG: didn't understand the verb"
-                                f" {verb}")
-            except FieldError:
-                eprint(
-                        f"""Django didn't like the field lookup "{lhs}"."""
-                        " Valid fields at this point are:")
-                for field in get_possible_fields(queryset):
-                    eprint(f"\t{field}")
-                sys.exit(2)
-        if filt_ops:
-            print(f" after filter: {queryset.count()} row(s)")
+        queryset = build_queryset_from(model, (filt_ops or []))
 
         queryset = queryset.order_by(
                 order_by
