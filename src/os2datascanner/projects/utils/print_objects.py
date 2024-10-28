@@ -59,9 +59,9 @@ def parse_fl_string(flt):
                     rhs = models.Count(field_expr)
                 case ("F", field_expr):
                     rhs = models.F(field_expr)
-                case (mystery, _):
-                    raise ValueError(
-                            f"operator {mystery} was not understood")
+                case _:
+                    # Do nothing; just leave rhs as a string
+                    pass
         else:
             # Do nothing; just leave rhs as a string
             pass
