@@ -16,6 +16,9 @@
 - Dropdowns in HTML templates are no longer built from tuples and indices,
   but rather from a separate entry in the context_data-dictionary.
 
+- Accounts with duplicate usernames can no longer be created for the same
+  organization in the admin and report modules.
+
 ## Version 3.25.1, 24th October 2024
 
 This minor bugfix release ensures that LDAP-based import jobs send their
