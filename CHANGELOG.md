@@ -2,6 +2,15 @@
 
 ## Version 3.25.2, ???
 
+### New in this release
+
+- Management command for deleting all reports from a given scanner job in
+  the report module.
+
+- List of scannerjobs with results in the report module, which is visible
+  to superusers. Provides functionality for deleting all results from a 
+  scanner job.
+
 ### General improvements
 
 - Dropdowns in HTML templates are no longer built from tuples and indices,
