@@ -113,25 +113,21 @@ def build_queryset_from(
 
 class CollectorActionFactory:
     class Action(argparse.Action):
-        def __init__(self, *args, caf_list, caf_prefix, **kwargs):
+        def __init__(self, *args, prefix, **kwargs):
             super().__init__(*args, **kwargs)
-            self.caf_list = caf_list
-            self.caf_prefix = list(caf_prefix)
+            self.prefix = list(prefix)
 
         def __call__(self, parser, namespace, values, option_string):
             if getattr(namespace, self.dest, None) is None:
                 setattr(namespace, self.dest, [])
             if not isinstance(values, (list, tuple,)):
                 values = [values]
-            getattr(namespace, self.dest).append(self.caf_prefix + values)
-
-    def __init__(self):
-        self.list = []
+            getattr(namespace, self.dest).append(self.prefix + values)
 
     def make_collector_action(self, *prefix):
         return partial(
                 CollectorActionFactory.Action,
-                caf_list=self.list, caf_prefix=prefix)
+                prefix=prefix)
 
 
 def get_possible_fields(qs: QuerySet) -> list[str]:
