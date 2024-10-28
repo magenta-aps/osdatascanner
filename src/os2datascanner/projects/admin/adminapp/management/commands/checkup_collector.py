@@ -37,7 +37,8 @@ SUMMARY = Summary("os2datascanner_checkup_collector_admin",
                   "Messages through checkup collector")
 
 
-def create_usererrorlog(message: messages.ProblemMessage):
+def create_usererrorlog(
+        message: messages.ProblemMessage, ss: ScanStatus):
     """Create a UserErrorLog object from a problem message."""
 
     try:
@@ -58,45 +59,40 @@ def create_usererrorlog(message: messages.ProblemMessage):
     else:
         path = ""
 
-    # Determine related ScanStatus object
-    scan_status = ScanStatus.objects.filter(  # Uses the "ss_pc_lookup" index
-            scanner=scanner,
-            scan_tag=message.scan_tag.to_json_object()).first()
-    # The ScanTagFragment is converted to json ↑ again.
-    # Consider better solution.
+    logger.info("Logging the error!",
+                error_message=error_message, scanner=ss.scanner.name)
 
-    if scan_status:
-        logger.info("Logging the error!",
-                    error_message=error_message, scanner=scan_status.scanner.name)
-
-        UserErrorLog.objects.create(
-            scan_status=scan_status,
-            error_message=error_message,
-            path=path,
-            organization=scanner.organization,
-            is_new=True
-        )
+    UserErrorLog.objects.create(
+        scan_status=ss,
+        error_message=error_message,
+        path=path,
+        organization=scanner.organization,
+        is_new=True
+    )
 
 
 def checkup_message_received_raw(body):
     handle = None
     scan_tag = None
+    scan_tag_raw = None
     matches = None
     problem = None
     if "message" in body:  # Problem message
         problem = messages.ProblemMessage.from_json_object(body)
         handle = problem.handle
         scan_tag = problem.scan_tag
+        scan_tag_raw = body["scan_tag"]
     elif "matches" in body:  # Matches message
         matches = messages.MatchesMessage.from_json_object(body)
         handle = matches.handle
         scan_tag = matches.scan_spec.scan_tag
+        scan_tag_raw = body["scan_spec"]["scan_tag"]
 
     if not scan_tag or not handle:
         return
     try:
         scanner = Scanner.objects.get(pk=scan_tag.scanner.pk)
-        ScanStatus.objects.get(scan_tag=scan_tag.to_json_object())
+        ss = ScanStatus.objects.get(scan_tag=scan_tag_raw)
     except Scanner.DoesNotExist:
         # This is a residual message for a scanner that the administrator has
         # deleted. Throw it away
@@ -128,12 +124,13 @@ def checkup_message_received_raw(body):
         here = here.source.handle
 
     update_scheduled_checkup(
-            handle.censor(), matches, problem, scan_time, scanner)
+            handle.censor(), matches, problem, scan_time, scanner, ss)
 
     yield from []
 
 
-def update_scheduled_checkup(handle, matches, problem, scan_time, scanner):  # noqa: CCR001, E501 too high cognitive complexity
+def update_scheduled_checkup(  # noqa: CCR001 E501
+        handle, matches, problem, scan_time, scanner, ss: ScanStatus):
     locked_qs = ScheduledCheckup.objects.select_for_update(
         of=('self',)
     ).filter(
@@ -209,7 +206,7 @@ def update_scheduled_checkup(handle, matches, problem, scan_time, scanner):  # n
         if problem and not problem.missing:
             # For problems, we also create a UserErrorLog object to alert
             # the user that something did not go as expected.
-            create_usererrorlog(problem)
+            create_usererrorlog(problem, ss)
     else:
         logger.debug(
                 "Not interesting, doing nothing",

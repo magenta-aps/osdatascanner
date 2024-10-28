@@ -19,6 +19,11 @@
 - Accounts with duplicate usernames can no longer be created for the same
   organization in the admin and report modules.
 
+### Bugfixes
+
+- The administration system's checkup collector process can now correctly
+  interpret messages with outdated scan tag formats.
+
 ## Version 3.25.1, 24th October 2024
 
 This minor bugfix release ensures that LDAP-based import jobs send their

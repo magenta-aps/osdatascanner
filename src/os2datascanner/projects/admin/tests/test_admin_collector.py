@@ -58,7 +58,8 @@ class TestPipelineCollector:
                         matches=positive_corrupt_match_message,
                         problem=None,
                         scan_time=positive_corrupt_match_message.scan_spec.scan_tag.time,
-                        scanner=None)
+                        scanner=None,
+                        ss=None)
         except DataError:
             # Expected behaviour
             pass
@@ -76,7 +77,7 @@ class TestPipelineCollector:
         basic_scanstatus.scan_tag = basic_problem_message.scan_tag.to_json_object()
         basic_scanstatus.save()
 
-        create_usererrorlog(basic_problem_message)
+        create_usererrorlog(basic_problem_message, basic_scanstatus)
 
         assert UserErrorLog.objects.all().exists()
         assert UserErrorLog.objects.first().error_message == basic_problem_message.message
@@ -98,3 +99,28 @@ class TestPipelineCollector:
         sc = ScheduledCheckup.objects.get(scanner=basic_scanner)
         for hint in ("fresh", "last_modified",):
             assert sc.handle.hint(hint) is None
+
+    def test_retro_checkup_message(self, basic_scanner, positive_web_match_message):
+        """A message with an outdated scan tag format should still be able to
+        create ScheduledCheckup objects, as long as the corresponding
+        ScanStatus still exists."""
+        pwmm = positive_web_match_message._deep_replace(
+                scan_spec__scan_tag__scanner__pk=basic_scanner.pk)
+        pwmm_json = pwmm.to_json_object()
+
+        # Simulate the old scan tag format
+        scan_tag = pwmm_json["scan_spec"]["scan_tag"]
+        scanner_part = scan_tag["scanner"]
+        del scanner_part["test"]
+        del scanner_part["keep_fp"]
+
+        ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=scan_tag,
+                total_sources=1,
+                total_objects=1)
+
+        [s for s in checkup_message_received_raw(pwmm_json)]
+
+        sc = ScheduledCheckup.objects.get(scanner=basic_scanner)
+        assert sc is not None
