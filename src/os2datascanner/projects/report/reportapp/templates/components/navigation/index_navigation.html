@@ -14,5 +14,10 @@
     <a id="undistributed"
        class="tabs__control{% if '/undistributed' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "undistributed-archive" %}{% else %}{% url "undistributed" %}{% endif %}">{% trans "Undistributed" %}</a>
+    {% if '/archive' not in request.path %}
+      <a id="scannerjobs"
+         class="tabs__control{% if '/scannerjobs' in request.path %} active{% endif %}"
+         href="{% url "scannerjobs" %}">{% trans "Scannerjobs" %}</a>
+    {% endif %}
   {% endif %}
 </div>
