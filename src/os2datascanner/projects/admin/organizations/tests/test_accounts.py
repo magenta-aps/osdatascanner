@@ -1,4 +1,7 @@
+import pytest
+
 from django.test import TestCase
+from django.db.utils import IntegrityError
 
 from parameterized import parameterized
 
@@ -9,6 +12,16 @@ from ...adminapp.models.scannerjobs.scanner import Scanner
 from ...adminapp.models.rules import CustomRule
 from ...tests.test_utilities import dummy_rule_dict
 from os2datascanner.utils.system_utilities import time_now
+
+
+@pytest.mark.django_db
+class TestAccounts:
+    def test_account_username_org_constraint(self, test_org, oluf):
+        with pytest.raises(IntegrityError):
+            Account.objects.create(
+                username=oluf.username,
+                organization=test_org
+            )
 
 
 class AccountMethodTests(TestCase):

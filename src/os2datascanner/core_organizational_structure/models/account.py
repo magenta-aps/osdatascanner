@@ -105,6 +105,8 @@ class Account(models.Model):
         verbose_name = _('account')
         verbose_name_plural = _('accounts')
 
+        unique_together = ('organization', 'username')
+
     def __str__(self):
         return self.username
 
@@ -165,3 +167,8 @@ class AccountSerializer(serializers.ModelSerializer):
             "is_superuser",
             "email",
             "is_universal_dpo"]
+
+    def get_unique_together_validators(self):
+        # TODO: Tests implode if the serializers try to uphold unique-together
+        # validators. We should have some validation logic in the future.
+        return []

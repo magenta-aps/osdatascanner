@@ -70,14 +70,18 @@ class TestDiagnosticsReportCommand:
         assert match.group(1) == "3"
 
     def test_count_accounts_without_username(
-            self, egon_account, benny_account, kjeld_account, capfd):
-        Account.objects.all().update(username="")
+            self, egon_account, benny_account, kjeld_account, hulk_account, capfd):
+
+        egon_account.username = ""
+        egon_account.save()
+        hulk_account.username = ""
+        hulk_account.save()
 
         call_command("diagnostics", only=["Account"])
 
         match = re.search(r'Found (\d+) accounts without a username.', capfd.readouterr()[0])
 
-        assert match.group(1) == "3"
+        assert match.group(1) == "2"
 
     def test_count_accounts_without_email(self, egon_account, benny_account, kjeld_account, capfd):
         Account.objects.all().update(email="")
@@ -112,9 +116,12 @@ class TestDiagnosticsReportCommand:
         assert match.group(1) == "3"
 
     def test_count_accounts_with_duplicate_usernames(
-            self, egon_account, benny_account, kjeld_account, capfd):
+            self, egon_account, benny_account, kjeld_account, hulk_account, capfd):
 
-        Account.objects.all().update(username="generic_username")
+        egon_account.username = "generic_username"
+        egon_account.save()
+        hulk_account.username = "generic_username"
+        hulk_account.save()
 
         call_command("diagnostics", only=["Account"])
 
@@ -124,7 +131,7 @@ class TestDiagnosticsReportCommand:
 
         assert match.group(1) == "1"
         assert match.group(2) == "generic_username"
-        assert match.group(3) == "3"
+        assert match.group(3) == "2"
 
     def test_count_accounts_missing_categories(
             self, egon_account, benny_account, kjeld_account, capfd):
