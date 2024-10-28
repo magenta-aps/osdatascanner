@@ -17,7 +17,9 @@ class ScannerjobListView(ListView):
     template_name = "scannerjobs/scannerjob_list.html"
 
     def get_queryset(self):
-        return DocumentReport.objects.filter(organization=self.kwargs["org"])
+        return DocumentReport.objects.filter(
+            number_of_matches__gte=1,
+            organization=self.kwargs["org"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
