@@ -325,6 +325,45 @@ class TestAccount:
         # Assert
         assert qs.first().unhandled_matches == egon_account.match_count
 
+    @pytest.mark.parametrize('handled_matches,total_matches',
+                             [(0, 1), (1, 0), (7, 10), (8, 10), (3, 4), (10, 10)])
+    def test_account_with_status_equals_match_status(
+            self, egon_email_alias, egon_account, handled_matches, total_matches):
+        """Check that with_status annotates the same value as given by match_status."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=handled_matches,
+            amount=total_matches)
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_status()
+
+        # Assert
+        assert qs.first().handle_status == egon_account.match_status
+
+    @pytest.mark.parametrize('days_ago', list(range(13, 22)))
+    def test_account_with_status_old_matches(self, egon_email_alias, egon_account, days_ago):
+        """Check that with_status gives the same output for reports aged between 2 and 3 weeks."""
+        # Arrange
+        t = timezone.now() - datetime.timedelta(days=days_ago)
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=1,
+            amount=2,
+            created=t)
+        DocumentReport.objects.all().update(resolution_time=t)
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_status()
+
+        # Assert
+        assert qs.first().handle_status == egon_account.match_status
+
 
 @pytest.mark.django_db
 class TestUserAccountConnection:
