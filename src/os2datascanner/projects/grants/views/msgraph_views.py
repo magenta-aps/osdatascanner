@@ -2,14 +2,17 @@ import json
 import base64
 from urllib.parse import urlencode
 
+from django import forms
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.views.generic import UpdateView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.utils.dateparse import parse_datetime
 from os2datascanner.projects.admin.utilities import UserWrapper
+
 from ..models.graphgrant import GraphGrant
 
 
@@ -88,3 +91,95 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
             parameters = "?" + urlencode(request.GET)
 
         return HttpResponseRedirect(redirect + parameters)
+
+
+class MSGraphGrantForm(forms.ModelForm):
+    class Meta:
+        model = GraphGrant
+        exclude = ("_client_secret",)
+
+    client_secret = forms.CharField()
+    expiry_date = forms.DateField(widget=forms.widgets.DateInput(
+        attrs={"type": "date", }, format="%Y-%m-%d",),
+        required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["client_secret"].initial = self.instance.client_secret_hint
+        self.fields["expiry_date"].initial = self.instance.expiry_date
+
+        self.fields["organization"].disabled = True
+        self.fields["tenant_id"].disabled = True
+        # Todo: Maybe we'll want to let client_id be editable.
+        self.fields["app_id"].disabled = True
+
+
+def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
+    res = (graph_caller.get(
+        f"applications?$filter=(appId eq '{graph_grant.app_id}')&$select=passwordCredentials")
+           .json().get("value"))
+    for pwc in res:
+        for secret in pwc.get("passwordCredentials", []):
+            if client_secret.startswith(secret.get("hint")):
+                end_date = parse_datetime(secret.get("endDateTime")).date()
+
+    return end_date
+
+
+class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView):
+    model = GraphGrant
+    form_class = MSGraphGrantForm
+    template_name = "grants/grant_update.html"
+    success_url = reverse_lazy('organization-list')
+
+    def get(self, request, *args, **kwargs):
+        self.end_date = kwargs.get("end_date")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        is_htmx = self.request.headers.get("HX-Request", False) == "true"
+        if is_htmx:
+            gg = self.get_object()
+            end_date = gg.expiry_date  # Defining variable, as it's used in the return
+            client_secret = request.POST.get("client_secret")
+
+            from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
+            GraphCaller = MSGraphSource.GraphCaller
+
+            if client_secret and (client_secret[:3] != gg.client_secret_hint[:3]):
+                # Secret has been changed and is currently in plaintext.
+                # Initiate GraphCaller with new secret.
+                gg.client_secret = client_secret
+                gc = GraphCaller(gg.make_token)
+                end_date = get_secret_end_date(client_secret, end_date, gc, gg)
+            else:
+                # Secret is the same
+                gc = GraphCaller(gg.make_token)
+                end_date = get_secret_end_date(client_secret, end_date, gc, gg)
+            return self.get(request, *args, end_date=end_date)
+
+        else:
+            return super().post(request, *args, **kwargs)
+
+    def get_form_kwargs(self, *args, **kwargs):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+
+        if self.request.method == "POST" and self.request.headers.get(
+                "HX-Request", False) == "true":
+            # request.POST is an immutable querydict, copying to circumvent.
+            post_copy = self.request.POST.copy()
+            post_copy["expiry_date"] = self.end_date
+
+            kwargs.update({
+                'data': post_copy,
+            })
+
+        return kwargs
+
+    def form_valid(self, form):
+        if form.has_changed():
+            if "client_secret" in form.changed_data:
+                self.object.client_secret = form.cleaned_data["client_secret"]
+        return super().form_valid(form)

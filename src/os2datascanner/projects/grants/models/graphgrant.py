@@ -21,6 +21,10 @@ class GraphGrant(Grant):
     tenant_id = models.UUIDField(
             default=uuid4, editable=True, verbose_name="tenant ID")
 
+    expiry_date = models.DateField(
+        blank=True, null=True, verbose_name="expiry date"
+    )
+
     _client_secret = models.JSONField(verbose_name="client secret")
     client_secret = wrap_encrypted_field("_client_secret")
 
@@ -35,6 +39,12 @@ class GraphGrant(Grant):
 
     def __str__(self):
         return f"Microsoft Graph access to tenant {self.tenant_id}"
+
+    @property
+    def client_secret_hint(self):
+        if self.client_secret:
+            return self.client_secret[:3] + "************"
+        return ""
 
     class Meta:
         constraints = [

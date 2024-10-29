@@ -1,0 +1,54 @@
+{% extends 'components/common/base.html' %}
+{% load i18n %}
+
+{% block body %}
+  {% include "components/common/header.html" %}
+
+  <form class="form" id="graphgrant-form" method="post">
+    {% csrf_token %}
+    <div class="data-form">
+      <div class="form__row">
+        {% for field in form %}
+          <div class="form__row__item">
+            <div class="form__group{% if field.errors %} has-error{% endif %}"></div>
+            <div class="flex">
+              {{ field.label_tag }}
+              {% if field.help_text %}
+                <div class="help">
+                  <div class="help-icon" title="{{ field.help_text|safe }}"></div>
+                </div>
+              {% endif %}
+            </div>
+
+            {% if field.name == "expiry_date" %}
+              <div class="field-with-button__container">
+                {{ field }}
+                <button type="button"
+                        class="button button--text-button"
+                        hx-post="{% url 'msgraphgrant-update' pk=graphgrant.pk %}"
+                        hx-trigger="click"
+                        hx-target="#graphgrant-form"
+                        hx-select="#graphgrant-form"
+                        hx-swap="outerHTML"
+                        hx-indicator="div.spinner">{% trans "fetch expiry date"|capfirst %}</button>
+              </div>
+
+            {% else %}
+              {{ field }}
+            {% endif %}
+
+            {% if field.errors %}{{ field.errors }}{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <button type="submit"
+            class="button button--cta-button"
+            aria-label="{% trans 'save GraphGrant'|capfirst %}"
+            title="{% trans 'save GraphGrant'|capfirst %}"
+            name="save">{% trans "save GraphGrant"|capfirst %}</button>
+
+  </form>
+
+{% endblock %}
