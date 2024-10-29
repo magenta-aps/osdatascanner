@@ -52,6 +52,9 @@
 - Now using pytest as testing framework in tests for organization views
   instead of django TestCase.
 
+- The Account model in the Report module has been normalized, removing the derived fields,
+  handled_matches, match_count, match_status, and withheld_matches, turing them into properties.
+  This should also greatly decrease sorting time on the leader page.
 
 ### Bugfixes
 
@@ -156,9 +159,6 @@ the risk of violating database constraints.)
 
 - The organisational import processes now optionally support the immediate
   enforcement of database constraints, useful for troubleshooting.
-
-- The Account model in the Report module had some fields that were derived from other tables.
-  These fields have been removed, greatly decreasing the sorting time on the leader page.
 
 ### Bugfixes
 
