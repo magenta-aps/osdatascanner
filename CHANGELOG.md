@@ -21,10 +21,18 @@
 
 - Management command for updating GraphGrant objects client_secret.
 
+- Using the rulebuilder a user can no longer create a compound rule with less than 2 components.
+  Not-rules and email-header-rules without a subrule are also prohibited now.
+
 ### Bugfixes
 
 - The administration system's checkup collector process can now correctly
   interpret messages with outdated scan tag formats.
+
+- The constructor of CompoundRule doesn't allow for compound rules without subrules.
+  The constructor of NotRule and DictLookupRule doesn't allow for rules without a subrule.
+
+- Scanning with a compound rule with 1 component no longer fails.
 
 ## Version 3.25.1, 24th October 2024
 
