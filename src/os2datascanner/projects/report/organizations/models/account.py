@@ -73,14 +73,14 @@ class AccountQuerySet(models.QuerySet):
     def with_unhandled_matches(self):
         return self.annotate(unhandled_matches=Count(
                     "aliases__match_relation",
-                    exclude=(
-                        Q(aliases___alias_type=AliasType.REMEDIATOR)
-                        | Q(aliases__shared=True)
-                    ),
-                    filter=Q(
-                        aliases__match_relation__number_of_matches__gte=1,
-                        aliases__match_relation__resolution_status__isnull=True,
-                        aliases__match_relation__only_notify_superadmin=False
+                    filter=(
+                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+                        & Q(
+                            aliases__shared=False,
+                            aliases__match_relation__number_of_matches__gte=1,
+                            aliases__match_relation__resolution_status__isnull=True,
+                            aliases__match_relation__only_notify_superadmin=False
+                        )
                     ),
                     distinct=True
                 )
@@ -120,8 +120,8 @@ class AccountQuerySet(models.QuerySet):
             _handled_new_ratio=Case(
                 When(
                     _new_count__gt=0,
-                    then=F('_handled_count') /
-                    F('_new_count')),
+                    then=(F('_handled_count') * 1.0 / F('_new_count'))
+                ),
                 default=0.0,
                 output_field=FloatField()))
 

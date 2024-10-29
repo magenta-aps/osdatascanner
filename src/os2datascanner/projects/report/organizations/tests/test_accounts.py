@@ -53,8 +53,6 @@ class TestAccount:
 
         make_matched_document_reports_for(egon_email_alias, handled=handled_num, amount=all_num)
 
-        egon_account.save()
-
         assert all_num-handled_num == egon_account.match_count
         assert egon_account.match_status == status
 
@@ -72,8 +70,6 @@ class TestAccount:
             created=timezone.now() -
             datetime.timedelta(
                 days=100))
-
-        egon_account.save()
 
         assert all_matches-handled == egon_account.match_count
         assert egon_account.match_status == StatusChoices.BAD
@@ -244,6 +240,90 @@ class TestAccount:
                 username=egon_account.username,
                 organization=olsenbanden_organization
             )
+
+    def test_account_with_unhandled_matches_equals_match_count(
+            self, egon_email_alias, egon_account):
+        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
+        using the property match_count."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=6,
+            amount=10)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_unhandled_matches()
+
+        # Assert
+        assert qs.first().unhandled_matches == egon_account.match_count
+
+    def test_account_with_unhandled_matches_remediator_alias(
+            self, egon_email_alias, egon_remediator_alias, egon_account):
+        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
+        using the property match_count, both of which ignoring matches from remediator aliases."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=6,
+            amount=10)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        make_matched_document_reports_for(egon_remediator_alias, handled=5, amount=10)
+
+        # Act
+        qs = qs.with_unhandled_matches()
+
+        # Assert
+        assert qs.first().unhandled_matches == egon_account.match_count
+
+    def test_account_with_unhandled_matches_shared_alias(
+            self, egon_email_alias, egon_shared_email_alias, egon_account):
+        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
+        using the property match_count, both of which ignoring matches from shared aliases."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=6,
+            amount=10)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        make_matched_document_reports_for(egon_shared_email_alias, handled=5, amount=10)
+
+        # Act
+        qs = qs.with_unhandled_matches()
+
+        # Assert
+        assert qs.first().unhandled_matches == egon_account.match_count
+
+    def test_account_with_unhandled_matches_distinct(
+            self, egon_email_alias, egon_sid_alias, egon_account):
+        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
+        using the property match_count, both of which ignoring duplicate matches in case of
+        multiple aliases."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=6,
+            amount=10)
+        make_matched_document_reports_for(
+            egon_sid_alias,
+            handled=5,
+            amount=8)
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_unhandled_matches()
+
+        # Assert
+        assert qs.first().unhandled_matches == egon_account.match_count
 
 
 @pytest.mark.django_db
