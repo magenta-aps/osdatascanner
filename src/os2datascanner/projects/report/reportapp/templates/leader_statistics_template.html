@@ -55,8 +55,8 @@
 
               {% if settings.LEADER_CSV_EXPORT %}
                 <div class="form__buttons">
-                  <button type="submit"
-                          formaction="{% url 'statistics-leader-export' %}"
+                  <button type="button"
+                          onclick="location.href='{% url 'statistics-leader-export' %}?org_unit={{ org_unit.uuid }}'"
                           class="button button--transparent-button"
                           aria-label="{% trans 'Export leader data as a csv-file' %}"
                           title="{% trans 'Click here to export leader data as a csv-file' %}">
