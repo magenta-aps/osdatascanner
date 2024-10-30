@@ -1,10 +1,10 @@
 import os.path
 import unittest
 
-from os2datascanner.engine2.model.core import SourceManager
+from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.file import (
         FilesystemSource, FilesystemHandle)
-from os2datascanner.engine2.model.derived.zip import ZipSource
+from os2datascanner.engine2.model.derived.zip import ZipHandle, ZipSource
 
 
 here_path = os.path.dirname(__file__)
@@ -23,3 +23,22 @@ class ZipTests(unittest.TestCase):
         with SourceManager() as sm:
             for h in encrypted_file.handles(sm):
                 h.follow(sm).compute_type()
+
+    def test_infinite_recursion(self):
+        endless_file = FilesystemHandle(
+                FilesystemSource(test_data_path), "r.zip")
+
+        root_source = ZipSource(endless_file)
+        deeply_nested_file = ZipHandle(root_source, "r.zip")
+        for _ in range(0, 9):
+            deeply_nested_file = ZipHandle(
+                    ZipSource(deeply_nested_file), "r.zip")
+
+        # Nine layers of recursion is fine...
+        assert Source.from_handle(deeply_nested_file) is not None
+
+        deeply_nested_file = ZipHandle(
+                ZipSource(deeply_nested_file), "r.zip")
+
+        # ,,, but ten is too many
+        assert Source.from_handle(deeply_nested_file) is None
