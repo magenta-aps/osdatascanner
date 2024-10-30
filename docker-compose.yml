@@ -70,7 +70,8 @@ services:
       start_period: 30s
       retries: 3
     depends_on:
-      - pg_upgrade
+      pg_upgrade:
+        condition: service_completed_successfully
 
   pg_upgrade:
     image: magentaaps/postgres-upgrade:master
