@@ -1,6 +1,6 @@
 import pytest
 
-from os2datascanner.engine2.rules.logical import OrRule
+from os2datascanner.engine2.rules.logical import OrRule, NotRule
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules.name import NameRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
@@ -38,13 +38,10 @@ class TestRuleInvariant:
             invariant_checker.check_invariants(wordlist_rule)
 
     def test_standalone_invariant_holds_for_or_with_single_cpr(self, invariant_checker, cpr_rule):
-        rule = OrRule(cpr_rule, name="A single CPRRule")
-        assert invariant_checker.check_invariants(rule)
+        assert invariant_checker.check_invariants(cpr_rule)
 
     def test_standalone_invariant_holds_for_or_with_single_name(self, invariant_checker, name_rule):
-        rule = OrRule(name_rule, name="A single NameRule")
-
-        assert invariant_checker.check_invariants(rule)
+        assert invariant_checker.check_invariants(name_rule)
 
     def test_standalone_invariant_violated_for_or_with_single_wordlist(self, invariant_checker,
                                                                        wordlist_rule):
@@ -94,3 +91,23 @@ class TestRuleInvariant:
 
         with pytest.raises(RuleInvariantViolationError):
             invariant_checker.check_invariants(rule)
+
+    def test_components_invariant_violated_with_one_component(self, invariant_checker, cpr_rule):
+
+        rule = OrRule(cpr_rule, name="Or Rule")
+
+        with pytest.raises(RuleInvariantViolationError):
+            invariant_checker.check_invariants(rule)
+
+    def test_components_invariant_violated_with_two_components(self, invariant_checker,
+                                                               cpr_rule, wordlist_rule):
+
+        rule = OrRule(cpr_rule, wordlist_rule, name="Or Rule")
+
+        assert invariant_checker.check_invariants(rule)
+
+    def test_components_invariant_holds_for_not_cpr(self, invariant_checker, cpr_rule):
+
+        rule = NotRule(cpr_rule, name="Not CPR")
+
+        assert invariant_checker.check_invariants(rule)

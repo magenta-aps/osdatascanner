@@ -11,7 +11,9 @@ def oxford_comma(parts: Sequence, conjunction: str, *, key=lambda c: str(c)) -> 
     To my parents, Ayn Rand, and God. (with oxford)
 
     """
-    if len(parts) == 1:
+    if len(parts) == 0:
+        raise ValueError("Can't combine empty list of words")
+    elif len(parts) == 1:
         return key(parts[0])
     else:
         start = [key(p) for p in parts[0:-1]]
@@ -25,6 +27,8 @@ def oxford_comma(parts: Sequence, conjunction: str, *, key=lambda c: str(c)) -> 
 class CompoundRule(Rule):
     def __init__(self, *components, **super_kwargs):
         super().__init__(**super_kwargs)
+        if len(components) == 0:
+            raise ValueError("CompoundRule with zero components")
         self._components = components
 
     @property
@@ -55,9 +59,15 @@ class CompoundRule(Rule):
             return cls(*components)
 
     def split(self):
-        fst, rest = self._components[0], self._components[1:]
-        head, pve, nve = fst.split()
-        return head, self.make(pve, *rest), self.make(nve, *rest)
+        match self._components:
+            case [head]:
+                # Trivial case: just defer to the only component
+                return head.split()
+            case [head, *tail]:
+                next_rule, pve, nve = head.split()
+                return next_rule, self.make(pve, *tail), self.make(nve, *tail)
+            case _:
+                raise ValueError
 
     def to_json_object(self):
         return dict(
@@ -81,11 +91,12 @@ class AllRule(CompoundRule):
 
     @property
     def presentation_raw(self):
-        if len(self._components) == 2:
-            conjunction = "or"
+        if len(self._components) == 0:
+            return "Empty AllRule"
+        elif len(self._components) < 3:
+            return "({0})".format(oxford_comma(self._components, "or"))
         else:
-            conjunction = "or any of"
-        return "({0})".format(oxford_comma(self._components, conjunction))
+            return "({0})".format(oxford_comma(self._components, "or any of"))
 
     @classmethod
     def make(cls, *components, satisfied: bool = False):
@@ -188,6 +199,8 @@ class NotRule(Rule):
 
     def __init__(self, rule, **super_kwargs):
         super().__init__(**super_kwargs)
+        if not rule:
+            raise ValueError("Couldn't construct NotRule: No rule given")
         self._rule = rule
 
     @property

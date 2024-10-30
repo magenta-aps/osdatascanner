@@ -18,6 +18,8 @@ error_table = {
     _("Cannot build rule: %(r1)s may not precede %(r2)s. Please change the order."),
     "standalone":
     _("Cannot build rule: %(r1)s must be used in conjunction with another rule."),
+    "components":
+    _("Cannot build rule: %(r1)s must include at least 2 components.")
 }
 
 
@@ -30,7 +32,12 @@ def customrule_validator(value):
     checker = RuleInvariantChecker()
 
     try:
-        checker.check_invariants(E2Rule.from_json_object(value))
+        rule = E2Rule.from_json_object(value)
+    except Exception as e:
+        raise ValidationError(f"Error occured while trying to construct rule: '{e}'")
+
+    try:
+        checker.check_invariants(rule)
     except RuleInvariantViolationError as rive:
         raise ValidationError(
             error_table.get(rive.message) % {f"r{i+1}": str(r)

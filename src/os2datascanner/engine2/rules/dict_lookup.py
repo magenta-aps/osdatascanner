@@ -7,6 +7,8 @@ class DictLookupRule(SimpleRule):
             self, prop: str, rule: Rule, **kwargs):
         super().__init__(**kwargs)
         self._prop = prop
+        if not rule:
+            raise ValueError("Couldn't construct DictLookupRule: No rule given")
         self._rule = rule
 
     def match(self, value: dict):
