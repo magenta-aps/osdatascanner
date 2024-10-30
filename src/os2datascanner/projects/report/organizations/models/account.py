@@ -71,6 +71,10 @@ class AccountQuerySet(models.QuerySet):
         )
 
     def with_unhandled_matches(self):
+        """Annotates each account in the queryset with 'unhandled_matches', which contains the
+        number of unhandled matches the user has. Doesn't count matches from remediator aliases,
+        shared aliases, or withheld matches.
+        This field should contain the same value as the 'match_count' property."""
         return self.annotate(unhandled_matches=Count(
                     "aliases__match_relation",
                     filter=(
@@ -87,6 +91,12 @@ class AccountQuerySet(models.QuerySet):
             )
 
     def with_status(self):
+        """Annotates each account in the queryset with 'handle_status', which contains
+        - StatusChoices.GOOD if they have no unhandled matches
+        - StatusChoices.BAD if they have no handled matches in the last 3 weeks
+          OR if the ratio between handled matches and new matches for the last 3 weeks in below 75%
+        - StatusChoices.OK otherwise.
+        This field should contain the same value as the 'match_status' property."""
         next_monday = timezone.now() + timedelta(weeks=1) - timedelta(
                 days=timezone.now().weekday(),
                 hours=timezone.now().hour,
@@ -95,9 +105,12 @@ class AccountQuerySet(models.QuerySet):
 
         three_weeks_ago = next_monday - timedelta(weeks=3)
 
-        valid_reports = Q(aliases__match_relation__number_of_matches__gte=1,
-                          aliases__match_relation__only_notify_superadmin=False)
-
+        valid_reports = (~Q(aliases___alias_type=AliasType.REMEDIATOR)
+                         & Q(aliases__shared=False,
+                             aliases__match_relation__number_of_matches__gte=1,
+                             aliases__match_relation__only_notify_superadmin=False
+                             )
+                         )
         unhandled_filter = Q(aliases__match_relation__resolution_status__isnull=True)
         handled_filter = Q(
             aliases__match_relation__resolution_status__isnull=False,

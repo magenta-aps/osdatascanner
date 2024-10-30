@@ -364,6 +364,48 @@ class TestAccount:
         # Assert
         assert qs.first().handle_status == egon_account.match_status
 
+    def test_account_with_status_shared_alias(
+            self, egon_email_alias, egon_shared_email_alias, egon_account):
+        """Using with_status on a queryset of Accounts should give the same result as
+        using the property match_status, both of which ignoring matches from shared aliases."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=4,
+            amount=5)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        make_matched_document_reports_for(egon_shared_email_alias, handled=0, amount=10)
+
+        # Act
+        qs = qs.with_status()
+
+        # Assert
+        assert qs.first().handle_status == egon_account.match_status
+
+    def test_account_with_status_remediator_alias(
+            self, egon_email_alias, egon_remediator_alias, egon_account):
+        """Using with_status on a queryset of Accounts should give the same result as
+        using the property match_status, both of which ignoring matches from remediator aliases."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=4,
+            amount=5)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        make_matched_document_reports_for(egon_remediator_alias, handled=0, amount=10)
+
+        # Act
+        qs = qs.with_status()
+
+        # Assert
+        assert qs.first().handle_status == egon_account.match_status
+
 
 @pytest.mark.django_db
 class TestUserAccountConnection:
