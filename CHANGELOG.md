@@ -19,6 +19,8 @@
 - Accounts with duplicate usernames can no longer be created for the same
   organization in the admin and report modules.
 
+- Management command for updating GraphGrant objects client_secret.
+
 ### Bugfixes
 
 - The administration system's checkup collector process can now correctly

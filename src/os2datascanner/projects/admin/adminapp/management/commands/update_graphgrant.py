@@ -19,14 +19,14 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, organization, client_secret, **options):
-        if Organization.objects.count() > 1 and not organization:
-            raise CommandError("Can't run without providing -org <pk> "
-                               "when there are multiple organizations in the system!")
-
         if organization:
             org = Organization.objects.get(pk=organization)
         else:
-            org = Organization.objects.first()
+            try:
+                org = Organization.objects.get()
+            except Organization.MultipleObjectsReturned:
+                raise CommandError("Can't run without providing -org <pk> "
+                                   "when there are multiple organizations in the system!")
 
         try:
             gc = GraphGrant.objects.get(organization=org)
