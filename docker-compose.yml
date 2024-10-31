@@ -42,7 +42,7 @@ services:
       - sbsys
 
   db:
-    image: postgres:12
+    image: postgres:16
     ports:
         - "8035:5432"
     shm_size: '2GB'
@@ -56,8 +56,10 @@ services:
       - dev-environment/db.env
     environment:
       - PGUSER=postgres
+      - PGDATA=/var/lib/postgresql/16/data
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data # Old data, from PG 12, we can probably remove this after a while / everybody has transitioned.
+      - pgdata_16:/var/lib/postgresql/16/data
       - ./docker/postgres-initdb.d/10-test-for-valid-env-variables.sh:/docker-entrypoint-initdb.d/10-test-for-valid-env-variables.sh
       - ./docker/postgres-initdb.d/20-create-admin-db-and-user.sh:/docker-entrypoint-initdb.d/20-create-admin-db-and-user.sh
       - ./docker/postgres-initdb.d/40-create-report-db-and-user.sh:/docker-entrypoint-initdb.d/40-create-report-db-and-user.sh
@@ -67,6 +69,20 @@ services:
       interval: 5s
       start_period: 30s
       retries: 3
+    depends_on:
+      pg_upgrade:
+        condition: service_completed_successfully
+
+  pg_upgrade:
+    image: magentaaps/postgres-upgrade:master
+    environment: # These are passed to the actual running stage. I.e. "up"
+      - PGUSER=postgres
+      - PGDATA=/var/lib/postgresql/16/data
+      - PGNEW=16
+      - PGOLD=12
+    volumes:
+      - postgres-data:/var/lib/postgresql/12/data
+      - pgdata_16:/var/lib/postgresql/16/data
 
   queue:
     # Normally, we expect the `rabbitmq` image. The -management images come
@@ -699,6 +715,7 @@ x-disabled:
 
 
 volumes:
+  pgdata_16:
   frontend-bundles:
   postgres-data:
   postgres-initdb.d:

@@ -6,11 +6,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-################################################################################
-# Changes to this file requires approval from Labs. Please add a person from   #
-# Labs as required approval to your MR if you have any changes.                #
-################################################################################
-
 # This file creates a database user for the admin module.
 # It can be mounted into the official
 # postgres docker image (https://hub.docker.com/_/postgres) at
@@ -29,5 +24,9 @@ psql -v ON_ERROR_STOP=1 <<ENDSQL
 CREATE DATABASE ${ADMIN_DATABASE_NAME};
 CREATE USER ${ADMIN_DATABASE_USER} WITH ENCRYPTED PASSWORD '${ADMIN_DATABASE_PASSWORD}';
 GRANT ALL PRIVILEGES ON DATABASE ${ADMIN_DATABASE_NAME} TO ${ADMIN_DATABASE_USER};
+
+-- next commands are needed on PostgreSQL 15 and later apparently
+\connect ${ADMIN_DATABASE_NAME};
+GRANT CREATE ON SCHEMA public TO ${ADMIN_DATABASE_USER};
 ENDSQL
 fi
