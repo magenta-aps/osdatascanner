@@ -38,7 +38,7 @@
           <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}" />
           <input type="hidden" name="order" id="order" value="{{ order }}" />
           <div class="org_filtering_wrapper">
-            <div class = "stat_form">
+            <div class="stat_form">
               <div>
                 <div>
                   <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
@@ -55,13 +55,14 @@
 
               {% if settings.LEADER_CSV_EXPORT %}
                 <div class="form__buttons">
-                  <button type="button"
-                          onclick="location.href='{% url 'statistics-leader-export' %}?org_unit={{ org_unit.uuid }}'"
-                          class="button button--transparent-button"
-                          aria-label="{% trans 'Export leader data as a csv-file' %}"
-                          title="{% trans 'Click here to export leader data as a csv-file' %}">
-                    {% trans "Export CSV" %}
-                  </button>
+                  <div class="button-group">
+                    <a href="{% url "statistics-leader-export" %}?{{ request.GET.urlencode }}"
+                       class="button button--transparent-button"
+                       aria-label="{% trans "Export leader data as a csv-file" %}"
+                       title="{% trans "Click here to export leader data as a csv-file" %}">
+                      {% trans "Export CSV" %}
+                    </a>
+                  </div>
                 </div>
               {% endif %}
             </div>

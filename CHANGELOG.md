@@ -37,7 +37,8 @@
 - The FileScanner settings "skip_super_hidden" and "unc_is_home_root" are sent
   correctly to the report module.
   
-- A bug causing CSV-exports when entering a search in the leader tab, has been fixed.
+- A bug causing CSV-exports when entering a search in the leader tab, has been 
+  fixed.
 
 ## Version 3.25.1, 24th October 2024
 
