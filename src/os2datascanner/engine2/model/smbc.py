@@ -128,7 +128,14 @@ class SMBCSource(Source):
         yield (self._to_url(), c)
 
     def censor(self):
-        return SMBCSource(self.unc, None, None, None, self.driveletter)
+        return SMBCSource(
+            self.unc,
+            None,
+            None,
+            None,
+            self.driveletter,
+            skip_super_hidden=self._skip_super_hidden,
+            unc_is_home_root=self._unc_is_home_root)
 
     @classmethod
     def is_skippable(  # noqa CCR001

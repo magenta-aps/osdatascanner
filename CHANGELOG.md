@@ -34,6 +34,9 @@
 
 - Scanning with a compound rule with 1 component no longer fails.
 
+- The FileScanner settings "skip_super_hidden" and "unc_is_home_root" are sent
+  correctly to the report module.
+
 ## Version 3.25.1, 24th October 2024
 
 This minor bugfix release ensures that LDAP-based import jobs send their
