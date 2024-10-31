@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.25.2, ???
+## Version 3.25.2, 31th October 2024
+
+"What's the Status Again?"
 
 ### New in this release
 
