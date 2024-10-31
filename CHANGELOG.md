@@ -40,6 +40,10 @@
 - A bug causing CSV-exports when entering a search in the leader tab, has been 
   fixed.
 
+- When users cancel a scannerjob it couldn't clear the message queue, as it threw an error when 
+  trying to reach the none-existing "scan_status" (that was deleted alongside the scannerjob).
+  "scan_status" is now only updated from the db if there actually is a "scan_status" to update. 
+
 ## Version 3.25.1, 24th October 2024
 
 This minor bugfix release ensures that LDAP-based import jobs send their
