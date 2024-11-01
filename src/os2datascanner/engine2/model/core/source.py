@@ -1,11 +1,16 @@
 from abc import abstractmethod
 from typing import Mapping, Iterator
+import structlog
 
+from ... import settings
 from ...utilities.json import JSONSerialisable
 from ...utilities.equality import TypePropertyEquality
 # from .errors import UnknownSchemeError
 from .import handle as mhandle
 from .utilities import takes_named_arg, SourceManager  # noqa
+
+
+logger = structlog.get_logger("engine2")
 
 
 class Source(TypePropertyEquality, JSONSerialisable):
@@ -114,6 +119,17 @@ class Source(TypePropertyEquality, JSONSerialisable):
         This will only work if the target of the Handle in question can
         meaningfully be interpreted as the root of a hierarchy of its own --
         for example, if it's an archive."""
+
+        depth = 0
+        for _ in handle.walk_up():
+            if depth > settings.model["max_depth"]:
+                logger.warning(
+                        "too much recursion on handle, "
+                        "not exploring any deeper",
+                        handle=handle, representation=str(handle))
+                return None
+            depth += 1
+
         if not sm:
             mime = handle.guess_type()
         else:

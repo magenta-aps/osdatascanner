@@ -1,5 +1,12 @@
 # Changelog
 
+## Next Release
+
+### General improvements
+
+- To mitigate against resource exhaustion attacks, the scanner engine now
+  enforces a (configurable) maximum recursion depth when exploring files.
+
 ## Version 3.25.2, 31th October 2024
 
 "What's the Status Again?"

@@ -65,6 +65,15 @@ obj_limit = 10
 # applicable
 directory = ""
 
+[model]
+# The maximum nesting depth; after this point, Source.from_handle will return
+# None
+# (ten should be generous enough for any realistic situation -- for example, an
+# image (1) on page 4 (2) of a PDF file (3) in a Zip file (4) attached (5) to
+# an email (6) exported to an .eml file (7) and then forwarded as an attachment
+# (8) in another email (9) would still pose no problems)
+max_depth = 10
+
 [model.libreoffice]
 # The size at which LibreOffice-generated HTML should be thrown away and
 # replaced by a new plaintext conversion (in bytes)
