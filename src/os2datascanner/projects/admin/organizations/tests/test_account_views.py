@@ -31,18 +31,22 @@ class TestAccountListView:
     def other_url(self, test_org2):
         return reverse_lazy('accounts', kwargs={'org_slug': test_org2.slug})
 
-    def test_search_query_full_name(self, superuser, url, oluf, client):
+    def test_search_query_full_name(self, superuser, url, oluf, gertrud, client):
+        """When searching for the full name of Gertrud, since she shares a
+        last name with Oluf, both should be returned, but Gertrud be returned
+        first, since her similarity score is higher."""
+
         # Arrange
         client.force_login(superuser)
-        query = urllib.parse.urlencode({'search_field': 'oluf sand'})
+        query = urllib.parse.urlencode({'search_field': 'gertrud sand'})
 
         # Act
         response = client.get(url + '?' + query)
         accounts = response.context['accounts']
 
         # Assert
-        assert accounts.count() == 1
-        assert accounts.first() == oluf
+        assert accounts.count() == 2
+        assert list(accounts) == [gertrud, oluf]
 
     def test_search_query_username(self, superuser, url, oluf, client):
         # Arrange
@@ -71,6 +75,9 @@ class TestAccountListView:
         assert accounts.first() == oluf
 
     def test_search_query_last_name(self, superuser, url, oluf, gertrud, client):
+        """When searching for just the last name, the Trigram Similarity
+        scores Oluf higher than Gertrud."""
+
         # Arrange
         client.force_login(superuser)
         query = urllib.parse.urlencode({"search_field": "sand"})
@@ -81,7 +88,43 @@ class TestAccountListView:
 
         # Assert
         assert accounts.count() == 2
-        assert list(accounts) == [gertrud, oluf]
+        assert list(accounts) == [oluf, gertrud]
+
+    @pytest.mark.parametrize("search_query", [
+        "gertroluf",
+        "frither",
+        "bensi",
+        "olufritz",
+        "sand",
+        "olufritherud"
+    ])
+    def test_trigram_similarity_score(
+            self,
+            search_query,
+            superuser,
+            url,
+            oluf,
+            gertrud,
+            benny,
+            hansi,
+            günther,
+            fritz,
+            client):
+        """The trigram similarity score of any returned account should never
+        exceed 0.2."""
+
+        # Arrange
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": search_query})
+
+        # Act
+        response = client.get(url + '?' + query)
+        accounts = response.context['accounts']
+
+        # Assert
+        assert accounts
+        for account in accounts:
+            assert account.search >= 0.2
 
     def test_account_list_order(self, user_admin, url, nisserne_accounts, client):
         # Arrange

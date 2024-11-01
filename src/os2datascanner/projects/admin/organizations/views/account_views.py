@@ -58,7 +58,7 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
                     TrigramSimilarity("full_name", search),
                     TrigramSimilarity("username", search)
                 )
-            ).filter(search__gt=0.2)
+            ).filter(search__gte=0.2)
 
         return qs
 
