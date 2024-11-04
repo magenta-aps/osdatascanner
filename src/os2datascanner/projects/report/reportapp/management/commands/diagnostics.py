@@ -275,16 +275,20 @@ class Command(BaseCommand):
 
         print("\n# [functionality]")
         print_settings("HANDLE_DROPDOWN", "ALLOW_CONTACT_MAGENTA",
-                       "ARCHIVE_TAB")
+                       "ARCHIVE_TAB", "DPO_CSV_EXPORT", "LEADER_CSV_EXPORT",
+                       "ALLOW_SHOW_ERRORS")
 
         print("\n# [msgraph]")
         print_settings("MSGRAPH_ALLOW_WRITE")
+
+        print("\n# [smb]")
+        print_settings("SMB_ALLOW_WRITE")
 
         print("\n# [logging]")
         print_settings("LOG_LEVEL")
 
         print("\n# [other]")
-        print_settings()
+        print_settings("NOTIFICATION_INSTITUTION")
 
         print("\n//ENVIRONMENT VARIABLES//")
 

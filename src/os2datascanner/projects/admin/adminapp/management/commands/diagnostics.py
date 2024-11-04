@@ -206,7 +206,8 @@ class Command(BaseCommand):
 
         print("\n# [other]")
         print_settings("ENABLE_MINISCAN", "MINISCAN_REQUIRES_LOGIN",
-                       "MINISCAN_FILE_SIZE_LIMIT")
+                       "MINISCAN_FILE_SIZE_LIMIT", "NOTIFICATION_INSTITUTION",
+                       "PREPNPUB_IMMEDIATE_CONSTRAINTS")
 
         print("\n//ENVIRONMENT VARIABLES//")
 

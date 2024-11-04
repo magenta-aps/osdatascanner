@@ -11,9 +11,20 @@ from ..organizations.models.account import Account
 from .test_utilities import create_errors
 
 
-@pytest.fixture
-def temp_settings():
-    return settings
+class TempSettings:
+    def __init__(self, changes: dict, **kwargs):
+        super().__init__(**kwargs)
+        self.changes = changes
+        self.old_values = {k: getattr(settings, k) for k in self.changes}
+
+    def __enter__(self):
+        for k, v in self.changes.items():
+            setattr(settings, k, v)
+        return settings
+
+    def __exit__(self, *args):
+        for k, v in self.old_values.items():
+            setattr(settings, k, v)
 
 
 @pytest.mark.django_db
@@ -318,14 +329,14 @@ class TestDiagnosticsCommand:
     @pytest.mark.parametrize('setting', [
         True, False
     ])
-    def test_settings_debug(self, capfd, setting, temp_settings):
-        temp_settings.DEBUG = setting
+    def test_settings_debug(self, capfd, setting):
 
-        call_command("diagnostics", only=["Settings"])
+        with TempSettings({"DEBUG": setting}):
+            call_command("diagnostics", only=["Settings"])
 
-        match = re.search(r'WARNING: DEBUG is ON for this installation!', capfd.readouterr()[0])
+            match = re.search(r'WARNING: DEBUG is ON for this installation!', capfd.readouterr()[0])
 
-        assert bool(match) == setting
+            assert bool(match) == setting
 
     @pytest.mark.parametrize('setting,value', [
         ('EXCLUSION_RULES', True),
@@ -375,13 +386,18 @@ class TestDiagnosticsCommand:
         ('MINISCAN_REQUIRES_LOGIN', False),
         ('MINISCAN_FILE_SIZE_LIMIT', 12345),
         ('MINISCAN_FILE_SIZE_LIMIT', 0),
-        ('MINISCAN_FILE_SIZE_LIMIT', 1048576)
+        ('MINISCAN_FILE_SIZE_LIMIT', 1048576),
+        ('NOTIFICATION_INSTITUTION', 'olsenbanden'),
+        ('NOTIFICATION_INSTITUTION', ''),
+        ('PREPNPUB_IMMEDIATE_CONSTRAINTS', True),
+        ('PREPNPUB_IMMEDIATE_CONSTRAINTS', False)
     ])
-    def test_settings_overview(self, capfd, setting, value, temp_settings):
-        setattr(temp_settings, setting, value)
+    def test_settings_overview(self, capfd, setting, value):
 
-        call_command("diagnostics", only=["Settings"])
+        with TempSettings({setting: value}):
 
-        match = re.search(setting + r' = (.+)\n', capfd.readouterr()[0])
+            call_command("diagnostics", only=["Settings"])
 
-        assert match.group(1).strip("'") == str(value)
+            match = re.search(setting + r' = (.+)\n', capfd.readouterr()[0])
+
+            assert match.group(1).strip("'") == str(value)
