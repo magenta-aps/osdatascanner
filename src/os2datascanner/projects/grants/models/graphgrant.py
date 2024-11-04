@@ -40,12 +40,6 @@ class GraphGrant(Grant):
     def __str__(self):
         return f"Microsoft Graph access to tenant {self.tenant_id}"
 
-    @property
-    def client_secret_hint(self):
-        if self.client_secret:
-            return self.client_secret[:3] + "************"
-        return ""
-
     class Meta:
         constraints = [
             models.UniqueConstraint(

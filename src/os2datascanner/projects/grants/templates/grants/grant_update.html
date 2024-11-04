@@ -1,6 +1,5 @@
 {% extends 'components/common/base.html' %}
 {% load i18n %}
-
 {% block body %}
   {% include "components/common/header.html" %}
 
@@ -25,10 +24,11 @@
                 {{ field }}
                 <button type="button"
                         class="button button--text-button"
+                        name="fetch-expiry-date"
                         hx-post="{% url 'msgraphgrant-update' pk=graphgrant.pk %}"
                         hx-trigger="click"
-                        hx-target="#graphgrant-form"
-                        hx-select="#graphgrant-form"
+                        hx-target="#id_expiry_date"
+                        hx-select="#id_expiry_date"
                         hx-swap="outerHTML"
                         hx-indicator="div.spinner">{% trans "fetch expiry date"|capfirst %}</button>
               </div>
