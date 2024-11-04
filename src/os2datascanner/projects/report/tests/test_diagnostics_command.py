@@ -601,14 +601,28 @@ class TestDiagnosticsReportCommand:
         ('ALLOW_CONTACT_MAGENTA', False),
         ('ARCHIVE_TAB', True),
         ('ARCHIVE_TAB', False),
+        ('DPO_CSV_EXPORT', True),
+        ('DPO_CSV_EXPORT', False),
+        ('LEADER_CSV_EXPORT', True),
+        ('LEADER_CSV_EXPORT', False),
+        ('ALLOW_SHOW_ERRORS', True),
+        ('ALLOW_SHOW_ERRORS', False),
+        # msgraph
         ('MSGRAPH_ALLOW_WRITE', True),
         ('MSGRAPH_ALLOW_WRITE', False),
+        # smb
+        ('SMB_ALLOW_WRITE', True),
+        ('SMB_ALLOW_WRITE', False),
+        # logging
         ('LOG_LEVEL', 'DEBUG'),
         ('LOG_LEVEL', 'INFO'),
         ('LOG_LEVEL', 'WARNING'),
         ('LOG_LEVEL', 'ERROR'),
         ('LOG_LEVEL', 'CRITICAL'),
         ('LOG_LEVEL', 'OFF'),
+        # other
+        ('NOTIFICATION_INSTITUTION', 'olsenbanden'),
+        ('NOTIFICATION_INSTITUTION', ''),
     ])
     def test_settings_overview(self, capfd, setting, value):
         setattr(settings, setting, value)

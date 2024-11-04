@@ -33,6 +33,8 @@
 - Using the rulebuilder a user can no longer create a compound rule with less than 2 components.
   Not-rules and email-header-rules without a subrule are also prohibited now.
 
+- Show a few more settings when running the diagnostics command.
+
 ### Bugfixes
 
 - The administration system's checkup collector process can now correctly

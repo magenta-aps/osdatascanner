@@ -375,7 +375,11 @@ class TestDiagnosticsCommand:
         ('MINISCAN_REQUIRES_LOGIN', False),
         ('MINISCAN_FILE_SIZE_LIMIT', 12345),
         ('MINISCAN_FILE_SIZE_LIMIT', 0),
-        ('MINISCAN_FILE_SIZE_LIMIT', 1048576)
+        ('MINISCAN_FILE_SIZE_LIMIT', 1048576),
+        ('NOTIFICATION_INSTITUTION', 'olsenbanden'),
+        ('NOTIFICATION_INSTITUTION', ''),
+        ('PREPNPUB_IMMEDIATE_CONSTRAINTS', True),
+        ('PREPNPUB_IMMEDIATE_CONSTRAINTS', False)
     ])
     def test_settings_overview(self, capfd, setting, value, temp_settings):
         setattr(temp_settings, setting, value)
