@@ -252,7 +252,9 @@ class SMBCSource(Source):
                         yield from handle_fileinfo(here, fileinfo, owner_sid)
                 except (ValueError, *IGNORABLE_SMBC_EXCEPTIONS):
                     pass
-            elif attrs == smbc.Attribute.NORMAL:
+            else:
+                # We assume anything not tagged as a directory is (scannable as
+                # if it were) a normal file
                 yield handle_here
 
         try:
