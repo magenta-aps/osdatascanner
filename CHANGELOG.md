@@ -14,6 +14,8 @@
 - Changed the title of the "Matches"-column in the scanner job table in the
   report module to "Results".
 
+- The file scanner no longer ignores files with unexpected attributes set.
+
 ## Version 3.25.2, 31th October 2024
 
 "What's the Status Again?"

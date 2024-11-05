@@ -137,9 +137,34 @@ class SMBCSource(Source):
             skip_super_hidden=self._skip_super_hidden,
             unc_is_home_root=self._unc_is_home_root)
 
+    def get_attrs(
+            self, context: smbc.Context,
+            fi: smbc.FileInfo, url: str) -> smbc.Attribute:
+        """Returns the (possibly overridden) Windows filesystem attributes of
+        the file identified by the given URL and FileInfo."""
+        logger.debug(
+                "SMBCSource.get_attrs",
+                url=url, attr=fi.attrs)
+
+        attr = fi.attrs
+
+        if self.allow_fake_attr:
+            if raw_attr := _trivial_read(context, url + ".attr-override"):
+                # Load this file's SMB attributes from the override file next
+                # to it
+                override_attr = _parse_int_flag_expr(
+                        smbc.Attribute, raw_attr.decode())
+
+                logger.info(
+                        "SMBCSource.get_attrs overriding attributes",
+                        url=url, original=attr, override=override_attr)
+                return override_attr
+
+        return attr
+
     @classmethod
     def is_skippable(  # noqa CCR001
-            cls, context: smbc.Context, fi: smbc.FileInfo, url: str):
+            cls, name: str, attr: smbc.Attribute) -> bool:
         """Evaluates whether or not the given file is skippable: i.e., whether
         its attributes and other properties indicate that we should ignore it.
 
@@ -147,19 +172,7 @@ class SMBCSource(Source):
         a skippable file is not implemented here.)"""
         logger.debug(
                 "SMBCSource.is_skippable",
-                url=url, attr=fi.attrs)
-
-        name = fi.name
-        attr = fi.attrs
-        if cls.allow_fake_attr:
-            if raw_attr := _trivial_read(context, url + ".attr-override"):
-                # Load this file's SMB attributes from the override file next
-                # to it
-                attr = _parse_int_flag_expr(smbc.Attribute, raw_attr.decode())
-
-                logger.info(
-                        "SMBCSource.is_skippable overriding attributes",
-                        url=url, attr=attr)
+                name=name, attr=attr)
 
         if attr is not None:
             # If the smbc.Attribute.NORMAL bit is set *along with* other bits...
@@ -169,13 +182,9 @@ class SMBCSource(Source):
                     # set...
                     or attr & ~smbc.AttributeMask):
                 # ... then something has gone very badly wrong
-                logger.warning(
-                        "incoherent attributes detected",
-                        url=url, attr=attr)
+                logger.warning("incoherent attributes detected")
                 if name.startswith("~"):
-                    logger.info(
-                            "skipping perhaps-hidden object",
-                            url=url, attr=attr)
+                    logger.info("skipping perhaps-hidden object")
                     return True
 
             # If this object is super-hidden -- that is, if it has the hidden
@@ -184,15 +193,13 @@ class SMBCSource(Source):
             if (attr & smbc.Attribute.HIDDEN
                     and (attr & smbc.Attribute.SYSTEM
                          or name.startswith("~"))):
-                logger.info(
-                        "skipping super-hidden object",
-                        url=url, attr=attr)
+                logger.info("skipping super-hidden object")
                 return True
 
         # Special-case the ~snapshot folder, which we should never scan
         # (XXX: revisit this once we know the Samba bug is fixed)
         if name == "~snapshot":
-            logger.info("skipping snapshot directory", url=url)
+            logger.info("skipping snapshot directory")
             return True
 
         return False
@@ -219,8 +226,8 @@ class SMBCSource(Source):
             path = '/'.join([h.name for h in here])
             url_here = url + "/" + path
 
-            if (self._skip_super_hidden
-                    and SMBCSource.is_skippable(context, fi, url_here)):
+            attrs = self.get_attrs(context, fi, url_here)
+            if self._skip_super_hidden and self.is_skippable(fi.name, attrs):
                 return
 
             hints = {}
@@ -228,7 +235,7 @@ class SMBCSource(Source):
                 hints["owner_sid"] = owner_sid
 
             handle_here = SMBCHandle(self, path, hints=hints)
-            if fi.attrs & smbc.Attribute.DIRECTORY:
+            if attrs & smbc.Attribute.DIRECTORY:
                 try:
                     try:
                         obj = context.opendir(url_here)
@@ -245,7 +252,9 @@ class SMBCSource(Source):
                         yield from handle_fileinfo(here, fileinfo, owner_sid)
                 except (ValueError, *IGNORABLE_SMBC_EXCEPTIONS):
                     pass
-            elif fi.attrs == smbc.Attribute.NORMAL:
+            else:
+                # We assume anything not tagged as a directory is (scannable as
+                # if it were) a normal file
                 yield handle_here
 
         try:
