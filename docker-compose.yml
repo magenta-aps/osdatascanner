@@ -169,6 +169,7 @@ services:
       - ./dev-environment/admin/.secret:/code/.secret
       - ./src/os2datascanner:/code/src/os2datascanner
       - ./dev-environment/uploads:/code/uploads
+      - ./dev-environment/admin/ipython:/home/os2ds_admin/.ipython
     ports:
       - "8020:5000"
     extra_hosts:
@@ -310,6 +311,7 @@ services:
       # used for assertion signage see dev-environment/report/dev-settings.toml
       #- ./ssl/signing.crt:/etc/ssl/certs/signing.crt:ro
       #- ./ssl/signing.key:/etc/ssl/certs/signing.key:ro
+      - ./dev-environment/report/ipython:/home/os2ds_report/.ipython
     ports:
       - "8040:5000"
     extra_hosts:

@@ -66,10 +66,18 @@ permissions recursively down through the file structure from the location
 The above is necessary whenever a process needs write permissions, but should
 always be done for the following locations:
 
-- `code/src/os2datascanner/projects/<module>/locale/`
-- `code/src/os2datascanner/projects/<module>/<module>app/migrations/`
+- `code/src/os2datascanner/projects/admin/locale/`
+- `code/src/os2datascanner/projects/admin/adminapp/migrations/`
+- `code/src/os2datascanner/projects/report/locale/`
+- `code/src/os2datascanner/projects/report/reportapp/migrations/`
 
-`<module>` being either `admin` or `report`.
+If you want the `django-admin shell_plus` commands to record command-line
+history (which you probably do in the development environment), you should also
+run `chmod -R o+w` for the following locations:
+
+- `dev-environment/admin/ipython/`
+- `dev-environment/report/ipython/`
+
 
 **NB!** Git will only save executable permissions, which means that granting
 other users write permissions on your local setup, will not compromise

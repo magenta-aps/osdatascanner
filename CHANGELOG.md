@@ -14,6 +14,14 @@
 - Refactor login and user page templates in report module to extend base 
   templates.
 
+- Command-line history is now available in the development environment
+  when using Django's `shell_plus` command in the `admin` and `report`
+  containers.
+
+  (This change requires that you manually adjustment the permissions of
+  certain folders -- see the development environment's documentation for
+  details.)
+
 ### Bugfixes
 
 - Background on login and logout page is now blue once again.
