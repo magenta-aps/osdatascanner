@@ -7,6 +7,13 @@
 - To mitigate against resource exhaustion attacks, the scanner engine now
   enforces a (configurable) maximum recursion depth when exploring files.
 
+- Show a few more settings when running the diagnostics command.
+
+### Bugfixes
+
+- Changed the title of the "Matches"-column in the scanner job table in the
+  report module to "Results".
+
 ## Version 3.25.2, 31th October 2024
 
 "What's the Status Again?"
@@ -32,8 +39,6 @@
 
 - Using the rulebuilder a user can no longer create a compound rule with less than 2 components.
   Not-rules and email-header-rules without a subrule are also prohibited now.
-
-- Show a few more settings when running the diagnostics command.
 
 ### Bugfixes
 
