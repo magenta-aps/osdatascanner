@@ -176,7 +176,7 @@ class WebSource(Source):
         # details from netloc
         return self
 
-    def handles(self, sm):  # noqa: CCR001
+    def handles(self, sm):
         session = sm.open(self)
         wc = crawler.WebCrawler(
                 self._url, session=session, ttl=TTL,
@@ -193,6 +193,9 @@ class WebSource(Source):
             if not self._always_crawl:
                 wc.freeze()
 
+        yield from self._get_handles_from_webcrawler(wc)
+
+    def _get_handles_from_webcrawler(self, wc):
         for hints, url in wc.visit():
             referrer = hints.get("referrer")
             r = WebHandle.make_handle(
