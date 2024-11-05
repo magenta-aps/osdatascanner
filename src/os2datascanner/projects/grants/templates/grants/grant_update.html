@@ -51,4 +51,16 @@
 
   </form>
 
+  <div>
+    <h1>{% trans "How do I get a new client secret?" %}</h1>
+    <span>
+      {% blocktranslate %}
+          	You'll have to navigate to your Azure Portal and find the application created for OSdatascanner.
+            It's likely you've followed instructions from our documentation, in that case,
+            once you've found your created application, you can follow step 7 and 8
+      {% endblocktranslate %}
+    </span>
+    <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "here" %}</a>
+  </div>
+
 {% endblock %}
