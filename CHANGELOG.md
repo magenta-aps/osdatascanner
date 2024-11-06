@@ -1,6 +1,8 @@
 # Changelog
 
-## Next Release
+## Version 3.25.3, 6th November 2024
+
+"Remember, remember, the 5th of November ... wait ... close enough"
 
 ### General improvements
 
