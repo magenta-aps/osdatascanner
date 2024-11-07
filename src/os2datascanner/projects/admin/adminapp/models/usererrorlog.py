@@ -23,6 +23,8 @@ class UserErrorLog(models.Model):
         verbose_name = _('error log')
         verbose_name_plural = _('error logs')
 
+        permissions = [("can_remove_usererrorlog", _("Can remove error log"))]
+
     scan_status = models.ForeignKey(
         ScanStatus,
         on_delete=models.CASCADE,

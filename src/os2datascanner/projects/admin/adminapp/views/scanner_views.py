@@ -16,9 +16,9 @@ from json import dumps
 from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
-from django.conf import settings
+from django.http import Http404, HttpResponseForbidden
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -254,8 +254,9 @@ class StatusDelete(RestrictedDeleteView):
         return super().form_valid()
 
 
-class UserErrorLogView(RestrictedListView):
+class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
     """Displays list of errors encountered."""
+    permission_required = 'os2datascanner.view_usererrorlog'
     template_name = 'error_log.html'
     model = UserErrorLog
     paginate_by = 10
@@ -320,12 +321,6 @@ class UserErrorLogView(RestrictedListView):
         # as url param paginate_by=xx
         return self.request.GET.get('paginate_by', self.paginate_by)
 
-    def dispatch(self, request, *args, **kwargs):
-        if settings.USERERRORLOG:
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise Http404()
-
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"
         htmx_trigger = self.request.headers.get('HX-Trigger-Name')
@@ -333,6 +328,11 @@ class UserErrorLogView(RestrictedListView):
         self.object_list = self.get_queryset()
 
         if is_htmx:
+            # Only allow removal of errors if the user has the correct permissions
+            if htmx_trigger in ("remove_errorlog", "remove_selected", "remove_all") \
+                    and not self.request.user.has_perm('os2datascanner.can_remove_usererrorlog'):
+                return HttpResponseForbidden()
+
             if htmx_trigger == "remove_errorlog":
                 delete_pk = self.request.POST.get('pk')
                 self.object_list.filter(pk=delete_pk).update(is_removed=True, is_new=False)

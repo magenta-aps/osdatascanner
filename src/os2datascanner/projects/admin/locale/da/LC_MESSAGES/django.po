@@ -546,7 +546,7 @@ msgstr ""
 "Et objekt blev sprunget over enten fordi det ikke kunne åbnes eller at det "
 "tog for lang tid at skanne."
 
-#: adminapp/models/usererrorlog.py:23 adminapp/templates/error_log.html:243
+#: adminapp/models/usererrorlog.py:23 adminapp/templates/error_log.html:248
 msgid "error log"
 msgstr "fejlbesked"
 
@@ -554,29 +554,33 @@ msgstr "fejlbesked"
 msgid "error logs"
 msgstr "fejlbeskeder"
 
-#: adminapp/models/usererrorlog.py:33 adminapp/templates/error_log.html:173
-#: adminapp/views/scanner_views.py:358
+#: adminapp/models/usererrorlog.py:26
+msgid "Can remove error log"
+msgstr "Kan fjerne fejlbesked"
+
+#: adminapp/models/usererrorlog.py:35 adminapp/templates/error_log.html:177
+#: adminapp/views/scanner_views.py:366
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:360
+#: adminapp/models/usererrorlog.py:40 adminapp/views/scanner_views.py:368
 msgid "Error message"
 msgstr "Fejlbesked"
 
-#: adminapp/models/usererrorlog.py:57
+#: adminapp/models/usererrorlog.py:59
 msgid "Is new"
 msgstr "Er ny"
 
-#: adminapp/models/usererrorlog.py:61
+#: adminapp/models/usererrorlog.py:63
 msgid "Is removed"
 msgstr "Er fjernet"
 
-#: adminapp/models/usererrorlog.py:71
+#: adminapp/models/usererrorlog.py:73
 #, python-brace-format
 msgid "Could not open a connection to {0}"
 msgstr "Kunne ikke åbne en forbindelse til {0}"
 
-#: adminapp/models/usererrorlog.py:77
+#: adminapp/models/usererrorlog.py:79
 msgid "User friendly error message"
 msgstr "Brugervenlig fejlbesked"
 
@@ -1003,7 +1007,7 @@ msgstr "Udførte scanninger"
 
 #: adminapp/templates/components/navigation/scanner_tabs.html:62
 #: adminapp/templates/error_log.html:25 adminapp/templates/error_log.html:64
-#: adminapp/templates/error_log.html:98 adminapp/templates/error_log.html:99
+#: adminapp/templates/error_log.html:101 adminapp/templates/error_log.html:102
 msgid "Error Log"
 msgstr "Fejlbeskeder"
 
@@ -1166,7 +1170,7 @@ msgstr "Gem ændringer"
 #: adminapp/templates/components/scanner/scan_completed.html:167
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
-#: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:98
+#: adminapp/templates/error_log.html:248 adminapp/templates/rules.html:98
 #: adminapp/templates/rules.html:99
 #: organizations/templates/organizations/org_table.html:222
 #: organizations/templates/organizations/org_table.html:223
@@ -1832,12 +1836,12 @@ msgstr "Søg efter fejlbesked"
 msgid "Show seen error messages"
 msgstr "Vis sete fejlbeskeder"
 
-#: adminapp/templates/error_log.html:84 adminapp/templates/error_log.html:85
-#: adminapp/templates/error_log.html:92
+#: adminapp/templates/error_log.html:86 adminapp/templates/error_log.html:87
+#: adminapp/templates/error_log.html:94
 msgid "Mark all as seen"
 msgstr "Markér alle som set"
 
-#: adminapp/templates/error_log.html:91
+#: adminapp/templates/error_log.html:93
 msgid ""
 "You are about to mark all error log messages as seen. This action cannot be "
 "reverted. Are you sure?"
@@ -1845,62 +1849,67 @@ msgstr ""
 "Du er ved at markere alle fejlbeskeder som set. Denne handling kan ikke "
 "fortrydes. Er du sikker?"
 
-#: adminapp/templates/error_log.html:98 adminapp/templates/error_log.html:99
-#: adminapp/templates/error_log.html:107
+#: adminapp/templates/error_log.html:101 adminapp/templates/error_log.html:102
+#: adminapp/templates/error_log.html:110
 msgid "Remove all"
 msgstr "Slet alle"
 
-#: adminapp/templates/error_log.html:105
+#: adminapp/templates/error_log.html:108
 msgid "You are about to remove"
 msgstr "Du er ved at slette"
 
-#: adminapp/templates/error_log.html:105
+#: adminapp/templates/error_log.html:108
 msgid " error logs. This action cannot be reverted. Are you sure?"
 msgstr " fejlbeskeder. Denne handling kan ikke fortrydes. Er du sikker?"
 
-#: adminapp/templates/error_log.html:131
+#: adminapp/templates/error_log.html:115 adminapp/templates/error_log.html:116
+#: adminapp/templates/error_log.html:118
+msgid "Export to CSV"
+msgstr "Eksportér til CSV"
+
+#: adminapp/templates/error_log.html:135
 msgid "Error"
 msgstr "Fejl"
 
-#: adminapp/templates/error_log.html:136 adminapp/templates/error_log.html:137
-#: adminapp/templates/error_log.html:156 adminapp/templates/error_log.html:157
-#: adminapp/templates/error_log.html:178 adminapp/templates/error_log.html:179
+#: adminapp/templates/error_log.html:140 adminapp/templates/error_log.html:141
+#: adminapp/templates/error_log.html:160 adminapp/templates/error_log.html:161
+#: adminapp/templates/error_log.html:182 adminapp/templates/error_log.html:183
 msgid "Sort table by"
 msgstr "Sortér tabel efter"
 
-#: adminapp/templates/error_log.html:136 adminapp/templates/error_log.html:137
+#: adminapp/templates/error_log.html:140 adminapp/templates/error_log.html:141
 msgid "error type"
 msgstr "fejltype"
 
-#: adminapp/templates/error_log.html:156 adminapp/templates/error_log.html:157
+#: adminapp/templates/error_log.html:160 adminapp/templates/error_log.html:161
 msgid "start time"
 msgstr "startet"
 
-#: adminapp/templates/error_log.html:178 adminapp/templates/error_log.html:179
+#: adminapp/templates/error_log.html:182 adminapp/templates/error_log.html:183
 msgid "path name"
 msgstr "sti navn"
 
-#: adminapp/templates/error_log.html:194
+#: adminapp/templates/error_log.html:198
 msgid "Scan"
 msgstr "Scan"
 
-#: adminapp/templates/error_log.html:212 adminapp/templates/error_log.html:213
+#: adminapp/templates/error_log.html:216 adminapp/templates/error_log.html:217
 msgid "Select results"
 msgstr "Vælg resultater"
 
-#: adminapp/templates/error_log.html:220
+#: adminapp/templates/error_log.html:224
 msgid "New"
 msgstr "Ny"
 
-#: adminapp/templates/error_log.html:242
+#: adminapp/templates/error_log.html:247
 msgid "Delete permanently"
 msgstr "Slet permanent"
 
-#: adminapp/templates/error_log.html:256 adminapp/templates/error_log.html:257
+#: adminapp/templates/error_log.html:262 adminapp/templates/error_log.html:263
 msgid "Mark as seen"
 msgstr "Markér som set"
 
-#: adminapp/templates/error_log.html:269
+#: adminapp/templates/error_log.html:275
 msgid "no errors found."
 msgstr "ingen fejl fundet."
 
