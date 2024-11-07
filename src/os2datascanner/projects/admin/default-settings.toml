@@ -22,6 +22,7 @@ PUSHGATEWAY_HOST = ""
 # [mode]
 DEBUG = false
 PRODUCTION = false
+KEYCLOAK_ENABLED = false
 
 # [functionality]
 EXCLUSION_RULES = false
@@ -47,6 +48,9 @@ REPORT_URL = "*"
 KEYCLOAK_BASE_URL = ""
 KEYCLOAK_ADMIN_CLIENT = "os2datascanner_admin"
 KEYCLOAK_ADMIN_SECRET = ""
+# It's important that this corresponds to the same value in the report module!
+OIDC_RP_CLIENT_ID = "OSdatascanner Report"
+OIDC_CREATE_USER = false
 
 # [msgraph]
 # The GUID of the registered Azure application corresponding to this

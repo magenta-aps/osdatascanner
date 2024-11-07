@@ -48,8 +48,11 @@ SESSION_COOKIE_NAME = "sessionid"
 CSRF_TRUSTED_ORIGINS = []
 
 # Client info from keycloak
-OIDC_RP_CLIENT_ID = ""
+OIDC_RP_CLIENT_ID = "OSdatascanner Report"
 OIDC_RP_CLIENT_SECRET = ""
+# user creation
+# Say no to automatic user creation by default; we tend to use import jobs.
+OIDC_CREATE_USER = false
 # endpoints
 OIDC_OP_AUTHORIZATION_ENDPOINT = ""
 OIDC_OP_TOKEN_ENDPOINT = ""

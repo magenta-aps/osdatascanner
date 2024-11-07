@@ -26,4 +26,7 @@ urlpatterns = [
          views.AliasCreateView.as_view(), name='create-alias'),
     path('<slug:org_slug>/accounts/<uuid:acc_uuid>/alias/<uuid:pk>/delete',
          views.AliasDeleteView.as_view(), name='delete-alias'),
+    path('<uuid:org_id>/sso/add/', views.SSOCreateView.as_view(), name='add-sso'),
+    path('<uuid:org_id>/sso/edit/', views.SSOUpdateView.as_view(), name='edit-sso'),
+    path('sso/error', views.SSOErrorView.as_view(), name='sso-error'),
 ]

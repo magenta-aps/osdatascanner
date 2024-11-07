@@ -24,6 +24,7 @@ nav:
     - Installation: installation.md
     - Docker: docker.md
     - Configuration: configuration.md
+    - Single SignOn: single-sign-on.md
     - Requirements: requirements.md
     - Release procedure: release-procedure.md
     - Microsoft Azure: azure/azure-setup-guide.md

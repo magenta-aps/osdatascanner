@@ -171,6 +171,11 @@ services:
       - ./dev-environment/uploads:/code/uploads
     ports:
       - "8020:5000"
+    extra_hosts:
+      # Adds an entry to container's /etc/hosts, allowing it to use localhost-urls.
+      # Needed to be able to communicate with keycloak through 'localhost' URL and be able to
+      #  test Azure SSO.
+      - "localhost:host-gateway"
     depends_on: &admin_dependencies
       admin_migrate:
         condition: service_completed_successfully
@@ -307,6 +312,11 @@ services:
       #- ./ssl/signing.key:/etc/ssl/certs/signing.key:ro
     ports:
       - "8040:5000"
+    extra_hosts:
+      # Adds an entry to container's /etc/hosts, allowing it to use localhost-urls.
+      # Needed to be able to communicate with keycloak through 'localhost' URL and be able to
+      #  test Azure SSO.
+      - "localhost:host-gateway"
     depends_on: &report_dependencies
       report_migrate:
         condition: service_completed_successfully
@@ -516,18 +526,24 @@ services:
   idp:
     image: magentaaps/simplesamlphp:master
     environment:
-      - SIMPLESAMLPHP_BASEURLPATH=http://localhost:8080/simplesaml/
-      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8040/saml2_auth/acs/
-      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8040/saml2_auth/acs/
-      # Replace the three env variables above with these below, if you wish to test Keycloak.
-      # Be aware they require an osdatascammer realm etc.
-#      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner
-#      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/broker/saml/endpoint
-#      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localkeycloak.os2datascanner:8090/auth/realms/osdatascanner/broker/saml/endpoint
+    # TODO: Remove simple saml
+#      - SIMPLESAMLPHP_BASEURLPATH=http://localhost:8080/simplesaml/
+#      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8040/saml2_auth/acs/
+#      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8040/saml2_auth/acs/
+
+      # Be aware these require an osdatascanner realm etc.
+      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8090/auth/realms/osdatascanner
+      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8090/auth/realms/osdatascanner/broker/SAML-SSO/endpoint
+      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localhost:8090/auth/realms/osdatascanner/broker/SAML-SSO/endpoint
     volumes:
       - ./dev-environment/authsources.php:/var/www/simplesamlphp/config/authsources.php
     ports:
       - "8080:8080"
+    extra_hosts:
+      # Adds an entry to container's /etc/hosts, allowing it to use localhost-urls.
+      # Needed to be able to communicate with keycloak through 'localhost' URL (it's annoying to
+      # change SP urls in the environment variables)
+      - "localhost:host-gateway"
     profiles:
       - sso
 
@@ -580,6 +596,10 @@ services:
       ]
     ports:
       - 8090:8090
+    extra_hosts:
+      # Adds an entry to container's /etc/hosts, allowing it to use localhost-urls.
+      # Useful for fetching metadata from our idp service, without having to type idp:8080 url.
+      - "localhost:host-gateway"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
