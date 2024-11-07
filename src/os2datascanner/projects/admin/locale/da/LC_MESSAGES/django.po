@@ -337,6 +337,10 @@ msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
+#: adminapp/models/scannerjobs/scanner.py:643
+msgid "Can validate scannerjobs"
+msgstr "Kan godkende scannerjob"
+
 #: adminapp/models/scannerjobs/scanner_helpers.py:35
 msgid "connected scanner job"
 msgstr "tilknyttet scannerjob"
