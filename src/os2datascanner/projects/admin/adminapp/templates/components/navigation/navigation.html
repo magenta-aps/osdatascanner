@@ -56,24 +56,22 @@
           <span class="width">{% trans "Report module" %}</span>
         </a>
       </li>
-      {% if user.is_superuser %}
-        {% if settings.ALLOW_ACCESS_ADMIN %}
-          <li>
-            <a href="{% url "admin:index" %}" target="_NEW">
-              {% include "components/svg-icons/admin_panel.svg" %}
-              <span class="width">{% trans "Administration" %}</span>
-            </a>
-          </li>
-        {% endif %}
-        {% if settings.MANUAL_PAGE %}
-          <li>
-            <a href="{% url "guide" %}"
-               class="{% if active_tab == 'guide' %}active{% endif %}">
-              {% include "components/svg-icons/help.svg" %}
-              <span class="width">{% trans "Guide" %}</span>
-            </a>
-          </li>
-        {% endif %}
+      {% if user.is_staff %}
+        <li>
+          <a href="{% url "admin:index" %}" target="_NEW">
+            {% include "components/svg-icons/admin_panel.svg" %}
+            <span class="width">{% trans "Administration" %}</span>
+          </a>
+        </li>
+      {% endif %}
+      {% if user.is_superuser and settings.MANUAL_PAGE %}
+        <li>
+          <a href="{% url "guide" %}"
+             class="{% if active_tab == 'guide' %}active{% endif %}">
+            {% include "components/svg-icons/help.svg" %}
+            <span class="width">{% trans "Guide" %}</span>
+          </a>
+        </li>
       {% endif %}
     {% endif %}
     {% if request.user.is_authenticated %}
