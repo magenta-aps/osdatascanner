@@ -39,7 +39,4 @@ urlpatterns = [
      path('os2mo-organization/import/<uuid:pk>',
           views.OS2moImportView.as_view(),
           name='import-os2mo'),
-     path('sso/add/<uuid:org_id>', views.SSOCreateView.as_view(), name='add-sso'),
-     path('sso/edit/<uuid:org_id>', views.SSOUpdateView.as_view(), name='edit-sso'),
-     path('sso/error', views.SSOErrorView.as_view(), name='sso-error'),
 ]

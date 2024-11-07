@@ -128,7 +128,7 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
-        if not (settings.KEYCLOAK_ENABLED or
+        if not (settings.KEYCLOAK_ENABLED and
                 Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
                 Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
                 Feature.IMPORT_SERVICES in org.client.enabled_features or
@@ -244,7 +244,7 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
-        if not (settings.KEYCLOAK_ENABLED or
+        if not (settings.KEYCLOAK_ENABLED and
                 Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
                 Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
                 Feature.IMPORT_SERVICES in org.client.enabled_features or

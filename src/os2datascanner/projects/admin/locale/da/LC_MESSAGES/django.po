@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-06 13:56+0100\n"
+"POT-Creation-Date: 2024-11-07 16:09+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -123,7 +123,7 @@ msgstr "intet planlagt checkup findes med id {id}"
 #: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:70
-#: import_services/models/realm.py:29
+#: import_services/models/realm.py:34
 msgid "organization"
 msgstr "organisation"
 
@@ -2998,23 +2998,155 @@ msgstr "OS2mo-konfiguration"
 msgid "OS2mo configurations"
 msgstr "OS2mo-konfigurationer"
 
-#: import_services/models/realm.py:24
+#: import_services/models/realm.py:29
 msgid "realm id"
 msgstr "realm id"
 
-#: import_services/models/realm.py:34
+#: import_services/models/realm.py:39
 msgid "Keycloak realm"
 msgstr "Keycloak realm"
 
-#: import_services/models/realm.py:35
+#: import_services/models/realm.py:40
 msgid "Keycloak realms"
 msgstr "Keycloak realms"
 
+#: import_services/models/realm.py:207
+msgid "metadata url"
+msgstr "metadata url"
+
+#: import_services/models/realm.py:208
+msgid "should be a reachable url providing federation metadata in xml format "
+msgstr "skal være en offentlig url, der udstiller federation metadata i xml format"
+
+#: import_services/models/realm.py:211
+msgid "service provider entity id"
+msgstr "service provider entity id"
+
+#: import_services/models/realm.py:212
+msgid "entity id of the service provider"
+msgstr "service providerens entity id"
+
+#: import_services/models/realm.py:215
+msgid "identity provider entity id"
+msgstr "identity provider entity id"
+
+#: import_services/models/realm.py:216
+msgid "entity id of the identity provider"
+msgstr "identity providerens entity id"
+
+#: import_services/models/realm.py:220
+msgid "Single Sign-On service url"
+msgstr "Single Sign-On service url"
+
+#: import_services/models/realm.py:222
+msgid ""
+"The url that must be used to send authentication requests (SAML "
+"AuthnRequest)."
+msgstr ""
+"url der skal benyttes ved autentificerings-forespørgsler (SAML AuthnRequest)"
+
+#: import_services/models/realm.py:228
+msgid "Single logout service url"
+msgstr "Single logout service url"
+
+#: import_services/models/realm.py:229
+msgid "The url that must be used to send logout requests."
+msgstr "Url der skal benyttes til logud forespørgsler"
+
+#: import_services/models/realm.py:242
+msgid "nameid policy format"
+msgstr "nameid policy format"
+
+#: import_services/models/realm.py:243
+msgid "Specifies the URI reference corresponding to a name identifier format."
+msgstr "Specificerer URI referencen til et name identifier format."
+
+#: import_services/models/realm.py:254
+msgid "principal type"
+msgstr "principal type"
+
+#: import_services/models/realm.py:255
+msgid ""
+"Way to identify and track external users from the assertion. Default is "
+"using Subject NameID, alternatively you can set up identifying attribute."
+msgstr ""
+"Hvordan brugere skal identificeres i assertionen. Standard værdien er Subject NameID, men "
+"alternativt kan du definere en anden identificerende attribut."
+
+#: import_services/models/realm.py:26
+msgid "principal attribute"
+msgstr "principal attribut"
+
+#: import_services/models/realm.py:264
+msgid ""
+"Name or Friendly Name of the attribute used to identify external users. Only "
+"relevant if principal type is set to an 'Attribute' option. "
+msgstr ""
+"Name eller Friendly Name på attributten der bruges som identifikator. Kun relevant, hvis "
+"principal type er sat til en af 'Attribut' indstillingerne. "
+
+#: import_services/models/realm.py:271
+msgid "HTTP-POST binding response"
+msgstr "HTTP-POST binding response"
+
+#: import_services/models/realm.py:272 import_services/models/realm.py:286
+msgid ""
+"Indicates whether to respond to requests using HTTP-POST binding. If off, "
+"HTTP-REDIRECT binding will be used."
+msgstr ""
+"Indikerer hvorvidt forespørgsler skal besvares med HTTP-POST binding. Hvis fra, "
+"anvendes HTTP-REDIRECT"
+
+#: import_services/models/realm.py:278
+msgid "HTTP-POST binding for AuthnRequest"
+msgstr "HTTP-POST binding for AuthnRequest"
+
+#: import_services/models/realm.py:279
+msgid ""
+"Indicates whether the AuthnRequest must be sent using HTTP-POST binding. If "
+"off, HTTP-REDIRECT binding will be used."
+msgstr ""
+"Indikerer hvorvidt AuthnRequest skal sendes med HTTP-POST binding. Hvis fra, "
+"benyttes HTTP-REDIRECT binding."
+
+#: import_services/models/realm.py:285
+msgid "HTTP-POST binding logout"
+msgstr "HTTP-POST binding logout"
+
+#: import_services/models/realm.py:293
+msgid "AuthnRequests signed"
+msgstr "AuthnRequests signerede"
+
+#: import_services/models/realm.py:294
+msgid "Indicates whether the identity provider expects a signed AuthnRequest."
+msgstr "Indikerer hvorvidt identity provideren forventer en signeret AuthnRequest"
+
+#: import_services/models/realm.py:298
+msgid "Assertions signed"
+msgstr "Signerede assertions"
+
+#: import_services/models/realm.py:299
+msgid "Indicates whether this service provider expects a signed Assertion."
+msgstr "Indikerer hvorvidt service provideren forventer signerede assertions."
+
+#: import_services/models/realm.py:306
+msgid "allowed clock skew"
+msgstr "tilladt tidsforskel"
+
+#: import_services/models/realm.py:307
+msgid ""
+"Clock skew in seconds that is tolerated when validating identity provider "
+"tokens. "
+msgstr ""
+"Tidsforskel, i sekunder, som er tolereret ved validering af identity provider tokens."
+
 #: import_services/templates/import_services/ldap_edit.html:28
+#: organizations/templates/sso/sso_edit.html:17
 msgid "add"
 msgstr "tilføj"
 
 #: import_services/templates/import_services/ldap_edit.html:30
+#: organizations/templates/sso/sso_edit.html:19
 msgid "update"
 msgstr "opdatér"
 
@@ -3433,7 +3565,19 @@ msgstr ""
 "Dette vil også slette import- og scannerjobs der tilhører organisationen. "
 "Handlingen kan ikke fortrydes."
 
-#: organizations/templates/organizations/org_table.html:247
+#: organizations/templates/organizations/org_table.html:238
+#: organizations/templates/organizations/org_table.html:239
+#, fuzzy
+#| msgid "Edit LDAP configuration"
+msgid "Edit Single SignOn configuration"
+msgstr "Redigér LDAP-konfiguration"
+
+#: organizations/templates/organizations/org_table.html:249
+#: organizations/templates/organizations/org_table.html:250
+msgid "Configure Single SignOn"
+msgstr ""
+
+#: organizations/templates/organizations/org_table.html:269
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
@@ -3523,6 +3667,53 @@ msgstr "Ingen organisatoriske enheder fundet ..."
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
+#: organizations/templates/sso/sso_edit.html:6
+#: organizations/templates/sso/sso_error.html:7
+msgid "Single SignOn (SSO) configuration"
+msgstr "Single SignOn (SSO) konfiguration"
+
+#: organizations/templates/sso/sso_edit.html:21
+msgid "Single SignOn (SSO) configuration for"
+msgstr "Single SignOn (SSO) konfiguration for"
+
+#: organizations/templates/sso/sso_edit.html:30
+msgid "identity provider setup"
+msgstr "identify provider opsætning"
+
+#: organizations/templates/sso/sso_edit.html:57
+msgid "Fetch metadata"
+msgstr "Hent metadata"
+
+#: organizations/templates/sso/sso_edit.html:109
+msgid "claim setup"
+msgstr "claim opsætning"
+
+#: organizations/templates/sso/sso_edit.html:123
+#: organizations/templates/sso/sso_edit.html:124
+#: organizations/templates/sso/sso_edit.html:12
+msgid "save SSO configuration"
+msgstr "gem SSO konfiguration"
+
+#: organizations/templates/sso/sso_error.html:11
+msgid "Oh! Might be too soon.."
+msgstr "Åh! Det var nok for tidligt.."
+
+#: organizations/templates/sso/sso_error.html:15
+msgid ""
+"It is unclear how to properly set up Single Sign-On with current "
+"configuration."
+msgstr ""
+"Det er uklart hvordan Single Sign-On skal sættes op, med "
+"nuværende konfiguration."
+
+#: organizations/templates/sso/sso_error.html:18
+msgid ""
+"You might be missing configuration in regard to importing organizational "
+"structure, allowing SSO initiated user creation or Keycloak enabling."
+msgstr ""
+"Du mangler muligvis konfigurationer relateret til organisatorisk struktur, "
+"tilladelse af SSO initieret brugeroprettelse eller at slå Keycloak til."
+
 #: organizations/tests/test_org_views.py:127
 #: organizations/views/org_views.py:67 organizations/views/org_views.py:114
 msgid "That name is already taken."
@@ -3543,6 +3734,14 @@ msgstr "Vælg ny leder"
 #: organizations/views/account_views.py:213
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
+
+#: organizations/views/keycloak_sso_views.py:112
+msgid "OSdatascanner user attribute"
+msgstr "OSdatascanner bruger attribut"
+
+#: organizations/views/keycloak_sso_views.py:116
+msgid "Claim attribute"
+msgstr "Claim attribut"
 
 #~ msgid "Support settings"
 #~ msgstr "Support indstillinger"
@@ -3713,9 +3912,6 @@ msgstr "Vælg ny DPO"
 
 #~ msgid "fraction explored"
 #~ msgstr "objekter udforsket"
-
-#~ msgid "fraction scanned"
-#~ msgstr "scannet"
 
 #~ msgid "Please make sure all fields are filled in correctly:"
 #~ msgstr "Følgende felter er ikke udfyldt korrekt:"
