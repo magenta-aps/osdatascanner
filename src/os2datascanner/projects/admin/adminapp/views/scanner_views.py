@@ -431,10 +431,10 @@ class ScannerBase(object):
         """Get the list of form fields.
 
         The 'validation_status' field will be added to the form if the
-        user is a superuser.
+        user has permission to validate scanners.
         """
         fields = super().get_form_fields()
-        if self.request.user.is_superuser:
+        if self.request.user.has_perm('os2datascanner.can_validate'):
             fields.append('validation_status')
 
         self.fields = fields

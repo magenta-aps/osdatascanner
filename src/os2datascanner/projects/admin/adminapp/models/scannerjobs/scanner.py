@@ -640,6 +640,8 @@ class Scanner(models.Model):
         abstract = False
         ordering = ['name']
 
+        permissions = [("can_validate", _("Can validate scannerjobs"))]
+
 
 @receiver(post_delete)
 def post_delete_callback(sender, instance, using, **kwargs):
