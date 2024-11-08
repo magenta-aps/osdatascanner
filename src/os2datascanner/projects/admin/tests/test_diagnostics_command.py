@@ -347,8 +347,6 @@ class TestDiagnosticsCommand:
         ('AUTOMATIC_IMPORT_CLEANUP', False),
         ('MANUAL_PAGE', True),
         ('MANUAL_PAGE', False),
-        ('USERERRORLOG', True),
-        ('USERERRORLOG', False),
         # Scanners
         ('ENABLE_FILESCAN', True),
         ('ENABLE_FILESCAN', False),

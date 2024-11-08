@@ -28,21 +28,20 @@ msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
 #: adminapp/admin.py:147
-msgid "An errorlog cannot both be new and removed"
-msgstr "En fejlbesked kan ikke både være ny og fjernet"
+msgid "An errorlog cannot both be new and resolved"
+msgstr "En fejlbesked kan ikke både være ny og løst"
 
 #: adminapp/admin.py:186
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
 #: adminapp/admin.py:190
-#, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
-"is_removed attribute set to True, it has not been changed."
+"is_resolved attribute set to True, it has not been changed."
 msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
-"har er_fjernet attributtet sat til True, så er den ikke blevet ændret"
+"har is_resolved attributtet sat til True, så er den ikke blevet ændret"
 
 #: adminapp/admin.py:195
 msgid "Change new-status to False"
@@ -555,8 +554,8 @@ msgid "error logs"
 msgstr "fejlbeskeder"
 
 #: adminapp/models/usererrorlog.py:26
-msgid "Can remove error log"
-msgstr "Kan fjerne fejlbesked"
+msgid "Can resolve error log"
+msgstr "Kan løse fejlbesked"
 
 #: adminapp/models/usererrorlog.py:35 adminapp/templates/error_log.html:177
 #: adminapp/views/scanner_views.py:366
@@ -572,8 +571,8 @@ msgid "Is new"
 msgstr "Er ny"
 
 #: adminapp/models/usererrorlog.py:63
-msgid "Is removed"
-msgstr "Er fjernet"
+msgid "Is resolved"
+msgstr "Er løst"
 
 #: adminapp/models/usererrorlog.py:73
 #, python-brace-format
@@ -1861,11 +1860,6 @@ msgstr "Du er ved at slette"
 #: adminapp/templates/error_log.html:108
 msgid " error logs. This action cannot be reverted. Are you sure?"
 msgstr " fejlbeskeder. Denne handling kan ikke fortrydes. Er du sikker?"
-
-#: adminapp/templates/error_log.html:115 adminapp/templates/error_log.html:116
-#: adminapp/templates/error_log.html:118
-msgid "Export to CSV"
-msgstr "Eksportér til CSV"
 
 #: adminapp/templates/error_log.html:135
 msgid "Error"

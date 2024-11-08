@@ -11,10 +11,6 @@ from ..models.scannerjobs.scanner_helpers import ScanStatus
 class TestExportUserErrorLog:
     url = reverse_lazy('export-error-log')
 
-    @pytest.fixture(autouse=True)
-    def enable_user_error_log(self, USERERRORLOG_True):
-        pass  # Need to override, it's False by default in pipeline
-
     @pytest.fixture
     def error_logs(self, test_org, basic_scanstatus):
 
@@ -39,6 +35,9 @@ class TestExportUserErrorLog:
         """Admins for an organization should be able to export the usererrorlogs
         from their own organization."""
 
+        # Grant permission for viewing usererrorlog list
+        user_admin.user_permissions.add(Permission.objects.get(codename='view_usererrorlog'))
+
         UserErrorLog.objects.create(
             scan_status=basic_scanstatus2,
             organization=test_org2,
@@ -55,6 +54,9 @@ class TestExportUserErrorLog:
     def test_csv_export_usererrorlog_unprivileged_user(self, error_logs, user, client):
         """A user unrelated to an organization should only get header values."""
 
+        # Grant permission for viewing usererrorlog list
+        user.user_permissions.add(Permission.objects.get(codename='view_usererrorlog'))
+
         client.force_login(user)
         response = client.get(self.url)
         streamed_rows = [row for row in response.streaming_content]
@@ -66,6 +68,13 @@ class TestExportUserErrorLog:
         """An anonymous user should be redirected."""
         response = client.get(self.url)
         assert response.status_code == 302
+
+    def test_csv_export_user_without_permission(self, client, user_admin):
+        """A user without permission to view usererrorlogs should get a 403
+        status code."""
+        client.force_login(user_admin)
+        response = client.get(self.url)
+        assert response.status_code == 403
 
 
 @pytest.mark.django_db

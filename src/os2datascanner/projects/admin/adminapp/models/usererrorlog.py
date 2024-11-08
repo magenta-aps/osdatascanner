@@ -23,7 +23,7 @@ class UserErrorLog(models.Model):
         verbose_name = _('error log')
         verbose_name_plural = _('error logs')
 
-        permissions = [("can_resolve_usererrorlog", _("Can resolve error log"))]
+        permissions = [("resolve_usererrorlog", _("Can resolve error log"))]
 
     scan_status = models.ForeignKey(
         ScanStatus,

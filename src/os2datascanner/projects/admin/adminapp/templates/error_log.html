@@ -75,7 +75,7 @@
               <thead>
                 <tr class="table-topbar topbar-stick sticky">
                   <th colspan="6">
-                    {% if perms.os2datascanner.can_remove_usererrorlog %}
+                    {% if perms.os2datascanner.resolve_usererrorlog %}
                       {% include "components/scanstatus/remove_error.html" %}
                     {% endif %}
                     <div class="view-options button-group">
@@ -94,7 +94,7 @@
                           <span>{% trans "Mark all as seen" %}</span>
                         </button>
                       {% endif %}
-                      {% if perms.os2datascanner.can_remove_usererrorlog %}
+                      {% if perms.os2datascanner.resolve_usererrorlog %}
                         <button type="button"
                                 class="button button--icon-text-button"
                                 name="remove_all"
@@ -233,7 +233,7 @@
                   <td class="datatable__column--automatic">{{ error_log.scan_status.scanner.name }}</td>
                   <td class="datatable__column--actions">
                     <div class="action-wrapper button-group">
-                      {% if perms.os2datascanner.can_remove_usererrorlog %}
+                      {% if perms.os2datascanner.resolve_usererrorlog %}
                         <button type="button"
                                 class="button button--icon-button"
                                 name="remove_errorlog"

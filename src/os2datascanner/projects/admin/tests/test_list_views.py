@@ -93,6 +93,9 @@ class TestListViews:
     def test_as_administrator_for_magenta_org(self, _, path, list_type, user_admin, populate_lists):
         qs = listview_get_queryset(user_admin, path, list_type)
         if isinstance(list_type, UserErrorLogView):
+            # This _would_ not be possible without the "view_usererrorlog"
+            # permission, but the "listview_get_queryset"-function never
+            # actually calls dispatch, where permissions are checked.
             assert qs.count() == 1
         elif isinstance(list_type, RuleList):
             assert qs.count() == 1

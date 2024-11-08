@@ -21,7 +21,6 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseForbidden
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from pika.exceptions import AMQPError
 import structlog
 
@@ -330,7 +329,7 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
         if is_htmx:
             # Only allow removal of errors if the user has the correct permissions
             if htmx_trigger in ("remove_errorlog", "remove_selected", "remove_all") \
-                    and not self.request.user.has_perm('os2datascanner.can_remove_usererrorlog'):
+                    and not self.request.user.has_perm('os2datascanner.resolve_usererrorlog'):
                 return HttpResponseForbidden()
 
             if htmx_trigger == "remove_errorlog":
