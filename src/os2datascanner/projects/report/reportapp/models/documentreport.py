@@ -141,7 +141,7 @@ class DocumentReport(models.Model):
     class ResolutionChoices(models.IntegerChoices):
         OTHER = 0, _("Other")
         EDITED = 1, _("Edited")
-        MOVED = 2, _("Deleted and journalized")
+        MOVED = 2, _("Journalized and deleted")
         REMOVED = 3, _("Deleted")
         FALSE_POSITIVE = 4, _("False positive")
 

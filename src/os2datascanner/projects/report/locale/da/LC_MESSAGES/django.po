@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-06 14:00+0100\n"
+"POT-Creation-Date: 2024-11-08 14:14+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -281,8 +281,8 @@ msgid "Edited"
 msgstr "Redigeret"
 
 #: reportapp/models/documentreport.py:144
-msgid "Deleted and journalized"
-msgstr "Slettet og journaliseret"
+msgid "Journalized and deleted"
+msgstr "Journaliseret og slettet"
 
 #: reportapp/models/documentreport.py:145
 msgid "Deleted"
@@ -1932,11 +1932,11 @@ msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/report_views.py:114
+#: reportapp/views/report_views.py:116
 msgid "No action required:"
 msgstr "Ingen handling påkrævet:"
 
-#: reportapp/views/report_views.py:116
+#: reportapp/views/report_views.py:118
 msgid ""
 "A temporary error occurred during the latest check of this result. "
 "OSdatascanner will automatically check this result again as part of the next "
@@ -1946,14 +1946,14 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:528 reportapp/views/report_views.py:553
-#: reportapp/views/report_views.py:573 reportapp/views/report_views.py:598
-#: reportapp/views/report_views.py:617
+#: reportapp/views/report_views.py:530 reportapp/views/report_views.py:555
+#: reportapp/views/report_views.py:575 reportapp/views/report_views.py:600
+#: reportapp/views/report_views.py:619
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:644
+#: reportapp/views/report_views.py:646
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"

@@ -106,7 +106,12 @@ class ReportView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["renderable_rules"] = RENDERABLE_RULES
-        context["resolution_choices"] = DocumentReport.ResolutionChoices.choices
+
+        # We do this at the request of a customer to change the structure of resolution choices.
+        resolution_choices_order = [3, 2, 4, 1, 0]
+        context["resolution_choices"] = [DocumentReport.ResolutionChoices.choices[i]
+                                         for i in resolution_choices_order]
+
         self.add_form_context(context)
 
         # create a dictionary with data for the popover_component showing error messages
