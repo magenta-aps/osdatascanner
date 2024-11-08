@@ -29,11 +29,11 @@ class OrganizationListView(RestrictedListView):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset(org_path="uuid")
-        if hasattr(user, 'administrator_for'):
+        if user.has_perm('core.view_client'):
+            queryset = Client.objects.all()
+        elif hasattr(user, 'administrator_for'):
             client_id = user.administrator_for.client_id
             queryset = Client.objects.filter(pk=client_id)
-        elif user.is_superuser:
-            queryset = Client.objects.all()
         return queryset.prefetch_related('organizations')
 
     def get_context_data(self, **kwargs):
@@ -74,7 +74,7 @@ class AddOrganizationView(RestrictedCreateView):
 
     def dispatch(self, request, *args, **kwargs):
         client_id = self.kwargs['client_id']
-        if request.user.is_superuser or \
+        if request.user.has_perm('core.view_client') or \
                 Administrator.objects.filter(user=request.user, client=client_id).exists():
             return super().dispatch(request, *args, **kwargs)
         else:
