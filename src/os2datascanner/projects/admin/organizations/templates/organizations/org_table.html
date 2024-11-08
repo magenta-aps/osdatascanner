@@ -213,7 +213,7 @@
                        class="button button--icon-button"
                        aria-label="{% trans 'View accounts.' %}"
                        title="{% trans 'View accounts.' %}">{% include "../components/svg-icons/people.svg" %}</a>
-                    {% if request.user.is_superuser %}
+                    {% if perms.organizations.delete_organization %}
                       {% if organization.scanners_running %}
                         <a href="#delete-org-blocked"
                            data-modal="modal:open"

@@ -123,9 +123,10 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
         return super().get_queryset(org_path="uuid")
 
 
-class DeleteOrganizationView(RestrictedDeleteView):
+class DeleteOrganizationView(PermissionRequiredMixin, RestrictedDeleteView):
     """Delete an organization view."""
     model = Organization
+    permission_required = 'organizations.delete_organization'
     success_url = '/organizations/'
 
     def post(self, request, *args, **kwargs):
