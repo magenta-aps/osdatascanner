@@ -12,17 +12,19 @@
   <div class="content-header">
     <div class="aside">
       <h1 class="page-title">{% trans 'organizations for'|capfirst %} {{ client }}</h1>
-      <div class="btn">
-        <a href="{% url 'add-organization-for' client_id=client.pk %}"
-           aria-label="{% trans 'Add new organization' %}"
-           title="{% trans 'Add new organization' %}"
-           class="button button--cta-button button--icon-text-button">
-          <svg class="icon button__plus-icon">
-            <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-          </svg>
-          <span>{% trans "Add new organization" %}</span>
-        </a>
-      </div>
+      {% if perms.organizations.add_organization %}
+        <div class="btn">
+          <a href="{% url 'add-organization-for' client_id=client.pk %}"
+             aria-label="{% trans 'Add new organization' %}"
+             title="{% trans 'Add new organization' %}"
+             class="button button--cta-button button--icon-text-button">
+            <svg class="icon button__plus-icon">
+              <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+            </svg>
+            <span>{% trans "Add new organization" %}</span>
+          </a>
+        </div>
+      {% endif %}
     </div>
   </div>
 

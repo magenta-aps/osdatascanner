@@ -1,5 +1,6 @@
 from typing import Any, Dict
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.adminapp.views.views import (
@@ -46,8 +47,9 @@ class OrganizationListView(RestrictedListView):
         return 'organizations/org_table.html' if is_htmx else "organizations/org_list.html"
 
 
-class AddOrganizationView(RestrictedCreateView):
+class AddOrganizationView(PermissionRequiredMixin, RestrictedCreateView):
     model = Organization
+    permission_required = 'organizations.add_organization'
     template_name = 'organizations/org_add.html'
     success_url = reverse_lazy('organization-list')
     fields = ['name', 'contact_email', 'contact_phone',
