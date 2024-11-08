@@ -12,7 +12,7 @@ dummy_rule_dict = {
 def create_errors(num, organization=None,
                   scan_status=None, path="pathypathy",
                   error_message="UnknownError: This is definitely an error",
-                  is_new=False, is_removed=False):
+                  is_new=False, is_resolved=False):
     UserErrorLog.objects.bulk_create([
         UserErrorLog(
             organization=organization if organization else Organization.objects.first(),
@@ -20,6 +20,6 @@ def create_errors(num, organization=None,
             path=path,
             error_message=error_message,
             is_new=is_new,
-            is_removed=is_removed
+            is_resolved=is_resolved
         ) for _ in range(num)
     ])

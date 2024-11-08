@@ -265,7 +265,7 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
 
     def get_queryset(self):
         """Order errors by most recent scan."""
-        qs = super().get_queryset().filter(is_removed=False)
+        qs = super().get_queryset().filter(is_resolved=False)
 
         qs = self.sort_queryset(qs)
 
@@ -335,12 +335,12 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
 
             if htmx_trigger == "remove_errorlog":
                 delete_pk = self.request.POST.get('pk')
-                self.object_list.filter(pk=delete_pk).update(is_removed=True, is_new=False)
+                self.object_list.filter(pk=delete_pk).update(is_resolved=True, is_new=False)
             elif htmx_trigger == "remove_selected":
                 self.object_list.filter(pk__in=self.request.POST.getlist(
-                    'table-checkbox')).update(is_removed=True, is_new=False)
+                    'table-checkbox')).update(is_resolved=True, is_new=False)
             elif htmx_trigger == "remove_all":
-                self.object_list.update(is_removed=True, is_new=False)
+                self.object_list.update(is_resolved=True, is_new=False)
             elif htmx_trigger == "see_errorlog":
                 seen_pk = self.request.POST.get('pk')
                 self.object_list.filter(pk=seen_pk).update(is_new=False)

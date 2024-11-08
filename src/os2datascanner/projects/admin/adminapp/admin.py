@@ -143,8 +143,8 @@ for _cls in (APIKey,):
 
 class UserErrorLogForm(forms.ModelForm):
     def clean(self):
-        if self.cleaned_data["is_new"] and self.cleaned_data["is_removed"]:
-            raise forms.ValidationError(_("An errorlog cannot both be new and removed"))
+        if self.cleaned_data["is_new"] and self.cleaned_data["is_resolved"]:
+            raise forms.ValidationError(_("An errorlog cannot both be new and resolved"))
 
         return self.cleaned_data
 
@@ -158,7 +158,7 @@ class UserErrorLogAdmin(admin.ModelAdmin):
         'path',
         'scan_status',
         'organization',
-        'is_removed',
+        'is_resolved',
         'is_new'
     )
     list_display_links = (
@@ -178,17 +178,17 @@ class UserErrorLogAdmin(admin.ModelAdmin):
         'scan_status',
         'organization',
         'is_new',
-        'is_removed'
+        'is_resolved'
     )
 
     actions = ('mark_new', 'mark_not_new', 'mark_removed', 'mark_not_removed',)
 
     @admin.action(description=_("Change new-status to True"))
     def mark_new(self, request, query_set):
-        query_set.filter(is_removed=False).update(is_new=True)
+        query_set.filter(is_resolved=False).update(is_new=True)
         messages.add_message(request, messages.INFO, _(
             "Changed {qs_count} elements new-status to True. "
-            "Note: if the element has its is_removed attribute set to True, "
+            "Note: if the element has its is_resolved attribute set to True, "
             "it has not been changed.")
                 .format(qs_count=query_set.count()))
 
@@ -201,14 +201,14 @@ class UserErrorLogAdmin(admin.ModelAdmin):
 
     @admin.action(description=_("Change removed-status to True"))
     def mark_removed(self, request, query_set):
-        query_set.update(is_removed=True, is_new=False)
+        query_set.update(is_resolved=True, is_new=False)
         messages.add_message(request, messages.INFO, _(
             "Changed {qs_count} elements removed-status to True")
                 .format(qs_count=query_set.count()))
 
     @admin.action(description=_("Change removed-status to False"))
     def mark_not_removed(self, request, query_set):
-        query_set.update(is_removed=False)
+        query_set.update(is_resolved=False)
         messages.add_message(request, messages.INFO, _(
             "Changed {qs_count} elements removed-status to False")
                 .format(qs_count=query_set.count()))
