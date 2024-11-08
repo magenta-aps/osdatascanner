@@ -83,8 +83,9 @@ class AddOrganizationView(PermissionRequiredMixin, RestrictedCreateView):
             raise PermissionDenied
 
 
-class UpdateOrganizationView(RestrictedUpdateView):
+class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
     model = Organization
+    permission_required = 'organizations.change_organization'
     template_name = 'organizations/org_update.html'
     success_url = reverse_lazy('organization-list')
     fields = ['name', 'contact_email', 'contact_phone',

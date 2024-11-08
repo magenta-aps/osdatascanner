@@ -56,7 +56,11 @@
             {% for organization in client.organizations.all %}
               <tr class="datatablex__row">
                 <td class="column column--name">
-                  <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
+                  {% if perms.organizations.change_organization %}
+                    <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
+                  {% else %}
+                    <span>{{ organization.name }}</span>
+                  {% endif %}
                 </td>
                 <td class="column column--info">
                   <div class="info__wrapper">
