@@ -169,7 +169,19 @@ ADRESSE = [
             "PostNummer": 1000,
             "HusNummer": 13,
         }
-    )
+    ),
+    _update_base_obj(
+        _ADRESSE_BASE,
+        {
+            "Adresse1": "Shaolin Temple",
+            "Adresse2": "Dengfeng Boulevard",
+            "Adresse3": "Zhengzhou",
+            "Adresse4": "Henan",
+            "Landekode": "CN",
+            "PostNummer": 471925,
+            "HusNummer": 1,
+        }
+    ),
 ]
 
 
@@ -273,6 +285,7 @@ BRUGER = [
             "LogonID": 1,
             "Navn": "Bruce Lee",
             "FagomraadeID": 1,
+            "AdresseID": 2,
             "AnsaettelsesstedID": 1,
             "Status": 1,
             "ObjectSid": "S-DIG",
