@@ -2,6 +2,7 @@ import pytest
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory
+from django.contrib.auth.models import Permission
 from unittest import skip
 
 from os2datascanner.engine2.model.data import unpack_data_url
@@ -41,6 +42,12 @@ class TestScanners:
         view = get_webscannerupdate_view(user)
         form_fields = view.get_form_fields()
         assert 'validation_status' not in str(form_fields)
+
+    def test_user_with_permission_can_validate_scannerjob(self, user):
+        user.user_permissions.add(Permission.objects.get(codename='can_validate'))
+        view = get_webscannerupdate_view(user)
+        form_fields = view.get_form_fields()
+        assert 'validation_status' in str(form_fields)
 
     def test_scanner_job_sitemap(self, web_scanner):
         # Arrange...
