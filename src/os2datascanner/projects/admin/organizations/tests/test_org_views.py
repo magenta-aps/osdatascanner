@@ -155,6 +155,10 @@ class TestAddOrganizationViews:
         """An administrator for a client should be able to create a new
         organization for that client."""
         client.force_login(user_admin)
+
+        # User needs correct permission to do this
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_organization"))
+
         num_org_pre = Organization.objects.count()
         url = reverse_lazy('add-organization-for',
                            kwargs={'client_id': test_client.uuid})
@@ -176,6 +180,21 @@ class TestAddOrganizationViews:
         assert new_org.contact_phone == "12341234"
         assert new_org.client == test_client
 
+    def test_administrator_create_organization_no_permission(self):
+        """Administrators should not be able to create an organization without
+        the "add_organization"-permission."""
+
+        Administrator.objects.create(user=self.user, client=self.mock_client)
+        url = reverse_lazy('add-organization-for',
+                           kwargs={'client_id': self.mock_client.uuid})
+        response = self.client.post(url, {
+            'name': 'New Org',
+            'contact_email': 'test@unique.mail',
+            'contact_phone': '12341234',
+        })
+
+        self.assertEqual(response.status_code, 403)
+
 
 @pytest.mark.django_db
 class TestUpdateOrganizationViews:
@@ -184,8 +203,12 @@ class TestUpdateOrganizationViews:
         """Users with no permissions should not be able to update any
         organizations."""
         client.force_login(user)
-        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
-        response = client.post(url, {
+
+        # User needs the correct permission to do this
+        user.user_permissions.add(Permission.objects.get(codename="change_organization"))
+
+        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
+        response = self.client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
@@ -200,6 +223,11 @@ class TestUpdateOrganizationViews:
         """An administrator should be able to edit an organization owned by
         the client, that the user is administrator for."""
         client.force_login(user_admin)
+
+        # User needs correct permission to do this
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_organization"))
+
+        Administrator.objects.create(user=self.user, client=self.mock_client)
         num_org_pre = Organization.objects.count()
         url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
         response = client.post(url, {
@@ -238,8 +266,14 @@ class TestUpdateOrganizationViews:
         """An administrator should not be able to edit an organization owned by
         another client, than the one the user is administrator for."""
         client.force_login(user_admin)
-        url = reverse_lazy('edit-organization', kwargs={'slug': other_org.slug})
-        response = client.post(url, {
+
+        # User needs correct permission to do this
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_organization"))
+
+        other_client = Client.objects.create(name='other client')
+        Administrator.objects.create(user=self.user, client=other_client)
+        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
+        response = self.client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
@@ -251,6 +285,32 @@ class TestUpdateOrganizationViews:
 
         assert response.status_code == expected_code
         assert other_org.name != "Updated Organization"
+
+    def test_administrator_updating_an_organization_no_permission(self, client, user_admin, test_org):
+        """An administrator should not be able to edit an organization if they
+        do not have the "change_organization"-permission."""
+        client.force_login(user_admin)
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url, {
+            'name': 'Updated Organization',
+            'contact_email': 'something@else.com',
+            'contact_phone': 'new phone, who dis?',
+            'leadertab_access': StatisticsPageConfigChoices.MANAGERS,
+            'dpotab_access': StatisticsPageConfigChoices.DPOS,
+            'show_support_button': False,
+            'support_contact_method': SupportContactChoices.NONE,
+            'support_name': 'IT',
+            'support_value': '',
+            'dpo_contact_method': DPOContactChoices.NONE,
+            'dpo_name': '',
+            'dpo_value': '',
+            'outlook_categorize_email_permission': OutlookCategorizeChoices.NONE,
+            'outlook_delete_email_permission': False,
+            'onedrive_delete_permission': False,
+            'synchronization_time': "17:00",
+        })
+
+        assert response.status_code == 403
 
     def test_superuser_updating_an_organization(self, client, superuser, test_org):
         """Superusers should be able to update all organizations."""
