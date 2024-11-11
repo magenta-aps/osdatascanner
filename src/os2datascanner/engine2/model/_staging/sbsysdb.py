@@ -100,9 +100,8 @@ def resolve_complex_column_name(
         fk, = link_column.foreign_keys
         other_table = fk.column.table
 
-        # ... then we join the Bruger table into our query...
-        expr = expr.join_from(here, other_table,
-                link_column == other_table.c.ID)
+        # ... then we (implicitly) join the Bruger table into our query...
+        expr = expr.where(link_column == other_table.c.ID)
         # ... and continue following the chain at Bruger, where we do the
         # same trick again for "Adresse" -> AdresseID -> <table Adresse>
         here = other_table
