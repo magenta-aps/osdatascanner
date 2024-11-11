@@ -64,7 +64,13 @@ class TestAccountView:
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_user_can_see_link_to_password_change(self, egon_account, rf):
         """Users should be able to see a link to password change."""
+        # User needs a password
+        user = egon_account.user
+        user.set_password('password')
+        user.save()
+
         view = self.get_userpage_object(rf, egon_account)
+
         url = '<a class="password-change" href="%s">Change</a>' % reverse('password_change')
         assert url in view.rendered_content
 
@@ -87,7 +93,7 @@ class TestAccountView:
     # Helper functions
 
     def get_userpage_object(self, rf, account):
-        request = rf.get('/account')
+        request = rf.get(reverse("account-me"))
         request.user = account.user
         response = AccountView.as_view()(request)
         return response

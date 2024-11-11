@@ -1,47 +1,45 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
-{% language 'da' %}
-  <html lang="da" class="{% block rendertype %}{% endblock rendertype %}">
- 
-    {% include "components/common/header.html" %}
+<html lang="da" class="{% block rendertype %}{% endblock rendertype %}">
 
-    {% include "components/common/banner.html" %}
+  {% include "components/common/header.html" %}
 
-    <body class="{% block body_class %}{% endblock body_class %} page">
+  {% include "components/common/banner.html" %}
 
-      <noscript>
-        {% blocktrans %}<strong>We're sorry but <em>OSDatascanner</em> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>{% endblocktrans %}
-      </noscript>
+  <body class="{% block body_class %}{% endblock body_class %} page">
 
-      {% include "components/common/page_load_indicator.html" %}
+    <noscript>
+      {% blocktrans %}<strong>We're sorry but <em>OSDatascanner</em> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>{% endblocktrans %}
+    </noscript>
 
-      {% block additional_styles %}
-      {% endblock additional_styles %}
+    {% include "components/common/page_load_indicator.html" %}
 
-      {% block body %}
-      {% endblock body %}
+    {% block additional_styles %}
+    {% endblock additional_styles %}
 
-      {% block footer %}
-        <footer class="subtle_footer">
-          {% trans "OSdatascanner version" %} {{ version }}
-        </footer>
-      {% endblock footer %}
+    {% block body %}
+    {% endblock body %}
 
-      {% block scripts %}
-        <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
-        <script src="{% static '3rdparty/clipboard.min.js' %} "></script>
-        <script src="{% static '3rdparty/htmx.min.js' %}"></script>
-        <script src="{% static 'js/index.js' %} "></script>
-        <script src="{% static 'js/tables/tableBehavior.js' %} "></script>
-        <script src="{% static 'js/reports/show-more.js' %} "></script>
-        <script src="{% static 'js/filters/options.js' %} "></script>
-        <script src="{% static 'js/reports/distributeElement.js' %}"></script>
-        <script src="{% static 'js/modals/snackBars.js' %}"></script>
-        <script src="{% static 'js/modals/popover.js' %}"></script>
-        <script src="{% url 'jsi18n' %}"></script>
-      {% endblock scripts %}
+    {% block scripts %}
+      <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+      <script src="{% static '3rdparty/clipboard.min.js' %} "></script>
+      <script src="{% static '3rdparty/htmx.min.js' %}"></script>
+      <script src="{% static 'js/index.js' %} "></script>
+      <script src="{% static 'js/tables/tableBehavior.js' %} "></script>
+      <script src="{% static 'js/reports/show-more.js' %} "></script>
+      <script src="{% static 'js/filters/options.js' %} "></script>
+      <script src="{% static 'js/reports/distributeElement.js' %}"></script>
+      <script src="{% static 'js/modals/snackBars.js' %}"></script>
+      <script src="{% static 'js/modals/popover.js' %}"></script>
+      <script src="{% url 'jsi18n' %}"></script>
+    {% endblock scripts %}
 
-    </body>
-  </html>
-{% endlanguage %}
+    {% block footer %}
+      <footer class="subtle_footer">
+        {% trans "OSdatascanner version" %} {{ version }}
+      </footer>
+    {% endblock footer %}
+
+  </body>
+</html>

@@ -9,7 +9,14 @@
 
 ### General improvements
 
-- Rearranged handle dropdown order to match customer preference 
+- Rearranged handle dropdown order to match customer preference.
+
+- Refactor login and user page templates in report module to extend base 
+  templates.
+
+### Bugfixes
+
+- Background on login and logout page is now blue once again.
 
 ## Version 3.25.3, 6th November 2024
 
