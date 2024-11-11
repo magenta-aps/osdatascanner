@@ -309,7 +309,7 @@ class TestDiagnosticsReportCommand:
         fp_match = re.search(r'Falsk positiv\s*\[\s*(\d+)\]', out)
         other_match = re.search(r'Andet\s*\[\s*(\d+)\]', out)
         edited_match = re.search(r'Redigeret\s*\[\s*(\d+)\]', out)
-        jour_match = re.search(r'Slettet og journaliseret\s*\[\s*(\d+)\]', out)
+        jour_match = re.search(r'Journaliseret og slettet\s*\[\s*(\d+)\]', out)
         del_match = re.search(r'Slettet\s*\[\s*(\d+)\]', out)
 
         assert fp_match.group(1) == "5"
