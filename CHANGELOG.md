@@ -27,6 +27,9 @@
   certain folders -- see the development environment's documentation for
   details.)
 
+- The "Administration" navigation link in the admin module is now hidden for
+  users without the "is_staff"-flag.
+
 ### Bugfixes
 
 - Background on login and logout page is now blue once again.
