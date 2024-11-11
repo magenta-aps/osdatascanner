@@ -12,6 +12,12 @@
   when searching for both an account first name and last name and username
   (or any other combination of two).
 
+- Introduces the use of django permissions in the admin module, instead of 
+  locking all functionality to the "is_superuser"-flag on users.
+
+  - To validate a scannerjob, users must now have the 
+    "can_validate"-permission.
+
 ### General improvements
 
 - Rearranged handle dropdown order to match customer preference.
