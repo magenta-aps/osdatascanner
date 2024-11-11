@@ -7,6 +7,10 @@
 - Single Sign-On for the report module can now be configured through the admin module interface,
  and is now relying on Keycloak.
 
+### General improvements
+
+- Rearranged handle dropdown order to match customer preference 
+
 ## Version 3.25.3, 6th November 2024
 
 "Remember, remember, the 5th of November ... wait ... close enough"
