@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-07 16:09+0100\n"
+"POT-Creation-Date: 2024-11-11 10:53+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3016,7 +3016,8 @@ msgstr "metadata url"
 
 #: import_services/models/realm.py:208
 msgid "should be a reachable url providing federation metadata in xml format "
-msgstr "skal være en offentlig url, der udstiller federation metadata i xml format"
+msgstr ""
+"skal være en offentlig url, der udstiller federation metadata i xml format"
 
 #: import_services/models/realm.py:211
 msgid "service provider entity id"
@@ -3070,10 +3071,11 @@ msgid ""
 "Way to identify and track external users from the assertion. Default is "
 "using Subject NameID, alternatively you can set up identifying attribute."
 msgstr ""
-"Hvordan brugere skal identificeres i assertionen. Standard værdien er Subject NameID, men "
-"alternativt kan du definere en anden identificerende attribut."
+"Hvordan brugere skal identificeres i assertionen. Standard værdien er "
+"Subject NameID, men alternativt kan du definere en anden identificerende "
+"attribut."
 
-#: import_services/models/realm.py:26
+#: import_services/models/realm.py:263
 msgid "principal attribute"
 msgstr "principal attribut"
 
@@ -3082,8 +3084,8 @@ msgid ""
 "Name or Friendly Name of the attribute used to identify external users. Only "
 "relevant if principal type is set to an 'Attribute' option. "
 msgstr ""
-"Name eller Friendly Name på attributten der bruges som identifikator. Kun relevant, hvis "
-"principal type er sat til en af 'Attribut' indstillingerne. "
+"Name eller Friendly Name på attributten der bruges som identifikator. Kun "
+"relevant, hvis principal type er sat til en af 'Attribut' indstillingerne. "
 
 #: import_services/models/realm.py:271
 msgid "HTTP-POST binding response"
@@ -3094,8 +3096,8 @@ msgid ""
 "Indicates whether to respond to requests using HTTP-POST binding. If off, "
 "HTTP-REDIRECT binding will be used."
 msgstr ""
-"Indikerer hvorvidt forespørgsler skal besvares med HTTP-POST binding. Hvis fra, "
-"anvendes HTTP-REDIRECT"
+"Indikerer hvorvidt forespørgsler skal besvares med HTTP-POST binding. Hvis "
+"fra, anvendes HTTP-REDIRECT"
 
 #: import_services/models/realm.py:278
 msgid "HTTP-POST binding for AuthnRequest"
@@ -3119,7 +3121,8 @@ msgstr "AuthnRequests signerede"
 
 #: import_services/models/realm.py:294
 msgid "Indicates whether the identity provider expects a signed AuthnRequest."
-msgstr "Indikerer hvorvidt identity provideren forventer en signeret AuthnRequest"
+msgstr ""
+"Indikerer hvorvidt identity provideren forventer en signeret AuthnRequest"
 
 #: import_services/models/realm.py:298
 msgid "Assertions signed"
@@ -3138,7 +3141,8 @@ msgid ""
 "Clock skew in seconds that is tolerated when validating identity provider "
 "tokens. "
 msgstr ""
-"Tidsforskel, i sekunder, som er tolereret ved validering af identity provider tokens."
+"Tidsforskel, i sekunder, som er tolereret ved validering af identity "
+"provider tokens."
 
 #: import_services/templates/import_services/ldap_edit.html:28
 #: organizations/templates/sso/sso_edit.html:17
@@ -3690,7 +3694,7 @@ msgstr "claim opsætning"
 
 #: organizations/templates/sso/sso_edit.html:123
 #: organizations/templates/sso/sso_edit.html:124
-#: organizations/templates/sso/sso_edit.html:12
+#: organizations/templates/sso/sso_edit.html:125
 msgid "save SSO configuration"
 msgstr "gem SSO konfiguration"
 
@@ -3703,8 +3707,8 @@ msgid ""
 "It is unclear how to properly set up Single Sign-On with current "
 "configuration."
 msgstr ""
-"Det er uklart hvordan Single Sign-On skal sættes op, med "
-"nuværende konfiguration."
+"Det er uklart hvordan Single Sign-On skal sættes op, med nuværende "
+"konfiguration."
 
 #: organizations/templates/sso/sso_error.html:18
 msgid ""
@@ -3723,15 +3727,15 @@ msgstr "Navnet er allerede i brug."
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
-#: organizations/views/account_views.py:176
+#: organizations/views/account_views.py:188
 msgid "Choose Account"
 msgstr "Vælg konto"
 
-#: organizations/views/account_views.py:205
+#: organizations/views/account_views.py:217
 msgid "Choose new manager"
 msgstr "Vælg ny leder"
 
-#: organizations/views/account_views.py:213
+#: organizations/views/account_views.py:225
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
 

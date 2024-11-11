@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import TrigramSimilarity
 from django.views.generic import DetailView, CreateView, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from django.db.models.functions import Concat, Greatest
+from django.db.models import CharField, Value
 
 from ..models import Account, Alias, OrganizationalUnit
 from ..models.aliases import AliasType
@@ -48,13 +50,23 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
     def search_queryset(self, qs):
 
         if search := self.request.GET.get('search_field'):
-            qs = qs.annotate(search=SearchVector("username", "first_name", "last_name"))
-            qs = qs.filter(search=search)
+            qs = qs.annotate(
+                full_name=Concat('first_name', Value(' '), 'last_name',
+                                 output_field=CharField())
+            ).annotate(
+                search=Greatest(
+                    TrigramSimilarity("full_name", search),
+                    TrigramSimilarity("username", search)
+                )
+            ).filter(search__gte=0.2)
 
         return qs
 
     def order_queryset(self, qs):
-        qs = qs.order_by('first_name', 'last_name')
+        if self.request.GET.get('search_field'):
+            qs = qs.order_by('-search', 'first_name', 'last_name')
+        else:
+            qs = qs.order_by('first_name', 'last_name')
         return qs
 
     def get_paginate_by(self, queryset):

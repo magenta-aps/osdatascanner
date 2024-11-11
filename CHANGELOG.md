@@ -4,8 +4,13 @@
 
 ### New in this release
 
-- Single Sign-On for the report module can now be configured through the admin module interface,
- and is now relying on Keycloak.
+- Single Sign-On for the report module can now be configured through the admin 
+  module interface, and is now relying on Keycloak.
+
+- Searching for accounts in the account overview in the admin module is now
+  based on _trigram similarities_, is more lenient to typos, and does not break
+  when searching for both an account first name and last name and username
+  (or any other combination of two).
 
 ### General improvements
 
