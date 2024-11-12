@@ -3509,7 +3509,7 @@ msgstr "Gør alle organisatoriske enhededer synlige"
 
 #: organizations/templates/organizations/edit_visibility_page.html:49
 msgid "Make all visible"
-msgstr "Markér alle som  synlige"
+msgstr "Markér alle som synlige"
 
 #: organizations/templates/organizations/edit_visibility_page.html:57
 msgid "Make all organizational units hidden"
@@ -3526,7 +3526,7 @@ msgstr "Søg efter enhed"
 #: organizations/templates/organizations/edit_visibility_page.html:109
 #: organizations/templates/organizations/edit_visibility_page.html:110
 msgid "return to the organizational structure overview"
-msgstr "retunér til siden for organisatorisk struktur"
+msgstr "returnér til siden for organisatorisk struktur"
 
 #: organizations/templates/organizations/edit_visibility_page.html:114
 msgid "go back"
@@ -3758,11 +3758,11 @@ msgstr "tilknyttet"
 
 #: organizations/templates/organizations/orgunit_list.html:243
 msgid "has been set to be hidden"
-msgstr "er indstilet til at være skjult"
+msgstr "er indstillet til at være skjult"
 
 #: organizations/templates/organizations/orgunit_list.html:252
 msgid "has been set to be visible"
-msgstr "er indstilet til at være synlig"
+msgstr "er indstillet til at være synlig"
 
 #: organizations/templates/organizations/orgunit_list.html:266
 #: organizations/templates/organizations/orgunit_list.html:273
