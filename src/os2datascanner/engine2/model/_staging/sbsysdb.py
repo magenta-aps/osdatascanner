@@ -169,7 +169,13 @@ class SBSYSDBSource(Source):
             logger.debug(
                     "executing SBSYS database query",
                     query=str(expr), params=expr.compile().params)
-            for db_row_ in session.execute(expr).fetchall():
+
+            # Simulate Django's iterator() (with its default page size of 2000)
+            # to avoid allocating too much memory
+            for db_row_ in session.execute(
+                    expr, execution_options={
+                        "yield_per": 2000
+                    }):
                 db_row = db_row_._mapping
                 yield SBSYSDBCaseHandle(
                         self,
