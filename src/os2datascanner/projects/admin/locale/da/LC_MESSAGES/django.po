@@ -3493,8 +3493,8 @@ msgid ""
 "users once saved."
 msgstr ""
 "Vælg hvilke organisatoriske enheder, der skal være synlige på tværs af "
-"Admin- og Rapportmodulet fra listen nedenfor. Gemte ændringer bliver synlige "
-"for alle brugerer med det samme."
+"Admin- og Rapportmodulet fra listen nedenfor. Ændringer bliver synlige "
+"for alle brugere med det samme."
 
 #: organizations/templates/organizations/edit_visibility_page.html:41
 #: organizations/templates/organizations/edit_visibility_page.html:56

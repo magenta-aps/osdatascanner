@@ -122,8 +122,9 @@
                     {% endfor %}
  
                     {% comment %}
-                    I'm doing this the same way as it's been done previously because I don't have time 
-                    to refactor the styling for this element, but bloody hell we need to fix this.
+                    TO DO: Refactor this so it's not x amount of lists, and instead one list with x amount of list items.
+
+                    See [#62901] on Redmine.
                     {% endcomment %}
                     <ul>
                       <div class="filter_checkbox">
@@ -209,15 +210,15 @@
                     </tr>
                   </thead>
 
-                  <tbody>
-                    {% if object_list.exists %}
+                  {% if object_list.exists %}
+                    <tbody>
                       {% for orgunit in object_list %}
                         <tr id="orgunit__{{ orgunit.pk }}" class="datatablex__row">
                           <td class="column column--name orgunit_name">
                             <div>{{ orgunit.name }}</div>
                             {% if orgunit.parent %}<div class="parent">({{ orgunit.parent.name }})</div>{% endif %}
                           </td>
- 
+
                           <td class="column column--affiliated-accounts orgunit_members">
                             <div class="info__wrapper">
                               <div class="info info__container info--{% if orgunit.employee_count %}affiliated-account{% else %}none{% endif %}"
@@ -226,13 +227,13 @@
 
                                 <div class="info__label">
                                   <span class="content-min">{{ orgunit.employee_count }}</span>
- 
+
                                   <span class="content-max">{{ orgunit.employee_count }} {% trans "associated" %}</span>
                                 </div>
                               </div>
                             </div>
                           </td>
- 
+
                           <td class="column column--visibility">
                             <div class="table-icon__container">
                               {% if orgunit.hidden %}
@@ -243,7 +244,7 @@
 
                                   </div>
                                 </div>
- 
+
                               {% else %}
                                 <div class="status status--visibility-on">
                                   <div class="status__wrapper"
@@ -255,7 +256,7 @@
                               {% endif %}
                             </div>
                           </td>
- 
+
                           <td class="column column--managers orgunit_managers">
                             <div class="org-position__container">
                               <ul>
@@ -272,7 +273,7 @@
                                     <span>{{ manager_pos.account.get_full_name }}</span>
                                   </li>
                                 {% endfor %}
- 
+
                                 <li class="add_manager">
                                   <button type="button"
                                           class="add_button button button--icon-button"
@@ -303,7 +304,7 @@
                                     <span>{{ dpo_pos.account.get_full_name }}</span>
                                   </li>
                                 {% endfor %}
- 
+
                                 <li class="add_dpo">
                                   <button type="button"
                                           class="add_button button button--icon-button"
@@ -319,13 +320,17 @@
                           </td>
                         </tr>
                       {% endfor %}
-                    {% else %}
-                      <tr>
-                        <td class="nothing_found_row" colspan="5">{% trans "No organizational units found ..." %}</td>
+                    </tbody>
+
+                    {% include "components/pagination/pagination.html" %}
+
+                  {% else %}
+                    <tbody>
+                      <tr class="datatablex__row">
+                        <td class="column nothing_found_row" colspan="5">{% trans "No organizational units found ..." %}</td>
                       </tr>
-                    {% endif %}
-                  </tbody>
-                  {% include "components/pagination/pagination.html" %}
+                    </tbody>
+                  {% endif %}
                 </table>
               </div>
             </div>

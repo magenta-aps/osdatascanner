@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
  
-{% if object_list.exists %}
+{% if object_list %}
   <ul class="orgunit-list">
     {% for orgunit in object_list %}
       <li id="orgunit__{{ orgunit.pk }}">

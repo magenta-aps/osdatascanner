@@ -856,6 +856,17 @@
 // NOTE:
 // Change the class name from "datatablex" to "datatable" after all tables have been refactored.
 // Remember to do the same in all relevant HTML docs.
+
+// Used between icons and their label text
+$uniform_icon-label_gap-size: 0.25rem;
+
+// Magical mixin for instant centered behaviour. So far only available in datatables.
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .datatablex {
   // Box model
   width: 100%;
@@ -946,13 +957,13 @@
       &__wrapper {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         gap: 0.75rem;
       }
 
       &__container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        @include flex-center;
+        gap: $uniform_icon-label_gap-size;
       }
 
       &__label {
@@ -995,6 +1006,12 @@
       align-items: center;
       gap: 4px;
     }
+  }
+
+  .nothing_found_row {
+    text-align: center;
+    font-style: italic;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -1059,16 +1076,6 @@ $uniform_gap-size: 0.25rem;
         $text-size: 1rem;
         $icon-size: 1.25rem;
 
-        &__container {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
         &__label {
           color: var(--color-text-secondary);
           font-size: $text-size;
@@ -1101,9 +1108,9 @@ $uniform_gap-size: 0.25rem;
         /* A "diy" icon made with existing icons from the Material Symbols library*/
         #sso-icon-container {
           $standard-icon-size: 1.5rem; // Same as the standard icon font size
-          width: $standard-icon-size; 
-          height: $standard-icon-size; 
-          
+          width: $standard-icon-size;
+          height: $standard-icon-size;
+
           position: relative;
 
           i {
@@ -1120,10 +1127,7 @@ $uniform_gap-size: 0.25rem;
               z-index: 2; // Place it on top of cloud icon to imitate "cut-out" effect
               padding-top: 0.25rem;
               color: var(--color-btn-neutral);
-              font-variation-settings: 
-                "GRAD" -25, 
-                "opsz" 20,
-              ;
+              font-variation-settings: "GRAD" -25, "opsz" 20;
               font-size: 18px;
               text-align: center;
             }
@@ -1159,7 +1163,7 @@ $uniform_gap-size: 0.25rem;
   min-width: $table_min-width;
 
   .column {
-    $uniform_gap-size: 0.25rem;
+    $uniform_icon-label_gap-size: 0.25rem;
 
     &--name {
       width: clamp(
@@ -1292,7 +1296,7 @@ $uniform_gap-size: 0.25rem;
         &__container {
           display: flex;
           flex-direction: column;
-          gap: $uniform_gap-size;
+          gap: $uniform_icon-label_gap-size;
         }
 
         &__label {
@@ -1350,7 +1354,7 @@ $uniform_gap-size: 0.25rem;
 
         &__wrapper {
           @include flex-center;
-          gap: $uniform_gap-size;
+          gap: $uniform_icon-label_gap-size;
           padding: 0 1rem 0 0.625rem; // Asymmetrical padding to compensate for visual weight
         }
 
@@ -1375,7 +1379,7 @@ $uniform_gap-size: 0.25rem;
       .status {
         display: flex;
         align-items: center;
-        gap: $uniform_gap-size;
+        gap: $uniform_icon-label_gap-size;
 
         &__icon {
           &.material-symbols {

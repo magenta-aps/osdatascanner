@@ -3,8 +3,8 @@
 {% load l10n %}
 
 <tbody class="pagination">
-  <tr>
-    <td colspan="7">
+  <tr class="datatablex__row">
+    <td colspan="7" class="column">
       <div class="flex">
         <span class="page_of_pages">
           {% object_interval object_list page_obj paginate_by %} {% trans "of" %} {{ page_obj.paginator.count }}
