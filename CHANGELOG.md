@@ -27,7 +27,6 @@
   - Includes initial functionality to support email notification(s) when nearing
   (or past) expiration of client secret.
 
-
 ### General improvements
 
 - Rearranged handle dropdown order to match customer preference.
@@ -45,6 +44,11 @@
 
 - The "Administration" navigation link in the admin module is now hidden for
   users without the "is_staff"-flag.
+
+- The database query helper management command has been improved with
+  support for additional queries and better handling of unsupported data
+  types.
+
 
 ### Bugfixes
 
