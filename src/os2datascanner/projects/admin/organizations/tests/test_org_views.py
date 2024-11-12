@@ -1,80 +1,78 @@
-from django.test import TestCase
-from django.urls import reverse_lazy
-from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
+import pytest
 
-from ..models import Organization, OrganizationalUnit, Account, Position
-from ...core.models import Client, Administrator
+from django.urls import reverse_lazy
+
+from ..models import Organization, Position
 
 from os2datascanner.core_organizational_structure.models.organization import (
     StatisticsPageConfigChoices, DPOContactChoices, SupportContactChoices, OutlookCategorizeChoices)
 
 
-class OrganizationListViewTests(TestCase):
-
-    def setUp(self):
-        self.user = User.objects.create_user(username="name", password="secret")
-        self.client.force_login(self.user)
-        self.client1 = Client.objects.create(name="Client1")
-        self.client2 = Client.objects.create(name="Client2")
-
-    def test_superuser_list(self):
+@pytest.mark.django_db
+class TestOrganizationListViews:
+    def test_superuser_list(self, client, superuser, test_client, other_client):
         """Superusers should be able to see all clients."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
 
         url = reverse_lazy("organization-list")
+        response = client.get(url)
 
-        response = self.client.get(url)
+        assert response.status_code == 200
+        assert test_client in response.context.get("client_list")
+        assert other_client in response.context.get("client_list")
 
-        self.assertIn(self.client1, response.context.get("client_list"),
-                      msg="Client not correctly shown to superuser")
-        self.assertIn(self.client2, response.context.get("client_list"),
-                      msg="Client not correctly shown to superuser")
+    # Not implemented yet
+    # def test_administrator_with_permission_list(self, client, user_admin,
+    #       test_client, other_client):
+    #     """Users with the "view_client"-permission should be able to see
+    #     all clients."""
+    #     client.force_login(user_admin)
+    #     user_admin.user_permissions.add(
+    #         Permission.objects.get(codename="view_client"))
 
-    def test_administrator_for_list(self):
+    #     url = reverse_lazy("organization-list")
+    #     response = client.get(url)
+
+    #     assert response.status_code == 200
+    #     assert test_client in response.context.get("client_list")
+    #     assert other_client in response.context.get("client_list")
+
+    def test_administrator_for_list(self, client, user_admin, test_client, other_client):
         """Administrators should only be able to see the client, that they are
         administrator for."""
-        Administrator.objects.create(user=self.user, client=self.client1)
+        client.force_login(user_admin)
 
         url = reverse_lazy("organization-list")
 
-        response = self.client.get(url)
+        response = client.get(url)
 
-        self.assertIn(self.client1, response.context.get("client_list"),
-                      msg="Client not correctly shown to superuser")
-        self.assertNotIn(self.client2, response.context.get("client_list"),
-                         msg="Client wrongly shown to user!")
+        assert response.status_code == 200
+        assert test_client in response.context.get("client_list")
+        assert other_client not in response.context.get("client_list")
 
-    def test_regular_user_list(self):
+    def test_regular_user_list(self, client, user, test_client, other_client):
         """A user which is neither Administrator or superuser should not be
         able to see anything."""
+        client.force_login(user)
 
         url = reverse_lazy("organization-list")
 
-        response = self.client.get(url)
+        response = client.get(url)
 
-        self.assertNotIn(self.client1, response.context.get("client_list"),
-                         msg="Client wrongly shown to user!")
-        self.assertNotIn(self.client2, response.context.get("client_list"),
-                         msg="Client wrongly shown to user!")
+        assert test_client not in response.context.get("client_list")
+        assert other_client not in response.context.get("client_list")
 
 
-class AddOrganizationViewTests(TestCase):
+@pytest.mark.django_db
+class TestAddOrganizationViews:
 
-    def setUp(self):
-        self.user = User.objects.create_user(username='name', password='secret')
-        self.client.force_login(self.user)
-        self.mock_client = Client.objects.create(name='mock_client')
-
-    def test_superuser_create_unique_name_organization(self):
+    def test_superuser_create_unique_name_organization(self, client, superuser, test_client):
         """Successfully creating an organization redirects to the list view."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
         num_org_pre = Organization.objects.count()
         url = reverse_lazy('add-organization-for',
-                           kwargs={'client_id': self.mock_client.uuid})
-        response = self.client.post(url, {
+                           kwargs={'client_id': test_client.uuid})
+        response = client.post(url, {
             'name': 'Unique',
             'contact_email': 'test@unique.mail',
             'contact_phone': '12341234',
@@ -82,36 +80,24 @@ class AddOrganizationViewTests(TestCase):
 
         success_url = reverse_lazy('organization-list')
         num_org_post = Organization.objects.count()
-        new_org = Organization.objects.exclude(name="OS2datascanner").first()
+        new_org = Organization.objects.get(name="Unique")
         expected_code = 302
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertRedirects(response, success_url)
-        self.assertEqual(
-            num_org_post,
-            num_org_pre + 1,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre+1}.")
-        self.assertEqual(new_org.name, "Unique",
-                         "Name of Organization not set correctly during creation.")
-        self.assertEqual(new_org.contact_email, "test@unique.mail",
-                         "Contact email of Organization not set correctly during creation.")
-        self.assertEqual(new_org.contact_phone, "12341234",
-                         "Phone number of Organization not set correctly during creation.")
-        self.assertEqual(new_org.client, self.mock_client)
+        assert response.status_code == expected_code
+        assert response["Location"] == success_url
+        assert num_org_post == num_org_pre + 1
+        assert new_org.contact_email == "test@unique.mail"
+        assert new_org.contact_phone == "12341234"
+        assert new_org.client == test_client
 
-    def test_superuser_create_same_name_organization(self):
+    def test_superuser_create_same_name_organization(self, client, superuser, test_client):
         """Providing a name already in use for an organization
         should invalidate the form and display an error."""
-        self.user.is_superuser = True
-        self.user.save()
-        Organization.objects.create(name='Same', slug='same', client=self.mock_client)
+        client.force_login(superuser)
+        Organization.objects.create(name='Same', slug='same', client=test_client)
         num_org_pre = Organization.objects.count()
-        url = reverse_lazy('add-organization-for', kwargs={'client_id': self.mock_client.uuid})
-        response = self.client.post(url, {
+        url = reverse_lazy('add-organization-for', kwargs={'client_id': test_client.uuid})
+        response = client.post(url, {
             'name': 'Same',
             'contact_email': '',
             'contact_phone': '',
@@ -120,23 +106,18 @@ class AddOrganizationViewTests(TestCase):
         num_org_post = Organization.objects.count()
         expected_code = 200
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertFormError(response, 'form', 'name', _('That name is already taken.'))
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
+        assert response.status_code == expected_code
+        assert num_org_post == num_org_pre
+        assert 'form' in response.context
+        assert 'name' in response.context['form'].errors
 
-    def test_blank_user_create_organization(self):
+    def test_blank_user_create_organization(self, client, user, test_client):
         """A user with no permission should not be able to create a new organization."""
+        client.force_login(user)
         num_org_pre = Organization.objects.count()
         url = reverse_lazy('add-organization-for',
-                           kwargs={'client_id': self.mock_client.uuid})
-        response = self.client.post(url, {
+                           kwargs={'client_id': test_client.uuid})
+        response = client.post(url, {
             'name': 'New Org',
             'contact_email': 'test@unique.mail',
             'contact_phone': '12341234',
@@ -145,27 +126,19 @@ class AddOrganizationViewTests(TestCase):
         num_org_post = Organization.objects.count()
         expected_code = 403
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
-        self.assertFalse(Organization.objects.filter(name="New Org").exists(),
-                         "Blank user is able to create an organization for a client!")
+        assert response.status_code == expected_code
+        assert num_org_post == num_org_pre
+        assert not Organization.objects.filter(name="New Org").exists()
 
-    def test_administrator_create_organization_not_permitted(self):
+    def test_administrator_create_organization_not_permitted(
+            self, client, user_admin, test_client, other_client):
         """An administrator for one client should not be able to create a new
         organization for another client."""
+        client.force_login(user_admin)
         num_org_pre = Organization.objects.count()
-        other_client = Client.objects.create(name="other client")
-        Administrator.objects.create(user=self.user, client=other_client)
         url = reverse_lazy('add-organization-for',
-                           kwargs={'client_id': self.mock_client.uuid})
-        response = self.client.post(url, {
+                           kwargs={'client_id': other_client.uuid})
+        response = client.post(url, {
             'name': 'New Org',
             'contact_email': 'test@unique.mail',
             'contact_phone': '12341234',
@@ -174,27 +147,18 @@ class AddOrganizationViewTests(TestCase):
         num_org_post = Organization.objects.count()
         expected_code = 403
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
-        self.assertFalse(Organization.objects.filter(name="New Org").exists(),
-                         "Administrator for wrong client is able to create an "
-                         "organization for a client!")
+        assert response.status_code == expected_code
+        assert num_org_post == num_org_pre
+        assert not Organization.objects.filter(name="New Org").exists()
 
-    def test_administrator_create_organization_permitted(self):
+    def test_administrator_create_organization_permitted(self, client, user_admin, test_client):
         """An administrator for a client should be able to create a new
         organization for that client."""
+        client.force_login(user_admin)
         num_org_pre = Organization.objects.count()
-        Administrator.objects.create(user=self.user, client=self.mock_client)
         url = reverse_lazy('add-organization-for',
-                           kwargs={'client_id': self.mock_client.uuid})
-        response = self.client.post(url, {
+                           kwargs={'client_id': test_client.uuid})
+        response = client.post(url, {
             'name': 'New Org',
             'contact_email': 'test@unique.mail',
             'contact_phone': '12341234',
@@ -202,66 +166,43 @@ class AddOrganizationViewTests(TestCase):
 
         success_url = reverse_lazy('organization-list')
         num_org_post = Organization.objects.count()
-        new_org = Organization.objects.exclude(name="OS2datascanner").first()
+        new_org = Organization.objects.get(name="New Org")
         expected_code = 302
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertRedirects(response, success_url)
-        self.assertEqual(
-            num_org_post,
-            num_org_pre + 1,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre+1}.")
-        self.assertEqual(new_org.name, "New Org",
-                         "Name of Organization not set correctly during creation.")
-        self.assertEqual(new_org.contact_email, "test@unique.mail",
-                         "Contact email of Organization not set correctly during creation.")
-        self.assertEqual(new_org.contact_phone, "12341234",
-                         "Phone number of Organization not set correctly during creation.")
-        self.assertEqual(new_org.client, self.mock_client)
+        assert response.status_code == expected_code
+        assert response["Location"] == success_url
+        assert num_org_post == num_org_pre + 1
+        assert new_org.contact_email == "test@unique.mail"
+        assert new_org.contact_phone == "12341234"
+        assert new_org.client == test_client
 
 
-class UpdateOrganizationViewTests(TestCase):
+@pytest.mark.django_db
+class TestUpdateOrganizationViews:
 
-    def setUp(self):
-        self.user = User.objects.create_user(username='name', password='secret')
-        self.client.force_login(self.user)
-        self.mock_client = Client.objects.create(name='mock_client')
-        self.mock_organization = Organization.objects.create(
-            name='mock_org', slug='mock_org', client=self.mock_client)
-
-    def test_blank_user_updating_an_organization(self):
+    def test_blank_user_updating_an_organization(self, client, user, test_org):
         """Users with no permissions should not be able to update any
         organizations."""
-        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url, {
+        client.force_login(user)
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
         })
 
-        updated_org = Organization.objects.exclude(name="OS2datascanner").first()
         expected_code = 404
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertEqual(
-            updated_org.name,
-            "mock_org",
-            "User with no permissions is able to edit organization!")
+        assert response.status_code == expected_code
+        assert not Organization.objects.filter(name="Updated Organization").exists()
 
-    def test_administrator_updating_an_organization_permitted(self):
+    def test_administrator_updating_an_organization_permitted(self, client, user_admin, test_org):
         """An administrator should be able to edit an organization owned by
         the client, that the user is administrator for."""
-        Administrator.objects.create(user=self.user, client=self.mock_client)
+        client.force_login(user_admin)
         num_org_pre = Organization.objects.count()
-        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url, {
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
@@ -282,59 +223,41 @@ class UpdateOrganizationViewTests(TestCase):
 
         success_url = reverse_lazy('organization-list')
         num_org_post = Organization.objects.count()
-        updated_org = Organization.objects.exclude(name="OS2datascanner").first()
+        test_org.refresh_from_db()
         expected_code = 302
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertRedirects(response, success_url)
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
-        self.assertEqual(updated_org.name, "Updated Organization",
-                         "Name of organization not updated correctly!")
-        self.assertEqual(updated_org.contact_email, "something@else.com",
-                         "Contact email of organization not updated correctly!")
-        self.assertEqual(updated_org.contact_phone, "new phone, who dis?",
-                         "Phone number of organization not updated correctly!")
-        self.assertEqual(updated_org.client, self.mock_client)
+        assert response.status_code == expected_code
+        assert response["Location"] == success_url
+        assert num_org_post == num_org_pre
+        assert test_org.name == "Updated Organization"
+        assert test_org.contact_email == "something@else.com"
+        assert test_org.contact_phone == "new phone, who dis?"
 
-    def test_administrator_updating_an_organization_not_permitted(self):
+    def test_administrator_updating_an_organization_not_permitted(
+            self, client, user_admin, other_org):
         """An administrator should not be able to edit an organization owned by
         another client, than the one the user is administrator for."""
-        other_client = Client.objects.create(name='other client')
-        Administrator.objects.create(user=self.user, client=other_client)
-        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url, {
+        client.force_login(user_admin)
+        url = reverse_lazy('edit-organization', kwargs={'slug': other_org.slug})
+        response = client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
             'msgraph_write_permissions': '',
         })
 
-        updated_org = Organization.objects.exclude(name="OS2datascanner").first()
+        other_org.refresh_from_db()
         expected_code = 404
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertEqual(
-            updated_org.name,
-            "mock_org",
-            "Administrator for wrong client is able to edit organization!")
+        assert response.status_code == expected_code
+        assert other_org.name != "Updated Organization"
 
-    def test_superuser_updating_an_organization(self):
+    def test_superuser_updating_an_organization(self, client, superuser, test_org):
         """Superusers should be able to update all organizations."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
         num_org_pre = Organization.objects.count()
-        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url, {
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
@@ -355,399 +278,351 @@ class UpdateOrganizationViewTests(TestCase):
 
         success_url = reverse_lazy('organization-list')
         num_org_post = Organization.objects.count()
-        updated_org = Organization.objects.exclude(name="OS2datascanner").first()
+        test_org.refresh_from_db()
         expected_code = 302
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertRedirects(response, success_url)
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
-        self.assertEqual(updated_org.name, "Updated Organization",
-                         "Name of organization not updated correctly!")
-        self.assertEqual(updated_org.contact_email, "something@else.com",
-                         "Contact email of organization not updated correctly!")
-        self.assertEqual(updated_org.contact_phone, "new phone, who dis?",
-                         "Phone number of organization not updated correctly!")
-        self.assertEqual(updated_org.client, self.mock_client)
+        assert response.status_code == expected_code
+        assert response["Location"] == success_url
+        assert num_org_post == num_org_pre
+        assert test_org.name == "Updated Organization"
+        assert test_org.contact_email == "something@else.com"
+        assert test_org.contact_phone == "new phone, who dis?"
 
 
-class DeleteOrganizationViewTests(TestCase):
+@pytest.mark.django_db
+class TestDeleteOrganizationViews:
 
-    def setUp(self):
-        self.user = User.objects.create_user(username='name', password='secret')
-        self.client.force_login(self.user)
-        self.mock_client = Client.objects.create(name='mock_client')
-        self.mock_organization = Organization.objects.create(
-            name='mock_org', slug='mock_org', client=self.mock_client)
-
-    def test_blank_user_delete_organization(self):
+    def test_blank_user_delete_organization(self, client, user, test_org):
         """Trying to delete an organization as a user with no permissions at
         all should fail."""
+        client.force_login(user)
         num_org_pre = Organization.objects.count()
-        url = reverse_lazy('delete-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url)
+        url = reverse_lazy('delete-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url)
 
         num_org_post = Organization.objects.count()
         expected_code = 403
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
+        assert response.status_code == expected_code
+        assert num_org_post == num_org_pre
 
-    def test_administrator_delete_organization(self):
+    def test_administrator_delete_organization(self, client, user_admin, test_org):
         """Trying to delete an organization as an administrator for the client
         should fail."""
+        client.force_login(user_admin)
         num_org_pre = Organization.objects.count()
-        Administrator.objects.create(user=self.user, client=self.mock_client)
-        url = reverse_lazy('delete-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url)
+        url = reverse_lazy('delete-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url)
 
         num_org_post = Organization.objects.count()
         expected_code = 403
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertEqual(
-            num_org_post,
-            num_org_pre,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre}.")
+        assert response.status_code == expected_code
+        assert num_org_post == num_org_pre
 
-    def test_superuser_delete_organization(self):
+    def test_superuser_delete_organization(self, client, superuser, test_org):
         """Trying to delete an organization as a superuser should succeed."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
         num_org_pre = Organization.objects.count()
-        url = reverse_lazy('delete-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url)
+        url = reverse_lazy('delete-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url)
 
         success_url = reverse_lazy('organization-list')
         num_org_post = Organization.objects.count()
         expected_code = 302
 
-        self.assertEqual(
-            response.status_code,
-            expected_code,
-            f"Wrong status code! Received {response.status_code}, but expected {expected_code}.")
-        self.assertRedirects(response, success_url)
-        self.assertEqual(
-            num_org_post,
-            num_org_pre-1,
-            f"Wrong number of Organization objects! Found {num_org_post},"
-            f" but expected {num_org_pre-1}.")
-        self.assertFalse(Organization.objects.filter(name='mock_org').exists())
+        assert response.status_code == expected_code
+        assert response["Location"] == success_url
+        assert num_org_post == num_org_pre - 1
+        assert not Organization.objects.filter(name='test_org').exists()
 
 
-class OrganizationalUnitListViewTest(TestCase):
+@pytest.mark.django_db
+class TestOrganizationalUnitListView:
 
-    def setUp(self):
-        self.user = User.objects.create_user(username="name", password="secret")
-        self.client.force_login(self.user)
-        self.client1 = Client.objects.create(name="Client1")
-        self.client2 = Client.objects.create(name="Client2")
-
-        self.org1 = Organization.objects.create(
-            name="Organization1", slug="org1", client=self.client1)
-        self.org2 = Organization.objects.create(
-            name="Organization2", slug="org2", client=self.client2)
-
-        self.unit1 = OrganizationalUnit.objects.create(name="OrgUnit1", organization=self.org1)
-        self.unit2 = OrganizationalUnit.objects.create(name="OrgUnit2", organization=self.org1)
-        self.unit3 = OrganizationalUnit.objects.create(name="OrgUnit3", organization=self.org2)
-        self.unit4 = OrganizationalUnit.objects.create(name="OrgUnit4", organization=self.org2)
-
-        self.egon = Account.objects.create(username="Egon", organization=self.org1)
-        self.benny = Account.objects.create(username="Benny", organization=self.org1)
-        self.kjeld = Account.objects.create(username="Kjeld", organization=self.org2)
-
-        self.egon.units.add(self.unit1)
-        self.benny.units.add(self.unit2)
-        self.kjeld.units.add(self.unit3)
-
-    def test_superuser_list(self):
+    def test_superuser_list(
+            self,
+            client,
+            superuser,
+            test_org,
+            test_org2,
+            familien_sand,
+            dansk_kartoffelavlerforening,
+            oluf,
+            gertrud,
+            olsen_banden,
+            børges_værelse,
+            egon):
         """Superusers should be able to see all organizational units."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
+
+        # Add accounts to ous
+        # Familien Sand already contains oluf and gertrud
+        dansk_kartoffelavlerforening.account_set.add(oluf)
+        olsen_banden.account_set.add(egon)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
         # This response should yield two units
-        response1 = self.client.get(url1)
+        response1 = client.get(url1)
         # This response should yield one unit, as the other one has no accounts associated
-        response2 = self.client.get(url2)
+        response2 = client.get(url2)
         # This response should yield two units, including one empty
-        response3 = self.client.get(url2, {"show_empty": "on"})
+        response3 = client.get(url2, {"show_empty": "on"})
 
-        self.assertEqual(response1.status_code, 200)
-        self.assertEqual(response2.status_code, 200)
-        self.assertEqual(response3.status_code, 200)
-        self.assertIn(self.unit1, response1.context.get("object_list"))
-        self.assertIn(self.unit2, response1.context.get("object_list"))
-        self.assertIn(self.unit3, response2.context.get("object_list"))
-        self.assertNotIn(self.unit4, response2.context.get("object_list"))
-        self.assertIn(self.unit3, response3.context.get("object_list"))
-        self.assertIn(self.unit4, response3.context.get("object_list"))
+        assert response1.status_code == 200
+        assert response2.status_code == 200
+        assert response3.status_code == 200
+        assert len(response1.context.get("object_list")) == 2
+        assert len(response2.context.get("object_list")) == 1
+        assert len(response3.context.get("object_list")) == 2
+        assert familien_sand in response1.context.get("object_list")
+        assert dansk_kartoffelavlerforening in response1.context.get("object_list")
+        assert olsen_banden in response2.context.get("object_list")
+        assert børges_værelse not in response2.context.get("object_list")
+        assert olsen_banden in response3.context.get("object_list")
+        assert børges_værelse in response3.context.get("object_list")
 
-    def test_administrator_for_list(self):
+    def test_administrator_for_list(
+            self,
+            client,
+            user_admin,
+            test_org,
+            test_org2,
+            familien_sand,
+            dansk_kartoffelavlerforening,
+            oluf,
+            gertrud,
+            olsen_banden,
+            børges_værelse,
+            egon,
+            test_client,
+            other_client):
         """Administrators should be able to see the units belonging to
         organizations, belonging to clients, for which they are
         administrators."""
-        Administrator.objects.create(user=self.user, client=self.client2)
+        client.force_login(user_admin)
+
+        # Add accounts to ous
+        # Familien Sand already contains oluf and gertrud
+        dansk_kartoffelavlerforening.account_set.add(oluf)
+        olsen_banden.account_set.add(egon)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
         # This response should yield two units
-        response1 = self.client.get(url1)
-        # This response should yield one unit, as the other one has no accounts associated
-        response2 = self.client.get(url2)
-        # This response should yield two units, including one empty
-        response3 = self.client.get(url2, {"show_empty": "on"})
+        response1 = client.get(url1)
+        # The user should not be able to access this, as it belongs to a different client
+        response2 = client.get(url2)
 
-        self.assertEqual(response1.status_code, 404)
-        self.assertEqual(response2.status_code, 200)
-        self.assertEqual(response3.status_code, 200)
-        self.assertIn(self.unit3, response2.context.get("object_list"))
-        self.assertNotIn(self.unit4, response2.context.get("object_list"))
-        self.assertIn(self.unit3, response3.context.get("object_list"))
-        self.assertIn(self.unit4, response3.context.get("object_list"))
+        assert response1.status_code == 200
+        assert response2.status_code == 404
+        assert len(response1.context.get("object_list")) == 2
+        assert familien_sand in response1.context.get("object_list")
+        assert dansk_kartoffelavlerforening in response1.context.get("object_list")
 
-    def test_regular_user_list(self):
+    def test_regular_user_list(self, client, user, test_org, test_org2):
         """Users with no priviliges should not be able to see any units."""
+        client.force_login(user)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        # This response should yield two units
-        response1 = self.client.get(url1)
-        # This response should yield one unit, as the other one has no accounts associated
-        response2 = self.client.get(url2)
-        # This response should yield two units, including one empty
-        response3 = self.client.get(url2, {"show_empty": "on"})
+        response1 = client.get(url1)
+        response2 = client.get(url2)
 
-        self.assertEqual(response1.status_code, 404)
-        self.assertEqual(response2.status_code, 404)
-        self.assertEqual(response3.status_code, 404)
+        assert response1.status_code == 404
+        assert response2.status_code == 404
 
 
-class OrganizationalUnitListViewAddRemoveManagersTest(TestCase):
+@pytest.mark.django_db
+class TestOrganizationalUnitListViewAddRemoveManagers:
 
-    def setUp(self):
-        self.user = User.objects.create_user(username="name", password="secret")
-        self.client.force_login(self.user)
-        self.client1 = Client.objects.create(name="Client1")
-        self.client2 = Client.objects.create(name="Client2")
-
-        self.org1 = Organization.objects.create(
-            name="Organization1", slug="org1", client=self.client1)
-        self.org2 = Organization.objects.create(
-            name="Organization2", slug="org2", client=self.client2)
-
-        self.unit1 = OrganizationalUnit.objects.create(name="OrgUnit1", organization=self.org1)
-        self.unit2 = OrganizationalUnit.objects.create(name="OrgUnit2", organization=self.org1)
-        self.unit3 = OrganizationalUnit.objects.create(name="OrgUnit3", organization=self.org2)
-        self.unit4 = OrganizationalUnit.objects.create(name="OrgUnit4", organization=self.org2)
-
-        self.egon = Account.objects.create(username="Egon", organization=self.org1)
-        self.benny = Account.objects.create(username="Benny", organization=self.org1)
-        self.kjeld = Account.objects.create(username="Kjeld", organization=self.org2)
-
-        self.egon.units.add(self.unit1)
-        self.benny.units.add(self.unit2)
-        self.kjeld.units.add(self.unit3)
-
-    def test_add_manager_superuser(self):
+    def test_add_manager_superuser(
+            self,
+            client,
+            superuser,
+            test_org,
+            test_org2,
+            fritz,
+            nisserne,
+            egon,
+            olsen_banden):
         """A superuser should be able to add managers."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        response1 = self.client.post(
-            url1, {"add-manager": self.egon.uuid, "orgunit": self.unit1.pk})
-        response2 = self.client.post(
-            url2, {"add-manager": self.kjeld.uuid, "orgunit": self.unit3.pk})
+        response1 = client.post(
+            url1, {"add-manager": fritz.uuid, "orgunit": nisserne.pk})
+        response2 = client.post(
+            url2, {"add-manager": egon.uuid, "orgunit": olsen_banden.pk})
 
-        self.assertEqual(response1.status_code, 200)
-        self.assertEqual(response2.status_code, 200)
-        self.assertTrue(
-            Position.objects.filter(
-                account=self.egon,
-                unit=self.unit1,
-                role="manager").exists())
-        self.assertTrue(
-            Position.objects.filter(
-                account=self.kjeld,
-                unit=self.unit3,
-                role="manager").exists())
+        assert response1.status_code == 200
+        assert response2.status_code == 200
+        assert nisserne in fritz.get_managed_units()
+        assert olsen_banden in egon.get_managed_units()
 
-    def test_remove_manager_superuser(self):
+    def test_remove_manager_superuser(
+            self,
+            client,
+            superuser,
+            test_org,
+            test_org2,
+            fritz,
+            nisserne,
+            egon,
+            olsen_banden):
         """A superuser should be able to remove managers from all units."""
-        self.user.is_superuser = True
-        self.user.save()
+        client.force_login(superuser)
 
-        Position.objects.create(account=self.egon, unit=self.unit1, role="manager")
-        Position.objects.create(account=self.kjeld, unit=self.unit3, role="manager")
+        Position.managers.create(account=fritz, unit=nisserne)
+        Position.managers.create(account=egon, unit=olsen_banden)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        response1 = self.client.post(
-            url1, {"rem-manager": self.egon.uuid, "orgunit": self.unit1.pk})
-        response2 = self.client.post(
-            url2, {"rem-manager": self.kjeld.uuid, "orgunit": self.unit3.pk})
+        response1 = client.post(
+            url1, {"rem-manager": fritz.uuid, "orgunit": nisserne.pk})
+        response2 = client.post(
+            url2, {"rem-manager": egon.uuid, "orgunit": olsen_banden.pk})
 
-        self.assertEqual(response1.status_code, 200)
-        self.assertEqual(response2.status_code, 200)
-        self.assertFalse(
-            Position.objects.filter(
-                account=self.egon,
-                unit=self.unit1,
-                role="manager").exists())
-        self.assertFalse(
-            Position.objects.filter(
-                account=self.kjeld,
-                unit=self.unit3,
-                role="manager").exists())
+        assert response1.status_code == 200
+        assert response2.status_code == 200
+        assert nisserne not in fritz.get_managed_units()
+        assert olsen_banden not in egon.get_managed_units()
 
-    def test_add_manager_administrator(self):
+    def test_add_manager_administrator(
+            self,
+            client,
+            user_admin,
+            test_org,
+            test_org2,
+            fritz,
+            nisserne,
+            egon,
+            olsen_banden):
         """An administrator should be able to add managers to units they are
         administrator for."""
-        Administrator.objects.create(user=self.user, client=self.client2)
+        client.force_login(user_admin)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        response1 = self.client.post(
-            url1, {"add-manager": self.egon.uuid, "orgunit": self.unit1.pk})
-        response2 = self.client.post(
-            url2, {"add-manager": self.kjeld.uuid, "orgunit": self.unit3.pk})
+        response1 = client.post(
+            url1, {"add-manager": fritz.uuid, "orgunit": nisserne.pk})
+        response2 = client.post(
+            url2, {"add-manager": egon.uuid, "orgunit": olsen_banden.pk})
 
-        self.assertEqual(response1.status_code, 404)
-        self.assertEqual(response2.status_code, 200)
-        self.assertFalse(
-            Position.objects.filter(
-                account=self.egon,
-                unit=self.unit1,
-                role="manager").exists())
-        self.assertTrue(
-            Position.objects.filter(
-                account=self.kjeld,
-                unit=self.unit3,
-                role="manager").exists())
+        assert response1.status_code == 200
+        assert response2.status_code == 404
+        assert nisserne in fritz.get_managed_units()
+        assert olsen_banden not in egon.get_managed_units()
 
-    def test_remove_manager_administrator(self):
+    def test_remove_manager_administrator(
+            self,
+            client,
+            user_admin,
+            test_org,
+            test_org2,
+            fritz,
+            nisserne,
+            egon,
+            olsen_banden):
         """An administrator should be able to remove managers from the units
         they are administrators for."""
-        Administrator.objects.create(user=self.user, client=self.client2)
+        client.force_login(user_admin)
 
-        Position.objects.create(account=self.egon, unit=self.unit1, role="manager")
-        Position.objects.create(account=self.kjeld, unit=self.unit3, role="manager")
+        Position.managers.create(account=fritz, unit=nisserne)
+        Position.managers.create(account=egon, unit=olsen_banden)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        response1 = self.client.post(
-            url1, {"rem-manager": self.egon.uuid, "orgunit": self.unit1.pk})
-        response2 = self.client.post(
-            url2, {"rem-manager": self.kjeld.uuid, "orgunit": self.unit3.pk})
+        response1 = client.post(
+            url1, {"rem-manager": fritz.uuid, "orgunit": nisserne.pk})
+        response2 = client.post(
+            url2, {"rem-manager": egon.uuid, "orgunit": olsen_banden.pk})
 
-        self.assertEqual(response1.status_code, 404)
-        self.assertEqual(response2.status_code, 200)
-        self.assertTrue(
-            Position.objects.filter(
-                account=self.egon,
-                unit=self.unit1,
-                role="manager").exists())
-        self.assertFalse(
-            Position.objects.filter(
-                account=self.kjeld,
-                unit=self.unit3,
-                role="manager").exists())
+        assert response1.status_code == 200
+        assert response2.status_code == 404
+        assert nisserne not in fritz.get_managed_units()
+        assert olsen_banden in egon.get_managed_units()
 
-    def test_add_manager_regular_user(self):
+    def test_add_manager_regular_user(
+            self,
+            client,
+            user,
+            test_org,
+            test_org2,
+            fritz,
+            nisserne,
+            egon,
+            olsen_banden):
         """An unprivileged user should not be able to add managers to any
         units."""
+        client.force_login(user)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        response1 = self.client.post(
-            url1, {"add-manager": self.egon.uuid, "orgunit": self.unit1.pk})
-        response2 = self.client.post(
-            url2, {"add-manager": self.kjeld.uuid, "orgunit": self.unit3.pk})
+        response1 = client.post(
+            url1, {"add-manager": fritz.uuid, "orgunit": nisserne.pk})
+        response2 = client.post(
+            url2, {"add-manager": egon.uuid, "orgunit": olsen_banden.pk})
 
-        self.assertEqual(response1.status_code, 404)
-        self.assertEqual(response2.status_code, 404)
-        self.assertFalse(
-            Position.objects.filter(
-                account=self.egon,
-                unit=self.unit1,
-                role="manager").exists())
-        self.assertFalse(
-            Position.objects.filter(
-                account=self.kjeld,
-                unit=self.unit3,
-                role="manager").exists())
+        assert response1.status_code == 404
+        assert response2.status_code == 404
+        assert nisserne not in fritz.get_managed_units()
+        assert olsen_banden not in egon.get_managed_units()
 
-    def test_remove_manager_regular_user(self):
+    def test_remove_manager_regular_user(
+            self,
+            client,
+            user,
+            test_org,
+            test_org2,
+            fritz,
+            nisserne,
+            egon,
+            olsen_banden):
         """An unprivileged user should not be able to remove managers from
         any units."""
+        client.force_login(user)
 
-        Position.objects.create(account=self.egon, unit=self.unit1, role="manager")
-        Position.objects.create(account=self.kjeld, unit=self.unit3, role="manager")
+        Position.managers.create(account=fritz, unit=nisserne)
+        Position.managers.create(account=egon, unit=olsen_banden)
 
         # URL to all units from organization 1
-        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org1.slug})
+        url1 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org.slug})
         # URL to all units from organization 2
-        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': self.org2.slug})
+        url2 = reverse_lazy("orgunit-list", kwargs={'org_slug': test_org2.slug})
 
-        response1 = self.client.post(
-            url1, {"rem-manager": self.egon.uuid, "orgunit": self.unit1.pk})
-        response2 = self.client.post(
-            url2, {"rem-manager": self.kjeld.uuid, "orgunit": self.unit3.pk})
+        response1 = client.post(
+            url1, {"rem-manager": fritz.uuid, "orgunit": nisserne.pk})
+        response2 = client.post(
+            url2, {"rem-manager": egon.uuid, "orgunit": olsen_banden.pk})
 
-        self.assertEqual(response1.status_code, 404)
-        self.assertEqual(response2.status_code, 404)
-        self.assertTrue(
-            Position.objects.filter(
-                account=self.egon,
-                unit=self.unit1,
-                role="manager").exists())
-        self.assertTrue(
-            Position.objects.filter(
-                account=self.kjeld,
-                unit=self.unit3,
-                role="manager").exists())
+        assert response1.status_code == 404
+        assert response2.status_code == 404
+        assert nisserne in fritz.get_managed_units()
+        assert olsen_banden in egon.get_managed_units()
