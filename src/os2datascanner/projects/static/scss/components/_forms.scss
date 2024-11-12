@@ -46,7 +46,7 @@
       flex-direction: row;
       align-items: center;
       gap: 16px;
-      
+
       &--left {
         flex-wrap: wrap;
       }
@@ -78,13 +78,8 @@
       input,
       select {
         margin-top: 0.5rem !important;
-
-      input,
-      select {
-        margin-top: 0.5rem !important;
       }
     }
-
 
     &--general,
     &--tab-access,
@@ -92,7 +87,7 @@
     &--support,
     &--dpo,
     &--outlook,
-    &--ldap-provider-setup, 
+    &--ldap-provider-setup,
     &--ldap-claim-setup {
       margin: 3rem 0;
       display: flex;
@@ -110,15 +105,11 @@
       margin: 0;
     }
 
-
     &--outlook {
       gap: 1rem;
 
-
       .form__row__item {
         padding-top: 0.5rem;
-
-        > label:first-child {
 
         > label:first-child {
           font-weight: 600;
@@ -160,7 +151,7 @@
 
     &--ldap-claim-setup {
       gap: 1rem;
-      
+
       .form__group {
         display: flex;
         flex-direction: column;
@@ -199,8 +190,6 @@
 
       .button {
         // temporary button styling until forms get their makeover
-      .button {
-        // temporary button styling until forms get their makeover
         margin-left: 0.5rem;
         padding: 0.75rem;
       }
@@ -216,7 +205,6 @@
     }
   }
 
-  .form__group + .form__group {
   .form__group + .form__group {
     margin-top: 1rem;
   }
@@ -236,8 +224,6 @@
     color: var(--color-text-main);
   }
 
-  label + input,
-  label + .input-group {
   label + input,
   label + .input-group {
     margin-top: 0.5rem;
@@ -300,9 +286,8 @@
     appearance: none;
     background-color: var(--color-widget-bg);
     /* note: bg image below uses 2 urls. The first is an svg data uri for the arrow icon, and the second is the gradient. 
-  		for the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also swap in a different svg icon or an external image reference
-  		
-  	*/
+    For the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also 
+    swap in a different svg icon or an external image reference */
     background-image: url("../svg/chevron-down.svg"),
       linear-gradient(
         to bottom,
