@@ -1006,11 +1006,15 @@
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
 $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
+$uniform_gap-size: 0.25rem;
+
+// Magical mixin for instant centered behaviour. So far only available in datatables.
 @mixin flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 
 // ******************************
 // ***** ORGANIZATION TABLE *****
@@ -1136,7 +1140,100 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
 // Redmine ticket: [#60290]
 
-// TBA
+.orgunit-table {
+  // Table SCSS vars:
+  $table_width: $relative_table_width;
+  $table_min-width: 70rem; // The size for this specific table
+
+  // Column SCSS vars:
+  $width_15: calc(#{$table_width} * 0.15);
+  $min-width_15: calc(#{$table_min-width} * 0.15);
+
+  $width_25: calc(#{$table_width} * 0.25);
+  $min-width_25: calc(#{$table_min-width} * 0.25);
+
+  $width_30: calc(#{$table_width} * 0.3);
+  $min-width_30: calc(#{$table_min-width} * 0.3);
+
+  // Styles:
+  min-width: $table_min-width;
+
+  .column {
+    $uniform_gap-size: 0.25rem;
+
+    &--name {
+      width: clamp(
+        calc(#{$min-width_25}),
+        calc(#{$width_25}),
+        calc(#{$width_25})
+      );
+    }
+
+    &--affiliated-accounts {
+      width: clamp(
+        calc(#{$min-width_15}),
+        calc(#{$width_15}),
+        calc(#{$width_15})
+      );
+
+      .content-min {
+        display: block;
+      }
+
+      .content-max {
+        display: none;
+      }
+
+      @media (min-width: $break-xl) {
+        .content-max {
+          display: block;
+        }
+
+        .content-min {
+          display: none;
+        }
+      }
+    }
+
+    &--visibility {
+      width: 7.5rem; //120px
+      text-align: center;
+
+      .table-icon__container {
+        .status {
+          @include flex-center;
+
+          &__wrapper {
+            @include flex-center;
+          }
+
+          &--visibility-on {
+            .status__icon {
+              color: var(--color-checkmark);
+            }
+          }
+
+          &--visibility-off {
+            .status__icon {
+              color: var(--color-clear);
+              opacity: 60%;
+              font-variation-settings: "FILL" 0 !important;
+            }
+          }
+        }
+      }
+    }
+
+    &--managers,
+    &--dpos {
+      width: clamp(
+        calc(#{$min-width_30}),
+        calc(#{$width_30}),
+        calc(#{$width_30})
+      );
+    }
+  }
+}
 
 // ****************************************
 // ***** ORGANIZATIONS ACCOUNTS TABLE *****
@@ -1184,16 +1281,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   min-width: $table_min-width;
 
   .column {
-    @mixin flex-center {
-      /* We might end up moving this out of here and make it available for all 
-      datatables. Why write 3 lines of code when you can write one? */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    $uniform_gap-size: 0.25rem;
-
     &--name {
       width: clamp(
         calc(#{$min-width_35}),
