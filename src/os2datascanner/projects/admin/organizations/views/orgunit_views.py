@@ -1,11 +1,14 @@
 from django.db.models import Q, Count, Prefetch
 from ...adminapp.views.views import RestrictedListView
-from ..models import OrganizationalUnit, Account, Position, Organization
+from ..models import (OrganizationalUnit, Account, Position,
+                      Organization, OrganizationalUnitSerializer)
 from ...core.models import Feature
 from ...adminapp.views.scanner_views import EmptyPagePaginator
 from ..utils import ClientAdminMixin
 from os2datascanner.core_organizational_structure.models.position import Role
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
+from ..publish import publish_events
+from ..broadcast_bulk_events import BulkUpdateEvent
 
 
 class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
@@ -79,8 +82,7 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
         return context
 
     def get_paginate_by(self, queryset):
-        # Overrides get_paginate_by to allow changing it in the template
-        # as url param paginate_by=xx
+        # Allow `paginate_by` to be dynamically updated via URL params
         return self.request.GET.get('paginate_by', self.paginate_by)
 
     def post(self, request, *args, **kwargs):
@@ -127,7 +129,7 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
 
 class OrganizationalUnitEditVisibility(ClientAdminMixin, RestrictedListView):
     model = OrganizationalUnit
-    template_name = 'organizations/edit_visibility_page.html'
+    template_name = 'organizations/edit_hidden_state_page.html'
     paginator_class = EmptyPagePaginator
     paginate_by = 60
     paginate_by_options = [60, 120, 240, 480]
@@ -137,8 +139,7 @@ class OrganizationalUnitEditVisibility(ClientAdminMixin, RestrictedListView):
         org_slug = self.kwargs['org_slug']
         qs = qs.filter(organization__slug=org_slug)
 
-        search_field = self.request.GET.get('search_field', '')
-        if search_field:
+        if search_field := self.request.GET.get('search_field', ''):
             qs = qs.filter(Q(name__icontains=search_field))
 
         qs = qs.order_by('name')
@@ -148,44 +149,53 @@ class OrganizationalUnitEditVisibility(ClientAdminMixin, RestrictedListView):
         context = super().get_context_data(**kwargs)
         org_slug = self.kwargs['org_slug']
         organization = get_object_or_404(Organization, slug=org_slug)
+
         context['organization'] = organization
         context['FEATURES'] = Feature.__members__
-        context['search_field'] = self.request.GET.get('search_field', '')
-        context['search_targets'] = [unit.uuid for unit in self.object_list]
-        context['show_empty'] = self.request.GET.get('show_empty', 'off') == 'on'
+
+        context['search_targets'] = [
+            unit.uuid for unit in self.object_list] if self.request.GET.get(
+            "search_field", None) else []
+
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
+
         return context
 
     def get_paginate_by(self, queryset):
-        paginate_by = self.request.GET.get('paginate_by') or self.request.POST.get('paginate_by')
-        if paginate_by:
-            self.request.session['paginate_by'] = int(paginate_by)
-        else:
-            paginate_by = self.request.session.get('paginate_by', self.paginate_by)
-        return int(paginate_by)
+        # Allow `paginate_by` to be dynamically updated via URL params
+        return self.request.GET.get('paginate_by', self.paginate_by)
+
+    def update_hidden_state_for_org_unit(self, queryset):
+        update_dict = {"OrganizationalUnit": OrganizationalUnitSerializer(
+            queryset.all(), many=True).data}
+        publish_events([BulkUpdateEvent(update_dict)])
 
     def post(self, request, *args, **kwargs):
-        org_slug = self.kwargs['org_slug']
+        is_htmx = self.request.headers.get("HX-Request", False) == "true"
+        htmx_trigger = self.request.headers.get('HX-Trigger-Name')
 
-        # Toggle visibility for a single orgunit
-        if orgunit_pk := request.POST.get("toggle_visibility"):
-            orgunit = get_object_or_404(
-                OrganizationalUnit, pk=orgunit_pk, organization__slug=org_slug)
-            orgunit.hidden = not orgunit.hidden
-            orgunit.save()
-
-        # Set visibility for all orgunits
-        elif 'set_all_visibility' in request.POST:
-            visibility = request.POST.get('visibility')
-            hidden = visibility != 'true'
-            organization = get_object_or_404(Organization, slug=org_slug)
-            OrganizationalUnit.objects.filter(organization=organization).update(hidden=hidden)
-
+        # Fetch the authorized queryset for the org
         self.object_list = self.get_queryset()
-        context = self.get_context_data()
 
-        if request.headers.get("HX-Request"):
-            return render(request, 'organizations/edit_visibility_orgunit_list.html', context)
-        else:
-            return render(request, 'organizations/edit_visibility_page.html', context)
+        if is_htmx:
+            # Toggle hidden status for a single OU
+            if htmx_trigger == "toggle_orgunit_hidden_state":
+                org_unit_pk = self.request.POST.get("pk")
+                org_unit = self.object_list.filter(pk=org_unit_pk)
+                # This is a whack but functioning way to change the hidden state to the opposite
+                org_unit.update(hidden=Q(hidden=False))
+                self.update_hidden_state_for_org_unit(org_unit)
+
+            # Change all OUs to visible
+            elif htmx_trigger == "unhide_all_orgunits":
+                self.object_list.update(hidden=False)
+                self.update_hidden_state_for_org_unit(self.object_list)
+
+            # Change all OUs to hidden
+            elif htmx_trigger == "hide_all_orgunits":
+                self.object_list.update(hidden=True)
+                self.update_hidden_state_for_org_unit(self.object_list)
+
+        context = self.get_context_data()
+        return self.render_to_response(context)

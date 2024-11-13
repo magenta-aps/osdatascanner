@@ -200,7 +200,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
-        allowed_orgunits = self.user_units
+        allowed_orgunits = self.user_units.filter(hidden=False)
 
         context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
         context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')

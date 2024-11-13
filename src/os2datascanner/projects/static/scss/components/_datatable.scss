@@ -1146,7 +1146,7 @@ $uniform_gap-size: 0.25rem;
 
 .orgunit-table {
   // Table SCSS vars:
-  $table_width: $relative_table_width;
+  $table_width: $relative_table_width--admin;
   $table_min-width: 70rem; // The size for this specific table
 
   // Column SCSS vars:

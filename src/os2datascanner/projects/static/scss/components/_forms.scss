@@ -1,3 +1,9 @@
+@mixin hide-ou-page-container-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .form {
   line-height: 1;
 
@@ -11,26 +17,23 @@
     }
 
     &__body {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
+      @include hide-ou-page-container-layout;
 
-    &__footer {
-      #ou-visibility-form-pagitation {
+      table#ou-visibility-form-pagitation {
         width: 100%;
+        border-collapse: collapse;
 
-        tbody {
-          width: inherit;
-        }
+        tfoot.pagination {
+          border-top: none;
 
-        td {
-          padding: 0 !important;
-        }
-        .page_of_pages,
-        .pages,
-        .dropdown {
-          margin: 0 !important;
+          td {
+            padding: 0 !important;
+          }
+          .page_of_pages,
+          .pages,
+          .dropdown {
+            margin: 0 !important;
+          }
         }
       }
     }
@@ -751,44 +754,50 @@
   padding: 1px;
 }
 
-.form__group#ou-list-hidden {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-  border-radius: var(--border-radius-button);
+.hide-orgunits-list {
+  @include hide-ou-page-container-layout;
 
-  ul.orgunit-list {
-    // Column math
-    column-gap: 2.5rem;
-    column-rule: 1px dashed rgba(0, 0, 0, 0.1);
-    column-count: 3;
+  &__wrapper {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-button);
+  }
 
-    @media (min-width: $break-lg) {
-      column-count: auto;
-      column-width: clamp(18rem, 15vw, 24rem);
-      /* Takes up min 288px, grows with 15vw, until max 384px */
-    }
-
-    padding: 1rem 1.25rem;
-    margin: 0;
-
-    li {
-      list-style: none;
+  &__container {
+    ul.orgunit-list {
+      padding: 1rem 1.25rem;
       margin: 0;
-      margin-left: 0.5rem;
 
-      &:not(:last-child) {
-        margin-bottom: 0.875rem;
+      // Column math
+      column-gap: 2.5rem;
+      column-rule: 1px dashed rgba(0, 0, 0, 0.1);
+      column-count: 3;
+
+      @media (min-width: $break-lg) {
+        column-count: auto;
+        column-width: clamp(18rem, 15vw, 24rem);
+        /* Takes up min 288px, grows with 15vw, until max 384px */
       }
 
-      .ds-checkbox {
-        margin-right: 0;
+      li {
+        list-style: none;
+        margin-left: 0.5rem;
+        margin-bottom: 0.875rem;
 
-        label {
-          display: flex;
-          align-items: center;
-          gap: 0.125rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
 
-          span {
-            margin-left: 0.25rem;
+        .ds-checkbox {
+          margin-right: 0;
+
+          label {
+            display: flex;
+            align-items: center;
+            gap: 0.125rem;
+
+            span {
+              margin-left: 0.25rem;
+            }
           }
         }
       }
