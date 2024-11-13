@@ -18,6 +18,16 @@
   - To validate a scannerjob, users must now have the 
     "can_validate"-permission.
 
+- Support for storing (and remotely fetching) GraphGrant expiry date and update its client secret
+ through OSdatascanner UI.
+
+  - However, this isn't navigable yet without knowledge of location as design decisions are
+   to be made.
+  
+  - Includes initial functionality to support email notification(s) when nearing
+  (or past) expiration of client secret.
+
+
 ### General improvements
 
 - Rearranged handle dropdown order to match customer preference.

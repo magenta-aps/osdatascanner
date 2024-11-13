@@ -11,4 +11,7 @@ urlpatterns = [
     path('msgraph/receive/',
          msgraph_views.MSGraphGrantReceptionView.as_view(),
          name='msgraphgrant-receive'),
+    path('msgraph/<int:pk>',
+         msgraph_views.MSGraphGrantUpdateView.as_view(),
+         name='msgraphgrant-update'),
 ]

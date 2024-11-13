@@ -21,6 +21,10 @@ class GraphGrant(Grant):
     tenant_id = models.UUIDField(
             default=uuid4, editable=True, verbose_name="tenant ID")
 
+    expiry_date = models.DateField(
+        blank=True, null=True, verbose_name="expiry date"
+    )
+
     _client_secret = models.JSONField(verbose_name="client secret")
     client_secret = wrap_encrypted_field("_client_secret")
 

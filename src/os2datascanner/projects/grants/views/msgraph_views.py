@@ -2,14 +2,20 @@ import json
 import base64
 from urllib.parse import urlencode
 
+from django import forms
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.views.generic import UpdateView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.utils.dateparse import parse_datetime
 from os2datascanner.projects.admin.utilities import UserWrapper
+from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
+from requests import HTTPError
+
 from ..models.graphgrant import GraphGrant
 
 
@@ -88,3 +94,113 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
             parameters = "?" + urlencode(request.GET)
 
         return HttpResponseRedirect(redirect + parameters)
+
+
+class MSGraphGrantForm(forms.ModelForm):
+    class Meta:
+        model = GraphGrant
+        exclude = ("__all__")
+
+    _client_secret = AutoEncryptedField(required=False)
+    expiry_date = forms.DateField(widget=forms.widgets.DateInput(
+        attrs={"type": "date", }, format="%Y-%m-%d",),
+        required=False
+    )
+
+    def clean__client_secret(self):
+        return choose_field_value(
+              self.cleaned_data["_client_secret"],
+              self.instance._client_secret)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["_client_secret"].initial = "dummy"
+        self.fields["expiry_date"].initial = self.instance.expiry_date
+
+        self.fields["organization"].disabled = True
+        self.fields["tenant_id"].disabled = True
+        # Todo: Maybe we'll want to let client_id be editable.
+        self.fields["app_id"].disabled = True
+
+
+def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
+    res = (graph_caller.get(
+        f"applications?$filter=(appId eq '{graph_grant.app_id}')&$select=passwordCredentials")
+           .json().get("value"))
+    for pwc in res:
+        for secret in pwc.get("passwordCredentials", []):
+            if client_secret.startswith(secret.get("hint")):
+                end_date = parse_datetime(secret.get("endDateTime")).date()
+
+    return end_date
+
+
+class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView):
+    model = GraphGrant
+    form_class = MSGraphGrantForm
+    template_name = "grants/grant_update.html"
+    success_url = reverse_lazy('organization-list')
+
+    def get(self, request, *args, **kwargs):
+        self.end_date = kwargs.get("end_date")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        is_htmx = self.request.headers.get("HX-Request", False) == "true"
+
+        if is_htmx:
+            htmx_trigger = self.request.headers.get("HX-Trigger-Name")
+            if htmx_trigger == "fetch-expiry-date":
+                gg = self.get_object()
+                end_date = gg.expiry_date  # Defining variable, as it's used in the return
+                client_secret = request.POST.get("_client_secret")
+
+                from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
+                GraphCaller = MSGraphSource.GraphCaller
+
+                try:
+                    if client_secret:
+                        # Secret has been changed.
+                        # Initiate GraphCaller with new secret.
+                        gg.client_secret = client_secret
+                        gc = GraphCaller(gg.make_token)
+                        end_date = get_secret_end_date(client_secret, end_date, gc, gg)
+                    else:
+                        # Secret is the same
+                        gc = GraphCaller(gg.make_token)
+                        end_date = get_secret_end_date(gg.client_secret, end_date, gc, gg)
+
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        f"Fetched end date: {end_date}",
+                        extra_tags="auto_close"
+                    )
+
+                except HTTPError as e:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        e,
+                        extra_tags="auto_close"
+                    )
+                return self.get(request, *args, end_date=end_date)
+
+        else:
+            return super().post(request, *args, **kwargs)
+
+    def get_form_kwargs(self, *args, **kwargs):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+
+        if self.request.method == "POST" and self.request.headers.get(
+                "HX-Request", False) == "true":
+            # request.POST is an immutable querydict, copying to circumvent.
+            post_copy = self.request.POST.copy()
+            post_copy["expiry_date"] = self.end_date
+
+            kwargs.update({
+                'data': post_copy,
+            })
+
+        return kwargs
