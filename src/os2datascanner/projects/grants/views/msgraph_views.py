@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 from django import forms
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -13,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_datetime
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
+from requests import HTTPError
 
 from ..models.graphgrant import GraphGrant
 
@@ -156,16 +158,32 @@ class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView):
                 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
                 GraphCaller = MSGraphSource.GraphCaller
 
-                if client_secret:
-                    # Secret has been changed.
-                    # Initiate GraphCaller with new secret.
-                    gg.client_secret = client_secret
-                    gc = GraphCaller(gg.make_token)
-                    end_date = get_secret_end_date(client_secret, end_date, gc, gg)
-                else:
-                    # Secret is the same
-                    gc = GraphCaller(gg.make_token)
-                    end_date = get_secret_end_date(gg.client_secret, end_date, gc, gg)
+                try:
+                    if client_secret:
+                        # Secret has been changed.
+                        # Initiate GraphCaller with new secret.
+                        gg.client_secret = client_secret
+                        gc = GraphCaller(gg.make_token)
+                        end_date = get_secret_end_date(client_secret, end_date, gc, gg)
+                    else:
+                        # Secret is the same
+                        gc = GraphCaller(gg.make_token)
+                        end_date = get_secret_end_date(gg.client_secret, end_date, gc, gg)
+
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        f"Fetched end date: {end_date}",
+                        extra_tags="auto_close"
+                    )
+
+                except HTTPError as e:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        e,
+                        extra_tags="auto_close"
+                    )
                 return self.get(request, *args, end_date=end_date)
 
         else:
