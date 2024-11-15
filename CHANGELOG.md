@@ -49,6 +49,9 @@
   support for additional queries and better handling of unsupported data
   types.
 
+- Now using pytest as testing framework in tests for organization views
+  instead of django TestCase.
+
 
 ### Bugfixes
 

@@ -632,6 +632,14 @@ def olsen_banden(test_org2):
 
 
 @pytest.fixture
+def børges_værelse(test_org2):
+    return OrganizationalUnit.objects.create(
+        name="Børges Værelse",
+        organization=test_org2,
+    )
+
+
+@pytest.fixture
 def egon(test_org2):
     return Account.objects.create(
         username="manden_med_planen",
@@ -690,3 +698,14 @@ def os2datascanner_org(test_client):
 @pytest.fixture
 def osdatascanner_org(test_client):
     return Organization.objects.create(name="OSdatascanner", client=test_client)
+
+
+# More test clients
+@pytest.fixture
+def other_client():
+    return Client.objects.create(name='other_client')
+
+
+@pytest.fixture
+def other_org(other_client):
+    return Organization.objects.create(name='other_org', client=other_client)
