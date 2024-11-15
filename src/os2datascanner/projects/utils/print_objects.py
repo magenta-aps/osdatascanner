@@ -8,18 +8,22 @@
 from ast import literal_eval
 import sys
 import json
-import uuid
 import yaml
+from pprint import pformat
 from functools import partial
 
 import argparse
 from django.apps import apps
 from django.db import models
+from django.db.models.query import QuerySet
 from django.core.exceptions import FieldError
 from django.core.management.base import BaseCommand
 
 
 model_mapping = {model.__name__: model for model in apps.get_models()}
+
+
+eprint = partial(print, file=sys.stderr)
 
 
 def model_class(model):
@@ -74,7 +78,9 @@ class CollectorActionFactory:
         def __call__(self, parser, namespace, values, option_string):
             if getattr(namespace, self.dest, None) is None:
                 setattr(namespace, self.dest, [])
-            getattr(namespace, self.dest).append(self.caf_prefix + [values])
+            if not isinstance(values, (list, tuple,)):
+                values = [values]
+            getattr(namespace, self.dest).append(self.caf_prefix + values)
 
     def __init__(self):
         self.list = []
@@ -85,7 +91,9 @@ class CollectorActionFactory:
                 caf_list=self.list, caf_prefix=prefix)
 
 
-def get_possible_fields(qs) -> list[str]:
+def get_possible_fields(qs: QuerySet) -> list[str]:
+    """Returns all of the fields, including annotations, available in the given
+    QuerySet."""
     # Trivially adapted from django.db.models.sql.query.Query.names_to_path
     return sorted([
             *models.sql.query.get_field_names_from_opts(qs.model._meta),
@@ -113,6 +121,22 @@ class Command(BaseCommand):
             type=str,
             action=caf.make_collector_action("filter"),
             help="a Django field lookup to filter objects")
+        parser.add_argument(
+            '--annotate',
+            dest="filt_ops",
+            metavar="FL",
+            type=str,
+            action=caf.make_collector_action("annotate"),
+            help="a Django field lookup describing an annotation to add to the"
+                 " query set")
+        parser.add_argument(
+            '--alias',
+            dest="filt_ops",
+            metavar="FL",
+            type=str,
+            action=caf.make_collector_action("alias"),
+            help="a Django field lookup describing an alias to add to the"
+                 " query set")
 
         parser.add_argument(
             '--field',
@@ -123,13 +147,10 @@ class Command(BaseCommand):
             help="a Django field name to include in the output (can be used"
                  " multiple times; if not used, all fields are included)")
         parser.add_argument(
-            '--annotate',
-            dest="filt_ops",
-            metavar="FL",
-            type=str,
-            action=caf.make_collector_action("annotate"),
-            help="a Django field lookup describing an annotation to add to the"
-                 " query set")
+            '--distinct',
+            action="store_true",
+            help="generate a final query with SELECT DISTINCT"
+                 " (use with --order-by)")
 
         group = parser.add_mutually_exclusive_group()
         group.add_argument(
@@ -148,6 +169,12 @@ class Command(BaseCommand):
             help="the Django field (expression) to order the results by"
                  " (descending)")
 
+        parser.add_argument(
+            '--offset',
+            type=int,
+            action="store",
+            default=None,
+            help="the offset at which to start to collect results")
         group = parser.add_mutually_exclusive_group()
         group.add_argument(
             '--limit',
@@ -164,12 +191,6 @@ class Command(BaseCommand):
             help="collect all results for printing")
 
         parser.add_argument(
-            '--offset',
-            type=int,
-            action="store",
-            default=None,
-            help="the offset at which to start to collect results")
-        parser.add_argument(
             '--with-sql',
             action="store_true",
             help="also print the computed SQL statement for the query")
@@ -180,6 +201,18 @@ class Command(BaseCommand):
             const="json",
             default="yaml",
             help="output results as JSON, not YAML")
+        parser.add_argument(
+            '--pprint',
+            dest="format",
+            action="store_const",
+            const="pprint",
+            help="output raw QuerySets using Python's pretty-printer")
+        parser.add_argument(
+            '--no-results',
+            dest="format",
+            action="store_const",
+            const=None,
+            help="don't actually print the final computed results")
         parser.add_argument(
             'model',
             type=model_class,
@@ -199,7 +232,8 @@ class Command(BaseCommand):
     def handle(  # noqa CCR001
             self, *,
             order_by, order_by_desc, limit, offset, model, fields,
-            filt_ops, with_sql, format, **kwargs):
+            filt_ops, with_sql, format, distinct, **kwargs):
+        model_name = model._meta.object_name
         manager = model.objects
 
         if hasattr(manager, "select_subclasses"):
@@ -207,52 +241,91 @@ class Command(BaseCommand):
         else:
             queryset = manager.all()
 
-        for verb, fexpr in (filt_ops or ()):
+        print(f" table:        {model_name}, {queryset.count()} row(s)")
+
+        for verb, fexpr, *rest in (filt_ops or ()):
             lhs, rhs = parse_fl_string(fexpr)
             try:
-                match verb:
-                    case "filter":
+                match (verb, *rest):
+                    case ("filter",):
                         queryset = queryset.filter(**{lhs: rhs})
-                    case "exclude":
+                    case ("exclude",):
                         queryset = queryset.exclude(**{lhs: rhs})
-                    case "annotate":
+                    case ("annotate",):
                         queryset = queryset.annotate(**{lhs: rhs})
+                    case ("alias",):
+                        queryset = queryset.alias(**{lhs: rhs})
+                    case _:
+                        raise ValueError(
+                                "BUG: didn't understand the verb"
+                                f" {verb}")
             except FieldError:
-                print(
+                eprint(
                         f"""Django didn't like the field lookup "{lhs}"."""
-                        " Valid fields at this point are:", file=sys.stderr)
+                        " Valid fields at this point are:")
                 for field in get_possible_fields(queryset):
-                    print(f"\t{field}", file=sys.stderr)
+                    eprint(f"\t{field}")
                 sys.exit(2)
+        if filt_ops:
+            print(f" after filter: {queryset.count()} row(s)")
 
         queryset = queryset.order_by(
                 order_by
                 if order_by is not None
                 else f"-{order_by_desc}")
+        if distinct:
+            queryset = queryset.distinct()
 
-        queryset = queryset.values(*(fields or []))
+        use_values = format in ("json", "yaml")
+
+        if use_values:
+            queryset = queryset.values(*(fields or []))
 
         if (limit, offset) != (None, None):
-            queryset = queryset[slice(offset, (offset or 0) + limit)]
+            off = offset or 0
+            lim = max(1, limit or 0)
+            qslice = slice(off, off + lim)
+            queryset = queryset[qslice]
+            print(f" after slice:  {queryset.count()} row(s) (offset {off})")
 
         if with_sql:
             print(queryset.query)
 
-        queryset = list(queryset)
-        # Lightly postprocess the results: obscure passwords and prevent
-        # UUIDField objects from being dumped in their unhelpful raw form
-        for obj in queryset:
-            for key, value in obj.items():
-                if "password" in key and isinstance(value, str):
-                    obj[key] = "█" * min(len(value), 8)
-                elif isinstance(value, uuid.UUID):
-                    obj[key] = repr(value)
+        if format is None:
+            return
 
-        if format == "json":
-            representation = json.dumps(
-                    queryset, ensure_ascii=False, default=repr,
-                    indent=True)
-        else:
-            representation = yaml.safe_dump(
-                    queryset, allow_unicode=True)
+        queryset = list(queryset)
+        if use_values:
+            # Lightly postprocess the results: obscure passwords and prevent
+            # UUIDField objects from being dumped in their unhelpful raw form
+            for obj in queryset:
+                for key, value in obj.items():
+                    key_is_suspicious = (
+                            "password" in key
+                            or "secret" in key
+                            or "token" in key)
+                    if key_is_suspicious and isinstance(value, str):
+                        obj[key] = "█" * min(len(value), 8)
+                    elif not isinstance(
+                            value,
+                            (int, float, dict, str, list, type(None))):
+                        obj[key] = {
+                            "unserialisable": True,
+                            "module": (type_here := type(value)).__module__,
+                            "qualname": type_here.__qualname__,
+                            "str": str(value),
+                            "repr": repr(value),
+                        }
+
+        match format:
+            case "json":
+                representation = json.dumps(
+                        queryset, ensure_ascii=False, default=repr,
+                        indent=True)
+            case "yaml":
+                representation = yaml.safe_dump(
+                        queryset, allow_unicode=True)
+            case "pprint":
+                representation = pformat(queryset)
+
         print(representation.rstrip())
