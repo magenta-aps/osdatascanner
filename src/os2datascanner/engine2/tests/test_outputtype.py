@@ -86,6 +86,26 @@ class TestOutputSerialisation:
                     "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<\n"
                     "L898902C36UT07408122F1204159ZE184226B<<<<<10",
                     DITTO),
+                (
+                    OutputType.DatabaseRow,
+                    {
+                        "ID": 479,
+                        "User.ID": 20,
+                        "User.Height": 1.79,
+                        "User.Name": "Jens Testsen",
+                        "User.Active": True,
+                        "User.EmployedSince": timestamp,
+                        "User.Manager": None,
+                    },
+                    {
+                        "ID": ["int", 479],
+                        "User.ID": ["int", 20],
+                        "User.Height": ["float", 1.79],
+                        "User.Name": ["str", "Jens Testsen"],
+                        "User.Active": ["bool", True],
+                        "User.EmployedSince": ["datetime", timestamp_str],
+                        "User.Manager": [None, None],
+                    }),
             ])
     def test_outputtype(self, type_, original_value, serialised_value):
         if serialised_value == DITTO:

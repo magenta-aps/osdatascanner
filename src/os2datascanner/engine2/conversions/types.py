@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+from datetime import datetime
 from functools import wraps
 from dataclasses import dataclass, field
 
@@ -37,6 +38,45 @@ class Link:
         return [Link(url, link_text) for url, link_text in v]
 
 
+def encode_db_row(row):
+
+    def _encode_element(value):
+        vtn = type(value).__name__
+        match value:
+            case int() | float() | str() | bool():
+                return [vtn, value]
+            case datetime():
+                return [vtn, unparse_datetime(value)]
+            case None:
+                return [None, None]
+            case _:
+                raise TypeError
+
+    return {key: _encode_element(value) for key, value in row.items()}
+
+
+def decode_db_row(row):
+
+    def _decode_element(value):
+        match value:
+            case ["int", v]:
+                return int(v)
+            case ["float", v]:
+                return float(v)
+            case ["str", v]:
+                return str(v)
+            case ["bool", v]:
+                return bool(v)
+            case ["datetime", v]:
+                return parse_datetime(v)
+            case [None, None]:
+                return None
+            case _:
+                raise TypeError
+
+    return {key: _decode_element(value) for key, value in row.items()}
+
+
 def wrap_none(fn):
     """Decorator. Returns a wrapped version of the given single-argument
     function that unconditionally returns None when its argument is None."""
@@ -71,6 +111,10 @@ class OutputType(Enum):
             dict, dict)
     MRZ = (  # str
             "mrz", str, str)
+
+    DatabaseRow = (
+            "db-row",  # dict[str, db_type]
+            encode_db_row, decode_db_row)
 
     AlwaysTrue = (
             "fallback",
