@@ -142,7 +142,8 @@ class SBSYSDBSource(Source):
         engine, tables = sm.open(self)
         Sag = tables["Sag"]
 
-        expr = select(Sag.c)
+        columns = ["Nummer", "Titel"]
+        expr = select(Sag.c.Nummer, Sag.c.Titel)
 
         # Prepare an expression that represents the number of days since a case
         # was last updated
@@ -158,11 +159,17 @@ class SBSYSDBSource(Source):
         for component in filt:
             match component:
                 case SBSYSDBRule("?Age?", op, value):
+                    if "?Age?" not in columns:
+                        columns.append("?Age?")
+                        expr = expr.add_columns(age)
                     expr = expr.where(op(age, value))
 
                 case SBSYSDBRule(field_name, op, value):
                     expr, column = resolve_complex_column_name(
                             expr, Sag, field_name)
+                    if field_name not in columns:
+                        columns.append(field_name)
+                        expr = expr.add_columns(column)
                     expr = expr.where(op.func_db(column, value))
 
         with Session(engine) as session:
@@ -176,7 +183,7 @@ class SBSYSDBSource(Source):
                     expr, execution_options={
                         "yield_per": 2000
                     }):
-                db_row = db_row_._mapping
+                db_row = dict(zip(columns, db_row_))
                 yield SBSYSDBCaseHandle(
                         self,
                         db_row["Nummer"], db_row["Titel"],
