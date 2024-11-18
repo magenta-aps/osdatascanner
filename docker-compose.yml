@@ -236,6 +236,8 @@ services:
       - ./dev-environment/uploads:/code/uploads
     depends_on: *admin_dependencies
     stop_grace_period: 1m30s
+    extra_hosts:
+      - "localhost:host-gateway"
     networks:
       - default
       - os2mo_default
