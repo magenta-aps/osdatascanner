@@ -566,7 +566,7 @@ services:
       - sso
 
   localkeycloak.os2datascanner:
-    image: quay.io/keycloak/keycloak:21.1.0
+    image: quay.io/keycloak/keycloak:26.0.5
 
     # Import of realm is done with migration commands below
     # because we need to predefine the Master realm.

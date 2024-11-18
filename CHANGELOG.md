@@ -56,6 +56,8 @@
   handled_matches, match_count, match_status, and withheld_matches, turing them into properties.
   This should also greatly decrease sorting time on the leader page.
 
+- Keycloak bumped from version 21.1.0 to the latest version, 26.0.5.
+
 ### Bugfixes
 
 - Background on login and logout page is now blue once again.
