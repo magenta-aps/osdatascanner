@@ -61,7 +61,7 @@ from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete,
                                CustomRuleConnect)
 
-from .views.scanner_views import (StatusOverview, StatusCompleted,
+from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
                                   StatusDelete, StatusTimeline, UserErrorLogView,
                                   UserErrorLogCSVView)
 
@@ -102,7 +102,9 @@ urlpatterns = [
             AnalysisJobRunView.as_view(), name='run-analysis-job'),
     # App URLs
     re_path(r'^status/$', StatusOverview.as_view(), name='status'),
-    re_path(r'^status-completed/$', StatusCompleted.as_view(), name='status-completed'),
+    re_path(r'^status-completed/$', StatusCompletedView.as_view(), name='status-completed'),
+    re_path(r'^status-completed/csv/$',
+            StatusCompletedCSVView.as_view(), name='export-status-completed'),
     re_path(r'^status-completed/timeline/(?P<pk>\d+)/$',
             StatusTimeline.as_view(), name='status-timeline'),
     re_path(r'^error-log/$', UserErrorLogView.as_view(), name='error-log'),

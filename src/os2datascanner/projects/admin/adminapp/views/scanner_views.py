@@ -138,7 +138,7 @@ class StatusOverview(StatusBase):
             return "scan_status.html"
 
 
-class StatusCompleted(StatusBase):
+class StatusCompletedView(StatusBase):
     paginate_by = 10
     paginator_class = EmptyPagePaginator
     template_name = "components/scanner/scan_completed.html"
@@ -191,6 +191,17 @@ class StatusCompleted(StatusBase):
                 self.object_list.update(resolved=True)
 
         return self.render_to_response(self.get_context_data())
+
+
+class StatusCompletedCSVView(CSVExportMixin, StatusCompletedView):
+    exported_fields = {
+        _("Scanner name"): 'scanner__name',
+        _("Start time"): 'scan_tag__time',
+        _("Objects found"): 'total_objects',
+        _("Matches"): 'matches_found',
+        _("Scan time"): 'scan_time',
+    }
+    exported_filename = 'os2datascanner_completed_scans'
 
 
 class StatusTimeline(RestrictedDetailView):
