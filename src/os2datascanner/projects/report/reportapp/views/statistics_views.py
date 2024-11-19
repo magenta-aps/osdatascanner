@@ -529,6 +529,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(last_name__icontains=search_field) |
                 Q(username__istartswith=search_field))
 
+        qs = qs.with_unhandled_matches()
+        qs = qs.with_status()
         qs = self.order_employees(qs)
 
         self.employee_count = qs.count()
@@ -553,24 +555,17 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         """Checks if a sort key is allowed and orders the employees queryset"""
         allowed_sorting_properties = [
             'first_name',
-            'match_count',
-            'match_status']
+            'unhandled_matches',
+            'handle_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):
 
             if sort_key not in allowed_sorting_properties:
                 return
 
-            if sort_key == "match_count":
-                # Trigger recomputation of match_count by saving
-                # all the objects again. FIXME FIXME FIXME!!!
-                for acc in qs:
-                    acc.save()
-
             if order != 'ascending':
                 sort_key = '-'+sort_key
-            qs = qs.order_by(sort_key, 'pk').distinct(
-                sort_key if sort_key[0] != "-" else sort_key[1:], "pk")
+            qs = qs.order_by(sort_key, 'pk').distinct()
 
         return qs
 
@@ -605,8 +600,8 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         _("First name"): 'first_name',
         _("Last name"): 'last_name',
         _("Username"): 'username',
-        _("Matches"): 'match_count',
-        _("Status"): 'match_status',
+        _("Matches"): 'unhandled_matches',
+        _("Status"): 'handle_status',
         _("Organizational units"): 'unit_list',
     }
     exported_filename = 'os2datascanner_leaderpage_statistics'
@@ -635,7 +630,7 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
     def get_rows(self):
         rows = super().get_rows()
         for row in rows:
-            row['match_status'] = StatusChoices(row['match_status']).label
+            row['handle_status'] = StatusChoices(row['handle_status']).label
         return rows
 
     def get(self, request, *args, **kwargs):

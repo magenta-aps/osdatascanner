@@ -18,8 +18,8 @@ from datetime import timedelta
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.conf import settings
-from django.db.models import Count
 from django.db import models
+from django.db.models import Count, Q, Case, When, Value, F, IntegerField, FloatField
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -69,6 +69,83 @@ class AccountQuerySet(models.QuerySet):
              account in accounts_with_no_outlook_settings],
             ignore_conflicts=False  # If this is true, we can't get the PK in the return value.
         )
+
+    def with_unhandled_matches(self):
+        """Annotates each account in the queryset with 'unhandled_matches', which contains the
+        number of unhandled matches the user has. Doesn't count matches from remediator aliases,
+        shared aliases, or withheld matches.
+        This field should contain the same value as the 'match_count' property."""
+        return self.annotate(unhandled_matches=Count(
+                    "aliases__match_relation",
+                    filter=(
+                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+                        & Q(
+                            aliases__shared=False,
+                            aliases__match_relation__number_of_matches__gte=1,
+                            aliases__match_relation__resolution_status__isnull=True,
+                            aliases__match_relation__only_notify_superadmin=False
+                        )
+                    ),
+                    distinct=True
+                )
+            )
+
+    def with_status(self):
+        """Annotates each account in the queryset with 'handle_status', which contains
+        - StatusChoices.GOOD if they have no unhandled matches
+        - StatusChoices.BAD if they have no handled matches in the last 3 weeks
+          OR if the ratio between handled matches and new matches for the last 3 weeks in below 75%
+        - StatusChoices.OK otherwise.
+        This field should contain the same value as the 'match_status' property."""
+        next_monday = timezone.now() + timedelta(weeks=1) - timedelta(
+                days=timezone.now().weekday(),
+                hours=timezone.now().hour,
+                minutes=timezone.now().minute,
+                seconds=timezone.now().second)
+
+        three_weeks_ago = next_monday - timedelta(weeks=3)
+
+        valid_reports = (~Q(aliases___alias_type=AliasType.REMEDIATOR)
+                         & Q(aliases__shared=False,
+                             aliases__match_relation__number_of_matches__gte=1,
+                             aliases__match_relation__only_notify_superadmin=False
+                             )
+                         )
+        unhandled_filter = Q(aliases__match_relation__resolution_status__isnull=True)
+        handled_filter = Q(
+            aliases__match_relation__resolution_status__isnull=False,
+            aliases__match_relation__resolution_time__gte=three_weeks_ago)
+        new_filter = Q(aliases__match_relation__created_timestamp__gte=three_weeks_ago)
+
+        qs = self.annotate(
+            _unhandled_count=Count(
+                'aliases__match_relation',
+                filter=valid_reports & unhandled_filter,
+                distinct=True),
+            _handled_count=Count(
+                'aliases__match_relation',
+                filter=valid_reports & handled_filter,
+                distinct=True),
+            _new_count=Count(
+                'aliases__match_relation',
+                filter=valid_reports & new_filter,
+                distinct=True),
+            _handled_new_ratio=Case(
+                When(
+                    _new_count__gt=0,
+                    then=(F('_handled_count') * 1.0 / F('_new_count'))
+                ),
+                default=0.0,
+                output_field=FloatField()))
+
+        return qs.annotate(handle_status=Case(
+                    When(_unhandled_count=0, then=Value(StatusChoices.GOOD)),
+                    When(_handled_count=0, then=Value(StatusChoices.BAD)),
+                    When(_handled_new_ratio__lt=0.75, then=Value(StatusChoices.BAD)),
+                    default=Value(StatusChoices.OK),
+                    output_field=IntegerField(),
+                )
+            )
 
 
 class AccountManager(models.Manager):
@@ -183,27 +260,6 @@ class Account(Core_Account):
         null=True,
         blank=True,
         verbose_name=_('image'))
-    match_count = models.IntegerField(
-        default=0,
-        null=True,
-        blank=True,
-        verbose_name=_("Number of matches"))
-    withheld_matches = models.IntegerField(
-        default=0,
-        null=True,
-        blank=True,
-        verbose_name=_("Number of withheld matches"))
-    handled_matches = models.IntegerField(
-        default=0,
-        null=True,
-        blank=True,
-        verbose_name=_("Number of handled matches")
-    )
-    match_status = models.IntegerField(
-        choices=StatusChoices.choices,
-        default=1,
-        null=True,
-        blank=True)
     contact_person = models.BooleanField(_("Contact person"), default=False)
 
     def update_last_handle(self):
@@ -224,46 +280,43 @@ class Account(Core_Account):
     def status(self):
         return StatusChoices(self.match_status).label
 
-    def _count_matches(self, exclude_shared=False):
-        """Counts the number of unhandled matches associated with the account."""
+    def _get_reports(self):
         from ...reportapp.models.documentreport import DocumentReport
-        aliases = self.aliases.exclude(_alias_type=AliasType.REMEDIATOR)
-        if exclude_shared:
-            aliases = aliases.exclude(shared=True)
-        reports = DocumentReport.objects.filter(  # noqa: ECE001
-            alias_relation__in=aliases,
+        aliases = self.aliases.exclude(_alias_type=AliasType.REMEDIATOR).exclude(shared=True)
+        reports = DocumentReport.objects.filter(alias_relation__in=aliases)
+        return reports
+
+    @property
+    def match_count(self) -> int:
+        """Counts the number of unhandled matches associated with the account."""
+        reports = self._get_reports()
+        reports = reports.filter(
             number_of_matches__gte=1,
-            resolution_status__isnull=True).values(
-                "only_notify_superadmin").order_by(
-                    "only_notify_superadmin").annotate(
-            count=Count("only_notify_superadmin")).values(
-            "only_notify_superadmin",
-            "resolution_status",
-            "count")
+            resolution_status__isnull=True,
+            only_notify_superadmin=False)
+        return reports.count()
 
-        # TODO: Revisit logic below (and its tests, organizations/tests/test_accounts.py)
-        self.match_count = 0
-        self.withheld_matches = 0
-        self.handled_matches = 0
+    @property
+    def withheld_matches(self) -> int:
+        reports = self._get_reports()
+        reports = reports.filter(
+            number_of_matches__gte=1,
+            resolution_status__isnull=True,
+            only_notify_superadmin=True)
+        return reports.count()
 
-        # reports contains as many dicts as there are (only_notify_superadmin,
-        # resolution_status) pairs, so we need to add them up instead of overwriting
-        # a single value
-        for obj in reports:
-            if obj.get("only_notify_superadmin"):
-                self.withheld_matches += obj.get("count", 0)
-            elif obj.get("resolution_status") is not None:
-                self.handled_matches += obj.get("count", 0)
-            else:
-                self.match_count += obj.get("count", 0)
+    @property
+    def handled_matches(self) -> int:
+        reports = self._get_reports()
+        reports = reports.filter(
+            number_of_matches__gte=1,
+            resolution_status__isnull=False,
+            only_notify_superadmin=True)
+        return reports.count()
 
-    def _calculate_status(self, exclude_shared=False):
-        """Calculate the status of the user. The user can have one of three
-        statuses: GOOD, OK and BAD. The status is calulated on the basis of
-        the number of matches associated with the user, and how often the user
-        has handled matches recently."""
-
-        matches_by_week = self.count_matches_by_week(weeks=3, exclude_shared=exclude_shared)
+    @property
+    def match_status(self) -> StatusChoices:
+        matches_by_week = self.count_matches_by_week(weeks=3, exclude_shared=True)
 
         total_new = 0
         total_handled = 0
@@ -272,11 +325,11 @@ class Account(Core_Account):
             total_handled += week_obj["handled"]
 
         if matches_by_week[0]["matches"] == 0:
-            self.match_status = StatusChoices.GOOD
-        elif total_handled == 0 or total_new != 0 and total_handled/total_new < 0.75:
-            self.match_status = StatusChoices.BAD
+            return StatusChoices.GOOD
+        elif total_handled == 0 or (total_new != 0 and total_handled/total_new < 0.75):
+            return StatusChoices.BAD
         else:
-            self.match_status = StatusChoices.OK
+            return StatusChoices.OK
 
     @property
     def false_positive_rate(self) -> float:
@@ -306,7 +359,7 @@ class Account(Core_Account):
         new matches and the number of handled matches on a weekly basis.
 
         Keyword arguments:
-          week -- the number of weeks to count matches for.
+          weeks -- the number of weeks to count matches for.
         """
         if weeks < 1:
             raise ValueError("The number of weeks must be at least 1.")
@@ -430,13 +483,6 @@ class Account(Core_Account):
             return True
         else:
             return False
-
-    def save(self, *args, **kwargs):
-
-        self._count_matches(exclude_shared=True)
-        self._calculate_status(exclude_shared=True)
-
-        return super().save(*args, **kwargs)
 
 
 @receiver(post_save, sender=Account)
