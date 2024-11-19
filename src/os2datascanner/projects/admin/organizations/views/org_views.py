@@ -75,9 +75,8 @@ class AddOrganizationView(PermissionRequiredMixin, RestrictedCreateView):
         return super().get_queryset(org_path="uuid")
 
     def dispatch(self, request, *args, **kwargs):
-        client_id = self.kwargs['client_id']
         if request.user.has_perm('core.view_client') or \
-                Administrator.objects.filter(user=request.user, client=client_id).exists():
+                Administrator.objects.filter(user=request.user, client_id=self.kwargs['client_id']).exists():
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
