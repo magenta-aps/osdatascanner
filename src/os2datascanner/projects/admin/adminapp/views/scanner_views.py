@@ -198,8 +198,8 @@ class StatusCompletedCSVView(CSVExportMixin, StatusCompletedView):
         _("Scanner name"): 'scanner__name',
         _("Start time"): 'scan_tag__time',
         _("Objects found"): 'total_objects',
-        _("Matches"): 'matches_found',
-        _("Scan time"): 'scan_time',
+        _("Matches found"): 'matches_found',
+        _("Scanning time"): 'scan_time',
     }
     exported_filename = 'os2datascanner_completed_scans'
 
