@@ -1,7 +1,9 @@
 import pytest
 
+from django.contrib.auth.models import Permission
 from django.urls import reverse_lazy
 
+from ...core.models import Client, Administrator
 from ..models import Organization, Position
 
 from os2datascanner.core_organizational_structure.models.organization import (
@@ -21,21 +23,20 @@ class TestOrganizationListViews:
         assert test_client in response.context.get("client_list")
         assert other_client in response.context.get("client_list")
 
-    # Not implemented yet
-    # def test_administrator_with_permission_list(self, client, user_admin,
-    #       test_client, other_client):
-    #     """Users with the "view_client"-permission should be able to see
-    #     all clients."""
-    #     client.force_login(user_admin)
-    #     user_admin.user_permissions.add(
-    #         Permission.objects.get(codename="view_client"))
+    def test_administrator_with_permission_list(self, client, user_admin,
+          test_client, other_client):
+        """Users with the "view_client"-permission should be able to see
+        all clients."""
+        client.force_login(user_admin)
+        user_admin.user_permissions.add(
+            Permission.objects.get(codename="view_client"))
 
-    #     url = reverse_lazy("organization-list")
-    #     response = client.get(url)
+        url = reverse_lazy("organization-list")
+        response = client.get(url)
 
-    #     assert response.status_code == 200
-    #     assert test_client in response.context.get("client_list")
-    #     assert other_client in response.context.get("client_list")
+        assert response.status_code == 200
+        assert test_client in response.context.get("client_list")
+        assert other_client in response.context.get("client_list")
 
     def test_administrator_for_list(self, client, user_admin, test_client, other_client):
         """Administrators should only be able to see the client, that they are
@@ -180,35 +181,35 @@ class TestAddOrganizationViews:
         assert new_org.contact_phone == "12341234"
         assert new_org.client == test_client
 
-    def test_administrator_create_organization_no_permission(self):
+    def test_administrator_create_organization_no_permission(self, client, user_admin, test_client):
         """Administrators should not be able to create an organization without
         the "add_organization"-permission."""
+        client.force_login(user_admin)
 
-        Administrator.objects.create(user=self.user, client=self.mock_client)
         url = reverse_lazy('add-organization-for',
-                           kwargs={'client_id': self.mock_client.uuid})
-        response = self.client.post(url, {
+                           kwargs={'client_id': test_client.uuid})
+        response = client.post(url, {
             'name': 'New Org',
             'contact_email': 'test@unique.mail',
             'contact_phone': '12341234',
         })
 
-        self.assertEqual(response.status_code, 403)
+        assert response.status_code == 403
 
 
 @pytest.mark.django_db
 class TestUpdateOrganizationViews:
 
     def test_blank_user_updating_an_organization(self, client, user, test_org):
-        """Users with no permissions should not be able to update any
+        """Users who are not administrators should not be able to update any
         organizations."""
         client.force_login(user)
 
         # User needs the correct permission to do this
         user.user_permissions.add(Permission.objects.get(codename="change_organization"))
 
-        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url, {
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+        response = client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
@@ -227,7 +228,6 @@ class TestUpdateOrganizationViews:
         # User needs correct permission to do this
         user_admin.user_permissions.add(Permission.objects.get(codename="change_organization"))
 
-        Administrator.objects.create(user=self.user, client=self.mock_client)
         num_org_pre = Organization.objects.count()
         url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
         response = client.post(url, {
@@ -270,10 +270,8 @@ class TestUpdateOrganizationViews:
         # User needs correct permission to do this
         user_admin.user_permissions.add(Permission.objects.get(codename="change_organization"))
 
-        other_client = Client.objects.create(name='other client')
-        Administrator.objects.create(user=self.user, client=other_client)
-        url = reverse_lazy('edit-organization', kwargs={'slug': self.mock_organization.slug})
-        response = self.client.post(url, {
+        url = reverse_lazy('edit-organization', kwargs={'slug': other_org.slug})
+        response = client.post(url, {
             'name': 'Updated Organization',
             'contact_email': 'something@else.com',
             'contact_phone': 'new phone, who dis?',
