@@ -3,7 +3,9 @@ from typing import Iterable
 import operator
 import structlog
 
-from sqlalchemy import select, Table, Column, MetaData, create_engine
+from sqlalchemy import (
+        and_, or_, not_, true, false,
+        select, Table, Column, MetaData, create_engine)
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import (
         Select, func as sql_func, text as sql_text)
@@ -11,7 +13,8 @@ from sqlalchemy.sql.expression import (
 
 from os2datascanner.engine2.model.core import (
         Source, Handle, Resource, SourceManager)
-from os2datascanner.engine2.rules.rule import SimpleRule
+from os2datascanner.engine2.rules import logical
+from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 
 
 logger = structlog.get_logger("engine2")
@@ -74,17 +77,19 @@ class SBSYSDBRule(SimpleRule):
 
 
 def resolve_complex_column_name(
-        expr: Select, start: Table, col_name: str) -> (Select, Column):
-    """Given a Select expression and a Table at which to start, resolves a
-    column name that may traverse several tables (for example,
-    "Creator.ContactInfo.Address.Postcode"). Returns a modified version of the
-    expression that includes all of the constraints required by the traversal
-    and a reference to the column that was eventually selected."""
+        start: Table, col_name: str) -> (Select, Column):
+    """Given a Table at which to start and a complex column name that may
+    traverse several tables (for example,
+    "Creator.ContactInfo.Address.Postcode"), returns the conjunction of all the
+    extra constraints required by the traversal and a reference to the column
+    that was eventually selected."""
     here = start
     *field_path, last = col_name.split(".")
 
     # Worked example: starting at Sag and trying to get to
     # Behandler.Adresse.Landekode...
+
+    links = []
 
     for part in field_path:
         # ... we first select the "BehandlerID" column...
@@ -101,14 +106,75 @@ def resolve_complex_column_name(
         other_table = fk.column.table
 
         # ... then we (implicitly) join the Bruger table into our query...
-        expr = expr.where(link_column == other_table.c.ID)
+        links.append(link_column == other_table.c.ID)
         # ... and continue following the chain at Bruger, where we do the
         # same trick again for "Adresse" -> AdresseID -> <table Adresse>
         here = other_table
 
     # Finally, we take the last part of the column name ("Landekode") and look
     # it up in the table we've ended up at
-    return expr, getattr(here.c, last)
+    return and_(*links), getattr(here.c, last)
+
+
+def convert_rule_to_select(
+        rule: Rule, table: Table,
+        initial_select: Select, column_labels: dict[str, Column],
+        virtual_columns: dict[str, object] = None) -> Select:
+    """Converts an OSdatascanner Rule containing SBSYSDBRule objects into a
+    corresponding SQLAlchemy Select expression.
+
+    The resulting expression is guaranteed to select columns in the same order
+    as the keys of the column_labels dict. (One useful consequence of this is
+    that you can make a mapping from field names to results by just zipping
+    the keys together with a result tuple.)"""
+
+    def rule_to_constraints(r):
+        """Recursively converts an OSdatascanner Rule into a SQLAlchemy
+        constraint.
+
+        This function updates the column_labels dictionary with each new column
+        required by the expression, labelled with its name from the Rule; this
+        information will eventually be required to turn the constraint into a
+        complete Select expression."""
+        match r:
+            case logical.AndRule():
+                return and_(
+                        true(),
+                        *(rule_to_constraints(c) for c in r.components))
+
+            case logical.OrRule():
+                return or_(
+                        false(),
+                        *(rule_to_constraints(c) for c in r.components))
+
+            case logical.NotRule():
+                return not_(rule_to_constraints(r._rule))
+
+            case SBSYSDBRule(field_name, op, value) \
+                    if virtual_columns and field_name in virtual_columns:
+                virtual_column = virtual_columns.get(field_name)
+                if field_name not in column_labels:
+                    column_labels[field_name] = virtual_column
+                return op.func_db(virtual_column, value)
+
+            case SBSYSDBRule(field_name, op, value):
+                extra_constraints, column = resolve_complex_column_name(
+                        table, field_name)
+                if field_name not in column_labels:
+                    column_labels[field_name] = column
+                return and_(*extra_constraints, op.func_db(column, value))
+
+            case _:
+                # For now, we assume that any other OSdatascanner rule plays no
+                # part in the SQL query
+                return true()
+
+    constraints = rule_to_constraints(rule) if rule else true()
+    # To turn our constraint object into a valid Select expression, we need to
+    # make sure we actually select the columns required by the constraints.
+    # Luckily rule_to_constraints stashes those away in the column_labels dict
+    return initial_select.add_columns(
+            *column_labels.values()).where(constraints)
 
 
 class SBSYSDBSource(Source):
@@ -142,35 +208,20 @@ class SBSYSDBSource(Source):
         engine, tables = sm.open(self)
         Sag = tables["Sag"]
 
-        columns = ["Nummer", "Titel"]
-        expr = select(Sag.c.Nummer, Sag.c.Titel)
-
-        # Prepare an expression that represents the number of days since a case
-        # was last updated
-        # (subtracting two datetimes in SQL Server utterly bafflingly gives you
-        # /a third datetime/ (2024-01-01 - 2020-01-01 = 1904-01-02), so let's
-        # not do that. Instead we use the DATEDIFF() function, which computes
-        # the difference between the start date and the end date in terms of
-        # the unit you request)
-        age = sql_func.datediff(
-                sql_text("day"), Sag.c.LastChanged, sql_func.now())
-
-        filt = compute_mss(rule)
-        for component in filt:
-            match component:
-                case SBSYSDBRule("?Age?", op, value):
-                    if "?Age?" not in columns:
-                        columns.append("?Age?")
-                        expr = expr.add_columns(age)
-                    expr = expr.where(op(age, value))
-
-                case SBSYSDBRule(field_name, op, value):
-                    expr, column = resolve_complex_column_name(
-                            expr, Sag, field_name)
-                    if field_name not in columns:
-                        columns.append(field_name)
-                        expr = expr.add_columns(column)
-                    expr = expr.where(op.func_db(column, value))
+        column_labels = {"Nummer": Sag.c.Nummer, "Titel": Sag.c.Titel}
+        expr = convert_rule_to_select(
+                rule, Sag, select(), column_labels,
+                virtual_columns={
+                    # Subtracting two datetimes in SQL Server utterly
+                    # bafflingly gives you /a third datetime/ (2024-01-01 -
+                    # 2020-01-01 = 1904-01-02), so let's not do that. Instead
+                    # we use the DATEDIFF() function, which computes the
+                    # difference between the start date and the end date in
+                    # terms of the unit you request
+                    "?Age?": sql_func.datediff(
+                            sql_text("day"), Sag.c.LastChanged, sql_func.now())
+                })
+        breakpoint()
 
         with Session(engine) as session:
             logger.debug(
@@ -183,7 +234,7 @@ class SBSYSDBSource(Source):
                     expr, execution_options={
                         "yield_per": 2000
                     }):
-                db_row = dict(zip(columns, db_row_))
+                db_row = dict(zip(column_labels.keys(), db_row_))
                 yield SBSYSDBCaseHandle(
                         self,
                         db_row["Nummer"], db_row["Titel"],
