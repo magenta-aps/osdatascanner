@@ -443,7 +443,7 @@ def _update_account(account: Account, path: Sequence[RDN], remote_node: LDAPNode
             # XXX: We are unsure why this still works? This should be handled by
             # prepare_and_publish.
             if attr_name == "imported_id":
-                yield(Action.KEEP, copy(account))
+                yield (Action.KEEP, copy(account))
             setattr(account, attr_name, expected)
             yield (Action.UPDATE, (account, (attr_name,)))
 

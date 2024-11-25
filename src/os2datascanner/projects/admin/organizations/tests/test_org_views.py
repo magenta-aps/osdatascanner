@@ -3,7 +3,6 @@ import pytest
 from django.contrib.auth.models import Permission
 from django.urls import reverse_lazy
 
-from ...core.models import Client, Administrator
 from ..models import Organization, Position
 
 from os2datascanner.core_organizational_structure.models.organization import (
@@ -24,12 +23,12 @@ class TestOrganizationListViews:
         assert other_client in response.context.get("client_list")
 
     def test_administrator_with_permission_list(self, client, user_admin,
-          test_client, other_client):
+                                                test_client, other_client):
         """Users with the "view_client"-permission should be able to see
         all clients."""
         client.force_login(user_admin)
         user_admin.user_permissions.add(
-            Permission.objects.get(codename="view_client"))
+                Permission.objects.get(codename="view_client"))
 
         url = reverse_lazy("organization-list")
         response = client.get(url)
@@ -284,7 +283,8 @@ class TestUpdateOrganizationViews:
         assert response.status_code == expected_code
         assert other_org.name != "Updated Organization"
 
-    def test_administrator_updating_an_organization_no_permission(self, client, user_admin, test_org):
+    def test_administrator_updating_an_organization_no_permission(
+            self, client, user_admin, test_org):
         """An administrator should not be able to edit an organization if they
         do not have the "change_organization"-permission."""
         client.force_login(user_admin)
