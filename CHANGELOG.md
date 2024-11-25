@@ -78,6 +78,9 @@
 
 - Background on login and logout page is now blue once again.
 
+- Updated to call the correct method, _get_saml_client, as implemented in our fork of
+  django_saml2_auth.
+
 ## Version 3.25.3, 6th November 2024
 
 "Remember, remember, the 5th of November ... wait ... close enough"
