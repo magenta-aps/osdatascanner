@@ -339,8 +339,11 @@ class UndistributedView(ReportView):
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
         try:
-            if request.user.is_superuser:
+            if request.user.has_perm("os2datascanner_report.can_see_withheld"):
                 return response
+            else:
+                raise PermissionDenied("User must have the 'os2datascanner_report.can_see_withheld'"
+                                       "-permission to access this view.")
         except Exception as e:
             logger.warning("Exception raised while trying to dispatch to user "
                            f"{request.user}: {e}")
