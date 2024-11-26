@@ -23,7 +23,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponse
@@ -317,10 +317,11 @@ class RemediatorView(ReportView):
         return redirect(reverse_lazy('index'))
 
 
-class UndistributedView(ReportView):
+class UndistributedView(PermissionRequiredMixin, ReportView):
     """Presents a superuser with all undistributed unhandled results."""
 
     type = "undistributed"
+    permission_required = "os2datascanner_report.can_see_withheld"
     template_name = "undistributed_content.html"
 
     def base_match_filter(self, reports):
@@ -335,19 +336,6 @@ class UndistributedView(ReportView):
         context["show_smb_delete_button"] = False
         context["show_smb_mass_delete_button"] = False
         return context
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        try:
-            if request.user.has_perm("os2datascanner_report.can_see_withheld"):
-                return response
-            else:
-                raise PermissionDenied("User must have the 'os2datascanner_report.can_see_withheld'"
-                                       "-permission to access this view.")
-        except Exception as e:
-            logger.warning("Exception raised while trying to dispatch to user "
-                           f"{request.user}: {e}")
-        return redirect(reverse_lazy('index'))
 
 
 class ArchiveMixin:

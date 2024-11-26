@@ -3,6 +3,8 @@ import pytest
 from datetime import timedelta
 from django.conf import settings
 from django.test import override_settings
+from django.contrib.auth.models import Permission
+from django.core.exceptions import PermissionDenied
 
 from os2datascanner.utils.system_utilities import time_now
 
@@ -691,13 +693,20 @@ class TestRemediatorArchiveView:
 @pytest.mark.django_db
 class TestUndistibutedArchiveView:
 
-    def test_undistributedarchiveview_as_default_role(self, rf, egon_account):
-        """A user without superuser privileges should be redirected when trying
-        to access this view."""
+    def test_undistributedarchiveview_without_permission(self, rf, egon_account):
+        """A user without the correct permission should not be allowed access."""
+        request = rf.get('/archive/undistributed')
+        request.user = egon_account.user
+        with pytest.raises(PermissionDenied):
+            UndistributedArchiveView.as_view()(request)
+
+    def test_undistributedarchiveview_with_permission(self, rf, egon_account):
+        """A user with the correct permission should be allowed access."""
+        egon_account.user.user_permissions.add(Permission.objects.get(codename="can_see_withheld"))
         request = rf.get('/archive/undistributed')
         request.user = egon_account.user
         response = UndistributedArchiveView.as_view()(request)
-        assert response.status_code == 302
+        assert response.status_code == 200
 
     def test_undistributedarchiveview_as_superuser(self, rf, superuser_account):
         """Superusers should be able to access the undistributed archive tab."""
