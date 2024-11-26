@@ -194,7 +194,6 @@ class ScanStatus(AbstractScanStatus):
 
     scan_tag = models.JSONField(
         verbose_name=_("scan tag"),
-        unique=True,
     )
 
     scanner = models.ForeignKey(
