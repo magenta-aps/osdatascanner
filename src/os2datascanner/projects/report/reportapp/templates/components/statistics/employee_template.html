@@ -17,19 +17,20 @@
     <div class="matches_container">
       <div class="matches">
         <span class="datatable-numeral">{{ employee.match_count }}</span>
-
-        {% if employee.withheld_matches > 0 %}
-          <div class="withheld-matches"
-               title="{% blocktranslate with withheld=employee.withheld_matches %}The user has {{ withheld }} matches, which have not been distributed to the user yet. This can be done by a superuser in the report module.{% endblocktranslate %}">
-            {{ employee.withheld_matches }} <span>{% trans "withheld" %}</span>
-          </div>
-        {% endif %}
       </div>
       {% if employee.false_positive_alarm %}
         <span class="warning-symbol material-symbols-outlined" title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
           warning
         </span>
       {% endif %}
+    </div>
+  </td>
+
+  <td class="column--withheld">
+    <div class="matches_container">
+      <div class="matches">
+        <span class="datatable-numeral">{{ employee.withheld_matches }}</span>
+      </div>
     </div>
   </td>
 
@@ -56,7 +57,7 @@
 </tr>
 
 <tr class="user-overview datatablex__row" hidden>
-  <td colspan="4">
+  <td colspan="5">
     <div class="overview_wrapper"
          hx-get="{% url 'statistics-user-id' employee.uuid %}"
          hx-trigger="intersect"

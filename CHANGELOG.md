@@ -72,6 +72,7 @@
   - Expanded rows now have a visual indicator when expanded like on other tables.
   - Overview over "unhandled results per scannerjob" is now visible for all users with access to the leader overview page. It is still only possible to delete results if you're a superuser though. 
   - The "User Overview" page has gotten a minor update as a side-result of the refactoring.
+  - Withheld results has gotten its own column.
 
 ### Bugfixes
 

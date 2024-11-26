@@ -90,6 +90,26 @@ class AccountQuerySet(models.QuerySet):
                 )
             )
 
+    def with_withheld_matches(self):
+        """Annotates each account in the queryset with 'withheld', which contains the
+        number of withheld matches the user has. Doesn't count matches from remediator aliases,
+        shared aliases, or withheld matches.
+        This field should contain the same value as the 'withheld_matches' property."""
+        return self.annotate(withheld=Count(
+                    "aliases__match_relation",
+                    filter=(
+                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+                        & Q(
+                            aliases__shared=False,
+                            aliases__match_relation__number_of_matches__gte=1,
+                            aliases__match_relation__resolution_status__isnull=True,
+                            aliases__match_relation__only_notify_superadmin=True
+                        )
+                    ),
+                    distinct=True
+                )
+            )
+
     def with_status(self):
         """Annotates each account in the queryset with 'handle_status', which contains
         - StatusChoices.GOOD if they have no unhandled matches

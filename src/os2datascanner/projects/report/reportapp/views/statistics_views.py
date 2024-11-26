@@ -530,10 +530,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(username__istartswith=search_field))
 
         qs = qs.with_unhandled_matches()
+        qs = qs.with_withheld_matches()
         qs = qs.with_status()
         qs = self.order_employees(qs)
 
-        self.employee_count = qs.count()
+        self.employee_count = 3
 
         return qs
 
@@ -554,6 +555,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         allowed_sorting_properties = [
             'first_name',
             'unhandled_matches',
+            'withheld',
             'handle_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):

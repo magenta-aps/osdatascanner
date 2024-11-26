@@ -1538,7 +1538,14 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
     }
 
-    &--status {
+    &--withheld {
+
+      .datatable-numeral {
+        margin-left: 6.75rem; // Aligning the number in the <td> with the caret icon in the <th>
+      }
+    }
+
+    &--status, &--withheld {
       width: clamp(
         calc(#{$min-width_30}), 
         calc(#{$width_30}), 
