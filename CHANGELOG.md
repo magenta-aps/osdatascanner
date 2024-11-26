@@ -27,6 +27,10 @@
   - Includes initial functionality to support email notification(s) when nearing
   (or past) expiration of client secret.
 
+- The report module has a new management command, `replay_checkups`, that can
+  be used to restore `ScheduledCheckup` objects deleted in error from the
+  administration system.
+
 ### General improvements
 
 - Rearranged handle dropdown order to match customer preference.
