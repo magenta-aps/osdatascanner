@@ -58,6 +58,10 @@
 
 - Keycloak bumped from version 21.1.0 to the latest version, 26.0.5.
 
+- All SimpleRules that operates on text, now inherits from SimpleTextRule.
+  These rules implements get_censor_intervals, which allows the rule to censor the context,
+  of any matches the rule itself or other rules in a compound rule finds.
+
 ### Bugfixes
 
 - Background on login and logout page is now blue once again.

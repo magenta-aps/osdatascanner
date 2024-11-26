@@ -1,8 +1,11 @@
 import structlog
-from ..conversions.types import decode_dict
+
+from ..conversions.types import decode_dict, OutputType
+from ...utils.replace_regions import replace_regions
 from . import messages
 from .. import settings
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 
 logger = structlog.get_logger("matcher")
 
@@ -14,6 +17,67 @@ WRITES_QUEUES = (
     "os2ds_conversions",)
 PROMETHEUS_DESCRIPTION = "Representations examined"
 PREFETCH_COUNT = 8
+
+
+def censor_context(context, rules):
+    """Given a text and an iterable of rules, will censor the text,
+    using the get_censor_intervals method of each rule."""
+    censor_intervals = []
+    for r in rules:
+        if hasattr(r, "get_censor_intervals"):
+            censor_intervals.extend(r.get_censor_intervals(context))
+
+    # Make sure no interval extends beyond the context
+    censor_intervals = [(max(0, start), min(end, len(context))) for start, end in censor_intervals]
+    # Make sure every interval starts before it ends,
+    # and sort them in increasing order of beginning
+    censor_intervals = sorted((start, end) for start, end in censor_intervals if start < end)
+
+    if censor_intervals:
+        # Combine overlapping intervals
+
+        # The beginning and end of current interval
+        interval_start, interval_end = censor_intervals[0]
+        intervals = []
+
+        for start, end in censor_intervals:
+            if start >= interval_end:
+                # If the next interval doesn't overlap with the current one,
+                # save the current one and start a new
+                intervals.append((interval_start, interval_end))
+                interval_start = start
+                interval_end = end
+
+            else:
+                # If the next interval overlaps with the current one, combine them
+                interval_end = max(interval_end, end)
+
+        intervals.append((interval_start, interval_end))
+
+        return "".join(replace_regions(
+            context,
+            *[(start, 'X' * (end - start), end) for start, end in intervals]))
+
+    else:
+        return context
+
+
+def postprocess_match(
+        base_rule: Rule,
+        match_object: tuple[SimpleRule, list[dict]]):
+    rule, matches = match_object
+    """Goes through all found matches and censors their context, if the rule operates on text."""
+
+    if not matches:
+        return (rule, None)
+
+    if rule.operates_on == OutputType.Text:
+        all_rules = base_rule.flatten()
+        for match_dict in matches:
+            if context := match_dict.get("context", None):
+                match_dict["context"] = censor_context(context, all_rules)
+
+    return (rule, matches)
 
 
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 too high cognitive complexity
@@ -49,9 +113,10 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
                     message=exception_message).to_json_object())
         return
 
-    final_matches = message.progress.matches + [
-            messages.MatchFragment(rule, matches or None)
-            for rule, matches in new_matches]
+    final_matches = message.progress.matches
+    for match in new_matches:
+        sub_rule, matches = postprocess_match(rule, match)
+        final_matches.append(messages.MatchFragment(sub_rule, matches))
 
     if isinstance(conclusion, bool):
         # We've come to a conclusion!

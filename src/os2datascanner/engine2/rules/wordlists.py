@@ -2,8 +2,7 @@ import re
 
 from typing import Iterator, Optional
 
-from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleTextRule, Sensitivity
 from .datasets.loader import common as common_loader
 from .utilities.properties import RulePrecedence, RuleProperties
 
@@ -28,7 +27,7 @@ def load_words(dataset):
     yield from _flatten(loaded)
 
 
-class OrderedWordlistRule(SimpleRule):
+class OrderedWordlistRule(SimpleTextRule):
     """
     A OrderedWordlistRule finds matches for a single list of words.
 
@@ -37,7 +36,6 @@ class OrderedWordlistRule(SimpleRule):
 
     Matches are not case-sensitive.
     """
-    operates_on = OutputType.Text
     type_label = "ordered-wordlist"
     eq_properties = ("_dataset",)
     properties = RuleProperties(
@@ -71,6 +69,10 @@ class OrderedWordlistRule(SimpleRule):
                     "context": content[context_begin:context_end],
                     "context_offset": min(begin, 50)
                 }
+
+    def get_censor_intervals(self, context):
+        return [m.span() for m in self._compiled_expr.finditer(context)
+                if str(m.group()).lower() in self._wordlists]
 
     def to_json_object(self) -> dict:
         return dict(**super().to_json_object(), dataset=self._dataset)

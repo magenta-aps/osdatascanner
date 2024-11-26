@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 import json
-from typing import Union, Optional, Tuple, Iterator, Callable, Any
+from typing import Union, Optional, Tuple, Iterator, Callable, Any, Iterable
 from itertools import islice
 
 from .utilities.properties import RulePrecedence, RuleProperties
@@ -140,6 +140,10 @@ class Rule(TypePropertyEquality, JSONSerialisable):
             here = pve if matches[head] else nve
         return (here, list(matches.items()))
 
+    @abstractmethod
+    def flatten(self) -> set['SimpleRule']:
+        """Reduces this Rule to the set of SimpleRules that it references."""
+
     _json_handlers = {}
 
     @abstractmethod
@@ -181,3 +185,17 @@ class SimpleRule(Rule):
         each of which represents one match of this SimpleRule against the
         provided content. Matched content should appear under the dictionary's
         "match" key."""
+
+    def flatten(self):
+        return {self}
+
+
+class SimpleTextRule(SimpleRule):
+    """A SimpleTextRule is a SimpleRule that operates on text."""
+    operates_on = OutputType.Text
+
+    @abstractmethod
+    def get_censor_intervals(self, context: str) -> Iterable[tuple[int, int]]:
+        """Given context for a match, returns an iterable of intervals that should be censored.
+        Intervals should be left-inclusive and right-exclusive"""
+        return []

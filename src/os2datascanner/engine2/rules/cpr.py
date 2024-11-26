@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Iterator, List, Match, Optional, Tuple, Dict
 import re
-from functools import partial
 from itertools import chain
 from enum import Enum, unique
 import structlog
@@ -9,7 +8,7 @@ import structlog
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
 from .logical import oxford_comma
-from .utilities.context import make_context, add_context_filter
+from .utilities.context import make_context
 from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator, cpr_bin_check
 from .utilities.properties import RuleProperties, RulePrecedence
 
@@ -17,13 +16,6 @@ logger = structlog.get_logger("engine2")
 
 cpr_regex = r"\b(\d{6})(?:[ \-/\.\t]|[ ]\-[ ])?(\d{4})\b"
 calculator = CprProbabilityCalculator()
-
-
-# Attempt to filter CPR number-like strings out of all contexts
-add_context_filter(
-        partial(
-                re.compile(cpr_regex).sub,
-                "XXXXXX-XXXX"))
 
 
 # if the sourronding context contains some of these, we get suspicious.
