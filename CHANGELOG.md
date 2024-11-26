@@ -58,6 +58,8 @@ This minor bugfix release corrects a display error in the report module.
   be used to restore `ScheduledCheckup` objects deleted in error from the
   administration system.
 
+- It is now possible to export the history of completed scans in the admin module.
+
 ### General improvements
 
 - Rearranged handle dropdown order to match customer preference.
