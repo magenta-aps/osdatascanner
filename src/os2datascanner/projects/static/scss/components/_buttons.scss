@@ -144,15 +144,22 @@
     margin-left: 0.25rem;
     border: var(--btn-border-default) transparent;
     background-color: transparent !important;
+    height: 26px; // This needs to be redone after the table refactoring
 
-    .material-icons#expand_more {
-      pointer-events: none;
-      transition: var(--transition-default);
-      color: #aaa;
+    .material-icons, .material-symbols {
+      &#expand_more {
+        pointer-events: none;
+        transition: var(--transition-default);
+        color: #aaa;
+      }
     }
     
-    &.up .material-icons#expand_more {
-      transform: rotate(180deg);      
+    &.up {
+      .material-icons, .material-symbols {
+        &#expand_more {
+          transform: rotate(180deg);      
+        }
+      }
     }
 
     &:disabled {
@@ -166,6 +173,42 @@
       color: var(--color-primary-dark);
       border: var(--btn-border-default) transparent;
       background-color: transparent;
+    }
+  }
+
+  &--datatable-actions { // For the new button style in the datatables
+    background-color: transparent;
+    border: var(--btn-border-default) transparent;
+
+    .material-symbols {
+      color: var(--color-primary-dark);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+
+      // Visual
+      color: var(--color-btn-neutral);
+      background-color: transparent;
+
+      // Box Model
+      border: var(--btn-border-default) transparent;
+
+      .material-symbols {
+        color: var(--color-btn-neutral);
+      }
+
+    }
+  
+    &:hover:not([disabled]),
+    &:focus:not([disabled]) {
+      border: var(--btn-border-default) var(--color-primary-dark);
+      background-color: var(--color-primary-dark) !important;
+      
+      .material-symbols {
+        font-variation-settings: 'wght' 500, 'GRAD' -25 !important;
+        color: var(--color-text-white);
+      }
     }
   }
 
@@ -210,6 +253,7 @@
 
   &--text-button { // ***** For smaller buttons that only contain text ***** 
     padding: 0.5rem 0.75rem !important;
+    text-wrap: nowrap;
   }
 
   &--icon-text-button { // ***** For smaller buttons that contains an icon followed by text *****
@@ -280,7 +324,6 @@
   height: fit-content;
 
   &__divider {
-    height: 2.125rem;
     height: 1.25rem;
     width: 2px;
     border: none;

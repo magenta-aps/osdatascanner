@@ -945,6 +945,17 @@
     font-weight: 500;
     color: var(--color-primary);
   }
+
+  .th__flex-container {
+    display: flex;
+    align-items: center;
+
+    .th-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
 }
 
 // **************************************
@@ -953,7 +964,7 @@
 
 // SCSS vars for über precise and responsive column widths
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
-$relative_table_width: calc(100vw - #{$sidemenu_and_content});
+$relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
 // ******************************
 // ***** ORGANIZATION TABLE *****
@@ -964,7 +975,7 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 .org-table {
   // Table SCSS vars:
   $fixed-column_width: 8.5rem; // The "fixed" column of this specific table
-  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width});
+  $table_width: calc(#{$relative_table_width--admin} - #{$fixed-column_width}); 
   $table_min-width: 70rem; // The size for this specific table
 
   // Column SCSS vars:
@@ -1110,8 +1121,8 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
   // Table SCSS vars:
   // $fixed-column_width: 16rem; // The "fixed" column of this specific table
   $fixed-column_width: 210px; // The "fixed" column of this specific table
-  $table_width: calc(#{$relative_table_width} - #{$fixed-column_width});
-  $table_min-width: 60rem;
+  $table_width: calc(#{$relative_table_width--admin} - #{$fixed-column_width}); 
+  $table_min-width: 60rem; 
 
   // Column SCSS vars:
   $width_25: calc(#{$table_width} * 0.25);
@@ -1420,6 +1431,12 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 // ***** TABLES IN THE REPORT MODULE *****
 // ***************************************
 
+// ***** NOTES *****
+
+  /* Report doesn't have the side nav like Admin, BUT all content will be 
+  getting a max-width, so calculations for column width are a bit different 
+  here. */
+
 // **********************************
 // ***** RESULT OVERVIEW TABLES *****
 // **********************************
@@ -1448,4 +1465,138 @@ $relative_table_width: calc(100vw - #{$sidemenu_and_content});
 
 // Redmine ticket: [#60320]
 
-// TBA
+.leaderoverview-table {
+  // Table SCSS vars:
+  $fixed-column_width: 15.5rem; // 248px
+  $table_min-width: 65rem;
+
+  // // Column SCSS vars:
+  $width_20: 20%;
+  $min-width_20: calc((#{$table_min-width} - #{$fixed-column_width}) * 0.2);
+
+  $width_30: 30%;
+  $min-width_30: calc((#{$table_min-width} - #{$fixed-column_width}) * 0.3);
+
+  $width_50: 50%;
+  $min-width_50: calc((#{$table_min-width} - #{$fixed-column_width}) * 0.5);
+
+  // Styles:
+  min-width: $table_min-width;
+
+  .column {
+    $uniform_gap-size: 0.25rem; // NOTE: eventually this needs to be standardized.
+    $font-size_subtitle: 0.875rem; // NOTE: eventually this needs to be standardized.
+
+    &--employee {
+      width: clamp(
+        calc(#{$min-width_50}), 
+        calc(#{$width_50}), 
+        calc(#{$width_50}));
+
+      .employee {
+        &__container {
+          display: flex;
+          flex-direction: column;
+          gap: $uniform_gap-size;
+        }
+
+        &__fullname {
+          font-weight: bold;
+        }
+        
+        &__username {
+          color: var(--color-text-secondary);
+          font-size: $font-size_subtitle;
+        }
+      }
+    }
+
+    &--matches {
+      width: clamp(
+        calc(#{$min-width_20}), 
+        calc(#{$width_20}), 
+        calc(#{$width_20}));
+      
+      padding-right: var(--datatable-cell-padding);
+
+      @media (min-width: $break-xl) {
+        // Increasing the spacing, between this column and the next, on large screens.
+        padding-right: calc(var(--datatable-cell-padding) * 3);
+      }
+
+      .th__flex-container {
+        justify-content: end;
+      }
+
+      &:not(:first-child) {
+        text-align: right;
+        margin-right: 0.25rem;
+      }
+
+      .datatable-numeral {
+        margin-right: 0.375rem; // Aligning the number in the <td> with the caret icon in the <th>
+      }
+    }
+
+    &--status {
+      width: clamp(
+        calc(#{$min-width_30}), 
+        calc(#{$width_30}), 
+        calc(#{$width_30}));
+
+      .help-tooltip {
+        $icon-size: 1.25rem; // Local var setting a fixed size for this element.
+        
+        // Layout
+        vertical-align: middle;
+
+        // Box Model
+        width: $icon-size;
+        height: $icon-size;
+
+        .material-symbols#help {
+          // Visual
+          color: var(--color-primary-dark);
+          opacity: 50%;
+
+          // Typograhy
+          font-size: $icon-size;
+          font-variation-settings: 'opsz' 20;
+        }
+      }
+    }
+
+    &--actions { // The "fixed" column of this specific table
+      width: $fixed-column_width;
+
+      .button-group {
+        flex-wrap: nowrap;
+      }
+
+      #expand_more { // The caret icon
+        color: var(--color-primary-dark);
+      }
+    }
+
+    &--loading { // The element shown while content is loaded.
+      text-align: center;
+    }
+
+    &--nodata { // The element shown, when there's no content to show for the selected organization.
+      // Visual
+      color: var(--color-text-secondary);
+      
+      // Typography
+      text-align: center;
+      font-style: italic;
+    }
+  }
+
+  .datatablex__row {
+    // Adding appropriate styling to the expanded row only.
+    &.user-overview {
+      box-shadow: inset 4px 0 0 var(--color-primary);
+      background-color: rgba(0, 0, 0, 0.035);
+    }
+  }
+}

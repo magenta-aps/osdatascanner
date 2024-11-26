@@ -66,6 +66,13 @@
   These rules implements get_censor_intervals, which allows the rule to censor the context,
   of any matches the rule itself or other rules in a compound rule finds.
 
+- The datatable on "Leader Overview" has been optimized. 
+  - Overall improvement of layout. 
+  - The page is the first on Report to have an overall max-width for content.
+  - Expanded rows now have a visual indicator when expanded like on other tables.
+  - Overview over "unhandled results per scannerjob" is now visible for all users with access to the leader overview page. It is still only possible to delete results if you're a superuser though. 
+  - The "User Overview" page has gotten a minor update as a side-result of the refactoring.
+
 ### Bugfixes
 
 - Background on login and logout page is now blue once again.

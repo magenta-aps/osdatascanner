@@ -131,9 +131,18 @@
           {% include "components/reports/match.html" %}
         {% endfor %}
 
+        {% if '/archive/' in request.path %}
+          {% with colspan=8 %}
+            {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+          {% endwith %}
+        {% else %}
+          {% with colspan=7 %}
+            {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+          {% endwith %}
+        {% endif %}
+
       </tbody>
 
-      {% include "components/pagination/pagination.html" %}
     </table>
   </form>
 </div>
