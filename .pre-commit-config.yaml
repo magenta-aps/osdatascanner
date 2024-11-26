@@ -1,10 +1,10 @@
 repos:
--   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: 'v1.5.7'
+-   repo: https://github.com/hhatto/autopep8
+    rev: 'v2.3.1'
     hooks:
     - id: autopep8
 -   repo: https://github.com/pycqa/flake8
-    rev: 4.0.1
+    rev: 7.0.0
     hooks:
     - id: flake8
       entry: pflake8 src
