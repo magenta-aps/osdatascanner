@@ -102,14 +102,34 @@
                 <th class="column--matches">
                   <div class="th__flex-container">
                     <label class="th-label" for="matches-caret">
-                      <span>{% trans "Matches" %}</span>
+                      <span>{% trans "Results" %}</span>
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'match_count' and order == 'descending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'unhandled_matches' and order == 'descending' %}up{% endif %}"
                             id="matches-caret"
-                            name="match_count"
-                            value="{% if order_by == 'match_count' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                            name="unhandled_matches"
+                            value="{% if order_by == 'unhandled_matches' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                    </button>
+                  </div>
+                </th>
+
+                <th class="column--withheld">
+                  <div class="th__flex-container">
+                    <label class="th-label" for="withheld-matches-caret">
+                      <span>{% trans "Withheld" %}</span>
+                      <span class="help-tooltip"
+                            title="{% blocktrans trimmed %} Withheld results are results that aren't yet visible to the user, but can be delegated by a superuser. These results won't count in the development overview. {% endblocktrans %}">
+                        <i id="help" class="material-symbols">help</i>
+                      </span>
+                    </label>
+
+                    <button type="button"
+                            class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'descending' %}up{% endif %}"
+                            id="withheld-matches-caret"
+                            name="withheld"
+                            value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                       <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                     </button>
                   </div>
@@ -126,10 +146,10 @@
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'match_status' and order == 'descending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'handle_status' and order == 'descending' %}up{% endif %}"
                             id="status-caret"
-                            name="match_status"
-                            value="{% if order_by == 'match_status' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                            name="handle_status"
+                            value="{% if order_by == 'handle_status' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                       <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                     </button>
                   </div>
@@ -150,12 +170,12 @@
                       hx-target="this"
                       hx-trigger="revealed"
                       hx-push-url="false">
-                    <td colspan="4" class="loading">{% trans "Loading employee ..." %}</td>
+                    <td colspan="5" class="loading">{% trans "Loading employee ..." %}</td>
                   </tr>
                 {% endfor %}
               {% else %}
                 <tr class="datatablex__row">
-                  <td class="column--nodata" colspan="4">{% trans "No employees found." %}</td>
+                  <td class="column--nodata" colspan="5">{% trans "No employees found." %}</td>
                 </tr>
               {% endif %}
             </tbody>
