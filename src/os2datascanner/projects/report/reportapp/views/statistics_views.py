@@ -200,7 +200,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
-        allowed_orgunits = self.user_units
+        allowed_orgunits = self.user_units.filter(hidden=False)
 
         context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
         context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')
@@ -540,11 +540,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['user_units'] = self.user_units
+        context['user_units'] = self.user_units.filter(hidden=False)
         context["org_unit"] = self.org_unit
         context["employee_count"] = self.employee_count
-
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
 

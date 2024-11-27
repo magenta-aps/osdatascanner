@@ -6,12 +6,11 @@
   height: 4.5rem;
   border-radius: var(--border-radius-default);
   margin-right: 2rem;
-  padding-left: .75rem;
+  padding-left: 0.75rem;
 
   .material-icons {
     color: #21759c;
     font-size: 3rem;
-
   }
 }
 
@@ -66,38 +65,33 @@
   }
 }
 
-
 @keyframes spin {
   100% {
     -webkit-transform: rotate(180deg);
     transform: rotate(180deg);
   }
 }
-  
+
 @keyframes spinback {
   0% {
     -webkit-transform: rotate(181deg);
-    transform: rotate(181deg);    
+    transform: rotate(181deg);
   }
-  
+
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
 }
 
-
-
 .userObjClass {
-
-  .user-class-input+.user-class-input,
-  button+.user-class-input {
+  .user-class-input + .user-class-input,
+  button + .user-class-input {
     margin-top: 1rem;
   }
 }
 
 .orgunit-list {
-
   .orgunit_name .parent {
     color: var(--color-text-secondary);
     font-style: italic;
@@ -108,7 +102,6 @@
   }
 
   .orgunit_managers {
-
     ul {
       list-style: none;
       display: inline;
@@ -123,28 +116,35 @@
         }
       }
     }
-
   }
 }
 
 .uni-dpos-container {
-  margin-bottom: 1rem;
-
+  margin: 1rem 0 3rem;
   .uni-dpos {
+    margin-top: 8px;
+  }
+}
+
+.org-position__container,
+.uni-dpos {
+  ul {
+    list-style-type: none;
+    margin: 0;
+
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    gap: 6px;
 
-    ul {
-      list-style-type: none;
+    li {
+      display: inline;
+      margin: 0;
 
-      li {
-        display: inline;
-        margin: 0;
-
-        &.add_uni_dpo {
-          margin-left: 0.3rem;
-        }
+      &.add_manager,
+      &.add_dpo,
+      &.add_uni_dpo {
+        margin-left: 0.3rem;
       }
     }
   }
@@ -153,9 +153,9 @@
 .dynamic_li {
   cursor: pointer;
 
-  &:not(:nth-last-of-type(2)) {
+  &:not(:nth-last-child(2)) {
     span::after {
-      content: ", ";
+      content: ",";
     }
   }
 
@@ -165,10 +165,12 @@
 }
 
 .select_options {
-  height: 2rem;
-  width: 15rem;
+  height: 2.125rem;
+  width: 12rem;
   font-size: inherit;
   font-weight: inherit;
+  padding: 0 8px;
+  border: none;
 }
 
 .orgunits {

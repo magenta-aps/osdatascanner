@@ -1,16 +1,16 @@
 :root {
   // Button colors
-  --color-btn-neutral: #E5E5E5;
-  --color-btn-neutral-hover: #CACACA;
-  --color-btn-outline: #CBD5E2;
+  --color-btn-neutral: #e5e5e5;
+  --color-btn-neutral-hover: #cacaca;
+  --color-btn-outline: #cbd5e2;
 
   // Button border life hack
   --btn-border-default: 0.094rem solid;
 
   // Focus styles
-  --color-btn-focus: #BEDAEB;
+  --color-btn-focus: #bedaeb;
   --btn-focus-style: 4px solid;
-  
+
   // Used for the vertical <hr> dividing some button groups for ✨fancy✨ UI
   --color-border-neutral: rgba(0, 0, 0, 0.1);
 }
@@ -19,7 +19,8 @@
   display: none;
 }
 
-.button { // ***** Default button type *****
+.button {
+  // ***** Default button type *****
   // Layout
   display: inline-block;
 
@@ -62,12 +63,13 @@
     outline: var(--btn-focus-style) var(--color-btn-focus) !important;
   }
 
-  &--cta-button { // ***** "Primary" button type (cta: "call to action") *****
+  &--cta-button {
+    // ***** "Primary" button type (cta: "call to action") *****
     // Box Model
     padding: 0.75rem 1rem !important;
     border: var(--btn-border-default) var(--color-primary);
-    border-radius: var(--border-radius-default);
-    
+    // border-radius: var(--border-radius-default);
+
     // Visual
     color: var(--color-text-white);
     background-color: var(--color-primary);
@@ -81,8 +83,9 @@
       background-color: var(--color-primary-dark);
     }
 
-    &.button--icon-text-button { // Only applies when both classes are added
-      max-height: fit-content !important;
+    &.button--icon-text-button {
+      // Only applies when both classes are added
+      max-height: 43px !important;
 
       svg {
         margin-right: 0.25rem;
@@ -92,18 +95,15 @@
         height: 1rem !important;
       }
     }
-
-    &.button--modal-ui { // Only applies when both classes are added
-      border-radius: var(--border-radius-button) !important;
-    }
   }
 
-  &--outline-button  { // ***** "Secondary" button type *****
+  &--outline-button {
+    // ***** "Secondary" button type *****
     // Box Model
-    border: var(--btn-border-default) var(--color-btn-outline);    
+    border: var(--btn-border-default) var(--color-btn-outline);
 
     // Visual
-    color: var(--color-primary) !important;
+    color: var(--color-primary);
     background-color: transparent;
 
     // Typography
@@ -113,10 +113,11 @@
     &:focus:not([disabled]) {
       border: var(--btn-border-default) var(--color-primary);
       background-color: transparent;
-    }   
+    }
   }
 
-  &--transparent-button { // ***** For buttons that are basically just text with no visible "button" styling - (not for carets!) *****
+  &--transparent-button {
+    // ***** For buttons that are basically just text with no visible "button" styling - (not for carets!) *****
     // Box Model
     border: var(--btn-border-default) transparent;
     padding: 0.5rem 0.25rem;
@@ -130,7 +131,7 @@
       background-color: transparent;
       cursor: not-allowed;
     }
-  
+
     &:hover:not([disabled]),
     &:focus:not([disabled]) {
       color: var(--color-primary-dark);
@@ -139,7 +140,8 @@
     }
   }
 
-  &--caret-button { // ***** For - you've guessed it - caret buttons. We primarily use them to illustrate "sort by" and "expand/collapse" in tables *****
+  &--caret-button {
+    // ***** For - you've guessed it - caret buttons. We primarily use them to illustrate "sort by" and "expand/collapse" in tables *****
     padding: 0;
     margin-left: 0.25rem;
     border: var(--btn-border-default) transparent;
@@ -167,7 +169,7 @@
       background-color: transparent;
       cursor: not-allowed;
     }
-  
+
     &:hover:not([disabled]),
     &:focus:not([disabled]) {
       color: var(--color-primary-dark);
@@ -218,11 +220,12 @@
   }
 
   // ***** Style classes that handles layout depending on the button content *****
-  
-      // All three of the following classes "match" each other, so you can mix and match to 
-      // your hearts content, and it'll still look neat. 
 
-  &--icon-button { // ***** For square buttons that only contain an icon *****
+  // All three of the following classes "match" each other, so you can mix and match to
+  // your hearts content, and it'll still look neat.
+
+  &--icon-button {
+    // ***** For square buttons that only contain an icon *****
     padding: 0.25rem;
     max-height: 2.125rem; // future proofing for when someone inevitably adds an icon that's too big
     max-width: 2.125rem; // ^ see above ^
@@ -234,29 +237,34 @@
       pointer-events: none;
     }
 
-    svg { // Currently this applies to (../components/svg-icons/org.svg), (../components/svg-icons/people.svg), and (/static/svg/symbol-defs.svg#icon-plus)
+    svg {
+      // Currently this applies to (../components/svg-icons/org.svg), (../components/svg-icons/people.svg), and (/static/svg/symbol-defs.svg#icon-plus)
       fill: currentColor;
     }
 
-    svg:not(.icon-plus) { // Currently this applies to (../components/svg-icons/org.svg), and (../components/svg-icons/people.svg)
+    svg:not(.icon-plus) {
+      // Currently this applies to (../components/svg-icons/org.svg), and (../components/svg-icons/people.svg)
       margin: 0.125rem;
       width: 1.25rem !important;
       height: 1.25rem !important;
     }
 
-    svg.icon-plus { // (/static/svg/symbol-defs.svg#icon-plus)
+    svg.icon-plus {
+      // (/static/svg/symbol-defs.svg#icon-plus)
       margin: 0.25rem;
       width: 1rem !important;
       height: 1rem !important;
     }
   }
 
-  &--text-button { // ***** For smaller buttons that only contain text ***** 
+  &--text-button {
+    // ***** For smaller buttons that only contain text *****
     padding: 0.5rem 0.75rem !important;
     text-wrap: nowrap;
   }
 
-  &--icon-text-button { // ***** For smaller buttons that contains an icon followed by text *****
+  &--icon-text-button {
+    // ***** For smaller buttons that contains an icon followed by text *****
     // Layout
     display: flex !important;
     align-items: center !important;
@@ -269,13 +277,15 @@
       fill: currentColor;
     }
 
-    .button__clear-icon { // The "x"
+    .button__clear-icon {
+      // The "x"
       width: 1.5rem;
       height: 1.5rem;
       margin-left: -0.25rem;
     }
 
-    .material-icons#delete_forever { // Corrects "empty" space on buttons with this specific "slim" icon
+    .material-icons#delete_forever {
+      // Corrects "empty" space on buttons with this specific "slim" icon
       margin-left: -0.125rem;
     }
 
@@ -297,25 +307,40 @@
 
   // ***** Icon specific code *****
   .material-icons#play_arrow {
-    transform: translateX(-0.063rem); // adjusts the perceived optical balance of the play icon
+    transform: translateX(
+      -0.063rem
+    ); // adjusts the perceived optical balance of the play icon
   }
 
   &--debug {
     background: repeating-linear-gradient(
-        45deg, #ddd7, #fdd7 10px, #f667 10px, #f667 20px);
+      45deg,
+      #ddd7,
+      #fdd7 10px,
+      #f667 10px,
+      #f667 20px
+    );
     border: 1px dashed var(--color-primary-dark);
     font-style: italic;
+  }
+
+  &--modal-ui {
+    border-radius: var(--border-radius-button) !important;
+    padding: 0.5rem 1rem 0.5rem 0.75rem !important;
+    height: 2.125rem;
+    max-height: 2.125rem !important;
   }
 }
 
 // ***** Miscellaneous button adjacent styling *****
 
 .show-more {
-  display: none; // display is updated in JavaScript when needed 
+  display: none; // display is updated in JavaScript when needed
   cursor: pointer;
 }
 
-.button-group { // ***** Handles groups of buttons (surprice, surprice) and might need a refactoring (or at least a better name) at a later time *****
+.button-group {
+  // ***** Handles groups of buttons (surprice, surprice) and might need a refactoring (or at least a better name) at a later time *****
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -331,7 +356,8 @@
   }
 }
 
-.toggle { // ***** This is only used on the "probability" radio button on the Report module *****
+.toggle {
+  // ***** This is only used on the "probability" radio button on the Report module *****
   position: relative;
   display: inline-block;
   background-color: #fff;
@@ -340,16 +366,16 @@
   cursor: pointer;
   font-size: 1rem;
   line-height: 1;
-  padding: .5em .5em .5em 3.5em;
+  padding: 0.5em 0.5em 0.5em 3.5em;
   border-radius: var(--border-radius-button);
 
   &::before,
   &::after {
     position: absolute;
-    left: .5em;
-    top: .5em;
+    left: 0.5em;
+    top: 0.5em;
     box-shadow: 0 0 0 3px #aaa;
-    border-radius: .5em;
+    border-radius: 0.5em;
     transition: var(--transition-default);
   }
 
@@ -375,7 +401,7 @@
     height: 1em;
   }
 
-  &[aria-pressed=false] {
+  &[aria-pressed="false"] {
     &::before {
       content: "clear";
       color: var(--color-error);
@@ -384,7 +410,7 @@
     }
   }
 
-  &[aria-pressed=true] {
+  &[aria-pressed="true"] {
     &::before {
       content: "done";
       color: var(--color-ok-dark);
@@ -398,7 +424,8 @@
   }
 }
 
-.sorting-options {  // *****Used for the "filter" button in the report module 
+.sorting-options {
+  // *****Used for the "filter" button in the report module
   height: 2.69rem;
   width: 5rem;
   background-color: var(--color-white);
@@ -408,7 +435,7 @@
   border-radius: 0%;
   font-family: inherit;
   font-weight: normal;
-  font-size: 0.90rem;
+  font-size: 0.9rem;
 
   &:hover:not(:disabled) {
     cursor: pointer;
@@ -417,5 +444,58 @@
   &:disabled {
     color: var(--color-text-main);
     background-color: var(--color-primary-lightest);
+  }
+}
+
+/************************************/
+/***** CUSTOM ICONS FOR BUTTONS *****/
+/************************************/
+
+/* "Visibility Settings" on Admin */
+.custom-visibility-icon {
+  $icon-size: 12px;
+  $background-size: 14px;
+
+  position: relative;
+  display: inline-block;
+  width: 30px; // Can't explain the math behind this one, it just felt right.
+
+  .fake-shadow {
+    // Layout
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // Box model
+    width: $background-size;
+    height: $background-size;
+    border-radius: 50%;
+
+    // Visual
+    background-color: var(--color-primary);
+
+    // Misc
+    transition: none;
+  }
+
+  #settings {
+    // Cog icon
+    font-size: $icon-size;
+    width: fit-content;
+    font-variation-settings: "wght" 300, "GRAD" -25, "opsz" 20;
+  }
+}
+
+.button--cta-button {
+  // Change the background of the fake shadow when button:hover
+  &:hover:not([disabled]),
+  &:focus:not([disabled]) {
+    .custom-visibility-icon .fake-shadow {
+      border-color: var(--color-primary-dark);
+      background-color: var(--color-primary-dark);
+    }
   }
 }

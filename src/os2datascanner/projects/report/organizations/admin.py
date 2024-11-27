@@ -70,8 +70,8 @@ class OrganizationAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
 
 @admin.register(OrganizationalUnit)
 class OrganizationalUnitAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'uuid', 'parent', 'organization')
-    readonly_fields = ('name', 'uuid', 'parent', 'organization')
+    list_display = ('name', 'hidden', 'parent', 'organization', 'uuid')
+    readonly_fields = ('name', 'hidden', 'parent', 'organization', 'uuid')
 
 
 @admin.register(Position)

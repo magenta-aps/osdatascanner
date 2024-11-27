@@ -13,103 +13,132 @@
     <circle id="circle" cx="50" cy="50" r="45"></circle>
   </svg>
 
-  <div class="content-header"
-       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-       hx-push-url='true'>
+  {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
 
-    {% include "components/common/breadcrumb.html" with page="orgunit_list" %}
+    <div class="content-wrapper"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+         hx-push-url='true'>
 
-    {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
-      <h1>{% trans "organizational hierarchy for"|capfirst %} {{ organization }}</h1>
-      <div class="uni-dpos-container">
-        <b>{% trans "universal DPOs"|capfirst %}:</b>
-        <span class="help-tooltip"
-              title="{% trans 'A universal DPO has access to the DPO-module for all organizational units' %}.">
-          {% include "components/svg-icons/help.svg" %}
-        </span>
-        <div id="uni_dpos" class="uni-dpos">
-          <ul>
-            {% for uni_dpo in uni_dpos %}
-              <li class="dynamic_li"
-                  title="{% trans 'Click to remove' %} {{ uni_dpo.get_full_name }} {% trans 'as universal DPO of' %} {{ organization }}."
-                  hx-post=""
-                  hx-target="#uni_dpos"
-                  hx-select="#uni_dpos"
-                  hx-swap="outerHTML"
-                  hx-trigger="click"
-                  hx-vals='{"rem-uni-dpo": "{{ uni_dpo.uuid }}"}'
-                  hx-confirm="{% trans 'Are you sure you want to remove' %} {{ uni_dpo.get_full_name }} {% trans 'as universal DPO of' %} {{ organization }}?">
-                <span>{{ uni_dpo.get_full_name }}</span>
+      {% include "components/common/breadcrumb.html" with page="orgunit_list" %}
+
+      <div class="content-header">
+        <h1>{% trans "organizational hierarchy for"|capfirst %} {{ organization }}</h1>
+ 
+        <div class="uni-dpos-container">
+          <b>{% trans "universal DPOs"|capfirst %}</b>
+ 
+          <span class="help-tooltip"
+                title="{% trans 'A universal DPO has access to the DPO-module for all organizational units' %}.">
+            {% include "components/svg-icons/help.svg" %}
+          </span>
+ 
+          <div id="uni_dpos" class="uni-dpos">
+            <ul>
+              {% for uni_dpo in uni_dpos %}
+                <li class="dynamic_li"
+                    title="{% trans 'Click to remove' %} {{ uni_dpo.get_full_name }} {% trans 'as universal DPO of' %} {{ organization }}."
+                    hx-post=""
+                    hx-target="#uni_dpos"
+                    hx-select="#uni_dpos"
+                    hx-swap="outerHTML"
+                    hx-trigger="click"
+                    hx-vals='{"rem-uni-dpo": "{{ uni_dpo.uuid }}"}'
+                    hx-confirm="{% trans 'Are you sure you want to remove' %} {{ uni_dpo.get_full_name }} {% trans 'as universal DPO of' %} {{ organization }}?">
+                  <span>{{ uni_dpo.get_full_name }}</span>
+                </li>
+              {% endfor %}
+ 
+              <li class="add_uni_dpo dynamic_li">
+                <button type="button"
+                        class="add_button button button--icon-button"
+                        hx-get="{% url 'uni-dpo-dropdown' organization.slug %}"
+                        hx-swap="outerHTML"
+                        hx-target="this"
+                        hx-push-url="false">
+                  <i id="person_add_alt" class="material-symbols">person_add_alt</i>
+                </button>
               </li>
-            {% endfor %}
-            <li class="add_uni_dpo dynamic_li">
-              <button type="button"
-                      class="add_button button button--icon-button"
-                      hx-get="{% url 'uni-dpo-dropdown' organization.slug %}"
-                      hx-swap="outerHTML"
-                      hx-target="this"
-                      hx-push-url="false">
-                <i id="person_add_alt_1" class="material-icons">person_add_alt_1</i>
-              </button>
-            </li>
-          </ul>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div class="orgunit_filtering_wrapper">
-        <form name="orgunit_filters"
-              id="orgunit_filters"
-              hx-get="{% url 'orgunit-list' organization.slug %}"
-              hx-trigger="keyup delay:200ms from:#search_field"
-              hx-swap="outerHTML"
-              hx-select=".orgunit-list"
-              hx-target=".orgunit-list"
-              hx-include="[id='dropdown_options']"
-              hx-indicator="#orgunit-page-indicator">
-          <div class="orgunit_input_container">
-            <div class="orgunit_input_wrapper search_field_wrapper">
-              <input type="search"
-                     name="search_field"
-                     id="search_field"
-                     placeholder="{% trans 'Search for organizational unit' %}"
-                     value="{{ request.GET.search_field }}"
-                     autocomplete="off" />
-            </div>
-            <div class="org_unit_filter_button">
-              <button class="filter-button filter-button--org_unit expand"
-                      type="button"
-                      onclick="toggleOptionbox('org_structure_filter_options')">
-                <span>{% trans "filter"|capfirst %}</span>
-                <svg class="icon">
-                  <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
-                </svg>
-              </button>
-              <div id="org_structure_filter_options"
-                   class="filter-container"
-                   style="display: none">
-                <div class="filter-container-options filter-container-options--org_unit">
-                  {% comment %}
-                  Added hidden value, to show all roles the first time the user visits the page, despite all unchecked boxes
-                  {% endcomment %}
-                  <input type="hidden" name="roles" value="_" />
-                  <ul>
-                    <div class="filter_header">{% trans "Show organizational units:" %}</div>
-                  </ul>
-                  {% for role in roles %}
+ 
+        <div class="filters-and-settings__wrapper">
+          <form name="orgunit_filters"
+                id="orgunit_filters"
+                class="orgunit_filtering_wrapper"
+                hx-get="{% url 'orgunit-list' organization.slug %}"
+                hx-trigger="keyup delay:200ms from:#search_field"
+                hx-swap="outerHTML"
+                hx-select=".orgunit-table"
+                hx-target=".orgunit-table"
+                hx-include="[id='dropdown_options']"
+                hx-indicator="#orgunit-page-indicator">
+            <div class="orgunit_input_container">
+              <div class="orgunit_input_wrapper search_field_wrapper">
+                <input type="search"
+                       name="search_field"
+                       id="search_field"
+                       placeholder="{% trans 'Search for organizational unit' %}"
+                       value="{{ request.GET.search_field }}"
+                       autocomplete="off" />
+              </div>
+              <div class="org_unit_filter_button">
+                <button class="filter-button filter-button--org_unit expand"
+                        type="button"
+                        onclick="toggleOptionbox('org_structure_filter_options')">
+                  <span>{% trans "filter"|capfirst %}</span>
+                  <svg class="icon">
+                    <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
+                  </svg>
+                </button>
+                <div id="org_structure_filter_options"
+                     class="filter-container"
+                     style="display: none">
+                  <div class="filter-container-options filter-container-options--org_unit">
+                    {% comment %}
+                      Added hidden value, to show all roles the first time the user visits the page, despite all unchecked boxes
+                    {% endcomment %}
+                    <input type="hidden" name="roles" value="_" />
+ 
                     <ul>
-                      <div class="filter_checkbox">
-                        <input value="{{ role.0 }}"
-                               name="roles"
-                               type="checkbox"
-                               id="{{ role.0 }}_checkbox"
-                               {% if role.0 in checked_roles %}checked{% endif %}
-                               autocomplete="off">
-                        <label for="{{ role.0 }}_checkbox">{% trans "with "|capfirst %} {{ role.1 }}</label>
-                        <button class="checkbox_button"
-                                id="{{ role.0 }}_checkbox_button"
-                                onclick="toggleCheckbox(event, '{{ role.0 }}_checkbox')">
+                      <div class="filter_header">{% trans "Show organizational units:" %}</div>
+                    </ul>
+ 
+                    {% for role in roles %}
+                      <ul>
+                        <div class="filter_checkbox">
+                          <input value="{{ role.0 }}"
+                                 name="roles"
+                                 type="checkbox"
+                                 id="{{ role.0 }}_checkbox"
+                                 {% if role.0 in checked_roles %}checked{% endif %}
+                                 autocomplete="off">
+                          <label for="{{ role.0 }}_checkbox">{% trans "with "|capfirst %} {{ role.1 }}</label>
+                          <button class="checkbox_button"
+                                  id="{{ role.0 }}_checkbox_button"
+                                  onclick="toggleCheckbox(event, '{{ role.0 }}_checkbox')"></button>
                         </div>
                       </ul>
                     {% endfor %}
+ 
+                    {% comment %}
+                      TO DO: Refactor this so it's not x amount of lists, and instead one list with x amount of list items. See [#62901] on Redmine.
+                    {% endcomment %}
+                    <ul>
+                      <div class="filter_checkbox">
+                        <input type="checkbox"
+                               name="show_hidden"
+                               id="show_hidden"
+                               value="on"
+                               autocomplete="off"
+                               {% if show_hidden %}checked{% endif %} />
+                        <label for="show_hidden">{% trans "Show hidden units" %}</label>
+                        <button class="checkbox_button"
+                                id="show_hidden_checkbox_button"
+                                onclick="toggleCheckbox(event, 'show_hidden')"></button>
+                      </div>
+                    </ul>
+ 
                     <ul>
                       <div class="filter_checkbox">
                         <input type="checkbox"
@@ -117,72 +146,127 @@
                                id="show_empty"
                                value="on"
                                autocomplete="off"
-                               {% if show_empty %}checked{% endif %}>
+                               {% if show_empty %}checked{% endif %} />
                         <label for="show_empty">{% trans "Show empty units" %}</label>
                         <button class="checkbox_button"
                                 id="show_empty_checkbox_button"
-                                onclick="toggleCheckbox(event, 'show_empty')">
-                        </div>
-                      </ul>
-                      <ul>
-                        <button type="submit" class="button--cta button">{% trans "filter"|capfirst %}</button>
-                      </ul>
-                    </div>
+                                onclick="toggleCheckbox(event, 'show_empty')"></button>
+                      </div>
+                    </ul>
+ 
+                    <ul>
+                      <button type="submit" class="button--cta button">{% trans "filter"|capfirst %}</button>
+                    </ul>
                   </div>
                 </div>
               </div>
-            </form>
-          {% endif %}
+            </div>
+          </form>
+ 
+          <div class="btn">
+            <a href="{% url 'edit-orgunit-visibility-view' organization.slug %}"
+               aria-label="{% trans 'Change which organizational units should be visible throughout both Admin and Report' %}"
+               title="{% trans 'Change which organizational units should be visible throughout both Admin and Report' %}"
+               class="button button--cta-button button--icon-text-button">
+              <div class="custom-visibility-icon">
+                <i id="visibility" class="material-symbols">visibility</i>
+ 
+                <div class="fake-shadow">
+                  <i id="settings" class="material-symbols icon-main">settings</i>
+                </div>
+              </div>
+              <span>{% trans "Edit visibility" %}</span>
+            </a>
+          </div>
         </div>
-        {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
-          <div class="datatable-wrapper card orgunit-list"
+      </div>
+
+
+      <div class="content-body">
+        <div class="datatablex__card-container">
+          <div class="datatablex__wrapper"
                role="region"
                tabindex="0"
                aria-label="{% trans 'organizational units'|capfirst %}"
-               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               hx-indicator="#orgunit-page-indicator"
-               hx-push-url='true'>
-            <table class="datatable">
-              <colgroup>
-                <col class="datatable__column--name">
-                <col class="datatable__column--info">
-                <col class="datatable__column--managers">
-                <col class="datatable__column--dpos">
-              </colgroup>
+               hx-indicator="#orgunit-page-indicator">
+
+            <table class="datatablex orgunit-table">
               <thead>
-                <tr class="table-topbar topbar-stick sticky">
-                  <th class="datatable__column--name">{% trans "name"|capfirst %}</th>
-                  <th class="datatable__column--info">{% trans "accounts"|capfirst %}</th>
-                  <th class="datatable__column--managers">{% trans "managers"|capfirst %}</th>
-                  <th class="datatable__column--dpos">{% trans "DPOs" %}</th>
+                <tr class="datatablex__row">
+                  <th class="column column--name"
+                      title="{% trans 'Name of organizational unit' %}">{% trans "name"|capfirst %}</th>
+                  <th class="column column--affiliated-accounts"
+                      title="{% trans 'Affiliated accounts for this organizational unit' %}">
+                    {% trans "accounts"|capfirst %}
+                  </th>
+                  <th class="column column--visibility">{% trans "visibility"|capfirst %}</th>
+                  <th class="column column--managers">{% trans "managers"|capfirst %}</th>
+                  <th class="column column--dpos">{% trans "DPOs" %}</th>
                 </tr>
               </thead>
-              <tbody>
-                {% if object_list.exists %}
+
+              {% if object_list.exists %}
+                <tbody>
                   {% for orgunit in object_list %}
-                    <tr id="orgunit__{{ orgunit.pk }}">
-                      <td class="datatable__column--name orgunit_name">
+                    <tr id="orgunit__{{ orgunit.pk }}" class="datatablex__row">
+                      <td class="column column--name orgunit_name">
                         <div>{{ orgunit.name }}</div>
                         {% if orgunit.parent %}<div class="parent">({{ orgunit.parent.name }})</div>{% endif %}
                       </td>
-                      <td class="datatable__column--info orgunit_members">
-                        {{ orgunit.employee_count }} {% trans "accounts associated." %}
+
+                      <td class="column column--affiliated-accounts orgunit_members">
+                        <div class="info__wrapper">
+                          <div class="info info__container info--{% if orgunit.employee_count %}affiliated-account{% else %}none{% endif %}"
+                               {% if orgunit.employee_count %} title="{% trans 'There are currently' %} {{ orgunit.employee_count }} {% trans 'accounts associated with' %} {{ orgunit.name }}" {% else %} title="{% trans 'There are currently none accounts associated with' %} {{ orgunit.name }}" {% endif %}>
+                            <i id="diversity_3" class="material-symbols info__icon">diversity_3</i>
+
+                            <div class="info__label">
+                              <span class="content-min">{{ orgunit.employee_count }}</span>
+
+                              <span class="content-max">{{ orgunit.employee_count }} {% trans "associated" %}</span>
+                            </div>
+                          </div>
+                        </div>
                       </td>
-                      <td class="datatable__column--managers orgunit_managers">
-                        <ul>
-                          {% for manager_pos in orgunit.managers %}
-                            <li class="dynamic_li"
-                                title="{% trans 'Click to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
-                                hx-post=""
-                                hx-swap="outerHTML"
-                                hx-target="#orgunit__{{ orgunit.pk }}"
-                                hx-select="#orgunit__{{ orgunit.pk }}"
-                                hx-trigger="click"
-                                hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-manager": "{{ manager_pos.account.uuid }}"}'
-                                hx-confirm="{% trans 'Are you sure you want to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}?">
-                              <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-                              <!-- djlint:off --><span>{{ manager_pos.account.get_full_name }}</span></li><!-- djlint:on -->
+
+                      <td class="column column--visibility">
+                        <div class="table-icon__container">
+                          {% if orgunit.hidden %}
+                            <div class="status status--visibility-off">
+                              <div class="status__wrapper"
+                                   title="&quot;{{ orgunit.name }}&quot; {% trans 'has been set to be hidden' %}">
+                                <i class="material-symbols status__icon">visibility_off</i>
+                              </div>
+                            </div>
+
+                          {% else %}
+                            <div class="status status--visibility-on">
+                              <div class="status__wrapper"
+                                   title="&quot;{{ orgunit.name }}&quot; {% trans 'has been set to be visible' %}">
+                                <i class="material-symbols status__icon">visibility</i>
+                              </div>
+                            </div>
+                          {% endif %}
+                        </div>
+                      </td>
+
+                      <td class="column column--managers orgunit_managers">
+                        <div class="org-position__container">
+                          <ul>
+                            {% for manager_pos in orgunit.managers %}
+                              <li class="dynamic_li"
+                                  title="{% trans 'Click to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}."
+                                  hx-post=""
+                                  hx-swap="outerHTML"
+                                  hx-target="#orgunit__{{ orgunit.pk }}"
+                                  hx-select="#orgunit__{{ orgunit.pk }}"
+                                  hx-trigger="click"
+                                  hx-vals='{"orgunit": "{{ orgunit.pk }}", "rem-manager": "{{ manager_pos.account.uuid }}"}'
+                                  hx-confirm="{% trans 'Are you sure you want to remove' %} {{ manager_pos.account.get_full_name }} {% trans 'as manager of' %} {{ orgunit }}?">
+                                <span>{{ manager_pos.account.get_full_name }}</span>
+                              </li>
                             {% endfor %}
+
                             <li class="add_manager">
                               <button type="button"
                                       class="add_button button button--icon-button"
@@ -194,8 +278,11 @@
                               </button>
                             </li>
                           </ul>
-                        </td>
-                        <td class="datatable__column--dpos orgunit_managers">
+                        </div>
+                      </td>
+
+                      <td class="column column--dpos orgunit_managers">
+                        <div class="org-position__container">
                           <ul>
                             {% for dpo_pos in orgunit.dpos %}
                               <li class="dynamic_li"
@@ -210,6 +297,7 @@
                                 <span>{{ dpo_pos.account.get_full_name }}</span>
                               </li>
                             {% endfor %}
+
                             <li class="add_dpo">
                               <button type="button"
                                       class="add_button button button--icon-button"
@@ -221,19 +309,27 @@
                               </button>
                             </li>
                           </ul>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  {% else %}
-                    <tr>
-                      <td class="nothing_found_row" colspan="4">{% trans "No organizational units found ..." %}</td>
+                        </div>
+                      </td>
                     </tr>
-                  {% endif %}
+                  {% endfor %}
                 </tbody>
+
                 {% include "components/pagination/pagination.html" %}
-              </table>
-            </div>
-          {% else %}
-            <div class="root">{% trans "No organizational units." %}</div>
-          {% endif %}
-        {% endblock %}
+
+              {% else %}
+                <tbody>
+                  <tr class="datatablex__row">
+                    <td class="column nothing_found_row" colspan="5">{% trans "No organizational units found ..." %}</td>
+                  </tr>
+                </tbody>
+              {% endif %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="root">{% trans "No organizational units." %}</div>
+  {% endif %}
+{% endblock %}

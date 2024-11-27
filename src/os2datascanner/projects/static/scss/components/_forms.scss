@@ -1,5 +1,60 @@
+@mixin hide-ou-page-container-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .form {
   line-height: 1;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    &__header {
+      /* There's nothing specific for this class yet, but there will be eventually. */
+    }
+
+    &__body {
+      @include hide-ou-page-container-layout;
+
+      table#ou-visibility-form-pagitation {
+        width: 100%;
+        border-collapse: collapse;
+
+        tfoot.pagination {
+          border-top: none;
+
+          td {
+            padding: 0 !important;
+          }
+          .page_of_pages,
+          .pages,
+          .dropdown {
+            margin: 0 !important;
+          }
+        }
+      }
+    }
+  }
+
+  &__ui-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .ui-group {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+
+      &--left {
+        flex-wrap: wrap;
+      }
+    }
+  }
 
   .iframe-modal & {
     max-width: none;
@@ -13,6 +68,10 @@
     h3 {
       margin: 0 0 2em;
     }
+  }
+
+  &__fieldset {
+    // max-width: 65rem;
   }
 
   &__row {
@@ -31,7 +90,7 @@
     &--support,
     &--dpo,
     &--outlook,
-    &--ldap-provider-setup, 
+    &--ldap-provider-setup,
     &--ldap-claim-setup {
       margin: 3rem 0;
       display: flex;
@@ -95,7 +154,7 @@
 
     &--ldap-claim-setup {
       gap: 1rem;
-      
+
       .form__group {
         display: flex;
         flex-direction: column;
@@ -230,9 +289,8 @@
     appearance: none;
     background-color: var(--color-widget-bg);
     /* note: bg image below uses 2 urls. The first is an svg data uri for the arrow icon, and the second is the gradient. 
-  		for the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also swap in a different svg icon or an external image reference
-  		
-  	*/
+    For the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also 
+    swap in a different svg icon or an external image reference */
     background-image: url("../svg/chevron-down.svg"),
       linear-gradient(
         to bottom,
@@ -694,4 +752,55 @@
   cursor: help;
 
   padding: 1px;
+}
+
+.hide-orgunits-list {
+  @include hide-ou-page-container-layout;
+
+  &__wrapper {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-button);
+  }
+
+  &__container {
+    ul.orgunit-list {
+      padding: 1rem 1.25rem;
+      margin: 0;
+
+      // Column math
+      column-gap: 2.5rem;
+      column-rule: 1px dashed rgba(0, 0, 0, 0.1);
+      column-count: 3;
+
+      @media (min-width: $break-lg) {
+        column-count: auto;
+        column-width: clamp(18rem, 15vw, 24rem);
+        /* Takes up min 288px, grows with 15vw, until max 384px */
+      }
+
+      li {
+        list-style: none;
+        margin-left: 0.5rem;
+        margin-bottom: 0.875rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .ds-checkbox {
+          margin-right: 0;
+
+          label {
+            display: flex;
+            align-items: center;
+            gap: 0.125rem;
+
+            span {
+              margin-left: 0.25rem;
+            }
+          }
+        }
+      }
+    }
+  }
 }

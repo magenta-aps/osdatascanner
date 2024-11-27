@@ -59,6 +59,11 @@ class OrganizationalUnit(MPTTModel):
         blank=False,
     )
 
+    hidden = models.BooleanField(
+        default=False,
+        verbose_name=_('hidden'),
+    )
+
     def get_employees(self):
         positions = self.positions.filter(role=Role.EMPLOYEE)
         return self.account_set.filter(positions__in=positions)
@@ -88,4 +93,5 @@ class OrganizationalUnit(MPTTModel):
 
 class OrganizationalUnitSerializer(BaseSerializer):
     class Meta:
-        fields = ["pk", "name", "parent", "organization", "lft", "rght", "tree_id", "level"]
+        fields = ["pk", "name", "parent", "organization", "lft", "rght", "tree_id", "level",
+                  "hidden"]

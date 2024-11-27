@@ -555,33 +555,36 @@
                 </div>
               {% endif %}
 
-              <!-- Available Employees widget -->
-              <!-- <p class="information">Vælg kun medarbejdere, som du ønsker at tilføje til scannerjobbet.</p>
+              {% comment %}
+                <!-- Available Employees widget -->
+                <p class="information">Vælg kun medarbejdere, som du ønsker at tilføje til scannerjobbet.</p>
 
-          <div id="{% if view.edit %}messageColorId{% endif %}" class="form__group{% if form.rule.errors %} has-error{% endif %}">
-            <div class="select-employees">
+                <div id="{% if view.edit %}messageColorId{% endif %}" class="form__group{% if form.rule.errors %} has-error{% endif %}">
+                  <div class="select-employees">
 
-              <ul id="available_employees" class="select-employees__available">
-                <div class="select-employees-title">{% trans "Available employees" %}</div>
+                    <ul id="available_employees" class="select-employees__available">
+                      <div class="select-employees-title">{% trans "Available employees" %}</div>
 
-                <input type="text" class="employee-filter" id="employee-filter" placeholder="Søg">
+                      <input type="text" class="employee-filter" id="employee-filter" placeholder="Søg">
 
-                {% for value, tag in form.org_unit.field.choices %}
-                <li class="employee" data-employee-id="{{ value }}">
-                  <a href="javascript:void(0);" class="add-employee-button" title="{{ description }}" role="button">{{ tag }}</a>
-                </li>
-                {% endfor %}
-              </ul>
+                      {% for value, tag in form.org_unit.field.choices %}
+                      <li class="employee" data-employee-id="{{ value }}">
+                        <a href="javascript:void(0);" class="add-employee-button" title="{{ description }}" role="button">{{ tag }}</a>
+                      </li>
+                      {% endfor %}
+                    </ul>
 
-              <i id="chevron_right" class="material-icons">chevron_right</i>
+                    <i id="chevron_right" class="material-icons">chevron_right</i>
 
-              <div id="selected_employees" class="select-employees__selected">
-                <div class="select-employees-title">{% trans "Selected employees" %}</div>
-                <div id="employees_list"></div>
-              </div>
+                    <div id="selected_employees" class="select-employees__selected">
+                      <div class="select-employees-title">{% trans "Selected employees" %}</div>
+                      <div id="employees_list"></div>
+                    </div>
 
-            </div>
-          </div> -->
+                  </div>
+                </div> 
+              {% endcomment %}
+
             </fieldset>
           </section>
         {% endif %}
@@ -589,9 +592,12 @@
         {% if not form.userlist and form.org_unit %}
           <section class="data-form">
             <fieldset class="form__fieldset">
-              <h3 class="required-form">{% trans "add users"|capfirst %}</h3>
- 
-              <label for="entire-org">{% trans "all users in this organization"|capfirst %}</label>
+              <h3 class="required-form">{% trans "add accounts"|capfirst %}</h3>
+              <p class="description">
+                {% blocktrans %}Note that opting to "scan all accounts in this organization" will mean that this scannerjob will scan accounts from hidden organizational units as well.{% endblocktrans %}
+              </p>
+
+              <label for="entire-org">{% trans "scan all accounts in this organization"|capfirst %}</label>
  
               <input type="radio"
                      name="show-org-units"
@@ -600,7 +606,7 @@
                      id="entire-org"
                      checked />
  
-              <label for="select-org-units">{% trans "select users from organizational units"|capfirst %}</label>
+              <label for="select-org-units">{% trans "scan accounts from selected organizational units"|capfirst %}</label>
  
               <input type="radio"
                      name="show-org-units"
@@ -608,7 +614,7 @@
                      onclick="showOrgUnits();"
                      id="select-org-units" />
 
-              <p class="information" id="org-unit-info">{% trans "select users from"|capfirst %}</p>
+              <p class="information" id="org-unit-info">{% trans "scan accounts from"|capfirst %}</p>
               <div class="form__group {% if form.org_unit.errors %}has-error{% endif %}"
                    id="org-units">
                 <label class="treeview-label {% if required %}required-form{% endif %}"

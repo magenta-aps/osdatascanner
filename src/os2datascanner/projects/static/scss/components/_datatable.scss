@@ -856,6 +856,17 @@
 // NOTE:
 // Change the class name from "datatablex" to "datatable" after all tables have been refactored.
 // Remember to do the same in all relevant HTML docs.
+
+// Used between icons and their label text
+$uniform_icon-label_gap-size: 0.25rem;
+
+// Magical mixin for instant centered behaviour. So far only available in datatables.
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .datatablex {
   // Box model
   width: 100%;
@@ -937,6 +948,46 @@
       border-top: 1px solid rgba(0, 0, 0, 0.2);
       transition: opacity 200ms ease-in-out;
     }
+
+    .column .info {
+      // Local SCSS vars
+      $text-size: 1rem;
+      $icon-size: 1.25rem;
+
+      &__wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      &__container {
+        @include flex-center;
+        gap: $uniform_icon-label_gap-size;
+      }
+
+      &__label {
+        color: var(--color-text-secondary);
+        font-size: $text-size;
+        line-height: $text-size;
+        margin-top: calc(#{$text-size} * 0.115);
+      }
+
+      &__icon.material-symbols {
+        color: var(--color-primary);
+        font-size: $icon-size;
+        width: $icon-size;
+        height: $icon-size;
+        line-height: $icon-size;
+      }
+
+      &--none {
+        opacity: 50%;
+        .material-symbols {
+          color: var(--color-text-secondary);
+        }
+      }
+    }
   }
 
   a:not(.button) {
@@ -956,6 +1007,12 @@
       gap: 4px;
     }
   }
+
+  .nothing_found_row {
+    text-align: center;
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
 }
 
 // **************************************
@@ -965,6 +1022,16 @@
 // SCSS vars for über precise and responsive column widths
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
 $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
+
+$uniform_gap-size: 0.25rem;
+
+// Magical mixin for instant centered behaviour. So far only available in datatables.
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 // ******************************
 // ***** ORGANIZATION TABLE *****
@@ -1009,16 +1076,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         $text-size: 1rem;
         $icon-size: 1.25rem;
 
-        &__container {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
         &__label {
           color: var(--color-text-secondary);
           font-size: $text-size;
@@ -1051,9 +1108,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         /* A "diy" icon made with existing icons from the Material Symbols library*/
         #sso-icon-container {
           $standard-icon-size: 1.5rem; // Same as the standard icon font size
-          width: $standard-icon-size; 
-          height: $standard-icon-size; 
-          
+          width: $standard-icon-size;
+          height: $standard-icon-size;
+
           position: relative;
 
           i {
@@ -1070,10 +1127,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
               z-index: 2; // Place it on top of cloud icon to imitate "cut-out" effect
               padding-top: 0.25rem;
               color: var(--color-btn-neutral);
-              font-variation-settings: 
-                "GRAD" -25, 
-                "opsz" 20,
-              ;
+              font-variation-settings: "GRAD" -25, "opsz" 20;
               font-size: 18px;
               text-align: center;
             }
@@ -1090,7 +1144,100 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
 // Redmine ticket: [#60290]
 
-// TBA
+.orgunit-table {
+  // Table SCSS vars:
+  $table_width: $relative_table_width--admin;
+  $table_min-width: 70rem; // The size for this specific table
+
+  // Column SCSS vars:
+  $width_15: calc(#{$table_width} * 0.15);
+  $min-width_15: calc(#{$table_min-width} * 0.15);
+
+  $width_25: calc(#{$table_width} * 0.25);
+  $min-width_25: calc(#{$table_min-width} * 0.25);
+
+  $width_30: calc(#{$table_width} * 0.3);
+  $min-width_30: calc(#{$table_min-width} * 0.3);
+
+  // Styles:
+  min-width: $table_min-width;
+
+  .column {
+    $uniform_icon-label_gap-size: 0.25rem;
+
+    &--name {
+      width: clamp(
+        calc(#{$min-width_25}),
+        calc(#{$width_25}),
+        calc(#{$width_25})
+      );
+    }
+
+    &--affiliated-accounts {
+      width: clamp(
+        calc(#{$min-width_15}),
+        calc(#{$width_15}),
+        calc(#{$width_15})
+      );
+
+      .content-min {
+        display: block;
+      }
+
+      .content-max {
+        display: none;
+      }
+
+      @media (min-width: $break-xl) {
+        .content-max {
+          display: block;
+        }
+
+        .content-min {
+          display: none;
+        }
+      }
+    }
+
+    &--visibility {
+      width: 7.5rem; //120px
+      text-align: center;
+
+      .table-icon__container {
+        .status {
+          @include flex-center;
+
+          &__wrapper {
+            @include flex-center;
+          }
+
+          &--visibility-on {
+            .status__icon {
+              color: var(--color-checkmark);
+            }
+          }
+
+          &--visibility-off {
+            .status__icon {
+              color: var(--color-clear);
+              opacity: 60%;
+              font-variation-settings: "FILL" 0 !important;
+            }
+          }
+        }
+      }
+    }
+
+    &--managers,
+    &--dpos {
+      width: clamp(
+        calc(#{$min-width_30}),
+        calc(#{$width_30}),
+        calc(#{$width_30})
+      );
+    }
+  }
+}
 
 // ****************************************
 // ***** ORGANIZATIONS ACCOUNTS TABLE *****
@@ -1138,16 +1285,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   min-width: $table_min-width;
 
   .column {
-    @mixin flex-center {
-      /* We might end up moving this out of here and make it available for all 
-      datatables. Why write 3 lines of code when you can write one? */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    $uniform_gap-size: 0.25rem;
-
     &--name {
       width: clamp(
         calc(#{$min-width_35}),
@@ -1159,7 +1296,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         &__container {
           display: flex;
           flex-direction: column;
-          gap: $uniform_gap-size;
+          gap: $uniform_icon-label_gap-size;
         }
 
         &__label {
@@ -1217,7 +1354,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
         &__wrapper {
           @include flex-center;
-          gap: $uniform_gap-size;
+          gap: $uniform_icon-label_gap-size;
           padding: 0 1rem 0 0.625rem; // Asymmetrical padding to compensate for visual weight
         }
 
@@ -1242,7 +1379,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       .status {
         display: flex;
         align-items: center;
-        gap: $uniform_gap-size;
+        gap: $uniform_icon-label_gap-size;
 
         &__icon {
           &.material-symbols {

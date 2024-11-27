@@ -1,0 +1,164 @@
+{% extends 'organizations/base.html' %}
+{% load i18n %}
+ 
+{% load static %}
+ 
+
+{% block title %}
+  {% trans "Edit visibility"|capfirst %}
+{% endblock %}
+ 
+
+{% block content %}
+  <svg class="page-indicator"
+       id="orgunit-page-indicator"
+       viewbox="0 0 100 100">
+    <circle id="circle" cx="50" cy="50" r="45"></circle>
+  </svg>
+ 
+  {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
+
+    <div class="content-wrapper"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+         hx-push-url='true'>
+      {% include "components/common/breadcrumb.html" with page="edit_orgunit_visibility" %}
+ 
+      <div class="content-header">
+        <h1>{% trans "edit organizational unit visibility for"|capfirst %} {{ organization }}</h1>
+      </div>
+
+      <div class="content-body">
+        <div class="form">
+          <section class="data-form">
+            <fieldset class="form__fieldset">
+              <div class="form__content">
+                <div class="form__content__header">
+                  <h3 class="header__title">{% trans "Choose organizational units" %}</h3>
+ 
+                  <p class="header__subtitle">
+                    {% trans "Select the organizational units that should be visible throughout the Admin and Report module from the list below. Any changes will be visible to all users once saved." %}
+                  </p>
+                </div>
+ 
+                <div id="ou-visibility-form" class="form__content__body">
+                  <form name="hidden-orgunits_filters"
+                        id="hidden-orgunits_filters"
+                        hx-get=""
+                        hx-trigger="keyup delay:200ms from:#search_field, search from:#search_field"
+                        hx-swap="outerHTML"
+                        hx-include="[id='dropdown_options']"
+                        hx-select="#list-of-all-ou"
+                        hx-target="#list-of-all-ou">
+                    <div class="form__ui-container">
+                      <div class="ui-group ui-group--left">
+                        {% comment %} "make all OU visible" button {% endcomment %}
+                        <button type="button"
+                                class="button button--modal-ui button--cta-button button--icon-text-button"
+                                name="unhide_all_orgunits"
+                                aria-label="{% trans 'This button handles toggling of visibility for all organizational units' %}"
+                                title="{% trans 'Make all organizational units visible' %}"
+                                hx-post=""
+                                hx-trigger="click"
+                                hx-trigger-name="unhide_all_orgunits"
+                                hx-swap="outerHTML"
+                                hx-target="#list-of-all-ou"
+                                hx-select="#list-of-all-ou">
+                          <i class="material-symbols">visibility</i>
+                          <span>{% trans "Make all visible"|capfirst %}</span>
+                        </button>
+ 
+                        {% comment %} "hide all OU" button {% endcomment %}
+                        <button type="button"
+                                class="button button--modal-ui button--outline-button button--icon-text-button"
+                                name="hide_all_orgunits"
+                                aria-label="{% trans 'This button handles toggling of visibility for all organizational units' %}"
+                                title="{% trans 'Make all organizational units hidden' %}"
+                                hx-post=""
+                                hx-trigger="click"
+                                hx-trigger-name="hide_all_orgunits"
+                                hx-swap="outerHTML"
+                                hx-target="#list-of-all-ou"
+                                hx-select="#list-of-all-ou">
+                          <i class="material-symbols">visibility_off</i>
+                          <span>{% trans "Make all hidden"|capfirst %}</span>
+                        </button>
+                      </div>
+ 
+                      <div class="ui-group ui-group--right">
+                        {% comment %} search field {% endcomment %}
+                        <div class="search_field_wrapper">
+                          <input type="search"
+                                 name="search_field"
+                                 id="search_field"
+                                 placeholder="{% trans 'Search for unit' %}"
+                                 value="{{ request.GET.search_field }}"
+                                 autocomplete="off" />
+                        </div>
+
+                        {% comment %} Place future filtering options here as well {% endcomment %}
+                      </div>
+                    </div>
+                  </form>
+ 
+                  <div class="hide-orgunits-list" id="list-of-all-ou">
+                    <div class="hide-orgunits-list__wrapper">
+                      <div class="hide-orgunits-list__container">
+                        {% if object_list %}
+                          <ul class="orgunit-list">
+                            {% for orgunit in object_list %}
+                              <li id="orgunit__{{ orgunit.pk }}">
+                                <div class="ds-checkbox">
+                                  <input type="checkbox"
+                                         name="toggle_orgunit_hidden_state"
+                                         id="select-{{ orgunit.pk }}"
+                                         value="{{ orgunit.pk }}"
+                                         hx-post=""
+                                         hx-vals='{"pk": "{{ orgunit.pk }}"}'
+                                         hx-trigger="change"
+                                         hx-trigger-name="toggle_orgunit_hidden_state"
+                                         hx-swap="outerHTML"
+                                         hx-target="#orgunit__{{ orgunit.pk }}"
+                                         hx-select="#orgunit__{{ orgunit.pk }}"
+                                         {% if not orgunit.hidden %}checked{% endif %}>
+
+                                  <label for="select-{{ orgunit.pk }}">
+                                    <span title="">{{ orgunit.name }}</span>
+                                  </label>
+                                </div>
+                              </li>
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                      </div>
+                    </div>
+ 
+                    <!-- pagination -->
+                    <table id="ou-visibility-form-pagitation">
+                      {% include "components/pagination/pagination.html" %}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </section>
+        </div>
+      </div>
+
+      <div class="content-footer">
+        <a href="{% url 'orgunit-list' org_slug=organization.slug %}"
+           class="button button--cta-button button--icon-text-button"
+           id="return_button"
+           aria-label="{% trans 'return to the organizational structure overview'|capfirst %}"
+           title="{% trans 'return to the organizational structure overview'|capfirst %}"
+           name="return">
+          <i id="undo" class="material-symbols">undo</i>
+ 
+          <span>{% trans "go back"|capfirst %}</span>
+        </a>
+      </div>
+    </div>
+
+  {% else %}
+    <div class="root">{% trans "you don't have the right credentials to access this page"|capfirst %}</div>
+  {% endif %}
+{% endblock %}

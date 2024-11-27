@@ -70,14 +70,13 @@ Single-colored icons can be modified like so:
 
 /* datatable severity icons, stop */
 
-
 /* file type icons, start */
 .icon-filetype {
   display: block;
   height: 2rem;
   width: 2rem;
 
-  >svg {
+  > svg {
     display: block;
     height: 100%;
     fill: #50565d;
@@ -93,19 +92,29 @@ Single-colored icons can be modified like so:
   }
 
   &--ews svg {
-    fill: #EEB441;
+    fill: #eeb441;
   }
-
 }
 
 /* file type icons, stop */
 
 .help-tooltip {
-
   display: none;
 
-  svg, .material-icons {
-    fill: var(--color-text-secondary);
+  $icon-color: var(--color-text-secondary);
+
+  svg {
+    fill: $icon-color;
+  }
+
+  .material-icons,
+  .material-symbols {
+    color: $icon-color;
+  }
+  
+  svg,
+  .material-icons,
+  .material-symbols {
     height: 1em;
     width: 1em;
     vertical-align: text-top;

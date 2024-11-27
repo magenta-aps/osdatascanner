@@ -11,6 +11,8 @@ urlpatterns = [
          name='add-organization-for'),
     path('<slug:slug>/edit', views.UpdateOrganizationView.as_view(), name='edit-organization'),
     path('<slug:org_slug>/units', views.OrganizationalUnitListView.as_view(), name='orgunit-list'),
+    path('<slug:org_slug>/units/edit-visibility', views.OrganizationalUnitEditVisibility.as_view(),
+         name='edit-orgunit-visibility-view'),
     path('<slug:org_slug>/units/<uuid:pk>/manager-dropdown', views.ManagerDropdownView.as_view(),
          name='manager-dropdown'),
     path('<slug:org_slug>/units/<uuid:pk>/dpo-dropdown', views.DPODropdownView.as_view(),

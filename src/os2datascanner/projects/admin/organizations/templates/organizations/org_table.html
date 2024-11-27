@@ -57,14 +57,14 @@
                   <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
                 </td>
                 <td class="column column--info">
-                  <div class="info__container">
-                    <div class="info info--email">
-                      <i id="mail" class="material-symbols">mail</i>
+                  <div class="info__wrapper">
+                    <div class="info info__container info--email">
+                      <i id="mail" class="material-symbols info__icon">mail</i>
                       <span class="info__label">{{ organization.contact_email|default_if_none:"---" }}</span>
                     </div>
  
-                    <div class="info info--phone">
-                      <i id="phone" class="material-symbols">phone</i>
+                    <div class="info info__container info--phone">
+                      <i id="phone" class="material-symbols  info__icon">phone</i>
                       <span class="info__label">{{ organization.contact_phone|default_if_none:"---" }}</span>
                     </div>
                   </div>
