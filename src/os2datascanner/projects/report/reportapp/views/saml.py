@@ -10,7 +10,7 @@ from django_saml2_auth import views as dsa_views
 def metadata(request):
     sa = settings.SAML2_AUTH
 
-    client = dsa_views.get_saml_client(sa["ASSERTION_URL"], dsa_views.acs)
+    client = dsa_views._get_saml_client(dsa_views.get_current_domain(request))
     config = client.config
     am = sa["ATTRIBUTES_MAP"]
 
