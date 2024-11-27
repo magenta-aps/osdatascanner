@@ -57,13 +57,13 @@ class OutputType(Enum):
                 return [int(v[0]), int(v[1])]
             case OutputType.Links:
                 if isinstance(v, list):
-                    return [(link.url, link.link_text) for link in v]
-                return (v.url, v.link_text)
+                    return [[link.url, link.link_text] for link in v]
+                return [v.url, v.link_text]
             case OutputType.Manifest:
                 return [h.to_json_object() for h in v]
             case OutputType.EmailHeaders:
-                # v is already suitable for JSON serialisation
-                return v
+                # Force all keys to be lower-case
+                return {k.lower(): v for k, v in v.items()}
 
             case OutputType.AlwaysTrue:
                 return True
