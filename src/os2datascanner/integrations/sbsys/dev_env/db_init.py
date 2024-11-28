@@ -34,15 +34,18 @@ if __name__ == "__main__":
 
     with Session(engine) as session:
         # Populate tables
-        session.execute(insert(SagsTilstandOpslag), SAGS_TILSTAND_OPSLAG)
-        session.execute(insert(SagsStatus), SAGS_STATUS)
-        session.execute(insert(Hieraki), HIERAKI)  # NOTE misspelled in SBSYS
-        session.execute(insert(HierakiMedlem), HIERAKI_MEDLEM)  # NOTE misspelled in SBSYS
-        session.execute(insert(Adresse), ADRESSE)
-        session.execute(insert(ArkivAfklaringStatus), ARKIV_AFKLARING_STATUS)
-        session.execute(insert(Ansaettelsessted), ANSAETTELSESSTED)
-        session.execute(insert(FagOmraade), FAG_OMRAADE)
-        session.execute(insert(Bruger), BRUGER)
-        session.execute(insert(Sag), SAG)
+        for table, data in [
+                (SagsTilstandOpslag, SAGS_TILSTAND_OPSLAG),
+                (SagsStatus, SAGS_STATUS),
+                (Hieraki, HIERAKI),  # NOTE misspelled in SBSYS
+                (HierakiMedlem, HIERAKI_MEDLEM),  # NOTE misspelled in SBSYS
+                (Adresse, ADRESSE),
+                (ArkivAfklaringStatus, ARKIV_AFKLARING_STATUS),
+                (Ansaettelsessted, ANSAETTELSESSTED),
+                (FagOmraade, FAG_OMRAADE),
+                (Bruger, BRUGER),
+                (Sag, SAG)]:
+            print(table.name)
+            print("\t", session.execute(insert(table), data))
 
         session.commit()

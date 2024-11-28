@@ -1,6 +1,8 @@
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional
+from datetime import datetime
+from functools import wraps
+from dataclasses import dataclass, field
 
 from os2datascanner.engine2.model.core.handle import Handle
 from os2datascanner.engine2.utilities.datetime import (
@@ -26,75 +28,107 @@ class Link:
             s = " ".join([s.strip() for s in s.split()])
         self._link_text = s
 
+    @classmethod
+    def dump(cls, v):
+        return [[link.url, link.link_text]
+                for link in (v if isinstance(v, list) else [v])]
+
+    @classmethod
+    def load(cls, v):
+        return [Link(url, link_text) for url, link_text in v]
+
+
+def encode_db_row(row):
+
+    def _encode_element(value):
+        vtn = type(value).__name__
+        match value:
+            case int() | float() | str() | bool():
+                return [vtn, value]
+            case datetime():
+                return [vtn, unparse_datetime(value)]
+            case None:
+                return [None, None]
+            case _:
+                raise TypeError
+
+    return {key: _encode_element(value) for key, value in row.items()}
+
+
+def decode_db_row(row):
+
+    def _decode_element(value):
+        match value:
+            case ["int", v]:
+                return int(v)
+            case ["float", v]:
+                return float(v)
+            case ["str", v]:
+                return str(v)
+            case ["bool", v]:
+                return bool(v)
+            case ["datetime", v]:
+                return parse_datetime(v)
+            case [None, None]:
+                return None
+            case _:
+                raise TypeError
+
+    return {key: _decode_element(value) for key, value in row.items()}
+
+
+def wrap_none(fn):
+    """Decorator. Returns a wrapped version of the given single-argument
+    function that unconditionally returns None when its argument is None."""
+
+    @wraps(fn)
+    def _wrapper(arg):
+        return fn(arg) if arg is not None else None
+
+    return _wrapper
+
 
 class OutputType(Enum):
     """Conversion functions return a typed result, and the type is a member of
     the OutputType enumeration. The values associated with these members are
     simple string identifiers that can be used in serialisation formats."""
-    Text = "text"  # str
-    LastModified = "last-modified"  # datetime.datetime
-    ImageDimensions = "image-dimensions"  # (int, int)
-    Links = "links"  # list[Link]
-    Manifest = "manifest"  # list[Handle]
-    EmailHeaders = "email-headers"  # dict[str, str]
-    MRZ = "mrz"  # str
+    Text = (  # str
+            "text", str, str)
+    LastModified = (  # datetime.datetime
+            "last-modified", unparse_datetime, parse_datetime)
+    ImageDimensions = (
+            "image-dimensions",
+            lambda dim: list(int(k) for k in dim),
+            lambda dim: tuple(int(k) for k in dim))
+    Links = (  # list[Link]
+            "links", Link.dump, Link.load)
+    Manifest = (  # list[Handle]
+            "manifest",
+            lambda hl: [handle.to_json_object() for handle in hl],
+            lambda hl: [Handle.from_json_object(handle) for handle in hl])
+    EmailHeaders = (  # dict[str, str]
+            "email-headers",
+            dict, dict)
+    MRZ = (  # str
+            "mrz", str, str)
 
-    AlwaysTrue = "fallback"  # True
-    NoConversions = "dummy"
+    DatabaseRow = (
+            "db-row",  # dict[str, db_type]
+            encode_db_row, decode_db_row)
 
-    def encode_json_object(self, v):
-        """Converts an object (of the appropriate type for this OutputType) to
-        a JSON-friendly representation."""
-        if v is None:
-            return None
+    AlwaysTrue = (
+            "fallback",
+            lambda _: True, lambda _: True)
+    NoConversions = (
+            "dummy",
+            None, None)
 
-        match self:
-            case OutputType.Text | OutputType.MRZ:
-                return str(v)
-            case OutputType.LastModified:
-                return unparse_datetime(v)
-            case OutputType.ImageDimensions:
-                return [int(v[0]), int(v[1])]
-            case OutputType.Links:
-                if isinstance(v, list):
-                    return [(link.url, link.link_text) for link in v]
-                return (v.url, v.link_text)
-            case OutputType.Manifest:
-                return [h.to_json_object() for h in v]
-            case OutputType.EmailHeaders:
-                # v is already suitable for JSON serialisation
-                return v
-
-            case OutputType.AlwaysTrue:
-                return True
-            case _:
-                raise TypeError(self.value)
-
-    def decode_json_object(self, v):
-        """Constructs an object (of the appropriate type for this OutputType)
-        from a JSON representation."""
-        if v is None:
-            return None
-
-        match self:
-            case OutputType.Text | OutputType.MRZ:
-                return v
-            case OutputType.LastModified:
-                return parse_datetime(v)
-            case OutputType.ImageDimensions:
-                return int(v[0]), int(v[1])
-            case OutputType.Links:
-                return [Link(url, link_text) for url, link_text in v]
-            case OutputType.Manifest:
-                return [Handle.from_json_object(h) for h in v]
-            case OutputType.EmailHeaders:
-                # Force all keys to be lower-case
-                return {k.lower(): v for k, v in v.items()}
-
-            case OutputType.AlwaysTrue:
-                return True
-            case _:
-                raise TypeError(self.value)
+    def __new__(cls, value, dump, load):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.encode_json_object = wrap_none(dump)
+        obj.decode_json_object = wrap_none(load)
+        return obj
 
 
 def encode_dict(d):

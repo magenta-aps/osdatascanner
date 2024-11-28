@@ -1,0 +1,3 @@
+This folder is intended as a test and staging area for extensions to the
+OSdatascanner data access model. No other code in the repository should import
+or depend upon anything in this folder, and it is not imported automatically.

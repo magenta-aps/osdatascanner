@@ -24,7 +24,7 @@ services:
       - sbsys
 
   SBSYS_DB:
-    image: mcr.microsoft.com/mssql/server:2017-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - "7777:1433"
       - "7778:1434"
@@ -33,7 +33,7 @@ services:
       - MSSQL_SA_PASSWORD=ub3rStr0nGpassword
       - MSSQL_COLLATION=SQL_Danish_Pref_CP1_CI_AS
     healthcheck:
-      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -Q 'SELECT 1' || exit 1" ]
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -Q 'SELECT 1' || exit 1" ]
       interval: 10s
       retries: 3
       start_period: 10s
