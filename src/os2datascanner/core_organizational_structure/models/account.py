@@ -25,11 +25,17 @@ from functools import cached_property
 
 
 class AccountPermission(Enum):
-    CAN_SEE_WITHHELD = "can_see_withheld"
-    CAN_DISTRIBUTE_WITHHELD = "can_distribute_withheld"
+    """Enum of the codenames of permissions that can be granted to
+    users in the report module by users in the admin module."""
+    pass
 
     @classmethod
     def test_list(cls, lst):
+        """It seems like python 3.12 supports using something like
+
+        test = [var in EnumClass for var in lst]
+
+        we should probably switch to that when we can."""
         results = []
         for val in lst:
             try:
@@ -41,10 +47,9 @@ class AccountPermission(Enum):
 
 
 def validate_list_of_enum_vals(value):
-    print(value)
-    print(isinstance(value, list))
-    print(AccountPermission.test_list(value))
-    if not (isinstance(value, list) and all(AccountPermission.test_list(value))):
+    is_list = isinstance(value, list)
+    contained_in_enum = all(AccountPermission.test_list(value))
+    if not (is_list and contained_in_enum):
         raise ValidationError(
             "Field must only contain a list of enum-values!",
             code="invalid",
@@ -120,7 +125,8 @@ class Account(models.Model):
     permissions = models.JSONField(
         verbose_name="Account permissions",
         default=list,
-        validators=[validate_list_of_enum_vals]
+        validators=[validate_list_of_enum_vals],
+        blank=True
     )
 
     def get_employed_units(self):

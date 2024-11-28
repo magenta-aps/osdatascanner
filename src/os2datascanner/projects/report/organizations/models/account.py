@@ -23,7 +23,7 @@ from django.db.models import Count, Q, Case, When, Value, F, IntegerField, Float
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
 
@@ -40,6 +40,13 @@ from os2datascanner.utils.system_utilities import time_now
 from ..seralizer import BaseBulkSerializer, SelfRelatingField
 
 logger = structlog.get_logger("report_organizations")
+
+
+def align_user_permissions_to_account(user: User, account: Core_Account) -> User:
+    user.user_permissions.clear()
+    for permission in account.permissions:
+        user.user_permissions.add(Permission.objects.get(codename=permission))
+    return user
 
 
 class StatusChoices(models.IntegerChoices):
@@ -220,6 +227,8 @@ class AccountManager(models.Manager):
         account = Account(**kwargs, user=user_obj)
         account.save()
 
+        align_user_permissions_to_account(user_obj, account)
+
         if (account.organization.outlook_categorize_email_permission ==
                 OutlookCategorizeChoices.ORG_LEVEL):
             acc_qs = Account.objects.filter(pk=account.pk)
@@ -245,6 +254,8 @@ class AccountManager(models.Manager):
                 })
             account.user = user_obj
 
+            align_user_permissions_to_account(user_obj, account)
+
         objects = super().bulk_create(objs, **kwargs)
 
         accounts = Account.objects.filter(
@@ -266,6 +277,8 @@ class AccountManager(models.Manager):
                 user.last_name = account.last_name or ''
                 user.is_superuser = account.is_superuser
                 user.save()
+
+                align_user_permissions_to_account(user, account)
         return super().bulk_update(objs, fields, **kwargs)
 
 
