@@ -83,6 +83,7 @@ class AccountAdmin(ImportedAdmin):
     #  At the time of writing units does not work
     fields = ('username', 'first_name', 'last_name', 'email',
               'organization', 'manager', 'imported_id', 'last_import',
+              'permissions',
               'is_universal_dpo', 'is_superuser',
               )
     list_display = ('username', 'first_name', 'last_name', 'email',

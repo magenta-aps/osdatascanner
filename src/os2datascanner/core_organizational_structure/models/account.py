@@ -11,15 +11,45 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from enum import Enum
 from uuid import uuid4
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from .position import Role
 
 from functools import cached_property
+
+
+class AccountPermission(Enum):
+    CAN_SEE_WITHHELD = "can_see_withheld"
+    CAN_DISTRIBUTE_WITHHELD = "can_distribute_withheld"
+
+    @classmethod
+    def test_list(cls, lst):
+        results = []
+        for val in lst:
+            try:
+                cls(val)
+                results.append(True)
+            except ValueError:
+                results.append(False)
+        return results
+
+
+def validate_list_of_enum_vals(value):
+    print(value)
+    print(isinstance(value, list))
+    print(AccountPermission.test_list(value))
+    if not (isinstance(value, list) and all(AccountPermission.test_list(value))):
+        raise ValidationError(
+            "Field must only contain a list of enum-values!",
+            code="invalid",
+            params={"value": value},
+        )
 
 
 class Account(models.Model):
@@ -86,6 +116,11 @@ class Account(models.Model):
     is_superuser = models.BooleanField(
         verbose_name=_('superuser_status'),
         default=False
+    )
+    permissions = models.JSONField(
+        verbose_name="Account permissions",
+        default=list,
+        validators=[validate_list_of_enum_vals]
     )
 
     def get_employed_units(self):
@@ -166,7 +201,8 @@ class AccountSerializer(serializers.ModelSerializer):
             "manager",
             "is_superuser",
             "email",
-            "is_universal_dpo"]
+            "is_universal_dpo",
+            "permissions"]
 
     def get_unique_together_validators(self):
         # TODO: Tests implode if the serializers try to uphold unique-together
