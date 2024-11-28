@@ -402,41 +402,41 @@ msgstr "senest opdateret"
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:203
+#: adminapp/models/scannerjobs/scanner_helpers.py:202
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:208
+#: adminapp/models/scannerjobs/scanner_helpers.py:207
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:213
+#: adminapp/models/scannerjobs/scanner_helpers.py:212
 msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:267
+#: adminapp/models/scannerjobs/scanner_helpers.py:266
 #: adminapp/views/scanner_views.py:199
 msgid "Start time"
 msgstr "Startet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:270
+#: adminapp/models/scannerjobs/scanner_helpers.py:269
 #: adminapp/models/usererrorlog.py:29
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:271
+#: adminapp/models/scannerjobs/scanner_helpers.py:270
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:327
+#: adminapp/models/scannerjobs/scanner_helpers.py:326
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:335
+#: adminapp/models/scannerjobs/scanner_helpers.py:334
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:336
+#: adminapp/models/scannerjobs/scanner_helpers.py:335
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
@@ -752,7 +752,7 @@ msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 
 #: adminapp/templates/components/common/breadcrumb.html:5
 #: adminapp/templates/components/navigation/navigation.html:18
-#: adminapp/templates/components/scanner/scan_completed.html:82
+#: adminapp/templates/components/scanner/scan_completed.html:89
 #: adminapp/templates/components/scanstatus/scan_status_table.html:40
 #: adminapp/templates/scanners.html:25
 msgid "Scannerjob"
