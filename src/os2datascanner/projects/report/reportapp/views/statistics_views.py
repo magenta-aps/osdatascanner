@@ -534,7 +534,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         qs = qs.with_status()
         qs = self.order_employees(qs)
 
-        self.employee_count = 3
+        self.employee_count = qs.count()
 
         return qs
 
