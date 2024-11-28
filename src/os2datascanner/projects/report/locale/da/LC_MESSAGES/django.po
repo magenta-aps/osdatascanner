@@ -1244,7 +1244,7 @@ msgstr "Medarbejder"
 
 #: reportapp/templates/leader_statistics_template.html:121
 msgid "Withheld"
-msgstr "Tiilbageholdte"
+msgstr "Tilbageholdte"
 
 #: reportapp/templates/leader_statistics_template.html:123
 msgid ""
