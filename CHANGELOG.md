@@ -18,14 +18,20 @@
   - To validate a scannerjob, users must now have the 
     "can_validate"-permission.
 
+  - To see organizations from clients than a user's own, the user must have the
+    "view_client"-permission.
+
+  - Creating, editing and deleting organizations now require the relevant
+    django permission.
+
 - Support for storing (and remotely fetching) GraphGrant expiry date and update its client secret
  through OSdatascanner UI.
 
   - However, this isn't navigable yet without knowledge of location as design decisions are
-   to be made.
+    to be made.
   
   - Includes initial functionality to support email notification(s) when nearing
-  (or past) expiration of client secret.
+    (or past) expiration of client secret.
 
 - The report module has a new management command, `replay_checkups`, that can
   be used to restore `ScheduledCheckup` objects deleted in error from the

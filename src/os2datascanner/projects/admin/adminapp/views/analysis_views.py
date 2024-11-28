@@ -22,7 +22,7 @@ class AnalysisPageView(LoginRequiredMixin, TemplateView):
     orgs = []
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_superuser:
+        if request.user.has_perm("core.view_client"):
             self.orgs = Organization.objects.all()
         else:
             try:

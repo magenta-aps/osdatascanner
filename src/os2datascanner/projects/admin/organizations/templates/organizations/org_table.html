@@ -12,17 +12,19 @@
   <div class="content-header">
     <div class="aside">
       <h1 class="page-title">{% trans 'organizations for'|capfirst %} {{ client }}</h1>
-      <div class="btn">
-        <a href="{% url 'add-organization-for' client_id=client.pk %}"
-           aria-label="{% trans 'Add new organization' %}"
-           title="{% trans 'Add new organization' %}"
-           class="button button--cta-button button--icon-text-button">
-          <svg class="icon button__plus-icon">
-            <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-          </svg>
-          <span>{% trans "Add new organization" %}</span>
-        </a>
-      </div>
+      {% if perms.organizations.add_organization %}
+        <div class="btn">
+          <a href="{% url 'add-organization-for' client_id=client.pk %}"
+             aria-label="{% trans 'Add new organization' %}"
+             title="{% trans 'Add new organization' %}"
+             class="button button--cta-button button--icon-text-button">
+            <svg class="icon button__plus-icon">
+              <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+            </svg>
+            <span>{% trans "Add new organization" %}</span>
+          </a>
+        </div>
+      {% endif %}
     </div>
   </div>
 
@@ -54,7 +56,11 @@
             {% for organization in client.organizations.all %}
               <tr class="datatablex__row">
                 <td class="column column--name">
-                  <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
+                  {% if perms.organizations.change_organization %}
+                    <a href="{% url 'edit-organization' slug=organization.slug %}">{{ organization.name }}</a>
+                  {% else %}
+                    <span>{{ organization.name }}</span>
+                  {% endif %}
                 </td>
                 <td class="column column--info">
                   <div class="info__wrapper">
@@ -207,7 +213,7 @@
                        class="button button--icon-button"
                        aria-label="{% trans 'View accounts.' %}"
                        title="{% trans 'View accounts.' %}">{% include "../components/svg-icons/people.svg" %}</a>
-                    {% if request.user.is_superuser %}
+                    {% if perms.organizations.delete_organization %}
                       {% if organization.scanners_running %}
                         <a href="#delete-org-blocked"
                            data-modal="modal:open"

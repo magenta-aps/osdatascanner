@@ -190,7 +190,7 @@ def user_allowed(user, org_slug):
     and returns the Organization object."""
     org = get_object_or_404(Organization, slug=org_slug)
     allowed = user.is_authenticated and (
-                user.is_superuser or Administrator.objects.filter(
+                user.has_perm("core.view_client") or Administrator.objects.filter(
                     user=user, client=org.client).exists())
     return org, allowed
 

@@ -23,8 +23,8 @@ class TestWebRetrier(unittest.TestCase):
                         f"status code {value} should have triggered a retry")
 
     def test_should_not_retry(self):
-        """Provided an HTTP code that is not a part of WebRetrier's RETRY_CODES, should_not_retry should
-        return False."""
+        """Provided an HTTP code that is not a part of WebRetrier's RETRY_CODES, should_not_retry
+        should return False."""
         ex = requests.exceptions.HTTPError(
             response=Mock(status_code=100),
             request=Mock()

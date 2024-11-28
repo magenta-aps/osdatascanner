@@ -1,5 +1,6 @@
 from typing import Any, Dict
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.adminapp.views.views import (
@@ -29,11 +30,11 @@ class OrganizationListView(RestrictedListView):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset(org_path="uuid")
-        if hasattr(user, 'administrator_for'):
+        if user.has_perm('core.view_client'):
+            queryset = Client.objects.all()
+        elif hasattr(user, 'administrator_for'):
             client_id = user.administrator_for.client_id
             queryset = Client.objects.filter(pk=client_id)
-        elif user.is_superuser:
-            queryset = Client.objects.all()
         return queryset.prefetch_related('organizations')
 
     def get_context_data(self, **kwargs):
@@ -46,8 +47,9 @@ class OrganizationListView(RestrictedListView):
         return 'organizations/org_table.html' if is_htmx else "organizations/org_list.html"
 
 
-class AddOrganizationView(RestrictedCreateView):
+class AddOrganizationView(PermissionRequiredMixin, RestrictedCreateView):
     model = Organization
+    permission_required = 'organizations.add_organization'
     template_name = 'organizations/org_add.html'
     success_url = reverse_lazy('organization-list')
     fields = ['name', 'contact_email', 'contact_phone',
@@ -73,16 +75,17 @@ class AddOrganizationView(RestrictedCreateView):
         return super().get_queryset(org_path="uuid")
 
     def dispatch(self, request, *args, **kwargs):
-        client_id = self.kwargs['client_id']
-        if request.user.is_superuser or \
-                Administrator.objects.filter(user=request.user, client=client_id).exists():
+        if request.user.has_perm('core.view_client') or \
+                Administrator.objects.filter(user=request.user, client_id=self.kwargs['client_id']
+                                             ).exists():
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
 
-class UpdateOrganizationView(RestrictedUpdateView):
+class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
     model = Organization
+    permission_required = 'organizations.change_organization'
     template_name = 'organizations/org_update.html'
     success_url = reverse_lazy('organization-list')
     fields = ['name', 'contact_email', 'contact_phone',
@@ -120,9 +123,10 @@ class UpdateOrganizationView(RestrictedUpdateView):
         return super().get_queryset(org_path="uuid")
 
 
-class DeleteOrganizationView(RestrictedDeleteView):
+class DeleteOrganizationView(PermissionRequiredMixin, RestrictedDeleteView):
     """Delete an organization view."""
     model = Organization
+    permission_required = 'organizations.delete_organization'
     success_url = '/organizations/'
 
     def post(self, request, *args, **kwargs):

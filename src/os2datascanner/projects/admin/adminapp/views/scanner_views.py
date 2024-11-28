@@ -50,7 +50,7 @@ logger = structlog.get_logger("adminapp")
 def count_new_errors(user) -> int:
     """Return the number of new user error logs available to the user."""
     usererrorlog = None
-    if user.is_superuser:
+    if user.has_perm("core.view_client"):
         usererrorlog = UserErrorLog.objects.all()
     else:
         user_orgs = user.administrator_for.client.organizations.all()

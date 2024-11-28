@@ -24,7 +24,7 @@ class UserWrapper:
         """Returns a Q object that selects all objects whose Organization the
         wrapped User can interact with. (Note that this might, in the worst
         case, mean *no* objects.)"""
-        if self.user.is_superuser:
+        if self.user.has_perm('core.view_client'):
             return Q()
         elif (client := self.get_client()):
             uuids = {org.uuid for org in client.organizations.all()}

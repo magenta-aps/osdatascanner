@@ -90,7 +90,9 @@
                           <span>{{ scanner.name }}</span>
                         </a>
  
-                        {% if user.is_superuser %}<span class="scanner-organization name__org">({{ scanner.organization }})</span>{% endif %}
+                        {% if perms.core.view_client %}
+                          <span class="scanner-organization name__org">({{ scanner.organization }})</span>
+                        {% endif %}
                       </div>
  
                       <div class="UI-container">
