@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse_lazy
+from datetime import timedelta, datetime
 
 from ..models.usererrorlog import UserErrorLog
 from ..models.scannerjobs.scanner_helpers import ScanStatus
@@ -73,15 +74,17 @@ class TestExportCompletedScanStatus:
     @pytest.fixture()
     def completed_statuses(self, basic_scanner):
         stati = []
-        for i in range(1, 4):
-            stati.append(ScanStatus(
+        now = datetime.today()
+        for i in range(1, 11):
+            status = ScanStatus(
                 scanner=basic_scanner,
                 scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
                 total_objects=i,
                 scanned_objects=i,
                 explored_sources=i,
                 total_sources=i)
-            )
+            status.scan_tag['time_stamp'] = (now + timedelta(seconds=5 * i)).isoformat()
+            stati.append(status)
 
         ScanStatus.objects.bulk_create(stati)
 
@@ -111,7 +114,7 @@ class TestExportCompletedScanStatus:
 
         # Assert
         assert response.status_code == 200
-        assert len(streamed_rows) == 3 + 1
+        assert len(streamed_rows) == 10 + 1
 
     def test_csv_export_completed_scans_unprivileged_user(self, user, completed_statuses, client):
         """A user unrelated to an organization should only get header values."""
