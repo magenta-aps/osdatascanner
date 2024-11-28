@@ -155,6 +155,9 @@ class StatusCompletedView(StatusBase):
         qs = qs.filter(ScanStatus._completed_Q, resolved=False).order_by(
                 '-scan_tag__time').prefetch_related('scanner')
 
+        # The runtime of the scan is calculated from the last snapshot and the first snapshot
+        # that has recorded a scanned object (or more) to exclude time spent idle -
+        # f.e. due to multiple running jobs resulting in a large message queue.
         qs = qs.annotate(
             scan_time=Max('snapshots__time_stamp')
             - Min('snapshots__time_stamp', filter=Q(snapshots__scanned_objects__gte=1))
