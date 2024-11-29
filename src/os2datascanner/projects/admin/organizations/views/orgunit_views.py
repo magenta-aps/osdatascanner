@@ -69,9 +69,6 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
             organization=self.kwargs['org'],
             is_universal_dpo=True
         )
-        context['search_targets'] = [
-            unit.uuid for unit in self.object_list] if self.request.GET.get(
-            "search_field", None) else []
         context['show_empty'] = self.request.GET.get('show_empty', 'off') == 'on'
         context['show_hidden'] = self.request.GET.get('show_hidden', 'off') == 'on'
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
@@ -152,11 +149,6 @@ class OrganizationalUnitEditVisibility(ClientAdminMixin, RestrictedListView):
 
         context['organization'] = organization
         context['FEATURES'] = Feature.__members__
-
-        context['search_targets'] = [
-            unit.uuid for unit in self.object_list] if self.request.GET.get(
-            "search_field", None) else []
-
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
 
