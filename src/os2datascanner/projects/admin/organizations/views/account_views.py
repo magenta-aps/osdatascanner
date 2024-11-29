@@ -4,7 +4,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.views.generic import DetailView, CreateView, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -12,6 +12,7 @@ from django.db.models.functions import Concat, Greatest
 from django.db.models import CharField, Value, Max
 
 from ..models import Account, Alias, OrganizationalUnit
+from .....core_organizational_structure.models.account import AccountPermission
 from ..models.aliases import AliasType
 from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
@@ -99,6 +100,8 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
         context["scanners"] = list(Scanner.objects.filter(organization=self.kwargs['org'])
                                    .exclude(pk__in=existing_pks)
                                    .values('name', 'pk'))
+        context["permissions"] = [key._value_ for key in AccountPermission
+                                  if key._value_ not in self.object.permissions]
         return context
 
     def post(self, request, *args, **kwargs):
@@ -137,6 +140,26 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
                 Alias.objects.filter(_alias_type=AliasType.REMEDIATOR,
                                      _value=removed_scanner_job_pk,
                                      account_id=acc).delete()
+
+            case 'add-permission':
+                if request.user.has_perm('organizations.can_give_permissions'):
+                    added_permission = request.POST.get('add-permission')
+
+                    acc.permissions.append(added_permission)
+                    acc.save()
+                else:
+                    raise PermissionDenied("User does not have the 'can_give_permissions'"
+                                           "-permission.")
+
+            case 'rem-permission':
+                if request.user.has_perm('organizations.can_take_permissions'):
+                    removed_permission = request.POST.get('rem-permission')
+
+                    acc.permissions.remove(removed_permission)
+                    acc.save()
+                else:
+                    raise PermissionDenied("User does not have the 'can_take_permissions'"
+                                           "-permission.")
 
         return self.get(request, *args, **kwargs)
 

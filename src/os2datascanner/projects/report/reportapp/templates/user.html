@@ -117,6 +117,16 @@
               </ul>
             </td>
           </tr>
+          {% if account.permissions %}
+            <tr>
+              <td>{% trans "Permissions" %}</td>
+              <td>
+                <ul>
+                  {% for permission in account.permissions %}<li>{{ permission }}</li>{% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endif %}
         </tbody>
       </table>
 

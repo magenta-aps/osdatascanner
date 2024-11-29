@@ -42,10 +42,22 @@ from ..seralizer import BaseBulkSerializer, SelfRelatingField
 logger = structlog.get_logger("report_organizations")
 
 
+def permission_from_identifier(identifier: str) -> Permission:
+    """Returns a Permission object from the permission identifier."""
+    match identifier.rsplit(".", maxsplit=1):
+        case [app_label, codename]:
+            return Permission.objects.get(
+                content_type__app_label=app_label,
+                codename=codename
+            )
+        case _:
+            raise ValueError("Unrecognized format of permission identifier")
+
+
 def align_user_permissions_to_account(user: User, account: Core_Account) -> User:
     user.user_permissions.clear()
     for permission in account.permissions:
-        user.user_permissions.add(Permission.objects.get(codename=permission))
+        user.user_permissions.add(permission_from_identifier(permission))
     return user
 
 

@@ -5,12 +5,16 @@
 
 {% block content %}
 
-  <div class="content-header">{% include "components/common/breadcrumb.html" with page="account" %}</div>
+  <div class="content-header">
+    {% include "components/common/breadcrumb.html" with page="account" %}
+  </div>
 
   <h1 class="userprofile-text">{% trans "Account" %}</h1>
 
   <div class="userprofile-content-wrapper user-image">
-    <span class="user__avatar_verybig">{% include "components/account_image.html" with account=account %}</span>
+    <span class="user__avatar_verybig">
+      {% include "components/account_image.html" with account=account %}
+    </span>
   </div>
 
   <div class="userprofile-content-wrapper user-tables">
@@ -185,7 +189,9 @@
                                 hx-trigger="change"
                                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
                           <option value="">{% trans "Choose scannerjob" %}</option>
-                          {% for scanner in scanners %}<option value="{{ scanner.pk }}">{{ scanner.name }}</option>{% endfor %}
+                          {% for scanner in scanners %}
+                            <option value="{{ scanner.pk }}">{{ scanner.name }}</option>
+                          {% endfor %}
                         </select>
                       </li>
                     {% endif %}
@@ -193,18 +199,56 @@
                 </td>
               </tr>
             {% endif %}
-          </tbody>
-        </table>
-
-        <h2>{% trans "Login Information" %}</h2>
-        <table class="userprofile-table login-info">
-          <tbody>
             <tr>
-              <td>{% trans "User since" %}</td>
-              <td>{{ user.date_joined }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              <td>{% trans "Permissions" %}</td>
+              <td>
+                <ul>
+                  {% for permission in account.permissions %}
+                    <li {% if perms.organizations.can_take_permissions %} class="dynamic_li" title="{% trans "Click to remove" %} {{ permission }}" name="rem-permission" hx-post="" hx-swap="outerHTML" hx-target=".content" hx-select=".content" hx-trigger="click" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-vals='{"rem-permission": "{{ permission }}"}' hx-confirm="{% trans "Are you sure you want to remove" %} {{ permission }}?" {% endif %}>
+                      <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                      <!-- djlint:off -->{{ permission }}</li><!--djlint:on-->
+                    {% endfor %}
+                    {% if permissions and perms.organizations.can_give_permissions %}
+                      <li class="add_permission">
+                        <button type="button"
+                                class="add_button button button--icon-button"
+                                aria-label="{% trans 'Click here to add a new permission' %}"
+                                title="{% trans 'Add permission' %}">
+                          <svg class="icon icon-plus">
+                            <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                          </svg>
+                        </button>
+                        <select class="select_options"
+                                name="add-permission"
+                                hidden
+                                hx-post=""
+                                hx-swap="outerHTML"
+                                hx-target=".content"
+                                hx-select=".content"
+                                hx-trigger="change"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                          <option value="">{% trans "Choose permission" %}</option>
+                          {% for permission in permissions %}
+                            <option value="{{ permission }}">{{ permission }}</option>
+                          {% endfor %}
+                        </select>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-    {% endblock content %}
+          <h2>{% trans "Login Information" %}</h2>
+          <table class="userprofile-table login-info">
+            <tbody>
+              <tr>
+                <td>{% trans "User since" %}</td>
+                <td>{{ user.date_joined }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      {% endblock content %}

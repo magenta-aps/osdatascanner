@@ -57,6 +57,12 @@ class Account(Core_Account, Imported):
                     'last_name',
                     config='english'),
                 name='full_name_search')]
+        permissions = [
+            ("can_give_permissions",
+             _("Can grant permission to users in the report module")),
+            ("can_take_permissions",
+             _("Can take permissions away from users in the report module"))
+        ]
 
 
 class AccountSerializer(Core_AccountSerializer):

@@ -25,12 +25,19 @@ from functools import cached_property
 
 
 class AccountPermission(Enum):
-    """Enum of the codenames of permissions that can be granted to
-    users in the report module by users in the admin module."""
-    pass
+    """Enum of the identifiers of permissions that can be granted to
+    users in the report module by users in the admin module.
+
+    Identifiers must be of the form
+        <app_label>.<codename>
+
+    For example, a Permission with codename "add_account" in the app
+    "os2datascanner_report" would be
+        os2datascanner_report.add_account
+    """
 
     @classmethod
-    def test_list(cls, lst):
+    def test_list(cls, lst: list[str]) -> bool:
         """It seems like python 3.12 supports using something like
 
         test = [var in EnumClass for var in lst]
@@ -43,12 +50,12 @@ class AccountPermission(Enum):
                 results.append(True)
             except ValueError:
                 results.append(False)
-        return results
+        return all(results)
 
 
 def validate_list_of_enum_vals(value):
     is_list = isinstance(value, list)
-    contained_in_enum = all(AccountPermission.test_list(value))
+    contained_in_enum = AccountPermission.test_list(value)
     if not (is_list and contained_in_enum):
         raise ValidationError(
             "Field must only contain a list of enum-values!",
