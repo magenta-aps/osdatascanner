@@ -46,6 +46,10 @@ _base_arguments = "-sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dNOPAUSE -dBATCH"
 # Extra arguments to be appended to the Ghostscript command line, if any
 extra_args = ""
 
+[tesseract]
+# Extra arguments to be added to the Tesseract command line, if any
+extra_args = ["-l", "dan+eng"]
+
 [pipeline]
 # The maximum runtime (in seconds) allowed:
 # * in the explorer stage, for a Source to produce a single Handle;
