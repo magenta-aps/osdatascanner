@@ -153,6 +153,10 @@
         pointer-events: none;
         transition: var(--transition-default);
         color: #aaa;
+
+          &.active {
+            color: var(--color-primary);
+          }
       }
     }
     
