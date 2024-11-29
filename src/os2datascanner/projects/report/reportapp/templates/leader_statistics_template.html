@@ -47,7 +47,9 @@
                   <select name="org_unit" id="org_units" autocomplete="off">
                     {% for unit in user_units %}
                       <option value="{{ unit.uuid }}"
-                              {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
+                              {% if unit == org_unit %}selected="selected"{% endif %}>
+                        {{ unit.name }}
+                      </option>
                     {% endfor %}
                   </select>
                 </div>
@@ -144,27 +146,27 @@
                   </div>
                 </th>
 
-                <th class="column--withheld column--numeral">
-                  <div class="th__flex-container">
-                    <label class="th-label" for="withheld-matches-caret">
-                      <span>{% trans "Withheld" %}</span>
-                      <span class="help-tooltip"
-                            title="{% blocktrans trimmed %} Withheld results are results that aren't yet visible to the user, but can be delegated by a superuser. These results won't count in the development overview. {% endblocktrans %}">
-                        <i id="help" class="material-symbols">help</i>
-                      </span>
-                    </label>
+                {% if perms.os2datascanner_report.can_see_withheld %}
+                  <th class="column--withheld column--numeral">
+                    <div class="th__flex-container">
+                      <label class="th-label" for="withheld-matches-caret">
+                        <span>{% trans "Withheld" %}</span>
+                        <span class="help-tooltip"
+                              title="{% blocktrans trimmed %} Withheld results are results that aren't yet visible to the user, but can be delegated by a superuser. These results won't count in the development overview. {% endblocktrans %}">
+                          <i id="help" class="material-symbols">help</i>
+                        </span>
+                      </label>
 
-                    <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'ascending' %}up{% endif %}"
-                            id="withheld-matches-caret"
-                            name="withheld"
-                            value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more"
-                         class="material-symbols {% if order_by == 'withheld' %}active{% endif %}"
-                         aria-hidden="true">expand_more</i>
-                    </button>
-                  </div>
-                </th>
+                      <button type="button"
+                              class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'descending' %}up{% endif %}"
+                              id="withheld-matches-caret"
+                              name="withheld"
+                              value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                        <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                      </button>
+                    </div>
+                  </th>
+                {% endif %}
 
                 <th class="column--status">
                   <div class="th__flex-container">
@@ -203,29 +205,43 @@
                       hx-target="this"
                       hx-trigger="revealed"
                       hx-push-url="false">
-                    <td colspan="{% if show_30_days_column %}6{% else %}5{% endif %}"
-                        class="loading">{% trans "Loading employee ..." %}</td>
+                    <<<<<<< HEAD
+                    <td colspan="{% if show_30_days_column %}6{% else %}5{% endif %}" =======
+                      <td colspan="{% if perms.os2datascanner_report.can_see_withheld %}5{% else %}4{% endif %}">
+                        >>>>>> 6baa3c5b6 ([#63005] Apply permission check to withheld column instead)
+                        class="loading">{% trans "Loading employee ..." %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr class="datatablex__row">
+                    <td class="column--nodata"
+                        HEAD
+                        colspan="{% if show_30_days_column %}6{% else %}5{% endif %}">
+                      =======
+                      colspan="
+                      {% if perms.os2datascanner_report.can_see_withheld %}
+                        5
+                      {% else %}
+                        4
+                      {% endif %}
+                      ">
+                      >>>>>>> 6baa3c5b6 ([#63005] Apply permission check to withheld column instead)
+                      {% trans "No employees found." %}
+                    </td>
                   </tr>
-                {% endfor %}
-              {% else %}
-                <tr class="datatablex__row">
-                  <td class="column--nodata"
-                      colspan="{% if show_30_days_column %}6{% else %}5{% endif %}">
-                    {% trans "No employees found." %}
-                  </td>
-                </tr>
-              {% endif %}
-            </tbody>
-          </table>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    {% else %}
-      {% include "error_pages/no-units-error.html" %}
-    {% endif %}
-  </div>
-{% endblock body %}
+      {% else %}
+        {% include "error_pages/no-units-error.html" %}
+      {% endif %}
+    </div>
+  {% endblock body %}
 
-{% block scripts %}
-  {{ block.super }}
-  <script src="{% static 'js/leaderview/leaderOverview.js' %}"></script>
-{% endblock scripts %}
+  {% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/leaderview/leaderOverview.js' %}"></script>
+  {% endblock scripts %}
