@@ -1,6 +1,8 @@
 # Changelog
 
-## Next Release
+## Version 3.26.0, 29th November 2024
+
+"My Cat Keeps Bringing Live Mice Inside"
 
 ### New in this release
 

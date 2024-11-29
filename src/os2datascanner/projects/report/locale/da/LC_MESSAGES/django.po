@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 09:54+0100\n"
+"POT-Creation-Date: 2024-11-29 10:06+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -308,7 +308,7 @@ msgstr ""
 "<strong>Beklager, <em>OSdatascanner</em> virker ikke korrekt uden "
 "JavaScript. Slå det venligst til for at fortsætte.</strong>"
 
-#: reportapp/templates/components/common/base.html:40
+#: reportapp/templates/components/common/base.html:42
 msgid "OSdatascanner version"
 msgstr "OSdatascanner version"
 
@@ -832,7 +832,7 @@ msgstr "Navn"
 #: reportapp/templates/components/reports/match_table.html:60
 #: reportapp/templates/components/reports/match_table.html:64
 #: reportapp/templates/components/reports/match_table.html:65
-#: reportapp/views/statistics_views.py:603
+#: reportapp/views/statistics_views.py:601
 msgid "Matches"
 msgstr "Matches"
 
@@ -868,7 +868,7 @@ msgstr "Sti"
 #: reportapp/templates/components/reports/match_table.html:113
 #: reportapp/templates/components/reports/match_table.html:114
 #: reportapp/templates/leader_statistics_template.html:141
-#: reportapp/views/statistics_views.py:604
+#: reportapp/views/statistics_views.py:602
 msgid "Status"
 msgstr "Status"
 
@@ -924,7 +924,7 @@ msgid "report module"
 msgstr "rapportmodulet"
 
 #: reportapp/templates/components/user/login.html:15
-#: reportapp/templates/user.html:22 reportapp/views/statistics_views.py:602
+#: reportapp/templates/user.html:22 reportapp/views/statistics_views.py:600
 msgid "Username"
 msgstr "Brugernavn"
 
@@ -1222,7 +1222,7 @@ msgid "employees"
 msgstr "medarbejdere"
 
 #: reportapp/templates/leader_statistics_template.html:44
-#: reportapp/views/statistics_views.py:605
+#: reportapp/views/statistics_views.py:603
 msgid "Organizational units"
 msgstr "Organisatoriske enheder"
 
@@ -1252,8 +1252,9 @@ msgid ""
 "delegated by a superuser. These results won't count in the development "
 "overview."
 msgstr ""
-"Tilbageholdte resultater er resultater, der endnu ikke er synlige for brugeren, men som kan "
-"uddeles af en superbruger. Disse resultater tæller ikke med i udviklingsoverblikket."
+"Tilbageholdte resultater er resultater, der endnu ikke er synlige for "
+"brugeren, men som kan uddeles af en superbruger. Disse resultater tæller "
+"ikke med i udviklingsoverblikket."
 
 #: reportapp/templates/leader_statistics_template.html:143
 #, python-format
@@ -1873,7 +1874,8 @@ msgstr ""
 
 #: reportapp/templates/user_statistics_template.html:145
 msgid "Only superusers have permission to delete results from scanner jobs"
-msgstr "Kun superbrugere har tilladelse til at slette resultater fra scannerjob"
+msgstr ""
+"Kun superbrugere har tilladelse til at slette resultater fra scannerjob"
 
 #: reportapp/templates/user_statistics_template.html:158
 msgid "There are no unhandled results to show"
@@ -2034,66 +2036,66 @@ msgstr "Uhåndterede Resultater per Måned"
 msgid "New Matches by Month"
 msgstr "Nye Resultater per Måned"
 
-#: reportapp/views/statistics_views.py:600
+#: reportapp/views/statistics_views.py:598
 msgid "First name"
 msgstr "Fornavn"
 
-#: reportapp/views/statistics_views.py:601
+#: reportapp/views/statistics_views.py:599
 msgid "Last name"
 msgstr "Efternavn"
 
-#: reportapp/views/statistics_views.py:704
+#: reportapp/views/statistics_views.py:702
 #, python-format
 msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:807
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:807
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:807
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:807
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:808
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:808
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:808
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:808
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:809
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:809
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:809
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:809
 msgid "Dec"
 msgstr "Dec"
 

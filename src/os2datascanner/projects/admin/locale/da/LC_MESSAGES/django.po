@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 11:28+0100\n"
+"POT-Creation-Date: 2024-11-29 09:53+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -166,7 +166,7 @@ msgstr "Login metode"
 
 #: adminapp/models/rules.py:40 adminapp/models/rules.py:101
 #: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:75
-#: organizations/templates/organizations/org_table.html:37
+#: organizations/templates/organizations/org_table.html:39
 #: organizations/templates/organizations/orgunit_list.html:199
 msgid "name"
 msgstr "navn"
@@ -1154,10 +1154,10 @@ msgstr "Gem ændringer"
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:98
 #: adminapp/templates/rules.html:99
-#: organizations/templates/organizations/org_table.html:216
-#: organizations/templates/organizations/org_table.html:217
-#: organizations/templates/organizations/org_table.html:228
-#: organizations/templates/organizations/org_table.html:229
+#: organizations/templates/organizations/org_table.html:222
+#: organizations/templates/organizations/org_table.html:223
+#: organizations/templates/organizations/org_table.html:234
+#: organizations/templates/organizations/org_table.html:235
 msgid "Delete"
 msgstr "Slet"
 
@@ -1258,7 +1258,7 @@ msgstr ""
 #: adminapp/templates/components/scanner/scan_completed.html:94
 #: adminapp/templates/components/scanstatus/scan_status_table.html:43
 #: adminapp/templates/error_log.html:196
-#: organizations/templates/organizations/org_table.html:47
+#: organizations/templates/organizations/org_table.html:49
 msgid "Actions"
 msgstr "Handlinger"
 
@@ -1547,8 +1547,8 @@ msgid ""
 "that this scannerjob will scan accounts from hidden organizational units as "
 "well."
 msgstr ""
-"Bemærk at hvis du vælger \"scan af alle konti i denne organisation\" vil "
-"det betyde at dette scannerjob også scanner konti fra skjule organisatoriske "
+"Bemærk at hvis du vælger \"scan af alle konti i denne organisation\" vil det "
+"betyde at dette scannerjob også scanner konti fra skjule organisatoriske "
 "enheder."
 
 #: adminapp/templates/components/scanner/scanner_form.html:602
@@ -2210,7 +2210,7 @@ msgstr "Redigér"
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:207
+#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:209
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
@@ -2269,7 +2269,7 @@ msgstr "Validering"
 msgid "Next scan"
 msgstr "Næste scan"
 
-#: adminapp/templates/scanners.html:102
+#: adminapp/templates/scanners.html:104
 msgid ""
 "The following users are no longer covered by this scannerjob, but have been "
 "scanned previously:"
@@ -2277,55 +2277,55 @@ msgstr ""
 "Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
 "blevet scannet:"
 
-#: adminapp/templates/scanners.html:105
+#: adminapp/templates/scanners.html:107
 msgid "Stale accounts"
 msgstr "Frakoblede konti"
 
-#: adminapp/templates/scanners.html:136 adminapp/templates/scanners.html:145
+#: adminapp/templates/scanners.html:138 adminapp/templates/scanners.html:147
 msgid "Validation status for this scanner job has been set to"
 msgstr "Valideringstatus for dette scannerjob er blevet indstillet til"
 
-#: adminapp/templates/scanners.html:136 adminapp/templates/scanners.html:139
+#: adminapp/templates/scanners.html:138 adminapp/templates/scanners.html:141
 msgid "Valid"
 msgstr "Gyldig"
 
-#: adminapp/templates/scanners.html:145 adminapp/templates/scanners.html:148
+#: adminapp/templates/scanners.html:147 adminapp/templates/scanners.html:150
 msgid "Invalid"
 msgstr "Ugyldig"
 
-#: adminapp/templates/scanners.html:157
+#: adminapp/templates/scanners.html:159
 msgid "Next scan will run the"
 msgstr "Næste scan vil køre den"
 
-#: adminapp/templates/scanners.html:164
+#: adminapp/templates/scanners.html:166
 msgid "There are currently no scans scheduled for this scanner job"
 msgstr "Der er i øjeblikket ingen planlagte scan for dette scannerjob"
 
-#: adminapp/templates/scanners.html:168
+#: adminapp/templates/scanners.html:170
 msgid "Not scheduled"
 msgstr "Ikke planlagt"
 
-#: adminapp/templates/scanners.html:180 adminapp/templates/scanners.html:181
+#: adminapp/templates/scanners.html:182 adminapp/templates/scanners.html:183
 msgid "Run scanner job"
 msgstr "Kør scannerjob"
 
-#: adminapp/templates/scanners.html:187 adminapp/templates/scanners.html:188
+#: adminapp/templates/scanners.html:189 adminapp/templates/scanners.html:190
 msgid "Edit scanner job"
 msgstr "Redigér scannerjob"
 
-#: adminapp/templates/scanners.html:194 adminapp/templates/scanners.html:195
+#: adminapp/templates/scanners.html:196 adminapp/templates/scanners.html:197
 msgid "Copy scanner job"
 msgstr "Kopiér scannerjob"
 
-#: adminapp/templates/scanners.html:207
+#: adminapp/templates/scanners.html:209
 msgid "Do you really want to delete this scanner?"
 msgstr "Er du sikker på, at du vil slette denne scanner?"
 
-#: adminapp/templates/scanners.html:208 adminapp/templates/scanners.html:209
+#: adminapp/templates/scanners.html:210 adminapp/templates/scanners.html:211
 msgid "Delete scanner job"
 msgstr "Slet scannerjob"
 
-#: adminapp/templates/scanners.html:224
+#: adminapp/templates/scanners.html:226
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
@@ -2748,7 +2748,7 @@ msgid "organization UUID"
 msgstr "UUID for organisation"
 
 #: import_services/models/import_service.py:43
-#: organizations/templates/organizations/org_table.html:40
+#: organizations/templates/organizations/org_table.html:42
 msgid "import service"
 msgstr "importservice"
 
@@ -3583,75 +3583,75 @@ msgstr "Gå til scanner status"
 msgid "organizations for"
 msgstr "organisationer for"
 
-#: organizations/templates/organizations/org_table.html:17
 #: organizations/templates/organizations/org_table.html:18
-#: organizations/templates/organizations/org_table.html:23
+#: organizations/templates/organizations/org_table.html:19
+#: organizations/templates/organizations/org_table.html:24
 msgid "Add new organization"
 msgstr "Tilføj ny organisation"
 
-#: organizations/templates/organizations/org_table.html:38
+#: organizations/templates/organizations/org_table.html:40
 msgid "contact info"
 msgstr "kontaktinformation"
 
-#: organizations/templates/organizations/org_table.html:42
+#: organizations/templates/organizations/org_table.html:44
 msgid "import service (Microsoft Graph)"
 msgstr "Importservice (Microsoft Graph)"
 
-#: organizations/templates/organizations/org_table.html:44
+#: organizations/templates/organizations/org_table.html:46
 msgid "import service (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
-#: organizations/templates/organizations/org_table.html:83
-#: organizations/templates/organizations/org_table.html:84
-#: organizations/templates/organizations/org_table.html:91
-#: organizations/templates/organizations/org_table.html:92
+#: organizations/templates/organizations/org_table.html:89
+#: organizations/templates/organizations/org_table.html:90
+#: organizations/templates/organizations/org_table.html:97
+#: organizations/templates/organizations/org_table.html:98
 msgid "Edit LDAP configuration"
 msgstr "Redigér LDAP-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:97
-#: organizations/templates/organizations/org_table.html:98
+#: organizations/templates/organizations/org_table.html:103
 #: organizations/templates/organizations/org_table.html:104
-#: organizations/templates/organizations/org_table.html:129
-#: organizations/templates/organizations/org_table.html:130
+#: organizations/templates/organizations/org_table.html:110
+#: organizations/templates/organizations/org_table.html:135
 #: organizations/templates/organizations/org_table.html:136
-#: organizations/templates/organizations/org_table.html:178
-#: organizations/templates/organizations/org_table.html:179
+#: organizations/templates/organizations/org_table.html:142
+#: organizations/templates/organizations/org_table.html:184
 #: organizations/templates/organizations/org_table.html:185
+#: organizations/templates/organizations/org_table.html:191
 msgid "sync"
 msgstr "synkroniser"
 
-#: organizations/templates/organizations/org_table.html:122
-#: organizations/templates/organizations/org_table.html:123
+#: organizations/templates/organizations/org_table.html:128
+#: organizations/templates/organizations/org_table.html:129
 msgid "Add OS2mo configuration"
 msgstr "Tilføj OS2mo-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:155
-#: organizations/templates/organizations/org_table.html:156
-#: organizations/templates/organizations/org_table.html:163
-#: organizations/templates/organizations/org_table.html:164
+#: organizations/templates/organizations/org_table.html:161
+#: organizations/templates/organizations/org_table.html:162
+#: organizations/templates/organizations/org_table.html:169
+#: organizations/templates/organizations/org_table.html:170
 msgid "Add Microsoft Graph configuration"
 msgstr "Tilføj Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:172
-#: organizations/templates/organizations/org_table.html:173
+#: organizations/templates/organizations/org_table.html:178
+#: organizations/templates/organizations/org_table.html:179
 msgid "Edit Microsoft Graph configuration"
 msgstr "Redigér Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:201
-#: organizations/templates/organizations/org_table.html:202
+#: organizations/templates/organizations/org_table.html:207
+#: organizations/templates/organizations/org_table.html:208
 msgid "View organizational units."
 msgstr "Vis organisatoriske enheder"
 
-#: organizations/templates/organizations/org_table.html:208
-#: organizations/templates/organizations/org_table.html:209
+#: organizations/templates/organizations/org_table.html:214
+#: organizations/templates/organizations/org_table.html:215
 msgid "View accounts."
 msgstr "Se konti."
 
-#: organizations/templates/organizations/org_table.html:227
+#: organizations/templates/organizations/org_table.html:233
 msgid "Do you really want to delete this organization?"
 msgstr "Er du sikker på, at du vil slette denne organisation?"
 
-#: organizations/templates/organizations/org_table.html:227
+#: organizations/templates/organizations/org_table.html:233
 msgid ""
 "This will delete all associated import- and scannerjobs. The action cannot "
 "be reversed"
@@ -3659,17 +3659,17 @@ msgstr ""
 "Dette vil også slette import- og scannerjobs der tilhører organisationen. "
 "Handlingen kan ikke fortrydes."
 
-#: organizations/templates/organizations/org_table.html:238
-#: organizations/templates/organizations/org_table.html:239
+#: organizations/templates/organizations/org_table.html:244
+#: organizations/templates/organizations/org_table.html:245
 msgid "Edit Single SignOn configuration"
 msgstr "Redigér Single SignOn-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:249
-#: organizations/templates/organizations/org_table.html:250
+#: organizations/templates/organizations/org_table.html:255
+#: organizations/templates/organizations/org_table.html:256
 msgid "Configure Single SignOn"
 msgstr "Konfigurér Single SignOn"
 
-#: organizations/templates/organizations/org_table.html:269
+#: organizations/templates/organizations/org_table.html:275
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
@@ -3875,7 +3875,7 @@ msgstr "OSdatascanner bruger attribut"
 msgid "Claim attribute"
 msgstr "Claim attribut"
 
-#: organizations/views/org_views.py:67 organizations/views/org_views.py:114
+#: organizations/views/org_views.py:69 organizations/views/org_views.py:117
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 
