@@ -110,6 +110,11 @@ class Scanner(models.Model):
         verbose_name=_('planned execution')
     )
 
+    removed = models.BooleanField(
+        verbose_name=_("removed"),
+        default=False
+    )
+
     dtstart = models.DateField(
         default=datetime.date.today,
         verbose_name=_('schedule start time')
