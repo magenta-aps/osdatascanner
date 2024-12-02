@@ -1,11 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.26.1, 2nd December 2024
 
-### Bugfixes
-
-- A layout breaking <main> tag was introduced on Report in the previous version. 
-  This has been fixed.
+This minor bugfix release corrects a display error in the report module.
 
 ## Version 3.26.0, 29th November 2024
 
