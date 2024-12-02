@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+### Bugfixes
+
+- A layout breaking <main> tag was introduced on Report in the previous version. 
+  This has been fixed.
+
 ## Version 3.26.0, 29th November 2024
 
 "My Cat Keeps Bringing Live Mice Inside"
