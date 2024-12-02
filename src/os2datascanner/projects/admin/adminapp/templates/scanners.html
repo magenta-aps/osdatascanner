@@ -184,21 +184,49 @@
                           <i id="play_arrow" class="material-symbols">play_arrow</i>
                         </a>
  
-                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
-                           class="button button--icon-button button--datatable-actions"
-                           aria-label="{% trans 'Edit scanner job' %}"
-                           title="{% trans 'Edit scanner job' %}">
-                          <i id="edit" class="material-symbols">edit</i>
-                        </a>
+                        {% if perms.os2datascanner.change_scanner %}
+                          <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
+                             class="button button--icon-button button--datatable-actions"
+                             aria-label="{% trans 'Edit scanner job' %}"
+                             title="{% trans 'Edit scanner job' %}">
+                            <i id="edit" class="material-symbols">edit</i>
+                          </a>
+                        {% endif %}
  
-                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
-                           class="button button--icon-button button--datatable-actions"
-                           aria-label="{% trans 'Copy scanner job' %}"
-                           title="{% trans 'Copy scanner job' %}">
-                          <i id="content_copy" class="material-symbols">content_copy</i>
-                        </a>
+                        {% if perms.os2datascanner.add_scanner %}
+                          <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
+                             class="button button--icon-button button--datatable-actions"
+                             aria-label="{% trans 'Copy scanner job' %}"
+                             title="{% trans 'Copy scanner job' %}">
+                            <i id="content_copy" class="material-symbols">content_copy</i>
+                          </a>
+                        {% endif %}
+
+                        {% if perms.os2datascanner.remove_scanner %}
+                          {% comment %}
+                            We should use HTMX here I think, then we can just use 
+                            _one_ button element.
+                          {% endcomment %}
+                          <form action="/{{ view.type }}scanners/{{ scanner.pk }}/remove/"
+                                method="post"
+                                style="display: inline-block">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit"
+                                    class="button button--icon-button button--datatable-actions"
+                                    aria-label="{% trans 'Remove scanner job' %}"
+                                    title="{% trans 'Remove scanner job' %}">
+                              <i id="delete" class="material-symbols">close</i>
+                            </button>
+                          </form>
+                        {% endif %}
  
-                        {% if not scanner.scans %}
+
+                        {% if perms.os2datascanner.delete_scanner and not scanner.scans %}
+                          {% comment %}
+                            We should use HTMX here I think, then we can just use 
+                            _one_ button element.
+                          {% endcomment %}
                           <form action="/{{ view.type }}scanners/{{ scanner.pk }}/delete/"
                                 method="post"
                                 style="display: inline-block">
@@ -209,7 +237,7 @@
                                     onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
                                     aria-label="{% trans 'Delete scanner job' %}"
                                     title="{% trans 'Delete scanner job' %}">
-                              <i id="delete" class="material-symbols">delete</i>
+                              <i id="delete" class="material-symbols">delete_forever</i>
                             </button>
                           </form>
                         {% endif %}

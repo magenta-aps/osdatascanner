@@ -655,7 +655,7 @@ class Scanner(models.Model):
 
         permissions = [
             ("can_validate", _("Can validate scannerjobs")),
-            ("remove_scanner", _("Can remove scannerjob from scannerjob list"))
+            ("remove_scanner", _("Can remove scannerjob from scannerjob list")),
         ]
 
 
