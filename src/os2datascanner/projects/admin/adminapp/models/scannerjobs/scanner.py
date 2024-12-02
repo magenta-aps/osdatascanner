@@ -184,6 +184,14 @@ class Scanner(models.Model):
         """Method documentation"""
         raise NotImplementedError("Scanner.verify")
 
+    def remove(self):
+        self.removed = True
+        self.save()
+
+    def recreate(self):
+        self.removed = False
+        self.save()
+
     @property
     def needs_revalidation(self) -> bool:
         """Used to check if the url on a form object differs from the
@@ -645,7 +653,10 @@ class Scanner(models.Model):
         abstract = False
         ordering = ['name']
 
-        permissions = [("can_validate", _("Can validate scannerjobs"))]
+        permissions = [
+            ("can_validate", _("Can validate scannerjobs")),
+            ("remove_scanner", _("Can remove scannerjob from scannerjob list"))
+        ]
 
 
 @receiver(post_delete)

@@ -16,10 +16,11 @@ from json import dumps
 from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from pika.exceptions import AMQPError
 import structlog
 
@@ -498,8 +499,9 @@ class ScannerBase(object):
         return context
 
 
-class ScannerCreate(ScannerBase, RestrictedCreateView):
+class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
     """View for creating a new scannerjob."""
+    permission_required = "os2datascanner.add_scanner"
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -507,8 +509,9 @@ class ScannerCreate(ScannerBase, RestrictedCreateView):
         return response
 
 
-class ScannerUpdate(ScannerBase, RestrictedUpdateView):
+class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
     """View for editing an existing scannerjob."""
+    permission_required = "os2datascanner.change_scanner"
     edit = True
     old_url = ''
     old_rule = None
@@ -569,7 +572,19 @@ class ScannerUpdate(ScannerBase, RestrictedUpdateView):
         return response
 
 
-class ScannerDelete(RestrictedDeleteView):
+class ScannerRemove(PermissionRequiredMixin, RestrictedDeleteView):
+    permission_required = "os2datascanner.remove_scannerjob"
+
+    def post(self, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.remove()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class ScannerDelete(PermissionRequiredMixin, RestrictedDeleteView):
+    permission_required = "os2datascanner.delete_scanner"
+
     def get_form(self, form_class=None):
         """Adds special field password and decrypts password."""
         if form_class is None:
@@ -578,8 +593,9 @@ class ScannerDelete(RestrictedDeleteView):
         return super().get_form(form_class)
 
 
-class ScannerCopy(ScannerBase, RestrictedCreateView):
+class ScannerCopy(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
     """Creates a copy of an existing scanner. """
+    permission_required = "os2datascanner.add_scanner"
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
