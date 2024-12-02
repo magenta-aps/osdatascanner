@@ -163,11 +163,11 @@ class WebSource(Source):
         with requests.Session() as session:
             session.headers.update(
                 {"User-Agent": f"OSdatascanner/{__version__}"
-                               # Honour our heritage (and hopefully also keep
-                               # this UA working for everybody who's previously
-                               # whitelisted "OS2datascanner")
-                               " (previously OS2datascanner)"
-                               " (+https://osdatascanner.dk/agent)"}
+                 # Honour our heritage (and hopefully also keep
+                 # this UA working for everybody who's previously
+                 # whitelisted "OS2datascanner")
+                 " (previously OS2datascanner)"
+                 " (+https://osdatascanner.dk/agent)"}
             )
             yield session
 
@@ -193,27 +193,22 @@ class WebSource(Source):
             if not self._always_crawl:
                 wc.freeze()
 
-        yield from self._get_handles_from_webcrawler(wc)
+        yield from (self._prepare_handle(hints, url) for hints, url in wc.visit())
 
-    def _get_handles_from_webcrawler(self, wc):
-        for hints, url in wc.visit():
-            referrer = hints.get("referrer")
-            r = WebHandle.make_handle(
-                    referrer, self._url) if referrer else None
+    def _prepare_handle(self, hints: dict, url: str):
+        """Converts a hints dictionary and a raw URL produced by a WebCrawler into a WebHandle."""
 
-            new_hints = {
-                    k: v for k, v in hints.items()
-                    if k in ("last_modified", "content_type", "true_url",
-                             "title", "fresh",)}
-            r = WebHandle.make_handle(
-                    referrer, self._url) if referrer else None
-            h = WebHandle.make_handle(
-                    url, self._url, referrer=r, hints=new_hints or None)
-            # make_handle doesn't copy properties other than the URL into the
-            # new WebSource object, so fix up the references manually
-            if h.source == self:
-                h._source = self
-            yield h
+        referrer = hints.get("referrer")
+
+        new_hints = {k: v for k, v in hints.items() if k in ("last_modified", "content_type",
+                                                             "true_url", "title", "fresh",)}
+
+        r = WebHandle.make_handle(referrer, self._url) if referrer else None
+        h = WebHandle.make_handle(url, self._url, referrer=r, hints=new_hints or None)
+
+        if h.source == self:
+            h._source = self
+        yield h
 
     @property
     def url(self):
