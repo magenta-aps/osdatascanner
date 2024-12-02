@@ -16,10 +16,11 @@ from json import dumps
 from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from pika.exceptions import AMQPError
 import structlog
@@ -575,11 +576,18 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
 class ScannerRemove(PermissionRequiredMixin, RestrictedDeleteView):
     permission_required = "os2datascanner.remove_scannerjob"
 
-    def post(self, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.remove()
 
-        return HttpResponseRedirect(self.get_success_url())
+        messages.add_message(
+                request,
+                messages.SUCCESS,
+                _("The scannerjob was removed."),
+                extra_tags="manual_close"
+            )
+
+        return redirect(self.get_success_url())
 
 
 class ScannerDelete(PermissionRequiredMixin, RestrictedDeleteView):
@@ -591,6 +599,36 @@ class ScannerDelete(PermissionRequiredMixin, RestrictedDeleteView):
             form_class = self.get_form_class()
 
         return super().get_form(form_class)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # TODO: Despite the superclass calling either this method or `form_invalid`, neither seems
+        # to be called ...
+
+        messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                _("The scannerjob was deleted."),
+                extra_tags="manual_close"
+            )
+
+        return response
+
+    def form_invalid(self, *args, **kwargs):
+        response = super().form_invalid(*args, **kwargs)
+
+        # TODO: Despite the superclass calling either this method or `form_valid`, neither seems
+        # to be called ...
+
+        messages.add_message(
+                self.request,
+                messages.WARNING,
+                _("The scannerjob was not removed!"),
+                extra_tags="manual_close"
+            )
+
+        return response
 
 
 class ScannerCopy(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
