@@ -373,7 +373,7 @@ class ScannerList(RestrictedListView):
     context_object_name = 'scanner_list'
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = super().get_queryset().filter(removed=False)
         if search_field := self.request.GET.get('search_field'):
             qs = qs.filter(name__icontains=search_field)
         return qs
