@@ -24,7 +24,7 @@ from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
 from .scanner_views import (
         ScannerRun, ScannerList, ScannerAskRun, ScannerCreate, ScannerDelete,
-        ScannerUpdate, ScannerCopy, ScannerCleanupStaleAccounts)
+        ScannerUpdate, ScannerCopy, ScannerCleanupStaleAccounts, ScannerRemove)
 
 
 class MSGraphMailList(ScannerList):
@@ -115,6 +115,12 @@ class MSGraphMailUpdate(ScannerUpdate):
 
     def get_success_url(self):
         return '/msgraph-mailscanners/%s/saved/' % self.object.pk
+
+
+class MSGraphMailRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = MSGraphMailScanner
+    success_url = '/msgraph-mailscanners/'
 
 
 class MSGraphMailDelete(ScannerDelete):
@@ -220,6 +226,12 @@ class MSGraphFileUpdate(ScannerUpdate):
         return '/msgraph-filescanners/%s/saved/' % self.object.pk
 
 
+class MSGraphFileRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = MSGraphFileScanner
+    success_url = '/msgraph-filescanners/'
+
+
 class MSGraphFileDelete(ScannerDelete):
     """Deletes a Microsoft Graph file scanner job."""
     model = MSGraphFileScanner
@@ -309,6 +321,12 @@ class MSGraphCalendarUpdate(ScannerUpdate):
         return '/msgraph-calendarscanners/%s/saved/' % self.object.pk
 
 
+class MSGraphCalendarRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = MSGraphCalendarScanner
+    success_url = '/msgraph-calendarscanners/'
+
+
 class MSGraphCalendarDelete(ScannerDelete):
     """Deletes a Microsoft Graph calendar scanner job."""
     model = MSGraphCalendarScanner
@@ -392,6 +410,12 @@ class MSGraphTeamsFileUpdate(ScannerUpdate):
 
     def get_success_url(self):
         return '/msgraph-teams-filescanners/%s/saved/' % self.object.pk
+
+
+class MSGraphTeamsFileRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = MSGraphTeamsFileScanner
+    success_url = '/msgraph-teams-filescanners/'
 
 
 class MSGraphTeamsFileDelete(ScannerDelete):

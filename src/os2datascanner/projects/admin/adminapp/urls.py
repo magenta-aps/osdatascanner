@@ -32,30 +32,32 @@ from .views.exchangescanner_views import (ExchangeScannerList, ExchangeScannerCr
                                           ExchangeScannerUpdate, ExchangeScannerDelete,
                                           ExchangeScannerRun, ExchangeScannerAskRun,
                                           ExchangeScannerCopy, ExchangeCleanupStaleAccounts,
-                                          OrganizationalUnitListing)
+                                          OrganizationalUnitListing, ExchangeScannerRemove)
 
 from .views.filescanner_views import (FileScannerCreate, FileScannerRun,
                                       FileScannerAskRun, FileScannerUpdate,
                                       FileScannerDelete, FileScannerList,
-                                      FileScannerCopy)
+                                      FileScannerCopy, FileScannerRemove)
 
 from .views.dropboxscanner_views import (DropboxScannerCreate, DropboxScannerRun,
                                          DropboxScannerAskRun, DropboxScannerUpdate,
-                                         DropboxScannerDelete, DropboxScannerList)
+                                         DropboxScannerDelete, DropboxScannerList,
+                                         DropboxScannerRemove)
 
 from .views.googledrivescanner_views import (GoogleDriveScannerCreate, GoogleDriveScannerRun,
                                              GoogleDriveScannerAskRun, GoogleDriveScannerUpdate,
                                              GoogleDriveScannerList, GoogleDriveScannerDelete,
-                                             GoogleDriveScannerCopy)
+                                             GoogleDriveScannerCopy, GoogleDriveScannerRemove)
 
 from .views.gmailscanner_views import (GmailScannerCreate, GmailScannerRun,
                                        GmailScannerAskRun, GmailScannerUpdate,
                                        GmailScannerDelete, GmailScannerList,
-                                       GmailScannerCopy)
+                                       GmailScannerCopy, GmailScannerRemove)
 
 from .views.sbsysscanner_views import (SbsysScannerCreate, SbsysScannerList,
                                        SbsysScannerAskRun, SbsysScannerDelete,
-                                       SbsysScannerRun, SbsysScannerUpdate)
+                                       SbsysScannerRun, SbsysScannerUpdate,
+                                       SbsysScannerRemove)
 
 from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete,
@@ -68,7 +70,7 @@ from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCom
 from .views.webscanner_views import (WebScannerCreate, WebScannerUpdate,
                                      WebScannerDelete, WebScannerRun,
                                      WebScannerAskRun, WebScannerList,
-                                     WebScannerCopy)
+                                     WebScannerCopy, WebScannerRemove)
 
 from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphMailCreate, MSGraphMailUpdate,
@@ -86,7 +88,9 @@ from .views.msgraph_views import (MSGraphMailList, MSGraphMailDelete,
                                   MSGraphTeamsFileAskRun, MSGraphTeamsFileCopy,
                                   MSGraphCalendarCleanupStaleAccounts,
                                   MSGraphFileCleanupStaleAccounts,
-                                  MSGraphMailCleanupStaleAccounts)
+                                  MSGraphMailCleanupStaleAccounts,
+                                  MSGraphCalendarRemove, MSGraphMailRemove,
+                                  MSGraphFileRemove, MSGraphTeamsFileRemove)
 
 from .views.miniscanner_views import MiniScanner, execute_mini_scan
 
@@ -119,6 +123,8 @@ urlpatterns = [
             name='exchangescanner_add'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/delete/$', ExchangeScannerDelete.as_view(),
             name='exchangescanner_delete'),
+    re_path(r'^exchangescanners/(?P<pk>\d+)/remove/$', ExchangeScannerRemove.as_view(),
+            name='exchangescanner_remove'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/$', ExchangeScannerUpdate.as_view(),
             name='exchangescanner_update'),
     re_path(r'^exchangescanners/(?P<pk>\d+)/run/$', ExchangeScannerRun.as_view(),
@@ -136,6 +142,8 @@ urlpatterns = [
     re_path(r'^webscanners/add/$', WebScannerCreate.as_view(), name='webscanner_add'),
     re_path(r'^webscanners/(?P<pk>\d+)/delete/$', WebScannerDelete.as_view(),
             name='webscanner_delete'),
+    re_path(r'^webscanners/(?P<pk>\d+)/remove/$', WebScannerRemove.as_view(),
+            name='webscanner_remove'),
     re_path(r'^webscanners/(?P<pk>\d+)/run/$', WebScannerRun.as_view(),
             name='webscanner_run'),
     re_path(r'^webscanners/(?P<pk>\d+)/askrun/$',
@@ -152,6 +160,8 @@ urlpatterns = [
             name='filescanner_update'),
     re_path(r'^filescanners/(?P<pk>\d+)/delete/$', FileScannerDelete.as_view(),
             name='filescanner_delete'),
+    re_path(r'^filescanners/(?P<pk>\d+)/remove/$', FileScannerRemove.as_view(),
+            name='filescanner_remove'),
     re_path(r'^filescanners/(?P<pk>\d+)/run/$', FileScannerRun.as_view(),
             name='filescanner_run'),
     re_path(r'^filescanners/(?P<pk>\d+)/askrun/$',
@@ -168,6 +178,8 @@ urlpatterns = [
             name='dropboxscanner_update'),
     re_path(r'^dropboxscanners/(?P<pk>\d+)/delete/$', DropboxScannerDelete.as_view(),
             name='dropboxscanner_delete'),
+    re_path(r'^dropboxscanners/(?P<pk>\d+)/remove/$', DropboxScannerRemove.as_view(),
+            name='dropboxscanner_remove'),
     re_path(r'^dropboxscanners/(?P<pk>\d+)/run/$', DropboxScannerRun.as_view(),
             name='dropboxscanner_run'),
     re_path(r'^dropboxscanners/(?P<pk>\d+)/askrun/$',
@@ -183,6 +195,8 @@ urlpatterns = [
             name='googledrivescanner_update'),
     re_path(r'^googledrivescanners/(?P<pk>\d+)/delete/$', GoogleDriveScannerDelete.as_view(),
             name='googledrivescanner_delete'),
+    re_path(r'^googledrivescanners/(?P<pk>\d+)/remove/$', GoogleDriveScannerRemove.as_view(),
+            name='googledrivescanner_remove'),
     re_path(r'^googledrivescanners/(?P<pk>\d+)/run/$', GoogleDriveScannerRun.as_view(),
             name='googledrivescanner_run'),
     re_path(r'^googledrivescanners/(?P<pk>\d+)/askrun/$',
@@ -198,6 +212,8 @@ urlpatterns = [
             name='gmailscanner_update'),
     re_path(r'^gmailscanners/(?P<pk>\d+)/delete/$', GmailScannerDelete.as_view(),
             name='gmailscanner_delete'),
+    re_path(r'^gmailscanners/(?P<pk>\d+)/remove/$', GmailScannerRemove.as_view(),
+            name='gmailscanner_remove'),
     re_path(r'^gmailscanners/(?P<pk>\d+)/run/$', GmailScannerRun.as_view(),
             name='gmailscanner_run'),
     re_path(r'^gmailscanners/(?P<pk>\d+)/askrun/$',
@@ -214,6 +230,8 @@ urlpatterns = [
             name='sbsysscanner_update'),
     re_path(r'^sbsysscanners/(?P<pk>\d+)/delete/$', SbsysScannerDelete.as_view(),
             name='sbsysscanner_delete'),
+    re_path(r'^sbsysscanners/(?P<pk>\d+)/remove/$', SbsysScannerRemove.as_view(),
+            name='sbsysscanner_remove'),
     re_path(r'^sbsysscanners/(?P<pk>\d+)/run/$', SbsysScannerRun.as_view(),
             name='sbsysscanner_run'),
     re_path(r'^sbsysscanners/(?P<pk>\d+)/askrun/$',
@@ -233,6 +251,9 @@ urlpatterns = [
     re_path(r'^msgraph-calendarscanners/(?P<pk>\d+)/delete/$',
             MSGraphCalendarDelete.as_view(),
             name='msgraphcalendarscanner_delete'),
+    re_path(r'^msgraph-calendarscanners/(?P<pk>\d+)/remove/$',
+            MSGraphCalendarRemove.as_view(),
+            name='msgraph-calendarscanner_remove'),
     re_path(r'^msgraph-calendarscanners/(?P<pk>\d+)/copy/$',
             MSGraphCalendarCopy.as_view(),
             name='msgraphcalendarscanner_copy'),
@@ -255,16 +276,14 @@ urlpatterns = [
     re_path(r'^msgraph-filescanners/(?P<pk>\d+)/$',
             MSGraphFileUpdate.as_view(),
             name='msgraphfilescanner_update'),
-    re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/$',
-            MSGraphMailUpdate.as_view(),
-            name='msgraphmailscanner_update'),
     re_path(r'^msgraph-filescanners/(?P<pk>\d+)/cleanup_stale_accounts/$',
             MSGraphFileCleanupStaleAccounts.as_view(), name='msgraphfilescanner_cleanup'),
-    re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/cleanup_stale_accounts/$',
-            MSGraphMailCleanupStaleAccounts.as_view(), name='msgraphmailscanner_cleanup'),
     re_path(r'^msgraph-filescanners/(?P<pk>\d+)/delete/$',
             MSGraphFileDelete.as_view(),
             name='msgraphfilescanner_delete'),
+    re_path(r'^msgraph-filescanners/(?P<pk>\d+)/remove/$',
+            MSGraphFileRemove.as_view(),
+            name='msgraph-filescanner_remove'),
     re_path(r'^msgraph-filescanners/(?P<pk>\d+)/copy/$', MSGraphFileCopy.as_view(),
             name='filescanners_copy'),
     re_path(r'^msgraph-filescanners/(?P<pk>\d+)/run/$',
@@ -286,6 +305,9 @@ urlpatterns = [
     re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/delete/$',
             MSGraphMailDelete.as_view(),
             name='msgraphmailscanner_delete'),
+    re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/remove/$',
+            MSGraphMailRemove.as_view(),
+            name='msgraph-mailscanner_remove'),
     re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/copy/$', MSGraphMailCopy.as_view(),
             name='msgraphmailscanner_copy'),
     re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/run/$',
@@ -294,6 +316,8 @@ urlpatterns = [
     re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/askrun/$',
             MSGraphMailAskRun.as_view(),
             name='msgraphmailscanner_askrun'),
+    re_path(r'^msgraph-mailscanners/(?P<pk>\d+)/cleanup_stale_accounts/$',
+            MSGraphMailCleanupStaleAccounts.as_view(), name='msgraphmailscanner_cleanup'),
     re_path(r'^(msgraph-mailscanners|msgraph-filescanners)/(\d+)/(created|saved)/$',
             DialogSuccess.as_view()),
 
@@ -309,6 +333,9 @@ urlpatterns = [
     re_path(r'^msgraph-teams-filescanners/(?P<pk>\d+)/delete/$',
             MSGraphTeamsFileDelete.as_view(),
             name='msgraphteamsfilescanner_delete'),
+    re_path(r'^msgraph-teams-filescanners/(?P<pk>\d+)/remove/$',
+            MSGraphTeamsFileRemove.as_view(),
+            name='msgraph-teamsfilescanner_remove'),
     re_path(r'^msgraph-teams-filescanners/(?P<pk>\d+)/copy/$', MSGraphTeamsFileCopy.as_view(),
             name='msgraphfilescanners_copy'),
     re_path(r'^msgraph-teams-filescanners/(?P<pk>\d+)/run/$',
