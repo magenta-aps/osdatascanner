@@ -40,17 +40,19 @@
                    hx-include="#scanner_search_field" />
           </div>
 
-          <div class="btn">
-            <a href="/{{ view.type }}scanners/add/"
-               class="button button--cta-button button--icon-text-button"
-               aria-label="{% trans 'Add scannerjob' %}"
-               title="{% trans 'Add scannerjob' %}">
-              <svg class="icon button__plus-icon">
-                <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-              </svg>
-              <span>{% trans "Add scannerjob" %}</span>
-            </a>
-          </div>
+          {% if perms.os2datascanner.add_scanner %}
+            <div class="btn">
+              <a href="/{{ view.type }}scanners/add/"
+                 class="button button--cta-button button--icon-text-button"
+                 aria-label="{% trans 'Add scannerjob' %}"
+                 title="{% trans 'Add scannerjob' %}">
+                <svg class="icon button__plus-icon">
+                  <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                </svg>
+                <span>{% trans "Add scannerjob" %}</span>
+              </a>
+            </div>
+          {% endif %}
         </div>
       </div>
 
