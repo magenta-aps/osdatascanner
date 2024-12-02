@@ -18,10 +18,8 @@
     {% block additional_styles %}
     {% endblock additional_styles %}
 
-    <main class="wrapper">
-      {% block body %}
-      {% endblock body %}
-    </main>
+    {% block body %}
+    {% endblock body %}
 
     {% block scripts %}
       <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
