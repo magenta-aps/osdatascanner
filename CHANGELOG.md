@@ -15,6 +15,8 @@
 
 - It is now possible to export the history of completed scans in the admin module.
 
+  - This feature can be enabled through the django-permission 'can_export_completed_scans'
+
 - Column with the number of results from sources older than 30 days introduced in the leader 
   overview table. Hidden by default with an installation setting.
 
