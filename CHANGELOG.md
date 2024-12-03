@@ -1,5 +1,12 @@
 # Changelog
 
+## Next Release
+
+### General improvements
+
+- Sorting carets in the leader overview are now highlighted when in use, and point in a more 
+  intuitive direction to indicate ascending or descending order.
+
 ## Version 3.26.1, 2nd December 2024
 
 This minor bugfix release corrects a display error in the report module.
