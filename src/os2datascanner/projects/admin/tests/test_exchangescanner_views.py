@@ -3,6 +3,7 @@ import pytest
 
 from django.test import RequestFactory
 from django.urls.base import reverse
+from django.contrib.auth.models import Permission
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -31,6 +32,10 @@ class TestExchangeScannerViews:
             olsen_banden):
         """Note that this is not a django administrator role,
         but instead an organization administrator."""
+
+        # Requires user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+
         response = get_exchangescanner_response(user_admin)
 
         tree_queryset = response.context_data['org_units']
@@ -80,6 +85,8 @@ class TestExchangeScannerViews:
 
     def test_exchangescanner_org_units_list_as_normal_user(
             self, user, familien_sand, nisserne, olsen_banden):
+        # Requires user permission
+        user.user_permissions.add(Permission.objects.get(codename='add_scanner'))
         response = get_exchangescanner_response(user)
         tree_queryset = response.context_data['org_units']
         assert len(tree_queryset) == 0
@@ -222,6 +229,9 @@ class TestExchangeScannerViews:
 
         client.force_login(user_admin)
 
+        # Requires user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+
         response = client.post(reverse('exchangescanner_add'), {
             'name': 'test_scanner',
             'mail_domain': '@test.mail',
@@ -272,6 +282,9 @@ class TestExchangeScannerViews:
         domain is wrong."""
 
         client.force_login(user_admin)
+
+        # Requires user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
 
         response = client.post(reverse('exchangescanner_add'), {
             'name': 'test_scanner',
