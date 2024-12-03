@@ -67,14 +67,23 @@ class ScannerQuerySet(InheritanceQuerySet):
 
 
 class ScannerManager(InheritanceManager):
+
+    def __init__(self, *args, default_filters: dict[str, object] | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_filters = default_filters
+
     def get_queryset(self):
+        return ScannerQuerySet(self.model, using=self._db, hints=self._hints
+                               ).filter(**(self.default_filters or {}))
+
+    def unfiltered(self):
         return ScannerQuerySet(self.model, using=self._db, hints=self._hints)
 
 
 class Scanner(models.Model):
 
     """A scanner, i.e. a template for actual scanning jobs."""
-    objects = ScannerManager()
+    objects = ScannerManager(default_filters={"hidden": False})
 
     linkable = False
 
