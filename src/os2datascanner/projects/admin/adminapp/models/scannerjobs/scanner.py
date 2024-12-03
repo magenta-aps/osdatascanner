@@ -110,9 +110,10 @@ class Scanner(models.Model):
         verbose_name=_('planned execution')
     )
 
-    removed = models.BooleanField(
-        verbose_name=_("removed"),
-        default=False
+    hidden = models.BooleanField(
+        verbose_name=_("hidden"),
+        default=False,
+        blank=True
     )
 
     dtstart = models.DateField(
@@ -184,12 +185,12 @@ class Scanner(models.Model):
         """Method documentation"""
         raise NotImplementedError("Scanner.verify")
 
-    def remove(self):
-        self.removed = True
+    def hide(self):
+        self.hidden = True
         self.save()
 
-    def recreate(self):
-        self.removed = False
+    def unhide(self):
+        self.hidden = False
         self.save()
 
     @property
@@ -655,7 +656,7 @@ class Scanner(models.Model):
 
         permissions = [
             ("can_validate", _("Can validate scannerjobs")),
-            ("remove_scanner", _("Can remove scannerjob from scannerjob list")),
+            ("hide_scanner", _("Can hide scannerjob from scannerjob list")),
         ]
 
 
