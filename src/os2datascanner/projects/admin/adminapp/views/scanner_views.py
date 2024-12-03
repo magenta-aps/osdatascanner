@@ -574,7 +574,7 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
 
 
 class ScannerRemove(PermissionRequiredMixin, RestrictedDeleteView):
-    permission_required = "os2datascanner.remove_scannerjob"
+    permission_required = "os2datascanner.hide_scanner"
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()

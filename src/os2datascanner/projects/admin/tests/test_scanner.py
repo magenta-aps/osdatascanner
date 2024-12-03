@@ -261,3 +261,27 @@ class TestScanners:
             censored_handle) == (
             True,
             true_handle)
+
+    def test_scanner_hide(self, basic_scanner):
+        """Calling the 'hide'-method on a scanner should set the 'hidden'-field to True."""
+        basic_scanner.hide()
+        basic_scanner.refresh_from_db()
+        assert basic_scanner.hidden
+
+    def test_scanner_unhide(self, hidden_scanner):
+        """Calling the 'unhide'-method on a scanner should set the 'hidden'-field to False."""
+        hidden_scanner.unhide()
+        hidden_scanner.refresh_from_db()
+        assert not hidden_scanner.hidden
+
+    def test_hidden_scanners_in_queryset(self, basic_scanner, hidden_scanner):
+        """Querying for scanners should only return unhidden scanners, except when applying
+        'unfiltered' to the manager class."""
+
+        scanners = Scanner.objects.all()
+        unfiltered_scanners = Scanner.objects.unfiltered()
+
+        assert scanners.count() == 1
+        assert scanners[0] == basic_scanner
+        assert unfiltered_scanners.count() == 2
+        assert all([basic_scanner in unfiltered_scanners, hidden_scanner in unfiltered_scanners])

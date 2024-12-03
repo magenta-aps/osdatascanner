@@ -120,6 +120,16 @@ def basic_scanner(test_org, basic_rule):
 
 
 @pytest.fixture
+def hidden_scanner(test_org, basic_rule):
+    return Scanner.objects.create(
+            name=f"HiddenScanner-{test_org.name}",
+            organization=test_org,
+            rule=basic_rule,
+            hidden=True
+        )
+
+
+@pytest.fixture
 def web_scanner(test_org, basic_rule):
     return WebScanner.objects.create(
         name=f"SomeWebScanner-{test_org.name}",
