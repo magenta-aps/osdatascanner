@@ -47,11 +47,13 @@
                 {% if user.is_superuser %}<col class="datatable__column--delete">{% endif %}
               </colgroup>
               <thead>
-                {% if user.is_superuser %}
-                  <tr class="table-topbar topbar-stick sticky">
-                    <th colspan="7">
+                <tr class="table-topbar topbar-stick sticky">
+                  <th colspan="7">
+                    {% if user.is_superuser %}
                       {% include "components/scanstatus/resolve_status.html" %}
-                      <div class="view-options button-group">
+                    {% endif %}
+                    <div class="view-options button-group">
+                      {% if user.is_superuser %}
                         <button type="button"
                                 class="button button--icon-text-button"
                                 name="status-resolved-all"
@@ -66,6 +68,8 @@
                           <i id="delete_forever" class="material-icons">delete_forever</i>
                           <span>{% trans "Delete all" %}</span>
                         </button>
+                      {% endif %}
+                      {% if perms.os2datascanner.can_export_completed_scans %}
                         <a href='{% url "export-status-completed" %}'
                            class="button button--icon-text-button"
                            aria-label="{% trans 'Export to CSV' %}"
@@ -73,10 +77,10 @@
                           <i id="file_download" class="material-icons" aria-hidden="true">file_download</i>
                           <span>{% trans "Export to CSV" %}</span>
                         </a>
-                      </div>
-                    </th>
-                  </tr>
-                {% endif %}
+                      {% endif %}
+                    </div>
+                  </th>
+                </tr>
                 <tr class="column-headings sticky">
                   <th class="datatable__column--checkbox">
                     <div class="ds-checkbox">
