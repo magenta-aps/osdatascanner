@@ -2,10 +2,18 @@
 
 ## Next Release
 
+### New in this release
+
 ### General improvements
 
 - Sorting carets in the leader overview are now highlighted when in use, and point in a more 
   intuitive direction to indicate ascending or descending order.
+
+- SCSS for the leader overview datatable is now less vulnerable to future changes in column 
+  layout.
+
+### Bugfixes
+
 
 ## Version 3.26.1, 2nd December 2024
 
