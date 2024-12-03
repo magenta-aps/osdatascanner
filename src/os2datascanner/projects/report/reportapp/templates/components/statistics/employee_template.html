@@ -6,9 +6,17 @@
       <div class="overflow-ellipsis">
         <span class="employee__fullname">{{ employee.get_full_name|title }}</span>
       </div>
- 
+
       <div class="overflow-ellipsis">
         <span class="employee__username">{{ employee.username|lower }}</span>
+      </div>
+    </div>
+  </td>
+
+  <td class="column--old column--numeral">
+    <div class="matches_container">
+      <div class="matches">
+        <span class="datatable-numeral">{{ employee.old_matches }}</span>
       </div>
     </div>
   </td>
@@ -44,12 +52,9 @@
       <div class="button-group">
         <a href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}"
            class="button button--text-button"
-           aria-label="{% trans 'Send notification to' %} {{ employee.get_full_name }}"
-           title="{% trans 'Send notification to' %} {{ employee.get_full_name }}">{% trans "Send notification" %}</a>
-        <button type="button"
-                class="overview-expand button button--caret-button"
-                aria-label="{% trans 'Show/hide overview' %}"
-                title="{% trans 'Show/hide overview' %}">
+           aria-label="{% trans "Send notification to" %} {{ employee.get_full_name }}"
+           title="{% trans "Send notification to" %} {{ employee.get_full_name }}">{% trans "Send notification" %}</a>
+        <button type="button" class="overview-expand button button--caret-button" aria-label="{% trans "Show/hide overview" %}" title="{% trans "Show/hide overview" %}">
           <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
         </button>
       </div>

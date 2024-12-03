@@ -230,6 +230,10 @@ class DocumentReport(models.Model):
             models.Index(
                 Upper("owner"),
                 name="alias_creation_query_idx"),
+            models.Index(
+                fields=("datasource_last_modified",),
+                name="source_age_idx"
+            )
         ]
         constraints = [
             models.UniqueConstraint(

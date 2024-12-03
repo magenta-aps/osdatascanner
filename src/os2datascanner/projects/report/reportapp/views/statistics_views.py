@@ -531,6 +531,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         qs = qs.with_unhandled_matches()
         qs = qs.with_withheld_matches()
+        qs = qs.with_old_matches()
         qs = qs.with_status()
         qs = self.order_employees(qs)
 
@@ -554,6 +555,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
             'first_name',
             'unhandled_matches',
             'withheld',
+            'old',
             'handle_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):
