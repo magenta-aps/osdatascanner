@@ -14,7 +14,7 @@
 from json import dumps
 
 from django.db import transaction
-from django.db.models import OuterRef, Subquery, Q
+from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from django.shortcuts import render
@@ -138,7 +138,7 @@ class StatusOverview(StatusBase):
             return "scan_status.html"
 
 
-class StatusCompleted(StatusBase):
+class StatusCompletedView(StatusBase):
     paginate_by = 10
     paginator_class = EmptyPagePaginator
     template_name = "components/scanner/scan_completed.html"
@@ -150,48 +150,26 @@ class StatusCompleted(StatusBase):
 
         The queryset consists only of completed scans and is ordered by start time.
         """
-        return super().get_queryset().filter(
-                ScanStatus._completed_Q, resolved=False).order_by(
+
+        qs = super().get_queryset()
+        qs = qs.filter(ScanStatus._completed_Q, resolved=False).order_by(
                 '-scan_tag__time').prefetch_related('scanner')
+
+        # The runtime of the scan is calculated from the last snapshot and the first snapshot
+        # that has recorded a scanned object (or more) to exclude time spent idle -
+        # f.e. due to multiple running jobs resulting in a large message queue.
+        qs = qs.annotate(
+            scan_time=Max('snapshots__time_stamp')
+            - Min('snapshots__time_stamp', filter=Q(snapshots__scanned_objects__gte=1))
+        )
+
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
-
-        context['order_by'] = self.request.GET.get('order_by', 'sort_key')
-        context['order'] = self.request.GET.get('order', 'ascending')
-
-        total_scan_times = {}
-
-        # We're fetching the first snapshot that has recorded a scanned object (or more) to
-        # exclude time spent idle - f.e. due to multiple running jobs resulting in a large message
-        # queue.
-        # The last snapshot is fetched as well, to provide us the means to calculate runtime.
-        first_snapshot_with_scanned_obj_subquery = ScanStatusSnapshot.objects.filter(
-            scan_status=OuterRef('pk'), scanned_objects__gte=1).order_by(
-            'time_stamp').values("time_stamp")[:1]
-        last_snapshot_subquery = ScanStatusSnapshot.objects.filter(
-            scan_status=OuterRef('pk')).order_by(
-            '-time_stamp').values('time_stamp')[:1]
-
-        # Annotate the Status queryset with the ScanStatusSnapshot subqueries
-        statuses = self.object_list.annotate(
-            last_snapshot_time=Subquery(last_snapshot_subquery),
-            first_snapshot=Subquery(first_snapshot_with_scanned_obj_subquery)
-        )
-
-        for status in statuses:
-            if status.last_snapshot_time:
-                seconds_since_start = (
-                    status.last_snapshot_time -
-                    status.first_snapshot).total_seconds()
-                total_scan_times[status.pk] = seconds_since_start
-            else:
-                total_scan_times[status.pk] = None
-
-        context['total_scan_times'] = total_scan_times
 
         return context
 
@@ -216,6 +194,17 @@ class StatusCompleted(StatusBase):
                 self.object_list.update(resolved=True)
 
         return self.render_to_response(self.get_context_data())
+
+
+class StatusCompletedCSVView(CSVExportMixin, StatusCompletedView):
+    exported_fields = {
+        _("Scanner name"): 'scanner__name',
+        _("Start time"): 'scan_tag__time',
+        _("Objects found"): 'total_objects',
+        _("Matches found"): 'matches_found',
+        _("Scanning time"): 'scan_time',
+    }
+    exported_filename = 'os2datascanner_completed_scans'
 
 
 class StatusTimeline(RestrictedDetailView):

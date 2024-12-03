@@ -51,7 +51,7 @@
                   <tr class="table-topbar topbar-stick sticky">
                     <th colspan="7">
                       {% include "components/scanstatus/resolve_status.html" %}
-                      <div class="view-options">
+                      <div class="view-options button-group">
                         <button type="button"
                                 class="button button--icon-text-button"
                                 name="status-resolved-all"
@@ -66,6 +66,13 @@
                           <i id="delete_forever" class="material-icons">delete_forever</i>
                           <span>{% trans "Delete all" %}</span>
                         </button>
+                        <a href='{% url "export-status-completed" %}'
+                           class="button button--icon-text-button"
+                           aria-label="{% trans 'Export to CSV' %}"
+                           title="{% trans 'Export to CSV' %}">
+                          <i id="file_download" class="material-icons" aria-hidden="true">file_download</i>
+                          <span>{% trans "Export to CSV" %}</span>
+                        </a>
                       </div>
                     </th>
                   </tr>
@@ -136,7 +143,7 @@
                       <span class="completed_icon">
                         {% include "components/svg-icons/check_circle_full.svg" %}
                         <span class="width">
-                          {% with total_scan_times|get_item:status.pk as scan_time_item %}
+                          {% with status.scan_time.total_seconds as scan_time_item %}
                             {% if scan_time_item %}
                               {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan }}
                             {% else %}

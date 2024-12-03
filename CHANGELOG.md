@@ -4,6 +4,8 @@
 
 ### New in this release
 
+- It is now possible to export the history of completed scans in the admin module.
+
 ### General improvements
 
 - Sorting carets in the leader overview are now highlighted when in use, and point in a more 
