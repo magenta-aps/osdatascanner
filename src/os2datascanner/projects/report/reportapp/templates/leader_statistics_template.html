@@ -90,11 +90,13 @@
                     <label class="th-label" for="name-caret">{% trans "Employee" %}</label>
  
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'first_name' and order == 'descending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'first_name' and order == 'ascending' %}up{% endif %}"
                             id="name-caret"
                             name="first_name"
                             value="{% if order_by == 'first_name' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                      <i id="expand_more"
+                         class="material-symbols {% if order_by == 'first_name' %}active{% endif %}"
+                         aria-hidden="true">expand_more</i>
                     </button>
                   </div>
                 </th>
@@ -106,11 +108,13 @@
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'unhandled_matches' and order == 'descending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'unhandled_matches' and order == 'ascending' %}up{% endif %}"
                             id="matches-caret"
                             name="unhandled_matches"
                             value="{% if order_by == 'unhandled_matches' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                      <i id="expand_more"
+                         class="material-symbols {% if order_by == 'unhandled_matches' %}active{% endif %}"
+                         aria-hidden="true">expand_more</i>
                     </button>
                   </div>
                 </th>
@@ -126,11 +130,13 @@
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'descending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'ascending' %}up{% endif %}"
                             id="withheld-matches-caret"
                             name="withheld"
                             value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                      <i id="expand_more"
+                         class="material-symbols {% if order_by == 'withheld' %}active{% endif %}"
+                         aria-hidden="true">expand_more</i>
                     </button>
                   </div>
                 </th>
@@ -146,11 +152,13 @@
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'handle_status' and order == 'descending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'handle_status' and order == 'ascending' %}up{% endif %}"
                             id="status-caret"
                             name="handle_status"
                             value="{% if order_by == 'handle_status' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                      <i id="expand_more"
+                         class="material-symbols {% if order_by == 'handle_status' %}active{% endif %}"
+                         aria-hidden="true">expand_more</i>
                     </button>
                   </div>
                 </th>
