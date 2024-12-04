@@ -13,13 +13,15 @@
     </div>
   </td>
 
-  <td class="column--old column--numeral">
-    <div class="matches_container">
-      <div class="matches">
-        <span class="datatable-numeral">{{ employee.old_matches }}</span>
+  {% if show_30_days_column %}
+    <td class="column--old column--numeral">
+      <div class="matches_container">
+        <div class="matches">
+          <span class="datatable-numeral">{{ employee.old_matches }}</span>
+        </div>
       </div>
-    </div>
-  </td>
+    </td>
+  {% endif %}
 
   <td class="column--matches column--numeral">
     <div class="matches_container">
