@@ -232,10 +232,11 @@ class StatusTimeline(RestrictedDetailView):
         return context
 
 
-class StatusDelete(RestrictedDeleteView):
+class StatusDelete(PermissionRequiredMixin, RestrictedDeleteView):
     model = ScanStatus
     fields = []
     success_url = '/status/'
+    permission_required = "os2datascanner.delete_scanstatus"
 
     def get_form(self, form_class=None):
         if form_class is None:

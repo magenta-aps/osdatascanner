@@ -38,7 +38,7 @@
           <form id="table_checkboxes">
             <table class="datatable">
               <colgroup>
-                {% if permissions.os2datascanner.resolve_scanstatus %}<col class="datatable__column--checkbox">{% endif %}
+                {% if perms.os2datascanner.resolve_scanstatus %}<col class="datatable__column--checkbox">{% endif %}
                 <col class="datatable__column--name">
                 <col class="datatable__column--starttime">
                 <col class="datatable__column--objects">
@@ -49,7 +49,7 @@
               <thead>
                 <tr class="table-topbar topbar-stick sticky">
                   <th colspan="7">
-                    {% if permissions.os2datascanner.resolve_scanstatus %}
+                    {% if perms.os2datascanner.resolve_scanstatus %}
                       {% include "components/scanstatus/resolve_status.html" %}
                     {% endif %}
                     <div class="view-options button-group">
@@ -82,7 +82,7 @@
                   </th>
                 </tr>
                 <tr class="column-headings sticky">
-                  {% if permissions.os2datascanner.resolve_scanstatus %}
+                  {% if perms.os2datascanner.resolve_scanstatus %}
                     <th class="datatable__column--checkbox">
                       <div class="ds-checkbox">
                         <input id="select-all" type="checkbox">
@@ -110,7 +110,7 @@
               <tbody>
                 {% for status in object_list %}
                   <tr data-type="scan-status">
-                    {% if permissions.os2datascanner.resolve_scanstatus %}
+                    {% if perms.os2datascanner.resolve_scanstatus %}
                       <td class="datatable__column--checkbox">
                         <div class="ds-checkbox">
                           <input type="checkbox"
@@ -161,7 +161,7 @@
                   <td class="datatable__column--delete">
                     <div class="action-wrapper button-group">
 
-                      {% if permissions.os2datascanner.resolve_scanstatus %}
+                      {% if perms.os2datascanner.resolve_scanstatus %}
                         <button type="button"
                                 class="button button--icon-button"
                                 name="status-resolved"
