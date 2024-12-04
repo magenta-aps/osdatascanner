@@ -249,17 +249,6 @@
         }
       }
 
-      div.matches_container {
-        display: flex;
-        align-items: center;
-      }
-
-      .warning-symbol {
-        color: var(--color-error);
-        cursor: default;
-        margin-left: 0.5rem;
-      }
-
       @media (min-width: $break-lg) {
         width: 15rem;
 
@@ -1036,11 +1025,28 @@ $font-size_subtitle: 0.875rem;
           /* If the next sibling is not a column--numeral, then the sibling column needs a left padding to optimize visual navigation */ 
           padding-left: var(--datatable-cell-padding);
         }
+
+        // NOTE to the SCSS nerd:
+        // This "container behaviour" could be a reusable mixin.
+        .matches_container {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end; // Realigns the content with the right side of the <td>.
+
+          flex-wrap: nowrap;
+          gap: 0.5rem;
+          
+          #warning {
+            color: var(--color-error);
+            cursor: default;
+          }
+        }
       }
 
       &--loading {
         /* The element shown while content is loaded. */ 
         text-align: center;
+        // NOTE: why is this not used anywhere? Did it get deprecated in a refactor?
       }
   
       &--nodata {

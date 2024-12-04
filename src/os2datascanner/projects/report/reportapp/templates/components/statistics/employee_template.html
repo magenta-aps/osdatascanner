@@ -19,9 +19,10 @@
         <span class="datatable-numeral">{{ employee.match_count }}</span>
       </div>
       {% if employee.false_positive_alarm %}
-        <span class="warning-symbol material-symbols-outlined" title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
+        <i id="warning" class="material-symbols"
+          title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
           warning
-        </span>
+        </i>
       {% endif %}
     </div>
   </td>
