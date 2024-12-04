@@ -531,8 +531,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         qs = qs.with_unhandled_matches()
         qs = qs.with_withheld_matches()
-        qs = qs.with_old_matches()
         qs = qs.with_status()
+        if settings.LEADER_OVERVIEW_30_DAYS:
+            qs = qs.with_old_matches()
+
         qs = self.order_employees(qs)
 
         self.employee_count = qs.count()
