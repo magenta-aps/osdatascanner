@@ -220,7 +220,7 @@
                                     class="button button--icon-button button--datatable-actions"
                                     aria-label="{% trans "Remove scanner job. This does not delete the scanner's scanning history." %}"
                                     title="{% trans "Remove scanner job. This does not delete the scanner's scanning history." %}">
-                              <i id="delete" class="material-symbols">close</i>
+                              <i id="close" class="material-symbols">close</i>
                             </button>
                           </form>
                         {% endif %}
@@ -241,7 +241,7 @@
                                     onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
                                     aria-label="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}"
                                     title="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}">
-                              <i id="delete" class="material-symbols">delete_forever</i>
+                              <i id="delete_forever" class="material-symbols">delete_forever</i>
                             </button>
                           </form>
                         {% endif %}
