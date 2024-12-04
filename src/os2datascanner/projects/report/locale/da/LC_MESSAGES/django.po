@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-03 14:45+0100\n"
+"POT-Creation-Date: 2024-12-04 08:39+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -805,6 +805,7 @@ msgstr "Sandsynlighed"
 #: reportapp/templates/scannerjobs/scannerjob_list.html:21
 #: reportapp/templates/undistributed_content.html:7
 #: reportapp/templates/user_content.html:7
+#: reportapp/views/statistics_views.py:604
 msgid "Results"
 msgstr "Resultater"
 
@@ -832,7 +833,6 @@ msgstr "Navn"
 #: reportapp/templates/components/reports/match_table.html:60
 #: reportapp/templates/components/reports/match_table.html:64
 #: reportapp/templates/components/reports/match_table.html:65
-#: reportapp/views/statistics_views.py:603
 msgid "Matches"
 msgstr "Matches"
 
@@ -868,7 +868,7 @@ msgstr "Sti"
 #: reportapp/templates/components/reports/match_table.html:113
 #: reportapp/templates/components/reports/match_table.html:114
 #: reportapp/templates/leader_statistics_template.html:171
-#: reportapp/views/statistics_views.py:604
+#: reportapp/views/statistics_views.py:606
 msgid "Status"
 msgstr "Status"
 
@@ -1221,7 +1221,7 @@ msgid "employees"
 msgstr "medarbejdere"
 
 #: reportapp/templates/leader_statistics_template.html:44
-#: reportapp/views/statistics_views.py:605
+#: reportapp/views/statistics_views.py:607
 msgid "Organizational units"
 msgstr "Organisatoriske enheder"
 
@@ -1242,6 +1242,7 @@ msgid "Employee"
 msgstr "Medarbejder"
 
 #: reportapp/templates/leader_statistics_template.html:109
+#: reportapp/views/statistics_views.py:603
 msgid "Results older than 30 days"
 msgstr "Resultater ældre end 30 dage"
 
@@ -1252,8 +1253,8 @@ msgid ""
 "30 days. Results older than this should be handled as soon as possible."
 msgstr ""
 "Antallet af resultater der stammer fra en kilde, som er mere end 30 dage. "
-"Din organisation har indstillet, at resultater må opbevares i maksimalt 30 dage. "
-"Resultater ældre end dette bør håndteres hurtigst muligt."
+"Din organisation har indstillet, at resultater må opbevares i maksimalt 30 "
+"dage. Resultater ældre end dette bør håndteres hurtigst muligt."
 
 #: reportapp/templates/leader_statistics_template.html:149
 msgid "Withheld"
@@ -2057,58 +2058,62 @@ msgstr "Fornavn"
 msgid "Last name"
 msgstr "Efternavn"
 
-#: reportapp/views/statistics_views.py:704
+#: reportapp/views/statistics_views.py:605
+msgid "Withheld results"
+msgstr "Tilbageholdte resultater"
+
+#: reportapp/views/statistics_views.py:706
 #, python-format
 msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:811
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:811
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:811
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:809
+#: reportapp/views/statistics_views.py:811
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:812
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:812
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:812
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:810
+#: reportapp/views/statistics_views.py:812
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:813
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:813
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:813
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:811
+#: reportapp/views/statistics_views.py:813
 msgid "Dec"
 msgstr "Dec"
 
@@ -2171,6 +2176,11 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#, fuzzy
+#~| msgid "Mail results"
+#~ msgid "Old results"
+#~ msgstr "Mailresultater"
 
 #, python-format
 #~ msgid ""
@@ -2282,9 +2292,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgid "Results from"
 #~ msgstr "Resultater fra"
 
-#~ msgid "Mail results"
-#~ msgstr "Mailresultater"
-
 #~ msgid "File results"
 #~ msgstr "Resultater fra filer"
 
@@ -2317,9 +2324,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
 #~ msgid "Total number of matches from calendars"
 #~ msgstr "Antal af matches fra kalendre"
-
-#~ msgid "Other results"
-#~ msgstr "Andre resultater"
 
 #~ msgid "Current total number of unhandled matches from unknown file types"
 #~ msgstr "Nuværende antal af uhåndterede matches fra ukendte filtyper"
