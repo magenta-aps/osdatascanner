@@ -278,7 +278,10 @@ class ScanStatus(AbstractScanStatus):
 
         get_latest_by = "scan_tag__time"
 
-        permissions = [("export_completed_scanstatus", _("Can export history of completed scans"))]
+        permissions = [
+            ("resolve_scanstatus", _("Can resolve scan statuses")),
+            ("export_completed_scanstatus", _("Can export history of completed scans"))
+        ]
 
     def __str__(self):
         return f"{self.scanner}: {self.start_time}"
