@@ -601,8 +601,7 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         _("First name"): 'first_name',
         _("Last name"): 'last_name',
         _("Username"): 'username',
-        _("Results older than 30 days"): 'old',
-        _("Results"): 'unhandled_matches',
+        _("Matches"): 'unhandled_matches',
         _("Status"): 'handle_status',
         _("Organizational units"): 'unit_list',
     }
@@ -635,18 +634,10 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
             row['handle_status'] = StatusChoices(row['handle_status']).label
         return rows
 
-    def additional_columns(self, request):
-        """Adds additional columns to the CSV, depending on settings and permissions."""
-        if request.user.has_perm("os2datascanner_report.can_see_withheld"):
-            self.exported_fields[_("Withheld results")] = "withheld"
-        if settings.LEADER_OVERVIEW_30_DAYS:
-            self.exported_fields[_("Results older than 30 days")] = "old"
-
     def get(self, request, *args, **kwargs):
         if not settings.LEADER_CSV_EXPORT:
             raise PermissionDenied
         self.set_user_units_and_org_unit(request)
-        self.additional_columns(request)
         response = super().get(request, *args, **kwargs)
         return response
 
