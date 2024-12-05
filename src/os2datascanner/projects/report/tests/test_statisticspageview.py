@@ -223,8 +223,8 @@ class TestLeaderStatisticsPageView:
         rows = [row for row in rows if row['First name'] == "Kjeld"]
 
         assert len(rows) == 1
-        assert "Olsen-banden" in rows[0]['Organizational units']
-        assert "Kjelds Hus" in rows[0]['Organizational units']
+        assert rows[0]['Organizational units'].count("Olsen-banden") == 1
+        assert rows[0]['Organizational units'].count("Kjelds Hus") == 1
 
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_leader_csv_ignore_irrelevant_orgunits(

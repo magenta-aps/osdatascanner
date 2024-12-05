@@ -623,7 +623,8 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
                     delimiter=', ',
                     ordering='units__name',
                     output_field=CharField(),
-                    filter=Q(units__in=self.descendant_units)
+                    filter=Q(units__in=self.descendant_units),
+                    distinct=True,
                 ),
                 Value('')
             )
