@@ -22,6 +22,7 @@
 - Reconnect lost styling for the warning icon for high relative percentage of "fake positives" on
   the leader overview datatable.
 
+- The names of Organizational Units are no longer repeated in the Leader page csv export.
 
 ## Version 3.26.1, 2nd December 2024
 
