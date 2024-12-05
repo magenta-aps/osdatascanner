@@ -532,6 +532,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         qs = qs.with_unhandled_matches()
         qs = qs.with_withheld_matches()
         qs = qs.with_status()
+        if settings.LEADER_OVERVIEW_30_DAYS:
+            qs = qs.with_old_matches()
+
         qs = self.order_employees(qs)
 
         self.employee_count = qs.count()
@@ -545,6 +548,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context["employee_count"] = self.employee_count
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
+        context['show_30_days_column'] = settings.LEADER_OVERVIEW_30_DAYS
 
         return context
 
@@ -554,6 +558,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
             'first_name',
             'unhandled_matches',
             'withheld',
+            'old',
             'handle_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):
@@ -753,6 +758,12 @@ class EmployeeView(LoginRequiredMixin, DetailView):
         response = super().get(request, *args, **kwargs)
         self.object.save()
         return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['show_30_days_column'] = settings.LEADER_OVERVIEW_30_DAYS
+        return context
+
 
 # Logic separated to function to allow usability in send_notifications.py
 

@@ -92,8 +92,8 @@ class AccountQuerySet(models.QuerySet):
 
     def with_withheld_matches(self):
         """Annotates each account in the queryset with 'withheld', which contains the
-        number of withheld matches the user has. Doesn't count matches from remediator aliases,
-        shared aliases, or withheld matches.
+        number of withheld matches the user has. Doesn't count matches from remediator aliases or
+        shared aliases.
         This field should contain the same value as the 'withheld_matches' property."""
         return self.annotate(withheld=Count(
                     "aliases__match_relation",
@@ -104,6 +104,30 @@ class AccountQuerySet(models.QuerySet):
                             aliases__match_relation__number_of_matches__gte=1,
                             aliases__match_relation__resolution_status__isnull=True,
                             aliases__match_relation__only_notify_superadmin=True
+                        )
+                    ),
+                    distinct=True
+                )
+            )
+
+    def with_old_matches(self):
+        """Annotates each account in the queryset with 'old', which contains the number
+        of matches older than the specified number of days the user has. Doesn't count matches from
+        remediator aliases, shared aliases or withheld matches.
+        This field should contain the same value as the 'old_matches' property."""
+        # TODO: Make this configurable (#62838)
+        number_of_days_policy = 30
+        cutoff_date = time_now() - timedelta(days=number_of_days_policy)
+        return self.annotate(old=Count(
+                    "aliases__match_relation",
+                    filter=(
+                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+                        & Q(
+                            aliases__shared=False,
+                            aliases__match_relation__number_of_matches__gte=1,
+                            aliases__match_relation__resolution_status__isnull=True,
+                            aliases__match_relation__only_notify_superadmin=False,
+                            aliases__match_relation__datasource_last_modified__lte=cutoff_date
                         )
                     ),
                     distinct=True
@@ -323,6 +347,19 @@ class Account(Core_Account):
             number_of_matches__gte=1,
             resolution_status__isnull=True,
             only_notify_superadmin=True)
+        return reports.count()
+
+    @property
+    def old_matches(self) -> int:
+        # TODO: Make this configurable (#62838)
+        number_of_days_policy = 30
+        cutoff_date = time_now() - timedelta(days=number_of_days_policy)
+        reports = self._get_reports()
+        reports = reports.filter(
+            number_of_matches__gte=1,
+            resolution_status__isnull=True,
+            only_notify_superadmin=False,
+            datasource_last_modified__lte=cutoff_date)
         return reports.count()
 
     @property

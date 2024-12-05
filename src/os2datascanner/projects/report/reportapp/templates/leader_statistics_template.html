@@ -6,7 +6,7 @@
 
 {% block body %}
   <div class="content content--maxwidth" hx-push-url="true">
- 
+
     {% if user_units %}
       <div class="content-header">
         <h1 class="page-title">
@@ -88,7 +88,7 @@
                 <th class="column--employee">
                   <div class="th__flex-container">
                     <label class="th-label" for="name-caret">{% trans "Employee" %}</label>
- 
+
                     <button type="button"
                             class="order-by button button--caret-button {% if order_by == 'first_name' and order == 'ascending' %}up{% endif %}"
                             id="name-caret"
@@ -100,6 +100,31 @@
                     </button>
                   </div>
                 </th>
+
+                {% if show_30_days_column %}
+                  <th class="column--matches column--numeral">
+                    <div class="th__flex-container">
+                      <label class="th-label" for="matches-caret">
+                        {% comment %} "30" here should be variable at some point {% endcomment %}
+                        <span>{% trans "Results older than 30 days" %}</span>
+                        <span class="help-tooltip"
+                              title="{% blocktrans trimmed %} The number of results stemming from a source, which is older than 30 days. Your organization has defined, that results may be stored for a maximum of 30 days. Results older than this should be handled as soon as possible. {% endblocktrans %}">
+                          <i id="help" class="material-symbols">help</i>
+                        </span>
+                      </label>
+
+                      <button type="button"
+                              class="order-by button button--caret-button {% if order_by == 'old' and order == 'ascending' %}up{% endif %}"
+                              id="matches-caret"
+                              name="old"
+                              value="{% if order_by == 'old' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                        <i id="expand_more"
+                           class="material-symbols {% if order_by == 'old' %}active{% endif %}"
+                           aria-hidden="true">expand_more</i>
+                      </button>
+                    </div>
+                  </th>
+                {% endif %}
 
                 <th class="column--matches column--numeral">
                   <div class="th__flex-container">
@@ -146,7 +171,7 @@
                     <label class="th-label" for="status-caret">
                       {% trans "Status" %}
                       <span class="help-tooltip"
-                            title="{% trans 'The status of each user is determined by how many matches that user has, and how often they have handled their matches recently. A user with a “Completed” status has no matches. A user with a “Accepted” status has handled at least 75% of their recent matches.' %}">
+                            title="{% trans "The status of each user is determined by how many matches that user has, and how often they have handled their matches recently. A user with a “Completed” status has no matches. A user with a “Accepted” status has handled at least 75% of their recent matches." %}">
                         <i id="help" class="material-symbols">help</i>
                       </span>
                     </label>
@@ -164,7 +189,7 @@
                 </th>
 
                 <th class="column--actions">
-                  <span aria-label="{% trans 'Actions' %}" title="{% trans 'Actions' %}">{% trans "Actions" %}</span>
+                  <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
                 </th>
               </tr>
             </thead>

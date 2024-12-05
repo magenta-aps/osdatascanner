@@ -6,6 +6,9 @@
 
 - It is now possible to export the history of completed scans in the admin module.
 
+- Column with the number of results from sources older than 30 days introduced in the leader 
+  overview table. Hidden by default with an installation setting.
+
 ### General improvements
 
 - Sorting carets in the leader overview are now highlighted when in use, and point in a more 
