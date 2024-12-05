@@ -606,17 +606,44 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
 
 class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
-    exported_fields = {
-        _("First name"): 'first_name',
-        _("Last name"): 'last_name',
-        _("Username"): 'username',
-        # TODO: !2059 contains a change that will support this row. Removed for now.
-        # _("Older than retention_policy"): 'old',
-        _("Matches"): 'unhandled_matches',
-        _("Withheld"): 'withheld',
-        _("Status"): 'handle_status',
-        _("Organizational units"): 'unit_list',
-    }
+    columns = [
+        {
+            'name': 'first_name',
+            'label': _("First name"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'last_name',
+            'label': _("Last name"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'username',
+            'label': _("Username"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'unhandled_matches',
+            'label': _("Matches"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'withheld',
+            'label': _("Tilbageholdte matches"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'handle_status',
+            'label': _("Status"),
+            'type': CSVExportMixin.ColumnType.FUNCTION,
+            'function': lambda acc: StatusChoices(acc.handle_status).label,
+        },
+        {
+            'name': 'unit_list',
+            'label': _("Organizational units"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+    ]
     exported_filename = 'os2datascanner_leaderpage_statistics'
 
     def order_employees(self, qs):
