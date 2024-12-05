@@ -69,6 +69,7 @@ class CSVExportMixin:
         # Since we are streaming, we need to select the entire queryset, and
         # stream it from memory. We are not able to make further queries after
         # streaming has begun.
+        self.add_conditional_colums(request)
         rows = self.get_rows()
 
         response = StreamingHttpResponse(
@@ -79,3 +80,11 @@ class CSVExportMixin:
                 f'attachment; filename="{time_now()}-{self.exported_filename}.csv"'})
 
         return response
+
+    def add_conditional_colums(self, request):
+        """If any columns only need to be added conditionally,
+        make a method doing it overwriting this one."""
+        # self.columns = <class>.columns
+        # if <condition>:
+        #   self.columns = self.columns + [{<dict describing column>}]
+        pass

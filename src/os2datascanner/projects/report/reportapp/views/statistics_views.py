@@ -668,11 +668,15 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         )
         return qs
 
-    def get_rows(self):
-        rows = super().get_rows()
-        for row in rows:
-            row['handle_status'] = StatusChoices(row['handle_status']).label
-        return rows
+    def add_conditional_colums(self, request):
+        self.columns = LeaderStatisticsCSVView.columns
+        if settings.LEADER_OVERVIEW_30_DAYS:
+            # Don't use '.append()' to avoid shallow copies
+            self.columns = self.columns + [{
+                    'name': 'old',
+                    'label': _("Results older than 30 days"),
+                    'type': CSVExportMixin.ColumnType.FIELD,
+                }]
 
     def get(self, request, *args, **kwargs):
         if not settings.LEADER_CSV_EXPORT:
