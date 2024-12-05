@@ -79,21 +79,26 @@ Single-colored icons can be modified like so:
   > svg {
     display: block;
     height: 100%;
-    fill: #50565d;
+    // fill: #50565d;
+    fill: var(--color-primary);
+
     width: 100%;
   }
 
-  &--msgraph-files svg {
-    fill: var(--color-main);
-  }
+  /* Why are we only defining specific colours for some icons and not all of them? I don't mind the
+  different colours, but I crave consistency. */
 
-  &--msgraph-mail svg {
-    fill: var(--color-main);
-  }
+  // &--msgraph-files svg {
+  //   fill: var(--color-main);
+  // }
 
-  &--ews svg {
-    fill: #eeb441;
-  }
+  // &--msgraph-mail svg {
+  //   fill: var(--color-main);
+  // }
+
+  // &--ews svg {
+  //   fill: #eeb441;
+  // }
 }
 
 /* file type icons, stop */

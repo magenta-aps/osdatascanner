@@ -85,6 +85,7 @@ document.addEventListener("click", function (e) {
     document.getElementById("order_by").value = targ.name;
   }
 
+  // So far only used in results tables on Report
   if (hasClass(targ, "show-more")) {
     let overflowDiv = targ.parentElement;
 

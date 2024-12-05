@@ -1,4 +1,5 @@
 .view-options {
+  /* Dependency: Admin > error log + scan completed */
   clear: both;
   display: flex;
 
@@ -40,6 +41,7 @@
 }
 
 .checkbox-button-wrapper {
+  /* Dependency: Admin > remove error + resolve status */
   display: flex;
   align-items: center;
   float: left;
@@ -58,12 +60,12 @@
 
     &[disabled] {
       cursor: default;
-      background-color: rgba(0, 0, 0, .07);
+      background-color: rgba(0, 0, 0, 0.07);
       color: red;
 
       &,
       .text-secondary {
-        color: rgba(0, 0, 0, .35);
+        color: rgba(0, 0, 0, 0.35);
       }
     }
 
@@ -83,7 +85,7 @@
   .selected-cb {
     white-space: nowrap;
     margin-left: 1.5rem;
-    font-size: .9rem;
+    font-size: 0.9rem;
     font-weight: normal;
     color: var(--color-text-secondary);
   }
@@ -93,8 +95,80 @@
   min-width: 7.8rem;
 }
 
+// TODO:
+// Rename/repurpose this file so it's more obvious it's reusable
+// Update error log + scan completed datatables
+
+// Magic flex-box mixin
+@mixin flex-center($justify: center, $gap: null) {
+  display: flex;
+  align-items: center;
+  justify-content: $justify; // Can be redefined, if you don't want it centered
+
+  @if $gap {
+    // Only accounts for a gap value if one is given
+    gap: $gap;
+  }
+}
+
+.table-toolbar {
+  @include flex-center(space-between);
+
+  &__content-left {
+    @include flex-center(flex-start, 2rem);
+
+    button {
+      border-color: var(--color-primary-dark);
+      text-decoration: none;
+      word-break: normal;
+      cursor: pointer;
+      background-color: var(--color-primary-dark);
+
+      &,
+      .text-secondary {
+        color: var(--color-text-white);
+      }
+
+      &[disabled] {
+        $inactive-color: #e5e5e5;
+        cursor: default;
+        background-color: $inactive-color;
+        border-color: $inactive-color;
+
+        &,
+        .text-secondary {
+          color: rgba(0, 0, 0, 0.35);
+        }
+      }
+
+      &:focus:not([disabled]),
+      &:hover:not([disabled]) {
+        background-color: rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+        transition: background-color 0.2s ease-in-out;
+
+        &,
+        .text-secondary {
+          color: var(--color-text-main);
+        }
+      }
+    }
+
+    .selected-cb {
+      white-space: nowrap;
+      font-size: 0.9rem;
+      font-weight: normal;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__content-right {
+    @include flex-center(flex-end, 1rem);
+  }
+}
+
 #mass_handle_button.htmx-swapping {
   cursor: not-allowed;
   text-decoration: line-through;
-  background-color: rgba(0, 0, 0, .2);
+  background-color: rgba(0, 0, 0, 0.2);
 }

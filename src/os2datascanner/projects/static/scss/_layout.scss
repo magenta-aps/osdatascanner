@@ -61,19 +61,27 @@ body {
   }
 
   &--maxwidth {
-    /* NOTE: Experimental */
+    /* NOTE: Technically not experimental after this MR. */
     /* Made in colaboration with UX */
 
-    // @media (min-width: 1760px) {
-    //   max-width: 1600px;
-    //   margin: 0 auto;
-    //   padding: var(--padding-content) 0;
-    // }
-    @media (min-width: 1600px) {
-      max-width: 1440px;
+    /* I think this width is more sustainable after trying it on the results + archive page as 
+    well. I'm leaving in the "old" version just in case someone want's to play around with the 
+    old version during review. */
+    @media (min-width: 1760px) {
+      max-width: 1600px;
       margin: 0 auto;
       padding: var(--padding-content) 0;
     }
+
+    // TODO: 
+    // - Nuke unused style on approval.
+    // - Change wording on comments.
+
+    // @media (min-width: 1600px) {
+    //   max-width: 1440px;
+    //   margin: 0 auto;
+    //   padding: var(--padding-content) 0;
+    // }
   }
 }
 

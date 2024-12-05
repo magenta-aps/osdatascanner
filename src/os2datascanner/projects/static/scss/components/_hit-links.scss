@@ -1,10 +1,15 @@
 .hit-link {
-  display: block;
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+
   transition: opacity 0.1s ease-in-out 0.1s;
 
-  &__handle {
-    margin-top: .5rem;
+  .last-opened {
+    font-size: 0.813rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
   }
 }
 
@@ -15,6 +20,7 @@
 .morecontent span {
   display: none;
 }
+
 .morelink {
   display: block;
   color: var(--color-text-main);
