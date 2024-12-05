@@ -115,6 +115,7 @@ class AccountQuerySet(models.QuerySet):
         of matches older than the specified number of days the user has. Doesn't count matches from
         remediator aliases, shared aliases or withheld matches.
         This field should contain the same value as the 'old_matches' property."""
+        # TODO: Make this configurable (#62838)
         number_of_days_policy = 30
         cutoff_date = time_now() - timedelta(days=number_of_days_policy)
         return self.annotate(old=Count(
@@ -350,6 +351,7 @@ class Account(Core_Account):
 
     @property
     def old_matches(self) -> int:
+        # TODO: Make this configurable (#62838)
         number_of_days_policy = 30
         cutoff_date = time_now() - timedelta(days=number_of_days_policy)
         reports = self._get_reports()
