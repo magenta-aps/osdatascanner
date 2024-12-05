@@ -1,4 +1,5 @@
 import csv
+from enum import Enum
 
 from django.http import StreamingHttpResponse
 
@@ -11,12 +12,27 @@ class CSVExportMixin:
     from the view, which normally delivers context to a template, and this
     mixin. It is important, that the new view inherits from this mixin first!"""
     paginator_class = None  # We never want to paginate results
-    exported_fields = {}  # Structure: {"<label>": "<field_name>", ...}
+    # Contains a dict describing each column
+    # - 'name': A string for identifying the column.
+    #           For a FIELD column, this should be the name of the field
+    # - 'label': A string for the header of the csv. Should be translated
+    # - 'type': Of type ColumnType, describing how this column should get its value
+    # - 'function': A function used to generate the values of this column.
+    #               Takes a single object as argument. Only needed for functional columns
+    columns = []
     exported_filename = "exported_file"
 
     class CSVBuffer:
         def write(self, value):
             return value
+
+    class ColumnType(Enum):
+        """Enum for the two types of columns.
+        The type of a column describes how the values of the column is determined.
+        A FIELD column simply takes the values from the queryset.
+        A FUNCTION column uses a given function to calculate a value for each object."""
+        FIELD = 1
+        FUNCTION = 2
 
     def prepare_stream(self):
         """Writes to a virtual buffer, so there is only ever one row of the CSV
@@ -29,15 +45,25 @@ class CSVExportMixin:
         and each line containing the values of one row from rows."""
         self.prepare_stream()
 
-        yield self.writer.writerow(self.exported_fields.keys())
+        yield self.writer.writerow([c['label'] for c in self.columns])
 
         for row in rows:
-            yield self.writer.writerow([row[field] for field in self.exported_fields.values()])
+            yield self.writer.writerow([row[c['name']] for c in self.columns])
 
     def get_rows(self):
         """Takes a queryset and returns a list of rows,
         each row containing values for each field in export_fields"""
-        return list(self.get_queryset().values(*self.exported_fields.values()))
+        qs = self.get_queryset()
+
+        field_columns = [c for c in self.columns if c['type'] == self.ColumnType.FIELD]
+        rows = list(qs.values(*[c['name'] for c in field_columns]))
+
+        function_columns = [c for c in self.columns if c['type'] == self.ColumnType.FUNCTION]
+        for obj, row in zip(qs, rows):
+            for col in function_columns:
+                row[col['name']] = col['function'](obj)
+
+        return rows
 
     def get(self, request, *args, **kwargs):
         # Since we are streaming, we need to select the entire queryset, and
