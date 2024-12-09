@@ -1,6 +1,8 @@
 # Changelog
 
-## Next Release
+## Version 3.26.2, 9th December 2024
+
+"Historically Accurate"
 
 ### New in this release
 
