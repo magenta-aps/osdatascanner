@@ -9,6 +9,9 @@
 - Column with the number of results from sources older than 30 days introduced in the leader 
   overview table. Hidden by default with an installation setting.
 
+- New button in scanner overview for _removing_ scanners. Removing a scanner from the list does
+  not disrupt the scanner history (in opposition to _deleting_ scanners.)
+
 ### General improvements
 
 - Sorting carets in the leader overview are now highlighted when in use, and point in a more 
