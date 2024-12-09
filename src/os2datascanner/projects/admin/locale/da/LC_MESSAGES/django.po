@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-02 14:21+0100\n"
+"POT-Creation-Date: 2024-12-09 14:10+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -411,41 +411,41 @@ msgstr "senest opdateret"
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:202
+#: adminapp/models/scannerjobs/scanner_helpers.py:203
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:207
+#: adminapp/models/scannerjobs/scanner_helpers.py:208
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:212
+#: adminapp/models/scannerjobs/scanner_helpers.py:213
 msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:266
-#: adminapp/views/scanner_views.py:199
+#: adminapp/models/scannerjobs/scanner_helpers.py:267
+#: adminapp/views/scanner_views.py:204
 msgid "Start time"
 msgstr "Startet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:269
+#: adminapp/models/scannerjobs/scanner_helpers.py:270
 #: adminapp/models/usererrorlog.py:29
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:270
+#: adminapp/models/scannerjobs/scanner_helpers.py:271
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:326
+#: adminapp/models/scannerjobs/scanner_helpers.py:327
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:334
+#: adminapp/models/scannerjobs/scanner_helpers.py:335
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:335
+#: adminapp/models/scannerjobs/scanner_helpers.py:336
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
@@ -551,11 +551,11 @@ msgid "error logs"
 msgstr "fejlbeskeder"
 
 #: adminapp/models/usererrorlog.py:33 adminapp/templates/error_log.html:173
-#: adminapp/views/scanner_views.py:352
+#: adminapp/views/scanner_views.py:357
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:354
+#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:359
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -2333,8 +2333,7 @@ msgstr "Kopiér scannerjob"
 #: adminapp/templates/scanners.html:222 adminapp/templates/scanners.html:223
 msgid ""
 "Remove scanner job. This does not delete the scanner's scanning history."
-msgstr ""
-"Fjern scannerjob. Dette sletter ikke scannerens scanningshistorik."
+msgstr "Fjern scannerjob. Dette sletter ikke scannerens scanningshistorik."
 
 #: adminapp/templates/scanners.html:243
 msgid "Do you really want to delete this scanner?"
@@ -2507,43 +2506,43 @@ msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:198
+#: adminapp/views/scanner_views.py:203
 msgid "Scanner name"
 msgstr "Scanner navn"
 
-#: adminapp/views/scanner_views.py:200
+#: adminapp/views/scanner_views.py:205
 msgid "Objects found"
 msgstr "Objekter fundet"
 
-#: adminapp/views/scanner_views.py:201
+#: adminapp/views/scanner_views.py:206
 msgid "Matches found"
 msgstr "Resultater fundet"
 
-#: adminapp/views/scanner_views.py:202
+#: adminapp/views/scanner_views.py:207
 msgid "Scanning time"
 msgstr "Scanningstid"
 
-#: adminapp/views/scanner_views.py:351
+#: adminapp/views/scanner_views.py:356
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:353
+#: adminapp/views/scanner_views.py:358
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:559
+#: adminapp/views/scanner_views.py:566
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:597
+#: adminapp/views/scanner_views.py:586
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:623
+#: adminapp/views/scanner_views.py:612
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:638
+#: adminapp/views/scanner_views.py:627
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 
