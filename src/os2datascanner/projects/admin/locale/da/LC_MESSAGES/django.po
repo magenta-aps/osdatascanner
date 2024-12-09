@@ -132,7 +132,8 @@ msgid "no scheduled checkup exists with id {id}"
 msgstr "intet planlagt checkup findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
-#: adminapp/models/scannerjobs/scanner.py:93 adminapp/models/usererrorlog.py:52
+#: adminapp/models/scannerjobs/scanner.py:102
+#: adminapp/models/usererrorlog.py:52
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:70
 #: import_services/models/realm.py:34
@@ -155,7 +156,7 @@ msgstr "Username"
 msgid "Initialization Vector"
 msgstr "Initaliserings vektor"
 
-#: adminapp/models/authentication.py:25 adminapp/views/filescanner_views.py:180
+#: adminapp/models/authentication.py:25 adminapp/views/filescanner_views.py:187
 msgid "User domain"
 msgstr "Brugerdomæne"
 
@@ -165,7 +166,7 @@ msgid "Login method"
 msgstr "Login metode"
 
 #: adminapp/models/rules.py:40 adminapp/models/rules.py:101
-#: adminapp/models/scannerjobs/scanner.py:86 core/models/client.py:75
+#: adminapp/models/scannerjobs/scanner.py:95 core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:39
 #: organizations/templates/organizations/orgunit_list.html:199
 msgid "name"
@@ -276,35 +277,39 @@ msgstr "Scan vedhæftede filer"
 msgid "check dead links"
 msgstr "tjek døde links"
 
-#: adminapp/models/scannerjobs/scanner.py:102
+#: adminapp/models/scannerjobs/scanner.py:111
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: adminapp/models/scannerjobs/scanner.py:110
+#: adminapp/models/scannerjobs/scanner.py:119
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
-#: adminapp/models/scannerjobs/scanner.py:115
+#: adminapp/models/scannerjobs/scanner.py:123
+msgid "hidden"
+msgstr ""
+
+#: adminapp/models/scannerjobs/scanner.py:130
 msgid "schedule start time"
 msgstr "skema starttidspunkt"
 
-#: adminapp/models/scannerjobs/scanner.py:120
+#: adminapp/models/scannerjobs/scanner.py:135
 msgid "scan images"
 msgstr "scan billeder"
 
-#: adminapp/models/scannerjobs/scanner.py:125
+#: adminapp/models/scannerjobs/scanner.py:140
 msgid "check date of last modification"
 msgstr "tjek dato for sidste ændring"
 
-#: adminapp/models/scannerjobs/scanner.py:130
+#: adminapp/models/scannerjobs/scanner.py:145
 msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
-#: adminapp/models/scannerjobs/scanner.py:135
+#: adminapp/models/scannerjobs/scanner.py:150
 msgid "keep false positives"
 msgstr "behold falske positive"
 
-#: adminapp/models/scannerjobs/scanner.py:136
+#: adminapp/models/scannerjobs/scanner.py:151
 msgid ""
 "Retain false positives in the report module, regardless of the current state "
 "of the matched sources."
@@ -312,46 +317,50 @@ msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
 
-#: adminapp/models/scannerjobs/scanner.py:147
+#: adminapp/models/scannerjobs/scanner.py:162
 msgid "rule"
 msgstr "regel"
 
-#: adminapp/models/scannerjobs/scanner.py:155
+#: adminapp/models/scannerjobs/scanner.py:170
 msgid "Unverified"
 msgstr "Ugyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:156
+#: adminapp/models/scannerjobs/scanner.py:171
 msgid "Verified"
 msgstr "Gyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:162
+#: adminapp/models/scannerjobs/scanner.py:177
 msgid "username"
 msgstr "brugernavn"
 
-#: adminapp/models/scannerjobs/scanner.py:167
+#: adminapp/models/scannerjobs/scanner.py:182
 msgid "validation status"
 msgstr "valideringstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:172
+#: adminapp/models/scannerjobs/scanner.py:187
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:225
+#: adminapp/models/scannerjobs/scanner.py:248
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:228
+#: adminapp/models/scannerjobs/scanner.py:251
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:231
+#: adminapp/models/scannerjobs/scanner.py:254
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
-#: adminapp/models/scannerjobs/scanner.py:643
+#: adminapp/models/scannerjobs/scanner.py:667
 msgid "Can validate scannerjobs"
 msgstr "Kan godkende scannerjob"
+
+#: adminapp/models/scannerjobs/scanner.py:668
+msgid "Can hide scannerjob from scannerjob list"
+msgstr "Kan skjule scannerjob fra scannerjoblisten"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py:35
 msgid "connected scanner job"
@@ -2181,7 +2190,7 @@ msgstr "(endnu ingen)"
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html:64 adminapp/templates/scanners.html:63
+#: adminapp/templates/rules.html:64 adminapp/templates/scanners.html:67
 #: adminapp/templates/system_rules.html:67
 #: organizations/templates/organizations/account_detail.html:21
 #: organizations/templates/organizations/account_list.html:55
@@ -2201,12 +2210,12 @@ msgstr "Beskrivelse"
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/templates/rules.html:68 adminapp/templates/scanners.html:77
+#: adminapp/templates/rules.html:68 adminapp/templates/scanners.html:81
 msgid "Action"
 msgstr "Handling"
 
 #: adminapp/templates/rules.html:87 adminapp/templates/rules.html:88
-#: adminapp/templates/scanners.html:88 adminapp/templates/scanners.html:89
+#: adminapp/templates/scanners.html:92 adminapp/templates/scanners.html:93
 msgid "Edit"
 msgstr "Redigér"
 
@@ -2214,7 +2223,7 @@ msgstr "Redigér"
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:209
+#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:243
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
@@ -2252,28 +2261,28 @@ msgstr "Ja"
 msgid "Search for scanner"
 msgstr "Søg efter scanner"
 
-#: adminapp/templates/scanners.html:46 adminapp/templates/scanners.html:47
-#: adminapp/templates/scanners.html:51
+#: adminapp/templates/scanners.html:47 adminapp/templates/scanners.html:48
+#: adminapp/templates/scanners.html:52
 msgid "Add scannerjob"
 msgstr "Tilføj scannerjob"
 
-#: adminapp/templates/scanners.html:66
+#: adminapp/templates/scanners.html:70
 msgid "URL"
 msgstr "URL"
 
-#: adminapp/templates/scanners.html:70
+#: adminapp/templates/scanners.html:74
 msgid "Drive"
 msgstr "Drev"
 
-#: adminapp/templates/scanners.html:73
+#: adminapp/templates/scanners.html:77
 msgid "Validation"
 msgstr "Validering"
 
-#: adminapp/templates/scanners.html:75
+#: adminapp/templates/scanners.html:79
 msgid "Next scan"
 msgstr "Næste scan"
 
-#: adminapp/templates/scanners.html:104
+#: adminapp/templates/scanners.html:108
 msgid ""
 "The following users are no longer covered by this scannerjob, but have been "
 "scanned previously:"
@@ -2281,55 +2290,65 @@ msgstr ""
 "Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
 "blevet scannet:"
 
-#: adminapp/templates/scanners.html:107
+#: adminapp/templates/scanners.html:111
 msgid "Stale accounts"
 msgstr "Frakoblede konti"
 
-#: adminapp/templates/scanners.html:138 adminapp/templates/scanners.html:147
+#: adminapp/templates/scanners.html:142 adminapp/templates/scanners.html:151
 msgid "Validation status for this scanner job has been set to"
 msgstr "Valideringstatus for dette scannerjob er blevet indstillet til"
 
-#: adminapp/templates/scanners.html:138 adminapp/templates/scanners.html:141
+#: adminapp/templates/scanners.html:142 adminapp/templates/scanners.html:145
 msgid "Valid"
 msgstr "Gyldig"
 
-#: adminapp/templates/scanners.html:147 adminapp/templates/scanners.html:150
+#: adminapp/templates/scanners.html:151 adminapp/templates/scanners.html:154
 msgid "Invalid"
 msgstr "Ugyldig"
 
-#: adminapp/templates/scanners.html:159
+#: adminapp/templates/scanners.html:163
 msgid "Next scan will run the"
 msgstr "Næste scan vil køre den"
 
-#: adminapp/templates/scanners.html:166
+#: adminapp/templates/scanners.html:170
 msgid "There are currently no scans scheduled for this scanner job"
 msgstr "Der er i øjeblikket ingen planlagte scan for dette scannerjob"
 
-#: adminapp/templates/scanners.html:170
+#: adminapp/templates/scanners.html:174
 msgid "Not scheduled"
 msgstr "Ikke planlagt"
 
-#: adminapp/templates/scanners.html:182 adminapp/templates/scanners.html:183
+#: adminapp/templates/scanners.html:186 adminapp/templates/scanners.html:187
 msgid "Run scanner job"
 msgstr "Kør scannerjob"
 
-#: adminapp/templates/scanners.html:189 adminapp/templates/scanners.html:190
+#: adminapp/templates/scanners.html:194 adminapp/templates/scanners.html:195
 msgid "Edit scanner job"
 msgstr "Redigér scannerjob"
 
-#: adminapp/templates/scanners.html:196 adminapp/templates/scanners.html:197
+#: adminapp/templates/scanners.html:203 adminapp/templates/scanners.html:204
 msgid "Copy scanner job"
 msgstr "Kopiér scannerjob"
 
-#: adminapp/templates/scanners.html:209
+#: adminapp/templates/scanners.html:222 adminapp/templates/scanners.html:223
+msgid ""
+"Remove scanner job. This does not delete the scanner's scanning history."
+msgstr ""
+"Fjern scannerjob. Dette sletter ikke scannerens scanningshistorik."
+
+#: adminapp/templates/scanners.html:243
 msgid "Do you really want to delete this scanner?"
 msgstr "Er du sikker på, at du vil slette denne scanner?"
 
-#: adminapp/templates/scanners.html:210 adminapp/templates/scanners.html:211
-msgid "Delete scanner job"
-msgstr "Slet scannerjob"
+#: adminapp/templates/scanners.html:244 adminapp/templates/scanners.html:245
+msgid ""
+"Delete scanner job. The scannerjob and the related scanning history will be "
+"permanently deleted."
+msgstr ""
+"Slet scannerjobbet. Scannerjobbet og den relaterede scanningshistorik bliver "
+"permanent slettet."
 
-#: adminapp/templates/scanners.html:226
+#: adminapp/templates/scanners.html:260
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
@@ -2410,24 +2429,24 @@ msgstr "millisekund"
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:217
+#: adminapp/views/exchangescanner_views.py:224
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:218
+#: adminapp/views/exchangescanner_views.py:225
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:228
+#: adminapp/views/exchangescanner_views.py:235
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:234
+#: adminapp/views/exchangescanner_views.py:241
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:239
+#: adminapp/views/exchangescanner_views.py:246
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2435,31 +2454,31 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:258
+#: adminapp/views/exchangescanner_views.py:265
 msgid "The domain is invalid"
 msgstr "Domænet er ugyldigt"
 
-#: adminapp/views/exchangescanner_views.py:267
+#: adminapp/views/exchangescanner_views.py:274
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:271
-#: adminapp/views/filescanner_views.py:178
+#: adminapp/views/exchangescanner_views.py:278
+#: adminapp/views/filescanner_views.py:185
 #: organizations/templates/organizations/account_detail.html:25
 #: organizations/templates/organizations/account_list.html:56
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/views/exchangescanner_views.py:276
-#: adminapp/views/filescanner_views.py:179
+#: adminapp/views/exchangescanner_views.py:283
+#: adminapp/views/filescanner_views.py:186
 msgid "Password"
 msgstr "Adgangskode"
 
-#: adminapp/views/filescanner_views.py:177
+#: adminapp/views/filescanner_views.py:184
 msgid "e.g. //network-domain/top-folder"
 msgstr "f.eks. //network-domain/top-folder"
 
-#: adminapp/views/filescanner_views.py:181
+#: adminapp/views/filescanner_views.py:188
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
@@ -2484,7 +2503,7 @@ msgstr ""
 msgid "This rule cannot be deleted, because it's associated with a scanner."
 msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 
-#: adminapp/views/scanner_views.py:69
+#: adminapp/views/scanner_views.py:71
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
@@ -2516,6 +2535,18 @@ msgstr "Scannerjob"
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
+#: adminapp/views/scanner_views.py:597
+msgid "The scannerjob was removed."
+msgstr "Scannerjobbet blev fjernet."
+
+#: adminapp/views/scanner_views.py:623
+msgid "The scannerjob was deleted."
+msgstr "Scannerjobbet blev slettet."
+
+#: adminapp/views/scanner_views.py:638
+msgid "The scannerjob was not removed!"
+msgstr "Scannerjobbet blev ikke fjernet!"
+
 #: adminapp/views/validators.py:18
 #, python-format
 msgid ""
@@ -2543,15 +2574,15 @@ msgstr "oprettet"
 msgid "saved"
 msgstr "gemt"
 
-#: adminapp/views/webscanner_views.py:57
+#: adminapp/views/webscanner_views.py:58
 msgid "e.g. https://example.com"
 msgstr "f.eks. https://example.com"
 
-#: adminapp/views/webscanner_views.py:59
+#: adminapp/views/webscanner_views.py:60
 msgid "e.g. https://example.com/exclude1, https://example.com/exclude2"
 msgstr "f.eks. https://example.com/exclude1, https://example.com/exclude2"
 
-#: adminapp/views/webscanner_views.py:65 adminapp/views/webscanner_views.py:99
+#: adminapp/views/webscanner_views.py:66 adminapp/views/webscanner_views.py:100
 msgid "Space is not allowed in the web-domain name."
 msgstr "Mellemrum er ikke tilladt i web-domænenavnet."
 
@@ -3898,6 +3929,9 @@ msgstr "Claim attribut"
 #: organizations/views/org_views.py:69 organizations/views/org_views.py:117
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
+
+#~ msgid "Delete scanner job"
+#~ msgstr "Slet scannerjob"
 
 #~ msgid "Available employees"
 #~ msgstr "Tilgængelige medarbejdere"
