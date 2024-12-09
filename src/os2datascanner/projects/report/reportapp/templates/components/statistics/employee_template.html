@@ -65,7 +65,7 @@
 </tr>
 
 <tr class="user-overview datatablex__row" hidden>
-  <td colspan="5">
+  <td colspan="{% if show_30_days_column %}6{% else %}5{% endif %}">
     <div class="overview_wrapper"
          hx-get="{% url 'statistics-user-id' employee.uuid %}"
          hx-trigger="intersect"

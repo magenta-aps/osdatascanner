@@ -1071,6 +1071,7 @@ $font-size_subtitle: 0.875rem;
   .th__flex-container {
     display: flex;
     align-items: center;
+    text-wrap: nowrap;
 
     .th-label {
       display: flex;
