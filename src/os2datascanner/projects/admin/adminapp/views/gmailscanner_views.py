@@ -14,6 +14,7 @@
 from ..models.scannerjobs.gmail import GmailScanner
 from .scanner_views import (
     ScannerDelete,
+    ScannerRemove,
     ScannerAskRun,
     ScannerRun,
     ScannerUpdate,
@@ -79,6 +80,12 @@ class GmailScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/gmailscanners/%s/saved/' % self.object.pk
+
+
+class GmailScannerRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = GmailScanner
+    success_url = '/gmailscanners/'
 
 
 class GmailScannerDelete(ScannerDelete):

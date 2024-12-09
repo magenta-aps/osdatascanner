@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from ..validate import get_validation_str
 from .scanner_views import (
     ScannerDelete,
+    ScannerRemove,
     ScannerAskRun,
     ScannerRun,
     ScannerUpdate,
@@ -118,6 +119,12 @@ class WebScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/webscanners/%s/saved/' % self.object.pk
+
+
+class WebScannerRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = WebScanner
+    success_url = '/webscanners/'
 
 
 class WebScannerDelete(ScannerDelete):

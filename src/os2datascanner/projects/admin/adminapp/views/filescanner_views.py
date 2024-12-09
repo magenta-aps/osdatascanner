@@ -14,6 +14,7 @@
 from django import forms
 from .scanner_views import (
     ScannerDelete,
+    ScannerRemove,
     ScannerAskRun,
     ScannerRun,
     ScannerUpdate,
@@ -117,6 +118,12 @@ class FileScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/filescanners/%s/saved/' % self.object.pk
+
+
+class FileScannerRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = FileScanner
+    success_url = '/filescanners/'
 
 
 class FileScannerDelete(ScannerDelete):

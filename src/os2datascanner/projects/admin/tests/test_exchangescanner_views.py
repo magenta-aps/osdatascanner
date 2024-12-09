@@ -3,6 +3,7 @@ import pytest
 
 from django.test import RequestFactory
 from django.urls.base import reverse
+from django.contrib.auth.models import Permission
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -31,6 +32,10 @@ class TestExchangeScannerViews:
             olsen_banden):
         """Note that this is not a django administrator role,
         but instead an organization administrator."""
+
+        # Requires user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+
         response = get_exchangescanner_response(user_admin)
 
         tree_queryset = response.context_data['org_units']
@@ -80,6 +85,8 @@ class TestExchangeScannerViews:
 
     def test_exchangescanner_org_units_list_as_normal_user(
             self, user, familien_sand, nisserne, olsen_banden):
+        # Requires user permission
+        user.user_permissions.add(Permission.objects.get(codename='add_scanner'))
         response = get_exchangescanner_response(user)
         tree_queryset = response.context_data['org_units']
         assert len(tree_queryset) == 0
@@ -222,6 +229,9 @@ class TestExchangeScannerViews:
 
         client.force_login(user_admin)
 
+        # Requires user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+
         response = client.post(reverse('exchangescanner_add'), {
             'name': 'test_scanner',
             'mail_domain': '@test.mail',
@@ -273,6 +283,9 @@ class TestExchangeScannerViews:
 
         client.force_login(user_admin)
 
+        # Requires user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+
         response = client.post(reverse('exchangescanner_add'), {
             'name': 'test_scanner',
             'mail_domain': mail_domain,
@@ -291,3 +304,71 @@ class TestExchangeScannerViews:
         domain_is_valid = form is None
 
         assert domain_is_valid == valid
+
+    def test_createview_with_permission(self, client, user_admin):
+        client.force_login(user_admin)
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        response = client.get(reverse("exchangescanner_add"))
+
+        assert response.status_code == 200
+
+    def test_createview_without_permission(self, client, user_admin):
+        client.force_login(user_admin)
+        response = client.get(reverse("exchangescanner_add"))
+
+        assert response.status_code == 403
+
+    def test_editview_with_permission(self, client, user_admin, exchange_scanner):
+        client.force_login(user_admin)
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        response = client.get(reverse("exchangescanner_update", kwargs={"pk": exchange_scanner.pk}))
+
+        assert response.status_code == 200
+
+    def test_editview_without_permission(self, client, user_admin, exchange_scanner):
+        client.force_login(user_admin)
+        response = client.get(reverse("exchangescanner_update", kwargs={"pk": exchange_scanner.pk}))
+
+        assert response.status_code == 403
+
+    def test_deleteview_with_permission(self, client, user_admin, exchange_scanner):
+        client.force_login(user_admin)
+        user_admin.user_permissions.add(Permission.objects.get(codename="delete_scanner"))
+        response = client.post(
+            reverse(
+                "exchangescanner_delete",
+                kwargs={
+                    "pk": exchange_scanner.pk}))
+
+        assert response.status_code == 302
+
+    def test_deleteview_without_permission(self, client, user_admin, exchange_scanner):
+        client.force_login(user_admin)
+        response = client.post(
+            reverse(
+                "exchangescanner_delete",
+                kwargs={
+                    "pk": exchange_scanner.pk}))
+
+        assert response.status_code == 403
+
+    def test_removeview_with_permission(self, client, user_admin, exchange_scanner):
+        client.force_login(user_admin)
+        user_admin.user_permissions.add(Permission.objects.get(codename="hide_scanner"))
+        response = client.post(
+            reverse(
+                "exchangescanner_remove",
+                kwargs={
+                    "pk": exchange_scanner.pk}))
+
+        assert response.status_code == 302
+
+    def test_removeview_without_permission(self, client, user_admin, exchange_scanner):
+        client.force_login(user_admin)
+        response = client.post(
+            reverse(
+                "exchangescanner_remove",
+                kwargs={
+                    "pk": exchange_scanner.pk}))
+
+        assert response.status_code == 403

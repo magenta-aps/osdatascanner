@@ -13,6 +13,7 @@
 #
 from .scanner_views import (
     ScannerDelete,
+    ScannerRemove,
     ScannerAskRun,
     ScannerRun,
     ScannerUpdate,
@@ -95,6 +96,12 @@ class DropboxScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/dropboxscanners/%s/saved/' % self.object.pk
+
+
+class DropboxScannerRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = DropboxScanner
+    success_url = '/dropboxscanners/'
 
 
 class DropboxScannerDelete(ScannerDelete):

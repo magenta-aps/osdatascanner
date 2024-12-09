@@ -14,6 +14,7 @@
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .scanner_views import (
     ScannerDelete,
+    ScannerRemove,
     ScannerAskRun,
     ScannerRun,
     ScannerUpdate,
@@ -79,6 +80,12 @@ class GoogleDriveScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/googledrivescanners/%s/saved/' % self.object.pk
+
+
+class GoogleDriveScannerRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = GoogleDriveScanner
+    success_url = '/googledrivescanners/'
 
 
 class GoogleDriveScannerDelete(ScannerDelete):

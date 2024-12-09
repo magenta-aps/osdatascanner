@@ -19,7 +19,7 @@
     <div class="content">
 
       {% include "components/navigation/scanner_tabs.html" with page="scannerjob" %}
- 
+
       <div class="content-header">
         <div class="aside">
           <h1 class="page-title">{% trans "Scannerjob" %}</h1>
@@ -39,20 +39,24 @@
                    hx-trigger="keyup delay:200ms, search"
                    hx-include="#scanner_search_field" />
           </div>
- 
-          <div class="btn">
-            <a href="/{{ view.type }}scanners/add/"
-               class="button button--cta-button button--icon-text-button"
-               aria-label="{% trans 'Add scannerjob' %}"
-               title="{% trans 'Add scannerjob' %}">
-              <svg class="icon button__plus-icon">
-                <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-              </svg>
-              <span>{% trans "Add scannerjob" %}</span>
-            </a>
-          </div>
+
+          {% if perms.os2datascanner.add_scanner %}
+            <div class="btn">
+              <a href="/{{ view.type }}scanners/add/"
+                 class="button button--cta-button button--icon-text-button"
+                 aria-label="{% trans 'Add scannerjob' %}"
+                 title="{% trans 'Add scannerjob' %}">
+                <svg class="icon button__plus-icon">
+                  <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                </svg>
+                <span>{% trans "Add scannerjob" %}</span>
+              </a>
+            </div>
+          {% endif %}
         </div>
       </div>
+
+      {% include "components/feedback/snackbarNew.html" %}
 
       {% if scanner_list %}
         <div class="datatablex__card-container search-target">
@@ -61,19 +65,19 @@
               <thead>
                 <tr class="datatablex__row">
                   <th class="column column--name">{% trans "Name" %}</th>
- 
+
                   {% if view.type == 'web' %}
                     <th class="column column--url">{% trans "URL" %}</th>
                   {% endif %}
- 
+
                   {% if view.type == 'file' %}
                     <th class="column column--drive">{% trans "Drive" %}</th>
                   {% endif %}
 
                   <th class="column column--validation">{% trans "Validation" %}</th>
- 
+
                   <th class="column column--automatic">{% trans "Next scan" %}</th>
- 
+
                   <th class="column column--actions">{% trans "Action" %}</th>
                 </tr>
               </thead>
@@ -89,12 +93,12 @@
                            title="{% trans 'Edit' %} &quot;{{ scanner.name }}&quot;">
                           <span>{{ scanner.name }}</span>
                         </a>
- 
+
                         {% if perms.core.view_client %}
                           <span class="scanner-organization name__org">({{ scanner.organization }})</span>
                         {% endif %}
                       </div>
- 
+
                       <div class="UI-container">
                         {% if scanner.compute_stale_accounts.exists %}
                           <a class="button button--icon-text-button stale-accounts"
@@ -119,7 +123,7 @@
                         </div>
                       </td>
                     {% endif %}
- 
+
                     {% if view.type == 'file' %}
                       <td class="domain-letter column column--drive">
                         {% if scanner.alias %}
@@ -130,14 +134,14 @@
                         {% endif %}
                       </td>
                     {% endif %}
- 
+
                     <td class="domain-validation column column--validation">
                       {% if scanner.validation_status %}
                         <div class="status status--valid">
                           <div class="status__wrapper"
                                title="{% trans 'Validation status for this scanner job has been set to' %} &quot;{% trans 'Valid'|lower %}&quot;">
                             <i id="check" class="material-symbols status__icon">check</i>
- 
+
                             <span class="status__label">{% trans "Valid" %}</span>
                           </div>
                         </div>
@@ -152,7 +156,7 @@
                         </div>
                       {% endif %}
                     </td>
- 
+
                     <td class="scanner-runtime column column--automatic">
                       {% if scanner.schedule_datetime %}
                         <div class="status"
@@ -166,13 +170,13 @@
                              title="{% trans 'There are currently no scans scheduled for this scanner job' %}">
                           <i id="event_busy"
                              class="material-symbols status__icon status__icon--unplanned">event_busy</i>
- 
+
                           <span class="status__label">{% trans "Not scheduled" %}</span>
                         </div>
                       {% endif %}
                     </td>
- 
- 
+
+
                     <td class="scanner-actions column column--actions">
                       <div class="action-wrapper button-group">
                         <a href="#run-scanner-modal"
@@ -183,22 +187,50 @@
                            title="{% trans 'Run scanner job' %}">
                           <i id="play_arrow" class="material-symbols">play_arrow</i>
                         </a>
- 
-                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
-                           class="button button--icon-button button--datatable-actions"
-                           aria-label="{% trans 'Edit scanner job' %}"
-                           title="{% trans 'Edit scanner job' %}">
-                          <i id="edit" class="material-symbols">edit</i>
-                        </a>
- 
-                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
-                           class="button button--icon-button button--datatable-actions"
-                           aria-label="{% trans 'Copy scanner job' %}"
-                           title="{% trans 'Copy scanner job' %}">
-                          <i id="content_copy" class="material-symbols">content_copy</i>
-                        </a>
- 
-                        {% if not scanner.scans %}
+
+                        {% if perms.os2datascanner.change_scanner %}
+                          <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
+                             class="button button--icon-button button--datatable-actions"
+                             aria-label="{% trans 'Edit scanner job' %}"
+                             title="{% trans 'Edit scanner job' %}">
+                            <i id="edit" class="material-symbols">edit</i>
+                          </a>
+                        {% endif %}
+
+                        {% if perms.os2datascanner.add_scanner %}
+                          <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
+                             class="button button--icon-button button--datatable-actions"
+                             aria-label="{% trans 'Copy scanner job' %}"
+                             title="{% trans 'Copy scanner job' %}">
+                            <i id="content_copy" class="material-symbols">content_copy</i>
+                          </a>
+                        {% endif %}
+
+                        {% if perms.os2datascanner.remove_scanner %}
+                          {% comment %}
+                            We should use HTMX here I think, then we can just use 
+                            _one_ button element.
+                          {% endcomment %}
+                          <form action="/{{ view.type }}scanners/{{ scanner.pk }}/remove/"
+                                method="post"
+                                style="display: inline-block">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit"
+                                    class="button button--icon-button button--datatable-actions"
+                                    aria-label="{% trans "Remove scanner job. This does not delete the scanner's scanning history." %}"
+                                    title="{% trans "Remove scanner job. This does not delete the scanner's scanning history." %}">
+                              <i id="close" class="material-symbols">close</i>
+                            </button>
+                          </form>
+                        {% endif %}
+
+
+                        {% if perms.os2datascanner.delete_scanner and not scanner.scans %}
+                          {% comment %}
+                            We should use HTMX here I think, then we can just use 
+                            _one_ button element.
+                          {% endcomment %}
                           <form action="/{{ view.type }}scanners/{{ scanner.pk }}/delete/"
                                 method="post"
                                 style="display: inline-block">
@@ -207,9 +239,9 @@
                             <button type="submit"
                                     class="button button--icon-button button--datatable-actions"
                                     onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
-                                    aria-label="{% trans 'Delete scanner job' %}"
-                                    title="{% trans 'Delete scanner job' %}">
-                              <i id="delete" class="material-symbols">delete</i>
+                                    aria-label="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}"
+                                    title="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}">
+                              <i id="delete_forever" class="material-symbols">delete_forever</i>
                             </button>
                           </form>
                         {% endif %}
@@ -221,7 +253,7 @@
             </table>
           </div>
         </div>
- 
+
       {% else %}
         <p class="no-results search-target">{% trans "No scannerjob added" %}</p>
       {% endif %}

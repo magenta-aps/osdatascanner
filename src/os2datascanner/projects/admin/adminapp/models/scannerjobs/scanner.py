@@ -67,14 +67,23 @@ class ScannerQuerySet(InheritanceQuerySet):
 
 
 class ScannerManager(InheritanceManager):
+
+    def __init__(self, *args, default_filters: dict[str, object] | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_filters = default_filters
+
     def get_queryset(self):
+        return ScannerQuerySet(self.model, using=self._db, hints=self._hints
+                               ).filter(**(self.default_filters or {}))
+
+    def unfiltered(self):
         return ScannerQuerySet(self.model, using=self._db, hints=self._hints)
 
 
 class Scanner(models.Model):
 
     """A scanner, i.e. a template for actual scanning jobs."""
-    objects = ScannerManager()
+    objects = ScannerManager(default_filters={"hidden": False})
 
     linkable = False
 
@@ -108,6 +117,12 @@ class Scanner(models.Model):
         blank=True,
         include_dtstart=False,
         verbose_name=_('planned execution')
+    )
+
+    hidden = models.BooleanField(
+        verbose_name=_("hidden"),
+        default=False,
+        blank=True
     )
 
     dtstart = models.DateField(
@@ -178,6 +193,14 @@ class Scanner(models.Model):
     def verify(self) -> bool:
         """Method documentation"""
         raise NotImplementedError("Scanner.verify")
+
+    def hide(self):
+        self.hidden = True
+        self.save()
+
+    def unhide(self):
+        self.hidden = False
+        self.save()
 
     @property
     def needs_revalidation(self) -> bool:
@@ -640,7 +663,10 @@ class Scanner(models.Model):
         abstract = False
         ordering = ['name']
 
-        permissions = [("can_validate", _("Can validate scannerjobs"))]
+        permissions = [
+            ("can_validate", _("Can validate scannerjobs")),
+            ("hide_scanner", _("Can hide scannerjob from scannerjob list")),
+        ]
 
 
 @receiver(post_delete)

@@ -22,6 +22,7 @@ import re
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .scanner_views import (
     ScannerDelete,
+    ScannerRemove,
     ScannerAskRun,
     ScannerRun,
     ScannerUpdate,
@@ -187,6 +188,12 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
             form = validate_domain(form)
 
         return form
+
+
+class ExchangeScannerRemove(ScannerRemove):
+    """Remove a scanner view."""
+    model = ExchangeScanner
+    success_url = '/exchangescanners/'
 
 
 class ExchangeScannerDelete(ScannerDelete):
