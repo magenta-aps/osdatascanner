@@ -203,12 +203,16 @@
                       hx-target="this"
                       hx-trigger="revealed"
                       hx-push-url="false">
-                    <td colspan="5" class="loading">{% trans "Loading employee ..." %}</td>
+                    <td colspan="{% if show_30_days_column %}6{% else %}5{% endif %}"
+                        class="loading">{% trans "Loading employee ..." %}</td>
                   </tr>
                 {% endfor %}
               {% else %}
                 <tr class="datatablex__row">
-                  <td class="column--nodata" colspan="5">{% trans "No employees found." %}</td>
+                  <td class="column--nodata"
+                      colspan="{% if show_30_days_column %}6{% else %}5{% endif %}">
+                    {% trans "No employees found." %}
+                  </td>
                 </tr>
               {% endif %}
             </tbody>
