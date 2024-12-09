@@ -9,7 +9,12 @@ from ..registry import conversion
 
 def tesseract(path, dest="stdout", *args):
     result = run_custom(
-            ["tesseract", *args, path, dest],
+            [
+                "tesseract",
+                *engine2_settings.tesseract["extra_args"],
+                *args,
+                path, dest
+            ],
             universal_newlines=True,
             stdout=PIPE,
             stderr=DEVNULL,

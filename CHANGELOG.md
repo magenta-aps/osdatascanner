@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+### General improvements
+
+- It is now possible to fine-tune the Tesseract OCR engine by adjusting the new
+  `tesseract.extra_args` setting.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"
