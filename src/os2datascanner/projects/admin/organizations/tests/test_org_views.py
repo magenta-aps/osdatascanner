@@ -703,3 +703,53 @@ class TestOrganizationalUnitListViewAddRemoveManagers:
         assert response2.status_code == 404
         assert nisserne in fritz.get_managed_units()
         assert olsen_banden in egon.get_managed_units()
+
+
+@pytest.mark.django_db
+class TestOrganizationalUnitVisibilityView:
+
+    def test_orgunit_visibility_access_as_superuser(self, client, superuser, test_org):
+        """Superusers should have access to the view."""
+        client.force_login(superuser)
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+        response = client.get(url)
+
+        assert response.status_code == 200
+
+    def test_orgunit_visibility_access_as_administrator(self, client, user_admin, test_org):
+        """Superusers should have access to the view."""
+        user_admin.user_permissions.add(
+                Permission.objects.get(codename="change_visibility_organizationalunit"))
+        client.force_login(user_admin)
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+        response = client.get(url)
+
+        assert response.status_code == 200
+
+    def test_orgunit_visibility_access_as_user(self, client, user, test_org):
+        """Superusers should have access to the view."""
+        user.user_permissions.add(
+                Permission.objects.get(codename="change_visibility_organizationalunit"))
+        client.force_login(user)
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+        response = client.get(url)
+
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize("has_perm", [True, False])
+    def test_orgunit_visibility_access_permission(self, client, user_admin, has_perm, test_org):
+        if has_perm:
+            user_admin.user_permissions.add(
+                Permission.objects.get(codename="change_visibility_organizationalunit"))
+        client.force_login(user_admin)
+
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+
+        response = client.get(url)
+
+        if has_perm:
+            assert response.status_code == 200
+        else:
+            assert response.status_code == 403
+
+    # TODO: Write tests for hiding and un-hiding OUs: #63234
