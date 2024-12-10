@@ -878,10 +878,25 @@ $font-size_subtitle: 0.875rem;
     .td__flex-container {
       display: flex;
       align-items: center;
+      gap: 0.5rem;
     }
 
     .column {
       width: auto; /* Sets all column widths to auto unless otherwise specified. */
+
+      &--checkbox {
+        /* Only use this for actual checkboxes and not checkbox-typed intput disguised as a status
+        toggle. */
+        width: 72px;
+
+        .ds-checkbox {
+          margin: 0;
+
+          label {
+            padding-left: 24px;
+          }
+        }
+      }
 
       &--numeral {
         /* All table columns with only numbers should have this class. */
@@ -956,6 +971,47 @@ $font-size_subtitle: 0.875rem;
     }
   }
 
+  &__row,
+  &__row--expanded {
+    &.highlighted,
+    &.highlighted + .matches-list {
+      /* Shared styles for table cells */
+      > :is(td, th) {
+        background-color: var(--color-primary-lightest);
+        box-shadow: inherit;
+
+        > :not(.ds-checkbox):not(.button--caret-button) {
+          /* Change opacity for anything BUT the checkboxes and expand-row caret. */
+          opacity: 0.75;
+          /* Remove before merge: this will nudge the users to use the mass handle function. Also it looks neat. */
+        }
+      }
+
+      // Shared styles for buttons and status elements
+      .button:not(.button--caret-button):not(.dropdown-container .button),
+      .status {
+        background-color: var(--color-widget-bg) !important;
+        color: var(--color-text-secondary) !important;
+
+        // Specific styles for buttons
+        &.button {
+          border-color: var(--color-widget-bg);
+        }
+      }
+
+      // .button--deletion-button {
+      //   $button-color: var(--color-primary-dark);
+
+      //   background-color: $button-color;
+      //   border-color: $button-color;
+      //   color: var(--color-text-white);
+      // }
+      /* Not sure if we want to keep the visual weight difference for this button, when the row is
+      highlighted? We don't want the users to start deleting the files/mails individually, when 
+      they're marking them for mass handling. */
+    }
+  }
+
   a:not(.button) {
     // So far only used in the org-table on Admin
     text-decoration: none;
@@ -1001,21 +1057,50 @@ $font-size_subtitle: 0.875rem;
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
 $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
-// Magical mixin for instant centered behaviour. So far only available in datatables.
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@mixin pill-variant($bgColor, $textColor) {
+@mixin pill-variant($bgColor, $textColor, $font-size: 0.875rem) {
   background-color: $bgColor;
   color: $textColor;
+  font-size: $font-size;
+  line-height: $font-size;
 
-  padding: 0 1rem;
+  padding: 0 0.75rem; // 12px side padding
   border-radius: 50px;
-  height: 2.125rem;
+  height: 1.75rem; // 28px
+  width: fit-content;
   text-wrap: nowrap;
+
+  .status {
+    &__wrapper {
+      @include flex-center;
+      gap: 0.25rem;
+      height: inherit;
+
+      /* Styles for when both `.status__icon` and `.status__label` exist inside `.status__wrapper`. */
+      &:has(.status__icon + .status__label) {
+        /* Add extra spacing on the right to adjust the visual weight. */
+        padding-right: 0.25rem; // 4px
+
+        .status__label {
+          /* Google's recommended alignment correction for text next to icons */
+          margin-top: calc(14px * 0.115);
+          font-weight: 500;
+        }
+      }
+    }
+
+    &__icon {
+      &.material-symbols {
+        $pill-icon-size: 1.25rem; // 20px
+        font-size: $pill-icon-size;
+        width: $pill-icon-size;
+        font-variation-settings: "opsz" 20;
+      }
+    }
+
+    &__label {
+      // Empty
+    }
+  }
 }
 
 // ******************************
@@ -1311,14 +1396,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       );
 
       .status {
-        @include flex-center;
-
-        width: 6.75rem;
-        /* NOTE: This fixed width is a tiny bit bigger than the "natural" width of 
-        the "ugyldig"/"invalid" label/badge, so that both types of label/badge have 
-        matching width. If the wording changes, then this should be updated as well 
-        to fit whatever the "natural" width of the bigger one is. */
-
         &--valid {
           @include pill-variant(
             var(--color-status-good),
@@ -1328,21 +1405,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
         &--invalid {
           @include pill-variant(var(--color-status-bad), var(--color-clear));
-        }
-
-        &__wrapper {
-          @include flex-center;
-          gap: $uniform_icon-label_gap-size;
-          padding: 0 1rem 0 0.625rem; // Asymmetrical padding to compensate for visual weight
-        }
-
-        &__label {
-          $font-size: 0.875rem;
-          font-size: $font-size;
-          margin-top: calc(
-            #{$font-size} * 0.115
-          ); // Google's recommended alignment correction for text next to icons
-          font-weight: 500;
         }
       }
     }
@@ -1556,31 +1618,16 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // ***** RESULT OVERVIEW TABLES *****
 // **********************************
 
-// Redmine ticket: [#60320]
-
-// ***** REPORT/RESULTS *****
-// ******** ARCHIVE *********
-
-// PERSONAL:
-// REMEDIATOR:
-// UNDISTRIBUTED:
-
 .results-table {
+  // ***** REPORT/RESULTS *****
+  // ******** ARCHIVE *********
+  // PERSONAL:
+  // REMEDIATOR:
+  // UNDISTRIBUTED:
+
   min-width: 70rem;
 
   .column {
-    &--checkbox {
-      width: 72px;
-
-      .ds-checkbox {
-        margin: 0;
-
-        label {
-          padding-left: 24px;
-        }
-      }
-    }
-
     &--name {
       text-wrap: nowrap;
       p {
@@ -1613,74 +1660,69 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       width: 15rem; // 240px, roughly fits the width of the widest status label.
 
       .status {
-        &__wrapper {
-          @include flex-center;
-          @include pill-variant(
-            var(--color-primary-lightest),
-            var(--color-primary-dark)
-          );
+        @include pill-variant(
+          var(--color-primary-lightest),
+          var(--color-primary-dark)
+        );
 
-          width: fit-content;
+        /* We should consider colour coding the status chips. For now I'm not sure how to do it
+        in a non-judgemental way. */
+        // &[data-status="0"] {
+        //   // "Other"
+        //   @include pill-variant(
+        //     var(--color-btn-neutral),
+        //     var(--color-text-secondary)
+        //   );
+        // }
 
-          /* We should consider colour coding the status chips. For now I'm not sure how to do it
-          in a non-judgemental way. */
-          // &[data-status="0"] {
-          //   // "Other"
-          //   @include pill-variant(
-          //     var(--color-btn-neutral),
-          //     var(--color-text-secondary)
-          //   );
-          // }
+        // &[data-status="1"] {
+        //   // "Edited"
+        //   @include pill-variant(
+        //     var(--color-status-ok),
+        //     var(--color-ok)
+        //   );
+        // }
 
-          // &[data-status="1"] {
-          //   // "Edited"
-          //   @include pill-variant(
-          //     var(--color-status-ok),
-          //     var(--color-ok)
-          //   );
-          // }
+        // &[data-status="2"] {
+        //   // "Journalized and moved"
+        //   @include pill-variant(
+        //     var(--color-status-good),
+        //     var(--color-ok-dark)
+        //   );
+        // }
 
-          // &[data-status="2"] {
-          //   // "Journalized and moved"
-          //   @include pill-variant(
-          //     var(--color-status-good),
-          //     var(--color-ok-dark)
-          //   );
-          // }
+        // &[data-status="3"] {
+        //   // "Deleted"
+        //   @include pill-variant(
+        //     var(--color-status-good),
+        //     var(--color-ok-dark)
+        //   );
+        // }
 
-          // &[data-status="3"] {
-          //   // "Deleted"
-          //   @include pill-variant(
-          //     var(--color-status-good),
-          //     var(--color-ok-dark)
-          //   );
-          // }
-
-          // &[data-status="4"] {
-          //   // "False positive"
-          //   @include pill-variant(
-          //     var(--color-status-bad),
-          //     var(--color-error)
-          //   );
-          // }
-        }
+        // &[data-status="4"] {
+        //   // "False positive"
+        //   @include pill-variant(
+        //     var(--color-status-bad),
+        //     var(--color-error)
+        //   );
+        // }
 
         &__label {
-          font-weight: bold;
+          // font-weight: bold;
         }
       }
     }
 
     &--actions {
-      width: 12.25rem; // 196px;
+      width: 12.25rem; // 196px
 
       .button-group {
         flex-wrap: nowrap;
-      }
 
-      #expand_more {
-        // The caret icon
-        color: var(--color-primary-dark);
+        #expand_more {
+          // The caret icon
+          color: var(--color-primary-dark);
+        }
       }
     }
   }
@@ -1723,38 +1765,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           }
         }
       }
-    }
-  }
-
-  .datatablex__row,
-  .datatablex__row--expanded {
-    /* NOTE: Not sure if this should live here permanently. It's behaviour/styles we might wanna
-    reuse in other datatables. */
-    &.highlighted,
-    &.highlighted + .matches-list {
-      > :is(td, th) {
-        background-color: var(--color-primary-lightest);
-        box-shadow: inherit;
-      }
-
-      .button:not(.button--caret-button):not(.dropdown-container .button) {
-        // Magic way to not target the carets or the buttons inside the dropdown.
-        $button-color: var(--color-widget-bg);
-        background-color: $button-color;
-        border-color: $button-color;
-        color: var(--color-text-secondary);
-      }
-
-      // .button--deletion-button {
-      //   $button-color: var(--color-primary-dark);
-
-      //   background-color: $button-color;
-      //   border-color: $button-color;
-      //   color: var(--color-text-white);
-      // }
-      /* Not sure if we want to keep the visual weight difference for this button, when the row is
-      highlighted? We don't want the users to start deleting the files/mails individually, when 
-      they're marking them for mass handling. */
     }
   }
 }

@@ -1,10 +1,10 @@
 // Remove rounds corners of table when stuck on top of screen.
 function handleTableCorners() {
-  const stickyElm = document.querySelector('.table-topbar');
+  const stickyElm = document.querySelector(".table-topbar");
 
   const observer = new IntersectionObserver(
-    ([e]) => e.target.classList.toggle('stuck', e.intersectionRatio < 1),
-    { rootMargin: '-1px 0px 0px 0px', threshold: [1] }
+    ([e]) => e.target.classList.toggle("stuck", e.intersectionRatio < 1),
+    { rootMargin: "-1px 0px 0px 0px", threshold: [1] }
   );
 
   if (stickyElm) {
@@ -219,6 +219,9 @@ function hideTooltip(event) {
 }
 
 function prepareTable() {
+  // Remove .highlighted class from all rows
+  $("tr").removeClass("highlighted");
+
   // if user prefers to have all rows expanded, do that.
   const prefersExpanded = window.localStorage.getItem(
     "os2ds-prefers-expanded-results"
@@ -256,6 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (
       hasClass(content, "page") ||
       hasClass(content, "datatable-wrapper") ||
+      hasClass(content, "datatablex__wrapper") ||
       hasClass(content, "content")
     ) {
       prepareTable();
@@ -288,16 +292,15 @@ document.addEventListener("DOMContentLoaded", function () {
   function isContentOverflowing(element) {
     return element.scrollWidth > element.clientWidth;
   }
-  
+
   function expandOverflowButton() {
     const pathContainers = document.querySelectorAll(".overflow-ellipsis");
-    pathContainers.forEach (pathContainer => {
+    pathContainers.forEach((pathContainer) => {
       const moreBtn = pathContainer.querySelector(".show-more");
-      
+
       if (moreBtn && isContentOverflowing(pathContainer)) {
         moreBtn.style.display = "block";
       }
     });
   }
 });
-

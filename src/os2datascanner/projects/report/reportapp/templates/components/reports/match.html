@@ -108,7 +108,7 @@
  
                 {% if document_report.last_opened_time %}
                   {% with document_report.last_opened_time|naturaltime as time_since %}
-                    <div class="last-opened">{% trans "Last opened for" %} {{ time_since }}</div>
+                    <div class="last-opened">{% trans "Opened for" %} {{ time_since }}</div>
                   {% endwith %}
                 {% endif %}
  
