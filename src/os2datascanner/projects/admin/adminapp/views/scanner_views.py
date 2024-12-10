@@ -383,6 +383,28 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
 
 class UserErrorLogCSVView(CSVExportMixin, UserErrorLogView):
     permission_required = "os2datascanner.export_usererrorlog"
+    columns = [
+        {
+            'name': 'scan_status__scan_tag__time',
+            'label': _("Scan time"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'path',
+            'label': _("Path"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'scan_status__scanner__name',
+            'label': _("Scanner job"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'error_message',
+            'label': _("Error message"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+    ]
     exported_fields = {
         _("Scan time"): 'scan_status__scan_tag__time',
         _("Path"): 'path',
