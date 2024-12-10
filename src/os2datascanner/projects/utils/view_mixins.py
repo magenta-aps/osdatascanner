@@ -32,7 +32,7 @@ class CSVExportMixin:
         yield self.writer.writerow(self.exported_fields.keys())
 
         for row in rows:
-            yield self.writer.writerow(row.values())
+            yield self.writer.writerow([row[field] for field in self.exported_fields.values()])
 
     def get_rows(self):
         """Takes a queryset and returns a list of rows,
