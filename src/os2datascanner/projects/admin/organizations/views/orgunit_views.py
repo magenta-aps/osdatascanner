@@ -1,4 +1,6 @@
 from django.db.models import Q, Count, Prefetch
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 from ...adminapp.views.views import RestrictedListView
 from ..models import (OrganizationalUnit, Account, Position,
                       Organization, OrganizationalUnitSerializer)
@@ -11,9 +13,10 @@ from ..publish import publish_events
 from ..broadcast_bulk_events import BulkUpdateEvent
 
 
-class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
+class OrganizationalUnitListView(ClientAdminMixin, PermissionRequiredMixin, RestrictedListView):
     model = OrganizationalUnit
     template_name = 'organizations/orgunit_list.html'
+    permission_required = 'organizations.view_organizationalunit'
     paginator_class = EmptyPagePaginator
     paginate_by = 10
     paginate_by_options = [10, 20, 50, 100, 250]
@@ -124,9 +127,11 @@ class OrganizationalUnitListView(ClientAdminMixin, RestrictedListView):
         return response
 
 
-class OrganizationalUnitEditVisibility(ClientAdminMixin, RestrictedListView):
+class OrganizationalUnitEditVisibility(ClientAdminMixin, PermissionRequiredMixin,
+                                       RestrictedListView):
     model = OrganizationalUnit
     template_name = 'organizations/edit_hidden_state_page.html'
+    permission_required = 'organizations.change_visibility_organizationalunit'
     paginator_class = EmptyPagePaginator
     paginate_by = 60
     paginate_by_options = [60, 120, 240, 480]

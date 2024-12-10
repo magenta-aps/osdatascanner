@@ -15,6 +15,8 @@
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 
+from django.utils.translation import gettext_lazy as _
+
 from os2datascanner.projects.admin.import_services.models import Imported
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnit as Core_OrganizationalUnit
@@ -37,6 +39,10 @@ class OrganizationalUnit(Core_OrganizationalUnit, Imported):
             return self
         else:
             return self.parent.get_root()
+
+    class Meta(Core_OrganizationalUnit.Meta):
+        permissions = [("change_visibility_organizationalunit",
+                        _("Can change visibility of organizational units"))]
 
 
 class OrganizationalUnitSerializer(Core_OrganizationalUnitSerializer):

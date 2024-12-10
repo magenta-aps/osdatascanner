@@ -1,13 +1,13 @@
 {% extends 'organizations/base.html' %}
 {% load i18n %}
- 
+
 {% load static %}
- 
+
 
 {% block title %}
   {% trans "Edit visibility"|capfirst %}
 {% endblock %}
- 
+
 
 {% block content %}
   <svg class="page-indicator"
@@ -15,14 +15,14 @@
        viewbox="0 0 100 100">
     <circle id="circle" cx="50" cy="50" r="45"></circle>
   </svg>
- 
+
   {% if FEATURES.ORG_STRUCTURE in organization.client.enabled_features %}
 
     <div class="content-wrapper"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
          hx-push-url='true'>
       {% include "components/common/breadcrumb.html" with page="edit_orgunit_visibility" %}
- 
+
       <div class="content-header">
         <h1>{% trans "edit organizational unit visibility for"|capfirst %} {{ organization }}</h1>
       </div>
@@ -34,12 +34,12 @@
               <div class="form__content">
                 <div class="form__content__header">
                   <h3 class="header__title">{% trans "Choose organizational units" %}</h3>
- 
+
                   <p class="header__subtitle">
                     {% trans "Select the organizational units that should be visible throughout the Admin and Report module from the list below. Any changes will be visible to all users once saved." %}
                   </p>
                 </div>
- 
+
                 <div id="ou-visibility-form" class="form__content__body">
                   <form name="hidden-orgunits_filters"
                         id="hidden-orgunits_filters"
@@ -66,7 +66,7 @@
                           <i class="material-symbols">visibility</i>
                           <span>{% trans "Make all visible"|capfirst %}</span>
                         </button>
- 
+
                         {% comment %} "hide all OU" button {% endcomment %}
                         <button type="button"
                                 class="button button--modal-ui button--outline-button button--icon-text-button"
@@ -83,7 +83,7 @@
                           <span>{% trans "Make all hidden"|capfirst %}</span>
                         </button>
                       </div>
- 
+
                       <div class="ui-group ui-group--right">
                         {% comment %} search field {% endcomment %}
                         <div class="search_field_wrapper">
@@ -99,7 +99,7 @@
                       </div>
                     </div>
                   </form>
- 
+
                   <div class="hide-orgunits-list" id="list-of-all-ou">
                     <div class="hide-orgunits-list__wrapper">
                       <div class="hide-orgunits-list__container">
@@ -131,7 +131,7 @@
                         {% endif %}
                       </div>
                     </div>
- 
+
                     <!-- pagination -->
                     <table id="ou-visibility-form-pagitation">
                       {% include "components/pagination/pagination.html" %}
@@ -152,7 +152,7 @@
            title="{% trans 'return to the organizational structure overview'|capfirst %}"
            name="return">
           <i id="undo" class="material-symbols">undo</i>
- 
+
           <span>{% trans "go back"|capfirst %}</span>
         </a>
       </div>
