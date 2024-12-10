@@ -110,7 +110,7 @@ class TestExportCompletedScanStatus:
         # Grant permission for exporting completed scan statuses
         user_admin.user_permissions.add(
             Permission.objects.get(
-                codename='can_export_completed_scans'))
+                codename='export_completed_scanstatus'))
         client.force_login(user_admin)
 
         # Act
@@ -125,7 +125,7 @@ class TestExportCompletedScanStatus:
         """A user unrelated to an organization should only get header values."""
         # Arrange
         # Grant permission for exporting completed scan statuses
-        user.user_permissions.add(Permission.objects.get(codename='can_export_completed_scans'))
+        user.user_permissions.add(Permission.objects.get(codename='export_completed_scanstatus'))
         client.force_login(user)
 
         # Act

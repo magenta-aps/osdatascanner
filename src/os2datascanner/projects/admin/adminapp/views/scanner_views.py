@@ -207,7 +207,7 @@ class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusComp
         _("Scanning time"): 'scan_time',
     }
     exported_filename = 'os2datascanner_completed_scans'
-    permission_required = 'os2datascanner.can_export_completed_scans'
+    permission_required = 'os2datascanner.export_completed_scanstatus'
 
 
 class StatusTimeline(RestrictedDetailView):

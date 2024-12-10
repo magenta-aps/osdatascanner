@@ -69,7 +69,7 @@
                           <span>{% trans "Delete all" %}</span>
                         </button>
                       {% endif %}
-                      {% if perms.os2datascanner.can_export_completed_scans %}
+                      {% if perms.os2datascanner.export_completed_scanstatus %}
                         <a href='{% url "export-status-completed" %}'
                            class="button button--icon-text-button"
                            aria-label="{% trans 'Export to CSV' %}"
