@@ -7,6 +7,9 @@
 - It is now possible to fine-tune the Tesseract OCR engine by adjusting the new
   `tesseract.extra_args` setting.
 
+- Permission to export scan status can now be enabled for administrators,
+  with the django-permission 'export_completed_scanstatus'.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"

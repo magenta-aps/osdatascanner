@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse_lazy
+from django.contrib.auth.models import Permission
 from datetime import timedelta, datetime
 
 from ..models.usererrorlog import UserErrorLog
@@ -106,6 +107,10 @@ class TestExportCompletedScanStatus:
             explored_sources=1,
             total_sources=1,
         )
+        # Grant permission for exporting completed scan statuses
+        user_admin.user_permissions.add(
+            Permission.objects.get(
+                codename='export_completed_scanstatus'))
         client.force_login(user_admin)
 
         # Act
@@ -119,6 +124,8 @@ class TestExportCompletedScanStatus:
     def test_csv_export_completed_scans_unprivileged_user(self, user, completed_statuses, client):
         """A user unrelated to an organization should only get header values."""
         # Arrange
+        # Grant permission for exporting completed scan statuses
+        user.user_permissions.add(Permission.objects.get(codename='export_completed_scanstatus'))
         client.force_login(user)
 
         # Act
@@ -136,3 +143,10 @@ class TestExportCompletedScanStatus:
 
         # Assert
         assert response.status_code == 302
+
+    def test_csv_export_completed_scans_user_without_permission(
+            self, user_admin, completed_statuses, client):
+        """A user without permission to export completed scans should get a 403 status code."""
+        client.force_login(user_admin)
+        response = client.get(self.url)
+        assert response.status_code == 403

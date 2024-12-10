@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-09 14:10+0100\n"
+"POT-Creation-Date: 2024-12-10 09:30+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -437,15 +437,19 @@ msgstr "scanstatus"
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:327
+#: adminapp/models/scannerjobs/scanner_helpers.py:281
+msgid "Can export history of completed scans"
+msgstr "Kan eksportere historik af afsluttede scanninger"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py:329
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:335
+#: adminapp/models/scannerjobs/scanner_helpers.py:337
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:336
+#: adminapp/models/scannerjobs/scanner_helpers.py:338
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
@@ -551,11 +555,11 @@ msgid "error logs"
 msgstr "fejlbeskeder"
 
 #: adminapp/models/usererrorlog.py:33 adminapp/templates/error_log.html:173
-#: adminapp/views/scanner_views.py:357
+#: adminapp/views/scanner_views.py:358
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:359
+#: adminapp/models/usererrorlog.py:38 adminapp/views/scanner_views.py:360
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -761,7 +765,7 @@ msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 
 #: adminapp/templates/components/common/breadcrumb.html:5
 #: adminapp/templates/components/navigation/navigation.html:18
-#: adminapp/templates/components/scanner/scan_completed.html:89
+#: adminapp/templates/components/scanner/scan_completed.html:93
 #: adminapp/templates/components/scanstatus/scan_status_table.html:40
 #: adminapp/templates/scanners.html:25
 msgid "Scannerjob"
@@ -992,8 +996,8 @@ msgstr "Igangværende scanninger"
 #: adminapp/templates/components/navigation/scanner_tabs.html:60
 #: adminapp/templates/components/scanner/scan_completed.html:30
 #: adminapp/templates/components/scanner/scan_completed.html:37
-#: adminapp/templates/components/scanner/scan_completed.html:58
-#: adminapp/templates/components/scanner/scan_completed.html:59
+#: adminapp/templates/components/scanner/scan_completed.html:60
+#: adminapp/templates/components/scanner/scan_completed.html:61
 msgid "Completed scans"
 msgstr "Udførte scanninger"
 
@@ -1158,8 +1162,8 @@ msgid "Save changes"
 msgstr "Gem ændringer"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:6
-#: adminapp/templates/components/scanner/scan_completed.html:162
-#: adminapp/templates/components/scanner/scan_completed.html:163
+#: adminapp/templates/components/scanner/scan_completed.html:166
+#: adminapp/templates/components/scanner/scan_completed.html:167
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
 #: adminapp/templates/error_log.html:243 adminapp/templates/rules.html:98
@@ -1217,53 +1221,53 @@ msgstr ""
 "Bemærk, at regelændringer ikke vil påvirke tidligere scannede objekter "
 "medmindre der køres et fuldt scan."
 
-#: adminapp/templates/components/scanner/scan_completed.html:58
-#: adminapp/templates/components/scanner/scan_completed.html:59
-#: adminapp/templates/components/scanner/scan_completed.html:67
+#: adminapp/templates/components/scanner/scan_completed.html:60
+#: adminapp/templates/components/scanner/scan_completed.html:61
+#: adminapp/templates/components/scanner/scan_completed.html:69
 msgid "Delete all"
 msgstr "Slet alle"
 
-#: adminapp/templates/components/scanner/scan_completed.html:65
+#: adminapp/templates/components/scanner/scan_completed.html:67
 msgid "You are about to delete"
 msgstr "Du er ved at slette"
 
-#: adminapp/templates/components/scanner/scan_completed.html:65
+#: adminapp/templates/components/scanner/scan_completed.html:67
 msgid " scan status data. This action cannot be reverted. Are you sure?"
 msgstr " datascanninger. Denne handling kan ikke fortrydes. Er du sikker?"
 
-#: adminapp/templates/components/scanner/scan_completed.html:71
-#: adminapp/templates/components/scanner/scan_completed.html:72
-#: adminapp/templates/components/scanner/scan_completed.html:74
+#: adminapp/templates/components/scanner/scan_completed.html:75
+#: adminapp/templates/components/scanner/scan_completed.html:76
+#: adminapp/templates/components/scanner/scan_completed.html:78
 #: adminapp/templates/error_log.html:111 adminapp/templates/error_log.html:112
 #: adminapp/templates/error_log.html:114
 msgid "Export to CSV"
 msgstr "Eksportér til CSV"
 
-#: adminapp/templates/components/scanner/scan_completed.html:85
-#: adminapp/templates/components/scanner/scan_completed.html:86
+#: adminapp/templates/components/scanner/scan_completed.html:89
+#: adminapp/templates/components/scanner/scan_completed.html:90
 #: adminapp/templates/error_log.html:124 adminapp/templates/error_log.html:125
 msgid "Select all results"
 msgstr "Vælg alle resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:90
+#: adminapp/templates/components/scanner/scan_completed.html:94
 #: adminapp/templates/error_log.html:152
 msgid "Started"
 msgstr "Startet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:91
+#: adminapp/templates/components/scanner/scan_completed.html:95
 msgid "Objects"
 msgstr "Objekter"
 
-#: adminapp/templates/components/scanner/scan_completed.html:92
+#: adminapp/templates/components/scanner/scan_completed.html:96
 msgid "Results"
 msgstr "Resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:94
+#: adminapp/templates/components/scanner/scan_completed.html:98
 #: adminapp/templates/components/scanstatus/scan_status_table.html:42
 msgid "Status"
 msgstr "Status"
 
-#: adminapp/templates/components/scanner/scan_completed.html:96
+#: adminapp/templates/components/scanner/scan_completed.html:100
 msgid ""
 "Status for given job as well as an indication of its running time. Be aware "
 "that runtimes may not be fully accurate, they do not necessarily include any "
@@ -1273,53 +1277,53 @@ msgstr ""
 "køretider ikke nødvendigvis er fuldstændigt akkurate. Der inkluderes ikke "
 "nødvendigvis tid brugt i udforskningsfasen. Køretider vises uden spildtid."
 
-#: adminapp/templates/components/scanner/scan_completed.html:101
+#: adminapp/templates/components/scanner/scan_completed.html:105
 #: adminapp/templates/components/scanstatus/scan_status_table.html:43
 #: adminapp/templates/error_log.html:196
 #: organizations/templates/organizations/org_table.html:49
 msgid "Actions"
 msgstr "Handlinger"
 
-#: adminapp/templates/components/scanner/scan_completed.html:119
-#: adminapp/templates/components/scanner/scan_completed.html:120
+#: adminapp/templates/components/scanner/scan_completed.html:123
+#: adminapp/templates/components/scanner/scan_completed.html:124
 msgid "Select result"
 msgstr "Vælg resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:129
+#: adminapp/templates/components/scanner/scan_completed.html:133
 msgid "objects explored"
 msgstr "objekter udforsket"
 
-#: adminapp/templates/components/scanner/scan_completed.html:132
+#: adminapp/templates/components/scanner/scan_completed.html:136
 msgid "Not available"
 msgstr "Ikke tilgængelig"
 
-#: adminapp/templates/components/scanner/scan_completed.html:136
+#: adminapp/templates/components/scanner/scan_completed.html:140
 msgid "result"
 msgstr "resultat"
 
-#: adminapp/templates/components/scanner/scan_completed.html:138
+#: adminapp/templates/components/scanner/scan_completed.html:142
 msgid "results"
 msgstr "resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:148
+#: adminapp/templates/components/scanner/scan_completed.html:152
 msgid "Finished in"
 msgstr "Afsluttet på"
 
-#: adminapp/templates/components/scanner/scan_completed.html:150
+#: adminapp/templates/components/scanner/scan_completed.html:154
 msgid "Finished"
 msgstr "Afsluttet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:162
-#: adminapp/templates/components/scanner/scan_completed.html:163
+#: adminapp/templates/components/scanner/scan_completed.html:166
+#: adminapp/templates/components/scanner/scan_completed.html:167
 msgid "scannerjob"
 msgstr "scannerjob"
 
-#: adminapp/templates/components/scanner/scan_completed.html:174
-#: adminapp/templates/components/scanner/scan_completed.html:175
+#: adminapp/templates/components/scanner/scan_completed.html:178
+#: adminapp/templates/components/scanner/scan_completed.html:179
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
-#: adminapp/templates/components/scanner/scan_completed.html:208
+#: adminapp/templates/components/scanner/scan_completed.html:212
 msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
@@ -2522,27 +2526,27 @@ msgstr "Resultater fundet"
 msgid "Scanning time"
 msgstr "Scanningstid"
 
-#: adminapp/views/scanner_views.py:356
+#: adminapp/views/scanner_views.py:357
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:358
+#: adminapp/views/scanner_views.py:359
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:566
+#: adminapp/views/scanner_views.py:567
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:586
+#: adminapp/views/scanner_views.py:587
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:612
+#: adminapp/views/scanner_views.py:613
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:627
+#: adminapp/views/scanner_views.py:628
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 

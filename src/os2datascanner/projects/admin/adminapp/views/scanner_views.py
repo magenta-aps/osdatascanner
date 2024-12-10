@@ -198,7 +198,7 @@ class StatusCompletedView(StatusBase):
         return self.render_to_response(self.get_context_data())
 
 
-class StatusCompletedCSVView(CSVExportMixin, StatusCompletedView):
+class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusCompletedView):
     exported_fields = {
         _("Scanner name"): 'scanner__name',
         _("Start time"): 'scan_tag__time',
@@ -207,6 +207,7 @@ class StatusCompletedCSVView(CSVExportMixin, StatusCompletedView):
         _("Scanning time"): 'scan_time',
     }
     exported_filename = 'os2datascanner_completed_scans'
+    permission_required = 'os2datascanner.export_completed_scanstatus'
 
 
 class StatusTimeline(RestrictedDetailView):
