@@ -2,6 +2,11 @@
 
 ## Next release
 
+### New in this release
+
+- Introduces the "view_usererrorlog"-permission in the admin module, which replaces the
+  USERERRORLOG installation setting.
+
 ### General improvements
 
 - It is now possible to fine-tune the Tesseract OCR engine by adjusting the new

@@ -58,7 +58,7 @@
        hx-select="#new_errors">
     <a id="scan-status" class="tabs__control" href="/status/">{% trans "Scans in progress" %}</a>
     <a id="completed" class="tabs__control" href="/status-completed/">{% trans "Completed scans" %}</a>
-    {% if settings.USERERRORLOG %}
+    {% if perms.os2datascanner.view_usererrorlog %}
       <a id="error-log" class="tabs__control" href="/error-log/">{% trans "Error Log" %}</a>
       <span id="new_errors">
         {% if new_error_logs > 0 %}<span class="bubble offset">{{ new_error_logs }}</span>{% endif %}

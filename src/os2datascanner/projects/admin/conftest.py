@@ -41,11 +41,6 @@ def temp_settings():
     return settings
 
 
-@pytest.fixture
-def USERERRORLOG_True(temp_settings):
-    temp_settings.USERERRORLOG = True
-
-
 # Users
 @pytest.fixture
 def anonymous_user():
@@ -424,7 +419,7 @@ def basic_usererrorlog(basic_scanstatus, test_org):
         scan_status=basic_scanstatus,
         path="GiveMeTheMoney",
         error_message="Something went awry!",
-        engine_error="TestError: Test was just a test!",
+        engine_error={"type": "TestError", "args": "Test was just a test!"},
         organization=test_org,
         is_new=True
     )
@@ -443,7 +438,7 @@ def a_lot_of_usererrorlogs(basic_scanstatus, test_org):
             scan_status=basic_scanstatus,
             path=random_string(),
             error_message=random_string(),
-            engine_error=f"TestError: {random_string()}",
+            engine_error={"type": "TestError", "args": random_string()},
             organization=test_org,
             is_new=True
         ) for _ in range(20)
@@ -691,7 +686,7 @@ def basic_usererrorlog2(basic_scanstatus2, test_org2):
         scan_status=basic_scanstatus2,
         path="Don'tQuoteMeOnThis",
         error_message="Something went awry again!",
-        engine_error="TestError: Test was still just a test!",
+        engine_error={"type": "TestError", "args": "Test was still just a test!"},
         organization=test_org2,
         is_new=True
     )

@@ -189,8 +189,7 @@ class Command(BaseCommand):
 
         print("\n# [functionality]")
         print_settings("EXCLUSION_RULES", "ANALYSIS_PAGE",
-                       "AUTOMATIC_IMPORT_CLEANUP", "MANUAL_PAGE",
-                       "USERERRORLOG")
+                       "AUTOMATIC_IMPORT_CLEANUP", "MANUAL_PAGE")
 
         print("\n# [scans]")
         print_settings("ENABLE_FILESCAN", "ENABLE_WEBSCAN",

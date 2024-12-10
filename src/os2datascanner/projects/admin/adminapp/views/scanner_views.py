@@ -16,12 +16,11 @@ from json import dumps
 from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
-from django.conf import settings
+from django.http import Http404, HttpResponseForbidden
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from pika.exceptions import AMQPError
 import structlog
 
@@ -254,8 +253,9 @@ class StatusDelete(RestrictedDeleteView):
         return super().form_valid()
 
 
-class UserErrorLogView(RestrictedListView):
+class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
     """Displays list of errors encountered."""
+    permission_required = 'os2datascanner.view_usererrorlog'
     template_name = 'error_log.html'
     model = UserErrorLog
     paginate_by = 10
@@ -264,7 +264,7 @@ class UserErrorLogView(RestrictedListView):
 
     def get_queryset(self):
         """Order errors by most recent scan."""
-        qs = super().get_queryset().filter(is_removed=False)
+        qs = super().get_queryset().filter(is_resolved=False)
 
         qs = self.sort_queryset(qs)
 
@@ -320,12 +320,6 @@ class UserErrorLogView(RestrictedListView):
         # as url param paginate_by=xx
         return self.request.GET.get('paginate_by', self.paginate_by)
 
-    def dispatch(self, request, *args, **kwargs):
-        if settings.USERERRORLOG:
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise Http404()
-
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"
         htmx_trigger = self.request.headers.get('HX-Trigger-Name')
@@ -333,14 +327,19 @@ class UserErrorLogView(RestrictedListView):
         self.object_list = self.get_queryset()
 
         if is_htmx:
+            # Only allow removal of errors if the user has the correct permissions
+            if htmx_trigger in ("remove_errorlog", "remove_selected", "remove_all") \
+                    and not self.request.user.has_perm('os2datascanner.resolve_usererrorlog'):
+                return HttpResponseForbidden()
+
             if htmx_trigger == "remove_errorlog":
                 delete_pk = self.request.POST.get('pk')
-                self.object_list.filter(pk=delete_pk).update(is_removed=True, is_new=False)
+                self.object_list.filter(pk=delete_pk).update(is_resolved=True, is_new=False)
             elif htmx_trigger == "remove_selected":
                 self.object_list.filter(pk__in=self.request.POST.getlist(
-                    'table-checkbox')).update(is_removed=True, is_new=False)
+                    'table-checkbox')).update(is_resolved=True, is_new=False)
             elif htmx_trigger == "remove_all":
-                self.object_list.update(is_removed=True, is_new=False)
+                self.object_list.update(is_resolved=True, is_new=False)
             elif htmx_trigger == "see_errorlog":
                 seen_pk = self.request.POST.get('pk')
                 self.object_list.filter(pk=seen_pk).update(is_new=False)

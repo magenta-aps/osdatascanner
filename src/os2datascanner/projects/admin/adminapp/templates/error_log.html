@@ -75,7 +75,9 @@
               <thead>
                 <tr class="table-topbar topbar-stick sticky">
                   <th colspan="6">
-                    {% include "components/scanstatus/remove_error.html" %}
+                    {% if perms.os2datascanner.resolve_usererrorlog %}
+                      {% include "components/scanstatus/remove_error.html" %}
+                    {% endif %}
                     <div class="view-options button-group">
                       {% if new_error_logs > 0 %}
                         <button type="button"
@@ -92,20 +94,22 @@
                           <span>{% trans "Mark all as seen" %}</span>
                         </button>
                       {% endif %}
-                      <button type="button"
-                              class="button button--icon-text-button"
-                              name="remove_all"
-                              aria-label="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
-                              title="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
-                              hx-post=""
-                              hx-swap="outerHTML"
-                              hx-trigger="click"
-                              hx-target=".content"
-                              hx-select=".content"
-                              hx-confirm="{% trans 'You are about to remove' %} {{ page_obj.paginator.count }}{% trans ' error logs. This action cannot be reverted. Are you sure?' %}">
-                        <i id="delete_forever" class="material-icons">delete_forever</i>
-                        <span>{% trans "Remove all" %}</span>
-                      </button>
+                      {% if perms.os2datascanner.resolve_usererrorlog %}
+                        <button type="button"
+                                class="button button--icon-text-button"
+                                name="remove_all"
+                                aria-label="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
+                                title="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
+                                hx-post=""
+                                hx-swap="outerHTML"
+                                hx-trigger="click"
+                                hx-target=".content"
+                                hx-select=".content"
+                                hx-confirm="{% trans 'You are about to remove' %} {{ page_obj.paginator.count }}{% trans ' error logs. This action cannot be reverted. Are you sure?' %}">
+                          <i id="delete_forever" class="material-icons">delete_forever</i>
+                          <span>{% trans "Remove all" %}</span>
+                        </button>
+                      {% endif %}
                       <a href='{% url "export-error-log" %}'
                          class="button button--icon-text-button"
                          aria-label="{% trans 'Export to CSV' %}"
@@ -229,20 +233,22 @@
                   <td class="datatable__column--automatic">{{ error_log.scan_status.scanner.name }}</td>
                   <td class="datatable__column--actions">
                     <div class="action-wrapper button-group">
-                      <button type="button"
-                              class="button button--icon-button"
-                              name="remove_errorlog"
-                              hx-post=""
-                              hx-swap="outerHTML"
-                              hx-trigger="click"
-                              hx-target=".content"
-                              hx-select=".content"
-                              hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
-                              hx-indicator="closest tr"
-                              aria-label="{% trans 'Delete permanently' %}"
-                              title="{% trans 'Delete' %} {% trans 'error log' %}">
-                        <i id="delete_forever" class="material-icons">delete_forever</i>
-                      </button>
+                      {% if perms.os2datascanner.resolve_usererrorlog %}
+                        <button type="button"
+                                class="button button--icon-button"
+                                name="remove_errorlog"
+                                hx-post=""
+                                hx-swap="outerHTML"
+                                hx-trigger="click"
+                                hx-target=".content"
+                                hx-select=".content"
+                                hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
+                                hx-indicator="closest tr"
+                                aria-label="{% trans 'Delete permanently' %}"
+                                title="{% trans 'Delete' %} {% trans 'error log' %}">
+                          <i id="delete_forever" class="material-icons">delete_forever</i>
+                        </button>
+                      {% endif %}
                       {% if error_log.is_new %}
                         <button type="button"
                                 class="button button--text-button"

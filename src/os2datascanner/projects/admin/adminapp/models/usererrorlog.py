@@ -23,6 +23,8 @@ class UserErrorLog(models.Model):
         verbose_name = _('error log')
         verbose_name_plural = _('error logs')
 
+        permissions = [("resolve_usererrorlog", _("Can resolve error log"))]
+
     scan_status = models.ForeignKey(
         ScanStatus,
         on_delete=models.CASCADE,
@@ -56,9 +58,9 @@ class UserErrorLog(models.Model):
         default=False,
         verbose_name=_('Is new')
     )
-    is_removed = models.BooleanField(
+    is_resolved = models.BooleanField(
         default=False,
-        verbose_name=_('Is removed')
+        verbose_name=_('Is resolved')
     )
 
     @property
