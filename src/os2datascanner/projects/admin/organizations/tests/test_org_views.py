@@ -40,6 +40,7 @@ class TestOrganizationListViews:
     def test_administrator_for_list(self, client, user_admin, test_client, other_client):
         """Administrators should only be able to see the client, that they are
         administrator for."""
+
         client.force_login(user_admin)
 
         url = reverse_lazy("organization-list")
@@ -462,6 +463,9 @@ class TestOrganizationalUnitListView:
         """Administrators should be able to see the units belonging to
         organizations, belonging to clients, for which they are
         administrators."""
+        # Add user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename="view_organizationalunit"))
+
         client.force_login(user_admin)
 
         # Add accounts to ous
@@ -487,6 +491,9 @@ class TestOrganizationalUnitListView:
 
     def test_regular_user_list(self, client, user, test_org, test_org2):
         """Users with no priviliges should not be able to see any units."""
+        # Add user permission
+        user.user_permissions.add(Permission.objects.get(codename="view_organizationalunit"))
+
         client.force_login(user)
 
         # URL to all units from organization 1
@@ -575,6 +582,9 @@ class TestOrganizationalUnitListViewAddRemoveManagers:
             olsen_banden):
         """An administrator should be able to add managers to units they are
         administrator for."""
+        # Add user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename="view_organizationalunit"))
+
         client.force_login(user_admin)
 
         # URL to all units from organization 1
@@ -604,6 +614,9 @@ class TestOrganizationalUnitListViewAddRemoveManagers:
             olsen_banden):
         """An administrator should be able to remove managers from the units
         they are administrators for."""
+        # Add user permission
+        user_admin.user_permissions.add(Permission.objects.get(codename="view_organizationalunit"))
+
         client.force_login(user_admin)
 
         Position.managers.create(account=fritz, unit=nisserne)
@@ -636,6 +649,9 @@ class TestOrganizationalUnitListViewAddRemoveManagers:
             olsen_banden):
         """An unprivileged user should not be able to add managers to any
         units."""
+        # Add user permission
+        user.user_permissions.add(Permission.objects.get(codename="view_organizationalunit"))
+
         client.force_login(user)
 
         # URL to all units from organization 1
@@ -665,6 +681,9 @@ class TestOrganizationalUnitListViewAddRemoveManagers:
             olsen_banden):
         """An unprivileged user should not be able to remove managers from
         any units."""
+        # Add user permission
+        user.user_permissions.add(Permission.objects.get(codename="view_organizationalunit"))
+
         client.force_login(user)
 
         Position.managers.create(account=fritz, unit=nisserne)
