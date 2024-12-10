@@ -603,7 +603,9 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         _("First name"): 'first_name',
         _("Last name"): 'last_name',
         _("Username"): 'username',
+        **({_("Older than 30 days"): 'old'} if settings.LEADER_OVERVIEW_30_DAYS else {}),
         _("Matches"): 'unhandled_matches',
+        _("Withheld"): 'withheld',
         _("Status"): 'handle_status',
         _("Organizational units"): 'unit_list',
     }
