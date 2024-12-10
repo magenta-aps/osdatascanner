@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-09 14:10+0100\n"
+"POT-Creation-Date: 2024-12-10 11:15+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -832,7 +832,7 @@ msgstr "Navn"
 #: reportapp/templates/components/reports/match_table.html:60
 #: reportapp/templates/components/reports/match_table.html:64
 #: reportapp/templates/components/reports/match_table.html:65
-#: reportapp/views/statistics_views.py:606
+#: reportapp/views/statistics_views.py:607
 msgid "Matches"
 msgstr "Matches"
 
@@ -868,7 +868,7 @@ msgstr "Sti"
 #: reportapp/templates/components/reports/match_table.html:113
 #: reportapp/templates/components/reports/match_table.html:114
 #: reportapp/templates/leader_statistics_template.html:173
-#: reportapp/views/statistics_views.py:607
+#: reportapp/views/statistics_views.py:609
 msgid "Status"
 msgstr "Status"
 
@@ -1221,7 +1221,7 @@ msgid "employees"
 msgstr "medarbejdere"
 
 #: reportapp/templates/leader_statistics_template.html:44
-#: reportapp/views/statistics_views.py:608
+#: reportapp/views/statistics_views.py:610
 msgid "Organizational units"
 msgstr "Organisatoriske enheder"
 
@@ -1256,6 +1256,7 @@ msgstr ""
 "dage. Resultater ældre end dette bør håndteres hurtigst muligt."
 
 #: reportapp/templates/leader_statistics_template.html:151
+#: reportapp/views/statistics_views.py:608
 msgid "Withheld"
 msgstr "Tilbageholdte"
 
@@ -2057,58 +2058,62 @@ msgstr "Fornavn"
 msgid "Last name"
 msgstr "Efternavn"
 
-#: reportapp/views/statistics_views.py:708
+#: reportapp/views/statistics_views.py:606
+msgid "Older than 30 days"
+msgstr "Ældre end 30 dage"
+
+#: reportapp/views/statistics_views.py:710
 #, python-format
 msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
 
-#: reportapp/views/statistics_views.py:819
+#: reportapp/views/statistics_views.py:821
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:819
+#: reportapp/views/statistics_views.py:821
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:819
+#: reportapp/views/statistics_views.py:821
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:819
+#: reportapp/views/statistics_views.py:821
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:820
+#: reportapp/views/statistics_views.py:822
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:820
+#: reportapp/views/statistics_views.py:822
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:820
+#: reportapp/views/statistics_views.py:822
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:820
+#: reportapp/views/statistics_views.py:822
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:821
+#: reportapp/views/statistics_views.py:823
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:821
+#: reportapp/views/statistics_views.py:823
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:821
+#: reportapp/views/statistics_views.py:823
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:821
+#: reportapp/views/statistics_views.py:823
 msgid "Dec"
 msgstr "Dec"
 

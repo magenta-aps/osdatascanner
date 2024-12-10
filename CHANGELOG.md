@@ -15,6 +15,9 @@
 - Permission to export scan status can now be enabled for administrators,
   with the django-permission 'export_completed_scanstatus'.
 
+- Withheld and older than 30 days (if enabled) data is now included 
+  in the leader overview csv export.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"
