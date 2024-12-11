@@ -1,6 +1,7 @@
 import pytest
-
+from django.conf import settings
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
+from os2datascanner.projects.admin.adminapp.notification import create_context, get_scanner_time
 
 
 def record_status(status):
@@ -79,3 +80,38 @@ class TestStatus:
 
         basic_scanstatus.refresh_from_db()
         assert basic_scanstatus.explored_sources == 5
+
+    def test_mail_context_user(self,
+                               basic_scanner,
+                               basic_scanstatus,
+                               superuser
+                               ):
+
+        assert (create_context(basic_scanner, basic_scanstatus, superuser) ==
+                {
+            'admin_login_url': settings.SITE_URL,
+            'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
+            'full_name': 'mr_superuserman',
+            'institution': 'DUMMY',
+            'object_size': 0,
+            'scanner_name': 'SomeScanner-test_org',
+            'total_objects': 0,
+            'usererrorlogs': 0}
+                )
+
+    def test_mail_context_no_user(self,
+                                  basic_scanner,
+                                  basic_scanstatus,
+                                  ):
+
+        assert (create_context(basic_scanner, basic_scanstatus, None) ==
+                {
+            'admin_login_url': settings.SITE_URL,
+            'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
+            'full_name': '',
+            'institution': 'DUMMY',
+            'object_size': 0,
+            'scanner_name': 'SomeScanner-test_org',
+            'total_objects': 0,
+            'usererrorlogs': 0}
+                )

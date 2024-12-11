@@ -41,9 +41,7 @@
       {% trans " in total - in " %} <strong>{{ completion_time }}</strong>.
     </p>
     <p>
-      {% if usererrorlog_setting and usererrorlogs > 0 %}
-        {% blocktrans %}<strong>{{ usererrorlogs }}</strong> errors occured during the scan.<br /><a href="{{ admin_login_url }}error-log/">Click here to inspect the error logs</a>{% endblocktrans %}
-      {% endif %}
+      {% blocktrans %}<strong>{{ usererrorlogs }}</strong> errors occured during the scan.<br /><a href="{{ admin_login_url }}error-log/">Click here to inspect the error logs</a>{% endblocktrans %}
     </p>
     <p>
       {% blocktrans %}<a href="{{ admin_login_url }}">Log into OSdatascanner with your organisation account</a> for further details.{% endblocktrans %}
