@@ -1,7 +1,7 @@
 import pytest
-
+from django.conf import settings
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
-from os2datascanner.projects.admin.adminapp.notification import create_context
+from os2datascanner.projects.admin.adminapp.notification import create_context, get_scanner_time
 
 
 def record_status(status):
@@ -89,14 +89,13 @@ class TestStatus:
 
         assert (create_context(basic_scanner, basic_scanstatus, superuser) ==
                 {
-            'admin_login_url': 'http://localhost:8020/',
-            'completion_time': '0t0m0s',
+            'admin_login_url': settings.SITE_URL,
+            'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
             'full_name': 'mr_superuserman',
             'institution': 'DUMMY',
             'object_size': 0,
             'scanner_name': 'SomeScanner-test_org',
             'total_objects': 0,
-            'usererrorlog_setting': True,
             'usererrorlogs': 0}
                 )
 
@@ -107,13 +106,12 @@ class TestStatus:
 
         assert (create_context(basic_scanner, basic_scanstatus, None) ==
                 {
-            'admin_login_url': 'http://localhost:8020/',
-            'completion_time': '0t0m0s',
+            'admin_login_url': settings.SITE_URL,
+            'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
             'full_name': '',
             'institution': 'DUMMY',
             'object_size': 0,
             'scanner_name': 'SomeScanner-test_org',
             'total_objects': 0,
-            'usererrorlog_setting': True,
             'usererrorlogs': 0}
                 )
