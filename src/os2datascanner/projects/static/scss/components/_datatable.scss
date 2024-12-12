@@ -1625,8 +1625,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   // REMEDIATOR:
   // UNDISTRIBUTED:
 
-  min-width: 70rem;
-
   .column {
     &--name {
       text-wrap: nowrap;
