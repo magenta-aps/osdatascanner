@@ -767,8 +767,8 @@ msgstr ""
 "kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html:111
-msgid "Last opened for"
-msgstr "Senest åbnet for"
+msgid "Opened for"
+msgstr "Åbnet for"
 
 #: reportapp/templates/components/reports/match.html:160
 msgid "Show more"
@@ -837,9 +837,9 @@ msgstr "Vælg alle resultater"
 msgid "Name"
 msgstr "Navn"
 
-#: reportapp/templates/components/reports/match_table.html:60
-#: reportapp/templates/components/reports/match_table.html:64
-#: reportapp/templates/components/reports/match_table.html:65
+#: reportapp/templates/components/reports/match_table.html:62
+#: reportapp/templates/components/reports/match_table.html:66
+#: reportapp/templates/components/reports/match_table.html:67
 #: reportapp/views/statistics_views.py:612
 msgid "Matches"
 msgstr "Matches"
@@ -2184,6 +2184,9 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#~ msgid "Last opened for"
+#~ msgstr "Senest åbnet for"
 
 #~ msgid "Opened"
 #~ msgstr "Åbnet: "
