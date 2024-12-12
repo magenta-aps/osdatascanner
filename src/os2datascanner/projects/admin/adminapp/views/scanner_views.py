@@ -224,7 +224,6 @@ class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusComp
             'type': CSVExportMixin.ColumnType.FIELD,
         },
     ]
->>>>>>> 1f18e2ad6 ([#61392] Update completed scans CSV view)
     exported_filename = 'os2datascanner_completed_scans'
     permission_required = 'os2datascanner.export_completed_scanstatus'
 

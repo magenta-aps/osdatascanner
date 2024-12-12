@@ -199,8 +199,6 @@ class TestLeaderStatisticsPageView:
         names = {row['First name'] for row in rows if int(row['Matches']) > 0}
         assert {"Egon", "Kjeld", "Børge"} == names
 
-    # Helper functions
-
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_leader_csv_orgunit_export(
             self,
@@ -250,6 +248,40 @@ class TestLeaderStatisticsPageView:
         assert len(rows) == 1
         assert "Olsen-banden" not in rows[0]['Organizational units']
         assert "Kjelds Hus" in rows[0]['Organizational units']
+
+    @override_settings(LEADER_OVERVIEW_30_DAYS=True)
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_old_matches_column_enabled(
+            self,
+            egon_account,
+            egon_manager_position,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            rf):
+        """When LEADER_OVERVIEW_30_DAYS is true, Old matches should appear as a column."""
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Results older than 30 days" in reader.fieldnames
+
+    @override_settings(LEADER_OVERVIEW_30_DAYS=False)
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_old_matches_column_disabled(
+            self,
+            egon_account,
+            egon_manager_position,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            rf):
+        """When LEADER_OVERVIEW_30_DAYS is false, Old matches shouldn't appear as a column."""
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Results older than 30 days" not in reader.fieldnames
+
+    # Helper functions
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-leader') + params)
