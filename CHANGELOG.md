@@ -7,6 +7,10 @@
 - Introduces the "view_usererrorlog"-permission in the admin module, which replaces the
   USERERRORLOG installation setting.
 
+- Withheld results can now be viewed by users with the "see_withheld_documentreport"-permission,
+  and distributed by users with the "distribute_withheld_documentreport"-permission in the report
+  module.
+
 ### General improvements
 
 - It is now possible to fine-tune the Tesseract OCR engine by adjusting the new
