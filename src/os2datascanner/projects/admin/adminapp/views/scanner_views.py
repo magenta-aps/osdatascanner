@@ -210,6 +210,8 @@ class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusComp
 
 
 class StatusTimeline(RestrictedDetailView):
+    # TODO: RestrictedDetailView does not work properly here, since ScanStatus weirdly does not
+    # have a relation to an Organization. This view only works for superusers. #63270
     model = ScanStatus
     template_name = "components/scanstatus/status_timeline.html"
     context_object_name = "status"
