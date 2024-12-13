@@ -68,14 +68,14 @@
                       <i id="mail" class="material-symbols info__icon">mail</i>
                       <span class="info__label">{{ organization.contact_email|default_if_none:"---" }}</span>
                     </div>
- 
+
                     <div class="info info__container info--phone">
                       <i id="phone" class="material-symbols  info__icon">phone</i>
                       <span class="info__label">{{ organization.contact_phone|default_if_none:"---" }}</span>
                     </div>
                   </div>
                 </td>
- 
+
 
                 {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
                   <td id="import_column__{{ organization.slug }}"
@@ -201,7 +201,7 @@
                 {% endif %}
                 <td class="column column--actions">
                   <div class="action-wrapper button-group">
-                    {% if FEATURES.ORG_STRUCTURE in client.enabled_features %}
+                    {% if FEATURES.ORG_STRUCTURE in client.enabled_features and perms.organizations.view_organizationalunit %}
                       <a href="{% url 'orgunit-list' organization.slug %}"
                          class="button button--icon-button"
                          aria-label="{% trans 'View organizational units.' %}"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-10 09:30+0100\n"
+"POT-Creation-Date: 2024-12-13 10:16+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -36,6 +36,7 @@ msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
 #: adminapp/admin.py:190
+#, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
 "is_resolved attribute set to True, it has not been changed."
@@ -132,7 +133,7 @@ msgstr "intet planlagt checkup findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
 #: adminapp/models/scannerjobs/scanner.py:102
-#: adminapp/models/usererrorlog.py:52
+#: adminapp/models/usererrorlog.py:54
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:70
 #: import_services/models/realm.py:34
@@ -167,7 +168,7 @@ msgstr "Login metode"
 #: adminapp/models/rules.py:40 adminapp/models/rules.py:101
 #: adminapp/models/scannerjobs/scanner.py:95 core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:39
-#: organizations/templates/organizations/orgunit_list.html:199
+#: organizations/templates/organizations/orgunit_list.html:202
 msgid "name"
 msgstr "navn"
 
@@ -423,12 +424,12 @@ msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py:267
-#: adminapp/views/scanner_views.py:204
+#: adminapp/views/scanner_views.py:203
 msgid "Start time"
 msgstr "Startet"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py:270
-#: adminapp/models/usererrorlog.py:29
+#: adminapp/models/usererrorlog.py:31
 msgid "scan status"
 msgstr "scanstatus"
 
@@ -558,11 +559,11 @@ msgid "Can resolve error log"
 msgstr "Kan løse fejlbesked"
 
 #: adminapp/models/usererrorlog.py:35 adminapp/templates/error_log.html:177
-#: adminapp/views/scanner_views.py:366
+#: adminapp/views/scanner_views.py:357
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:40 adminapp/views/scanner_views.py:368
+#: adminapp/models/usererrorlog.py:40 adminapp/views/scanner_views.py:359
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -884,14 +885,14 @@ msgstr "organisatorisk struktur"
 
 #: adminapp/templates/components/common/breadcrumb.html:102
 #: organizations/templates/organizations/edit_hidden_state_page.html:8
-#: organizations/templates/organizations/orgunit_list.html:180
+#: organizations/templates/organizations/orgunit_list.html:183
 msgid "Edit visibility"
 msgstr "Redigér synlighed"
 
 #: adminapp/templates/components/common/breadcrumb.html:110
 #: adminapp/templates/components/common/breadcrumb.html:119
 #: organizations/templates/organizations/account_list.html:5
-#: organizations/templates/organizations/orgunit_list.html:202
+#: organizations/templates/organizations/orgunit_list.html:205
 msgid "accounts"
 msgstr "konti"
 
@@ -1241,19 +1242,19 @@ msgstr " datascanninger. Denne handling kan ikke fortrydes. Er du sikker?"
 #: adminapp/templates/components/scanner/scan_completed.html:75
 #: adminapp/templates/components/scanner/scan_completed.html:76
 #: adminapp/templates/components/scanner/scan_completed.html:78
-#: adminapp/templates/error_log.html:111 adminapp/templates/error_log.html:112
-#: adminapp/templates/error_log.html:114
+#: adminapp/templates/error_log.html:115 adminapp/templates/error_log.html:116
+#: adminapp/templates/error_log.html:118
 msgid "Export to CSV"
 msgstr "Eksportér til CSV"
 
 #: adminapp/templates/components/scanner/scan_completed.html:89
 #: adminapp/templates/components/scanner/scan_completed.html:90
-#: adminapp/templates/error_log.html:124 adminapp/templates/error_log.html:125
+#: adminapp/templates/error_log.html:128 adminapp/templates/error_log.html:129
 msgid "Select all results"
 msgstr "Vælg alle resultater"
 
 #: adminapp/templates/components/scanner/scan_completed.html:94
-#: adminapp/templates/error_log.html:152
+#: adminapp/templates/error_log.html:156
 msgid "Started"
 msgstr "Startet"
 
@@ -1282,7 +1283,7 @@ msgstr ""
 
 #: adminapp/templates/components/scanner/scan_completed.html:105
 #: adminapp/templates/components/scanstatus/scan_status_table.html:43
-#: adminapp/templates/error_log.html:196
+#: adminapp/templates/error_log.html:200
 #: organizations/templates/organizations/org_table.html:49
 msgid "Actions"
 msgstr "Handlinger"
@@ -1538,7 +1539,7 @@ msgstr "vælg brugere fra"
 #: adminapp/templates/components/scanner/scanner_form.html:513
 #: adminapp/templates/components/scanner/scanner_form.html:623
 #: import_services/models/ldap_configuration.py:126
-#: organizations/templates/organizations/orgunit_list.html:192
+#: organizations/templates/organizations/orgunit_list.html:195
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
@@ -1984,7 +1985,7 @@ msgstr " objekter scannet - "
 msgid " in total - in "
 msgstr " i alt - på "
 
-#: adminapp/templates/mail/finished_scannerjob.html:45
+#: adminapp/templates/mail/finished_scannerjob.html:44
 #, python-format
 msgid ""
 "<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /><a "
@@ -1995,7 +1996,7 @@ msgstr ""
 "\"%(admin_login_url)serror-log/\">Klik her for at inspicere fejlbeskederne.</"
 "a>"
 
-#: adminapp/templates/mail/finished_scannerjob.html:49
+#: adminapp/templates/mail/finished_scannerjob.html:47
 #, python-format
 msgid ""
 "<a href=\"%(admin_login_url)s\">Log into OSdatascanner with your "
@@ -2004,11 +2005,11 @@ msgstr ""
 "<a href=\"%(admin_login_url)s\">Log på OSdatascanner med din "
 "organisationskonto</a> for at se detajlerne."
 
-#: adminapp/templates/mail/finished_scannerjob.html:52
+#: adminapp/templates/mail/finished_scannerjob.html:50
 msgid "Kind regards,<br>the OSdatascanner system"
 msgstr "Med venlig hilsen<br>OSdatascanner-systemet"
 
-#: adminapp/templates/mail/finished_scannerjob.html:54
+#: adminapp/templates/mail/finished_scannerjob.html:52
 #, python-format
 msgid "(on behalf of %(institution)s)"
 msgstr "(på vegne af %(institution)s)"
@@ -2033,7 +2034,7 @@ msgstr ""
 "Til orientering er dit OSdatascanner-scan @ %(scanner_name)s lige kørt "
 "færdigt.\n"
 
-#: adminapp/templates/mail/finished_scannerjob.txt:14
+#: adminapp/templates/mail/finished_scannerjob.txt:13
 #, python-format
 msgid ""
 "\n"
@@ -2042,7 +2043,7 @@ msgstr ""
 "\n"
 "%(usererrorlogs)s fejl opstod under scannet.\n"
 
-#: adminapp/templates/mail/finished_scannerjob.txt:19
+#: adminapp/templates/mail/finished_scannerjob.txt:17
 msgid ""
 "\n"
 "Log into OSdatascanner with your organisation account for further details.\n"
@@ -2050,7 +2051,7 @@ msgstr ""
 "\n"
 "Log på OSdatascanner med din organisationskonto for at se detajlerne.\n"
 
-#: adminapp/templates/mail/finished_scannerjob.txt:26
+#: adminapp/templates/mail/finished_scannerjob.txt:24
 msgid ""
 "\n"
 "Kind regards,\n"
@@ -2060,7 +2061,7 @@ msgstr ""
 "Med venlig hilsen\n"
 "OSdatascanner-systemet\n"
 
-#: adminapp/templates/mail/finished_scannerjob.txt:31
+#: adminapp/templates/mail/finished_scannerjob.txt:29
 #, python-format
 msgid ""
 "\n"
@@ -2374,7 +2375,7 @@ msgstr "Filtrér systemreglerne efter de valgte kategorier"
 
 #: adminapp/templates/system_rules.html:31
 #: organizations/templates/organizations/orgunit_list.html:89
-#: organizations/templates/organizations/orgunit_list.html:160
+#: organizations/templates/organizations/orgunit_list.html:162
 msgid "filter"
 msgstr "filtrér"
 
@@ -2509,47 +2510,47 @@ msgstr ""
 msgid "This rule cannot be deleted, because it's associated with a scanner."
 msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 
-#: adminapp/views/scanner_views.py:71
+#: adminapp/views/scanner_views.py:70
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:203
+#: adminapp/views/scanner_views.py:202
 msgid "Scanner name"
 msgstr "Scanner navn"
 
-#: adminapp/views/scanner_views.py:205
+#: adminapp/views/scanner_views.py:204
 msgid "Objects found"
 msgstr "Objekter fundet"
 
-#: adminapp/views/scanner_views.py:206
+#: adminapp/views/scanner_views.py:205
 msgid "Matches found"
 msgstr "Resultater fundet"
 
-#: adminapp/views/scanner_views.py:207
+#: adminapp/views/scanner_views.py:206
 msgid "Scanning time"
 msgstr "Scanningstid"
 
-#: adminapp/views/scanner_views.py:357
+#: adminapp/views/scanner_views.py:356
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:359
+#: adminapp/views/scanner_views.py:358
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:567
+#: adminapp/views/scanner_views.py:566
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:587
+#: adminapp/views/scanner_views.py:586
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:613
+#: adminapp/views/scanner_views.py:612
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:628
+#: adminapp/views/scanner_views.py:627
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 
@@ -3397,6 +3398,10 @@ msgstr "systemregler"
 msgid "synchronization time"
 msgstr "synkroniseringstidspunkt"
 
+#: organizations/models/organizational_unit.py:45
+msgid "Can change visibility of organizational units"
+msgstr "Kan ændre synlighed på organisatoriske enheder"
+
 #: organizations/templates/components/modals/alias_create.html:15
 msgid "Create a new alias for"
 msgstr "Opret et nyt alias for"
@@ -3490,16 +3495,16 @@ msgstr "Aliasser"
 #: organizations/templates/organizations/account_detail.html:97
 #: organizations/templates/organizations/account_detail.html:154
 #: organizations/templates/organizations/orgunit_list.html:39
-#: organizations/templates/organizations/orgunit_list.html:260
-#: organizations/templates/organizations/orgunit_list.html:291
+#: organizations/templates/organizations/orgunit_list.html:263
+#: organizations/templates/organizations/orgunit_list.html:294
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:104
 #: organizations/templates/organizations/account_detail.html:163
 #: organizations/templates/organizations/orgunit_list.html:46
-#: organizations/templates/organizations/orgunit_list.html:267
-#: organizations/templates/organizations/orgunit_list.html:298
+#: organizations/templates/organizations/orgunit_list.html:270
+#: organizations/templates/organizations/orgunit_list.html:301
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
@@ -3774,24 +3779,24 @@ msgstr "som universel DPO for"
 msgid "Search for organizational unit"
 msgstr "Søg efter organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:105
+#: organizations/templates/organizations/orgunit_list.html:107
 msgid "Show organizational units:"
 msgstr "Vis organisatoriske enheder:"
 
-#: organizations/templates/organizations/orgunit_list.html:117
+#: organizations/templates/organizations/orgunit_list.html:119
 msgid "with "
 msgstr "med"
 
-#: organizations/templates/organizations/orgunit_list.html:137
+#: organizations/templates/organizations/orgunit_list.html:139
 msgid "Show hidden units"
 msgstr "Vis skjulte enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:152
+#: organizations/templates/organizations/orgunit_list.html:154
 msgid "Show empty units"
 msgstr "Vis tomme enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:170
-#: organizations/templates/organizations/orgunit_list.html:171
+#: organizations/templates/organizations/orgunit_list.html:173
+#: organizations/templates/organizations/orgunit_list.html:174
 msgid ""
 "Change which organizational units should be visible throughout both Admin "
 "and Report"
@@ -3799,65 +3804,65 @@ msgstr ""
 "Lav ændringer i hvilke organisatoriske enheder, der skal være synlige på "
 "tværs af både Admin og Rapport"
 
-#: organizations/templates/organizations/orgunit_list.html:199
+#: organizations/templates/organizations/orgunit_list.html:202
 msgid "Name of organizational unit"
 msgstr "Navn på organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:201
+#: organizations/templates/organizations/orgunit_list.html:204
 msgid "Affiliated accounts for this organizational unit"
 msgstr "Tilknyttede konti for denne organisatoriske enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:204
+#: organizations/templates/organizations/orgunit_list.html:207
 msgid "visibility"
 msgstr "synlighed"
 
-#: organizations/templates/organizations/orgunit_list.html:205
+#: organizations/templates/organizations/orgunit_list.html:208
 msgid "managers"
 msgstr "ledere"
 
-#: organizations/templates/organizations/orgunit_list.html:206
+#: organizations/templates/organizations/orgunit_list.html:209
 msgid "DPOs"
 msgstr "DPOer"
 
-#: organizations/templates/organizations/orgunit_list.html:222
+#: organizations/templates/organizations/orgunit_list.html:225
 msgid "There are currently"
 msgstr "Der er i øjeblikket"
 
-#: organizations/templates/organizations/orgunit_list.html:222
+#: organizations/templates/organizations/orgunit_list.html:225
 msgid "accounts associated with"
 msgstr "konti tilknyttet til"
 
-#: organizations/templates/organizations/orgunit_list.html:222
+#: organizations/templates/organizations/orgunit_list.html:225
 msgid "There are currently none accounts associated with"
 msgstr "Der er i øjeblikket ingen konti tilknyttet til"
 
-#: organizations/templates/organizations/orgunit_list.html:228
+#: organizations/templates/organizations/orgunit_list.html:231
 msgid "associated"
 msgstr "tilknyttet"
 
-#: organizations/templates/organizations/orgunit_list.html:239
+#: organizations/templates/organizations/orgunit_list.html:242
 msgid "has been set to be hidden"
 msgstr "er indstillet til at være skjult"
 
-#: organizations/templates/organizations/orgunit_list.html:247
+#: organizations/templates/organizations/orgunit_list.html:250
 msgid "has been set to be visible"
 msgstr "er indstillet til at være synlig"
 
-#: organizations/templates/organizations/orgunit_list.html:260
-#: organizations/templates/organizations/orgunit_list.html:267
-#: organizations/templates/organizations/orgunit_list.html:291
+#: organizations/templates/organizations/orgunit_list.html:263
+#: organizations/templates/organizations/orgunit_list.html:270
+#: organizations/templates/organizations/orgunit_list.html:294
 msgid "as manager of"
 msgstr "som leder af"
 
-#: organizations/templates/organizations/orgunit_list.html:298
+#: organizations/templates/organizations/orgunit_list.html:301
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:325
+#: organizations/templates/organizations/orgunit_list.html:328
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:335
+#: organizations/templates/organizations/orgunit_list.html:338
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 

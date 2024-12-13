@@ -11,6 +11,12 @@
   and distributed by users with the "distribute_withheld_documentreport"-permission in the report
   module.
 
+- Changing the visibility of organizational units in the admin module now requires the
+  "change_visibility_organizationalunit"-permission.
+
+- Viewing the organizational structure of an organization in the admin module now requires the
+  "view_organizationalunit"-permission.
+
 ### General improvements
 
 - It is now possible to fine-tune the Tesseract OCR engine by adjusting the new
