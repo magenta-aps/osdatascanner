@@ -235,6 +235,8 @@ class StatusTimeline(RestrictedDetailView):
 
 
 class StatusDelete(PermissionRequiredMixin, RestrictedDeleteView):
+    # TODO: RestrictedDeleteView does not work properly here, since ScanStatus weirdly does not
+    # have a relation to an Organization. This view only works for superusers. #63270
     model = ScanStatus
     fields = []
     success_url = '/status/'
