@@ -17,6 +17,9 @@
 - Viewing the organizational structure of an organization in the admin module now requires the
   "view_organizationalunit"-permission.
 
+- Only allow users with "resolve_scanstatus"-permission to resolve ScanStatus objects in the admin
+  module.
+
 ### General improvements
 
 - It is now possible to fine-tune the Tesseract OCR engine by adjusting the new
