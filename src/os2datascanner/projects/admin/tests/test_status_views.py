@@ -15,7 +15,7 @@ class TestStatusViews:
         response = client.post(reverse_lazy("status-delete", kwargs={"pk": basic_scanstatus.pk}))
 
         if has_perm:
-            assert response.status_code == 200
+            assert response.status_code == 302
         else:
             assert response.status_code == 403
 

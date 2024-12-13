@@ -72,9 +72,7 @@ class EmptyPagePaginator(Paginator):
 
 class StatusBase(RestrictedListView):
     def get_queryset(self):
-        user = UserWrapper(self.request.user)
-        return self.model.objects.filter(
-                user.make_org_Q("scanner__organization"))
+        return super().get_queryset(org_path="scanner__organization")
 
     def get_context_data(self, **kwargs):
         ScanStatus.clean_defunct()
@@ -210,12 +208,13 @@ class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusComp
 
 
 class StatusTimeline(RestrictedDetailView):
-    # TODO: RestrictedDetailView does not work properly here, since ScanStatus weirdly does not
-    # have a relation to an Organization. This view only works for superusers. #63270
     model = ScanStatus
     template_name = "components/scanstatus/status_timeline.html"
     context_object_name = "status"
     fields = "__all__"
+
+    def get_queryset(self):
+        return super().get_queryset(org_path="scanner__organization")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -235,12 +234,13 @@ class StatusTimeline(RestrictedDetailView):
 
 
 class StatusDelete(PermissionRequiredMixin, RestrictedDeleteView):
-    # TODO: RestrictedDeleteView does not work properly here, since ScanStatus weirdly does not
-    # have a relation to an Organization. This view only works for superusers. #63270
     model = ScanStatus
     fields = []
     success_url = '/status/'
     permission_required = "os2datascanner.delete_scanstatus"
+
+    def get_queryset(self):
+        return super().get_queryset(org_path="scanner__organization")
 
     def get_form(self, form_class=None):
         if form_class is None:
