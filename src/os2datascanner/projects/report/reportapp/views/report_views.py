@@ -321,7 +321,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     """Presents a superuser with all undistributed unhandled results."""
 
     type = "undistributed"
-    permission_required = "os2datascanner_report.can_see_withheld"
+    permission_required = "os2datascanner_report.see_withheld_documentreport"
     template_name = "undistributed_content.html"
 
     def base_match_filter(self, reports):

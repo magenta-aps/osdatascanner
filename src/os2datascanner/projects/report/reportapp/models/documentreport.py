@@ -237,6 +237,7 @@ class DocumentReport(models.Model):
                 name="unique_scanner_pk_and_path")
         ]
         permissions = [
-            ("can_see_withheld", _("Can see withheld results")),
-            ("can_distribute_withheld", _("Can distribute withheld matches to users"))
+            ("see_withheld_documentreport", _("Can see withheld DocumentReports")),
+            ("distribute_withheld_documentreport",
+             _("Can distribute withheld DocumentReports to users"))
         ]

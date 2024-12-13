@@ -10,7 +10,7 @@
        class="tabs__control{% if '/remediator' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "remediator-archive" %}{% else %}{% url "remediator" %}{% endif %}">{% trans "Remediator" %}</a>
   {% endif %}
-  {% if perms.os2datascanner_report.can_see_withheld %}
+  {% if perms.os2datascanner_report.see_withheld_documentreport %}
     <a id="undistributed"
        class="tabs__control{% if '/undistributed' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "undistributed-archive" %}{% else %}{% url "undistributed" %}{% endif %}">{% trans "Undistributed" %}</a>

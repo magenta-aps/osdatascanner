@@ -702,7 +702,8 @@ class TestUndistibutedArchiveView:
 
     def test_undistributedarchiveview_with_permission(self, rf, egon_account):
         """A user with the correct permission should be allowed access."""
-        egon_account.user.user_permissions.add(Permission.objects.get(codename="can_see_withheld"))
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="see_withheld_documentreport"))
         request = rf.get('/archive/undistributed')
         request.user = egon_account.user
         response = UndistributedArchiveView.as_view()(request)

@@ -7,7 +7,7 @@
   <h1 class="page-title">{% trans "Results" %}</h1>
   {{ page_obj.paginator.count }} {% trans "results" %}
 
-  {% if perms.os2datascanner_report.can_distribute_withheld %}
+  {% if perms.os2datascanner_report.distribute_withheld_documentreport %}
     <div id="distribute-container"
          class="distribute dropdown"
          name="distribute-container">
