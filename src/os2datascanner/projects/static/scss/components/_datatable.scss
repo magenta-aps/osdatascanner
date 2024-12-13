@@ -887,10 +887,12 @@ $font-size_subtitle: 0.875rem;
       &--checkbox {
         /* Only use this for actual checkboxes and not checkbox-typed intput disguised as a status
         toggle. */
-        width: 72px;
+        width: 4.5rem; // 72px
 
         .ds-checkbox {
+          /* Overwrites the "standard" checkbox styling for ones inside this specific type of column. */ 
           margin: 0;
+          line-height: normal;
 
           label {
             padding-left: 24px;
