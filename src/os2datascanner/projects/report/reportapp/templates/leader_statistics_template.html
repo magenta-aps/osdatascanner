@@ -47,9 +47,7 @@
                   <select name="org_unit" id="org_units" autocomplete="off">
                     {% for unit in user_units %}
                       <option value="{{ unit.uuid }}"
-                              {% if unit == org_unit %}selected="selected"{% endif %}>
-                        {{ unit.name }}
-                      </option>
+                              {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -205,43 +203,25 @@
                       hx-target="this"
                       hx-trigger="revealed"
                       hx-push-url="false">
-                    <<<<<<< HEAD
-                    <td colspan="{% if show_30_days_column %}6{% else %}5{% endif %}" =======
-                      <td colspan="{% if perms.os2datascanner_report.can_see_withheld %}5{% else %}4{% endif %}">
-                        >>>>>> 6baa3c5b6 ([#63005] Apply permission check to withheld column instead)
-                        class="loading">{% trans "Loading employee ..." %}
-                      </td>
-                    </tr>
-                  {% endfor %}
-                {% else %}
-                  <tr class="datatablex__row">
-                    <td class="column--nodata"
-                        HEAD
-                        colspan="{% if show_30_days_column %}6{% else %}5{% endif %}">
-                      =======
-                      colspan="
-                      {% if perms.os2datascanner_report.can_see_withheld %}
-                        5
-                      {% else %}
-                        4
-                      {% endif %}
-                      ">
-                      >>>>>>> 6baa3c5b6 ([#63005] Apply permission check to withheld column instead)
-                      {% trans "No employees found." %}
-                    </td>
+                    <td colspan="{{ num_cols }}" class="loading">{% trans "Loading employee ..." %}</td>
                   </tr>
-                {% endif %}
-              </tbody>
-            </table>
-          </div>
+                {% endfor %}
+              {% else %}
+                <tr class="datatablex__row">
+                  <td class="column--nodata" colspan="{{ num_cols }}">{% trans "No employees found." %}</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
         </div>
-      {% else %}
-        {% include "error_pages/no-units-error.html" %}
-      {% endif %}
-    </div>
-  {% endblock body %}
+      </div>
+    {% else %}
+      {% include "error_pages/no-units-error.html" %}
+    {% endif %}
+  </div>
+{% endblock body %}
 
-  {% block scripts %}
-    {{ block.super }}
-    <script src="{% static 'js/leaderview/leaderOverview.js' %}"></script>
-  {% endblock scripts %}
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'js/leaderview/leaderOverview.js' %}"></script>
+{% endblock scripts %}
