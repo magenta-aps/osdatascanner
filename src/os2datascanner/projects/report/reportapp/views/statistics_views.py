@@ -550,6 +550,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_30_days_column'] = settings.LEADER_OVERVIEW_30_DAYS
 
+        # Determine number of columns from context
+        num_cols = 4 + settings.LEADER_OVERVIEW_30_DAYS + self.request.user.has_perm(
+            "os2datascanner_report.see_withheld_documentreport")
+        context['num_cols'] = num_cols
+
         return context
 
     def order_employees(self, qs):

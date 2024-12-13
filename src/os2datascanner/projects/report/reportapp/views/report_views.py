@@ -23,10 +23,10 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import View, ListView, DetailView
 
@@ -317,10 +317,11 @@ class RemediatorView(ReportView):
         return redirect(reverse_lazy('index'))
 
 
-class UndistributedView(ReportView):
+class UndistributedView(PermissionRequiredMixin, ReportView):
     """Presents a superuser with all undistributed unhandled results."""
 
     type = "undistributed"
+    permission_required = "os2datascanner_report.see_withheld_documentreport"
     template_name = "undistributed_content.html"
 
     def base_match_filter(self, reports):
@@ -335,16 +336,6 @@ class UndistributedView(ReportView):
         context["show_smb_delete_button"] = False
         context["show_smb_mass_delete_button"] = False
         return context
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        try:
-            if request.user.is_superuser:
-                return response
-        except Exception as e:
-            logger.warning("Exception raised while trying to dispatch to user "
-                           f"{request.user}: {e}")
-        return redirect(reverse_lazy('index'))
 
 
 class ArchiveMixin:
@@ -399,11 +390,13 @@ class HTMXEndpointView(LoginRequiredMixin, View):
         return response
 
     def dispatch(self, request, *args, **kwargs):
+        print(request.headers)
+        print(request.POST)
         self.is_htmx = request.headers.get('HX-Request')
         if self.is_htmx == "true":
             return super().dispatch(request, *args, **kwargs)
         else:
-            return Http404()
+            return HttpResponseBadRequest("HTMX endpoint called from non-HTMX source!")
 
 
 class HandleMatchView(HTMXEndpointView, DetailView):
@@ -498,8 +491,9 @@ class ShowMoreMatchesView(HTMXEndpointView, DetailView):
         return context
 
 
-class DistributeMatchesView(HTMXEndpointView, ListView):
+class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView):
     model = DocumentReport
+    permission_required = "os2datascanner_report.distribute_withheld_documentreport"
 
     def get_queryset(self):
         qs = super().get_queryset()

@@ -10,14 +10,14 @@
        class="tabs__control{% if '/remediator' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "remediator-archive" %}{% else %}{% url "remediator" %}{% endif %}">{% trans "Remediator" %}</a>
   {% endif %}
-  {% if user.is_superuser %}
+  {% if perms.os2datascanner_report.see_withheld_documentreport %}
     <a id="undistributed"
        class="tabs__control{% if '/undistributed' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "undistributed-archive" %}{% else %}{% url "undistributed" %}{% endif %}">{% trans "Undistributed" %}</a>
-    {% if '/archive' not in request.path %}
-      <a id="scannerjobs"
-         class="tabs__control{% if '/scannerjobs' in request.path %} active{% endif %}"
-         href="{% url "scannerjobs" %}">{% trans "Scannerjobs" %}</a>
-    {% endif %}
+  {% endif %}
+  {% if request.user.is_superuser and '/archive' not in request.path %}
+    <a id="scannerjobs"
+       class="tabs__control{% if '/scannerjobs' in request.path %} active{% endif %}"
+       href="{% url "scannerjobs" %}">{% trans "Scannerjobs" %}</a>
   {% endif %}
 </div>

@@ -37,13 +37,15 @@
     </div>
   </td>
 
-  <td class="column--withheld column--numeral">
-    <div class="matches_container">
-      <div class="matches">
-        <span class="datatable-numeral">{{ employee.withheld_matches }}</span>
+  {% if perms.os2datascanner_report.see_withheld_documentreport %}
+    <td class="column--withheld column--numeral">
+      <div class="matches_container">
+        <div class="matches">
+          <span class="datatable-numeral">{{ employee.withheld_matches }}</span>
+        </div>
       </div>
-    </div>
-  </td>
+    </td>
+  {% endif %}
 
   <td class="column--status">
     <div class="status tag" data-status="{{ employee.match_status }}">{{ employee.status }}</div>
