@@ -208,7 +208,7 @@ class WebSource(Source):
 
         if h.source == self:
             h._source = self
-        yield h
+        return h
 
     @property
     def url(self):
