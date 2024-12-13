@@ -219,9 +219,6 @@ function hideTooltip(event) {
 }
 
 function prepareTable() {
-  // Remove .highlighted class from all rows
-  $("tr").removeClass("highlighted");
-
   // if user prefers to have all rows expanded, do that.
   const prefersExpanded = window.localStorage.getItem(
     "os2ds-prefers-expanded-results"
