@@ -26,7 +26,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import View, ListView, DetailView
 
@@ -390,11 +390,13 @@ class HTMXEndpointView(LoginRequiredMixin, View):
         return response
 
     def dispatch(self, request, *args, **kwargs):
+        print(request.headers)
+        print(request.POST)
         self.is_htmx = request.headers.get('HX-Request')
         if self.is_htmx == "true":
             return super().dispatch(request, *args, **kwargs)
         else:
-            return Http404()
+            return HttpResponseBadRequest("HTMX endpoint called from non-HTMX source!")
 
 
 class HandleMatchView(HTMXEndpointView, DetailView):
@@ -489,8 +491,9 @@ class ShowMoreMatchesView(HTMXEndpointView, DetailView):
         return context
 
 
-class DistributeMatchesView(HTMXEndpointView, ListView):
+class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView):
     model = DocumentReport
+    permission_required = "os2datascanner_report.distribute_withheld_documentreport"
 
     def get_queryset(self):
         qs = super().get_queryset()

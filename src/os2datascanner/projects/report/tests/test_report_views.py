@@ -5,6 +5,7 @@ from django.conf import settings
 from django.test import override_settings
 from django.contrib.auth.models import Permission
 from django.core.exceptions import PermissionDenied
+from django.urls import reverse_lazy
 
 from os2datascanner.utils.system_utilities import time_now
 
@@ -741,3 +742,31 @@ class TestUndistibutedArchiveView:
         view.setup(request)
         qs = view.get_queryset()
         return qs
+
+
+@pytest.mark.django_db
+class TestDistributeMatchesView:
+    url = reverse_lazy("distribute")
+    headers = {"HTTP_HX-Request": "true"}
+
+    def test_distribute_matches_with_permission(self, client, egon_account):
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="distribute_withheld_documentreport"))
+        client.force_login(egon_account.user)
+        response = client.post(self.url, data={}, **self.headers)
+
+        assert response.status_code == 200
+
+    def test_distribute_matches_without_permission(self, client, egon_account):
+        client.force_login(egon_account.user)
+        response = client.post(self.url, data={}, **self.headers)
+
+        assert response.status_code == 403
+
+    def test_distribute_matches_no_htmx_header(self, client, egon_account):
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="distribute_withheld_documentreport"))
+        client.force_login(egon_account.user)
+        response = client.post(self.url, data={})
+
+        assert response.status_code == 400
