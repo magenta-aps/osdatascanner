@@ -30,7 +30,7 @@
         <h1 class="page-title">{% trans "Completed scans" %}</h1>
       </div>
 
-      {% if object_list  %}
+      {% if object_list %}
         <div class="datatable-wrapper card"
              role="region"
              tabindex="0"
@@ -38,18 +38,18 @@
           <form id="table_checkboxes">
             <table class="datatable">
               <colgroup>
-                <col class="datatable__column--checkbox">
+                {% if perms.os2datascanner.resolve_scanstatus %}<col class="datatable__column--checkbox">{% endif %}
                 <col class="datatable__column--name">
                 <col class="datatable__column--starttime">
                 <col class="datatable__column--objects">
                 <col class="datatable__column--validated">
                 <col class="datatable__column--status">
-                {% if user.is_superuser %}<col class="datatable__column--delete">{% endif %}
+                <col class="datatable__column--delete">
               </colgroup>
               <thead>
                 <tr class="table-topbar topbar-stick sticky">
                   <th colspan="7">
-                    {% if user.is_superuser %}
+                    {% if perms.os2datascanner.resolve_scanstatus %}
                       {% include "components/scanstatus/resolve_status.html" %}
                     {% endif %}
                     <div class="view-options button-group">
@@ -82,14 +82,16 @@
                   </th>
                 </tr>
                 <tr class="column-headings sticky">
-                  <th class="datatable__column--checkbox">
-                    <div class="ds-checkbox">
-                      <input id="select-all" type="checkbox">
-                      <label for="select-all"
-                             aria-label="{% trans 'Select all results' %}"
-                             title="{% trans 'Select all results' %}"></label>
-                    </div>
-                  </th>
+                  {% if perms.os2datascanner.resolve_scanstatus %}
+                    <th class="datatable__column--checkbox">
+                      <div class="ds-checkbox">
+                        <input id="select-all" type="checkbox">
+                        <label for="select-all"
+                               aria-label="{% trans 'Select all results' %}"
+                               title="{% trans 'Select all results' %}"></label>
+                      </div>
+                    </th>
+                  {% endif %}
                   <th class="datatable__column--name">{% trans "Scannerjob" %}</th>
                   <th class="datatable__column--starttime">{% trans "Started" %}</th>
                   <th class="datatable__column--objects">{% trans "Objects" %}</th>
@@ -101,16 +103,14 @@
                       {% include "components/svg-icons/help.svg" %}
                     </span>
                   </th>
-                  {% if user.is_superuser %}
-                    <th class="datatable__column--delete">{% trans "Actions" %}</th>
-                  {% endif %}
+                  <th class="datatable__column--delete">{% trans "Actions" %}</th>
                 </tr>
               </thead>
- 
+
               <tbody>
                 {% for status in object_list %}
-                  {% if status.finished == True %}
-                    <tr data-type="scan-status">
+                  <tr data-type="scan-status">
+                    {% if perms.os2datascanner.resolve_scanstatus %}
                       <td class="datatable__column--checkbox">
                         <div class="ds-checkbox">
                           <input type="checkbox"
@@ -124,83 +124,84 @@
                                  title="{% trans 'Select result' %}"></label>
                         </div>
                       </td>
-                      <td class="datatable__column--name">{{ status.scanner.name }}</td>
-                      <td class="datatable__column--starttime">
-                        {% timezone "Europe/Copenhagen" %}
-                        {{ status.start_time }}
-                      {% endtimezone %}
-                    </td>
-                    <td class="datatable__column--objects">{{ status.total_objects }} {% trans "objects explored" %}</td>
-                    <td class="datatable__column--validated">
-                      {% if status.matches_found is None %}
-                        {% trans "Not available" %}
-                      {% else %}
-                        {{ status.matches_found }}
-                        {% if status.matches_found == 1 %}
-                          {% trans "result" %}
-                        {% else %}
-                          {% trans "results" %}
-                        {% endif %}
-                      {% endif %}
-                    </td>
-                    <td class="datatable__column--status">
-                      <span class="completed_icon">
-                        {% include "components/svg-icons/check_circle_full.svg" %}
-                        <span class="width">
-                          {% with status.scan_time.total_seconds as scan_time_item %}
-                            {% if scan_time_item %}
-                              {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan }}
-                            {% else %}
-                              {% trans "Finished" %}
-                            {% endif %}
-                          {% endwith %}
-                        </span>
-                      </span>
-                    </td>
-                    {% if user.is_superuser %}
-                      <td class="datatable__column--delete">
-                        <div class="action-wrapper button-group">
-                          <button type="button"
-                                  class="button button--icon-button"
-                                  name="status-resolved"
-                                  aria-label="{% trans 'Delete' %} {% trans 'scannerjob'|lower %}"
-                                  title="{% trans 'Delete' %} {% trans 'scannerjob'|lower %}"
-                                  hx-post=""
-                                  hx-swap="outerHTML"
-                                  hx-trigger="click"
-                                  hx-target=".content"
-                                  hx-vals='{"pk": "{{ status.pk|unlocalize }}"}'
-                                  hx-indicator="closest tr"
-                                  hx-select=".content">
-                            <i id="delete_forever" class="material-icons">delete_forever</i>
-                          </button>
-                          <button class="timelines-expand button button--caret-button"
-                                  aria-label="{% trans 'Show/hide timeline' %}"
-                                  title="{% trans 'Show/hide timeline' %}"
-                                  type="button">
-                            <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
-                          </button>
-                        </div>
-                      </td>
                     {% endif %}
-                  </tr>
-                  <tr class="statistic_row" hidden>
-                    <td colspan="7"
-                        hx-get="{% url 'status-timeline' status.pk %}"
-                        hx-trigger="intersect"
-                        hx-swap="outerHTML"
-                        hx-target="this"
-                        hx-push-url="false">
-                      <div class="loading">
-                        <svg class="relative page-indicator"
-                             id="report-page-indicator"
-                             viewbox="0 0 100 100">
-                          <circle id="circle" cx="50" cy="50" r="45"></circle>
-                        </svg>
-                      </div>
-                    </td>
-                  </tr>
-                {% endif %}
+                    <td class="datatable__column--name">{{ status.scanner.name }}</td>
+                    <td class="datatable__column--starttime">
+                      {% timezone "Europe/Copenhagen" %}
+                      {{ status.start_time }}
+                    {% endtimezone %}
+                  </td>
+                  <td class="datatable__column--objects">{{ status.total_objects }} {% trans "objects explored" %}</td>
+                  <td class="datatable__column--validated">
+                    {% if status.matches_found is None %}
+                      {% trans "Not available" %}
+                    {% else %}
+                      {{ status.matches_found }}
+                      {% if status.matches_found == 1 %}
+                        {% trans "result" %}
+                      {% else %}
+                        {% trans "results" %}
+                      {% endif %}
+                    {% endif %}
+                  </td>
+                  <td class="datatable__column--status">
+                    <span class="completed_icon">
+                      {% include "components/svg-icons/check_circle_full.svg" %}
+                      <span class="width">
+                        {% with status.scan_time.total_seconds as scan_time_item %}
+                          {% if scan_time_item %}
+                            {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan }}
+                          {% else %}
+                            {% trans "Finished" %}
+                          {% endif %}
+                        {% endwith %}
+                      </span>
+                    </span>
+                  </td>
+                  <td class="datatable__column--delete">
+                    <div class="action-wrapper button-group">
+
+                      {% if perms.os2datascanner.resolve_scanstatus %}
+                        <button type="button"
+                                class="button button--icon-button"
+                                name="status-resolved"
+                                aria-label="{% trans 'Delete' %} {% trans 'scannerjob'|lower %}"
+                                title="{% trans 'Delete' %} {% trans 'scannerjob'|lower %}"
+                                hx-post=""
+                                hx-swap="outerHTML"
+                                hx-trigger="click"
+                                hx-target=".content"
+                                hx-vals='{"pk": "{{ status.pk|unlocalize }}"}'
+                                hx-indicator="closest tr"
+                                hx-select=".content">
+                          <i id="delete_forever" class="material-icons">delete_forever</i>
+                        </button>
+                      {% endif %}
+                      <button class="timelines-expand button button--caret-button"
+                              aria-label="{% trans 'Show/hide timeline' %}"
+                              title="{% trans 'Show/hide timeline' %}"
+                              type="button">
+                        <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="statistic_row" hidden>
+                  <td colspan="7"
+                      hx-get="{% url 'status-timeline' status.pk %}"
+                      hx-trigger="intersect"
+                      hx-swap="outerHTML"
+                      hx-target="this"
+                      hx-push-url="false">
+                    <div class="loading">
+                      <svg class="relative page-indicator"
+                           id="report-page-indicator"
+                           viewbox="0 0 100 100">
+                        <circle id="circle" cx="50" cy="50" r="45"></circle>
+                      </svg>
+                    </div>
+                  </td>
+                </tr>
               {% endfor %}
             </tbody>
             {% include "components/pagination/pagination.html" %}

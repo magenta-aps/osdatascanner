@@ -22,27 +22,27 @@
         hx-vals='{"scans":"{{ object_list|length }}", "reload":"{{ reload }}"}'
         hx-sync="#status_tabs_poll:queue"></span>
 
-  {% if object_list %}
-    <div class="datatable-wrapper card lg"
-         role="region"
-         tabindex="0"
-         aria-label="{% trans 'Scans in progress' %}">
-      <table class="datatable middle">
-        <colgroup>
-          <col class="datatable__column--name" />
-          <col class="datatable__column--org" />
-          <col class="datatable__column--info" />
-          <col class="datatable__column--actions" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th class="datatable__column--name">{% trans "Scannerjob" %}</th>
-            <th class="datatable__column--org">{% trans "Phase" %}</th>
-            <th class="datatable__column--info">{% trans "Status" %}</th>
-            <th class="datatable__column--actions">{% trans "Actions" %}</th>
-          </tr>
-        </thead>
+  <div class="datatable-wrapper card lg"
+       role="region"
+       tabindex="0"
+       aria-label="{% trans 'Scans in progress' %}">
+    <table class="datatable middle">
+      <colgroup>
+        <col class="datatable__column--name" />
+        <col class="datatable__column--org" />
+        <col class="datatable__column--info" />
+        <col class="datatable__column--actions" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="datatable__column--name">{% trans "Scannerjob" %}</th>
+          <th class="datatable__column--org">{% trans "Phase" %}</th>
+          <th class="datatable__column--info">{% trans "Status" %}</th>
+          <th class="datatable__column--actions">{% trans "Actions" %}</th>
+        </tr>
+      </thead>
 
+      {% if object_list %}
         <tbody>
           {% for status in object_list %}
             <tr>
@@ -56,7 +56,7 @@
                   {% trans "Scanning data (still indexing) ..." %}
                 {% elif status.stage.value == 2 %}
                   {% trans "Scanning data ..." %}
- 
+
                 {% elif status.stage.value == 3 %}
                   {% trans "No objects to scan" %}
                 {% endif %}
@@ -77,7 +77,7 @@
                            style="width:{% widthratio frac 1 100 %}%"></div>
                     </div>
                   {% endwith %}
- 
+
                   {% with completion_time=status.estimated_completion_time %}
                     {% if completion_time %}
                       {% trans "Estimated finished" %} {{ completion_time|naturaltime }}
@@ -94,19 +94,21 @@
               </td>
               <td class="datatable__column--actions">
                 <div class="action-wrapper">
-                  <form action="/status/{{ status.pk|unlocalize }}/delete/"
-                        method="post"
-                        class="status-delete">
-                    {% csrf_token %}
-                    {% trans "Do you really want to delete the status object for scanner '%(scanner_name)s'?" as r_u_sure %}
-                    <button type="submit"
-                            class="button button--icon-button"
-                            onclick="return confirm(interpolate('{{ r_u_sure|escapejs }}', {'scanner_name': '{{ status.scanner.name|escapejs }}'}, true))"
-                            aria-label="{% trans 'Delete' %} {% trans 'status for running scanner' %}"
-                            title="{% trans 'Delete' %} {% trans 'status for running scanner' %}">
-                      <i id="delete_forever" class="material-icons">delete_forever</i>
-                    </button>
-                  </form>
+                  {% if perms.os2datascanner.delete_scanstatus %}
+                    <form action="/status/{{ status.pk|unlocalize }}/delete/"
+                          method="post"
+                          class="status-delete">
+                      {% csrf_token %}
+                      {% trans "Do you really want to delete the status object for scanner '%(scanner_name)s'?" as r_u_sure %}
+                      <button type="submit"
+                              class="button button--icon-button"
+                              onclick="return confirm(interpolate('{{ r_u_sure|escapejs }}', {'scanner_name': '{{ status.scanner.name|escapejs }}'}, true))"
+                              aria-label="{% trans 'Delete' %} {% trans 'status for running scanner' %}"
+                              title="{% trans 'Delete' %} {% trans 'status for running scanner' %}">
+                        <i id="delete_forever" class="material-icons">delete_forever</i>
+                      </button>
+                    </form>
+                  {% endif %}
                 </div>
               </td>
             </tr>
@@ -117,11 +119,15 @@
             </tr>
           {% endfor %}
         </tbody>
-      </table>
-    </div>
-  {% else %}
-    <p class="no-results">{% trans "no ongoing scans"|capfirst %}</p>
-  {% endif %}
+      {% else %}
+        <tbody>
+          <tr class="datatablex__row">
+            <td class="column nothing_found_row" colspan="4">{% trans "no ongoing scans"|capfirst %}</td>
+          </tr>
+        </tbody>
+      {% endif %}
+    </table>
+  </div>
   {% comment %} <div class="progressbar-container">
     <div id="scanstatus-progressbar" class="progressbar" style="width:50%"></div>
   </div> {% endcomment %}
