@@ -162,7 +162,7 @@ def convert_rule_to_select(
                         table, field_name)
                 if field_name not in column_labels:
                     column_labels[field_name] = column
-                return and_(*extra_constraints, op.func_db(column, value))
+                return and_(extra_constraints, op.func_db(column, value))
 
             case _:
                 # For now, we assume that any other OSdatascanner rule plays no
