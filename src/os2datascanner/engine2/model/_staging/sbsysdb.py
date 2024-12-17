@@ -57,9 +57,11 @@ class SBSYSDBRule(SimpleRule):
 
     __match_args__ = ("_field", "_op", "_value")
 
-    def __init__(self, field: str, op: Op, value, *args, **kwargs):
+    def __init__(
+            self, field: str, op: Op | str, value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._field = field
-        self._op = op
+        self._op = op if isinstance(op, self.Op) else self.Op(op)
         self._value = value
 
     @property
