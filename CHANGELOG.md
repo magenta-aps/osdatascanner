@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+### General improvements
+
+- Python's normal logical operators can now be used to compose scanner rules
+  when using Django's `shell_plus` command.
+
 ## Version 3.26.3, 7th January 2025
 
 "Did you also get an airfryer for christmas?"
