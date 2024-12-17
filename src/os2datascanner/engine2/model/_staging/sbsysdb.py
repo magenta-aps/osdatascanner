@@ -198,12 +198,20 @@ def convert_rule_to_select(
 class SBSYSDBSource(Source):
     type_label = "sbsys-db"
 
-    def __init__(self, server, port, db, user, password):
+    def __init__(
+            self, server, port, db, user, password,
+            *,
+            reflect_tables=None):
         self._server = server
         self._port = port
         self._db = db
         self._user = user
         self._password = password
+        self._reflect_tables = reflect_tables
+
+    @property
+    def reflect_tables(self):
+        return self._reflect_tables or ("Sag", "Person",)
 
     def censor(self):
         return SBSYSDBSource(
@@ -216,7 +224,7 @@ class SBSYSDBSource(Source):
                 f"@{self._server}:{self._port}/{self._db}")
 
         metadata_obj = MetaData()
-        metadata_obj.reflect(bind=engine, only=("Sag",))
+        metadata_obj.reflect(bind=engine, only=self.reflect_tables)
 
         yield engine, metadata_obj.tables
 
