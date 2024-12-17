@@ -123,7 +123,8 @@ def resolve_complex_column_name(
             other_table = all_tables[explicit_cast]
 
         # ... then we (implicitly) join the Bruger table into our query...
-        links.append(link_column == other_table.c.ID)
+        other_table_pk, = other_table.primary_key
+        links.append(link_column == other_table_pk)
         # ... and continue following the chain at Bruger, where we do the
         # same trick again for "Adresse" -> AdresseID -> <table Adresse>
         here = other_table
