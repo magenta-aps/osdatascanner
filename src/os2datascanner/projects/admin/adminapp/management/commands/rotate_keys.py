@@ -19,6 +19,7 @@ def _censor_hex(secret):
     return f"{hex_len * '*'}{last_four}"
 
 
+# TODO: #63329 Currently doesn't work (no tqdm module) and doesn't rotate a lot of secrets
 class Command(BaseCommand):
     """Rotate DECRYPTION_HEX and all encrypted values in the database along with it."""
     help = __doc__
@@ -73,10 +74,11 @@ class Command(BaseCommand):
                             self.stdout.write("Initiating reencryption.")
                             # Query the database, reencrypt the data and update the progres bar
                             with tqdm(total=count, desc="Reencrypting") as bar:
-                                for conf in ldap_configs:
-                                    conf.rotate_credential(key=bytes.fromhex(new_hex))
-                                    bar.update()
-                                    conf.save()
+                                # TODO: #63329 rotate_credental doesn't exist anymore
+                                # for conf in ldap_configs:
+                                #     conf.rotate_credential(key=bytes.fromhex(new_hex))
+                                #     bar.update()
+                                #     conf.save()
 
                                 for auth in authentications:
                                     password = auth.get_password()
