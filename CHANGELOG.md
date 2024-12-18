@@ -31,6 +31,9 @@
 - Withheld and older than 30 days (if enabled) data is now included 
   in the leader overview csv export.
 
+- LDAPConfig now uses AutoEncryptedField and as such it is no longer required to reenter password
+  on any unrelated LDAP configuration change.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"

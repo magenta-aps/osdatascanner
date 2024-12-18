@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-13 09:29+0100\n"
+"POT-Creation-Date: 2024-12-18 15:55+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1124,7 +1124,7 @@ msgstr "Nej"
 #: adminapp/templates/components/rules/customrule_form.html:40
 #: adminapp/templates/components/rules/regexrule_form.html:111
 #: adminapp/templates/components/scanner/scanner_form.html:136
-#: import_services/templates/import_services/ldap_edit.html:107
+#: import_services/templates/import_services/ldap_edit.html:125
 msgid "General"
 msgstr "Generelt"
 
@@ -1542,7 +1542,7 @@ msgstr "vælg brugere fra"
 
 #: adminapp/templates/components/scanner/scanner_form.html:513
 #: adminapp/templates/components/scanner/scanner_form.html:623
-#: import_services/models/ldap_configuration.py:126
+#: import_services/models/ldap_configuration.py:127
 #: organizations/templates/organizations/orgunit_list.html:195
 msgid "organizational units"
 msgstr "organisatoriske enheder"
@@ -2851,27 +2851,27 @@ msgstr "Keycloak-server"
 msgid "Keycloak servers"
 msgstr "Keycloak-servere"
 
-#: import_services/models/ldap_configuration.py:117
+#: import_services/models/ldap_configuration.py:118
 msgid "Active Directory"
 msgstr "Active Directory"
 
-#: import_services/models/ldap_configuration.py:118
+#: import_services/models/ldap_configuration.py:119
 msgid "other"
 msgstr "anden leverandør"
 
-#: import_services/models/ldap_configuration.py:120
+#: import_services/models/ldap_configuration.py:121
 msgid "vendor"
 msgstr "leverandør"
 
-#: import_services/models/ldap_configuration.py:125
+#: import_services/models/ldap_configuration.py:126
 msgid "groups"
 msgstr "grupper"
 
-#: import_services/models/ldap_configuration.py:129
+#: import_services/models/ldap_configuration.py:130
 msgid "import users into"
 msgstr "importér brugere baseret på"
 
-#: import_services/models/ldap_configuration.py:134
+#: import_services/models/ldap_configuration.py:135
 msgid ""
 "Groups will only be imported, if their name begins with the given string. "
 "Only works for group based imports. "
@@ -2879,11 +2879,11 @@ msgstr ""
 "Grupper importeres kun, hvis deres navn begynder med den givne streng. "
 "Virker kun for gruppe-baseret importjobs. "
 
-#: import_services/models/ldap_configuration.py:139
+#: import_services/models/ldap_configuration.py:140
 msgid "group prefix filter"
 msgstr "gruppe præfix filter"
 
-#: import_services/models/ldap_configuration.py:144
+#: import_services/models/ldap_configuration.py:145
 msgid ""
 "If true, any imported group with a managedBy attribute will have that user "
 "added as a manager"
@@ -2891,11 +2891,11 @@ msgstr ""
 "Hvis denne boks er checket, vil alle importerede grupper med et managedBy "
 "attribut få tilføjet denne bruger som leder"
 
-#: import_services/models/ldap_configuration.py:147
+#: import_services/models/ldap_configuration.py:148
 msgid "Set managing users as managers"
 msgstr "Sæt administrerende brugere som leder"
 
-#: import_services/models/ldap_configuration.py:152
+#: import_services/models/ldap_configuration.py:153
 msgid ""
 "Name of LDAP attribute, which is mapped as username. For many LDAP server "
 "vendors it can be 'uid'. For Active Directory it can be 'sAMAccountName' or "
@@ -2907,11 +2907,11 @@ msgstr ""
 "eller 'cn'. Attributten skal findes for alle de brugere, der skal importeres "
 "fra LDAP."
 
-#: import_services/models/ldap_configuration.py:158
+#: import_services/models/ldap_configuration.py:159
 msgid "username LDAP attribute"
 msgstr "LDAP-attribut for brugernavn"
 
-#: import_services/models/ldap_configuration.py:163
+#: import_services/models/ldap_configuration.py:164
 msgid ""
 "Name of the LDAP attribute which is mapped as first name. For many LDAP "
 "server vendors it can be 'givenName'"
@@ -2919,11 +2919,11 @@ msgstr ""
 "Navnet på den LDAP-attribut der bruges som fornavn på brugere. Typisk "
 "defineret som 'givenName'"
 
-#: import_services/models/ldap_configuration.py:166
+#: import_services/models/ldap_configuration.py:167
 msgid "First name LDAP attribute"
 msgstr "LDAP-attribut for fornavn"
 
-#: import_services/models/ldap_configuration.py:176
+#: import_services/models/ldap_configuration.py:177
 msgid ""
 "Name of LDAP attribute, which is used as RDN of typical user DN. Usually, "
 "but not necessarily, the same as username LDAP attribute. For example for "
@@ -2936,11 +2936,11 @@ msgstr ""
 "meget almindeligt at bruge 'cn' som RDN-attribut mens brugernavns-"
 "attributten ofte er 'sAMAccountName'"
 
-#: import_services/models/ldap_configuration.py:181
+#: import_services/models/ldap_configuration.py:182
 msgid "RDN LDAP attribute"
 msgstr "LDAP-attribut for RDN"
 
-#: import_services/models/ldap_configuration.py:186
+#: import_services/models/ldap_configuration.py:187
 msgid ""
 "Name of LDAP attribute, which is used as unique object identifier (UUID) for "
 "objects in LDAP. For many LDAP server vendors, it is 'entryUUID'; however "
@@ -2954,11 +2954,11 @@ msgstr ""
 "'objectGUID'. Understøtter din LDAP-server ikke UUID-værdier, kan du i "
 "stedet benytte en anden unik værdi, såsom 'uid' eller 'entryDN'."
 
-#: import_services/models/ldap_configuration.py:194
+#: import_services/models/ldap_configuration.py:195
 msgid "UUID LDAP attribute"
 msgstr "LDAP-attribut for UUID"
 
-#: import_services/models/ldap_configuration.py:201
+#: import_services/models/ldap_configuration.py:202
 msgid ""
 "Name of LDAP attribute, which stores the object security identifier. (SID) "
 "Often this is stored as 'objectSid' or 'securityIdentifier'. Without this "
@@ -2969,11 +2969,11 @@ msgstr ""
 "Typisk findes denne som 'objectSid' eller 'securityIdentifier'. Uden denne "
 "attribut, kan OSdatascanner ikke identificere ejerskab af on-premise filer."
 
-#: import_services/models/ldap_configuration.py:206
+#: import_services/models/ldap_configuration.py:207
 msgid "Object security identifier"
 msgstr "Object security identifier (SID)"
 
-#: import_services/models/ldap_configuration.py:210
+#: import_services/models/ldap_configuration.py:211
 msgid ""
 "All values of LDAP objectClass attribute for users in LDAP divided by comma. "
 "For example: 'inetOrgPerson, organizationalPerson'. User records are only "
@@ -2983,11 +2983,11 @@ msgstr ""
 "LDAP. For eksempel: 'inetOrgPerson, organizationalPerson'. Brugere bliver "
 "kun importeret, hvis de har samtlige klasser i listen."
 
-#: import_services/models/ldap_configuration.py:215
+#: import_services/models/ldap_configuration.py:216
 msgid "user object classes"
 msgstr "klasser for bruger-objekter"
 
-#: import_services/models/ldap_configuration.py:221
+#: import_services/models/ldap_configuration.py:222
 msgid ""
 "Additional LDAP Filter for filtering searched users. Leave this empty if you "
 "don't need additional filter. Make sure that it starts with '(' and ends "
@@ -2997,11 +2997,11 @@ msgstr ""
 "hvis du ikke har brug for yderligere filtrering. Sikr dig at denne værdi "
 "starter med '(' og slutter med ')'"
 
-#: import_services/models/ldap_configuration.py:225
+#: import_services/models/ldap_configuration.py:226
 msgid "custom LDAP user filter"
 msgstr "brugerdefineret LDAP brugerfilter"
 
-#: import_services/models/ldap_configuration.py:233
+#: import_services/models/ldap_configuration.py:234
 msgid ""
 "Choose between an encrypted connection protocol (ldaps) or an unencrypted "
 "one (ldap). Only select the unencrypted protocol if absolutely necessary."
@@ -3009,19 +3009,19 @@ msgstr ""
 "Vælg mellem en krypteret forbindelsesprotokol (ldaps) eller en ukrypteret "
 "(ldap). Det anbefales at vælge den krypterede protokol."
 
-#: import_services/models/ldap_configuration.py:237
+#: import_services/models/ldap_configuration.py:238
 msgid "connection protocol"
 msgstr "forbindelsesprotokol"
 
-#: import_services/models/ldap_configuration.py:242
+#: import_services/models/ldap_configuration.py:243
 msgid "Connection URL to the LDAP server. "
 msgstr "Forbindelses-URL til LDAP-serveren."
 
-#: import_services/models/ldap_configuration.py:244
+#: import_services/models/ldap_configuration.py:245
 msgid "connection URL"
 msgstr "forbindelses-URL"
 
-#: import_services/models/ldap_configuration.py:248
+#: import_services/models/ldap_configuration.py:249
 msgid ""
 "Distinguished name for the (top) OU in which to search for users. Groups "
 "present under this OU will not necessarily be imported, as OSdatascanner "
@@ -3031,19 +3031,19 @@ msgstr ""
 "brugere. Grupper under denne OU bliver ikke nødvendigvis importeret, da "
 "OSdatascanner opbygger grupper ud fra brugernes gruppemedlemskab."
 
-#: import_services/models/ldap_configuration.py:253
+#: import_services/models/ldap_configuration.py:254
 msgid "DN for users (OU)"
 msgstr "DN for brugere (OU)"
 
-#: import_services/models/ldap_configuration.py:257
+#: import_services/models/ldap_configuration.py:258
 msgid "one level"
 msgstr "kun øverste lag"
 
-#: import_services/models/ldap_configuration.py:258
+#: import_services/models/ldap_configuration.py:259
 msgid "subtree"
 msgstr "hele undertræet"
 
-#: import_services/models/ldap_configuration.py:261
+#: import_services/models/ldap_configuration.py:262
 msgid ""
 "For one level, the search applies only for users in the DNs specified by "
 "User DNs. For subtree, the search applies to the whole subtree. See LDAP "
@@ -3054,24 +3054,28 @@ msgstr ""
 "angivne OU, samt alle underliggende OU'er. Se LDAP dokumentationen for flere "
 "detaljer."
 
-#: import_services/models/ldap_configuration.py:266
+#: import_services/models/ldap_configuration.py:267
 msgid "search scope"
 msgstr "omfang af søgningen"
 
-#: import_services/models/ldap_configuration.py:270
+#: import_services/models/ldap_configuration.py:271
 msgid "Distinguished name for the service account allowing access to LDAP"
 msgstr "'Distinguished name' for servicekontoen, der giver adgang til LDAP"
 
-#: import_services/models/ldap_configuration.py:272
+#: import_services/models/ldap_configuration.py:273
 msgid "LDAP service account user name"
 msgstr "brugernavn for servicekontoen til LDAP"
 
-#: import_services/models/ldap_configuration.py:310
+#: import_services/models/ldap_configuration.py:276
+msgid "LDAP password (encrypted)"
+msgstr ""
+
+#: import_services/models/ldap_configuration.py:285
 #: import_services/templates/import_services/ldap_edit.html:6
 msgid "LDAP configuration"
 msgstr "LDAP-konfiguration"
 
-#: import_services/models/ldap_configuration.py:311
+#: import_services/models/ldap_configuration.py:286
 msgid "LDAP configurations"
 msgstr "LDAP-konfigurationer"
 
@@ -3238,53 +3242,69 @@ msgstr ""
 "Tidsforskel, i sekunder, som er tolereret ved validering af identity "
 "provider tokens."
 
-#: import_services/templates/import_services/ldap_edit.html:28
+#: import_services/templates/import_services/ldap_edit.html:22
 #: organizations/templates/sso/sso_edit.html:17
 msgid "add"
 msgstr "tilføj"
 
-#: import_services/templates/import_services/ldap_edit.html:30
+#: import_services/templates/import_services/ldap_edit.html:24
 #: organizations/templates/sso/sso_edit.html:19
 msgid "update"
 msgstr "opdatér"
 
-#: import_services/templates/import_services/ldap_edit.html:32
+#: import_services/templates/import_services/ldap_edit.html:26
 msgid "LDAP configuration for"
 msgstr "LDAP-konfiguration for"
 
-#: import_services/templates/import_services/ldap_edit.html:41
+#: import_services/templates/import_services/ldap_edit.html:35
 msgid "connect to LDAP"
 msgstr "opret forbindelse til LDAP"
 
-#: import_services/templates/import_services/ldap_edit.html:56
-#: import_services/templates/import_services/ldap_edit.html:57
-#: import_services/templates/import_services/ldap_edit.html:59
-#: import_services/templates/import_services/ldap_edit.html:85
-#: import_services/templates/import_services/ldap_edit.html:86
+#: import_services/templates/import_services/ldap_edit.html:50
+#: import_services/templates/import_services/ldap_edit.html:51
+#: import_services/templates/import_services/ldap_edit.html:58
+#: import_services/templates/import_services/ldap_edit.html:91
+#: import_services/templates/import_services/ldap_edit.html:92
 msgid "test connection"
 msgstr "test forbindelse"
 
-#: import_services/templates/import_services/ldap_edit.html:88
+#: import_services/templates/import_services/ldap_edit.html:73
+msgid "connection succeeded"
+msgstr "forbindelse oprettet "
+
+#: import_services/templates/import_services/ldap_edit.html:75
+msgid "connection failed"
+msgstr "forbindelse fejlet"
+
+#: import_services/templates/import_services/ldap_edit.html:100
 msgid "test authentication"
 msgstr "test adgang"
 
-#: import_services/templates/import_services/ldap_edit.html:116
+#: import_services/templates/import_services/ldap_edit.html:115
+msgid "authentication succeeded"
+msgstr "autentificeret"
+
+#: import_services/templates/import_services/ldap_edit.html:117
+msgid "authentication failed"
+msgstr "autentificering mislykkedes"
+
+#: import_services/templates/import_services/ldap_edit.html:134
 msgid "search specification"
 msgstr "søgespecifikation"
 
-#: import_services/templates/import_services/ldap_edit.html:129
-#: import_services/templates/import_services/ldap_edit.html:130
-#: import_services/templates/import_services/ldap_edit.html:139
+#: import_services/templates/import_services/ldap_edit.html:147
+#: import_services/templates/import_services/ldap_edit.html:148
+#: import_services/templates/import_services/ldap_edit.html:157
 msgid "user attributes"
 msgstr "bruger-attributter"
 
-#: import_services/templates/import_services/ldap_edit.html:132
+#: import_services/templates/import_services/ldap_edit.html:150
 msgid "add user attributes"
 msgstr "tilføj bruger-attributter"
 
-#: import_services/templates/import_services/ldap_edit.html:151
-#: import_services/templates/import_services/ldap_edit.html:152
-#: import_services/templates/import_services/ldap_edit.html:153
+#: import_services/templates/import_services/ldap_edit.html:169
+#: import_services/templates/import_services/ldap_edit.html:170
+#: import_services/templates/import_services/ldap_edit.html:171
 msgid "save LDAP configuration"
 msgstr "gem LDAP-konfiguration"
 
