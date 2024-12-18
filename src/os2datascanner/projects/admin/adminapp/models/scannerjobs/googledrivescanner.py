@@ -5,6 +5,8 @@ from csv import DictReader
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.translation import pgettext_lazy
+
 from .scanner import Scanner
 from ...utils import upload_path_gdrive_users, upload_path_gdrive_service_account
 from os2datascanner.engine2.model.googledrive import GoogleDriveSource
@@ -55,3 +57,6 @@ class GoogleDriveScanner(Scanner):
                 user_email = row['Email Address [Required]']
                 yield GoogleDriveSource(service_account_file=json.dumps(temp),
                                         user_email=user_email)
+
+    object_name = pgettext_lazy("unit of scan", "file")
+    object_name_plural = pgettext_lazy("unit of scan", "files")

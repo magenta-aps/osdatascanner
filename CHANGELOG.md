@@ -7,6 +7,10 @@
 - Python's normal logical operators can now be used to compose scanner rules
   when using Django's `shell_plus` command.
 
+- The scan status tab now displays a scanner-specific name for the objects
+  being scanned ("webpages" for the web scanner, "files" for the various file
+  scanners, etc.).
+
 ### Bugfixes
 
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs

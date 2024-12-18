@@ -215,6 +215,38 @@ msgstr "kategorier"
 msgid "Mime type"
 msgstr "Filformat"
 
+#: adminapp/models/scannerjobs/dropboxscanner.py:53
+#: adminapp/models/scannerjobs/filescanner.py:90
+#: adminapp/models/scannerjobs/googledrivescanner.py:61
+#: adminapp/models/scannerjobs/msgraph.py:160
+#: adminapp/models/scannerjobs/msgraph.py:216
+msgctxt "unit of scan"
+msgid "file"
+msgstr "fil"
+
+#: adminapp/models/scannerjobs/dropboxscanner.py:54
+#: adminapp/models/scannerjobs/filescanner.py:91
+#: adminapp/models/scannerjobs/googledrivescanner.py:62
+#: adminapp/models/scannerjobs/msgraph.py:161
+#: adminapp/models/scannerjobs/msgraph.py:217
+msgctxt "unit of scan"
+msgid "files"
+msgstr "filer"
+
+#: adminapp/models/scannerjobs/exchangescanner.py:170
+#: adminapp/models/scannerjobs/gmail.py:57
+#: adminapp/models/scannerjobs/msgraph.py:116
+msgctxt "unit of scan"
+msgid "email message"
+msgstr "mailbesked"
+
+#: adminapp/models/scannerjobs/exchangescanner.py:171
+#: adminapp/models/scannerjobs/gmail.py:58
+#: adminapp/models/scannerjobs/msgraph.py:117
+msgctxt "unit of scan"
+msgid "email messages"
+msgstr "mailbeskeder"
+
 #: adminapp/models/scannerjobs/filescanner.py:36
 msgid "drive letter"
 msgstr "drevbogstav"
@@ -273,9 +305,29 @@ msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
 #: adminapp/models/scannerjobs/msgraph.py:189
+msgctxt "unit of scan"
+msgid "appointment"
+msgstr "begivenhed"
+
+#: adminapp/models/scannerjobs/msgraph.py:189
+msgctxt "unit of scan"
+msgid "appointments"
+msgstr "begivenheder"
+
+#: adminapp/models/scannerjobs/msgraph.py:198
 #: adminapp/models/scannerjobs/webscanner.py:43
 msgid "check dead links"
 msgstr "tjek døde links"
+
+#: adminapp/models/scannerjobs/sbsysscanner.py:23
+msgctxt "unit of scan"
+msgid "case"
+msgstr "sag"
+
+#: adminapp/models/scannerjobs/sbsysscanner.py:24
+msgctxt "unit of scan"
+msgid "cases"
+msgstr "sager"
 
 #: adminapp/models/scannerjobs/scanner.py:90
 msgctxt "unit of scan"
@@ -530,6 +582,16 @@ msgid ""
 msgstr ""
 "navngiv sider efter HTML-overskrift og tillad specificering af alternative "
 "visningsformer for URL'er"
+
+#: adminapp/models/scannerjobs/webscanner.py:194
+msgctxt "unit of scan"
+msgid "web page"
+msgstr "side"
+
+#: adminapp/models/scannerjobs/webscanner.py:195
+msgctxt "unit of scan"
+msgid "web pages"
+msgstr "sider"
 
 #: adminapp/models/sensitivity_level.py:33
 msgid "Critical"
@@ -1800,9 +1862,9 @@ msgstr "Tidslinje"
 #, python-format
 msgid "known %(onp)s skipped due to no change"
 msgstr "kendte %(onp)s sprunget over grundet ingen ændring"
-
 #: adminapp/templates/components/scanstatus/status_timeline.html:23
-#, python-format
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:25
 msgid "new %(onp)s scanned"
 msgstr "nye %(onp)s scannet"
 

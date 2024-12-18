@@ -17,7 +17,7 @@ from base64 import encodebytes as encodeb64
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 
 from os2datascanner.engine2.model.http import WebSource
 from os2datascanner.engine2.rules.links_follow import LinksFollowRule
@@ -190,3 +190,6 @@ class WebScanner(Scanner):
                 sitemap_trusted=self.reduce_communication,
                 extended_hints=self.extended_hints,
                 always_crawl=self.always_crawl,)
+
+    object_name = pgettext_lazy("unit of scan", "web page")
+    object_name_plural = pgettext_lazy("unit of scan", "web pages")
