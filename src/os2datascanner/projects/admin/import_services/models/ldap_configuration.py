@@ -25,6 +25,8 @@ from .import_service import ImportService
 from .realm import Realm
 from ..keycloak_services import refresh_token
 from ...adminapp.aescipher import encrypt, decrypt  # Suggestion: move to core?
+from os2datascanner.projects.grants.models.grant import wrap_encrypted_field
+
 
 logger = structlog.get_logger("import_services")
 
@@ -287,6 +289,9 @@ class LDAPConfig(Exported, ImportService):
         null=False,
         verbose_name='cipher text for ldap credential',
     )
+
+    _ldap_password = models.JSONField(verbose_name=_('LDAP password (encrypted)'), null=True)
+    ldap_password = wrap_encrypted_field("_ldap_password")
 
     @property
     def ldap_credential(self):
