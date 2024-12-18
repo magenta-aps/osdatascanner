@@ -131,7 +131,13 @@
                       {{ status.start_time }}
                     {% endtimezone %}
                   </td>
-                  <td class="datatable__column--objects">{{ status.total_objects }} {% trans "objects explored" %}</td>
+                  {% with onp_true=status.scanner.as_subclass.object_name_plural onp_fallback=status.scanner.object_name_plural %}
+                    {% with onp=onp_true|default:onp_fallback %}
+                      <td class="datatable__column--objects">
+                        {% blocktranslate with obj=status.scanned_objects %}{{ obj }} {{ onp }} scanned{% endblocktranslate %}
+                      </td>
+                    {% endwith %}
+                  {% endwith %}
                   <td class="datatable__column--validated">
                     {% if status.matches_found is None %}
                       {% trans "Not available" %}

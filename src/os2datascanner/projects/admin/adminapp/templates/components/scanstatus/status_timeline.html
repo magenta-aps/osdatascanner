@@ -19,10 +19,16 @@
 </td>
 <td colspan="2">
   {% if status.skipped_by_last_modified %}
-    <p>{{ status.skipped_by_last_modified }} {% trans "known objects skipped due to no change" %}</p>
-    <p>{{ status.new_objects }} {% trans "new objects scanned" %}</p>
+    <p>
+      {{ status.skipped_by_last_modified }} {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}known {{ onp }} skipped due to no change{% endblocktranslate %}
+    </p>
+    <p>
+      {{ status.new_objects }} {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}new {{ onp }} scanned{% endblocktranslate %}
+    </p>
   {% else %}
-    <p>{% trans "All objects scanned" %}</p>
+    <p>
+      {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}All {{ onp }} scanned{% endblocktranslate %}
+    </p>
   {% endif %}
   {% comment %} TODO: Show number of errors thrown during scan. {% endcomment %}
 </td>
