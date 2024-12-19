@@ -89,8 +89,8 @@ document.addEventListener("click", function (e) {
   if (hasClass(targ, "show-more")) {
     let overflowDiv = targ.parentElement;
 
+    // Toggle the expanded class and update the button text
     overflowDiv.classList.toggle("full-path");
-
     if (overflowDiv.classList.contains("full-path")) {
       targ.innerText = gettext("Show less");
     } else {
@@ -218,6 +218,24 @@ function hideTooltip(event) {
   removeClass(targ, "cursor-help");
 }
 
+// Function to toggle visibility of "show-more" buttons based on screen size
+function toggleShowMoreButtons() {
+  const pathContainers = document.querySelectorAll(".overflow-ellipsis");
+  const isLargeScreen = window.matchMedia("(min-width: 1200px)").matches;
+
+  pathContainers.forEach((pathContainer) => {
+    const moreBtn = pathContainer.querySelector(".show-more");
+    if (moreBtn) {
+      // Check if the text is overflowing
+      const isOverflowing =
+        pathContainer.scrollWidth > pathContainer.clientWidth;
+
+      // Show the button only if it's a large screen and the content is overflowing
+      moreBtn.style.display = isLargeScreen && isOverflowing ? "block" : "none";
+    }
+  });
+}
+
 function prepareTable() {
   // if user prefers to have all rows expanded, do that.
   const prefersExpanded = window.localStorage.getItem(
@@ -300,4 +318,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  // Add call to toggle visibility of "show-more" buttons
+  toggleShowMoreButtons();
+
+  // Add resize listener to adjust visibility dynamically
+  window.addEventListener("resize", toggleShowMoreButtons);
 });

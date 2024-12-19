@@ -721,12 +721,29 @@ $font-size_subtitle: 0.875rem;
 .datatablex {
   // Box model
   width: 100%;
+  max-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 
+  &.no-side-scroll {
+    /* NOTE: To avoid sidescroll behaviour, add the class ".no-side-scroll" to the table, card-container
+    and wrapper. This is not the most elegant solution, but for now it's better to reverse engineer it 
+    rather than change every single table that's been modernized so far. */
+
+    table-layout: fixed;
+  }
+
   &__card-container {
+    &:not(.no-side-scroll) {
+      /* NOTE: To avoid sidescroll behaviour, add the class ".no-side-scroll" to the table, card-container
+      and wrapper. This is not the most elegant solution, but for now it's better to reverse engineer it 
+      rather than change every single table that's been modernized so far. */
+
+      overflow: hidden; // Hides overflow from the scrollbar and the background-gradient
+    }
+
     // Layout
-    overflow: hidden; // Hides overflow from the scrollbar and the background-gradient
+    position: relative;
 
     // Box model
     margin-bottom: 0;
@@ -744,40 +761,51 @@ $font-size_subtitle: 0.875rem;
   }
 
   &__wrapper {
-    // Layout
-    overflow-x: auto;
-
     // Box model
     max-width: 100%;
     height: inherit;
     clear: both;
 
-    // Visual
-    background-image: // use gradients to signify that the table is scrollable
-      linear-gradient(
-        to right,
-        white var(--datatable-cell-padding),
-        rgba(255, 255, 255, 0)
-      ),
-      linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
-      linear-gradient(
-        to left,
-        white var(--datatable-cell-padding),
-        rgba(255, 255, 255, 0)
-      ),
-      linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
-    background-repeat: no-repeat;
-    background-position: left top, left top, 100% 0, 100% 0;
-    background-size: calc(var(--datatable-cell-padding) * 4) 100%,
-      var(--datatable-cell-padding) 100%,
-      calc(var(--datatable-cell-padding) * 4) 100%,
-      var(--datatable-cell-padding) 100%;
-    background-attachment: local, scroll, local, scroll;
+    &:not(.no-side-scroll) {
+      /* NOTE: To avoid sidescroll behaviour, add the class ".no-side-scroll" to the table, card-container
+      and wrapper. This is not the most elegant solution, but for now it's better to reverse engineer it 
+      rather than change every single table that's been modernized so far. */
+
+      // Layout
+      overflow-x: auto;
+
+      // Visual
+      background-image: // use gradients to signify that the table is scrollable
+        linear-gradient(
+          to right,
+          white var(--datatable-cell-padding),
+          rgba(255, 255, 255, 0)
+        ),
+        linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
+        linear-gradient(
+          to left,
+          white var(--datatable-cell-padding),
+          rgba(255, 255, 255, 0)
+        ),
+        linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
+      background-repeat: no-repeat;
+      background-position: left top, left top, 100% 0, 100% 0;
+      background-size: calc(var(--datatable-cell-padding) * 4) 100%,
+        var(--datatable-cell-padding) 100%,
+        calc(var(--datatable-cell-padding) * 4) 100%,
+        var(--datatable-cell-padding) 100%;
+      background-attachment: local, scroll, local, scroll;
+    }
   }
 
   &__row {
     // Styles for all th + td inside datatables
     :is(th, td) {
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+
       line-height: normal;
       padding: var(--datatable-cell-padding)
         calc(var(--datatable-cell-padding) / 2);
@@ -805,6 +833,25 @@ $font-size_subtitle: 0.875rem;
         .table-ui__container {
           display: flex;
           align-items: center;
+        }
+      }
+
+      .tooltip,
+      .expandable-content {
+        max-width: 100%;
+
+        .overflow-ellipsis {
+          // Only apply truncation on larger screens (desktop size)
+          @media (min-width: $break-lg) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.full-path {
+              white-space: normal;
+              word-break: break-all;
+            }
+          }
         }
       }
     }
@@ -880,97 +927,6 @@ $font-size_subtitle: 0.875rem;
       align-items: center;
       gap: 0.5rem;
     }
-
-    .column {
-      width: auto; /* Sets all column widths to auto unless otherwise specified. */
-
-      &--checkbox {
-        /* Only use this for actual checkboxes and not checkbox-typed intput disguised as a status
-        toggle. */
-        width: 4.5rem; // 72px
-
-        .ds-checkbox {
-          /* Overwrites the "standard" checkbox styling for ones inside this specific type of column. */ 
-          margin: 0;
-          line-height: normal;
-
-          label {
-            padding-left: 24px;
-          }
-        }
-      }
-
-      &--numeral {
-        /* All table columns with only numbers should have this class. */
-        /* Right aligns content and makes it nicer to navigate for users. */
-
-        text-align: right;
-
-        .th__flex-container {
-          justify-content: end;
-        }
-
-        .datatable-numeral {
-          margin-right: 0.375rem; // Aligning the number in the <td> with the caret icon in the <th>
-        }
-
-        /* Add right padding to the last numeral column in a sequence UNLESS it is the last column in the row */
-        &:has(+ :not(.column--numeral)):not(:last-child) {
-          /* If the next sibling is not a column--numeral, then the last numeral column needs a right padding to optimize visual navigation */
-          padding-right: var(--datatable-cell-padding);
-        }
-
-        // NOTE to the SCSS nerd:
-        // This "container behaviour" could be a reusable mixin.
-        .matches_container {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end; // Realigns the content with the right side of the <td>.
-          flex-wrap: nowrap;
-          gap: 0.5rem;
-
-          #warning {
-            color: var(--color-error);
-            cursor: default;
-          }
-        }
-      }
-
-      &--attribute {
-        /* We have these types of icon/status/label based columns often enough to justify making
-        them their own sub-class, but I must admit I don't know what to name them. 
-        Is `.column--attribute` descriptive enough? I'm specifically looking for something as neat
-        as `.column--numeral`, but maybe that's impossible. */
-        .th,
-        .td {
-          &__flex-container {
-            justify-content: center;
-            text-align: center;
-          }
-        }
-
-        @media (min-width: $break-xl) {
-          padding-left: var(--datatable-cell-padding);
-          padding-right: var(--datatable-cell-padding);
-        }
-      }
-
-      &--loading {
-        /* The element shown while content is loaded. */
-        text-align: center;
-        // NOTE: why is this not used anywhere? Did it get deprecated in a refactor?
-      }
-
-      &--nodata {
-        /* The element shown, when there's no content to show for the selected filter. */
-        // Visual
-        color: var(--color-text-secondary);
-
-        // Typography
-        text-align: center;
-        font-style: italic;
-      }
-    }
   }
 
   &__row,
@@ -1014,6 +970,99 @@ $font-size_subtitle: 0.875rem;
     }
   }
 
+  .column {
+    width: auto; /* Sets all column widths to auto unless otherwise specified. */
+
+    &--checkbox {
+      /* Only use this for actual checkboxes and not checkbox-typed intput disguised as a status
+      toggle. */
+      width: 4.5rem; // 72px
+
+      .ds-checkbox {
+        /* Overwrites the "standard" checkbox styling for ones inside this specific type of column. */
+        margin: 0;
+        line-height: normal;
+
+        label {
+          padding-left: 24px;
+        }
+      }
+    }
+
+    &--numeral {
+      /* All table columns with only numbers should have this class. */
+      /* Right aligns content and makes it nicer to navigate for users. */
+
+      text-align: right;
+
+      .th__flex-container {
+        justify-content: end;
+      }
+
+      .datatable-numeral {
+        margin-right: 0.375rem; // Aligning the number in the <td> with the caret icon in the <th>
+      }
+
+      @media (min-width: $break-lg) {
+        /* Add right padding to the last numeral column in a sequence UNLESS it is the last column in the row */
+        &:has(+ :not(.column--numeral)):not(:last-child) {
+          /* If the next sibling is not a column--numeral, then the last numeral column needs a right padding to optimize visual navigation */
+          padding-right: var(--datatable-cell-padding);
+        }
+      }
+
+      // NOTE to the SCSS nerd:
+      // This "container behaviour" could be a reusable mixin.
+      .matches_container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; // Realigns the content with the right side of the <td>.
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+
+        #warning {
+          color: var(--color-error);
+          cursor: default;
+        }
+      }
+    }
+
+    &--attribute {
+      /* We have these types of icon/status/label based columns often enough to justify making
+      them their own sub-class, but I must admit I don't know what to name them. 
+      Is `.column--attribute` descriptive enough? I'm specifically looking for something as neat
+      as `.column--numeral`, but maybe that's impossible. */
+      .th,
+      .td {
+        &__flex-container {
+          justify-content: center;
+          text-align: center;
+        }
+      }
+
+      @media (min-width: $break-xl) {
+        padding-left: var(--datatable-cell-padding);
+        padding-right: var(--datatable-cell-padding);
+      }
+    }
+
+    &--loading {
+      /* The element shown while content is loaded. */
+      text-align: center;
+      // NOTE: why is this not used anywhere? Did it get deprecated in a refactor?
+    }
+
+    &--nodata {
+      /* The element shown, when there's no content to show for the selected filter. */
+      // Visual
+      color: var(--color-text-secondary);
+
+      // Typography
+      text-align: center;
+      font-style: italic;
+    }
+  }
+
   a:not(.button) {
     // So far only used in the org-table on Admin
     text-decoration: none;
@@ -1039,14 +1088,81 @@ $font-size_subtitle: 0.875rem;
     color: var(--color-text-secondary);
   }
 
+  // **************************
+  // ***** Sticky headers *****
+  // **************************
   .column-headings {
-    /* NOTE: this is the "2nd" header row in tables (the grey one) where theres a top header row
-    with table UI. */
+    z-index: 1;
+
     th {
+      // Box Model
       padding-top: 1.5rem;
       padding-bottom: 1.5rem;
       border-top: 1px solid rgba(0, 0, 0, 0.2);
+
+      // Visual
       background-color: #f4f4f4;
+
+      // Typography
+      font-size: 1rem;
+      font-weight: bold;
+      white-space: nowrap;
+
+      // Misc.
+      z-index: 1;
+
+      /* Sticky positioning based on breakpoints */
+      top: calc(2rem + var(--size-logo-height) + 6rem);
+
+      @media (min-width: $break-lg) {
+        top: 6rem;
+      }
+    }
+  }
+
+  .topbar-stick {
+    th {
+      background-color: #fff;
+      z-index: 2;
+
+      /* Sticky positioning */
+      top: calc(2rem + var(--size-logo-height));
+
+      @media (min-width: $break-lg) {
+        top: 0; // Adjusted for large screens
+      }
+
+      &:first-child {
+        border-top-left-radius: var(--border-radius-widget);
+      }
+
+      &:last-child {
+        border-top-right-radius: var(--border-radius-widget);
+      }
+    }
+  }
+
+  .column-headings,
+  .topbar-stick {
+    th {
+      position: static; // override aggressive position: relative; on * in _base.scss
+    }
+  }
+
+  /* Sticky behavior shared across headings */
+  .sticky th {
+    position: sticky;
+  }
+
+  .stuck th {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+    &:first-child {
+      border-top-left-radius: 0;
+    }
+
+    &:last-child {
+      border-top-right-radius: 0;
     }
   }
 }
@@ -1623,16 +1739,22 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 .results-table {
   // ***** REPORT/RESULTS *****
   // ******** ARCHIVE *********
-  // PERSONAL:
-  // REMEDIATOR:
-  // UNDISTRIBUTED:
+  // - PERSONAL
+  // - REMEDIATOR
+  // - UNDISTRIBUTED
 
   .column {
-    &--name {
-      text-wrap: nowrap;
-      p {
-        margin: 0;
+    &--flexible {
+      width: 100%;
+
+      &.column--numeral {
+        width: max(10vw, 140px);
+        // Min-width is 140px unless 10vw > 140px
       }
+    }
+
+    &--name {
+      // Empty
     }
 
     &--matchcount {
@@ -1640,15 +1762,18 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--datasource_last_modified {
-      display: none;
+      width: calc(var(--datatable-cell-padding) + 12ch);
+      // 12ch is the exact number of characters needed for "dd._mon_yyyy".
+      // Side-padding for table cells is defined as "--datatable-cell-padding/2".
+      // So it ends up being 12ch + (2em/2)*2 = 120px + 32px = 152px.
 
-      @media (min-width: $break-lg) {
-        display: table-cell;
+      @media (max-width: $break-xl) {
+        display: none;
       }
     }
 
     &--source {
-      // Empty
+      width: 6.25rem; // 100px, fits the width of the th text.
     }
 
     &--path {
@@ -1657,7 +1782,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     &--resolution-status {
       /* Archive only */
-      width: 15rem; // 240px, roughly fits the width of the widest status label.
+      width: 13rem; // 208px, roughly fits the width of the widest status label.
+
 
       .status {
         @include pill-variant(
@@ -1706,10 +1832,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         //     var(--color-error)
         //   );
         // }
-
-        &__label {
-          // font-weight: bold;
-        }
       }
     }
 

@@ -2,7 +2,7 @@
 {% load i18n %}
 
 <form id="table_checkboxes">
-  <div class="datatablex__card-container"
+  <div class="datatablex__card-container no-side-scroll"
        role="region"
        tabindex="0"
        aria-label="{% trans 'Results' %}"
@@ -14,10 +14,24 @@
        hx-select=".content"
        hx-include="[id='dropdown_options'], [id='filter_form']"
        hx-indicator="#report-page-indicator">
- 
-    <div class="datatablex__wrapper">
 
-      <table class="datatablex results-table">
+    <div class="datatablex__wrapper no-side-scroll">
+ 
+      <table class="datatablex results-table no-side-scroll">
+        {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
+        sidescroll on this specific table. This should be refactored if we find, that we don't want
+        sidescroll behaviour on any tables. {% endcomment %}
+
+        <colgroup>
+          <col class="column column--checkbox">
+          <col class="column column--flexible">
+          <col class="column column--flexible column--numeral">
+          <col class="column column--datasource_last_modified">
+          <col class="column column--source">
+          <col class="column column--flexible">
+          {% if "/archive/" in request.path %}<col class="column column--resolution-status">{% endif %}
+          <col class="column column--actions">
+        </colgroup>
  
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
@@ -43,7 +57,7 @@
           </tr>
  
           <tr class="datatablex__row column-headings sticky">
-            <th class="column--checkbox">
+            <th class="column column--checkbox">
               <div class="ds-checkbox">
                 <input id="select-all" type="checkbox">
                 <label for="select-all"
@@ -52,11 +66,11 @@
               </div>
             </th>
  
-            <th class="column--name">
+            <th class="column column--name">
               <div class="th__flex-container">{% trans "Name" %}</div>
             </th>
  
-            <th class="column--matchcount column--numeral">
+            <th class="column column--matchcount column--numeral">
               <div class="th__flex-container">
                 <label class="th-label" for="matches-caret">
                   <span>{% trans "Matches" %}</span>
@@ -73,7 +87,7 @@
               </div>
             </th>
  
-            <th class="column--datasource_last_modified">
+            <th class="column column--datasource_last_modified">
               <div class="th__flex-container">
                 <label class="th-label" for="datasource_last_modified-caret">
                   <span>{% trans "Resource age" %}</span>
@@ -90,11 +104,11 @@
               </div>
             </th>
  
-            <th class="column--source column--attribute">
+            <th class="column column--source column--attribute">
               <div class="th__flex-container">{% trans "Source" %}</div>
             </th>
  
-            <th class="column--path">
+            <th class="column column--path">
               <div class="th__flex-container">
                 <label class="th-label" for="path-caret">{% trans "Path" %}</label>
                 {% comment %}We use a click event handler on this button to
@@ -112,7 +126,7 @@
             </th>
  
             {% if "/archive/" in request.path %}
-              <th class="column--resolution-status">
+              <th class="column column--resolution-status">
                 <div class="th__flex-container">
                   <label class="th-label" for="status-caret">{% trans "Status" %}</label>
  
@@ -129,7 +143,7 @@
               </th>
             {% endif %}
  
-            <th class="column--actions">
+            <th class="column column--actions">
               <span aria-label="{% trans 'Actions' %}" title="{% trans 'Actions' %}">{% trans 'Actions' %}</span>
             </th>
           </tr>

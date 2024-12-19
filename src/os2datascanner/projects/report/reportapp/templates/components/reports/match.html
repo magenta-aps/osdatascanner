@@ -4,7 +4,7 @@
   {% with frag=document_report.matches.matches|merge_renderable_match_fragments %}
     <tr data-type="{{ type }}"
         class="datatablex__row{% if request.session.last_opened == document_report.pk|unlocalize %} highlighted{% endif %}">
-      <td class="column--checkbox">
+      <td class="column column--checkbox">
         <div class="ds-checkbox">
           <input type="checkbox"
                  id="table-checkbox-{{ document_report.pk|unlocalize }}"
@@ -18,13 +18,11 @@
         </div>
       </td>
 
-      <td class="column--name">
+      <td class="column column--name">
         <div class="td-content__container">
           <div class="tooltip">
             <div class="overflow-ellipsis">
-              <p>
-                <strong data-tooltip-text>{{ document_report.matches.handle.presentation_name }}</strong>
-              </p>
+              <strong data-tooltip-text>{{ document_report.matches.handle.presentation_name }}</strong>
             </div>
           </div>
  
@@ -129,7 +127,7 @@
         </div>
       </td>
 
-      <td class="column--matchcount column--numeral">
+      <td class="column column--matchcount column--numeral">
         <div class="matches_container">
           <div class="matches">
             <span class="datatable-numeral">{{ frag.matches|length }}</span>
@@ -137,11 +135,11 @@
         </div>
       </td>
  
-      <td class="column--datasource_last_modified">
+      <td class="column column--datasource_last_modified">
         {{ document_report.datasource_last_modified|naturalday:"d. M Y"|capfirst }}
       </td>
  
-      <td class="column--source column--attribute">
+      <td class="column column--source column--attribute">
         <div class="td__flex-container">
           <span class="icon-filetype icon-filetype--{{ type }}"
                 title="{% find_scan_type type %}">
@@ -152,11 +150,12 @@
         </div>
       </td>
  
-      <td class="column--path">
+      <td class="column column--path">
         <div class="td-content__container">
-          <div class="tooltip">
+          <div class="expandable-content">
             <div class="overflow-ellipsis">
               <span>{{ document_report.matches.handle.presentation_place }}</span>
+ 
               <button class="show-more button--transparent-button" type="button">{% trans "Show more" %}</button>
             </div>
           </div>
@@ -204,7 +203,7 @@
       </td>
 
       {% if "/archive/" in request.path %}
-        <td class="column--resolution-status">
+        <td class="column column--resolution-status">
           <div class="status">
             <div class="status__wrapper"
                  data-status="{{ document_report.resolution_status }}">
@@ -214,7 +213,7 @@
         </td>
       {% endif %}
  
-      <td class="column--actions">
+      <td class="column column--actions">
         <div class="button-group text-align-right">
           {% if settings.HANDLE_DROPDOWN %}
             <button class="matches-handle expand button button--icon-text-button"
