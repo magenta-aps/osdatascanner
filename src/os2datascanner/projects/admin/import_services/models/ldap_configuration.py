@@ -24,7 +24,8 @@ from .exported_mixin import Exported
 from .import_service import ImportService
 from .realm import Realm
 from ..keycloak_services import refresh_token
-from ...adminapp.aescipher import encrypt, decrypt  # Suggestion: move to core?
+from os2datascanner.projects.grants.models.grant import wrap_encrypted_field
+
 
 logger = structlog.get_logger("import_services")
 
@@ -271,40 +272,14 @@ class LDAPConfig(Exported, ImportService):
         ),
         verbose_name=_('LDAP service account user name'),
     )
-    # Initialization vector for decryption
-    _iv_ldap_credential = models.BinaryField(
-        db_column='iv_ldap',
-        max_length=32,
-        blank=True,
-        null=False,
-        verbose_name='initialization vector for ldap credential',
-    )
-    # Encrypted credential
-    _cipher_ldap_credential = models.BinaryField(
-        db_column='cipher_ldap',
-        max_length=1024,
-        blank=True,
-        null=False,
-        verbose_name='cipher text for ldap credential',
-    )
 
-    @property
-    def ldap_credential(self):
-        return decrypt(self._iv_ldap_credential,
-                       bytes(self._cipher_ldap_credential))
+    _ldap_password = models.JSONField(verbose_name=_('LDAP password (encrypted)'))
+    ldap_password = wrap_encrypted_field("_ldap_password")
 
     @property
     def realm(self):
         realm = get_object_or_404(Realm, organization_id=self.pk)
         return realm
-
-    @ldap_credential.setter
-    def ldap_credential(self, value):
-        self._iv_ldap_credential, self._cipher_ldap_credential = encrypt(value)
-
-    def rotate_credential(self, key=None):
-        credential = self.ldap_credential
-        self._iv_ldap_credential, self._cipher_ldap_credential = encrypt(credential, key)
 
     class Meta:
         verbose_name = _('LDAP configuration')
@@ -343,7 +318,7 @@ class LDAPConfig(Exported, ImportService):
                 "authType": ["simple"],
                 "startTls": [],
                 "bindDn": [self.bind_dn],
-                "bindCredential": [self.ldap_credential],
+                "bindCredential": [self.ldap_password],
                 "customUserSearchFilter": [self.custom_user_filter],
                 "searchScope": [str(self.search_scope)],
                 "validatePasswordPolicy": ["false"],

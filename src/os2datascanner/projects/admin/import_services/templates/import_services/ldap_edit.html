@@ -11,12 +11,6 @@
   <script type="text/javascript" src="/jsi18n/"></script>
   <script type="text/javascript" src="/admin/jsi18n/"></script>
   <script src="{% static 'js/ldap/addInput.js' %}"></script>
-  <script>
-        const urlConnection = "{% url 'test-ldap-connection' %}"
-        const urlAuth = "{% url 'test-ldap-authentication' %}"
-        const csrfToken = "{{ csrf_token }}"
-  </script>
-  <script src="{% static 'js/ldap/ldapConfig.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -54,23 +48,35 @@
                 class="button button--icon-text-button"
                 name="button-connection"
                 aria-label="{% trans 'test connection'|capfirst %}"
-                title="{% trans 'test connection'|capfirst %}">
+                title="{% trans 'test connection'|capfirst %}"
+                hx-post="{% url 'ldap-test' %}"
+                hx-trigger="click"
+                hx-target="#test-connection-response"
+                hx-select="#test-connection-response"
+                hx-swap="innerHTML">
           <i id="sync" class="material-icons">sync</i>
           <span class="con-text">{% trans "test connection"|capfirst %}</span>
         </button>
-        <div class="response">
+        <div class="response" id="test-connection-response">
           <span class="response-icon response-icon--success"
-                style="display: none"
+                style="display: {% if connection_established %} block {% else %} none {% endif %}"
                 id="responseSuccessCon">
             <i id="check" class="material-icons">check</i>
           </span>
           <span class="response-icon response-icon--error"
-                style="display: none"
+                style="display: {% if connection_established == False %} block {% else %} none {% endif %}"
                 id="responseErrorCon">
             <i id="error" class="material-icons">error</i>
           </span>
-          <span class="response-text" id="responseConnection"></span>
+          <span class="response-text" id="responseConnection">
+            {% if connection_established == True %}
+              {% trans "connection succeeded"|capfirst %}
+            {% elif connection_established == False %}
+              {% trans "connection failed"|capfirst %}
+            {% endif %}
+          </span>
         </div>
+
       </div>
       {% for field in form %}
         {% if field.name in form.connection_fields %}
@@ -83,22 +89,34 @@
                 class="button button--icon-text-button"
                 name="button-auth"
                 aria-label="{% trans 'test connection'|capfirst %}"
-                title="{% trans 'test connection'|capfirst %}">
+                title="{% trans 'test connection'|capfirst %}"
+                hx-post="{% url 'ldap-test' %}"
+                hx-trigger="click"
+                hx-target="#test-auth-response"
+                hx-select="#test-auth-response"
+                hx-swap="innerHTML"
+                {% if ldapconfig %}hx-vals='{"ldap_config": "{{ ldapconfig.pk }}" }'{% endif %}>
           <i id="sync" class="material-icons">sync</i>
           <span class="con-text">{% trans "test authentication"|capfirst %}</span>
         </button>
-        <div class="response">
+        <div class="response" id="test-auth-response">
           <span class="response-icon response-icon--success"
-                style="display: none"
+                style="display: {% if auth_established %} block {% else %} none {% endif %}"
                 id="responseSuccessAuth">
             <i id="check" class="material-icons">check</i>
           </span>
           <span class="response-icon response-icon--error"
-                style="display: none"
+                style="display: {% if auth_established == False %} block {% else %} none {% endif %}"
                 id="responseErrorAuth">
             <i id="error" class="material-icons">error</i>
           </span>
-          <span class="response-text" id="responseAuth"></span>
+          <span class="response-text" id="responseAuth">
+            {% if auth_established == True %}
+              {% trans "authentication succeeded"|capfirst %}
+            {% elif auth_established == False %}
+              {% trans "authentication failed"|capfirst %}
+            {% endif %}
+          </span>
         </div>
       </div>
     </section>

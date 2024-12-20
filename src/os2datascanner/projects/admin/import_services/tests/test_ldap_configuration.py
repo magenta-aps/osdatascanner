@@ -26,6 +26,7 @@ def ldap_conf(test_org):
         search_scope=2,
         bind_dn="cn=admin,dc=magenta,dc=test",
         last_modified=now(),
+        ldap_password="testMAG"
     )
     return config
 
@@ -34,6 +35,5 @@ def ldap_conf(test_org):
 class TestLDAPConfigTest:
 
     def test_payload(self, ldap_conf):
-        ldap_conf.ldap_credential = "testMAG"
         expected_json = '{"name": "ldap", "providerId": "ldap", "providerType": "org.keycloak.storage.UserStorageProvider", "parentId": "test_org", "id": "3d6d288f-b75f-43e2-be33-a43803cd1243", "config": {"enabled": ["true"], "priority": ["0"], "fullSyncPeriod": ["-1"], "changedSyncPeriod": ["-1"], "cachePolicy": ["DEFAULT"], "evictionDay": [], "evictionHour": [], "evictionMinute": [], "maxLifespan": [], "batchSizeForSync": ["1000"], "editMode": ["READ_ONLY"], "importEnabled": ["true"], "syncRegistrations": ["false"], "vendor": ["other"], "usePasswordModifyExtendedOp": [], "usernameLDAPAttribute": ["cn"], "rdnLDAPAttribute": ["cn"], "uuidLDAPAttribute": ["uidNumber"], "userObjectClasses": ["inetOrgPerson, organizationalPerson"], "connectionUrl": ["ldap://ldap-server:389"], "usersDn": ["ou=TestUnit,dc=magenta,dc=test"], "authType": ["simple"], "startTls": [], "bindDn": ["cn=admin,dc=magenta,dc=test"], "bindCredential": ["testMAG"], "customUserSearchFilter": [null], "searchScope": ["2"], "validatePasswordPolicy": ["false"], "trustEmail": ["false"], "useTruststoreSpi": ["ldapsOnly"], "connectionPooling": ["true"], "connectionPoolingAuthentication": [], "connectionPoolingDebug": [], "connectionPoolingInitSize": [], "connectionPoolingMaxSize": [], "connectionPoolingPrefSize": [], "connectionPoolingProtocol": [], "connectionPoolingTimeout": [], "connectionTimeout": [], "readTimeout": [], "pagination": ["true"], "allowKerberosAuthentication": ["false"], "serverPrincipal": [], "keyTab": [], "kerberosRealm": [], "debug": ["false"], "useKerberosForPasswordAuthentication": ["false"]}}'  # noqa
         assert json.dumps(ldap_conf.get_payload_dict()) == expected_json
