@@ -34,6 +34,8 @@
 - LDAPConfig now uses AutoEncryptedField and as such it is no longer required to reenter password
   on any unrelated LDAP configuration change.
 
+- Refactoring of the results + archive datatables.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"

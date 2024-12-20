@@ -11,24 +11,10 @@
     overflow-y: scroll;
   }
 
-  &.sm,
-  &.md,
   &.lg,
   &.xl {
     max-width: 100%;
     overflow-x: auto;
-  }
-
-  &.sm {
-    > .datatable {
-      min-width: 35rem;
-    }
-  }
-
-  &.md {
-    > .datatable {
-      min-width: 45rem;
-    }
   }
 
   &.lg {
@@ -55,8 +41,6 @@
     }
   }
 
-  &.sm.card,
-  &.md.card,
   &.lg.card,
   &.xl.card {
     // use gradients to signify that the table is scrollable
@@ -94,11 +78,6 @@
 
   label {
     cursor: pointer;
-  }
-
-  .last-opened {
-    opacity: 0.6;
-    margin-top: 0.5rem;
   }
 
   &.disabled {
@@ -152,25 +131,11 @@
     }
   }
 
-  .matches-list > td,
-  .matches-list > th {
-    background-color: rgba(0, 0, 0, 0.035);
-  }
-
   tr.open > th:first-child,
-  tr.open > td:first-child,
-  .matches-list > th:first-child,
-  .matches-list > td:first-child {
+  tr.open > td:first-child {
     // Emulate border-left. Adding an actual border-left will shift
     // the contents of the row
     box-shadow: inset 4px 0 0 var(--color-primary);
-  }
-
-  tr.highlighted > td,
-  tr.highlighted > th,
-  tr.highlighted + .matches-list > td,
-  tr.highlighted + .matches-list > th {
-    background-color: var(--color-primary-lightest);
   }
 
   tr.clickable {
@@ -185,16 +150,16 @@
     }
   }
 
-  &--wide {
-    max-width: none;
-  }
-
   &__column {
     &--checkbox {
+      /* Dependency: Admin > error log + system rules + scan completed */
       width: 4.2rem;
     }
 
     &--name {
+      /* Dependency: 
+        Admin > error log + rules + system rules + scan completed + scan status + account list
+        Report > scannerjob list */
       width: 100%;
       word-wrap: break-word;
       white-space: none;
@@ -202,46 +167,21 @@
       & > div {
         min-width: 12rem;
       }
-
-      .stale-accounts {
-        span {
-          display: inline-block;
-          margin: -1rem 0px;
-          font-size: 1.4em;
-          color: var(--color-text-main);
-          bottom: -4px;
-        }
-      }
     }
 
     &--categories {
+      /* Dependency: Admin > system rules */
       width: 100%;
     }
 
     &--matchcount {
+      /* Dependency: Report > scannerjob list */
       width: 5.5rem;
       display: none;
 
       label {
         &::after {
           content: "#";
-        }
-
-        span {
-          display: none;
-        }
-      }
-
-      .withheld-matches {
-        color: var(--color-text-secondary);
-        margin-top: 0.5rem;
-
-        &::after {
-          content: ")";
-        }
-
-        &::before {
-          content: "(";
         }
 
         span {
@@ -261,94 +201,72 @@
             display: inline;
           }
         }
-
-        .withheld-matches {
-          span {
-            display: inline;
-          }
-        }
-      }
-    }
-
-    &--datasource_last_modified {
-      width: 5.5rem;
-      display: none;
-
-      @media (min-width: $break-lg) {
-        width: 11rem;
       }
     }
 
     &--org {
+      /* Dependency: Admin > scan status + rules */
       width: 100%;
       word-wrap: break-word;
     }
 
-    &--expression {
-      width: 11rem;
-    }
-
     &--sensitivity {
+      /* Dependency: Admin > system rules + rules */
       width: 12rem;
     }
 
-    &--drive {
-      width: 6rem;
-    }
-
     &--validated {
+      /* Dependency: Admin > scan completed */
       width: 10rem;
     }
 
     &--automatic {
+      /* Dependency: Admin > error log */
       width: 100%;
       max-width: 15rem;
       word-wrap: break-word;
     }
 
     &--source {
+      /* Dependency: Report > scannerjob list */
       width: 4.5rem;
       display: none;
     }
 
     &--path {
+      /* Dependency: Admin > error log */
       font-size: 0.875rem;
       width: 100%;
       word-wrap: break-word;
     }
 
     &--scan {
+      /* Dependency: Admin > error log */
       width: 8rem;
       word-wrap: break-word;
     }
 
     &--starttime {
+      /* Dependency: Admin > error log + scan completed */
       width: 8rem;
     }
 
     &--status {
+      /* Dependency: Admin > scan completed */
       width: 100%;
       word-wrap: break-word;
     }
 
-    &--matchstatus {
-      width: 12rem;
-    }
-
     &--nodata {
+      /* Dependency: Report > scannerjob list */
       text-align: center;
       font-style: italic;
     }
 
-    &--managers {
-      width: 150%;
-    }
-
-    &--dpos {
-      width: 150%;
-    }
-
     &--actions {
+      /* Dependency: 
+        Admin > error log + rules + scan status 
+        Report > scannerjob list*/
       width: 15rem;
       word-wrap: break-word;
 
@@ -357,11 +275,8 @@
       }
     }
 
-    &--leader-actions {
-      width: 16rem;
-    }
-
     &--delete {
+      /* Dependency: Admin > scan completed */
       width: 8.5rem;
 
       .button {
@@ -374,23 +289,18 @@
     }
 
     &--info {
+      /* Dependency: Admin > rules + system rules + scan status */
       width: 20rem;
     }
 
     &--objects {
+      /* Dependency: Admin > scan completed */
       width: 15rem;
-    }
-
-    &--shortinfo {
-      width: 35%;
-    }
-
-    &--btn {
-      width: 28rem;
     }
   }
 
   .domain-url {
+    /* Maybe dependency: Admin > scannerjob */
     text-overflow: ellipsis;
     word-break: break-all;
   }
@@ -421,6 +331,7 @@
   }
 
   .nothing_found_row {
+    /* Dependency: Admin > system rules + orgunit list */
     text-align: center;
     font-style: italic;
   }
@@ -428,34 +339,19 @@
 
 @media (min-width: $break-sm) {
   col.datatable__column--matchcount,
-  col.datatable__column--datasource_last_modified,
   col.datatable__column--source {
     display: table-column;
   }
 
   td.datatable__column--matchcount,
   th.datatable__column--matchcount,
-  td.datatable__column--datasource_last_modified,
-  th.datatable__column--datasource_last_modified,
   td.datatable__column--source,
   th.datatable__column--source {
     display: table-cell;
   }
 }
 
-@media (max-width: $break-lg) {
-  col.datatable__column--datasource_last_modified,
-  td.datatable__column--datasource_last_modified,
-  th.datatable__column--datasource_last_modified {
-    display: none;
-  }
-}
-
 @media (min-width: $break-lg) {
-  .datasource_last_modified-button {
-    display: none;
-  }
-
   .datatable tbody.links.no-header {
     tr:first-of-type {
       td {
@@ -472,7 +368,9 @@
 }
 
 .compressed {
+  /* The table in the expandable row on the results overview on Report. */
   --datatable-cell-padding: 1rem;
+  table-layout: auto;
 }
 
 // probability,  start
@@ -738,34 +636,6 @@
   }
 }
 
-.text-align-right {
-  text-align: right;
-}
-
-.dont-break-out {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-
-  -ms-word-break: break-all;
-  word-break: break-all;
-}
-
-.matches-list {
-  &__column {
-    &--match {
-      width: auto;
-    }
-
-    &--context {
-      width: auto;
-    }
-
-    &--probability {
-      width: 10%;
-    }
-  }
-}
-
 .match-context {
   &::before,
   &::after {
@@ -815,16 +685,6 @@
   }
 }
 
-.tableUI__container {
-  display: flex;
-  align-items: center;
-  margin-top: 1rem;
-
-  .hit-link {
-    margin-top: 0;
-  }
-}
-
 .datatable tr.warning {
   background-color: var(--color-warning);
 }
@@ -861,12 +721,29 @@ $font-size_subtitle: 0.875rem;
 .datatablex {
   // Box model
   width: 100%;
+  max-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 
+  &.no-side-scroll {
+    /* NOTE: To avoid sidescroll behaviour, add the class ".no-side-scroll" to the table, card-container
+    and wrapper. This is not the most elegant solution, but for now it's better to reverse engineer it 
+    rather than change every single table that's been modernized so far. */
+
+    table-layout: fixed;
+  }
+
   &__card-container {
+    &:not(.no-side-scroll) {
+      /* NOTE: To avoid sidescroll behaviour, add the class ".no-side-scroll" to the table, card-container
+      and wrapper. This is not the most elegant solution, but for now it's better to reverse engineer it 
+      rather than change every single table that's been modernized so far. */
+
+      overflow: hidden; // Hides overflow from the scrollbar and the background-gradient
+    }
+
     // Layout
-    overflow: hidden; // Hides overflow from the scrollbar and the background-gradient
+    position: relative;
 
     // Box model
     margin-bottom: 0;
@@ -884,60 +761,99 @@ $font-size_subtitle: 0.875rem;
   }
 
   &__wrapper {
-    // Layout
-    overflow-x: auto;
-
     // Box model
     max-width: 100%;
     height: inherit;
     clear: both;
 
-    // Visual
-    background-image: // use gradients to signify that the table is scrollable
-      linear-gradient(
-        to right,
-        white var(--datatable-cell-padding),
-        rgba(255, 255, 255, 0)
-      ),
-      linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
-      linear-gradient(
-        to left,
-        white var(--datatable-cell-padding),
-        rgba(255, 255, 255, 0)
-      ),
-      linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
-    background-repeat: no-repeat;
-    background-position: left top, left top, 100% 0, 100% 0;
-    background-size: calc(var(--datatable-cell-padding) * 4) 100%,
-      var(--datatable-cell-padding) 100%,
-      calc(var(--datatable-cell-padding) * 4) 100%,
-      var(--datatable-cell-padding) 100%;
-    background-attachment: local, scroll, local, scroll;
+    &:not(.no-side-scroll) {
+      /* NOTE: To avoid sidescroll behaviour, add the class ".no-side-scroll" to the table, card-container
+      and wrapper. This is not the most elegant solution, but for now it's better to reverse engineer it 
+      rather than change every single table that's been modernized so far. */
+
+      // Layout
+      overflow-x: auto;
+
+      // Visual
+      background-image: // use gradients to signify that the table is scrollable
+        linear-gradient(
+          to right,
+          white var(--datatable-cell-padding),
+          rgba(255, 255, 255, 0)
+        ),
+        linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
+        linear-gradient(
+          to left,
+          white var(--datatable-cell-padding),
+          rgba(255, 255, 255, 0)
+        ),
+        linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
+      background-repeat: no-repeat;
+      background-position: left top, left top, 100% 0, 100% 0;
+      background-size: calc(var(--datatable-cell-padding) * 4) 100%,
+        var(--datatable-cell-padding) 100%,
+        calc(var(--datatable-cell-padding) * 4) 100%,
+        var(--datatable-cell-padding) 100%;
+      background-attachment: local, scroll, local, scroll;
+    }
   }
 
   &__row {
     // Styles for all th + td inside datatables
-    th:first-child,
-    td:first-child {
-      padding-left: var(--datatable-cell-padding);
-    }
+    :is(th, td) {
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
 
-    th:last-child,
-    td:last-child {
-      padding-right: var(--datatable-cell-padding);
-    }
-
-    th,
-    td {
       line-height: normal;
       padding: var(--datatable-cell-padding)
         calc(var(--datatable-cell-padding) / 2);
       vertical-align: middle;
+
+      &:first-child {
+        padding-left: var(--datatable-cell-padding);
+      }
+
+      &:last-child {
+        padding-right: var(--datatable-cell-padding);
+      }
     }
 
     td {
       border-top: 1px solid rgba(0, 0, 0, 0.2);
       transition: opacity 200ms ease-in-out;
+
+      .td-content__container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+
+        .table-ui__container {
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      .tooltip,
+      .expandable-content {
+        max-width: 100%;
+
+        .overflow-ellipsis {
+          // Only apply truncation on larger screens (desktop size)
+          @media (min-width: $break-lg) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.full-path {
+              white-space: normal;
+              word-break: break-all;
+            }
+          }
+        }
+      }
     }
 
     .info {
@@ -981,83 +897,169 @@ $font-size_subtitle: 0.875rem;
     }
 
     .th__flex-container {
+      display: flex;
+      align-items: center;
+
+      .th-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
       .help-tooltip {
         $icon-size: 1.25rem; // Local var setting a fixed size for this element.
-        
-        // Layout
-        vertical-align: middle;
 
-        // Box Model
+        vertical-align: middle;
         width: $icon-size;
         height: $icon-size;
 
         .material-symbols#help {
-          // Visual
           color: var(--color-primary-dark);
           opacity: 50%;
-
-          // Typograhy
           font-size: $icon-size;
-          font-variation-settings: 'opsz' 20;
+          font-variation-settings: "opsz" 20;
         }
       }
     }
 
-    .column {
-      width: auto; /* Sets all column widths to auto unless otherwise specified. */ 
-      
-      &--numeral {
-        /* All table columns with only numbers should have this class. */
-        /* Right aligns content and makes it nicer to navigate for users. */
+    .td__flex-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
 
-        text-align: right;
-        
-        .th__flex-container {
-          justify-content: end;
-        }
+  &__row,
+  &__row--expanded {
+    &.highlighted,
+    &.highlighted + .matches-list {
+      /* Shared styles for table cells */
+      > :is(td, th) {
+        background-color: var(--color-primary-lightest);
+        box-shadow: inherit;
 
-        .datatable-numeral {
-          margin-right: 0.375rem; // Aligning the number in the <td> with the caret icon in the <th>
-        }
-
-        /* Style for the next sibling to the last column--numeral in a sequence */ 
-        & + :not(.column--numeral) {
-          /* If the next sibling is not a column--numeral, then the sibling column needs a left padding to optimize visual navigation */ 
-          padding-left: var(--datatable-cell-padding);
-        }
-
-        // NOTE to the SCSS nerd:
-        // This "container behaviour" could be a reusable mixin.
-        .matches_container {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end; // Realigns the content with the right side of the <td>.
-
-          flex-wrap: nowrap;
-          gap: 0.5rem;
-          
-          #warning {
-            color: var(--color-error);
-            cursor: default;
-          }
+        > :not(.ds-checkbox):not(.button--caret-button) {
+          /* Change opacity for anything BUT the checkboxes and expand-row caret. */
+          opacity: 0.75;
+          /* Remove before merge: this will nudge the users to use the mass handle function. Also it looks neat. */
         }
       }
 
-      &--loading {
-        /* The element shown while content is loaded. */ 
-        text-align: center;
-        // NOTE: why is this not used anywhere? Did it get deprecated in a refactor?
+      // Shared styles for buttons and status elements
+      .button:not(.button--caret-button):not(.dropdown-container .button),
+      .status {
+        background-color: var(--color-widget-bg) !important;
+        color: var(--color-text-secondary) !important;
+
+        // Specific styles for buttons
+        &.button {
+          border-color: var(--color-widget-bg);
+        }
       }
-  
-      &--nodata {
-        /* The element shown, when there's no content to show for the selected filter. */ 
-        // Visual
-        color: var(--color-text-secondary);
-        
-        // Typography
-        text-align: center;
-        font-style: italic;
+
+      // .button--deletion-button {
+      //   $button-color: var(--color-primary-dark);
+
+      //   background-color: $button-color;
+      //   border-color: $button-color;
+      //   color: var(--color-text-white);
+      // }
+      /* Not sure if we want to keep the visual weight difference for this button, when the row is
+      highlighted? We don't want the users to start deleting the files/mails individually, when 
+      they're marking them for mass handling. */
+    }
+  }
+
+  .column {
+    width: auto; /* Sets all column widths to auto unless otherwise specified. */
+
+    &--checkbox {
+      /* Only use this for actual checkboxes and not checkbox-typed intput disguised as a status
+      toggle. */
+      width: 4.5rem; // 72px
+
+      .ds-checkbox {
+        /* Overwrites the "standard" checkbox styling for ones inside this specific type of column. */
+        margin: 0;
+        line-height: normal;
+
+        label {
+          padding-left: 24px;
+        }
       }
+    }
+
+    &--numeral {
+      /* All table columns with only numbers should have this class. */
+      /* Right aligns content and makes it nicer to navigate for users. */
+
+      text-align: right;
+
+      .th__flex-container {
+        justify-content: end;
+      }
+
+      .datatable-numeral {
+        margin-right: 0.375rem; // Aligning the number in the <td> with the caret icon in the <th>
+      }
+
+      @media (min-width: $break-lg) {
+        /* Add right padding to the last numeral column in a sequence UNLESS it is the last column in the row */
+        &:has(+ :not(.column--numeral)):not(:last-child) {
+          /* If the next sibling is not a column--numeral, then the last numeral column needs a right padding to optimize visual navigation */
+          padding-right: var(--datatable-cell-padding);
+        }
+      }
+
+      // NOTE to the SCSS nerd:
+      // This "container behaviour" could be a reusable mixin.
+      .matches_container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; // Realigns the content with the right side of the <td>.
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+
+        #warning {
+          color: var(--color-error);
+          cursor: default;
+        }
+      }
+    }
+
+    &--attribute {
+      /* We have these types of icon/status/label based columns often enough to justify making
+      them their own sub-class, but I must admit I don't know what to name them. 
+      Is `.column--attribute` descriptive enough? I'm specifically looking for something as neat
+      as `.column--numeral`, but maybe that's impossible. */
+      .th,
+      .td {
+        &__flex-container {
+          justify-content: center;
+          text-align: center;
+        }
+      }
+
+      @media (min-width: $break-xl) {
+        padding-left: var(--datatable-cell-padding);
+        padding-right: var(--datatable-cell-padding);
+      }
+    }
+
+    &--loading {
+      /* The element shown while content is loaded. */
+      text-align: center;
+      // NOTE: why is this not used anywhere? Did it get deprecated in a refactor?
+    }
+
+    &--nodata {
+      /* The element shown, when there's no content to show for the selected filter. */
+      // Visual
+      color: var(--color-text-secondary);
+
+      // Typography
+      text-align: center;
+      font-style: italic;
     }
   }
 
@@ -1085,6 +1087,84 @@ $font-size_subtitle: 0.875rem;
     font-style: italic;
     color: var(--color-text-secondary);
   }
+
+  // **************************
+  // ***** Sticky headers *****
+  // **************************
+  .column-headings {
+    z-index: 1;
+
+    th {
+      // Box Model
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+
+      // Visual
+      background-color: #f4f4f4;
+
+      // Typography
+      font-size: 1rem;
+      font-weight: bold;
+      white-space: nowrap;
+
+      // Misc.
+      z-index: 1;
+
+      /* Sticky positioning based on breakpoints */
+      top: calc(2rem + var(--size-logo-height) + 6rem);
+
+      @media (min-width: $break-lg) {
+        top: 6rem;
+      }
+    }
+  }
+
+  .topbar-stick {
+    th {
+      background-color: #fff;
+      z-index: 2;
+
+      /* Sticky positioning */
+      top: calc(2rem + var(--size-logo-height));
+
+      @media (min-width: $break-lg) {
+        top: 0; // Adjusted for large screens
+      }
+
+      &:first-child {
+        border-top-left-radius: var(--border-radius-widget);
+      }
+
+      &:last-child {
+        border-top-right-radius: var(--border-radius-widget);
+      }
+    }
+  }
+
+  .column-headings,
+  .topbar-stick {
+    th {
+      position: static; // override aggressive position: relative; on * in _base.scss
+    }
+  }
+
+  /* Sticky behavior shared across headings */
+  .sticky th {
+    position: sticky;
+  }
+
+  .stuck th {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+    &:first-child {
+      border-top-left-radius: 0;
+    }
+
+    &:last-child {
+      border-top-right-radius: 0;
+    }
+  }
 }
 
 // **************************************
@@ -1095,13 +1175,51 @@ $font-size_subtitle: 0.875rem;
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
 $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
-// Magical mixin for instant centered behaviour. So far only available in datatables.
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+@mixin pill-variant($bgColor, $textColor, $font-size: 0.875rem) {
+  background-color: $bgColor;
+  color: $textColor;
+  font-size: $font-size;
+  line-height: $font-size;
 
+  padding: 0 0.75rem; // 12px side padding
+  border-radius: 50px;
+  height: 1.75rem; // 28px
+  width: fit-content;
+  text-wrap: nowrap;
+
+  .status {
+    &__wrapper {
+      @include flex-center;
+      gap: 0.25rem;
+      height: inherit;
+
+      /* Styles for when both `.status__icon` and `.status__label` exist inside `.status__wrapper`. */
+      &:has(.status__icon + .status__label) {
+        /* Add extra spacing on the right to adjust the visual weight. */
+        padding-right: 0.25rem; // 4px
+
+        .status__label {
+          /* Google's recommended alignment correction for text next to icons */
+          margin-top: calc(14px * 0.115);
+          font-weight: 500;
+        }
+      }
+    }
+
+    &__icon {
+      &.material-symbols {
+        $pill-icon-size: 1.25rem; // 20px
+        font-size: $pill-icon-size;
+        width: $pill-icon-size;
+        font-variation-settings: "opsz" 20;
+      }
+    }
+
+    &__label {
+      // Empty
+    }
+  }
+}
 
 // ******************************
 // ***** ORGANIZATION TABLE *****
@@ -1112,7 +1230,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 .org-table {
   // Table SCSS vars:
   $fixed-column_width: 8.5rem; // The "fixed" column of this specific table
-  $table_width: calc(#{$relative_table_width--admin} - #{$fixed-column_width}); 
+  $table_width: calc(#{$relative_table_width--admin} - #{$fixed-column_width});
   $table_min-width: 70rem; // The size for this specific table
 
   // Column SCSS vars:
@@ -1338,8 +1456,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   // Table SCSS vars:
   // $fixed-column_width: 16rem; // The "fixed" column of this specific table
   $fixed-column_width: 210px; // The "fixed" column of this specific table
-  $table_width: calc(#{$relative_table_width--admin} - #{$fixed-column_width}); 
-  $table_min-width: 60rem; 
+  $table_width: calc(#{$relative_table_width--admin} - #{$fixed-column_width});
+  $table_min-width: 60rem;
 
   // Column SCSS vars:
   $width_25: calc(#{$table_width} * 0.25);
@@ -1396,21 +1514,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       );
 
       .status {
-        @mixin pill-variant($bgColor, $textColor) {
-          background-color: $bgColor;
-          color: $textColor;
-        }
-
-        @include flex-center;
-
-        border-radius: 50px;
-        height: 2.125rem;
-        width: 6.75rem;
-        /* NOTE: This fixed width is a tiny bit bigger than the "natural" width of 
-        the "ugyldig"/"invalid" label/badge, so that both types of label/badge have 
-        matching width. If the wording changes, then this should be updated as well 
-        to fit whatever the "natural" width of the bigger one is. */
-
         &--valid {
           @include pill-variant(
             var(--color-status-good),
@@ -1420,21 +1523,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
         &--invalid {
           @include pill-variant(var(--color-status-bad), var(--color-clear));
-        }
-
-        &__wrapper {
-          @include flex-center;
-          gap: $uniform_icon-label_gap-size;
-          padding: 0 1rem 0 0.625rem; // Asymmetrical padding to compensate for visual weight
-        }
-
-        &__label {
-          $font-size: 0.875rem;
-          font-size: $font-size;
-          margin-top: calc(
-            #{$font-size} * 0.115
-          ); // Google's recommended alignment correction for text next to icons
-          font-weight: 500;
         }
       }
     }
@@ -1640,7 +1728,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
 // ***** NOTES *****
 
-  /* Report doesn't have the side nav like Admin, BUT all content will be 
+/* Report doesn't have the side nav like Admin, BUT all content will be 
   getting a max-width, so calculations for column width are a bit different 
   here. */
 
@@ -1648,23 +1736,160 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // ***** RESULT OVERVIEW TABLES *****
 // **********************************
 
-// Redmine ticket: [#60320]
+.results-table {
+  // ***** REPORT/RESULTS *****
+  // ******** ARCHIVE *********
+  // - PERSONAL
+  // - REMEDIATOR
+  // - UNDISTRIBUTED
 
-// ***** REPORT *****
+  .column {
+    &--flexible {
+      width: 100%;
 
-// PERSONAL:
-// REMEDIATOR:
-// UNDISTRIBUTED:
+      &.column--numeral {
+        width: max(10vw, 140px);
+        // Min-width is 140px unless 10vw > 140px
+      }
+    }
 
-// TBA
+    &--name {
+      // Empty
+    }
 
-// ***** ARCHIVE *****
+    &--matchcount {
+      // Empty
+    }
 
-// PERSONAL:
-// REMEDIATOR:
-// UNDISTRIBUTED:
+    &--datasource_last_modified {
+      width: calc(var(--datatable-cell-padding) + 12ch);
+      // 12ch is the exact number of characters needed for "dd._mon_yyyy".
+      // Side-padding for table cells is defined as "--datatable-cell-padding/2".
+      // So it ends up being 12ch + (2em/2)*2 = 120px + 32px = 152px.
 
-// TBA
+      @media (max-width: $break-xl) {
+        display: none;
+      }
+    }
+
+    &--source {
+      width: 6.25rem; // 100px, fits the width of the th text.
+    }
+
+    &--path {
+      // Empty
+    }
+
+    &--resolution-status {
+      /* Archive only */
+      width: 13rem; // 208px, roughly fits the width of the widest status label.
+
+
+      .status {
+        @include pill-variant(
+          var(--color-primary-lightest),
+          var(--color-primary-dark)
+        );
+
+        /* We should consider colour coding the status chips. For now I'm not sure how to do it
+        in a non-judgemental way. */
+        // &[data-status="0"] {
+        //   // "Other"
+        //   @include pill-variant(
+        //     var(--color-btn-neutral),
+        //     var(--color-text-secondary)
+        //   );
+        // }
+
+        // &[data-status="1"] {
+        //   // "Edited"
+        //   @include pill-variant(
+        //     var(--color-status-ok),
+        //     var(--color-ok)
+        //   );
+        // }
+
+        // &[data-status="2"] {
+        //   // "Journalized and moved"
+        //   @include pill-variant(
+        //     var(--color-status-good),
+        //     var(--color-ok-dark)
+        //   );
+        // }
+
+        // &[data-status="3"] {
+        //   // "Deleted"
+        //   @include pill-variant(
+        //     var(--color-status-good),
+        //     var(--color-ok-dark)
+        //   );
+        // }
+
+        // &[data-status="4"] {
+        //   // "False positive"
+        //   @include pill-variant(
+        //     var(--color-status-bad),
+        //     var(--color-error)
+        //   );
+        // }
+      }
+    }
+
+    &--actions {
+      width: 12.25rem; // 196px
+
+      .button-group {
+        flex-wrap: nowrap;
+
+        #expand_more {
+          // The caret icon
+          color: var(--color-primary-dark);
+        }
+      }
+    }
+  }
+
+  .datatablex__row--expanded {
+    /* NOTE: Not sure if this should live here permanently. It's behaviour/styles we might wanna
+    reuse in other datatables. */
+
+    > td {
+      padding: calc(var(--datatable-cell-padding) / 2)
+        var(--datatable-cell-padding);
+    }
+
+    // Adding appropriate styling to the expanded row only.
+    &.matches-list {
+      box-shadow: inset 4px 0 0 var(--color-primary);
+      background-color: rgba(0, 0, 0, 0.035);
+
+      .matches-list {
+        &__column {
+          width: auto;
+
+          &--match {
+            min-width: 30%;
+
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            -ms-word-break: break-all;
+            word-break: break-all;
+          }
+
+          &--probability {
+            max-width: 7.5rem; // 120px, fits the width of the <th> content.
+            text-align: right;
+          }
+
+          &--show-more-matches {
+            padding-left: 0; // Align button inside with left side.
+            padding-top: 2rem; // Add visual space between button and rows above.
+          }
+        }
+      }
+    }
+  }
+}
 
 // *********************************
 // ***** LEADER OVERVIEW TABLE *****
@@ -1687,7 +1912,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         &__fullname {
           font-weight: bold;
         }
-        
+
         &__username {
           color: var(--color-text-secondary);
           font-size: $font-size_subtitle;
@@ -1715,7 +1940,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         flex-wrap: nowrap;
       }
 
-      #expand_more { // The caret icon
+      #expand_more {
+        // The caret icon
         color: var(--color-primary-dark);
       }
     }

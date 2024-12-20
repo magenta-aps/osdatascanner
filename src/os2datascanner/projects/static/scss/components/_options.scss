@@ -213,7 +213,7 @@ label+.dropdown, label+.input {
     cursor: default;
 
     &+.dropdown-container {
-      left: -4rem;
+      left: -9rem;
     }
 
     &:focus+.dropdown-container,
@@ -226,7 +226,7 @@ label+.dropdown, label+.input {
 .table-checkbox__action {
 
   &+.dropdown-container {
-    left: -0.5rem;
+    left: 0;
   }
 
   &:not(:disabled):hover+.dropdown-container {

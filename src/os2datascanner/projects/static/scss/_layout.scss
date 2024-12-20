@@ -61,16 +61,9 @@ body {
   }
 
   &--maxwidth {
-    /* NOTE: Experimental */
-    /* Made in colaboration with UX */
-
-    // @media (min-width: 1760px) {
-    //   max-width: 1600px;
-    //   margin: 0 auto;
-    //   padding: var(--padding-content) 0;
-    // }
-    @media (min-width: 1600px) {
-      max-width: 1440px;
+    /* Not all layouts benefit from expanding into foreverness, so this helps set a uniform maxwidth on content. */
+    @media (min-width: 1760px) {
+      max-width: 1600px;
       margin: 0 auto;
       padding: var(--padding-content) 0;
     }
