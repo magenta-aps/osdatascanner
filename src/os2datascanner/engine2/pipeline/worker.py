@@ -11,7 +11,7 @@ from . import messages
 logger = structlog.get_logger("worker")
 
 
-READS_QUEUES = ("os2ds_conversions",)
+READS_QUEUES = ("os2ds_conversions", "conversions_delta", "conversions_full")
 WRITES_QUEUES = (
     "os2ds_matches",
     "os2ds_checkups",
@@ -22,7 +22,7 @@ PROMETHEUS_DESCRIPTION = "Messages handled by worker"
 # Let the Pika background thread aggressively collect tasks. Workers should
 # always be doing something -- every centisecond of RabbitMQ overhead is time
 # wasted!
-PREFETCH_COUNT = 8
+PREFETCH_COUNT = 1
 
 
 def explore(sm, msg, *, check=True):

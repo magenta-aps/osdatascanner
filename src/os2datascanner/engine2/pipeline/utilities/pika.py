@@ -118,12 +118,11 @@ given channel.)"""
 
 class PikaPipelineRunner(PikaConnectionHolder):
     def __init__(self, *,
-                 prefetch_count=1, read=None, write=None, queue_suffix=None, **kwargs):
+                 prefetch_count=1, read=None, write=None, **kwargs):
         super().__init__(**kwargs)
         self._read = set() if read is None else set(read)
         self._write = set() if write is None else set(write)
         self._prefetch_count = prefetch_count
-        self._queue_suffix = queue_suffix
 
     def make_channel(self):
         """As PikaConnectionHolder.make_channel, but automatically declares all
@@ -134,11 +133,6 @@ class PikaPipelineRunner(PikaConnectionHolder):
         messages."""
         channel = super().make_channel()
         channel.basic_qos(prefetch_count=self._prefetch_count)
-
-        # Declare the required exchanges
-        queue_suffix = self._queue_suffix
-        customer_exchange = setup_headers_exchange_routing(channel, queue_suffix)
-
         for q in self._read.union(self._write):
             channel.queue_declare(
                     q,
@@ -146,13 +140,6 @@ class PikaPipelineRunner(PikaConnectionHolder):
                     durable=True,
                     exclusive=False,
                     auto_delete=False)
-
-            if "os2ds_conversions" in q and q in self._read:
-                # Make sure to bind the conversions queue to
-                # the customer's exchange.
-                arguments = {"x-match": "all", "org": queue_suffix} if queue_suffix else dict()
-                channel.queue_bind(q, customer_exchange,
-                                   arguments=arguments)
 
         channel.exchange_declare(
             "broadcast", pika.spec.ExchangeType.fanout,
@@ -175,59 +162,17 @@ class PikaPipelineRunner(PikaConnectionHolder):
         Subclasses can override this function to subscribe to additional
         queues, but should usually begin by calling the superclass
         implementation."""
-        consumer_tags = []
+        consumer_tags = {}
         for queue in self._read:
-            consumer_tags.append(self.channel.basic_consume(
+            consumer_tags[queue] = (self.channel.basic_consume(
                     queue, self.handle_message_raw,
                     exclusive=exclusive))
         return consumer_tags
 
-    def _basic_cancel(self, consumer_tags):
+    def _basic_cancel(self, consumer_tags: dict):
         """Cancels all of the provided consumer registrations."""
-        for tag in consumer_tags:
+        for tag in consumer_tags.values():
             self.channel.basic_cancel(tag)
-
-
-def setup_headers_exchange_routing(channel, queue_suffix):
-    """
-    Sets up the headers exchange routing structure for an
-    AMQP channel with a 'root' exchange for
-    the conversions (worker) queues.
-    """
-
-    # Declare the 'root' exchange
-    root_exchange = "os2ds_root_conversions"
-    channel.exchange_declare(
-        exchange=root_exchange,
-        exchange_type=pika.spec.ExchangeType.headers,
-        passive=False,
-        durable=True,
-        auto_delete=False,
-        )
-
-    # Declare the 'customer' exchange based on the queue suffix.
-    customer_exchange = (f"os2ds_conversions_{queue_suffix}"
-                         if queue_suffix else "os2ds_conversions")
-
-    arguments = {"x-match": "all", "org": queue_suffix} if queue_suffix else dict()
-
-    channel.exchange_declare(
-        exchange=customer_exchange,
-        exchange_type=pika.spec.ExchangeType.headers,
-        passive=False,
-        durable=True,
-        auto_delete=False,
-        internal=True,
-        arguments=arguments
-        )
-
-    # Bind the 'customer' exchange to the 'root' exchange with
-    # routing based on the queue suffix (organization).
-    channel.exchange_bind(customer_exchange,
-                          root_exchange,
-                          arguments=arguments)
-
-    return customer_exchange
 
 
 class RejectMessage(BaseException):
@@ -504,6 +449,7 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         old_handler = signal.signal(signal.SIGTERM, _handler)
 
         self.start()
+
         try:
             while running and self.is_alive():
                 method, properties, body = self.await_message(timeout=30.0)
@@ -513,15 +459,8 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                     key = method.routing_key
                     dbd = json_utf8_decode(body)
 
-                    for msg in self.handle_message(key, dbd):
-                        match msg:
-                            case (routing_key, message, exchange, headers):
-                                self.enqueue_message(routing_key,
-                                                     message,
-                                                     exchange=exchange,
-                                                     **headers)
-                            case (routing_key, message):
-                                self.enqueue_message(routing_key, message)
+                    for routing_key, message in self.handle_message(key, dbd):
+                        self.enqueue_message(routing_key, message)
 
                     self.enqueue_ack(method.delivery_tag)
                     self.after_message(key, dbd)
@@ -540,6 +479,5 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                              " clearing incoming queue.")
                 self._incoming.clear()
 
-        if self._shutdown_exception:
-            raise Exception("Worker thread died unexpectedly") from (
-                    self._shutdown_exception)
+            if self._shutdown_exception:
+                raise Exception("Worker thread died unexpectedly") from self._shutdown_exception

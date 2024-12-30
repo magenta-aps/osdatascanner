@@ -1,3 +1,5 @@
+import os
+import structlog
 from .. import settings
 from ..model.core import (
         Source, takes_named_arg, UnknownSchemeError, DeserialisationError)
@@ -8,17 +10,19 @@ from ..model.core.errors import (ModelException,
 from ..utilities.backoff import DummyRetrier, TimeoutRetrier
 from . import messages
 from .utilities.filtering import is_handle_relevant
-
-import structlog
-
+from os2datascanner.engine2.rules.logical import CompoundRule
 
 logger = structlog.get_logger("explorer")
 
+FULL_SCAN_CONVERSIONS_QUEUE = os.environ.get("FULL_SCAN_QUEUE")
+DELTA_SCAN_CONVERSIONS_QUEUE = os.environ.get("DELTA_SCAN_QUEUE")
+
 
 READS_QUEUES = ("os2ds_scan_specs",)
-WRITES_QUEUES = (
-        "os2ds_conversions", "os2ds_problems", "os2ds_status",
-        "os2ds_scan_specs", "os2ds_checkups",)
+WRITES_QUEUES = ("os2ds_problems", "os2ds_status",
+                 "os2ds_scan_specs", "os2ds_checkups",
+                 FULL_SCAN_CONVERSIONS_QUEUE,  DELTA_SCAN_CONVERSIONS_QUEUE)
+
 PROMETHEUS_DESCRIPTION = "Sources explored"
 # An individual exploration task is typically the longest kind of task, so we
 # want to do as little prefetching as possible here. (If we're doing an
@@ -113,7 +117,16 @@ def message_received_raw(body, channel, source_manager):  # noqa
             elif not scan_spec.source.yields_independent_sources:
                 # This Handle is just a normal reference to a scannable object.
                 # Send it on to be processed
-                yield ("os2ds_conversions",
+                from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+
+                queue = FULL_SCAN_CONVERSIONS_QUEUE  # Default, knowing no better
+                if isinstance(scan_spec.rule, CompoundRule):
+                    if isinstance(scan_spec.rule.components[0], LastModifiedRule):
+                        queue = DELTA_SCAN_CONVERSIONS_QUEUE
+                else:
+                    queue = FULL_SCAN_CONVERSIONS_QUEUE
+
+                yield (queue,
                        messages.ConversionMessage(
                             scan_spec, handle, progress).to_json_object())
                 handle_count += 1
