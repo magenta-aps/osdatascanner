@@ -1,4 +1,4 @@
-{% extends 'components/common/base.html' %}
+{% extends "components/common/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load humanize %}
@@ -9,7 +9,7 @@
   <script src="{% static '3rdparty/htmx.min.js' %}"></script>
   <script src="{% static 'js/index.js' %}"></script>
   <script src="{% static 'js/scannerjob/cleanupAccounts.js' %}"></script>
-{% endblock %}
+{% endblock scripts %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -28,7 +28,7 @@
             <input type="search"
                    name="search_field"
                    id="search_field"
-                   placeholder="{% trans 'Search for scanner' %}"
+                   placeholder="{% trans "Search for scanner" %}"
                    value="{{ request.GET.search_field }}"
                    autocomplete="off"
                    hx-get="{{ request.path }}"
@@ -42,10 +42,12 @@
 
           {% if perms.os2datascanner.add_scanner %}
             <div class="btn">
+              {% comment %} We should use a {% url %}-tag here, but cannot currently, since the
+              scanner type is a variable. We should think of a better way to do this. {% endcomment %}
               <a href="/{{ view.type }}scanners/add/"
                  class="button button--cta-button button--icon-text-button"
-                 aria-label="{% trans 'Add scannerjob' %}"
-                 title="{% trans 'Add scannerjob' %}">
+                 aria-label="{% trans "Add scannerjob" %}"
+                 title="{% trans "Add scannerjob" %}">
                 <svg class="icon button__plus-icon">
                   <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
                 </svg>
@@ -89,8 +91,8 @@
                       <div class="name__container">
                         <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
                            class="name__label"
-                           aria-label="{% trans 'Edit' %} {{ scanner.name }}"
-                           title="{% trans 'Edit' %} &quot;{{ scanner.name }}&quot;">
+                           aria-label="{% trans "Edit" %} {{ scanner.name }}"
+                           title="{% trans "Edit" %} &quot;{{ scanner.name }}&quot;">
                           <span>{{ scanner.name }}</span>
                         </a>
 
@@ -105,7 +107,7 @@
                              href="#cleanup-accounts-modal"
                              data-modal="modal:open"
                              data-src="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
-                             title="{% trans 'The following users are no longer covered by this scannerjob, but have been scanned previously:' %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
+                             title="{% trans "The following users are no longer covered by this scannerjob, but have been scanned previously:" %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
                             <i id="person_off" class="material-symbols">person_off</i>
 
                             <span>{% trans "Stale accounts" %}</span>
@@ -139,7 +141,7 @@
                       {% if scanner.validation_status %}
                         <div class="status status--valid">
                           <div class="status__wrapper"
-                               title="{% trans 'Validation status for this scanner job has been set to' %} &quot;{% trans 'Valid'|lower %}&quot;">
+                               title="{% trans "Validation status for this scanner job has been set to" %} &quot;{% trans "Valid"|lower %}&quot;">
                             <i id="check" class="material-symbols status__icon">check</i>
 
                             <span class="status__label">{% trans "Valid" %}</span>
@@ -148,7 +150,7 @@
                       {% else %}
                         <div class="status status--invalid">
                           <div class="status__wrapper"
-                               title="{% trans 'Validation status for this scanner job has been set to' %} &quot;{% trans 'Invalid'|lower %}&quot;">
+                               title="{% trans "Validation status for this scanner job has been set to" %} &quot;{% trans "Invalid"|lower %}&quot;">
                             <i id="close" class="material-symbols status__icon">close</i>
 
                             <span class="status__label">{% trans "Invalid" %}</span>
@@ -160,14 +162,14 @@
                     <td class="scanner-runtime column column--automatic">
                       {% if scanner.schedule_datetime %}
                         <div class="status"
-                             title="{% trans 'Next scan will run the' %} {{ scanner.schedule_datetime }}">
+                             title="{% trans "Next scan will run the" %} {{ scanner.schedule_datetime }}">
                           <i id="calendar_clock"
                              class="material-symbols status__icon status__icon--planned">calendar_clock</i>
                           <span class="status__label">{{ scanner.schedule_datetime|naturaltime }}</span>
                         </div>
                       {% else %}
                         <div class="status"
-                             title="{% trans 'There are currently no scans scheduled for this scanner job' %}">
+                             title="{% trans "There are currently no scans scheduled for this scanner job" %}">
                           <i id="event_busy"
                              class="material-symbols status__icon status__icon--unplanned">event_busy</i>
 
@@ -176,23 +178,22 @@
                       {% endif %}
                     </td>
 
-
                     <td class="scanner-actions column column--actions">
                       <div class="action-wrapper button-group">
                         <a href="#run-scanner-modal"
                            data-modal="modal:open"
                            data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
                            class="button button--icon-button button--datatable-actions"
-                           aria-label="{% trans 'Run scanner job' %}"
-                           title="{% trans 'Run scanner job' %}">
+                           aria-label="{% trans "Run scanner job" %}"
+                           title="{% trans "Run scanner job" %}">
                           <i id="play_arrow" class="material-symbols">play_arrow</i>
                         </a>
 
                         {% if perms.os2datascanner.change_scanner %}
                           <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
                              class="button button--icon-button button--datatable-actions"
-                             aria-label="{% trans 'Edit scanner job' %}"
-                             title="{% trans 'Edit scanner job' %}">
+                             aria-label="{% trans "Edit scanner job" %}"
+                             title="{% trans "Edit scanner job" %}">
                             <i id="edit" class="material-symbols">edit</i>
                           </a>
                         {% endif %}
@@ -200,8 +201,8 @@
                         {% if perms.os2datascanner.add_scanner %}
                           <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
                              class="button button--icon-button button--datatable-actions"
-                             aria-label="{% trans 'Copy scanner job' %}"
-                             title="{% trans 'Copy scanner job' %}">
+                             aria-label="{% trans "Copy scanner job" %}"
+                             title="{% trans "Copy scanner job" %}">
                             <i id="content_copy" class="material-symbols">content_copy</i>
                           </a>
                         {% endif %}
@@ -210,6 +211,9 @@
                           {% comment %}
                             We should use HTMX here I think, then we can just use 
                             _one_ button element.
+                          {% endcomment %}
+                          {% comment %}
+                            Can we avoid the inline styling on this element?
                           {% endcomment %}
                           <form action="/{{ view.type }}scanners/{{ scanner.pk }}/remove/"
                                 method="post"
@@ -225,11 +229,13 @@
                           </form>
                         {% endif %}
 
-
                         {% if perms.os2datascanner.delete_scanner and not scanner.scans %}
                           {% comment %}
                             We should use HTMX here I think, then we can just use 
                             _one_ button element.
+                          {% endcomment %}
+                          {% comment %}
+                            Can we avoid the inline styling on this element?
                           {% endcomment %}
                           <form action="/{{ view.type }}scanners/{{ scanner.pk }}/delete/"
                                 method="post"
@@ -238,7 +244,7 @@
                             {{ form.as_p }}
                             <button type="submit"
                                     class="button button--icon-button button--datatable-actions"
-                                    onclick="return confirm(`{% trans 'Do you really want to delete this scanner?' %}\n\n{{ scanner.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
+                                    onclick="return confirm(`{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "The action cannot be reversed" %}`)"
                                     aria-label="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}"
                                     title="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}">
                               <i id="delete_forever" class="material-symbols">delete_forever</i>
@@ -259,7 +265,7 @@
       {% endif %}
     </div>
   </main>
-{% endblock %}
+{% endblock body %}
 
 {% block modal %}
   <div class="modal"
@@ -279,4 +285,4 @@
        aria-hidden="true">
     <iframe src="about:blank" frameborder="0"></iframe>
   </div>
-{% endblock %}
+{% endblock modal %}
