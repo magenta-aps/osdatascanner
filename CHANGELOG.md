@@ -36,6 +36,10 @@
 
 - Refactoring of the results + archive datatables.
 
+### Bugfixes
+
+- Fix deletion issues for OneDrive results, by making the is_owner check case insensitive.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"
