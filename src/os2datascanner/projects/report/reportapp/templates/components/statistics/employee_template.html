@@ -13,7 +13,7 @@
     </div>
   </td>
 
-  {% if show_30_days_column %}
+  {% if show_retention_column %}
     <td class="column--old column--numeral">
       <div class="matches_container">
         <div class="matches">
@@ -67,7 +67,7 @@
 </tr>
 
 <tr class="user-overview datatablex__row" hidden>
-  <td colspan="{% if show_30_days_column %}6{% else %}5{% endif %}">
+  <td colspan="{% if show_retention_column %}6{% else %}5{% endif %}">
     <div class="overview_wrapper"
          hx-get="{% url 'statistics-user-id' employee.uuid %}"
          hx-trigger="intersect"

@@ -148,7 +148,7 @@ class TestUserReportView:
             egon_account,
             egon_email_alias):
         # Arrange
-        params = '?30-days=true'
+        params = '?retention=true'
         create_reports_for(egon_email_alias, num=num_new, datasource_last_modified=time_now())
         create_reports_for(
             egon_email_alias,
@@ -180,7 +180,7 @@ class TestUserReportView:
             egon_account,
             egon_email_alias):
         # Arrange
-        params = '?30-days=false'
+        params = '?retention=false'
         create_reports_for(egon_email_alias, num=num_new, datasource_last_modified=time_now())
         create_reports_for(
             egon_email_alias,
@@ -236,6 +236,42 @@ class TestUserReportView:
             assert qs.count() == unshared_num + shared_num
         else:
             assert qs.count() == unshared_num
+
+    @pytest.mark.parametrize('num_new,num_old', [
+        (0, 0),
+        (1, 0),
+        (0, 1),
+        (1, 1),
+        (10, 0),
+        (0, 10),
+        (10, 10),
+    ])
+    def test_all_matches_shown_with_no_retention_policy(
+            self,
+            num_new,
+            num_old,
+            rf,
+            egon_account,
+            egon_email_alias,
+            olsenbanden_organization):
+        # Arrange
+        # Disable retention policy
+        olsenbanden_organization.retention_policy = False
+        olsenbanden_organization.save()
+        params = '?retention=false'
+        create_reports_for(egon_email_alias, num=num_new, datasource_last_modified=time_now())
+        create_reports_for(
+            egon_email_alias,
+            num=num_old,
+            datasource_last_modified=time_now() -
+            timedelta(
+                days=31))
+
+        # Act
+        qs = self.userreport_get_queryset(rf, egon_account, params=params)
+
+        # Assert
+        assert qs.count() == num_old + num_new
 
     # # Helper methods
 
@@ -481,7 +517,7 @@ class TestUserArchiveView:
             egon_account,
             egon_email_alias):
         # Arrange
-        params = '?30-days=true'
+        params = '?retention=true'
         create_reports_for(
             egon_email_alias,
             num=num_new,
@@ -518,7 +554,7 @@ class TestUserArchiveView:
             egon_account,
             egon_email_alias):
         # Arrange
-        params = '?30-days=false'
+        params = '?retention=false'
         create_reports_for(
             egon_email_alias,
             num=num_new,

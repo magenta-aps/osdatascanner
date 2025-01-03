@@ -532,8 +532,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         qs = qs.with_unhandled_matches()
         qs = qs.with_withheld_matches()
         qs = qs.with_status()
-        if settings.LEADER_OVERVIEW_30_DAYS:
-            qs = qs.with_old_matches()
+        if self.org.retention_policy:
+            qs = qs.with_old_matches(self.org.retention_days)
 
         qs = self.order_employees(qs)
 
@@ -548,10 +548,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context["employee_count"] = self.employee_count
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
-        context['show_30_days_column'] = settings.LEADER_OVERVIEW_30_DAYS
+        context['show_retention_column'] = self.org.retention_policy
+        context['retention_days'] = self.org.retention_days
 
         # Determine number of columns from context
-        num_cols = 4 + settings.LEADER_OVERVIEW_30_DAYS + self.request.user.has_perm(
+        num_cols = 4 + context['show_retention_column'] + self.request.user.has_perm(
             "os2datascanner_report.see_withheld_documentreport")
         context['num_cols'] = num_cols
 
@@ -599,6 +600,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
             if not request.user.is_superuser and not request.user.account.is_manager:
                 return HttpResponseForbidden(
                     "Only managers and superusers have access to this page.")
+        self.org = request.user.account.organization
         return super(LeaderStatisticsPageView, self).dispatch(
             request, *args, **kwargs)
 
@@ -608,7 +610,8 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         _("First name"): 'first_name',
         _("Last name"): 'last_name',
         _("Username"): 'username',
-        **({_("Older than 30 days"): 'old'} if settings.LEADER_OVERVIEW_30_DAYS else {}),
+        # TODO: !2059 contains a change that will support this row. Removed for now.
+        # _("Older than retention_policy"): 'old',
         _("Matches"): 'unhandled_matches',
         _("Withheld"): 'withheld',
         _("Status"): 'handle_status',
@@ -763,13 +766,14 @@ class EmployeeView(LoginRequiredMixin, DetailView):
     template_name = "components/statistics/employee_template.html"
 
     def get(self, request, *args, **kwargs):
+        self.org = request.user.account.organization
         response = super().get(request, *args, **kwargs)
         self.object.save()
         return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['show_30_days_column'] = settings.LEADER_OVERVIEW_30_DAYS
+        context['show_retention_column'] = self.org.retention_policy
         return context
 
 

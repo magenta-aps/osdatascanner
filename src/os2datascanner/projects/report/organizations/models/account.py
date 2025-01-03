@@ -110,13 +110,15 @@ class AccountQuerySet(models.QuerySet):
                 )
             )
 
-    def with_old_matches(self):
+    def with_old_matches(self, policy: int):
         """Annotates each account in the queryset with 'old', which contains the number
         of matches older than the specified number of days the user has. Doesn't count matches from
         remediator aliases, shared aliases or withheld matches.
         This field should contain the same value as the 'old_matches' property."""
-        # TODO: Make this configurable (#62838)
-        number_of_days_policy = 30
+        if not policy >= 0:
+            raise ValueError("The retention policy value given to the 'with_old_matches'-method "
+                             f"must be a positive integer. Received {policy}")
+        number_of_days_policy = policy
         cutoff_date = time_now() - timedelta(days=number_of_days_policy)
         return self.annotate(old=Count(
                     "aliases__match_relation",
@@ -351,8 +353,10 @@ class Account(Core_Account):
 
     @property
     def old_matches(self) -> int:
-        # TODO: Make this configurable (#62838)
-        number_of_days_policy = 30
+        if not self.organization.retention_policy:
+            raise ValueError(f"Old matches requested from account {self}, but their organization "
+                             f"{self.organization} does not have a retention policy!")
+        number_of_days_policy = self.organization.retention_days
         cutoff_date = time_now() - timedelta(days=number_of_days_policy)
         reports = self._get_reports()
         reports = reports.filter(
