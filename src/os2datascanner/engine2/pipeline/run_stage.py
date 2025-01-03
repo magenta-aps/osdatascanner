@@ -49,7 +49,8 @@ class GenericRunner(PikaPipelineThread):
                  source_manager: SourceManager, *args,
                  stage: str, module,  limit, queue_priorities, **kwargs):
         super().__init__(*args, **kwargs,
-                         read=module.READS_QUEUES, write=module.WRITES_QUEUES,
+                         read=tuple(set(module.READS_QUEUES).union(set(queue_priorities))),
+                         write=module.WRITES_QUEUES,
                          prefetch_count=module.PREFETCH_COUNT)
         self._module = module
         self._registry = CollectorRegistry()
@@ -97,7 +98,7 @@ class GenericRunner(PikaPipelineThread):
         return consumer_tags
 
     def handle_message_raw(self, channel, method, properties, body):
-        if self._stage == "worker":
+        if self._stage in ("worker", "explorer",):
             self._check_and_switch_priority()
 
         super().handle_message_raw(channel, method, properties, body)

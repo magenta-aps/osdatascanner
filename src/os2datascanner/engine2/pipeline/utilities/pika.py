@@ -459,8 +459,15 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                     key = method.routing_key
                     dbd = json_utf8_decode(body)
 
-                    for routing_key, message in self.handle_message(key, dbd):
-                        self.enqueue_message(routing_key, message)
+                    for msg in self.handle_message(key, dbd):
+                        match msg:
+                            case (routing_key, message, exchange, headers):
+                                self.enqueue_message(routing_key,
+                                                     message,
+                                                     exchange=exchange,
+                                                     **headers)
+                            case (routing_key, message):
+                                self.enqueue_message(routing_key, message)
 
                     self.enqueue_ack(method.delivery_tag)
                     self.after_message(key, dbd)

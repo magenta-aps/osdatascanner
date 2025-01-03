@@ -25,7 +25,6 @@ from dateutil.tz import gettz
 import structlog
 
 from django.db import models
-from django.conf import settings
 from django.core.validators import validate_comma_separated_integer_list
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
@@ -363,6 +362,15 @@ class Scanner(models.Model):
         """Builds a scan specification template for this scanner. This template
         has no associated Source, so make sure you put one in with the _replace
         or _deep_replace methods before trying to scan with it."""
+
+        # Determine if we're running full or delta scan & set explorer and conversion queue
+        # accordingly
+        is_true_delta_scan = (bool(self.statuses) and self.do_last_modified_check) and not force
+        explorer_queue = (self.organization.client.explorer_delta_queue if is_true_delta_scan
+                          else self.organization.client.explorer_full_queue)
+        conversion_queue = (self.organization.client.conversion_delta_queue if is_true_delta_scan
+                            else self.organization.client.conversion_full_queue)
+
         rule = self._construct_rule(force)
         filter_rule = self._construct_filter_rule()
         scan_tag = self._construct_scan_tag(user)
@@ -370,7 +378,9 @@ class Scanner(models.Model):
 
         return messages.ScanSpecMessage(
                 scan_tag=scan_tag, rule=rule, configuration=configuration,
-                filter_rule=filter_rule, source=None, progress=None)
+                filter_rule=filter_rule, source=None, progress=None,
+                conversion_queue=conversion_queue,
+                explorer_queue=explorer_queue)
 
     @property
     def _supports_account_annotations(self) -> bool:
@@ -410,7 +420,7 @@ class Scanner(models.Model):
                             f"{self}: account {account} not previously"
                             " scanned")
                 outbox.append((
-                    settings.AMQP_PIPELINE_TARGET,
+                    spec_template.explorer_queue,
                     spec_template._replace(source=source, rule=rule)))
                 source_count += 1
             return source_count
@@ -420,7 +430,7 @@ class Scanner(models.Model):
             # the queue without fiddling around with the rule
             for source in self.generate_sources():
                 outbox.append((
-                    settings.AMQP_PIPELINE_TARGET,
+                    spec_template.explorer_queue,
                     spec_template._replace(source=source)
                 ))
                 source_count += 1
@@ -491,7 +501,7 @@ class Scanner(models.Model):
             rule_here = AndRule.make(
                     LastModifiedRule(ib) if ib and not force else True,
                     spec_template.rule)
-            outbox.append(("conversions_delta" if ib else "conversions_full",
+            outbox.append((spec_template.conversion_queue,
                            conv_template._deep_replace(
                                scan_spec__source=rh.source,
                                handle=rh,

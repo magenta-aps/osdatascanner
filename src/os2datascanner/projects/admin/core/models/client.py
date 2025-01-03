@@ -95,6 +95,19 @@ class Client(models.Model):
         verbose_name=_('activated scan types'),
     )
 
+    explorer_delta_queue = models.TextField(
+        default="os2ds_scan_specs",
+    )
+    explorer_full_queue = models.TextField(
+        default="os2ds_scan_specs",
+    )
+    conversion_delta_queue = models.TextField(
+        default="os2ds_conversions"
+    )
+    conversion_full_queue = models.TextField(
+        default="os2ds_conversions"
+    )
+
     @property
     def enabled_features(self):
         return Feature(self.features)

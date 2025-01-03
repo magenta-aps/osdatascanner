@@ -189,6 +189,8 @@ class ScanSpecMessage(NamedTuple):
     configuration: dict
     progress: ProgressFragment
     filter_rule: Rule
+    explorer_queue: str = "os2ds_scan_specs"  # os2ds_scan_specs compatability fallback.
+    conversion_queue: str = "os2ds_conversions"  # compatability fallback.
 
     def to_json_object(self):
         return {
@@ -200,7 +202,9 @@ class ScanSpecMessage(NamedTuple):
                 self.filter_rule.to_json_object()
                 if self.filter_rule else None),
             "progress": (
-                    self.progress.to_json_object() if self.progress else None)
+                    self.progress.to_json_object() if self.progress else None),
+            "explorer_queue": self.explorer_queue,
+            "conversion_queue": self.conversion_queue,
         }
 
     @classmethod
@@ -224,7 +228,10 @@ class ScanSpecMessage(NamedTuple):
                 progress=(
                     ProgressFragment.from_json_object(progress_fragment)
                     if progress_fragment
-                    else None))
+                    else None),
+                explorer_queue=obj.get("explorer_queue", "os2ds_scan_specs"),
+                conversion_queue=obj.get("conversion_queue", "os2ds_conversions")
+        )
 
     _deep_replace = _deep_replace
 

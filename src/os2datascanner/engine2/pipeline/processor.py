@@ -9,7 +9,7 @@ from . import messages
 
 logger = structlog.get_logger("processor")
 
-READS_QUEUES = ("os2ds_conversions",)
+READS_QUEUES = ("os2ds_conversions", "conversions_full", "conversions_delta")
 WRITES_QUEUES = (
     "os2ds_scan_specs",
     "os2ds_representations",

@@ -11,7 +11,7 @@ from . import messages
 logger = structlog.get_logger("worker")
 
 
-READS_QUEUES = ("os2ds_conversions", "conversions_delta", "conversions_full")
+READS_QUEUES = ("os2ds_conversions",)  # INTERNAL PYTHON PSEUDO-QUEUE AND LEGACY RABBITMQ QUEUE
 WRITES_QUEUES = (
     "os2ds_matches",
     "os2ds_checkups",
@@ -26,6 +26,7 @@ PREFETCH_COUNT = 1
 
 
 def explore(sm, msg, *, check=True):
+    """ Worker-internal explorer, channels are pseudo-queues, i.e. not RabbitMQ """
     for channel, message in explorer_handler(msg, "os2ds_scan_specs", sm):
         if channel == "os2ds_conversions":
             yield from process(sm, message, check=check)
@@ -42,6 +43,7 @@ def explore(sm, msg, *, check=True):
 
 
 def process(sm, msg, *, check=True):
+    """ Worker-internal processor, channels are pseudo-queues, i.e. not RabbitMQ """
     for channel, message in processor_handler(
             msg, "os2ds_conversions", sm, _check=check):
         if channel == "os2ds_representations":
@@ -61,6 +63,7 @@ total_matches = 0
 
 
 def match(sm, msg, *, check=True):
+    """ Worker-internal matcher, channels are pseudo-queues, i.e. not RabbitMQ """
     for channel, message in matcher_handler(msg, "os2ds_representations", sm):
         if channel == "os2ds_handles":
             global total_matches
@@ -73,6 +76,7 @@ def match(sm, msg, *, check=True):
 
 
 def tag(sm, msg):
+    """ Worker-internal tagger, channels are pseudo-queues, i.e. not RabbitMQ """
     yield from tagger_handler(msg, "os2ds_handles", sm)
 
 

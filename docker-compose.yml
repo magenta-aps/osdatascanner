@@ -407,8 +407,7 @@ services:
     env_file:
       - ./dev-environment/engine/dev-settings.env
     environment:
-      - DELTA_SCAN_QUEUE=conversions_delta
-      - FULL_SCAN_QUEUE=conversions_full
+      - QUEUE_PRIORITY=explorer_delta explorer_full os2ds_scan_specs
     command: explorer
     init: true
     tty:
@@ -454,7 +453,7 @@ services:
     env_file:
       - ./dev-environment/engine/dev-settings.env
     environment:
-      - SCHEDULE_ON_CPU=0
+      - SCHEDULE_ON_CPU=1
       - ENABLE_RUSAGE=true
       - OSDS_DEBUG_OAUTH2=true
       - QUEUE_PRIORITY=conversions_full conversions_delta

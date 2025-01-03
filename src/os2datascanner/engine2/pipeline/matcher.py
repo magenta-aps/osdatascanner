@@ -10,13 +10,10 @@ from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 logger = structlog.get_logger("matcher")
 
 READS_QUEUES = ("os2ds_representations",)
-# TODO: I'm not sure how to determine the "correct" conversions queues here.
 WRITES_QUEUES = (
     "os2ds_handles",
     "os2ds_matches",
-    "os2ds_checkups",
-    "conversions_full",
-    "conversions_delta")
+    "os2ds_checkups",)
 PROMETHEUS_DESCRIPTION = "Representations examined"
 PREFETCH_COUNT = 8
 
@@ -147,8 +144,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
                 f"{message.handle} needs"
                 f" new representation: [{new_rep}].")
 
-        # TODO: I'm not sure how to determine the "correct" queue here.
-        yield ("os2ds_conversions",
+        yield (message.scan_spec.conversion_queue,
                messages.ConversionMessage(
                             message.scan_spec, message.handle,
                             message.progress._replace(
