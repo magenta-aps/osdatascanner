@@ -3,6 +3,7 @@ from django.db import IntegrityError
 
 from ...organizations.models import Organization, Account, Alias, AliasType
 from ..utils import get_or_create_user_aliases
+from ..views.utilities.document_report_utilities import is_owner
 
 
 @pytest.fixture(scope="class")
@@ -279,3 +280,30 @@ class TestUtils:
         with pytest.raises(IntegrityError):  # Assert
             # Act
             mismatched_alias.save()
+
+    def test_alias_and_report_owner_case_mismatch(self, saml_user_data):
+        """
+        Test that a potential case mismatch between Account.alias and DocumentReport.owner won't
+        prevent them from getting correctly paired up.
+        """
+
+        # Arrange
+        file_owner = saml_user_data["email"]
+        reversed_case_value = file_owner.swapcase()
+
+        get_or_create_user_aliases(saml_user_data)
+
+        # Act/assert
+        assert is_owner(reversed_case_value, self.account_sam)
+
+    def test_alias_and_report_owner_no_match(self, saml_user_data):
+        """
+        Test that the is_owner returns False when DocumentReport.owner doesn't match any alias for
+        the given account.
+        """
+
+        # Arrange
+        file_owner = "thisisnota@match.com"
+
+        # Act/assert
+        assert not is_owner(file_owner, self.account_sam)
