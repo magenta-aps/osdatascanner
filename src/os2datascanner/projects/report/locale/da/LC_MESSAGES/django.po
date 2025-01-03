@@ -27,19 +27,19 @@ msgstr "Accepteret"
 msgid "Not accepted"
 msgstr "Ikke accepteret"
 
-#: organizations/models/account.py:294
+#: organizations/models/account.py:296
 msgid "User"
 msgstr "Bruger"
 
-#: organizations/models/account.py:298
+#: organizations/models/account.py:300
 msgid "Last handle"
 msgstr "Sidste håndtering"
 
-#: organizations/models/account.py:306
+#: organizations/models/account.py:308
 msgid "image"
 msgstr "billede"
 
-#: organizations/models/account.py:307
+#: organizations/models/account.py:309
 msgid "Contact person"
 msgstr "Kontaktperson"
 
@@ -252,7 +252,7 @@ msgid "source type"
 msgstr "kildetype"
 
 #: reportapp/models/documentreport.py:66
-#: reportapp/templates/components/reports/filters.html:191
+#: reportapp/templates/components/reports/filters.html:193
 msgid "sensitivity"
 msgstr "følsomhed"
 
@@ -560,8 +560,8 @@ msgstr "Scan"
 
 #: reportapp/templates/components/reports/filters.html:35
 #: reportapp/templates/components/reports/filters.html:71
-#: reportapp/templates/components/reports/filters.html:111
-#: reportapp/templates/components/reports/filters.html:149
+#: reportapp/templates/components/reports/filters.html:109
+#: reportapp/templates/components/reports/filters.html:147
 msgid "Clear"
 msgstr "Ryd"
 
@@ -579,29 +579,29 @@ msgstr "Kildetype"
 msgid "All source types"
 msgstr "Alle kildetyper"
 
-#: reportapp/templates/components/reports/filters.html:98
+#: reportapp/templates/components/reports/filters.html:97
 #: reportapp/views/statistics_views.py:489
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
 
-#: reportapp/templates/components/reports/filters.html:118
+#: reportapp/templates/components/reports/filters.html:116
 msgid "All resolution statuses"
 msgstr "Alle håndteringsstatusser"
 
-#: reportapp/templates/components/reports/filters.html:137
+#: reportapp/templates/components/reports/filters.html:135
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: reportapp/templates/components/reports/filters.html:156
+#: reportapp/templates/components/reports/filters.html:154
 msgid "All sensitivities"
 msgstr "Alle følsomheder"
 
-#: reportapp/templates/components/reports/filters.html:225
+#: reportapp/templates/components/reports/filters.html:226
 #, python-format
 msgid " Include results, that are less than %(retention_days)s days old "
 msgstr "Inkludér resultater, der er under %(retention_days)s dage gamle"
 
-#: reportapp/templates/components/reports/filters.html:246
+#: reportapp/templates/components/reports/filters.html:247
 msgid "Include results from shared mailboxes"
 msgstr "Inkludér resultater fra fælles mailbokse"
 
@@ -809,7 +809,7 @@ msgid "Probability"
 msgstr "Sandsynlighed"
 
 #: reportapp/templates/components/reports/match_table.html:8
-#: reportapp/templates/leader_statistics_template.html:133
+#: reportapp/templates/leader_statistics_template.html:131
 #: reportapp/templates/remediator_content.html:13
 #: reportapp/templates/scannerjobs/scannerjob_list.html:21
 #: reportapp/templates/undistributed_content.html:7
@@ -841,7 +841,7 @@ msgstr "Navn"
 #: reportapp/templates/components/reports/match_table.html:77
 #: reportapp/templates/components/reports/match_table.html:81
 #: reportapp/templates/components/reports/match_table.html:82
-#: reportapp/views/statistics_views.py:612
+#: reportapp/views/statistics_views.py:615
 msgid "Matches"
 msgstr "Matches"
 
@@ -876,13 +876,13 @@ msgstr "Sti"
 #: reportapp/templates/components/reports/match_table.html:133
 #: reportapp/templates/components/reports/match_table.html:137
 #: reportapp/templates/components/reports/match_table.html:138
-#: reportapp/templates/leader_statistics_template.html:173
-#: reportapp/views/statistics_views.py:614
+#: reportapp/templates/leader_statistics_template.html:171
+#: reportapp/views/statistics_views.py:617
 msgid "Status"
 msgstr "Status"
 
 #: reportapp/templates/components/reports/match_table.html:149
-#: reportapp/templates/leader_statistics_template.html:193
+#: reportapp/templates/leader_statistics_template.html:191
 #: reportapp/templates/scannerjobs/scannerjob_list.html:23
 msgid "Actions"
 msgstr "Handlinger"
@@ -932,7 +932,7 @@ msgid "report module"
 msgstr "rapportmodulet"
 
 #: reportapp/templates/components/user/login.html:15
-#: reportapp/templates/user.html:22 reportapp/views/statistics_views.py:610
+#: reportapp/templates/user.html:22 reportapp/views/statistics_views.py:612
 msgid "Username"
 msgstr "Brugernavn"
 
@@ -1230,7 +1230,7 @@ msgid "employees"
 msgstr "medarbejdere"
 
 #: reportapp/templates/leader_statistics_template.html:44
-#: reportapp/views/statistics_views.py:615
+#: reportapp/views/statistics_views.py:618
 msgid "Organizational units"
 msgstr "Organisatoriske enheder"
 
@@ -1250,26 +1250,29 @@ msgstr "Søg efter medarbejder"
 msgid "Employee"
 msgstr "Medarbejder"
 
-#: reportapp/templates/leader_statistics_template.html:110
-msgid "Results older than 30 days"
-msgstr "Resultater ældre end 30 dage"
+#: reportapp/templates/leader_statistics_template.html:108
+#, python-format
+msgid "Results older than %(retention_days)s days"
+msgstr "Resultater ældre end %(retention_days)s dage"
 
-#: reportapp/templates/leader_statistics_template.html:112
+#: reportapp/templates/leader_statistics_template.html:110
+#, python-format
 msgid ""
-"The number of results stemming from a source, which is older than 30 days. "
-"Your organization has defined, that results may be stored for a maximum of "
-"30 days. Results older than this should be handled as soon as possible."
+"The number of results stemming from a source, which is older than "
+"%(retention_days)s days. Your organization has defined, that results may be "
+"stored for a maximum of %(retention_days)s days. Results older than this "
+"should be handled as soon as possible."
 msgstr ""
-"Antallet af resultater der stammer fra en kilde, som er mere end 30 dage. "
-"Din organisation har indstillet, at resultater må opbevares i maksimalt 30 "
+"Antallet af resultater der stammer fra en kilde, som er mere end %(retention_days)s dage. "
+"Din organisation har indstillet, at resultater må opbevares i maksimalt %(retention_days)s "
 "dage. Resultater ældre end dette bør håndteres hurtigst muligt."
 
-#: reportapp/templates/leader_statistics_template.html:152
-#: reportapp/views/statistics_views.py:613
+#: reportapp/templates/leader_statistics_template.html:150
+#: reportapp/views/statistics_views.py:616
 msgid "Withheld"
 msgstr "Tilbageholdte"
 
-#: reportapp/templates/leader_statistics_template.html:154
+#: reportapp/templates/leader_statistics_template.html:152
 msgid ""
 "Withheld results are results that aren't yet visible to the user, but can be "
 "delegated by a superuser. These results won't count in the development "
@@ -1279,7 +1282,7 @@ msgstr ""
 "brugeren, men som kan uddeles af en superbruger. Disse resultater tæller "
 "ikke med i udviklingsoverblikket."
 
-#: reportapp/templates/leader_statistics_template.html:175
+#: reportapp/templates/leader_statistics_template.html:173
 #, python-format
 msgid ""
 "The status of each user is determined by how many matches that user has, and "
@@ -1292,11 +1295,11 @@ msgstr ""
 "“Færdig”-statussen har ingen resultater. En bruger med “Accepteret” har "
 "håndteret mindst 75%% af sine seneste resultater."
 
-#: reportapp/templates/leader_statistics_template.html:207
+#: reportapp/templates/leader_statistics_template.html:205
 msgid "Loading employee ..."
 msgstr "Indlæser medarbejder ..."
 
-#: reportapp/templates/leader_statistics_template.html:212
+#: reportapp/templates/leader_statistics_template.html:210
 msgid "No employees found."
 msgstr "Ingen medarbejdere fundet."
 
@@ -1978,14 +1981,14 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:531 reportapp/views/report_views.py:556
-#: reportapp/views/report_views.py:576 reportapp/views/report_views.py:601
-#: reportapp/views/report_views.py:620
+#: reportapp/views/report_views.py:532 reportapp/views/report_views.py:557
+#: reportapp/views/report_views.py:577 reportapp/views/report_views.py:602
+#: reportapp/views/report_views.py:621
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:647
+#: reportapp/views/report_views.py:648
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"
@@ -2059,70 +2062,66 @@ msgstr "Uhåndterede Resultater per Måned"
 msgid "New Matches by Month"
 msgstr "Nye Resultater per Måned"
 
-#: reportapp/views/statistics_views.py:608
+#: reportapp/views/statistics_views.py:610
 msgid "First name"
 msgstr "Fornavn"
 
-#: reportapp/views/statistics_views.py:609
+#: reportapp/views/statistics_views.py:611
 msgid "Last name"
 msgstr "Efternavn"
 
-#: reportapp/views/statistics_views.py:611
-msgid "Older than 30 days"
-msgstr "Ældre end 30 dage"
-
-#: reportapp/views/statistics_views.py:715
+#: reportapp/views/statistics_views.py:718
 #, python-format
 msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
 
-#: reportapp/views/statistics_views.py:826
+#: reportapp/views/statistics_views.py:830
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:826
+#: reportapp/views/statistics_views.py:830
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:826
+#: reportapp/views/statistics_views.py:830
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:826
+#: reportapp/views/statistics_views.py:830
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:827
+#: reportapp/views/statistics_views.py:831
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:827
+#: reportapp/views/statistics_views.py:831
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:827
+#: reportapp/views/statistics_views.py:831
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:827
+#: reportapp/views/statistics_views.py:831
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:828
+#: reportapp/views/statistics_views.py:832
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:828
+#: reportapp/views/statistics_views.py:832
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:828
+#: reportapp/views/statistics_views.py:832
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:828
+#: reportapp/views/statistics_views.py:832
 msgid "Dec"
 msgstr "Dec"
 

@@ -181,6 +181,12 @@
     }
   }
 
+  .secondary_text {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    font-size: small;
+  }
+
   .form__group {
     display: block;
 

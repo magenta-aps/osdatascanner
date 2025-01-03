@@ -57,6 +57,12 @@
 
         <div class="form__row--retention-policy">
           <span class="form__row__title">{% trans "Retention policy settings" %}</span>
+          <span class="secondary_text">
+            {% blocktrans trimmed %}
+              Allow results to be filtered out if they stem from sources less than a specific number of days of age.
+              This affects the report tab and the leader overview in the report module.
+            {% endblocktrans %}
+          </span>
 
           <div class="form__row__item {% if form.retention_policy.errors %}has-error{% endif %}">
             <label class="required-form">{% trans "Filtering of results by age" %}</label>
