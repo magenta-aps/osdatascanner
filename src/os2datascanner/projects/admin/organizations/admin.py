@@ -52,6 +52,12 @@ class OrganizationAdmin(admin.ModelAdmin):
             }
         ),
         (
+            _("Retention policy"),
+            {
+                "fields": ('retention_policy', 'retention_days')
+            }
+        ),
+        (
             _("System rules"),
             {
                 "fields": ('system_rules',)

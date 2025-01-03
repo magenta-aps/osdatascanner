@@ -29,6 +29,7 @@
           td {
             padding: 0 !important;
           }
+
           .page_of_pages,
           .pages,
           .dropdown {
@@ -78,7 +79,14 @@
     &__item {
       padding-top: 0.5rem;
 
-      input,
+      .inline-input input {
+        margin-top: 0;
+      }
+
+      input {
+        margin-top: 0.5rem;
+      }
+
       select {
         margin-top: 0.5rem !important;
       }
@@ -86,6 +94,7 @@
 
     &--general,
     &--tab-access,
+    &--retention-policy,
     &--support-button,
     &--support,
     &--dpo,
@@ -108,13 +117,14 @@
       margin: 0;
     }
 
-    &--outlook {
+    &--outlook,
+    &--retention-policy {
       gap: 1rem;
 
       .form__row__item {
         padding-top: 0.5rem;
 
-        > label:first-child {
+        >label:first-child {
           font-weight: 600;
           margin-bottom: 1rem;
         }
@@ -202,13 +212,13 @@
       display: flex;
       gap: 0.5rem;
 
-      > .button {
+      >.button {
         margin-top: 0.5rem;
       }
     }
   }
 
-  .form__group + .form__group {
+  .form__group+.form__group {
     margin-top: 1rem;
   }
 
@@ -227,23 +237,23 @@
     color: var(--color-text-main);
   }
 
-  label + input,
-  label + .input-group {
+  label+input,
+  label+.input-group {
     margin-top: 0.5rem;
   }
 
-  input + label,
-  select + label {
+  input+label,
+  select+label {
     margin-top: 1rem;
   }
 
-  .form__group + .form__group,
-  .form__group + .form__error,
-  .form__error + .form__group {
+  .form__group+.form__group,
+  .form__group+.form__error,
+  .form__error+.form__group {
     margin-top: 1rem;
   }
 
-  input[type="checkbox"] + label {
+  input[type="checkbox"]+label {
     display: flex;
   }
 
@@ -292,11 +302,9 @@
     For the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also 
     swap in a different svg icon or an external image reference */
     background-image: url("../svg/chevron-down.svg"),
-      linear-gradient(
-        to bottom,
+      linear-gradient(to bottom,
         var(--color-widget-bg) 0%,
-        var(--color-widget-bg) 100%
-      );
+        var(--color-widget-bg) 100%);
     background-repeat: no-repeat, repeat;
     /* arrow icon position (.75rem from the right, 50% vertical) , then gradient position*/
     background-position: right 0.75rem top 50%, 0 0;
@@ -387,7 +395,7 @@
       width: 0;
       height: 0;
 
-      &:focus + .radio__control {
+      &:focus+.radio__control {
         &--notify {
           box-shadow: 0 0 0 0.05em #fff,
             0 0 0.15em 0.1rem var(--color-notification);
@@ -414,7 +422,7 @@
       place-items: center;
     }
 
-    input + .radio__control--notify::before {
+    input+.radio__control--notify::before {
       content: "";
       width: 0.5rem;
       height: 0.5rem;
@@ -424,7 +432,7 @@
       transform: scale(0);
     }
 
-    input + .radio__control--warning::before {
+    input+.radio__control--warning::before {
       content: "";
       width: 0.5rem;
       height: 0.5rem;
@@ -434,7 +442,7 @@
       transform: scale(0);
     }
 
-    input + .radio__control--problem::before {
+    input+.radio__control--problem::before {
       content: "";
       width: 0.5rem;
       height: 0.5rem;
@@ -444,7 +452,7 @@
       transform: scale(0);
     }
 
-    input + .radio__control--critical::before {
+    input+.radio__control--critical::before {
       content: "";
       width: 0.5rem;
       height: 0.5rem;
@@ -454,7 +462,7 @@
       transform: scale(0);
     }
 
-    input:checked + .radio__control::before {
+    input:checked+.radio__control::before {
       transform: scale(1);
     }
   }
@@ -554,13 +562,14 @@
     z-index: -1;
   }
 
-  input + label {
+  input+label {
     cursor: pointer;
     padding-left: 1.75em;
     margin-top: 0;
   }
 
-  input[type="checkbox"] + label {
+  input[type="checkbox"]+label {
+
     &::before,
     &::after {
       :root {
@@ -596,19 +605,19 @@
     }
   }
 
-  input[type="checkbox"]:focus + label::before {
+  input[type="checkbox"]:focus+label::before {
     border-color: #12496e;
   }
 
   &:hover {
-    input[type="checkbox"] + label {
+    input[type="checkbox"]+label {
       &::before {
         border-color: #12496e;
       }
     }
   }
 
-  input[type="checkbox"]:checked + label {
+  input[type="checkbox"]:checked+label {
     &::before {
       background-color: #12496e;
       border-color: transparent;
@@ -619,7 +628,7 @@
     }
   }
 
-  input[type="checkbox"]:disabled + label {
+  input[type="checkbox"]:disabled+label {
     opacity: 0.5;
 
     &::before {
@@ -691,7 +700,7 @@
   filter: alpha(opacity=0);
 }
 
-.fileUpload + * {
+.fileUpload+* {
   margin-left: 0.25rem;
 }
 

@@ -45,14 +45,14 @@ function disableSupportOptions() {
 }
 
 function hideSupportOption() {
-  
-    const field = document.getElementsByClassName("form__row--support-settings")[0];
-    field.style.display = "none";
+
+  const field = document.getElementsByClassName("form__row--support-settings")[0];
+  field.style.display = "none";
 }
 
 function showSupportOption() {
-    const field = document.getElementsByClassName("form__row--support-settings")[0];
-    field.style.display = "block";
+  const field = document.getElementsByClassName("form__row--support-settings")[0];
+  field.style.display = "block";
   enableDPOOptions();
   enableSupportOptions();
 }
@@ -89,6 +89,24 @@ function SupportOptionChange(input) {
   }
 }
 
+function disableRetentionDaysField() {
+  const field = document.getElementById('id_retention_days');
+  field.setAttribute("disabled", "true");
+}
+
+function enableRetentionDaysField() {
+  const field = document.getElementById('id_retention_days');
+  field.removeAttribute("disabled");
+}
+
+function retentionPolicyChange(input) {
+  if (input.value === "false") {
+    disableRetentionDaysField();
+  } else {
+    enableRetentionDaysField();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const showSupportButtonCheck = document.getElementById('id_show_support_button');
   supportOptionChange(showSupportButtonCheck);
@@ -106,5 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
   SupportOptionChange(SupportMethodInput);
   SupportMethodInput.addEventListener('change', () => {
     SupportOptionChange(SupportMethodInput);
+  });
+
+  const retentionPolicyInputFalse = document.getElementById('id_retention_policy_false');
+  const retentionPolicyInputTrue = document.getElementById('id_retention_policy_true');
+  [retentionPolicyInputFalse, retentionPolicyInputTrue].forEach((input) => {
+    if (input.checked) {
+      retentionPolicyChange(input);
+      // Change events are defined in HTML
+    }
   });
 });

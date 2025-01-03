@@ -101,6 +101,11 @@ class Organization(models.Model):
 
     email_header_banner = ImageField(null=True, blank=True,
                                      verbose_name=_("Email header banner"))
+
+    # Retention policy settings
+    retention_policy = models.BooleanField(default=False, verbose_name=_("retention policy"))
+    retention_days = models.PositiveIntegerField(default=30, verbose_name=_("retention days"))
+
     # Outlook settings
     outlook_delete_email_permission = models.BooleanField(
         default=False,
@@ -237,4 +242,5 @@ class OrganizationSerializer(BaseSerializer):
                   'show_support_button', 'support_contact_method', 'support_name',
                   'support_value', 'dpo_contact_method', 'dpo_name', 'dpo_value',
                   'outlook_delete_email_permission', 'outlook_categorize_email_permission',
-                  'onedrive_delete_permission', 'email_header_banner', 'dtstart']
+                  'onedrive_delete_permission', 'email_header_banner', 'dtstart',
+                  'retention_policy', 'retention_days']
