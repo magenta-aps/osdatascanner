@@ -21,7 +21,7 @@
           <div class="dropdown__wrapper">
             <div class="dropdown__label">
               <label for="scannerjobs" class="match_filtering_label">{% trans "Scan" %}</label>
- 
+
               <button type="button"
                       class="match_filtering_clear_button"
                       name="clear_scannerjob"
@@ -34,14 +34,14 @@
                       hx-params="not scannerjob"
                       hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
             </div>
- 
+
             <div class="match_filtering dropdown">
               <select name="scannerjob" id="scannerjobs" autocomplete="off">
                 <option value="all"
                         {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
                   {% trans "All scannerjobs" %}
                 </option>
- 
+
                 {% for scan in scannerjob_choices %}
                   <option value="{{ scan.scanner_job_pk|unlocalize }}"
                           {% if chosen_scannerjob == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
@@ -52,12 +52,12 @@
             </div>
           </div>
         </div>
- 
+
         <div id="source_type_filter">
           <div class="dropdown__wrapper">
             <div class="dropdown__label">
               <label for="source-types" class="match_filtering_label">{% trans "Source Type" %}</label>
- 
+
               <button type="button"
                       class="match_filtering_clear_button"
                       name="clear_source_type"
@@ -70,14 +70,14 @@
                       hx-params="not source_type"
                       hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
             </div>
- 
+
             <div class="match_filtering dropdown">
               <select name="source_type" id="source_type" autocomplete="off">
                 <option value="all"
                         {% if chosen_source_type == "all" %}selected="selected"{% endif %}>
                   {% trans "All source types" %}
                 </option>
- 
+
                 {% for source_type in source_type_choices %}
                   <option value="{{ source_type.source_type }}"
                           {% if chosen_source_type == source_type.source_type %}selected="selected"{% endif %}>
@@ -89,13 +89,13 @@
             </div>
           </div>
         </div>
- 
-        {% if "/archive"  in request.path %}
+
+        {% if "/archive" in request.path %}
           <div>
             <div class="dropdown__wrapper">
               <div class="dropdown__label">
                 <label for="resolution_status" class="match_filtering_label">{% trans "Resolution Status" %}</label>
- 
+
                 <button type="button"
                         class="match_filtering_clear_button"
                         name="clear_resolution_status"
@@ -108,14 +108,14 @@
                         hx-params="not resolution_status"
                         hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
               </div>
- 
+
               <div class="match_filtering dropdown">
                 <select name="resolution_status" id="resolution_status" autocomplete="off">
                   <option value="all"
                           {% if chosen_resolution_status == "all" %}selected="selected"{% endif %}>
                     {% trans "All resolution statuses" %}
                   </option>
- 
+
                   {% for method in resolution_status_choices %}
                     <option value="{{ method.resolution_status|stringformat:'i' }}"
                             {% if chosen_resolution_status == method.resolution_status|stringformat:"i" %}selected="selected"{% endif %}>
@@ -127,13 +127,13 @@
             </div>
           </div>
         {% endif %}
- 
+
         <div id="sensitivity_filter"
              {% if request.GET.sensitivity_checkbox == on %}hidden{% endif %}>
           <div class="dropdown__wrapper">
             <div class="dropdown__label">
               <label for="sensitivities" class="match_filtering_label">{% trans "Sensitivity" %}</label>
- 
+
               <button type="button"
                       class="match_filtering_clear_button"
                       name="clear_sensitivities"
@@ -164,7 +164,7 @@
             </div>
           </div>
         </div>
- 
+
         <div>
           <div class="report_filter_toggle_button">
             <button class="filter-button filter-button--report expand"
@@ -175,6 +175,9 @@
               </svg>
             </button>
 
+            {% comment %}
+            Can we avoid using inline styling here?
+            {% endcomment %}
             <div id="report_filter_toggle_options"
                  class="filter-container"
                  style="display: none">
@@ -189,57 +192,61 @@
                     <label for="sensitivity_checkbox">{% trans "sensitivity"|capfirst %}</label>
                     <button class="checkbox_button"
                             id="sensitivity_checkbox_button"
-                            onclick="toggleCheckbox(event, 'sensitivity_checkbox')">
-                    </div>
-                  </ul>
+                            onclick="toggleCheckbox(event, 'sensitivity_checkbox')"></button>
+                  </div>
+                </ul>
 
-                  <ul class="report">
-                    <button class="button--cta button"
-                            onclick="hideOptions('report_filter_toggle_options')">Vis</button>
-                  </ul>
-                </div>
+                <ul class="report">
+                  <button class="button--cta button"
+                          onclick="hideOptions('report_filter_toggle_options')">Vis</button>
+                </ul>
               </div>
             </div>
           </div>
-        </div>
- 
-        <div class="filtering-UI__footer">
-          <div class="checkbox_wrapper checkbox-group">
-            <div class="ds-checkbox">
-              {% comment %}
-              We use the hidden input field below to track whether 30-days is enabled or not.
-              If we used the checkbox, unticking it would make it disappear from the form's GET action
-              {% endcomment %}
-              <input type="hidden" id="30-days" name="30-days" value="{{ 30_days }}">
-              <input type="checkbox"
-                     id="30-days-toggle"
-                     class="30-days-toggle"
-                     autocomplete="off"
-                     {% if 30_days == "true" %}checked{% endif %}>
-              <label for="30-days-toggle">{% trans "Include results, that are less than 30 days old" %}</label>
-            </div>
-
-            {% if view.type == "personal" %}
-              <div class="ds-checkbox">
-                {% comment %}
-                We use the hidden input field below to track whether 30-days is enabled or not.
-                If we used the checkbox, unticking it would make it disappear from the form's GET action
-                {% endcomment %}
-                <input type="hidden"
-                       id="include-shared"
-                       name="include-shared"
-                       value="{{ include_shared }}">
-                <input type="checkbox"
-                       id="include-shared-toggle"
-                       class="include-shared-toggle"
-                       autocomplete="off"
-                       {% if include_shared == "true" %}checked{% endif %}>
-                <label for="include-shared-toggle">{% trans "Include results from shared mailboxes" %}</label>
-              </div>
-            {% endif %}
-          </div>
- 
         </div>
       </div>
-    </form>
-  </div>
+
+      <div class="filtering-UI__footer">
+        <div class="checkbox_wrapper checkbox-group">
+          {% if retention_policy %}
+            <div class="ds-checkbox">
+              {% comment %}
+                We use the hidden input field below to track whether retention is enabled or not.
+                If we used the checkbox, unticking it would make it disappear from the form's GET action
+              {% endcomment %}
+              <input type="hidden" id="retention" name="retention" value="{{ retention }}">
+              <input type="checkbox"
+                     id="retention-toggle"
+                     class="retention-toggle"
+                     autocomplete="off"
+                     {% if retention == "true" %}checked{% endif %}>
+              <label for="retention-toggle">
+                {% blocktrans %} Include results, that are less than {{ retention_days }} days old {% endblocktrans %}
+              </label>
+            </div>
+          {% endif %}
+
+          {% if view.type == "personal" %}
+            <div class="ds-checkbox">
+              {% comment %}
+                We use the hidden input field below to track whether shared-toggle is enabled or not.
+                If we used the checkbox, unticking it would make it disappear from the form's GET action
+              {% endcomment %}
+              <input type="hidden"
+                     id="include-shared"
+                     name="include-shared"
+                     value="{{ include_shared }}">
+              <input type="checkbox"
+                     id="include-shared-toggle"
+                     class="include-shared-toggle"
+                     autocomplete="off"
+                     {% if include_shared == "true" %}checked{% endif %}>
+              <label for="include-shared-toggle">{% trans "Include results from shared mailboxes" %}</label>
+            </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </form>
+</div>

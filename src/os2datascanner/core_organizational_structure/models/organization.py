@@ -104,7 +104,8 @@ class Organization(models.Model):
 
     # Retention policy settings
     retention_policy = models.BooleanField(default=False, verbose_name=_("retention policy"))
-    retention_days = models.PositiveIntegerField(default=30, verbose_name=_("retention days"))
+    retention_days = models.PositiveIntegerField(
+        default=30, verbose_name=_("retention days"), blank=True)
 
     # Outlook settings
     outlook_delete_email_permission = models.BooleanField(

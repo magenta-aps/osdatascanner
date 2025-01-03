@@ -252,7 +252,7 @@ msgid "source type"
 msgstr "kildetype"
 
 #: reportapp/models/documentreport.py:66
-#: reportapp/templates/components/reports/filters.html:189
+#: reportapp/templates/components/reports/filters.html:191
 msgid "sensitivity"
 msgstr "følsomhed"
 
@@ -560,8 +560,8 @@ msgstr "Scan"
 
 #: reportapp/templates/components/reports/filters.html:35
 #: reportapp/templates/components/reports/filters.html:71
-#: reportapp/templates/components/reports/filters.html:109
-#: reportapp/templates/components/reports/filters.html:147
+#: reportapp/templates/components/reports/filters.html:111
+#: reportapp/templates/components/reports/filters.html:149
 msgid "Clear"
 msgstr "Ryd"
 
@@ -579,28 +579,29 @@ msgstr "Kildetype"
 msgid "All source types"
 msgstr "Alle kildetyper"
 
-#: reportapp/templates/components/reports/filters.html:97
+#: reportapp/templates/components/reports/filters.html:98
 #: reportapp/views/statistics_views.py:489
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
 
-#: reportapp/templates/components/reports/filters.html:116
+#: reportapp/templates/components/reports/filters.html:118
 msgid "All resolution statuses"
 msgstr "Alle håndteringsstatusser"
 
-#: reportapp/templates/components/reports/filters.html:135
+#: reportapp/templates/components/reports/filters.html:137
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: reportapp/templates/components/reports/filters.html:154
+#: reportapp/templates/components/reports/filters.html:156
 msgid "All sensitivities"
 msgstr "Alle følsomheder"
 
-#: reportapp/templates/components/reports/filters.html:220
-msgid "Include results, that are less than 30 days old"
-msgstr "Inkludér resultater, der er under 30 dage gamle"
+#: reportapp/templates/components/reports/filters.html:225
+#, python-format
+msgid " Include results, that are less than %(retention_days)s days old "
+msgstr "Inkludér resultater, der er under %(retention_days)s dage gamle"
 
-#: reportapp/templates/components/reports/filters.html:239
+#: reportapp/templates/components/reports/filters.html:246
 msgid "Include results from shared mailboxes"
 msgstr "Inkludér resultater fra fælles mailbokse"
 
@@ -1977,14 +1978,14 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:527 reportapp/views/report_views.py:552
-#: reportapp/views/report_views.py:572 reportapp/views/report_views.py:597
-#: reportapp/views/report_views.py:616
+#: reportapp/views/report_views.py:531 reportapp/views/report_views.py:556
+#: reportapp/views/report_views.py:576 reportapp/views/report_views.py:601
+#: reportapp/views/report_views.py:620
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:643
+#: reportapp/views/report_views.py:647
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"
