@@ -10,7 +10,7 @@ logger = structlog.get_logger("reportapp")
 def is_owner(owner: str, account: Account) -> bool:
     """ Checks if user has an alias with _value corresponding to owner value.
         Returns True/False"""
-    return bool(account.aliases.filter(_value=owner))
+    return bool(account.aliases.filter(_value__iexact=owner))
 
 
 def handle_report(account: Account,
