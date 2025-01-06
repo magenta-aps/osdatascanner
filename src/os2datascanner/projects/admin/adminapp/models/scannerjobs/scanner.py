@@ -254,6 +254,12 @@ class Scanner(models.Model):
                                               tzinfo=gettz())
                     + datetime.timedelta(minutes=added_minutes))
 
+    @property
+    def previous_run_time(self) -> datetime.datetime | None:
+        """Returns the timestamp of the most recent execution of this scanner, if there is one."""
+        last_status = self.statuses.last()
+        return last_status.start_time if last_status else None
+
     # Run error messages
     HAS_NO_RULES = (
         _("The scanner job could not be started because it has no assigned rules.")

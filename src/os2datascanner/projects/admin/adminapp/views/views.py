@@ -50,7 +50,7 @@ def _hide_csrf_token_and_password(d):
 class RestrictedListView(LoginRequiredMixin, ListView):
     def get_queryset(self, **kwargs):
         """Restrict to the organization of the logged-in user."""
-        return self.model.objects.filter(
+        return super().get_queryset().filter(
             UserWrapper(
                 self.request.user).make_org_Q(
                 org_path=kwargs.get(

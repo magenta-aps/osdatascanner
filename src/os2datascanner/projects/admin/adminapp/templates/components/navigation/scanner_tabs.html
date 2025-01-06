@@ -75,17 +75,18 @@
 
 <script>
     // Menu tabs
-    var web = document.getElementById("web")
-    var file = document.getElementById("file")
-    var exchange = document.getElementById("exchange")
-    var dropbox = document.getElementById("dropbox")
-    var msgraph_mail = document.getElementById("msgraph-mail")
-    var msgraph_file = document.getElementById("msgraph-file")
-    var msgraph_teams_file = document.getElementById("msgraph-teams-file")
-    var msgraph_calendar = document.getElementById("msgraph-calendar")
-    var googledrive = document.getElementById("googledrive")
-    var gmail = document.getElementById("gmail")
-    var sbsys = document.getElementById("sbsys")
+    let web = document.getElementById("web")
+    let file = document.getElementById("file")
+    let exchange = document.getElementById("exchange")
+    let dropbox = document.getElementById("dropbox")
+    let msgraph_mail = document.getElementById("msgraph-mail")
+    let msgraph_file = document.getElementById("msgraph-file")
+    let msgraph_teams_file = document.getElementById("msgraph-teams-file")
+    let msgraph_calendar = document.getElementById("msgraph-calendar")
+    let googledrive = document.getElementById("googledrive")
+    let gmail = document.getElementById("gmail")
+    let sbsys = document.getElementById("sbsys")
+    let removed = document.getElementById("removed")
 
     if (location.pathname === '/') {
         if (web) {
@@ -121,6 +122,9 @@
         } else if (sbsys) {
             window.location.href = "/sbsysscanners/"
             sbsys.classList.add('active')
+        } else if (removed) {
+          window.location.href = "/scanners/removed"
+          removed.classList.add('active')
         }
     }
     if (location.pathname === '/webscanners/') {
@@ -155,6 +159,9 @@
     }
     if (location.pathname === '/sbsysscanners/') {
         sbsys.classList.add("active")
+    }
+    if (location.pathname === '/scanners/removed') {
+      removed.classList.add("active")
     }
 
 

@@ -44,23 +44,24 @@
 
       {% include "components/feedback/snackbarNew.html" %}
 
-      {% if scanner_list %}
-        <div class="datatablex__card-container search-target">
-          <div class="datatablex__wrapper">
-            <table class="datatablex scannerjob-table{% if view.type == 'web' %} scannerjob-table--webscanner{% elif view.type == 'file' %} scannerjob-table--filescanner{% endif %}">
-              <thead>
-                <tr class="datatablex__row">
-                  <th class="column column--name">{% trans "Name" %}</th>
+      <div class="datatablex__card-container search-target">
+        <div class="datatablex__wrapper">
+          <table class="datatablex scannerjob-table{% if view.type == 'web' %} scannerjob-table--webscanner{% elif view.type == 'file' %} scannerjob-table--filescanner{% endif %}">
+            <thead>
+              <tr class="datatablex__row">
+                <th class="column column--name">{% trans "Name" %}</th>
 
-                  <th class="column column--type">{% trans "Type" %}</th>
+                <th class="column column--type">{% trans "Type" %}</th>
 
-                  <th class="column column--automatic">{% trans "Last scan" %}</th>
+                <th class="column column--automatic">{% trans "Last scan" %}</th>
 
-                  <th class="column column--actions">{% trans "Actions" %}</th>
-                </tr>
-              </thead>
+                <th class="column column--actions">{% trans "Actions" %}</th>
+              </tr>
+            </thead>
 
-              <tbody>
+            <tbody>
+
+              {% if scanner_list %}
                 {% for scanner in scanner_list %}
                   <tr class="datatablex__row" tabindex="0">
                     <td class="domain-url column column--name">
@@ -79,7 +80,11 @@
                       </div>
                     </td>
 
-                    <td class="scanner-runtime column column--automatic">SIDSTE SCAN</td>
+                    <td class="scanner-runtime column column--automatic">
+                      <div class="date__container">
+                        <span>{{ scanner.previous_run_time|naturaltime }}</span>
+                      </div>
+                    </td>
 
                     <td class="scanner-actions column column--actions">
                       <div class="action-wrapper button-group">
@@ -132,14 +137,15 @@
                     </td>
                   </tr>
                 {% endfor %}
-              </tbody>
-            </table>
-          </div>
+              {% else %}
+                <tr class="datatablex__row">
+                  <td colspan="5" class="datatable__column--nodata">{% trans "No removed scanners found" %}</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
         </div>
-
-      {% else %}
-        <p class="no-results search-target">{% trans "No scannerjob added" %}</p>
-      {% endif %}
+      </div>
     </div>
   </main>
 {% endblock body %}

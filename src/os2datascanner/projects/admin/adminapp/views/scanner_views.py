@@ -804,16 +804,25 @@ class RemovedScannersView(ScannerList):
     """View for listing all removed scanners."""
     template_name = "removed_scanners.html"
     model = Scanner
+    queryset = Scanner.objects.unfiltered().filter(hidden=True)
 
     def get_queryset(self):
         return super().get_queryset().select_subclasses()
 
 
-class RecreateScannerView(PermissionRequiredMixin, RestrictedCreateView):
+class RecreateScannerView(PermissionRequiredMixin, RestrictedUpdateView):
     permission_required = "os2datascanner.unhide_scanner"
+    model = Scanner
+
+    def get_success_url(self):
+        return reverse_lazy("removed_scanners")
+
+    def get_queryset(self):
+        return Scanner.objects.unfiltered().filter(hidden=True)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        print(self.object)
         self.object.unhide()
 
         messages.add_message(
