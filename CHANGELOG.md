@@ -40,6 +40,9 @@
 
 - Fix deletion issues for OneDrive results, by making the is_owner check case insensitive.
 
+- Button for removing a scanner from the scanner overview is now correctly hidden if the user does
+  not have the correct permission.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"
