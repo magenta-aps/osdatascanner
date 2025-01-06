@@ -43,6 +43,9 @@
 - Button for removing a scanner from the scanner overview is now correctly hidden if the user does
   not have the correct permission.
 
+- Deletion of scannerjob results through the "Scannerjob" tab in the reportmodule 
+  no longer times out on large counts.
+
 ## Version 3.26.2, 9th December 2024
 
 "Historically Accurate"
