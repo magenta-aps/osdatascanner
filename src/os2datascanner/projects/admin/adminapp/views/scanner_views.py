@@ -798,3 +798,29 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
         context = super().get_context_data(**kwargs)
         context["running"] = self.scanner_running
         return context
+
+
+class RemovedScannersView(ScannerList):
+    """View for listing all removed scanners."""
+    template_name = "removed_scanners.html"
+    model = Scanner
+
+    def get_queryset(self):
+        return super().get_queryset().select_subclasses()
+
+
+class RecreateScannerView(PermissionRequiredMixin, RestrictedCreateView):
+    permission_required = "os2datascanner.unhide_scanner"
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.unhide()
+
+        messages.add_message(
+                request,
+                messages.SUCCESS,
+                _("The scannerjob was recreated."),
+                extra_tags="manual_close"
+            )
+
+        return redirect(self.get_success_url())

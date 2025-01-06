@@ -76,7 +76,7 @@ Single-colored icons can be modified like so:
   height: 2rem;
   width: 2rem;
 
-  > svg {
+  >svg {
     display: block;
     height: 100%;
     fill: #50565d;
@@ -108,13 +108,15 @@ Single-colored icons can be modified like so:
   }
 
   .material-icons,
-  .material-symbols {
+  .material-symbols,
+  .material-symbols-outlined {
     color: $icon-color;
   }
-  
+
   svg,
   .material-icons,
-  .material-symbols {
+  .material-symbols,
+  .material-symbols-outlined {
     height: 1em;
     width: 1em;
     vertical-align: text-top;

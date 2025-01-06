@@ -18,6 +18,7 @@ import structlog
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.core.exceptions import ValidationError
+from django.urls import reverse_lazy
 
 from os2datascanner.engine2.model.smbc import SMBCSource
 from .scanner import Scanner

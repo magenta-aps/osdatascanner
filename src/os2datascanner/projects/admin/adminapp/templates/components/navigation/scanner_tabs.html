@@ -44,6 +44,9 @@
         {% if settings.ENABLE_SBSYSSCAN %}
           <a id="sbsys" class="tabs__control" href="/sbsysscanners/">{% trans "Sbsysscanner" %}</a>
         {% endif %}
+        <a id="removed"
+           class="tabs__control"
+           href="{% url "removed_scanners" %}">{% trans "Removed scanners" %}</a>
       </div>
     </div>
   {% endif %}

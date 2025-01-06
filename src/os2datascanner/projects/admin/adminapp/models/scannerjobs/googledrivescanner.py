@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 from ...utils import upload_path_gdrive_users, upload_path_gdrive_service_account
 from os2datascanner.engine2.model.googledrive import GoogleDriveSource

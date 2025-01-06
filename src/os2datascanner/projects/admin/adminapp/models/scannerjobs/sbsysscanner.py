@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.utils.translation import pgettext_lazy
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 
 from os2datascanner.engine2.model.sbsys import SbsysSource

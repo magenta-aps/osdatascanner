@@ -148,22 +148,27 @@
     background-color: transparent !important;
     height: 26px; // This needs to be redone after the table refactoring
 
-    .material-icons, .material-symbols {
+    .material-icons,
+    .material-symbols,
+    .material-symbols-outlined {
       &#expand_more {
         pointer-events: none;
         transition: var(--transition-default);
         color: #aaa;
 
-          &.active {
-            color: var(--color-primary);
-          }
+        &.active {
+          color: var(--color-primary);
+        }
       }
     }
-    
+
     &.up {
-      .material-icons, .material-symbols {
+
+      .material-icons,
+      .material-symbols,
+      .material-symbols-outlined {
         &#expand_more {
-          transform: rotate(180deg);      
+          transform: rotate(180deg);
         }
       }
     }
@@ -182,11 +187,13 @@
     }
   }
 
-  &--datatable-actions { // For the new button style in the datatables
+  &--datatable-actions {
+    // For the new button style in the datatables
     background-color: transparent;
     border: var(--btn-border-default) transparent;
 
-    .material-symbols {
+    .material-symbols,
+    .material-symbols-outlined {
       color: var(--color-primary-dark);
     }
 
@@ -200,25 +207,28 @@
       // Box Model
       border: var(--btn-border-default) transparent;
 
-      .material-symbols {
+      .material-symbols,
+      .material-symbols-outlined {
         color: var(--color-btn-neutral);
       }
 
     }
-  
+
     &:hover:not([disabled]),
     &:focus:not([disabled]) {
       border: var(--btn-border-default) var(--color-primary-dark);
       background-color: var(--color-primary-dark) !important;
-      
-      .material-symbols {
+
+      .material-symbols,
+      .material-symbols-outlined {
         font-variation-settings: 'wght' 500, 'GRAD' -25 !important;
         color: var(--color-text-white);
       }
     }
   }
 
-  &--rounded-button { // We don't use this anywhere, but it's a part of the design guide, so it gets to stay for now.
+  &--rounded-button {
+    // We don't use this anywhere, but it's a part of the design guide, so it gets to stay for now.
     padding: 0.5rem 1rem;
     border-radius: 50px;
   }
@@ -311,19 +321,15 @@
 
   // ***** Icon specific code *****
   .material-icons#play_arrow {
-    transform: translateX(
-      -0.063rem
-    ); // adjusts the perceived optical balance of the play icon
+    transform: translateX(-0.063rem); // adjusts the perceived optical balance of the play icon
   }
 
   &--debug {
-    background: repeating-linear-gradient(
-      45deg,
-      #ddd7,
-      #fdd7 10px,
-      #f667 10px,
-      #f667 20px
-    );
+    background: repeating-linear-gradient(45deg,
+        #ddd7,
+        #fdd7 10px,
+        #f667 10px,
+        #f667 20px);
     border: 1px dashed var(--color-primary-dark);
     font-style: italic;
   }
@@ -494,6 +500,7 @@
 }
 
 .button--cta-button {
+
   // Change the background of the fake shadow when button:hover
   &:hover:not([disabled]),
   &:focus:not([disabled]) {
