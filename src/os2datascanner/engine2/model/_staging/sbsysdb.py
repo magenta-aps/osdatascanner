@@ -57,9 +57,11 @@ class SBSYSDBRule(SimpleRule):
 
     __match_args__ = ("_field", "_op", "_value")
 
-    def __init__(self, field: str, op: Op, value, *args, **kwargs):
+    def __init__(
+            self, field: str, op: Op | str, value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._field = field
-        self._op = op
+        self._op = op if isinstance(op, self.Op) else self.Op(op)
         self._value = value
 
     @property
@@ -77,12 +79,17 @@ class SBSYSDBRule(SimpleRule):
 
 
 def resolve_complex_column_name(
-        start: Table, col_name: str) -> (Select, Column):
+        start: Table, col_name: str, all_tables) -> (Select, Column):
     """Given a Table at which to start and a complex column name that may
     traverse several tables (for example,
     "Creator.ContactInfo.Address.Postcode"), returns the conjunction of all the
     extra constraints required by the traversal and a reference to the column
-    that was eventually selected."""
+    that was eventually selected.
+
+    The traversal logic can follow foreign key relations automatically, but
+    it also supports a cast syntax ("Field as TableName") for pseudo-foreign
+    keys: "Subject as Person.Address", "Subject as Company.RegisteredAddress",
+    "Subject as Animal.Owner as Person.Address" etc."""
     here = start
     *field_path, last = col_name.split(".")
 
@@ -92,6 +99,13 @@ def resolve_complex_column_name(
     links = []
 
     for part in field_path:
+        explicit_cast = None
+        if " as " in part:
+            # Some SBSYS columns are "soft" foreign keys: the value of another
+            # field governs what they point at (groan). To support that, we
+            # allow the points-to relation to be set explicitly
+            part, explicit_cast = part.split(" as ", maxsplit=1)
+
         # ... we first select the "BehandlerID" column...
         try:
             link_column = getattr(here.c, part + "ID")
@@ -100,13 +114,17 @@ def resolve_complex_column_name(
             # name suffix convention
             link_column = getattr(here.c, part)
 
-        # ... then we follow the foreign key to get a reference to the Bruger
-        # table on the other side...
-        fk, = link_column.foreign_keys
-        other_table = fk.column.table
+        if not explicit_cast:
+            # ... then we follow the foreign key to get a reference to the
+            # Bruger table on the other side...
+            fk, = link_column.foreign_keys
+            other_table = fk.column.table
+        else:
+            other_table = all_tables[explicit_cast]
 
         # ... then we (implicitly) join the Bruger table into our query...
-        links.append(link_column == other_table.c.ID)
+        other_table_pk, = other_table.primary_key
+        links.append(link_column == other_table_pk)
         # ... and continue following the chain at Bruger, where we do the
         # same trick again for "Adresse" -> AdresseID -> <table Adresse>
         here = other_table
@@ -117,7 +135,8 @@ def resolve_complex_column_name(
 
 
 def convert_rule_to_select(
-        rule: Rule, table: Table,
+        rule: Rule,
+        table: Table, all_tables,
         initial_select: Select, column_labels: dict[str, Column],
         virtual_columns: dict[str, object] = None) -> Select:
     """Converts an OSdatascanner Rule containing SBSYSDBRule objects into a
@@ -159,10 +178,10 @@ def convert_rule_to_select(
 
             case SBSYSDBRule(field_name, op, value):
                 extra_constraints, column = resolve_complex_column_name(
-                        table, field_name)
+                        table, field_name, all_tables)
                 if field_name not in column_labels:
                     column_labels[field_name] = column
-                return and_(*extra_constraints, op.func_db(column, value))
+                return and_(extra_constraints, op.func_db(column, value))
 
             case _:
                 # For now, we assume that any other OSdatascanner rule plays no
@@ -180,12 +199,20 @@ def convert_rule_to_select(
 class SBSYSDBSource(Source):
     type_label = "sbsys-db"
 
-    def __init__(self, server, port, db, user, password):
+    def __init__(
+            self, server, port, db, user, password,
+            *,
+            reflect_tables=None):
         self._server = server
         self._port = port
         self._db = db
         self._user = user
         self._password = password
+        self._reflect_tables = reflect_tables
+
+    @property
+    def reflect_tables(self):
+        return self._reflect_tables or ("Sag", "Person",)
 
     def censor(self):
         return SBSYSDBSource(
@@ -198,7 +225,7 @@ class SBSYSDBSource(Source):
                 f"@{self._server}:{self._port}/{self._db}")
 
         metadata_obj = MetaData()
-        metadata_obj.reflect(bind=engine, only=("Sag",))
+        metadata_obj.reflect(bind=engine, only=self.reflect_tables)
 
         yield engine, metadata_obj.tables
 
@@ -210,7 +237,9 @@ class SBSYSDBSource(Source):
 
         column_labels = {"Nummer": Sag.c.Nummer, "Titel": Sag.c.Titel}
         expr = convert_rule_to_select(
-                rule, Sag, select(), column_labels,
+                rule,
+                Sag, tables,
+                select(), column_labels,
                 virtual_columns={
                     # Subtracting two datetimes in SQL Server utterly
                     # bafflingly gives you /a third datetime/ (2024-01-01 -
