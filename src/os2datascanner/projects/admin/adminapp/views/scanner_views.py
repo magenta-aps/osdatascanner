@@ -800,11 +800,12 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
         return context
 
 
-class RemovedScannersView(ScannerList):
+class RemovedScannersView(PermissionRequiredMixin, ScannerList):
     """View for listing all removed scanners."""
     template_name = "removed_scanners.html"
     model = Scanner
     queryset = Scanner.objects.unfiltered().filter(hidden=True)
+    permission_required = "os2datascanner.view_hidden_scanner"
 
     def get_queryset(self):
         return super().get_queryset().select_subclasses()
