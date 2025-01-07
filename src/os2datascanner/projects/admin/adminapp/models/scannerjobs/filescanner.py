@@ -18,7 +18,6 @@ import structlog
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.core.exceptions import ValidationError
-from django.urls import reverse_lazy
 
 from os2datascanner.engine2.model.smbc import SMBCSource
 from .scanner import Scanner
@@ -87,3 +86,6 @@ class FileScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")
+
+    class Meta:
+        verbose_name = _("Filescanner")

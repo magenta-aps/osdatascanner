@@ -25,6 +25,7 @@ from dateutil.tz import gettz
 import structlog
 
 from django.db import models
+from django.db.models import Q
 from django.core.validators import validate_comma_separated_integer_list
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
@@ -253,12 +254,6 @@ class Scanner(models.Model):
                                               self.FIRST_START_TIME,
                                               tzinfo=gettz())
                     + datetime.timedelta(minutes=added_minutes))
-
-    @property
-    def previous_run_time(self) -> datetime.datetime | None:
-        """Returns the timestamp of the most recent execution of this scanner, if there is one."""
-        last_status = self.statuses.last()
-        return last_status.start_time if last_status else None
 
     # Run error messages
     HAS_NO_RULES = (
@@ -591,9 +586,8 @@ class Scanner(models.Model):
         return scan_tag.to_json_object()
 
     def get_last_successful_run_at(self) -> datetime:
-        query = ScanStatus.objects.filter(scanner=self)
-        finished = (status for status in query if status.finished)
-        last = max(finished, key=lambda status: status.start_time, default=None)
+        query = ScanStatus.objects.filter(ScanStatus._completed_Q | Q(scanner=self))
+        last = query.order_by("-start_time").first()
         return last.start_time if last else None
 
     def generate_sources(self) -> Iterator[Source]:

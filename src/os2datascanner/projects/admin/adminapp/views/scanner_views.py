@@ -810,6 +810,11 @@ class RemovedScannersView(PermissionRequiredMixin, ScannerList):
     def get_queryset(self):
         return super().get_queryset().select_subclasses()
 
+    def get_context_data(self, **kwargs):
+        # Do not inherit from ScannerList, as self.model.get_type() breaks on the Scanner class.
+        context = super(ScannerList, self).get_context_data(**kwargs)
+        return context
+
 
 class RecreateScannerView(PermissionRequiredMixin, RestrictedUpdateView):
     permission_required = "os2datascanner.unhide_scanner"

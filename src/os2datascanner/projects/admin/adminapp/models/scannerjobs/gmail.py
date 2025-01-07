@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
-from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
@@ -55,3 +54,6 @@ class GmailScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
+
+    class Meta:
+        verbose_name = _("Gmail scanner")

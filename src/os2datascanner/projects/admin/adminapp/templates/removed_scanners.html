@@ -76,13 +76,13 @@
 
                     <td class="column column--type">
                       <div class="type__container">
-                        <span>{{ scanner.get_verbose_type }}</span>
+                        <span>{{ scanner|verbose_name }}</span>
                       </div>
                     </td>
 
                     <td class="scanner-runtime column column--automatic">
                       <div class="date__container">
-                        <span>{{ scanner.previous_run_time|naturaltime }}</span>
+                        <span>{{ scanner.get_last_successful_run_at|naturaltime }}</span>
                       </div>
                     </td>
 
