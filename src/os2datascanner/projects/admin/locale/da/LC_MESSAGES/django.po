@@ -247,15 +247,15 @@ msgctxt "unit of scan"
 msgid "email messages"
 msgstr "mailbeskeder"
 
-#: adminapp/models/scannerjobs/filescanner.py:36
+#: adminapp/models/scannerjobs/filescanner.py:35
 msgid "drive letter"
 msgstr "drevbogstav"
 
-#: adminapp/models/scannerjobs/filescanner.py:39
+#: adminapp/models/scannerjobs/filescanner.py:38
 msgid "skip super-hidden files"
 msgstr "spring over superskjulte filer"
 
-#: adminapp/models/scannerjobs/filescanner.py:40
+#: adminapp/models/scannerjobs/filescanner.py:39
 msgid ""
 "do not scan files with the HIDDEN and SYSTEM bits set, or files with the "
 "HIDDEN bit set whose name starts with a tilde"
@@ -263,11 +263,11 @@ msgstr ""
 "lad være med at scanne filer med både HIDDEN- og SYSTEM-attributter sat, "
 "samt filer med HIDDEN-attribut sat og et navn med tilde-tegn foran"
 
-#: adminapp/models/scannerjobs/filescanner.py:45
+#: adminapp/models/scannerjobs/filescanner.py:44
 msgid "UNC is home root"
 msgstr "UNC er brugermappernes rod"
 
-#: adminapp/models/scannerjobs/filescanner.py:46
+#: adminapp/models/scannerjobs/filescanner.py:45
 msgid ""
 "all folders under the given UNC are user home folders; their owners have "
 "responsibility for everything they contain regardless of other filesystem "
@@ -276,7 +276,7 @@ msgstr ""
 "alle mapper under det givne UNC er brugernes hjemmemapper: deres ejere har "
 "ansvar for alt, der ligger derinde, uanset hvad filsystemet ellers må sige"
 
-#: adminapp/models/scannerjobs/filescanner.py:88
+#: adminapp/models/scannerjobs/filescanner.py:87
 msgid "UNC must follow the UNC format"
 msgstr "UNC skal følge UNC-format"
 
@@ -304,7 +304,7 @@ msgstr "Scan vedhæftninger"
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
-#: adminapp/models/scannerjobs/msgraph.py:189
+#: adminapp/models/scannerjobs/msgraph.py:188
 msgctxt "unit of scan"
 msgid "appointment"
 msgstr "begivenhed"
@@ -2036,115 +2036,6 @@ msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 #: adminapp/templates/error_pages/500.html:18
 msgid "go to the front page"
 msgstr "gå til forsiden"
-
-#: adminapp/templates/mail/finished_scannerjob.html:35
-#, python-format
-msgid "Hello %(full_name)s,"
-msgstr "Hej %(full_name)s"
-
-#: adminapp/templates/mail/finished_scannerjob.html:37
-#, python-format
-msgid ""
-"For your information, your OSdatascanner-scan @ <strong>%(scanner_name)s</"
-"strong> has just finished."
-msgstr ""
-"Til orientering er dit OSdatascanner-scan @ <strong>%(scanner_name)s</"
-"strong> lige kørt færdigt."
-
-#: adminapp/templates/mail/finished_scannerjob.html:40
-#: adminapp/templates/mail/finished_scannerjob.txt:11
-msgid " objects were scanned - "
-msgstr " objekter scannet - "
-
-#: adminapp/templates/mail/finished_scannerjob.html:41
-#: adminapp/templates/mail/finished_scannerjob.txt:11
-msgid " in total - in "
-msgstr " i alt - på "
-
-#: adminapp/templates/mail/finished_scannerjob.html:44
-#, python-format
-msgid ""
-"<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /><a "
-"href=\"%(admin_login_url)serror-log/\">Click here to inspect the error logs</"
-"a>"
-msgstr ""
-"<strong>%(usererrorlogs)s</strong> fejl opstod under scannet.<br/><a href="
-"\"%(admin_login_url)serror-log/\">Klik her for at inspicere fejlbeskederne.</"
-"a>"
-
-#: adminapp/templates/mail/finished_scannerjob.html:47
-#, python-format
-msgid ""
-"<a href=\"%(admin_login_url)s\">Log into OSdatascanner with your "
-"organisation account</a> for further details."
-msgstr ""
-"<a href=\"%(admin_login_url)s\">Log på OSdatascanner med din "
-"organisationskonto</a> for at se detajlerne."
-
-#: adminapp/templates/mail/finished_scannerjob.html:50
-msgid "Kind regards,<br>the OSdatascanner system"
-msgstr "Med venlig hilsen<br>OSdatascanner-systemet"
-
-#: adminapp/templates/mail/finished_scannerjob.html:52
-#, python-format
-msgid "(on behalf of %(institution)s)"
-msgstr "(på vegne af %(institution)s)"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:3
-#, python-format
-msgid ""
-"\n"
-"Hello %(full_name)s,\n"
-msgstr ""
-"\n"
-"Hej %(full_name)s\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:7
-#, python-format
-msgid ""
-"\n"
-"For your information, your OSdatascanner-scan @ %(scanner_name)s has just "
-"finished.\n"
-msgstr ""
-"\n"
-"Til orientering er dit OSdatascanner-scan @ %(scanner_name)s lige kørt "
-"færdigt.\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:13
-#, python-format
-msgid ""
-"\n"
-"%(usererrorlogs)s errors occured during the scan.\n"
-msgstr ""
-"\n"
-"%(usererrorlogs)s fejl opstod under scannet.\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:17
-msgid ""
-"\n"
-"Log into OSdatascanner with your organisation account for further details.\n"
-msgstr ""
-"\n"
-"Log på OSdatascanner med din organisationskonto for at se detajlerne.\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:24
-msgid ""
-"\n"
-"Kind regards,\n"
-"the OSdatascanner system\n"
-msgstr ""
-"\n"
-"Med venlig hilsen\n"
-"OSdatascanner-systemet\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:29
-#, python-format
-msgid ""
-"\n"
-"(on behalf of %(institution)s)\n"
-msgstr ""
-"\n"
-"(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/mail/password_reset_email.html:4
 #, python-format

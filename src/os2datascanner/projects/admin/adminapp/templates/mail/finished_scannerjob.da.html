@@ -1,0 +1,61 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+
+  td {
+    text-align: right;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  .flex {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+
+  .width {
+    margin-top: .5rem;
+    margin-right: 1rem;
+    height: 1.2rem;
+    width: auto;
+  }
+
+  svg {
+    height: 100%;
+    width: auto;
+  }
+
+    </style>
+  </head>
+  <body>
+    <p>Hej {{ full_name }},</p>
+    <p>
+      Til orientering er dit OSdatascanner-scan @ <strong>{{ scanner_name }}</strong> lige kørt færdigt.
+    </p>
+    <p>
+      <strong>{{ total_objects }}</strong> {{ object_plural }} blev scannet &mdash;
+      <strong>{{ object_size|filesizeformat }}</strong> i alt &mdash; på
+      <strong>{{ completion_time }}</strong>.
+    </p>
+    {% if usererrorlogs %}
+      <p>
+        <strong>{{ usererrorlogs }}</strong> fejl opstod under scannet.
+        <br />
+        <a href="{{ admin_login_url }}error-log/">Klik her for at inspicere fejlbeskederne.</a>
+      </p>
+    {% endif %}
+    <p>
+      <a href="{{ admin_login_url }}">Log på OSdatascanner med din organisationskonto</a> for at se detaljerne.
+    </p>
+    <p>
+      Med venlig hilsen
+      <br>
+      OSdatascanner-systemet
+      {% if institution %}(på vegne af {{ institution }}){% endif %}
+    </p>
+  </body>
+</html>
