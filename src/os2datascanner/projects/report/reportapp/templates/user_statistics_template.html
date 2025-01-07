@@ -96,35 +96,34 @@
               </div>
             </div>
           </div>
+          {% if perms.os2datascanner_report.see_user_result_origins %}
+            <div class="data-card data-card--unhandled-results">
+              <div class="data-card__label">
+                <span class="title">{% trans "Unhandled results" %}</span>
+                <span class="subtitle">{% trans "Number of unhandled results per scanner job" %}</span>
+              </div>
  
-          <div class="data-card data-card--unhandled-results">
-            <div class="data-card__label">
-              <span class="title">{% trans "Unhandled results" %}</span>
-              <span class="subtitle">{% trans "Number of unhandled results per scanner job" %}</span>
-            </div>
+              <div class="data-card__content">
+
+                {% if scannerjobs %}
+                  <div class="mini-table">
+                    {% for scannerjob in scannerjobs %}
+                      <div id="scannerjob-li__{{ scannerjob.scanner_job_pk|unlocalize }}"
+                           class="unhandled-results__container">
+                        <div class="unhandled-results__label">
+                          <span class="label__scannerjob-name">{{ scannerjob.scanner_job_name }}</span>
  
-            <div class="data-card__content">
+                          <span class="label__amount">
+                            {{ scannerjob.total }}
+                            {% if scannerjob.total == 1 %}
+                              Resultat
+                            {% else %}
+                              Resultater
+                            {% endif %}
+                          </span>
+                        </div>
  
-              {% if scannerjobs %}
-                <div class="mini-table">
-                  {% for scannerjob in scannerjobs %}
-                    <div id="scannerjob-li__{{ scannerjob.scanner_job_pk|unlocalize }}"
-                         class="unhandled-results__container">
-                      <div class="unhandled-results__label">
-                        <span class="label__scannerjob-name">{{ scannerjob.scanner_job_name }}</span>
- 
-                        <span class="label__amount">
-                          {{ scannerjob.total }}
-                          {% if scannerjob.total == 1 %}
-                            Resultat
-                          {% else %}
-                            Resultater
-                          {% endif %}
-                        </span>
-                      </div>
- 
-                      <div class="unhandled-results__actions">
-                        {% if request.user.is_superuser %}
+                        <div class="unhandled-results__actions">
                           <button type="button"
                                   class="button button--icon-button button--datatable-actions"
                                   name="delete_from_scannerjob"
@@ -138,28 +137,19 @@
                                   hx-confirm="{% trans 'You are about to delete all results from the scannerjob' %} &quot;{{ scannerjob.scanner_job_name }}&quot; {% trans 'associated with the user' %} {{ account.get_full_name }} ({% trans Username %}{{ account.username }}). {% trans 'Are you sure? This action cannot be reversed.' %}">
                             <i id="delete" class="material-symbols">delete</i>
                           </button>
-                        {% else %}
-                          <button type="button"
-                                  class="button button--icon-button button--datatable-actions"
-                                  aria-label="{% trans 'This functionality is disabled. Only superusers have permission to delete results from scanner jobs' %}"
-                                  title="{% trans 'Only superusers have permission to delete results from scanner jobs' %}"
-                                  disabled>
-                            <i id="delete" class="material-symbols">delete</i>
-                          </button>
-                        {% endif %}
+                        </div>
                       </div>
-                    </div>
  
-                    {% if not forloop.last %}<hr class="unhandled-results__divider">{% endif %}
-                  {% endfor %}
-                </div>
+                      {% if not forloop.last %}<hr class="unhandled-results__divider">{% endif %}
+                    {% endfor %}
+                  </div>
  
-              {% else %}
-                <p class="no-data">{% trans 'There are no unhandled results to show' %}</p>
-              {% endif %}
+                {% else %}
+                  <p class="no-data">{% trans 'There are no unhandled results to show' %}</p>
+                {% endif %}
+              </div>
             </div>
-          </div>
- 
+          {% endif %}
           <div class="data-card data-card--graph">
             <div class="data-card__label">
               <span class="title">{% trans "Development overview" %}</span>
