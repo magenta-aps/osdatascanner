@@ -48,9 +48,11 @@
         {% if settings.ENABLE_SBSYSSCAN %}
           <a id="sbsys" class="tabs__control" href="{% url "sbsysscanners" %}">{% trans "Sbsysscanner" %}</a>
         {% endif %}
-        <a id="removed"
-           class="tabs__control"
-           href="{% url "removed_scanners" %}">{% trans "Removed scanners" %}</a>
+        {% if perms.os2datascanner.view_removed_scanner %}
+          <a id="removed"
+             class="tabs__control"
+             href="{% url "removed_scanners" %}">{% trans "Removed scanners" %}</a>
+        {% endif %}
       </div>
     </div>
   {% endif %}
@@ -129,7 +131,7 @@
             window.location.href = "/sbsysscanners/"
             sbsys.classList.add('active')
         } else if (removed) {
-          window.location.href = "/scanners/removed"
+          window.location.href = "/scanners/removed/"
           removed.classList.add('active')
         }
     }
@@ -166,7 +168,7 @@
     if (location.pathname === '/sbsysscanners/') {
         sbsys.classList.add("active")
     }
-    if (location.pathname === '/scanners/removed') {
+    if (location.pathname === '/scanners/removed/') {
       removed.classList.add("active")
     }
 
