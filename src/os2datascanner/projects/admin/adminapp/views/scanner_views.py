@@ -822,7 +822,6 @@ class RecreateScannerView(PermissionRequiredMixin, RestrictedUpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        print(self.object)
         self.object.unhide()
 
         messages.add_message(
@@ -833,3 +832,10 @@ class RecreateScannerView(PermissionRequiredMixin, RestrictedUpdateView):
             )
 
         return redirect(self.get_success_url())
+
+
+class DeleteRemovedScannerView(ScannerDelete):
+    """A separate view is required for this, since the regular view cannot access hidden
+    scanners."""
+    queryset = Scanner.objects.unfiltered().filter(hidden=True)
+    success_url = reverse_lazy("removed_scanners")

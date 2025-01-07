@@ -41,7 +41,8 @@ from .views.rule_views import (RuleList, CustomRuleCreate,
 
 from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
                                   StatusDelete, StatusTimeline, UserErrorLogView,
-                                  UserErrorLogCSVView, RemovedScannersView, RecreateScannerView)
+                                  UserErrorLogCSVView, RemovedScannersView, RecreateScannerView,
+                                  DeleteRemovedScannerView)
 
 
 from .views.miniscanner_views import MiniScanner, execute_mini_scan
@@ -75,6 +76,8 @@ urlpatterns = [
     path("scanners/removed", RemovedScannersView.as_view(), name="removed_scanners"),
     path("scanners/removed/<int:pk>/recreate", RecreateScannerView.as_view(),
          name="recreate_scanner"),
+    path("scanners/removed/<int:pk>/delete", DeleteRemovedScannerView.as_view(),
+         name="delete_removed_scanner"),
 
 
     re_path(r'^(msgraphcalendarscanners|msgraphmailscanners|msgraphfilescanners|'

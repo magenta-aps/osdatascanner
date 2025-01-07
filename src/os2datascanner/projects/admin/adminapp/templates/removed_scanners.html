@@ -119,7 +119,7 @@
                           {% comment %}
                             Can we avoid the inline styling on this element?
                           {% endcomment %}
-                          <form action="{{ scanner.get_delete_url }}"
+                          <form action="{% url "delete_removed_scanner" scanner.pk %}"
                                 method="post"
                                 style="display: inline-block">
                             {% csrf_token %}
