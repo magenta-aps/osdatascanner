@@ -1,6 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.26.3, 7th January 2025
+
+"Did you also get an airfryer for christmas?"
 
 ### New in this release
 
