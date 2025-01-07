@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
+from django.urls import reverse_lazy
 from .scanner import Scanner
 from ...utils import upload_path_gdrive_users, upload_path_gdrive_service_account
 from os2datascanner.engine2.model.googledrive import GoogleDriveSource
@@ -47,6 +48,28 @@ class GoogleDriveScanner(Scanner):
     def get_absolute_url(self):
         """Get the absolute URL for scanners."""
         return '/googledrivescanners'
+
+    @staticmethod
+    def get_create_url():
+        return reverse_lazy("googledrivescanner_add")
+
+    def get_update_url(self):
+        return reverse_lazy("googledrivescanner_update", kwargs={"pk": self.pk})
+
+    def get_cleanup_url(self):
+        return reverse_lazy("googledrivescanner_cleanup", kwargs={"pk": self.pk})
+
+    def get_askrun_url(self):
+        return reverse_lazy("googledrivescanner_askrun", kwargs={"pk": self.pk})
+
+    def get_copy_url(self):
+        return reverse_lazy("googledrivescanner_copy", kwargs={"pk": self.pk})
+
+    def get_remove_url(self):
+        return reverse_lazy("googledrivescanner_remove", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        return reverse_lazy("googledrivescanner_delete", kwargs={"pk": self.pk})
 
     def generate_sources(self):
         with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file.name)) as saf:

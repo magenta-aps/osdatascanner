@@ -18,6 +18,7 @@ from base64 import encodebytes as encodeb64
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
+from django.urls import reverse_lazy
 
 from os2datascanner.engine2.model.http import WebSource
 from os2datascanner.engine2.rules.links_follow import LinksFollowRule
@@ -181,6 +182,28 @@ class WebScanner(Scanner):
     def get_absolute_url(self):
         """Get the absolute URL for scanners."""
         return "/webscanners/"
+
+    @staticmethod
+    def get_create_url():
+        return reverse_lazy("webscanner_add")
+
+    def get_update_url(self):
+        return reverse_lazy("webscanner_update", kwargs={"pk": self.pk})
+
+    def get_cleanup_url(self):
+        return reverse_lazy("webscanner_cleanup", kwargs={"pk": self.pk})
+
+    def get_askrun_url(self):
+        return reverse_lazy("webscanner_askrun", kwargs={"pk": self.pk})
+
+    def get_copy_url(self):
+        return reverse_lazy("webscanner_copy", kwargs={"pk": self.pk})
+
+    def get_remove_url(self):
+        return reverse_lazy("webscanner_remove", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        return reverse_lazy("webscanner_delete", kwargs={"pk": self.pk})
 
     def generate_sources(self):
         yield WebSource(
