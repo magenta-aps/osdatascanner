@@ -33,6 +33,11 @@
         <a href="#user_overview">
           <li>{% trans "My Overview" %}</li>
         </a>
+        {% if request.user.account.leadertab_access %}
+          <a href="#leader_overview">
+            <li>{% trans "Leader Overview" %}</li>
+          </a>
+        {% endif %}
         {% if categorization %}
           <a href="#categorize">
             <li>{% trans "Categorization in Outlook" %}</li>
@@ -49,7 +54,7 @@
       </a>
       {% include "components/manual/faq_toc.html" %}
     </aside>
- 
+
     <div class="content">
 
       <h1 id="manual" class="page-title">{% trans "Manual" %}</h1>
@@ -75,8 +80,8 @@
       </p>
       <p>
         {% blocktrans trimmed %}
-        Note that, instead of "organizationname" the part of the link to the organization's website 
-        that comes before ".dk" should be input.
+          Note that, instead of "organizationname" the part of the link to the organization's website
+          that comes before ".dk" should be input.
         {% endblocktrans %}
       </p>
       <p>{% trans "From here, sign in using the username and password usually used for these systems." %}</p>
@@ -84,9 +89,9 @@
       <p>{% trans "If questions arise refer to your nearest manager, co-worker, or superuser." %}</p>
       <p class="emphasized">
         {% blocktrans trimmed %}
-        If different login information is provided for every program used in the organization, 
-        this screen will be displayed. If, like most other orgnizations, you're provided with 
-        one username and password for all programs, a different page will be displayed.
+          If different login information is provided for every program used in the organization,
+          this screen will be displayed. If, like most other orgnizations, you're provided with
+          one username and password for all programs, a different page will be displayed.
         {% endblocktrans %}
       </p>
       <div id="figure-22" class="figure-container">
@@ -97,9 +102,9 @@
       </div>
       <p>
         {% blocktrans trimmed %}
-        When signing in, all matches assigned to you will be displayed. From the report module, 
-        all relevant files can be opened and checked for matches. Note that, for this function 
-        to work on files from a network drive, some configurations have to be set.
+          When signing in, all matches assigned to you will be displayed. From the report module,
+          all relevant files can be opened and checked for matches. Note that, for this function
+          to work on files from a network drive, some configurations have to be set.
         {% endblocktrans %}
       </p>
 
@@ -112,8 +117,8 @@
       </div>
       <p>
         {% blocktrans trimmed %}
-        Matches generated from scanners like Web- or Office365-scans on cloud services, 
-        can be opened from the report module.
+          Matches generated from scanners like Web- or Office365-scans on cloud services,
+          can be opened from the report module.
         {% endblocktrans %}
       </p>
       <div id="figure-27" class="figure-container">
@@ -124,16 +129,16 @@
       </div>
       <p>
         {% blocktrans trimmed %}
-        For matches generated from File- or Exchange-scans on an on-premise services to be opened, 
-        some configurations have to be set. If this isn't an option, the path to the file or 
-        folder where the match is found, can be copied from the report module. 
+          For matches generated from File- or Exchange-scans on an on-premise services to be opened,
+          some configurations have to be set. If this isn't an option, the path to the file or
+          folder where the match is found, can be copied from the report module.
         {% endblocktrans %}
       </p>
       <p>{% trans "Matches found be the scanners have to be manually removed." %}</p>
       <p>
         {% blocktrans trimmed %}
-        This can be done by, opening the file, mail, or website and delete or edit the part 
-        marked as a match by the scanner.
+          This can be done by, opening the file, mail, or website and delete or edit the part
+          marked as a match by the scanner.
         {% endblocktrans %}
       </p>
       <p>{% trans "When this has been done, mark the match as handled in the report module." %}</p>
@@ -142,8 +147,8 @@
       <ol>
         <li>
           {% blocktrans trimmed %}
-          Check the checkbox on each individual match you have handled, or check the top checkbox 
-          to select all matches on that page.
+            Check the checkbox on each individual match you have handled, or check the top checkbox
+            to select all matches on that page.
           {% endblocktrans %}
         </li>
         <li>{% trans "Click mark as handled at the top of the list." %}</li>
@@ -156,8 +161,8 @@
       </div>
       <p>
         {% blocktrans trimmed %}
-        If a file or mail has been deleted but not marked as handled in the report module, 
-        it will be done automatically next time the same scannerjob is run. 
+          If a file or mail has been deleted but not marked as handled in the report module,
+          it will be done automatically next time the same scannerjob is run.
         {% endblocktrans %}
       </p>
 
@@ -165,8 +170,8 @@
         <h2 id="archive">{% trans "Archive" %}</h2>
         <p>
           {% blocktrans trimmed %}
-          On the archive tab all already handled matches are displayed. It's possible to revert 
-          a match marked as handled, in case of a mistake. 
+            On the archive tab all already handled matches are displayed. It's possible to revert
+            a match marked as handled, in case of a mistake.
           {% endblocktrans %}
         </p>
         <div id="figure-24" class="figure-container">
@@ -181,8 +186,8 @@
       <p>{% trans "On my overview, the amount of unhandled matches per week is displayed." %}</p>
       <p>
         {% blocktrans trimmed %}
-        The large number under each week indicates unhandled matches in total. The red number indicates 
-        the amount of matches found in that week, and the green indicates how many have been handled. 
+          The large number under each week indicates unhandled matches in total. The red number indicates
+          the amount of matches found in that week, and the green indicates how many have been handled.
         {% endblocktrans %}
       </p>
       <p>{% trans "The graph showcases the development of matches during the past year." %}</p>
@@ -197,14 +202,107 @@
       </p>
 
       {% url "account-me" as my-account %}
+
+      {% if request.user.account.leadertab_access %}
+        <h2 id="leader_overview">{% trans "Leader Overview" %}</h2>
+
+        <p>
+          {% blocktrans trimmed %}
+            The leader overview serves as a way for managers in OSdatascanner to gain an overview of
+            the organizational units they manage. Here you can see a list of the users from each
+            organizational unit and how many unhandled results are related to each user, as well as
+            the calculated "status" of the user. Each table row, corresponding to a user, can be
+            expanded to show that user's "my overview" page.
+          {% endblocktrans %}
+        </p>
+
+        <h3>{% trans "Status" %}</h3>
+
+        <p>
+          {% blocktrans trimmed %}
+            The "status" of a user is calculated from the way they have been handling results in the
+            past 3 weeks. The intention is to indicate if a user is taking a fair amount of action
+            or no action at all.
+          {% endblocktrans %}
+        </p>
+
+        <p>
+          {% blocktrans trimmed %}
+            A user can have one of three different statuses: "Finished", "Accepted", or "Not
+            accepted".
+          {% endblocktrans %}
+
+          <ul>
+            <li>
+              {% blocktrans trimmed %}
+                The "Finished" status indicates that the user has no unhandled results.
+              {% endblocktrans %}
+            </li>
+            <li>
+              {% blocktrans trimmed %}
+                The "Accepted" status indicates that the user has handled at least 75% of the
+                results they have received in OSdatascanner during the last 3 weeks. The total
+                amount of unhandled results is not considered, as long as the user have any
+                unhandled results.
+              {% endblocktrans %}
+            </li>
+            <li>
+              {% blocktrans trimmed %}
+                The "Not accepted" status indicates that the user has handled less than 75% of the
+                results they received during the last 3 weeks.
+              {% endblocktrans %}
+            </li>
+          </ul>
+        </p>
+
+        <h3>{% trans "Sending Notifications" %}</h3>
+
+        <p>
+          {% blocktrans trimmed %}
+            It is possible to easily send notifications to users in your organizational units through
+            the UI. Simply press the "Send notification"-button on the user's table row, and your
+            preferred email client will open with the recipient's address pre-populated.
+          {% endblocktrans %}
+        </p>
+
+        <p>
+          {% blocktrans trimmed %}
+            It is generally recommended to send personalized notifications in this way, as users
+            already receive automated notifications about their results in OSdatascanner.
+          {% endblocktrans %}
+        </p>
+
+        {% if settings.LEADER_OVERVIEW_30_DAYS %}
+          <h3>{% trans "Retention policy" %}</h3>
+
+          <p>
+            {% blocktrans trimmed %}
+              Your organization has a retention policy of 30 days. This means that users are
+              allowed to keep potential results for up to 30 days, before they must be handled in
+              an appropriate way.
+            {% endblocktrans %}
+          </p>
+
+          <p>
+            {% blocktrans trimmed %}
+              For this reason, you can see the number of unhandled "old" results related to each
+              user in the leader overview. The number of old results indicate how many unhandled
+              results related to each user are no longer covered by the retention policy.
+            {% endblocktrans %}
+          </p>
+
+        {% endif %}
+
+      {% endif %}
+
       {% if categorization %}
         <h2 id="categorize">{% trans "Categorization in Outlook" %}</h2>
         <p>
           {% blocktrans trimmed %}
-          With OSdatascanner, it is possible to mark mails containing matches with a match-category 
-          in Outlook. To enable this feature, access your <a href="{{my-account}}">profile page</a> 
-          and check the box called Categorize emails. Now when a scan is run, mails containing 
-          matchs will automatically be marked with a match category 
+            With OSdatascanner, it is possible to mark mails containing matches with a match-category
+            in Outlook. To enable this feature, access your <a href="{{ my-account }}">profile page</a>
+            and check the box called Categorize emails. Now when a scan is run, mails containing
+            matchs will automatically be marked with a match category
           {% endblocktrans %}
         </p>
         <p>
@@ -212,8 +310,8 @@
         </p>
         <p>
           {% blocktrans trimmed %}
-          Enabling this feature also adds a False positive category to Outlook. Mails marked with 
-          this category will no longer be seen as a match by OSdatascanner.
+            Enabling this feature also adds a False positive category to Outlook. Mails marked with
+            this category will no longer be seen as a match by OSdatascanner.
           {% endblocktrans %}
         </p>
       {% endif %}
@@ -222,15 +320,15 @@
         <h2 id="onedrive_delete">{% trans "Deletion of OneDrive files" %}</h2>
         <p>
           {% blocktrans trimmed %}
-          Pressing the "delete" button on a OneDrive result will move the given file to your recycling bin and mark the result as "Deleted" in OSdatascanner.
-          Mass deletion is possible by first filtering by source type.
+            Pressing the "delete" button on a OneDrive result will move the given file to your recycling bin and mark the result as "Deleted" in OSdatascanner.
+            Mass deletion is possible by first filtering by source type.
           {% endblocktrans %}
         </p>
         <h3>{% trans "Disclaimer:" %}</h3>
         <p>
           {% blocktrans trimmed %}
-                  Be aware that OSdatascanner does not back up your files or hold any responsibility in regard to potential loss of data.
-                  OSdatascanner cannot reverse your deletion.
+            Be aware that OSdatascanner does not back up your files or hold any responsibility in regard to potential loss of data.
+            OSdatascanner cannot reverse your deletion.
           {% endblocktrans %}
         </p>
       {% endif %}
@@ -241,9 +339,9 @@
       <h2 id="handle_delete">{% trans "Why doesn't 'handle' delete my file or email?" %}</h2>
       <p>
         {% blocktrans trimmed %}
-        For security reasons, OSdatascanner cannot interact with your files or emails in any way. 
-        For this reason, you must manually delete or handle the matched file. Pressing the 
-        'handle'-button in OSdatascanner only removes the match from the overview. 
+          For security reasons, OSdatascanner cannot interact with your files or emails in any way.
+          For this reason, you must manually delete or handle the matched file. Pressing the
+          'handle'-button in OSdatascanner only removes the match from the overview.
         {% endblocktrans %}
       </p>
       <p>
@@ -253,20 +351,20 @@
       <h2 id="open_file">{% trans "Why can't I open file scan matches?" %}</h2>
       <p>
         {% blocktrans trimmed %}
-        OSdatascanner is not located on your computer, but on an external server. You are accessing 
-        that server through your browser. 
+          OSdatascanner is not located on your computer, but on an external server. You are accessing
+          that server through your browser.
         {% endblocktrans %}
       </p>
       <p>
         {% blocktrans trimmed %}
-        For security reasons, modern browsers are not allowed to open a file on your computer. 
-        This also prevents OSdatascanner from doing the same. 
+          For security reasons, modern browsers are not allowed to open a file on your computer.
+          This also prevents OSdatascanner from doing the same.
         {% endblocktrans %}
       </p>
       <p>
         {% blocktrans trimmed %}
-        To find the file, which a match has been found in, click the 'Copy Folder' button on the match, 
-        then open your pathfinder on your computer, and paste in the content of your clipboard. 
+          To find the file, which a match has been found in, click the 'Copy Folder' button on the match,
+          then open your pathfinder on your computer, and paste in the content of your clipboard.
         {% endblocktrans %}
       </p>
 
@@ -274,16 +372,16 @@
         <h2 id="how_categorize">{% trans "Why are my emails not categorized in Outlook?" %}</h2>
         <p>
           {% blocktrans trimmed %}
-          To categorize emails in your Outlook client, you must toggle the setting "Categorize emails" 
-          on your <a href="{{my-account}}">profile page</a>. See more information in 
-          <a href="#categorize">the manual</a>.
+            To categorize emails in your Outlook client, you must toggle the setting "Categorize emails"
+            on your <a href="{{ my-account }}">profile page</a>. See more information in
+            <a href="#categorize">the manual</a>.
           {% endblocktrans %}
         </p>
         <p>
           {% blocktrans trimmed %}
-          If the setting is already on, future matches will categorize the corresponding email 
-          in your Outlook client. To categorize the previously matched emails, you must use the 
-          "Categorize" function on your <a href="{{my-account}}">profile page</a>.
+            If the setting is already on, future matches will categorize the corresponding email
+            in your Outlook client. To categorize the previously matched emails, you must use the
+            "Categorize" function on your <a href="{{ my-account }}">profile page</a>.
           {% endblocktrans %}
         </p>
       {% endif %}
