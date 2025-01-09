@@ -281,6 +281,51 @@ class TestLeaderStatisticsPageView:
 
         assert "Results older than 30 days" not in reader.fieldnames
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_status_bad(
+            self,
+            egon_account,
+            egon_manager_position,
+            kjeld_account,
+            kjeld_email_alias,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            rf):
+        """A user with status BAD, should have the string 'Completed' in their status column."""
+        create_reports_for(kjeld_email_alias)
+        kjeld_account.save()
+
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert rows[0]['Status'] == "Not accepted"
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_status_completed(
+            self,
+            egon_account,
+            egon_manager_position,
+            kjeld_account,
+            kjeld_email_alias,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            rf):
+        """A user with status GOOD, should have the string 'Completed' in their status column."""
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert rows[0]['Status'] == "Completed"
+
     # Helper functions
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
