@@ -5,6 +5,8 @@ from csv import DictReader
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.translation import pgettext_lazy
+
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
 from ...utils import upload_path_gmail_users, upload_path_gmail_service_account
@@ -51,3 +53,6 @@ class GmailScanner(Scanner):
                 user_email = row['Email Address [Required]']
                 yield GmailSource(service_account_file_gmail=json.dumps(temp),
                                   user_email_gmail=user_email)
+
+    object_name = pgettext_lazy("unit of scan", "email message")
+    object_name_plural = pgettext_lazy("unit of scan", "email messages")

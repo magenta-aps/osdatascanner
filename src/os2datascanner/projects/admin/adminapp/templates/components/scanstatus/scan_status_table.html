@@ -67,9 +67,9 @@
                 {% if status.stage.value == 0 %}
                   {% trans "Building index" %}
                 {% elif status.stage.value == 1 %}
-                  {% blocktranslate with obj=status.scanned_objects %}{{ obj }} objects scanned{% endblocktranslate %}
+                  {% blocktranslate with obj=status.scanned_objects unit=scan_unit onp=status.scanner.as_subclass.object_name_plural %}{{ obj }} {{ onp }} scanned{% endblocktranslate %}
                 {% elif status.stage.value == 2 %}
-                  {% blocktranslate with obj=status.scanned_objects total=status.total_objects %}{{ obj }} out of {{ total }} objects scanned {% endblocktranslate %}
+                  {% blocktranslate with obj=status.scanned_objects total=status.total_objects onp=status.scanner.as_subclass.object_name_plural %}{{ obj }} out of {{ total }} {{ onp }} scanned{% endblocktranslate %}
                   {% with frac=status.fraction_scanned %}
                     <div class="progressbar-container">
                       <div class="progressbar"

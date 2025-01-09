@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-07 11:24+0100\n"
+"POT-Creation-Date: 2025-01-08 14:26+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -132,7 +132,7 @@ msgid "no scheduled checkup exists with id {id}"
 msgstr "intet planlagt checkup findes med id {id}"
 
 #: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
-#: adminapp/models/scannerjobs/scanner.py:102
+#: adminapp/models/scannerjobs/scanner.py:105
 #: adminapp/models/usererrorlog.py:54
 #: import_services/models/msgraph_import_job.py:28
 #: import_services/models/os2mo_import_job.py:70
@@ -166,7 +166,7 @@ msgid "Login method"
 msgstr "Login metode"
 
 #: adminapp/models/rules.py:40 adminapp/models/rules.py:101
-#: adminapp/models/scannerjobs/scanner.py:95 core/models/client.py:75
+#: adminapp/models/scannerjobs/scanner.py:98 core/models/client.py:75
 #: organizations/templates/organizations/org_table.html:39
 #: organizations/templates/organizations/orgunit_list.html:202
 msgid "name"
@@ -215,15 +215,47 @@ msgstr "kategorier"
 msgid "Mime type"
 msgstr "Filformat"
 
-#: adminapp/models/scannerjobs/filescanner.py:36
+#: adminapp/models/scannerjobs/dropboxscanner.py:53
+#: adminapp/models/scannerjobs/filescanner.py:90
+#: adminapp/models/scannerjobs/googledrivescanner.py:61
+#: adminapp/models/scannerjobs/msgraph.py:160
+#: adminapp/models/scannerjobs/msgraph.py:216
+msgctxt "unit of scan"
+msgid "file"
+msgstr "fil"
+
+#: adminapp/models/scannerjobs/dropboxscanner.py:54
+#: adminapp/models/scannerjobs/filescanner.py:91
+#: adminapp/models/scannerjobs/googledrivescanner.py:62
+#: adminapp/models/scannerjobs/msgraph.py:161
+#: adminapp/models/scannerjobs/msgraph.py:217
+msgctxt "unit of scan"
+msgid "files"
+msgstr "filer"
+
+#: adminapp/models/scannerjobs/exchangescanner.py:170
+#: adminapp/models/scannerjobs/gmail.py:57
+#: adminapp/models/scannerjobs/msgraph.py:116
+msgctxt "unit of scan"
+msgid "email message"
+msgstr "mailbesked"
+
+#: adminapp/models/scannerjobs/exchangescanner.py:171
+#: adminapp/models/scannerjobs/gmail.py:58
+#: adminapp/models/scannerjobs/msgraph.py:117
+msgctxt "unit of scan"
+msgid "email messages"
+msgstr "mailbeskeder"
+
+#: adminapp/models/scannerjobs/filescanner.py:35
 msgid "drive letter"
 msgstr "drevbogstav"
 
-#: adminapp/models/scannerjobs/filescanner.py:39
+#: adminapp/models/scannerjobs/filescanner.py:38
 msgid "skip super-hidden files"
 msgstr "spring over superskjulte filer"
 
-#: adminapp/models/scannerjobs/filescanner.py:40
+#: adminapp/models/scannerjobs/filescanner.py:39
 msgid ""
 "do not scan files with the HIDDEN and SYSTEM bits set, or files with the "
 "HIDDEN bit set whose name starts with a tilde"
@@ -231,11 +263,11 @@ msgstr ""
 "lad være med at scanne filer med både HIDDEN- og SYSTEM-attributter sat, "
 "samt filer med HIDDEN-attribut sat og et navn med tilde-tegn foran"
 
-#: adminapp/models/scannerjobs/filescanner.py:45
+#: adminapp/models/scannerjobs/filescanner.py:44
 msgid "UNC is home root"
 msgstr "UNC er brugermappernes rod"
 
-#: adminapp/models/scannerjobs/filescanner.py:46
+#: adminapp/models/scannerjobs/filescanner.py:45
 msgid ""
 "all folders under the given UNC are user home folders; their owners have "
 "responsibility for everything they contain regardless of other filesystem "
@@ -244,7 +276,7 @@ msgstr ""
 "alle mapper under det givne UNC er brugernes hjemmemapper: deres ejere har "
 "ansvar for alt, der ligger derinde, uanset hvad filsystemet ellers må sige"
 
-#: adminapp/models/scannerjobs/filescanner.py:88
+#: adminapp/models/scannerjobs/filescanner.py:87
 msgid "UNC must follow the UNC format"
 msgstr "UNC skal følge UNC-format"
 
@@ -272,44 +304,74 @@ msgstr "Scan vedhæftninger"
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
+#: adminapp/models/scannerjobs/msgraph.py:188
+msgctxt "unit of scan"
+msgid "appointment"
+msgstr "begivenhed"
+
 #: adminapp/models/scannerjobs/msgraph.py:189
+msgctxt "unit of scan"
+msgid "appointments"
+msgstr "begivenheder"
+
+#: adminapp/models/scannerjobs/msgraph.py:198
 #: adminapp/models/scannerjobs/webscanner.py:43
 msgid "check dead links"
 msgstr "tjek døde links"
 
-#: adminapp/models/scannerjobs/scanner.py:111
+#: adminapp/models/scannerjobs/sbsysscanner.py:23
+msgctxt "unit of scan"
+msgid "case"
+msgstr "sag"
+
+#: adminapp/models/scannerjobs/sbsysscanner.py:24
+msgctxt "unit of scan"
+msgid "cases"
+msgstr "sager"
+
+#: adminapp/models/scannerjobs/scanner.py:90
+msgctxt "unit of scan"
+msgid "object"
+msgstr "objekt"
+
+#: adminapp/models/scannerjobs/scanner.py:91
+msgctxt "unit of scan"
+msgid "objects"
+msgstr "objekter"
+
+#: adminapp/models/scannerjobs/scanner.py:114
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: adminapp/models/scannerjobs/scanner.py:119
+#: adminapp/models/scannerjobs/scanner.py:122
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
-#: adminapp/models/scannerjobs/scanner.py:123
+#: adminapp/models/scannerjobs/scanner.py:126
 msgid "hidden"
 msgstr ""
 
-#: adminapp/models/scannerjobs/scanner.py:130
+#: adminapp/models/scannerjobs/scanner.py:133
 msgid "schedule start time"
 msgstr "skema starttidspunkt"
 
-#: adminapp/models/scannerjobs/scanner.py:135
+#: adminapp/models/scannerjobs/scanner.py:138
 msgid "scan images"
 msgstr "scan billeder"
 
-#: adminapp/models/scannerjobs/scanner.py:140
+#: adminapp/models/scannerjobs/scanner.py:143
 msgid "check date of last modification"
 msgstr "tjek dato for sidste ændring"
 
-#: adminapp/models/scannerjobs/scanner.py:145
+#: adminapp/models/scannerjobs/scanner.py:148
 msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
-#: adminapp/models/scannerjobs/scanner.py:150
+#: adminapp/models/scannerjobs/scanner.py:153
 msgid "keep false positives"
 msgstr "behold falske positive"
 
-#: adminapp/models/scannerjobs/scanner.py:151
+#: adminapp/models/scannerjobs/scanner.py:154
 msgid ""
 "Retain false positives in the report module, regardless of the current state "
 "of the matched sources."
@@ -317,48 +379,48 @@ msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
 
-#: adminapp/models/scannerjobs/scanner.py:162
+#: adminapp/models/scannerjobs/scanner.py:165
 msgid "rule"
 msgstr "regel"
 
-#: adminapp/models/scannerjobs/scanner.py:170
+#: adminapp/models/scannerjobs/scanner.py:173
 msgid "Unverified"
 msgstr "Ugyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:171
+#: adminapp/models/scannerjobs/scanner.py:174
 msgid "Verified"
 msgstr "Gyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:177
+#: adminapp/models/scannerjobs/scanner.py:180
 msgid "username"
 msgstr "brugernavn"
 
-#: adminapp/models/scannerjobs/scanner.py:182
+#: adminapp/models/scannerjobs/scanner.py:185
 msgid "validation status"
 msgstr "valideringstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:187
+#: adminapp/models/scannerjobs/scanner.py:190
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:248
+#: adminapp/models/scannerjobs/scanner.py:254
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:251
+#: adminapp/models/scannerjobs/scanner.py:257
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:254
+#: adminapp/models/scannerjobs/scanner.py:260
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
-#: adminapp/models/scannerjobs/scanner.py:667
+#: adminapp/models/scannerjobs/scanner.py:673
 msgid "Can validate scannerjobs"
 msgstr "Kan godkende scannerjob"
 
-#: adminapp/models/scannerjobs/scanner.py:668
+#: adminapp/models/scannerjobs/scanner.py:674
 msgid "Can hide scannerjob from scannerjob list"
 msgstr "Kan skjule scannerjob fra scannerjoblisten"
 
@@ -520,6 +582,16 @@ msgid ""
 msgstr ""
 "navngiv sider efter HTML-overskrift og tillad specificering af alternative "
 "visningsformer for URL'er"
+
+#: adminapp/models/scannerjobs/webscanner.py:194
+msgctxt "unit of scan"
+msgid "web page"
+msgstr "side"
+
+#: adminapp/models/scannerjobs/webscanner.py:195
+msgctxt "unit of scan"
+msgid "web pages"
+msgstr "sider"
 
 #: adminapp/models/sensitivity_level.py:33
 msgid "Critical"
@@ -1170,8 +1242,8 @@ msgid "Save changes"
 msgstr "Gem ændringer"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:6
-#: adminapp/templates/components/scanner/scan_completed.html:168
-#: adminapp/templates/components/scanner/scan_completed.html:169
+#: adminapp/templates/components/scanner/scan_completed.html:174
+#: adminapp/templates/components/scanner/scan_completed.html:175
 #: adminapp/templates/components/scanstatus/scan_status_table.html:107
 #: adminapp/templates/components/scanstatus/scan_status_table.html:108
 #: adminapp/templates/error_log.html:248 adminapp/templates/rules.html:98
@@ -1297,41 +1369,43 @@ msgstr "Handlinger"
 msgid "Select result"
 msgstr "Vælg resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:134
-msgid "objects explored"
-msgstr "objekter udforsket"
-
 #: adminapp/templates/components/scanner/scan_completed.html:137
+#: adminapp/templates/components/scanstatus/scan_status_table.html:71
+#, python-format
+msgid "%(obj)s %(onp)s scanned"
+msgstr "%(obj)s %(onp)s scannet"
+
+#: adminapp/templates/components/scanner/scan_completed.html:143
 msgid "Not available"
 msgstr "Ikke tilgængelig"
 
-#: adminapp/templates/components/scanner/scan_completed.html:141
+#: adminapp/templates/components/scanner/scan_completed.html:147
 msgid "result"
 msgstr "resultat"
 
-#: adminapp/templates/components/scanner/scan_completed.html:143
+#: adminapp/templates/components/scanner/scan_completed.html:149
 msgid "results"
 msgstr "resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:153
+#: adminapp/templates/components/scanner/scan_completed.html:159
 msgid "Finished in"
 msgstr "Afsluttet på"
 
-#: adminapp/templates/components/scanner/scan_completed.html:155
+#: adminapp/templates/components/scanner/scan_completed.html:161
 msgid "Finished"
 msgstr "Afsluttet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:168
-#: adminapp/templates/components/scanner/scan_completed.html:169
+#: adminapp/templates/components/scanner/scan_completed.html:174
+#: adminapp/templates/components/scanner/scan_completed.html:175
 msgid "scannerjob"
 msgstr "scannerjob"
 
-#: adminapp/templates/components/scanner/scan_completed.html:181
-#: adminapp/templates/components/scanner/scan_completed.html:182
+#: adminapp/templates/components/scanner/scan_completed.html:187
+#: adminapp/templates/components/scanner/scan_completed.html:188
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
-#: adminapp/templates/components/scanner/scan_completed.html:213
+#: adminapp/templates/components/scanner/scan_completed.html:219
 msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
@@ -1750,15 +1824,10 @@ msgstr "Ingen objekter at scanne"
 msgid "Building index"
 msgstr "Opbygger indeks"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:71
-#, python-format
-msgid "%(obj)s objects scanned"
-msgstr "%(obj)s objekter scannet"
-
 #: adminapp/templates/components/scanstatus/scan_status_table.html:73
 #, python-format
-msgid "%(obj)s out of %(total)s objects scanned "
-msgstr "%(obj)s ud af %(total)s objekter scannet"
+msgid "%(obj)s out of %(total)s %(onp)s scanned"
+msgstr "%(obj)s ud af %(total)s %(onp)s scannet"
 
 #: adminapp/templates/components/scanstatus/scan_status_table.html:84
 msgid "Estimated finished"
@@ -1790,16 +1859,19 @@ msgid "Timeline"
 msgstr "Tidslinje"
 
 #: adminapp/templates/components/scanstatus/status_timeline.html:22
-msgid "known objects skipped due to no change"
-msgstr "kendte objekter sprunget over grundet ingen ændring"
-
+#, python-format
+msgid "known %(onp)s skipped due to no change"
+msgstr "kendte %(onp)s sprunget over grundet ingen ændring"
 #: adminapp/templates/components/scanstatus/status_timeline.html:23
-msgid "new objects scanned"
-msgstr "nye objekter scannet"
 
 #: adminapp/templates/components/scanstatus/status_timeline.html:25
-msgid "All objects scanned"
-msgstr "Alle objekter scannet"
+msgid "new %(onp)s scanned"
+msgstr "nye %(onp)s scannet"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:25
+#, python-format
+msgid "All %(onp)s scanned"
+msgstr "Alle %(onp)s scannet"
 
 #: adminapp/templates/components/user/login.html:7
 #: adminapp/templates/components/user/login.html:17
@@ -1964,115 +2036,6 @@ msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 #: adminapp/templates/error_pages/500.html:18
 msgid "go to the front page"
 msgstr "gå til forsiden"
-
-#: adminapp/templates/mail/finished_scannerjob.html:35
-#, python-format
-msgid "Hello %(full_name)s,"
-msgstr "Hej %(full_name)s"
-
-#: adminapp/templates/mail/finished_scannerjob.html:37
-#, python-format
-msgid ""
-"For your information, your OSdatascanner-scan @ <strong>%(scanner_name)s</"
-"strong> has just finished."
-msgstr ""
-"Til orientering er dit OSdatascanner-scan @ <strong>%(scanner_name)s</"
-"strong> lige kørt færdigt."
-
-#: adminapp/templates/mail/finished_scannerjob.html:40
-#: adminapp/templates/mail/finished_scannerjob.txt:11
-msgid " objects were scanned - "
-msgstr " objekter scannet - "
-
-#: adminapp/templates/mail/finished_scannerjob.html:41
-#: adminapp/templates/mail/finished_scannerjob.txt:11
-msgid " in total - in "
-msgstr " i alt - på "
-
-#: adminapp/templates/mail/finished_scannerjob.html:44
-#, python-format
-msgid ""
-"<strong>%(usererrorlogs)s</strong> errors occured during the scan.<br /><a "
-"href=\"%(admin_login_url)serror-log/\">Click here to inspect the error logs</"
-"a>"
-msgstr ""
-"<strong>%(usererrorlogs)s</strong> fejl opstod under scannet.<br/><a href="
-"\"%(admin_login_url)serror-log/\">Klik her for at inspicere fejlbeskederne.</"
-"a>"
-
-#: adminapp/templates/mail/finished_scannerjob.html:47
-#, python-format
-msgid ""
-"<a href=\"%(admin_login_url)s\">Log into OSdatascanner with your "
-"organisation account</a> for further details."
-msgstr ""
-"<a href=\"%(admin_login_url)s\">Log på OSdatascanner med din "
-"organisationskonto</a> for at se detajlerne."
-
-#: adminapp/templates/mail/finished_scannerjob.html:50
-msgid "Kind regards,<br>the OSdatascanner system"
-msgstr "Med venlig hilsen<br>OSdatascanner-systemet"
-
-#: adminapp/templates/mail/finished_scannerjob.html:52
-#, python-format
-msgid "(on behalf of %(institution)s)"
-msgstr "(på vegne af %(institution)s)"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:3
-#, python-format
-msgid ""
-"\n"
-"Hello %(full_name)s,\n"
-msgstr ""
-"\n"
-"Hej %(full_name)s\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:7
-#, python-format
-msgid ""
-"\n"
-"For your information, your OSdatascanner-scan @ %(scanner_name)s has just "
-"finished.\n"
-msgstr ""
-"\n"
-"Til orientering er dit OSdatascanner-scan @ %(scanner_name)s lige kørt "
-"færdigt.\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:13
-#, python-format
-msgid ""
-"\n"
-"%(usererrorlogs)s errors occured during the scan.\n"
-msgstr ""
-"\n"
-"%(usererrorlogs)s fejl opstod under scannet.\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:17
-msgid ""
-"\n"
-"Log into OSdatascanner with your organisation account for further details.\n"
-msgstr ""
-"\n"
-"Log på OSdatascanner med din organisationskonto for at se detajlerne.\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:24
-msgid ""
-"\n"
-"Kind regards,\n"
-"the OSdatascanner system\n"
-msgstr ""
-"\n"
-"Med venlig hilsen\n"
-"OSdatascanner-systemet\n"
-
-#: adminapp/templates/mail/finished_scannerjob.txt:29
-#, python-format
-msgid ""
-"\n"
-"(on behalf of %(institution)s)\n"
-msgstr ""
-"\n"
-"(på vegne af %(institution)s)\n"
 
 #: adminapp/templates/mail/password_reset_email.html:4
 #, python-format

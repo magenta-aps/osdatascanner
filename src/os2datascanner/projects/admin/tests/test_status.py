@@ -93,6 +93,7 @@ class TestStatus:
             'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
             'full_name': 'mr_superuserman',
             'institution': 'DUMMY',
+            'object_plural': 'objekter',
             'object_size': 0,
             'scanner_name': 'SomeScanner-test_org',
             'total_objects': 0,
@@ -110,6 +111,7 @@ class TestStatus:
             'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
             'full_name': '',
             'institution': 'DUMMY',
+            'object_plural': 'objekter',
             'object_size': 0,
             'scanner_name': 'SomeScanner-test_org',
             'total_objects': 0,

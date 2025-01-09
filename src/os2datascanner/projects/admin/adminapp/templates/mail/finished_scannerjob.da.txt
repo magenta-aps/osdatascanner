@@ -1,0 +1,19 @@
+Hej {{ full_name }},
+
+Til orientering er dit OSdatascanner-scan @ {{ scanner_name }} lige kørt færdigt.
+
+{{ total_objects }} {{ object_plural }} blev scannet -- {{ object_size|filesizeformat }} i alt -- på {{ completion_time }}.
+
+{% if usererrorlogs %}
+{{ usererrorlogs }} fejl opstod under scannet.
+{% endif %}
+
+Log på OSdatascanner med din organisationskonto for at se detaljerne.
+
+    {{ admin_login_url }}
+
+Med venlig hilsen
+OSdatascanner-systemet
+{% if institution %}
+(på vegne af {{ institution }})
+{% endif %}

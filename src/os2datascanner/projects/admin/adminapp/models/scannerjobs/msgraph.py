@@ -16,7 +16,7 @@
 import structlog
 
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 
 from os2datascanner.engine2.model.msgraph.mail import (MSGraphMailSource, MSGraphMailAccountSource,
                                                        MSGraphMailAccountHandle)
@@ -113,6 +113,9 @@ class MSGraphMailScanner(MSGraphScanner):
                 yield (account, MSGraphMailAccountSource(
                     MSGraphMailAccountHandle(base_source, user_mail_address)))
 
+    object_name = pgettext_lazy("unit of scan", "email message")
+    object_name_plural = pgettext_lazy("unit of scan", "email messages")
+
 
 class MSGraphFileScanner(MSGraphScanner):
     scan_site_drives = models.BooleanField(
@@ -154,6 +157,9 @@ class MSGraphFileScanner(MSGraphScanner):
                         )
                     ))
 
+    object_name = pgettext_lazy("unit of scan", "file")
+    object_name_plural = pgettext_lazy("unit of scan", "files")
+
 
 class MSGraphCalendarScanner(MSGraphScanner):
     """Model for MSGraphCalendarSource."""
@@ -179,6 +185,9 @@ class MSGraphCalendarScanner(MSGraphScanner):
                 yield (account, MSGraphCalendarAccountSource(
                     MSGraphCalendarAccountHandle(base_source, user_mail_address)))
 
+    object_name = pgettext_lazy("unit of scan", "appointment")
+    object_name_plural = pgettext_lazy("unit of scan", "appointments")
+
 
 class MSGraphTeamsFileScanner(MSGraphScanner):
 
@@ -203,3 +212,6 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
                 client_id=str(self.grant.app_id),
                 tenant_id=str(self.grant.tenant_id),
                 client_secret=self.grant.client_secret)
+
+    object_name = pgettext_lazy("unit of scan", "file")
+    object_name_plural = pgettext_lazy("unit of scan", "files")

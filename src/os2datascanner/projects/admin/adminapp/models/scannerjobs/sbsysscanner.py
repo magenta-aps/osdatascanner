@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import pgettext_lazy
 from .scanner import Scanner
 
 from os2datascanner.engine2.model.sbsys import SbsysSource
@@ -18,3 +19,6 @@ class SbsysScanner(Scanner):
             token_url=settings.SBSYS_TOKEN_URL,
             api_url=settings.SBSYS_API_URL
         )
+
+    object_name = pgettext_lazy("unit of scan", "case")
+    object_name_plural = pgettext_lazy("unit of scan", "cases")

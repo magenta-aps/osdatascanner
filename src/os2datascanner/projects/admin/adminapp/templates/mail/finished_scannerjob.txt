@@ -1,32 +1,19 @@
-{% load i18n %}
-
-{% blocktrans %}
 Hello {{ full_name }},
-{% endblocktrans %}
 
-{% blocktrans %}
 For your information, your OSdatascanner-scan @ {{ scanner_name }} has just finished.
-{% endblocktrans %}
 
-{{ total_objects }}{% trans " objects were scanned - " %}{{ object_size|filesizeformat }}{% trans " in total - in " %}{{ completion_time }}.
+{{ total_objects }} objects were scanned - {{ object_size|filesizeformat }} in total - in {{ completion_time }}.
 
-{% blocktrans %}
+{% if usererrorlogs %}
 {{ usererrorlogs }} errors occured during the scan.
-{% endblocktrans %}
+{% endif %}
 
-{% blocktrans %}
 Log into OSdatascanner with your organisation account for further details.
-{% endblocktrans %}
 
     {{ admin_login_url }}
 
-
-{% blocktrans %}
 Kind regards,
 the OSdatascanner system
-{% endblocktrans %}
 {% if institution %}
-{% blocktrans %}
 (on behalf of {{ institution }})
-{% endblocktrans %}
 {% endif %}

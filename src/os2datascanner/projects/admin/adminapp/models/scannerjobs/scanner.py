@@ -28,7 +28,7 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import validate_comma_separated_integer_list
 from django.db.models.signals import post_delete
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.dispatch import receiver
 
 from model_utils.managers import InheritanceManager, InheritanceQuerySet
@@ -86,6 +86,9 @@ class Scanner(models.Model):
     objects = ScannerManager(default_filters={"hidden": False})
 
     linkable = False
+
+    object_name = pgettext_lazy("unit of scan", "object")
+    object_name_plural = pgettext_lazy("unit of scan", "objects")
 
     name = models.CharField(
         max_length=256,
@@ -189,6 +192,15 @@ class Scanner(models.Model):
                                        on_delete=models.PROTECT)
 
     supports_rule_preexec = False
+
+    def as_subclass(self) -> 'Scanner':
+        """Converts this generic Scanner object to a concrete subclass.
+        (This is necessary to access properties overridden in subclasses, like
+        object_name and object_name_plural.)"""
+        # If you already possess a valid reference to a Scanner, then you
+        # should be able to get a reference to a FileScanner (or whatever)
+        # regardless of whether or not it's been marked as hidden
+        return Scanner.objects.unfiltered().select_subclasses().get(pk=self.pk)
 
     def verify(self) -> bool:
         """Method documentation"""

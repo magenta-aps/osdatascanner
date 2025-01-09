@@ -16,7 +16,7 @@
 
 import structlog
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.core.exceptions import ValidationError
 
 from os2datascanner.engine2.model.smbc import SMBCSource
@@ -27,7 +27,6 @@ logger = structlog.get_logger("adminapp")
 
 
 class FileScanner(Scanner):
-
     """File scanner for scanning network drives and folders"""
 
     unc = models.CharField(max_length=2048, blank=False, verbose_name='UNC')
@@ -87,3 +86,6 @@ class FileScanner(Scanner):
         if not self.unc.startswith(('//', '\\\\')) or any(x in self.unc for x in ['\\\\\\', '///']):
             error = _("UNC must follow the UNC format")
             raise ValidationError({"unc": error})
+
+    object_name = pgettext_lazy("unit of scan", "file")
+    object_name_plural = pgettext_lazy("unit of scan", "files")

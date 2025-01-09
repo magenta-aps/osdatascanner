@@ -8,18 +8,20 @@ from django.template import loader
 from .models.scannerjobs.scanner import Scanner, ScanStatus
 from .models.usererrorlog import UserErrorLog
 
-logger = structlog.get_logger("adminapp")
+from os2datascanner.utils.template_utilities import (
+        get_localised_template_names)
 
-GIGABYTE = 1073741824
-MEGABYTE = 1048576
+logger = structlog.get_logger("adminapp")
 
 
 def send_mail_upon_completion(scanner: Scanner, scan_status: ScanStatus):
     """
     Send a mail to scannerjob responsible when a scannerjob has finished.
     """
-    txt_mail_template = loader.get_template("mail/finished_scannerjob.txt")
-    html_mail_template = loader.get_template("mail/finished_scannerjob.html")
+    txt_mail_template = loader.select_template(
+            get_localised_template_names(["mail/finished_scannerjob.txt"]))
+    html_mail_template = loader.select_template(
+            get_localised_template_names(["mail/finished_scannerjob.html"]))
 
     # Find suitable user to notify.
     username = scan_status.scan_tag.get("user")
@@ -50,6 +52,7 @@ def create_context(scanner: Scanner, scan_status: ScanStatus, user: User):
         "object_size": scan_status.scanned_size,
         "completion_time": get_scanner_time(scan_status),
         "usererrorlogs": user_logs,
+        "object_plural": scanner.as_subclass().object_name_plural,
     }
 
     return context

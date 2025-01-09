@@ -32,25 +32,30 @@
     </style>
   </head>
   <body>
-    <p>{% blocktrans %}Hello {{ full_name }},{% endblocktrans %}</p>
+    <p>Hello {{ full_name }},</p>
     <p>
-      {% blocktrans %}For your information, your OSdatascanner-scan @ <strong>{{ scanner_name }}</strong> has just finished.{% endblocktrans %}
+      For your information, your OSdatascanner scan @ <strong>{{ scanner_name }}</strong> has just finished.
     </p>
     <p>
-      <strong>{{ total_objects }}</strong>{% trans " objects were scanned - " %} <strong>{{ object_size|filesizeformat }}</strong>
-      {% trans " in total - in " %} <strong>{{ completion_time }}</strong>.
+      <strong>{{ total_objects }}</strong> {{ object_plural }} were scanned &mdash;
+      <strong>{{ object_size|filesizeformat }}</strong> in total &mdash; in
+      <strong>{{ completion_time }}</strong>.
+    </p>
+    {% if usererrorlogs %}
+      <p>
+        <strong>{{ usererrorlogs }}</strong> errors occured during the scan.
+        <br />
+        <a href="{{ admin_login_url }}error-log/">Click here to inspect the error logs</a>
+      </p>
+    {% endif %}
+    <p>
+      <a href="{{ admin_login_url }}">Log into OSdatascanner with your organisation account</a> for further details.
     </p>
     <p>
-      {% blocktrans %}<strong>{{ usererrorlogs }}</strong> errors occured during the scan.<br /><a href="{{ admin_login_url }}error-log/">Click here to inspect the error logs</a>{% endblocktrans %}
-    </p>
-    <p>
-      {% blocktrans %}<a href="{{ admin_login_url }}">Log into OSdatascanner with your organisation account</a> for further details.{% endblocktrans %}
-    </p>
-    <p>
-      {% blocktrans %}Kind regards,<br>the OSdatascanner system{% endblocktrans %}
-      {% if institution %}
-        {% blocktrans %}(on behalf of {{ institution }}){% endblocktrans %}
-      {% endif %}
+      Kind regards,
+      <br>
+      the OSdatascanner system
+      {% if institution %}(on behalf of {{ institution }}){% endif %}
     </p>
   </body>
 </html>

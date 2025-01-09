@@ -13,9 +13,11 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( http://www.os2.eu/ )
+
 import structlog
 from django.db import models
 from django.core.validators import MinLengthValidator
+from django.utils.translation import pgettext_lazy
 
 from os2datascanner.engine2.model.dropbox import DropboxSource
 from .scanner import Scanner
@@ -25,7 +27,6 @@ logger = structlog.get_logger("adminapp")
 
 
 class DropboxScanner(Scanner):
-
     """File scanner for scanning network drives and folders"""
 
     token = models.CharField(
@@ -48,3 +49,6 @@ class DropboxScanner(Scanner):
     def make_engine2_source(self):
         return DropboxSource(
             self.token)
+
+    object_name = pgettext_lazy("unit of scan", "file")
+    object_name_plural = pgettext_lazy("unit of scan", "files")
