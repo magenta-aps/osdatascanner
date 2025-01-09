@@ -702,6 +702,10 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
         pk = kwargs.get("pk")
         self.verify_access(request.user, pk)
 
+        # Check user permission
+        if not request.user.has_perm("os2datascanner_report.delete_documentreport"):
+            raise PermissionDenied
+
         scannerjob_pk = request.POST.get("pk")
         scannerjob_name = request.POST.get("name")
         account = Account.objects.get(pk=pk)

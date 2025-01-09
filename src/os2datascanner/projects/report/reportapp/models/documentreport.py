@@ -239,6 +239,5 @@ class DocumentReport(models.Model):
         permissions = [
             ("see_withheld_documentreport", _("Can see withheld DocumentReports")),
             ("distribute_withheld_documentreport",
-             _("Can distribute withheld DocumentReports to users")),
-            ("see_user_result_origins", _("Can see scannerjobs related to user results"))
+             _("Can distribute withheld DocumentReports to users"))
         ]

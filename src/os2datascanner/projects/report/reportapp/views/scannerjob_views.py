@@ -31,7 +31,7 @@ class ScannerjobListView(ListView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser:
+        if request.user.has_perm("os2datascanner_report.delete_documentreport"):
             self.kwargs["org"] = request.user.account.organization
             return super().dispatch(request, *args, **kwargs)
         else:
@@ -46,7 +46,7 @@ class ScannerjobDeleteView(ListView):
         return all_reports.filter(scanner_job_pk=self.kwargs["pk"]).only("pk")
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser:
+        if request.user.has_perm("os2datascanner_report.delete_documentreport"):
             self.kwargs["org"] = request.user.account.organization
             return super().dispatch(request, *args, **kwargs)
         else:

@@ -14,7 +14,7 @@
       </h1>
 
       <div class="user-overview__data-wrapper">
-        <div class="data-card__container">
+        <div class="data-card__container {% if perms.os2datascanner_report.delete_documentreport %}has-unhandled-results{% endif %}">
           <!-- Card with 3-week overview of matches -->
           <div class="data-card data-card--weekly">
             <div class="data-card__label">
@@ -96,7 +96,7 @@
               </div>
             </div>
           </div>
-          {% if perms.os2datascanner_report.see_user_result_origins %}
+          {% if perms.os2datascanner_report.delete_documentreport %}
             <div class="data-card data-card--unhandled-results">
               <div class="data-card__label">
                 <span class="title">{% trans "Unhandled results" %}</span>
