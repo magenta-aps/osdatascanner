@@ -16,7 +16,6 @@
 from django import forms
 from django.contrib import admin
 from django.contrib import messages
-from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
 from .models.authentication import Authentication
@@ -251,6 +250,3 @@ class ScanStatusSnapshotAdmin(admin.ModelAdmin):
     readonly_fields = ('scan_status', 'time_stamp', 'total_sources',
                        'explored_sources', 'fraction_explored', 'total_objects',
                        'scanned_objects', 'fraction_scanned', 'scanned_size')
-
-
-admin.site.unregister(Group)
