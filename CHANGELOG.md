@@ -16,6 +16,8 @@
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs
   with the correct permission.
 
+- Http errors 403, 404 and 500 now correctly shows custom error pages to the user.
+
 ## Version 3.26.3, 7th January 2025
 
 "Did you also get an airfryer for christmas?"
