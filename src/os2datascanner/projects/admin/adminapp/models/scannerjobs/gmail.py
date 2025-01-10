@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
-from django.urls import reverse_lazy
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
 from ...utils import upload_path_gmail_users, upload_path_gmail_service_account
@@ -38,34 +37,9 @@ class GmailScanner(Scanner):
                                          null=False,
                                          validators=[validate_filetype_csv])
 
-    def get_type(self):
-        return 'gmail'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/gmailscanners'
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("gmailscanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("gmailscanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("gmailscanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("gmailscanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("gmailscanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("gmailscanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("gmailscanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return 'gmail'
 
     def generate_sources(self):
         with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file_gmail.name)) as saf:

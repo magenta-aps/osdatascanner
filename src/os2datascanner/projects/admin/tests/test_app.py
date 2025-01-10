@@ -16,6 +16,7 @@ Unit tests for OS2datascanner.
 """
 
 import pytest
+from django.urls import reverse_lazy
 
 from os2datascanner.projects.admin.adminapp.models.authentication import Authentication
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
@@ -36,7 +37,8 @@ class TestScanner:
         """This test method is sufficient for all types of scanners."""
 
         client.force_login(user_admin)
-        response = client.get("/webscanners/" + str(invalid_web_scanner.pk) + "/askrun/")
+        response = client.get(reverse_lazy("webscanner_askrun",
+                                           kwargs={"pk": invalid_web_scanner.pk}))
         assert response.context["ok"] is False
         assert response.context["error_message"] == Scanner.NOT_VALIDATED
 

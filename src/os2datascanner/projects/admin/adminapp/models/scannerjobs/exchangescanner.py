@@ -21,7 +21,6 @@ import structlog
 from django.db import models
 from django.conf import settings
 from django.utils.translation import pgettext_lazy
-from django.urls import reverse_lazy
 
 from exchangelib.errors import ErrorNonExistentMailbox
 from os2datascanner.engine2.model.ews import EWSAccountSource
@@ -85,34 +84,9 @@ class ExchangeScanner(Scanner):
     def get_userlist_file_path(self):
         return os.path.join(settings.MEDIA_ROOT, self.userlist.name)
 
-    def get_type(self):
-        return "exchange"
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return "/exchangescanners/"
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("exchangescanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("exchangescanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("exchangescanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("exchangescanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("exchangescanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("exchangescanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("exchangescanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return "exchange"
 
     def compute_covered_accounts(self):
         # A Scanner that uses a userlist file shouldn't have a populated

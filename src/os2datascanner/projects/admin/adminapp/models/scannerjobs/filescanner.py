@@ -18,7 +18,6 @@ import structlog
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.core.exceptions import ValidationError
-from django.urls import reverse_lazy
 
 from os2datascanner.engine2.model.smbc import SMBCSource
 from .scanner import Scanner
@@ -65,34 +64,9 @@ class FileScanner(Scanner):
         """Return the URL for the scanner."""
         return self.unc
 
-    def get_type(self):
-        return 'file'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/filescanners/'
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("filescanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("filescanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("filescanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("filescanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("filescanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("filescanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("filescanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return 'file'
 
     def generate_sources(self):
         yield SMBCSource(

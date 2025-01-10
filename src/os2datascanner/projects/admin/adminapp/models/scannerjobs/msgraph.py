@@ -17,7 +17,6 @@ import structlog
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
-from django.urls import reverse_lazy
 
 from os2datascanner.engine2.model.msgraph.mail import (MSGraphMailSource, MSGraphMailAccountSource,
                                                        MSGraphMailAccountHandle)
@@ -90,34 +89,9 @@ class MSGraphMailScanner(MSGraphScanner):
 
     supports_rule_preexec = True
 
-    def get_type(self):
-        return 'msgraph-mail'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-mailscanners/'
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("msgraphmailscanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("msgraphmailscanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("msgraphmailscanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("msgraphmailscanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("msgraphmailscanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("msgraphmailscanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("msgraphmailscanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return 'msgraphmail'
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -146,34 +120,9 @@ class MSGraphFileScanner(MSGraphScanner):
     scan_user_drives = models.BooleanField(
             default=True, verbose_name='Scan alle OneDrive-drev')
 
-    def get_type(self):
-        return 'msgraph-files'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-filescanners/'
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("msgraphfilescanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("msgraphfilescanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("msgraphfilescanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("msgraphfilescanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("msgraphfilescanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("msgraphfilescanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("msgraphfilescanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return 'msgraphfile'
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -209,34 +158,9 @@ class MSGraphFileScanner(MSGraphScanner):
 class MSGraphCalendarScanner(MSGraphScanner):
     """Model for MSGraphCalendarSource."""
 
-    def get_type(self):
-        return 'msgraph-calendar'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-calendarscanners/'
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("msgraphcalendarscanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("msgraphcalendarscanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("msgraphcalendarscanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("msgraphcalendarscanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("msgraphcalendarscanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("msgraphcalendarscanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("msgraphcalendarscanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return 'msgraphcalendar'
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -265,34 +189,9 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
         verbose_name=_("check dead links")
     )
 
-    def get_type(self):
-        return 'msgraph-teams-file'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-teams-filescanners/'
-
     @staticmethod
-    def get_create_url():
-        return reverse_lazy("msgraphteamsfilescanner_add")
-
-    def get_update_url(self):
-        return reverse_lazy("msgraphteamsfilescanner_update", kwargs={"pk": self.pk})
-
-    def get_cleanup_url(self):
-        return reverse_lazy("msgraphteamsfilescanner_cleanup", kwargs={"pk": self.pk})
-
-    def get_askrun_url(self):
-        return reverse_lazy("msgraphteamsfilescanner_askrun", kwargs={"pk": self.pk})
-
-    def get_copy_url(self):
-        return reverse_lazy("msgraphteamsfilescanner_copy", kwargs={"pk": self.pk})
-
-    def get_remove_url(self):
-        return reverse_lazy("msgraphteamsfilescanner_remove", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("msgraphteamsfilescanner_delete", kwargs={"pk": self.pk})
+    def get_type():
+        return 'msgraphteamsfile'
 
     # TODO: Expand with generate_sources_with_accounts logic if possible.
     def generate_sources(self):
