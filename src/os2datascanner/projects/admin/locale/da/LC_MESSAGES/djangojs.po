@@ -687,7 +687,7 @@ msgid "Select one or more organizational units"
 msgstr "Vælg en eller flere organisatoriske enheder"
 
 #: dist/js/scannerjob/statusTimelines.js:44 js/scannerjob/statusTimelines.js:44
-msgid "Seconds since start of scan"
+msgid "Seconds since the scan was started"
 msgstr "Sekunder siden scannet blev startet"
 
 #: dist/js/scannerjob/statusTimelines.js:50 js/scannerjob/statusTimelines.js:50
