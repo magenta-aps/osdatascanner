@@ -28,7 +28,6 @@ from os2datascanner.projects.admin import settings
 from .views.api import JSONAPIView
 from .views.views import GuideView, DialogSuccess
 
-import re
 import inspect
 from .views import (exchangescanner_views, filescanner_views, dropboxscanner_views,
                     googledrivescanner_views, gmailscanner_views, sbsysscanner_views,
@@ -46,6 +45,10 @@ from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCom
 
 
 from .views.miniscanner_views import MiniScanner, execute_mini_scan
+
+from .views.scanner_views import (ScannerAskRun, ScannerCleanupStaleAccounts, ScannerCopy,
+                                  ScannerCreate, ScannerDelete, ScannerList, ScannerRemove,
+                                  ScannerRun, ScannerUpdate)
 
 urlpatterns = [
     # App URLs
@@ -168,27 +171,38 @@ for module in [exchangescanner_views,
                webscanner_views,
                msgraph_views]:
     imported = inspect.getmembers(module)
-    for name, data in imported:
-        # The regex will split the name of the class into three segments:
-        # 1. Everything that comes before the last two segments -- this is the scanner type
-        # 2. The second-to-last capitalized word -- this is exactly "Scanner"
-        # 3. The last capitalized word -- this is the type of view ("list", "create", etc.)
-        m = re.match(r'(\w*)(Scanner)'
-                     r'(List|Create|Update|Run|AskRun|Delete|Copy|Remove|Cleanup)',
-                     name)
-        if not m or not m[1] or m[1].startswith("_"):
+    for _, data in imported:
+
+        type_to_action = {
+            ScannerList: "list",
+            ScannerCreate: "add",
+            ScannerUpdate: "update",
+            ScannerRemove: "remove",
+            ScannerDelete: "delete",
+            ScannerCopy: "copy",
+            ScannerAskRun: "askrun",
+            ScannerRun: "run",
+            ScannerCleanupStaleAccounts: "cleanup",
+        }
+
+        action: str = None
+        for superclass, act_label in type_to_action.items():
+            if inspect.isclass(data) and issubclass(data, superclass) and data is not superclass:
+                action = act_label
+                break
+        else:
+            # No special treatment for this type
             continue
 
-        stype = m[1].lower()
-        action = m[3].lower()
+        stype: str = data.model.get_type().lower()
 
         # There are some special case patterns
         if action == "list":
             pattern = f"{stype}scanners/"
             name = f"{stype}scanners"
-        elif action == "create":
-            pattern = f"{stype}scanners/add"
-            name = f"{stype}scanner_add"
+        elif action == "add":
+            pattern = f"{stype}scanners/{action}/"
+            name = f"{stype}scanner_{action}"
         else:
             pattern = f"{stype}scanners/<int:pk>/{action}/"
             name = f"{stype}scanner_{action}"
