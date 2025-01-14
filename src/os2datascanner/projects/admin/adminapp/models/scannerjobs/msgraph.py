@@ -89,12 +89,9 @@ class MSGraphMailScanner(MSGraphScanner):
 
     supports_rule_preexec = True
 
-    def get_type(self):
-        return 'msgraph-mail'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-mailscanners/'
+    @staticmethod
+    def get_type():
+        return 'msgraphmail'
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -123,12 +120,9 @@ class MSGraphFileScanner(MSGraphScanner):
     scan_user_drives = models.BooleanField(
             default=True, verbose_name='Scan alle OneDrive-drev')
 
-    def get_type(self):
-        return 'msgraph-files'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-filescanners/'
+    @staticmethod
+    def get_type():
+        return 'msgraphfile'
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -164,12 +158,9 @@ class MSGraphFileScanner(MSGraphScanner):
 class MSGraphCalendarScanner(MSGraphScanner):
     """Model for MSGraphCalendarSource."""
 
-    def get_type(self):
-        return 'msgraph-calendar'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-calendarscanners/'
+    @staticmethod
+    def get_type():
+        return 'msgraphcalendar'
 
     def generate_sources(self):
         yield from (source for _, source in self.generate_sources_with_accounts())
@@ -198,12 +189,9 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
         verbose_name=_("check dead links")
     )
 
-    def get_type(self):
-        return 'msgraph-teams-file'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/msgraph-teams-filescanners/'
+    @staticmethod
+    def get_type():
+        return 'msgraphteamsfile'
 
     # TODO: Expand with generate_sources_with_accounts logic if possible.
     def generate_sources(self):

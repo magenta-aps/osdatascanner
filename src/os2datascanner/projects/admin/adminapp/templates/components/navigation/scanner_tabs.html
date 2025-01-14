@@ -16,22 +16,24 @@
           <a id="dropbox" class="tabs__control" href="/dropboxscanners/">{% trans "Dropboxscanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_MAILSCAN %}
-          <a id="msgraph-mail" class="tabs__control" href="/msgraph-mailscanners/">{% trans "Office 365 mailscanner" %}</a>
+          <a id="msgraph-mail"
+             class="tabs__control"
+             href="{% url "msgraphmailscanners" %}">{% trans "Office 365 mailscanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_FILESCAN %}
-          <a id="msgraph-file" class="tabs__control" href="/msgraph-filescanners/">
-            {% trans "Office 365 OneDrive filescanner" %}
-          </a>
+          <a id="msgraph-file"
+             class="tabs__control"
+             href="{% url "msgraphfilescanners" %}">{% trans "Office 365 OneDrive filescanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_TEAMS_FILESCAN %}
           <a id="msgraph-teams-file"
              class="tabs__control"
-             href="/msgraph-teams-filescanners/">{% trans "Office 365 Teams filescanner" %}</a>
+             href="{% url "msgraphteamsfilescanners" %}">{% trans "Office 365 Teams filescanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_CALENDARSCAN %}
           <a id="msgraph-calendar"
              class="tabs__control"
-             href="/msgraph-calendarscanners/">{% trans "Office 365 kalenderscanner" %}</a>
+             href="{% url "msgraphcalendarscanners" %}">{% trans "Office 365 kalenderscanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_GOOGLEDRIVESCAN %}
           <a id="googledrive" class="tabs__control" href="/googledrivescanners/">{% trans "Google Drive scanner" %}</a>
@@ -96,16 +98,16 @@
             window.location.href = "/dropboxscanners/"
             dropbox.classList.add('active')
         } else if (msgraph_mail) {
-            window.location.href = "/msgraph-mailscanners/"
+            window.location.href = "/msgraphmailscanners/"
             msgraph_mail.classList.add('active')
         } else if (msgraph_file) {
-            window.location.href = "/msgraph-filescanners/"
+            window.location.href = "/msgraphfilescanners/"
             msgraph_file.classList.add('active')
         } else if (msgraph_teams_file) {
-          window.location.href = "/msgraph-teams-filescanners/"
+          window.location.href = "/msgraphteamsfilescanners/"
           msgraph_teams_file.classList.add('active')
         } else if (msgraph_calendar) {
-            window.location.href = "/msgraph-calendarscanners/"
+            window.location.href = "/msgraphcalendarscanners/"
             msgraph_calendar.classList.add('active')
         } else if (googledrive) {
             window.location.href = "/googledrivescanners/"
@@ -130,16 +132,16 @@
     if (location.pathname === '/dropboxscanners/') {
         dropbox.classList.add("active")
     }
-    if (location.pathname === '/msgraph-mailscanners/') {
+    if (location.pathname === '/msgraphmailscanners/') {
         msgraph_mail.classList.add("active")
     }
-    if (location.pathname === '/msgraph-filescanners/') {
+    if (location.pathname === '/msgraphfilescanners/') {
         msgraph_file.classList.add("active")
     }
-    if (location.pathname === '/msgraph-teams-filescanners/') {
+    if (location.pathname === '/msgraphteamsfilescanners/') {
       msgraph_teams_file.classList.add("active")
     }
-    if (location.pathname === '/msgraph-calendarscanners/') {
+    if (location.pathname === '/msgraphcalendarscanners/') {
         msgraph_calendar.classList.add("active")
     }
     if (location.pathname === '/gmailscanners/') {

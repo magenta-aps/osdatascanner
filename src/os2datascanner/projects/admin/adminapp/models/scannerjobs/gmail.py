@@ -37,12 +37,9 @@ class GmailScanner(Scanner):
                                          null=False,
                                          validators=[validate_filetype_csv])
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return 'gmail'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/gmailscanners'
 
     def generate_sources(self):
         with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file_gmail.name)) as saf:

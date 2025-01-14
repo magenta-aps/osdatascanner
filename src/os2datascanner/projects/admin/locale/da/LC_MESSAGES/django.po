@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-08 14:26+0100\n"
+"POT-Creation-Date: 2025-01-09 11:20+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -263,11 +263,11 @@ msgstr ""
 "lad være med at scanne filer med både HIDDEN- og SYSTEM-attributter sat, "
 "samt filer med HIDDEN-attribut sat og et navn med tilde-tegn foran"
 
-#: adminapp/models/scannerjobs/filescanner.py:44
+#: adminapp/models/scannerjobs/filescanner.py:46
 msgid "UNC is home root"
 msgstr "UNC er brugermappernes rod"
 
-#: adminapp/models/scannerjobs/filescanner.py:45
+#: adminapp/models/scannerjobs/filescanner.py:47
 msgid ""
 "all folders under the given UNC are user home folders; their owners have "
 "responsibility for everything they contain regardless of other filesystem "
@@ -276,31 +276,31 @@ msgstr ""
 "alle mapper under det givne UNC er brugernes hjemmemapper: deres ejere har "
 "ansvar for alt, der ligger derinde, uanset hvad filsystemet ellers må sige"
 
-#: adminapp/models/scannerjobs/filescanner.py:87
+#: adminapp/models/scannerjobs/filescanner.py:111
 msgid "UNC must follow the UNC format"
 msgstr "UNC skal følge UNC-format"
 
-#: adminapp/models/scannerjobs/msgraph.py:74
+#: adminapp/models/scannerjobs/msgraph.py:75
 msgid "Scan deleted items folder"
 msgstr "Scan slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:75
+#: adminapp/models/scannerjobs/msgraph.py:76
 msgid "Include emails in the deleted post folder"
 msgstr "Inkludér emails i slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:80
+#: adminapp/models/scannerjobs/msgraph.py:81
 msgid "Scan syncissues folder"
 msgstr "Scan synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:81
+#: adminapp/models/scannerjobs/msgraph.py:82
 msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:86
+#: adminapp/models/scannerjobs/msgraph.py:87
 msgid "Scan attachments"
 msgstr "Scan vedhæftninger"
 
-#: adminapp/models/scannerjobs/msgraph.py:87
+#: adminapp/models/scannerjobs/msgraph.py:88
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
@@ -486,7 +486,7 @@ msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py:267
-#: adminapp/views/scanner_views.py:203
+#: adminapp/views/scanner_views.py:201
 msgid "Start time"
 msgstr "Startet"
 
@@ -519,23 +519,23 @@ msgstr "scanstatus snapshot"
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/webscanner.py:59
+#: adminapp/models/scannerjobs/webscanner.py:60
 msgid "validation method"
 msgstr "valideringsmetode"
 
-#: adminapp/models/scannerjobs/webscanner.py:65
+#: adminapp/models/scannerjobs/webscanner.py:66
 msgid "sitemap file"
 msgstr "sitemap fil"
 
-#: adminapp/models/scannerjobs/webscanner.py:72
+#: adminapp/models/scannerjobs/webscanner.py:73
 msgid "sitemap url"
 msgstr "sitemap url"
 
-#: adminapp/models/scannerjobs/webscanner.py:77
+#: adminapp/models/scannerjobs/webscanner.py:78
 msgid "crawl the sitemap's content"
 msgstr "crawle i sitemap-filens indhold"
 
-#: adminapp/models/scannerjobs/webscanner.py:79
+#: adminapp/models/scannerjobs/webscanner.py:80
 msgid ""
 "instead of just treating the sitemap as a complete list of links, run the "
 "crawler on those links as well"
@@ -543,15 +543,15 @@ msgstr ""
 "i stedet for at betragte sitemap-filen som en liste af alle relevante links, "
 "kør crawleren på selve disse links"
 
-#: adminapp/models/scannerjobs/webscanner.py:85
+#: adminapp/models/scannerjobs/webscanner.py:86
 msgid "download Sitemap from server"
 msgstr "hent Sitemap fra serveren"
 
-#: adminapp/models/scannerjobs/webscanner.py:90
+#: adminapp/models/scannerjobs/webscanner.py:91
 msgid "reduce communication"
 msgstr "formindsk kommunikation"
 
-#: adminapp/models/scannerjobs/webscanner.py:92
+#: adminapp/models/scannerjobs/webscanner.py:93
 msgid ""
 "reduce the number of HTTP requests made to the server by unconditionally "
 "trusting the content of the sitemap"
@@ -559,11 +559,11 @@ msgstr ""
 "formindsk antallet af HTTP-anmodninger til serveren ved at stole ubetinget "
 "på sitemap-filens indhold"
 
-#: adminapp/models/scannerjobs/webscanner.py:100
+#: adminapp/models/scannerjobs/webscanner.py:101
 msgid "comma-separated list of urls to exclude"
 msgstr "Kommasepareret liste af URLs der skal eksluderes"
 
-#: adminapp/models/scannerjobs/webscanner.py:102
+#: adminapp/models/scannerjobs/webscanner.py:103
 msgid ""
 "Be sure to include a trailing '/'to enforce path matching, i.e. https://"
 "example.com/images/ instead of https://example.com/images"
@@ -571,11 +571,11 @@ msgstr ""
 "Afslut URL'en med '/' for at sikre sti-matching, i.e. https://example.com/"
 "images/ i stedet for https://example.com/images"
 
-#: adminapp/models/scannerjobs/webscanner.py:108
+#: adminapp/models/scannerjobs/webscanner.py:109
 msgid "extended hint support"
 msgstr "udvidet hint-understøttelse"
 
-#: adminapp/models/scannerjobs/webscanner.py:110
+#: adminapp/models/scannerjobs/webscanner.py:111
 msgid ""
 "present pages by their HTML titles and allow the presentation of links to be "
 "overridden"
@@ -2481,19 +2481,19 @@ msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:202
+#: adminapp/views/scanner_views.py:200
 msgid "Scanner name"
 msgstr "Scanner navn"
 
-#: adminapp/views/scanner_views.py:204
+#: adminapp/views/scanner_views.py:202
 msgid "Objects found"
 msgstr "Objekter fundet"
 
-#: adminapp/views/scanner_views.py:205
+#: adminapp/views/scanner_views.py:203
 msgid "Matches found"
 msgstr "Resultater fundet"
 
-#: adminapp/views/scanner_views.py:206
+#: adminapp/views/scanner_views.py:204
 msgid "Scanning time"
 msgstr "Scanningstid"
 
@@ -2505,19 +2505,19 @@ msgstr "Scan tidspunkt"
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:571
+#: adminapp/views/scanner_views.py:576
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:591
+#: adminapp/views/scanner_views.py:596
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:617
+#: adminapp/views/scanner_views.py:622
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:632
+#: adminapp/views/scanner_views.py:637
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 

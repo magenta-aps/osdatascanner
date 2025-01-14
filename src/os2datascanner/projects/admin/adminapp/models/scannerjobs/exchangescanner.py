@@ -84,12 +84,9 @@ class ExchangeScanner(Scanner):
     def get_userlist_file_path(self):
         return os.path.join(settings.MEDIA_ROOT, self.userlist.name)
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return "exchange"
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return "/exchangescanners/"
 
     def compute_covered_accounts(self):
         # A Scanner that uses a userlist file shouldn't have a populated

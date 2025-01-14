@@ -39,12 +39,9 @@ class DropboxScanner(Scanner):
         """Return the URL for the scanner."""
         return self.url
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return 'dropbox'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/dropboxscanners/'
 
     def make_engine2_source(self):
         return DropboxSource(

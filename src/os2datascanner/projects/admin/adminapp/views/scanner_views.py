@@ -383,6 +383,11 @@ class ScannerList(RestrictedListView):
             qs = qs.filter(name__icontains=search_field)
         return qs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["add_scanner_url"] = self.model.get_create_url()
+        return context
+
 
 class ScannerBase(object):
     template_name = 'components/scanner/scanner_form.html'

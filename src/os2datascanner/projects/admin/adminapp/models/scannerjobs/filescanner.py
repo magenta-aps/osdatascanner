@@ -64,12 +64,9 @@ class FileScanner(Scanner):
         """Return the URL for the scanner."""
         return self.unc
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return 'file'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/filescanners/'
 
     def generate_sources(self):
         yield SMBCSource(

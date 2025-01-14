@@ -6,11 +6,10 @@ from os2datascanner.engine2.model.sbsys import SbsysSource
 
 
 class SbsysScanner(Scanner):
-    def get_type(self):
-        return 'sbsys'
 
-    def get_absolute_url(self):
-        return '/sbsysscanners'
+    @staticmethod
+    def get_type():
+        return 'sbsys'
 
     def generate_sources(self):
         yield SbsysSource(

@@ -286,7 +286,7 @@ def initialize_form(form):
     return form
 
 
-class ExchangeCleanupStaleAccounts(ScannerCleanupStaleAccounts):
+class ExchangeScannerCleanup(ScannerCleanupStaleAccounts):
     """Prompts the user for confirmation before deleting document reports
     belonging to accounts, which have gone stale for this scanner."""
     model = ExchangeScanner

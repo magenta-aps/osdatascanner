@@ -175,12 +175,9 @@ class WebScanner(Scanner):
             self.exclude_urls else [])
         return urls
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return "web"
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return "/webscanners/"
 
     def generate_sources(self):
         yield WebSource(

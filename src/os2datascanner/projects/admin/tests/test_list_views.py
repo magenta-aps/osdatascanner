@@ -20,9 +20,9 @@ all_scanner_list_urls = [
         reverse_lazy('googledrivescanners'),
         reverse_lazy('gmailscanners'),
         reverse_lazy('sbsysscanners'),
-        reverse_lazy('msgraphcalendarscanner_list'),
-        reverse_lazy('msgraphfilescanner_list'),
-        reverse_lazy('msgraphmailscanner_list'),
+        reverse_lazy('msgraphcalendarscanners'),
+        reverse_lazy('msgraphfilescanners'),
+        reverse_lazy('msgraphmailscanners'),
     ]
 
 path_and_class = [

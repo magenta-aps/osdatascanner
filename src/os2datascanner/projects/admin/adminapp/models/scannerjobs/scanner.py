@@ -30,6 +30,7 @@ from django.core.validators import validate_comma_separated_integer_list
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.dispatch import receiver
+from django.urls import reverse_lazy
 
 from model_utils.managers import InheritanceManager, InheritanceQuerySet
 from recurrence.fields import RecurrenceField
@@ -670,6 +671,33 @@ class Scanner(models.Model):
             job = AnalysisJob.objects.filter(scanner=self).order_by(
                 "-created_at").prefetch_related("types").first()
         return job
+
+    @classmethod
+    def get_absolute_url(cls):
+        """Get the absolute URL for scanners."""
+        return reverse_lazy(f"{cls.get_type()}scanners")
+
+    @classmethod
+    def get_create_url(cls):
+        return reverse_lazy(f"{cls.get_type()}scanner_add")
+
+    def get_update_url(self):
+        return reverse_lazy(f"{self.get_type()}scanner_update", kwargs={"pk": self.pk})
+
+    def get_cleanup_url(self):
+        return reverse_lazy(f"{self.get_type()}scanner_cleanup", kwargs={"pk": self.pk})
+
+    def get_askrun_url(self):
+        return reverse_lazy(f"{self.get_type()}scanner_askrun", kwargs={"pk": self.pk})
+
+    def get_copy_url(self):
+        return reverse_lazy(f"{self.get_type()}scanner_copy", kwargs={"pk": self.pk})
+
+    def get_remove_url(self):
+        return reverse_lazy(f"{self.get_type()}scanner_remove", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        return reverse_lazy(f"{self.get_type()}scanner_delete", kwargs={"pk": self.pk})
 
     class Meta:
         abstract = False

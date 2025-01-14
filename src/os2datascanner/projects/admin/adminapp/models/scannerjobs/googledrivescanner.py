@@ -41,12 +41,9 @@ class GoogleDriveScanner(Scanner):
         """Return the URL for the scanner."""
         return self.url
 
-    def get_type(self):
+    @staticmethod
+    def get_type():
         return 'googledrive'
-
-    def get_absolute_url(self):
-        """Get the absolute URL for scanners."""
-        return '/googledrivescanners'
 
     def generate_sources(self):
         with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file.name)) as saf:

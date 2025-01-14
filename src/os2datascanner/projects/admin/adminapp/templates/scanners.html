@@ -44,7 +44,7 @@
             <div class="btn">
               {% comment %} We should use a {% url %}-tag here, but cannot currently, since the
               scanner type is a variable. We should think of a better way to do this. {% endcomment %}
-              <a href="/{{ view.type }}scanners/add/"
+              <a href="{{ add_scanner_url }}"
                  class="button button--cta-button button--icon-text-button"
                  aria-label="{% trans "Add scannerjob" %}"
                  title="{% trans "Add scannerjob" %}">
@@ -89,7 +89,7 @@
                   <tr class="datatablex__row" tabindex="0">
                     <td class="domain-url column column--name">
                       <div class="name__container">
-                        <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
+                        <a href="{{ scanner.get_update_url }}"
                            class="name__label"
                            aria-label="{% trans "Edit" %} {{ scanner.name }}"
                            title="{% trans "Edit" %} &quot;{{ scanner.name }}&quot;">
@@ -106,7 +106,7 @@
                           <a class="button button--icon-text-button stale-accounts"
                              href="#cleanup-accounts-modal"
                              data-modal="modal:open"
-                             data-src="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
+                             data-src="{{ scanner.get_cleanup_url }}"
                              title="{% trans "The following users are no longer covered by this scannerjob, but have been scanned previously:" %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
                             <i id="person_off" class="material-symbols">person_off</i>
 
@@ -182,7 +182,7 @@
                       <div class="action-wrapper button-group">
                         <a href="#run-scanner-modal"
                            data-modal="modal:open"
-                           data-src="/{{ view.type }}scanners/{{ scanner.pk }}/askrun/"
+                           data-src="{{ scanner.get_askrun_url }}"
                            class="button button--icon-button button--datatable-actions"
                            aria-label="{% trans "Run scanner job" %}"
                            title="{% trans "Run scanner job" %}">
@@ -190,7 +190,7 @@
                         </a>
 
                         {% if perms.os2datascanner.change_scanner %}
-                          <a href="/{{ view.type }}scanners/{{ scanner.pk }}"
+                          <a href="{{ scanner.get_update_url }}"
                              class="button button--icon-button button--datatable-actions"
                              aria-label="{% trans "Edit scanner job" %}"
                              title="{% trans "Edit scanner job" %}">
@@ -199,7 +199,7 @@
                         {% endif %}
 
                         {% if perms.os2datascanner.add_scanner %}
-                          <a href="/{{ view.type }}scanners/{{ scanner.pk }}/copy"
+                          <a href="{{ scanner.get_copy_url }}"
                              class="button button--icon-button button--datatable-actions"
                              aria-label="{% trans "Copy scanner job" %}"
                              title="{% trans "Copy scanner job" %}">
@@ -215,7 +215,7 @@
                           {% comment %}
                             Can we avoid the inline styling on this element?
                           {% endcomment %}
-                          <form action="/{{ view.type }}scanners/{{ scanner.pk }}/remove/"
+                          <form action="{{ scanner.get_remove_url }}"
                                 method="post"
                                 style="display: inline-block">
                             {% csrf_token %}
@@ -237,7 +237,7 @@
                           {% comment %}
                             Can we avoid the inline styling on this element?
                           {% endcomment %}
-                          <form action="/{{ view.type }}scanners/{{ scanner.pk }}/delete/"
+                          <form action="{{ scanner.get_delete_url }}"
                                 method="post"
                                 style="display: inline-block">
                             {% csrf_token %}
