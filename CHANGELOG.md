@@ -11,6 +11,10 @@
   being scanned ("webpages" for the web scanner, "files" for the various file
   scanners, etc.).
 
+- Better use of url-tags instead of hardcoded urls in django templates.
+
+- URL patterns for scanner pages are now generated from the scanner views.
+
 ### Bugfixes
 
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs
