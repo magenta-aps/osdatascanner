@@ -44,6 +44,9 @@
 
 - Http errors 403, 404 and 500 now correctly shows custom error pages to the user.
 
+- The line chart on the overview for finished scans no longer shrinks from full size to nothing
+  when the page is accessed from a Chrome browser and page zoom is set to 90%. 
+
 ## Version 3.26.3, 7th January 2025
 
 "Did you also get an airfryer for christmas?"
