@@ -97,14 +97,16 @@ class GenericRunner(PikaPipelineThread):
 
         return consumer_tags
 
-    def handle_message_raw(self, channel, method, properties, body):
-        if self._stage in ("worker", "explorer",):
-            self._check_and_switch_priority()
-
-        super().handle_message_raw(channel, method, properties, body)
+    def _processing_complete(self, tick):
+        if tick and tick % 50 == 0:
+            if self._stage in ("worker", "explorer",):
+                self._check_and_switch_priority()
+        return super()._processing_complete(tick)
 
     def _check_and_switch_priority(self):  # noqa CCR001, cognitive complexity (17 > 15)
         """Switch consumers dynamically based on queue message counts."""
+        # TODO: Queue declare could be a helper function to guard against pika exceptions if a
+        # queue is missing  .. beware that many different ones can be thrown.
         queue_msg_counts = {
             queue: self.channel.queue_declare(queue=queue, passive=True).method.message_count
             for queue in self._queue_priorities

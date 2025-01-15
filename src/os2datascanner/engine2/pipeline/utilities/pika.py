@@ -216,6 +216,7 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         self._condition = threading.Condition()
         self._exclusive = exclusive
         self._default_basic_properties = dict(delivery_mode=2, content_encoding="gzip")
+        self._tick = 0
 
         self._shutdown_exception = None
 
@@ -355,6 +356,24 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                          " handled incoming message. Notifying other threads.")
             self._condition.notify()
 
+    def _processing_complete(self, tick: int):
+        """(Background thread.) General-purpose hook function called by run()
+        every time it finishes processing the list of enqueued actions.
+
+        The default implementation dispatches RabbitMQ heartbeat messages and
+        calls handle_message_raw() for new channel messages before sleeping for
+        a tenth of a second. Subclasses can override this method, but must
+        eventually call up to the superclass implementation.
+
+        The tick value passed to this method increases by one for every call
+        made to it. Subclasses can check this value to gate routine operations
+        that nonetheless don't need to be called ten times a second."""
+        # Dispatch any waiting timer (heartbeats) and channel (calls to our
+        # handle_message_raw method) callbacks...
+        self.connection.process_data_events(0)
+        # ... and then sleep for a moment to avoid overburdening the system
+        time.sleep(0.1)
+
     def run(self):  # noqa: CCR001, too high cognitive complexity
         """(Background thread.) Runs a loop that processes enqueued actions
         from, and collects new messages for, the main thread.
@@ -396,12 +415,8 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                             case ("zzz", duration):
                                 time.sleep(duration)
 
-                # Dispatch any waiting timer (heartbeats) and channel (calls to
-                # our handle_message_raw method) callbacks...
-                self.connection.process_data_events(0)
-                # ... and then sleep for a moment to avoid overburdening the
-                # system
-                time.sleep(0.1)
+                self._processing_complete(self._tick)
+                self._tick += 1
         except BaseException as ex:
             if isinstance(ex, (
                     pika.exceptions.ChannelClosed,
