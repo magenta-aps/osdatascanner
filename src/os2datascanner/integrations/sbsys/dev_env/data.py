@@ -1,27 +1,15 @@
-from copy import copy
 from datetime import datetime
-from typing import Any
 
 
-def _update_base_obj(
-    base_obj: dict[str, Any],
-    updates: dict[str, Any],
-) -> dict[str, Any]:
-    """
-    Update a base table object dict with values new values, e.g.
-    we can update the _SAG_BASE dict to a proper SAG dict.
-
-    Args:
-        base_obj: the base object to update, e.g. _SAG_BASE
-        updates: the values to update
-    """
-
-    updated_obj = copy(base_obj)
-    updated_obj.update(updates)
-    return updated_obj
+databases = {
+    "SbSysNetDrift": {
+        "tables": {}
+    },
+}
+SbSysNetDrift = databases["SbSysNetDrift"]["tables"]
 
 
-SAGS_TILSTAND_OPSLAG = [
+SbSysNetDrift["SagsTilstandOpslag"] = [
     {
         "ID": 0,
         "Navn": "Aktiv"
@@ -32,7 +20,7 @@ SAGS_TILSTAND_OPSLAG = [
     },
 ]
 
-SAGS_STATUS = [
+SbSysNetDrift["SagsStatus"] = [
     {
         "ID": 1,
         "Navn": "Opklaring",
@@ -114,13 +102,10 @@ _HIERAKI_BASE = {
 }
 
 # Misspelled in SBSYS
-HIERAKI = [
-    _update_base_obj(
-        _HIERAKI_BASE,
-        {
-            "Navn": "Vejstrand Hierarki",
-        }
-    )
+SbSysNetDrift["Hieraki"] = [
+    _HIERAKI_BASE | {
+        "Navn": "Vejstrand Hierarki",
+    }
 ]
 
 _HIERAKI_MEDLEM_BASE = {
@@ -131,14 +116,11 @@ _HIERAKI_MEDLEM_BASE = {
     "SortIndex": None,
 }
 
-HIERAKI_MEDLEM = [
-    _update_base_obj(
-        _HIERAKI_MEDLEM_BASE,
-        {
-            "Navn": "Vejstrand Hieraki Medlem",
-            "HierakiID": 1,
-        }
-    )
+SbSysNetDrift["HierakiMedlem"] = [
+    _HIERAKI_MEDLEM_BASE | {
+        "Navn": "Vejstrand Hieraki Medlem",
+        "HierakiID": 1,
+    }
 ]
 
 _ADRESSE_BASE = {
@@ -161,31 +143,25 @@ _ADRESSE_BASE = {
 }
 
 
-ADRESSE = [
-    _update_base_obj(
-        _ADRESSE_BASE,
-        {
-            "Adresse1": "Paradisæblevej",
-            "PostNummer": 1000,
-            "HusNummer": 13,
-        }
-    ),
-    _update_base_obj(
-        _ADRESSE_BASE,
-        {
-            "Adresse1": "Shaolin Temple",
-            "Adresse2": "Dengfeng Boulevard",
-            "Adresse3": "Zhengzhou",
-            "Adresse4": "Henan",
-            "Landekode": "CN",
-            "PostNummer": 471925,
-            "HusNummer": 1,
-        }
-    ),
+SbSysNetDrift["Adresse"] = [
+    _ADRESSE_BASE | {
+        "Adresse1": "Paradisæblevej",
+        "PostNummer": 1000,
+        "HusNummer": 13,
+    },
+    _ADRESSE_BASE | {
+        "Adresse1": "Shaolin Temple",
+        "Adresse2": "Dengfeng Boulevard",
+        "Adresse3": "Zhengzhou",
+        "Adresse4": "Henan",
+        "Landekode": "CN",
+        "PostNummer": 471925,
+        "HusNummer": 1,
+    },
 ]
 
 
-ARKIV_AFKLARING_STATUS = [
+SbSysNetDrift["ArkivAfklaringStatus"] = [
     {
         "ID": 1,
         "Navn": "Mangler bekræftelse",
@@ -226,17 +202,14 @@ _ANSAETTELSESSTED_BASE = {
     "VisCVR": 1,
 }
 
-ANSAETTELSESSTED = [
-    _update_base_obj(
-        _ANSAETTELSESSTED_BASE,
-        {
-            "Navn": "Vejstrand vej-afdeling",
-            "PostAdresseID": 1,
-            "FysiskAdresseID": 1,
-            "HierakiMedlemID": 1,
-            "AnsaettelsesstedIdentity": "DB05212B-15FA-4C02-8001-A05D0D45FED8",
-        }
-    )
+SbSysNetDrift["Ansaettelsessted"] = [
+    _ANSAETTELSESSTED_BASE | {
+        "Navn": "Vejstrand vej-afdeling",
+        "PostAdresseID": 1,
+        "FysiskAdresseID": 1,
+        "HierakiMedlemID": 1,
+        "AnsaettelsesstedIdentity": "DB05212B-15FA-4C02-8001-A05D0D45FED8",
+    }
 ]
 
 _FAG_OMRAADE_BASE = {
@@ -244,14 +217,11 @@ _FAG_OMRAADE_BASE = {
     "FagomraadeIdentity": None,
 }
 
-FAG_OMRAADE = [
-    _update_base_obj(
-        _FAG_OMRAADE_BASE,
-        {
-            "Navn": "Veje og strande",
-            "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
-        }
-    )
+SbSysNetDrift["FagOmraade"] = [
+    _FAG_OMRAADE_BASE | {
+        "Navn": "Veje og strande",
+        "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
+    }
 ]
 
 _BRUGER_BASE = {
@@ -278,21 +248,29 @@ _BRUGER_BASE = {
     "ErSystembruger": 0,
 }
 
-BRUGER = [
-    _update_base_obj(
-        _BRUGER_BASE,
-        {
-            "LogonID": 1,
-            "Navn": "Bruce Lee",
-            "FagomraadeID": 1,
-            "AdresseID": 2,
-            "AnsaettelsesstedID": 1,
-            "Status": 1,
-            "ObjectSid": "S-DIG",
-            "UserPrincipalName": "bruce@kungfu.org",
-            "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
-        }
-    )
+SbSysNetDrift["Bruger"] = [
+    _BRUGER_BASE | {
+        "LogonID": 1,
+        "Navn": "Bruce Lee",
+        "FagomraadeID": 1,
+        "AdresseID": 2,
+        "AnsaettelsesstedID": 1,
+        "Status": 1,
+        "ObjectSid": "S-DIG",
+        "UserPrincipalName": "bruce@kungfu.org",
+        "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
+    },
+    _BRUGER_BASE | {
+        "LogonID": 2,
+        "Navn": "Jan Kowalski",
+        "FagomraadeID": 1,
+        "AdresseID": 1,
+        "AnsaettelsesstedID": 1,
+        "Status": 1,
+        "ObjectSID": "S-CYF",
+        "UserPrincipalName": "jkowalski@vstkom.internal",
+        "BrugerIdentity": "69131057-FA37-4EE0-A79F-D8A5EF879CB6",
+    }
 ]
 
 _SAG_BASE = {
@@ -337,56 +315,47 @@ _SAG_BASE = {
     "Sletningsdato": None,
 }
 
-SAG = [
-    _update_base_obj(
-        _SAG_BASE,
-        {
-            "SagIdentity": "2B37AF33-BDFC-4C9B-B332-CAE56310E963",
-            "Nummer": "06.13.01-K02-3-13",
-            "Titel": "Opsætning af skilte: Skabet til Narnia",
-            "ErBeskyttet": 1,
-            "BehandlerID": 1,  # Reference to the "Bruger" table
-            "SagsStatusID": 8,
-            "CreatedByID": 1,
-            "Created": datetime(2013, 9, 11),
-            "LastChangedByID": 1,
-            "LastChanged": datetime(2023, 9, 11),
-            "AnsaettelsesstedID": 1,
-            "ArkivAfklaringStatusID": 1,
-        }
-    ),
-    _update_base_obj(
-        _SAG_BASE,
-        {
-            "SagIdentity": "EE5BF8A0-D44F-4780-A76A-6E625EF312DA",
-            "Nummer": "07.13.01-K02-3-13",
-            "Titel": "Eiffel Tower",
-            "ErBeskyttet": 1,
-            "BehandlerID": 1,  # Reference to the "Bruger" table
-            "SagsStatusID": 5,
-            "CreatedByID": 1,
-            "Created": datetime(2013, 9, 11),
-            "LastChangedByID": 1,
-            "LastChanged": datetime(2022, 9, 11),
-            "AnsaettelsesstedID": 1,
-            "ArkivAfklaringStatusID": 1,
-        }
-    ),
-    _update_base_obj(
-        _SAG_BASE,
-        {
-            "SagIdentity": "5A766711-7E0C-4085-8A8B-158ACE9EE087",
-            "Nummer": "05.13.01-K02-3-13",
-            "Titel": "Den Grimme Ælling",
-            "ErBeskyttet": 1,
-            "BehandlerID": 1,  # Reference to the "Bruger" table
-            "SagsStatusID": 8,
-            "CreatedByID": 1,
-            "Created": datetime(2013, 9, 11),
-            "LastChangedByID": 1,
-            "LastChanged": datetime(2022, 9, 11),
-            "AnsaettelsesstedID": 1,
-            "ArkivAfklaringStatusID": 1,
-        }
-    ),
+SbSysNetDrift["Sag"] = [
+    _SAG_BASE | {
+        "SagIdentity": "2B37AF33-BDFC-4C9B-B332-CAE56310E963",
+        "Nummer": "06.13.01-K02-3-13",
+        "Titel": "Opsætning af skilte: Skabet til Narnia",
+        "ErBeskyttet": 1,
+        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "SagsStatusID": 8,
+        "CreatedByID": 1,
+        "Created": datetime(2013, 9, 11),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2023, 9, 11),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+    },
+    _SAG_BASE | {
+        "SagIdentity": "EE5BF8A0-D44F-4780-A76A-6E625EF312DA",
+        "Nummer": "07.13.01-K02-3-13",
+        "Titel": "Eiffel Tower",
+        "ErBeskyttet": 1,
+        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "SagsStatusID": 5,
+        "CreatedByID": 1,
+        "Created": datetime(2013, 9, 11),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2022, 9, 11),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+    },
+    _SAG_BASE | {
+        "SagIdentity": "5A766711-7E0C-4085-8A8B-158ACE9EE087",
+        "Nummer": "05.13.01-K02-3-13",
+        "Titel": "Den Grimme Ælling",
+        "ErBeskyttet": 1,
+        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "SagsStatusID": 8,
+        "CreatedByID": 1,
+        "Created": datetime(2013, 9, 11),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2022, 9, 11),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+    }
 ]

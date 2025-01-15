@@ -19,7 +19,9 @@ def get_engine(
 
 
 @cache
-def get_tables(engine: Engine) -> FacadeDict[str, Table]:
+def get_tables(
+        engine: Engine,
+        only: tuple[str] = ("Sag,")) -> FacadeDict[str, Table]:
     """
     Get the SBSYS tables.
 
@@ -30,5 +32,5 @@ def get_tables(engine: Engine) -> FacadeDict[str, Table]:
          A dictionary-like object containing the SBSYS tables.
     """
     metadata_obj = MetaData()
-    metadata_obj.reflect(bind=engine, only=("Sag",))
+    metadata_obj.reflect(bind=engine, only=only)
     return metadata_obj.tables
