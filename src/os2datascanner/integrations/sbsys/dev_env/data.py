@@ -359,3 +359,17 @@ SbSysNetDrift["Sag"] = [
         "ArkivAfklaringStatusID": 1,
     }
 ]
+
+# --
+
+databases["SbSysNetDriftDokument0000"] = (_dr := {"tables": {}})
+SbSysNetDriftDokument0000 = _dr["tables"]
+
+with open("1111111118.pdf", "rb") as fp:
+    SbSysNetDriftDokument0000["DokumentData"] = [
+        {
+            "ID": 1,
+            "DokumentID": 1,
+            "Data": fp.read()
+        }
+    ]
