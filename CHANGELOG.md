@@ -29,6 +29,12 @@
 
 - URL patterns for scanner pages are now generated from the scanner views.
 
+- Bumped RabbitMQ version to 3.12.14
+
+- It is now possible to configure admin-module `Client` full- and delta-scan queues, and 
+to configure explorer and worker to prioritize different message queues. Effectively allowing
+full- and delta-scans to run in parallel.
+
 ### Bugfixes
 
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs
@@ -57,6 +63,7 @@
 
 - Only allow users with "resolve_scanstatus"-permission to resolve ScanStatus objects in the admin
   module.
+
 
 ### General improvements
 

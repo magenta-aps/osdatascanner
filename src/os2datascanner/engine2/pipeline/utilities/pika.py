@@ -129,7 +129,7 @@ class PikaPipelineRunner(PikaConnectionHolder):
         of the read and write queues used by this pipeline stage.
 
         This method also declares a durable fanout exchange called "broadcast"
-        used by some OS2datascanner components to send and receive global
+        used by some OSdatascanner components to send and receive global
         messages."""
         channel = super().make_channel()
         channel.basic_qos(prefetch_count=self._prefetch_count)

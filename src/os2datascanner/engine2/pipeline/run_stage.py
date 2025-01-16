@@ -236,9 +236,6 @@ restarting = False
               help='re-execute this stage after it has handled COUNT messages (default: None)')
 @click.argument('stage',
                 type=click.Choice(["explorer",
-                                   "processor",
-                                   "matcher",
-                                   "tagger",
                                    "exporter",
                                    "worker"]))
 @click.option("--queue-priority", envvar='QUEUE_PRIORITY',

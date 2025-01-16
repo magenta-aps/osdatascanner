@@ -9,14 +9,6 @@ from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 
 logger = structlog.get_logger("matcher")
 
-READS_QUEUES = ("os2ds_representations",)
-WRITES_QUEUES = (
-    "os2ds_handles",
-    "os2ds_matches",
-    "os2ds_checkups",)
-PROMETHEUS_DESCRIPTION = "Representations examined"
-PREFETCH_COUNT = 8
-
 
 def censor_context(context, rules):
     """Given a text and an iterable of rules, will censor the text,
