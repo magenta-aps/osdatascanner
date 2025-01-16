@@ -48,7 +48,7 @@
         {% if settings.ENABLE_SBSYSSCAN %}
           <a id="sbsys" class="tabs__control" href="{% url "sbsysscanners" %}">{% trans "Sbsysscanner" %}</a>
         {% endif %}
-        {% if perms.os2datascanner.view_removed_scanner %}
+        {% if perms.os2datascanner.view_hidden_scanner %}
           <a id="removed"
              class="tabs__control"
              href="{% url "removed_scanners" %}">{% trans "Removed scanners" %}</a>
@@ -83,18 +83,18 @@
 
 <script>
     // Menu tabs
-    let web = document.getElementById("web")
-    let file = document.getElementById("file")
-    let exchange = document.getElementById("exchange")
-    let dropbox = document.getElementById("dropbox")
-    let msgraph_mail = document.getElementById("msgraph-mail")
-    let msgraph_file = document.getElementById("msgraph-file")
-    let msgraph_teams_file = document.getElementById("msgraph-teams-file")
-    let msgraph_calendar = document.getElementById("msgraph-calendar")
-    let googledrive = document.getElementById("googledrive")
-    let gmail = document.getElementById("gmail")
-    let sbsys = document.getElementById("sbsys")
-    let removed = document.getElementById("removed")
+    const web = document.getElementById("web")
+    const file = document.getElementById("file")
+    const exchange = document.getElementById("exchange")
+    const dropbox = document.getElementById("dropbox")
+    const msgraph_mail = document.getElementById("msgraph-mail")
+    const msgraph_file = document.getElementById("msgraph-file")
+    const msgraph_teams_file = document.getElementById("msgraph-teams-file")
+    const msgraph_calendar = document.getElementById("msgraph-calendar")
+    const googledrive = document.getElementById("googledrive")
+    const gmail = document.getElementById("gmail")
+    const sbsys = document.getElementById("sbsys")
+    const removed = document.getElementById("removed")
 
     if (location.pathname === '/') {
         if (web) {
@@ -174,9 +174,9 @@
 
 
     // Status tabs
-    var scan_status = document.getElementById("scan-status")
-    var completed = document.getElementById("completed")
-    var error_log = document.getElementById("error-log")
+    const scan_status = document.getElementById("scan-status")
+    const completed = document.getElementById("completed")
+    const error_log = document.getElementById("error-log")
 
     if (location.pathname === '/status/') {
         scan_status.classList.add('active')

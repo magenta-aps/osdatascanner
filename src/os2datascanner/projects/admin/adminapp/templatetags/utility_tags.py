@@ -72,8 +72,3 @@ def format_timespan(seconds):
 def comma_separated_list(qs):
     lst = [acc.username for acc in qs]
     return ", ".join(lst)
-
-
-@register.filter
-def verbose_name(obj):
-    return obj._meta.verbose_name

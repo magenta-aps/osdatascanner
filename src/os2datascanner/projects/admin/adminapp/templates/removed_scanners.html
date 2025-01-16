@@ -46,7 +46,7 @@
 
       <div class="datatablex__card-container search-target">
         <div class="datatablex__wrapper">
-          <table class="datatablex scannerjob-table{% if view.type == 'web' %} scannerjob-table--webscanner{% elif view.type == 'file' %} scannerjob-table--filescanner{% endif %}">
+          <table class="datatablex scannerjob-table">
             <thead>
               <tr class="datatablex__row">
                 <th class="column column--name">{% trans "Name" %}</th>
@@ -76,7 +76,7 @@
 
                     <td class="column column--type">
                       <div class="type__container">
-                        <span>{{ scanner|verbose_name }}</span>
+                        <span>{{ scanner.verbose_name }}</span>
                       </div>
                     </td>
 
@@ -101,7 +101,6 @@
                                 method="post"
                                 style="display: inline-block">
                             {% csrf_token %}
-                            {{ form.as_p }}
                             <button type="submit"
                                     class="button button--icon-button button--datatable-actions"
                                     aria-label="{% trans "Recreate scanner job." %}"
@@ -123,7 +122,6 @@
                                 method="post"
                                 style="display: inline-block">
                             {% csrf_token %}
-                            {{ form.as_p }}
                             <button type="submit"
                                     class="button button--icon-button button--datatable-actions"
                                     onclick="return confirm(`{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "The action cannot be reversed" %}`)"

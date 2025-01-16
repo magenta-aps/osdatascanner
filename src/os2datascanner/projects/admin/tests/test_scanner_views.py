@@ -19,7 +19,7 @@ class TestRemovedScannerViews:
         assert basic_scanner not in qs
         assert web_scanner not in qs
 
-    def test_removed_scanners_list_with_permission(self, client, user_admin):
+    def test_removed_scanners_list_with_permission(self, client, user_admin, hidden_scanner):
         """Users with the 'view_hidden_scanner'-permission should be allowed to access the
         removed scanners list."""
         user_admin.user_permissions.add(Permission.objects.get(codename="view_hidden_scanner"))
@@ -29,7 +29,7 @@ class TestRemovedScannerViews:
 
         assert response.status_code == 200
 
-    def test_removed_scanners_list_without_permission(self, client, user_admin):
+    def test_removed_scanners_list_without_permission(self, client, user_admin, hidden_scanner):
         """A user without the 'view_hidden_scanner'-permission should not be allowed to access the
         removed scanner list."""
         client.force_login(user_admin)

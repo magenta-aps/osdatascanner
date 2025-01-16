@@ -586,8 +586,8 @@ class Scanner(models.Model):
         return scan_tag.to_json_object()
 
     def get_last_successful_run_at(self) -> datetime:
-        query = ScanStatus.objects.filter(ScanStatus._completed_Q | Q(scanner=self))
-        last = query.order_by("-start_time").first()
+        query = ScanStatus.objects.filter(ScanStatus._completed_Q & Q(scanner=self))
+        last = max(query, key=lambda status: status.start_time, default=None)
         return last.start_time if last else None
 
     def generate_sources(self) -> Iterator[Source]:
@@ -696,6 +696,10 @@ class Scanner(models.Model):
 
     def get_delete_url(self):
         return reverse_lazy(f"{self.get_type()}scanner_delete", kwargs={"pk": self.pk})
+
+    @property
+    def verbose_name(self):
+        return self._meta.verbose_name
 
     class Meta:
         abstract = False

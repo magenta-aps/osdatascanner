@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0140_scanstatus_resolve_permission'),
+        ('os2datascanner', '0141_alter_usererrorlog_options'),
     ]
 
     operations = [

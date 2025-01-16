@@ -811,7 +811,10 @@ class RemovedScannersView(PermissionRequiredMixin, ScannerList):
         return super().get_queryset().select_subclasses()
 
     def get_context_data(self, **kwargs):
-        # Do not inherit from ScannerList, as self.model.get_type() breaks on the Scanner class.
+        # Do not inherit from ScannerList, but from ScannerList's parent class instead.
+        # This method in ScannerList tries to fetch the url to the create view for the current
+        # scanner type. However, this view does not represent a scanner type, but rather points
+        # to the base `Scanner` model. Trying to fetch the create url for `Scanner` does not work.
         context = super(ScannerList, self).get_context_data(**kwargs)
         return context
 

@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0141_unhide_scanner_and_view_hidden_scanner_permissions'),
+        ('os2datascanner', '0142_unhide_scanner_and_view_hidden_scanner_permissions'),
     ]
 
     operations = [
