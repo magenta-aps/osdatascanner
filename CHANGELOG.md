@@ -40,6 +40,11 @@
 
 - Information about the leader overview has been added to the report module manual.
 
+- Only users with the "os2datascanner_report.delete_documentreport" permission, are able to 
+  see the unhandled results statistic under user statistics and delete underlying results from
+  available scannerjobs. 
+
+
 ### Bugfixes
 
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs

@@ -650,7 +650,7 @@ table .overview_wrapper {
     display: grid;
     gap: 2rem;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto;
+    grid-auto-rows: minmax(auto, 250px);
   }
 
   &--weekly {
@@ -715,6 +715,8 @@ table .overview_wrapper {
     // Box Model
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
 
     .mini-card {
       // Box Model
