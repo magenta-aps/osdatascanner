@@ -216,7 +216,6 @@ class ReportView(LoginRequiredMixin, ListView):
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         context['retention'] = self.request.GET.get('retention', 'true')
-        print("RETENTION:", context['retention'])
 
         sensitivities = self.all_reports.order_by(
                 '-sensitivity').values(
