@@ -2,6 +2,20 @@
 
 ## Next release
 
+### New in this release
+
+- Organizations can now define a retention policy. This policy replaces the previously hardcoded
+  "30 days" functionality in the report module:
+
+  - Users can opt to hide results stemming from matches newer than the amount of days specified by
+    the retention policy on the report page.
+
+  - In the leader overview, the number of results older than the amount of days specified by the
+    retention policy is displayed for each employee.
+
+  - The send_notifications management command respects the retention policy if called without the
+    `--all-results`-argument.
+
 ### General improvements
 
 - Python's normal logical operators can now be used to compose scanner rules
