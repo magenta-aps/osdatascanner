@@ -25,7 +25,6 @@ from dateutil.tz import gettz
 import structlog
 
 from django.db import models
-from django.conf import settings
 from django.core.validators import validate_comma_separated_integer_list
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
@@ -44,7 +43,6 @@ from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 import os2datascanner.engine2.pipeline.messages as messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.conversions.types import OutputType
-from os2datascanner.engine2.pipeline.headers import get_exchange, get_headers
 from mptt.models import TreeManyToManyField
 from os2datascanner.projects.admin.adminapp.utils import CleanProblemMessage
 
@@ -364,6 +362,15 @@ class Scanner(models.Model):
         """Builds a scan specification template for this scanner. This template
         has no associated Source, so make sure you put one in with the _replace
         or _deep_replace methods before trying to scan with it."""
+
+        # Determine if we're running full or delta scan & set explorer and conversion queue
+        # accordingly
+        is_true_delta_scan = (bool(self.statuses) and self.do_last_modified_check) and not force
+        explorer_queue = (self.organization.client.explorer_delta_queue if is_true_delta_scan
+                          else self.organization.client.explorer_full_queue)
+        conversion_queue = (self.organization.client.conversion_delta_queue if is_true_delta_scan
+                            else self.organization.client.conversion_full_queue)
+
         rule = self._construct_rule(force)
         filter_rule = self._construct_filter_rule()
         scan_tag = self._construct_scan_tag(user)
@@ -371,7 +378,9 @@ class Scanner(models.Model):
 
         return messages.ScanSpecMessage(
                 scan_tag=scan_tag, rule=rule, configuration=configuration,
-                filter_rule=filter_rule, source=None, progress=None)
+                filter_rule=filter_rule, source=None, progress=None,
+                conversion_queue=conversion_queue,
+                explorer_queue=explorer_queue)
 
     @property
     def _supports_account_annotations(self) -> bool:
@@ -411,7 +420,7 @@ class Scanner(models.Model):
                             f"{self}: account {account} not previously"
                             " scanned")
                 outbox.append((
-                    settings.AMQP_PIPELINE_TARGET,
+                    spec_template.explorer_queue,
                     spec_template._replace(source=source, rule=rule)))
                 source_count += 1
             return source_count
@@ -421,7 +430,7 @@ class Scanner(models.Model):
             # the queue without fiddling around with the rule
             for source in self.generate_sources():
                 outbox.append((
-                    settings.AMQP_PIPELINE_TARGET,
+                    spec_template.explorer_queue,
                     spec_template._replace(source=source)
                 ))
                 source_count += 1
@@ -463,8 +472,7 @@ class Scanner(models.Model):
     def _add_checkups(
             self, spec_template: messages.ScanSpecMessage,
             outbox: list,
-            force: bool,
-            queue_suffix=None) -> int:
+            force: bool) -> int:
         """Creates instructions to rescan every object covered by this
         scanner's ScheduledCheckup objects (in the process deleting objects no
         longer covered by one of this scanner's Sources), and puts them into
@@ -493,12 +501,11 @@ class Scanner(models.Model):
             rule_here = AndRule.make(
                     LastModifiedRule(ib) if ib and not force else True,
                     spec_template.rule)
-            outbox.append((settings.AMQP_CONVERSION_TARGET,
+            outbox.append((spec_template.conversion_queue,
                            conv_template._deep_replace(
                                scan_spec__source=rh.source,
                                handle=rh,
-                               progress__rule=rule_here),
-                           ),)
+                               progress__rule=rule_here)))
             checkup_count += 1
         return checkup_count
 
@@ -540,17 +547,12 @@ class Scanner(models.Model):
             checkup_count = self._add_checkups(
                 spec_template,
                 outbox,
-                force,
-                queue_suffix=self.organization.name)
+                force)
 
         if source_count == 0 and checkup_count == 0:
             raise ValueError(f"nothing to do for {self}")
 
         self.save()
-
-        # Use the name of an appropriate organization as queue_suffix for
-        # headers-based routing.
-        queue_suffix = self.organization.name
 
         # Create a model object to track the status of this scan...
         new_status = ScanStatus.objects.create(
@@ -564,14 +566,10 @@ class Scanner(models.Model):
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(
-                queue_suffix=queue_suffix,
                 write={queue for queue, _ in outbox}) as sender:
 
             for queue, message in outbox:
-                sender.enqueue_message(queue,
-                                       message.to_json_object(),
-                                       exchange=get_exchange(rk=queue),
-                                       **get_headers(organisation=queue_suffix))
+                sender.enqueue_message(queue, message.to_json_object())
             sender.enqueue_stop()
             sender.start()
             sender.join()

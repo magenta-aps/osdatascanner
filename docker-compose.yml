@@ -88,7 +88,7 @@ services:
     # Normally, we expect the `rabbitmq` image. The -management images come
     # with a set of management plugins installed and enabled by default. They
     # can be accessed through a web interface. The credentials are os2ds/os2ds.
-    image: rabbitmq:3.11.1-management-alpine
+    image: rabbitmq:3.12.14-management-alpine
     hostname: os2datascanner_msg_broker
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
@@ -406,6 +406,8 @@ services:
       target: engine
     env_file:
       - ./dev-environment/engine/dev-settings.env
+    environment:
+      - QUEUE_PRIORITY=explorer_delta explorer_full os2ds_scan_specs
     command: explorer
     init: true
     tty:
@@ -429,9 +431,32 @@ services:
       - ./dev-environment/engine/dev-settings.env
     environment:
       - SCHEDULE_ON_CPU=0
-      - QUEUE_SUFFIX
       - ENABLE_RUSAGE=true
       - OSDS_DEBUG_OAUTH2=true
+      - QUEUE_PRIORITY=conversions_delta conversions_full os2ds_conversions
+    tty:
+      true
+    volumes:
+      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
+      - ./src/os2datascanner:/code/src/os2datascanner
+    depends_on: *engine_dependencies
+
+
+  worker_2:
+    image: magentaaps/os2datascanner-engine:dev
+    build:
+      context: .
+      dockerfile: docker/base/Dockerfile
+      target: engine
+    command: worker
+    init: true
+    env_file:
+      - ./dev-environment/engine/dev-settings.env
+    environment:
+      - SCHEDULE_ON_CPU=1
+      - ENABLE_RUSAGE=true
+      - OSDS_DEBUG_OAUTH2=true
+      - QUEUE_PRIORITY=conversions_full conversions_delta
     tty:
       true
     volumes:

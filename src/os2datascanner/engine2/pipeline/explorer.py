@@ -1,3 +1,4 @@
+import structlog
 from .. import settings
 from ..model.core import (
         Source, takes_named_arg, UnknownSchemeError, DeserialisationError)
@@ -9,16 +10,13 @@ from ..utilities.backoff import DummyRetrier, TimeoutRetrier
 from . import messages
 from .utilities.filtering import is_handle_relevant
 
-import structlog
-
-
 logger = structlog.get_logger("explorer")
 
-
 READS_QUEUES = ("os2ds_scan_specs",)
-WRITES_QUEUES = (
-        "os2ds_conversions", "os2ds_problems", "os2ds_status",
-        "os2ds_scan_specs", "os2ds_checkups",)
+WRITES_QUEUES = ("os2ds_problems", "os2ds_status",
+                 "os2ds_scan_specs", "os2ds_checkups",
+                 "os2ds_conversions")
+
 PROMETHEUS_DESCRIPTION = "Sources explored"
 # An individual exploration task is typically the longest kind of task, so we
 # want to do as little prefetching as possible here. (If we're doing an
@@ -113,7 +111,8 @@ def message_received_raw(body, channel, source_manager):  # noqa
             elif not scan_spec.source.yields_independent_sources:
                 # This Handle is just a normal reference to a scannable object.
                 # Send it on to be processed
-                yield ("os2ds_conversions",
+
+                yield (scan_spec.conversion_queue,
                        messages.ConversionMessage(
                             scan_spec, handle, progress).to_json_object())
                 handle_count += 1
@@ -123,7 +122,7 @@ def message_received_raw(body, channel, source_manager):  # noqa
                     # This Handle is a thin wrapper around an independent Source.
                     # Construct that Source and enqueue it for further exploration
                     new_source = Source.from_handle(handle)
-                    yield ("os2ds_scan_specs", scan_spec._replace(
+                    yield (scan_spec.explorer_queue, scan_spec._replace(
                         source=new_source).to_json_object())
                     source_count = (source_count or 0) + 1
                 else:

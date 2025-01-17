@@ -16,7 +16,6 @@ from .utilities.pika import (ANON_QUEUE,
                              RejectMessage,
                              PikaPipelineThread,
                              HandleMessageType)
-from .headers import get_headers, get_queues, get_exchange
 
 logger = structlog.get_logger("run_stage")
 
@@ -48,14 +47,11 @@ def restart_process():
 class GenericRunner(PikaPipelineThread):
     def __init__(self,
                  source_manager: SourceManager, *args,
-                 stage: str, module, queue_suffix, limit,
-                 read, write, **kwargs):
-        super().__init__(
-                *args, **kwargs,
-                read=read,
-                write=write,
-                queue_suffix=queue_suffix,
-                prefetch_count=module.PREFETCH_COUNT)
+                 stage: str, module,  limit, queue_priorities, **kwargs):
+        super().__init__(*args, **kwargs,
+                         read=tuple(set(module.READS_QUEUES).union(set(queue_priorities))),
+                         write=module.WRITES_QUEUES,
+                         prefetch_count=module.PREFETCH_COUNT)
         self._module = module
         self._registry = CollectorRegistry()
         self._summary = Summary(
@@ -64,13 +60,21 @@ class GenericRunner(PikaPipelineThread):
                 registry=self._registry)
         self._source_manager = source_manager
 
-        self._queue_suffix = queue_suffix
         self._stage = stage
 
         self._cancelled = deque()
 
         self._limit = limit
         self._count = 0
+
+        self._queue_priorities = queue_priorities
+        if self._queue_priorities:
+            logger.info(
+                "Running with queue prioritization",
+                queue_priorities=self._queue_priorities)
+            self._first_priority = self._queue_priorities[0]  # First entry, first prio.
+            self._current_priority = None
+            self._consumer_tags = {}
 
     def make_channel(self):
         channel = super().make_channel()
@@ -83,14 +87,72 @@ class GenericRunner(PikaPipelineThread):
                 auto_delete=True, arguments={"x-max-priority": 10})
         channel.queue_bind(
                 exchange="broadcast", queue=anon_queue.method.queue)
-
         return channel
 
     def _basic_consume(self, *, exclusive=False):
         consumer_tags = super()._basic_consume(exclusive=exclusive)
-        consumer_tags.append(self.channel.basic_consume(
-                ANON_QUEUE, self.handle_message_raw, exclusive=False))
+        consumer_tags["anon"] = self.channel.basic_consume(
+                ANON_QUEUE, self.handle_message_raw, exclusive=False)
+        self._consumer_tags = consumer_tags
+
         return consumer_tags
+
+    def _processing_complete(self, tick):
+        if tick and tick % 50 == 0:
+            if self._stage in ("worker", "explorer",):
+                self._check_and_switch_priority()
+        return super()._processing_complete(tick)
+
+    def _check_and_switch_priority(self):  # noqa CCR001, cognitive complexity (17 > 15)
+        """Switch consumers dynamically based on queue message counts."""
+        # TODO: Queue declare could be a helper function to guard against pika exceptions if a
+        # queue is missing  .. beware that many different ones can be thrown.
+        queue_msg_counts = {
+            queue: self.channel.queue_declare(queue=queue, passive=True).method.message_count
+            for queue in self._queue_priorities
+        }
+
+        first_priority_count = queue_msg_counts[self._first_priority]
+
+        # Match on the state of the first-priority queue and the current priority
+        match (first_priority_count, self._current_priority):
+            case (count, current) if count > 0 and current != self._first_priority:
+                # First priority queue has messages: cancel lower-priority consumers
+                logger.info("Switching to first priority", first_priority=self._first_priority)
+                for queue in self._queue_priorities:
+                    if queue != self._first_priority and queue in self._consumer_tags:
+                        logger.info("Cancelling consumer", queue=queue)
+                        self.channel.basic_cancel(self._consumer_tags.pop(queue))
+                self._current_priority = self._first_priority
+
+            case (0, current) if current == self._first_priority:
+                # First priority is empty and currently active: check lower-priority queues
+                for queue in self._queue_priorities:
+                    if queue == self._first_priority:
+                        continue  # Skip first priority
+                    # If the queue has no consumer and messages, start one
+                    if queue not in self._consumer_tags and queue_msg_counts[queue] > 0:
+                        logger.info("Starting consumer", queue=queue)
+                        self._consumer_tags[queue] = self.channel.basic_consume(
+                            queue=queue,
+                            on_message_callback=self.handle_message_raw,
+                            exclusive=False
+                        )
+                        self._current_priority = queue
+                        break  # Break the loop - we don't want to start any more consumers.
+
+                # Cancel other lower-priority consumers
+                for queue in self._queue_priorities:
+                    if queue not in self._consumer_tags or queue == self._first_priority:
+                        continue
+
+                    if self._current_priority != queue:
+                        logger.info("Cancelling low prio consumer", queue=queue)
+                        self.channel.basic_cancel(self._consumer_tags.pop(queue))
+
+            case _:
+                # No action needed
+                logger.debug("No priority switch necessary.")
 
     def _handle_command(self, routing_key, body):
         command = messages.CommandMessage.from_json_object(body)
@@ -128,21 +190,12 @@ class GenericRunner(PikaPipelineThread):
                 body, routing_key, self._source_manager)
 
     def handle_message(self, routing_key, body) -> HandleMessageType:
-        # If the routing_key points to the default exchange, then
-        # we interpret the message as a command and yield a 2-tuple
-        # with a routing_key and a message.
-        # Otherwise, we interpret the message as carrying content and
-        # yield a 4-tuple with routing_key, message, exchange and headers.
         with self._summary.time():
             logger.debug(f"{routing_key}: {str(body)}")
             if routing_key == "":
                 yield from self._handle_command(routing_key, body)
             else:
-                # Note: change exchange and headers here.
-                qs = self._queue_suffix
-                stage = self._stage
-                for rk, msg in self._handle_content(routing_key, body):
-                    yield rk, msg, get_exchange(stage, qs, msg, rk), get_headers(stage, qs, msg, rk)
+                yield from self._handle_content(routing_key, body)
 
     def after_message(self, routing_key, body):
         # Check to see if we've met our quota and should restart
@@ -181,18 +234,16 @@ restarting = False
 @click.option('--restart-after', default=None,
               envvar='RESTART_AFTER', type=int,
               help='re-execute this stage after it has handled COUNT messages (default: None)')
-@click.option('--queue-suffix', default=None,
-              envvar='QUEUE_SUFFIX', type=str,
-              help='suffix for queue(s) for the engine stage to read from/write to')
 @click.argument('stage',
                 type=click.Choice(["explorer",
-                                   "processor",
-                                   "matcher",
-                                   "tagger",
                                    "exporter",
                                    "worker"]))
+@click.option("--queue-priority", envvar='QUEUE_PRIORITY',
+              multiple=True, type=str,
+              help='queue priorities, can be multiple: first entry equals highest priority.')
 def main(enable_profiling, enable_rusage, enable_metrics,
-         prometheus_port, width, single_cpu, restart_after, queue_suffix, stage):
+         prometheus_port, width, single_cpu, restart_after, stage,
+         queue_priority):
     debug.register_debug_signal()
     module = _module_mapping[stage]
     logger.info("starting pipeline", stage=stage)
@@ -222,9 +273,6 @@ def main(enable_profiling, enable_rusage, enable_metrics,
         logger.info("enabling profiling")
         profiling.enable_profiling()
 
-    if queue_suffix:
-        logger.info(f"Using dedicated queues with suffix: '{queue_suffix}'")
-
     try:
         with SourceManager(width=width) as source_manager:
             GenericRunner(
@@ -232,10 +280,7 @@ def main(enable_profiling, enable_rusage, enable_metrics,
                 stage=stage,
                 module=module,
                 limit=restart_after,
-                queue_suffix=queue_suffix,
-                read=get_queues(module.READS_QUEUES, queue_suffix),
-                write=get_queues(module.WRITES_QUEUES, queue_suffix),
-                ).run_consumer()
+                queue_priorities=queue_priority).run_consumer()
 
         if restarting:
             logger.info(f"restarting after {restart_after} messages")

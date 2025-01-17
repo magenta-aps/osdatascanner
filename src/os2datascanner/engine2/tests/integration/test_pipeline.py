@@ -109,7 +109,7 @@ def handle_message_worker(body, channel, *, stat_dict=None):
     with SourceManager() as sm:
         if channel == "os2ds_scan_specs":
             yield from explorer.message_received_raw(body, channel, sm)
-        elif channel in "os2ds_conversions":
+        elif channel == "os2ds_conversions":
             yield from worker.message_received_raw(body, channel, sm)
         elif channel in ("os2ds_matches", "os2ds_metadata", "os2ds_problems"):
             yield from exporter.message_received_raw(body, channel, sm)
