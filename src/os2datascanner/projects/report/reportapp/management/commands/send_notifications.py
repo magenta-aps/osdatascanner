@@ -121,16 +121,17 @@ class Command(BaseCommand):
                     # Ensure provided user exists
                     try:
                         user = User.objects.get(pk=context_for_user or notify_user)
-                        if results_context := self.count_user_results(all_results, results, user):
+                        if results_context := self.count_user_results(all_results, results, user,
+                                                                      org):
                             if context_for_user:
                                 self.stdout.write(
                                     msg=f"Printing context for user: \n {results_context}",
                                     style_func=self.style.SUCCESS)
                             elif notify_user:
                                 self.stdout.write(msg=f"Notifying user...\n"
-                                                      f" Username: {user.username}\n"
-                                                      f" PK: {notify_user} \n"
-                                                      f" dry_run: {dry_run}",
+                                                  f" Username: {user.username}\n"
+                                                  f" PK: {notify_user} \n"
+                                                  f" dry_run: {dry_run}",
                                                   style_func=self.style.SUCCESS)
                                 email_message = self.create_email_message(image_name, image_content,
                                                                           results_context, user)
@@ -143,7 +144,8 @@ class Command(BaseCommand):
                 # The "normal" behaviour. I.e. what happens when send-out occurs.
                 else:
                     for user in User.objects.filter(account__organization=org):
-                        if results_context := self.count_user_results(all_results, results, user):
+                        if results_context := self.count_user_results(all_results, results, user,
+                                                                      org):
                             email_message = self.create_email_message(image_name, image_content,
                                                                       results_context, user)
                             self.send_to_user(user, email_message, dry_run)
@@ -195,7 +197,7 @@ class Command(BaseCommand):
                 # Bingo, today we must send mails.
                 return True
 
-    def count_user_results(self, all_results, results, user):
+    def count_user_results(self, all_results, results, user, org):
         """
             Counts results for a user and populates context used in email templates.
             Returns populated context or an empty dict if no results.
@@ -206,10 +208,11 @@ class Command(BaseCommand):
 
         user_results = statistics_views.filter_inapplicable_matches(user=user, matches=results)
 
-        if not all_results:
-            # If not provided, results that are newer than 30 days are not included.
-            # Exactly 30 days is deemed to be "older than 30 days"
-            time_threshold = time_now() - timedelta(days=30)
+        if org.retention_policy and not all_results:
+            # If all_results is not provided, and the organization has a retention policy, do not
+            # include results newer than the number of days specified by the policy.
+            # Results of exactly the age of the retention policy are always included.
+            time_threshold = time_now() - timedelta(days=org.retention_days)
             user_results = user_results.filter(
                 datasource_last_modified__lte=time_threshold)
 

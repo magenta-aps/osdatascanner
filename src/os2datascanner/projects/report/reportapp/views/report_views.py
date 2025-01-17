@@ -132,12 +132,16 @@ class ReportView(LoginRequiredMixin, ListView):
             (self.request.GET.get("source_type") == "smbc" or
                 all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
 
+        context["retention_policy"] = self.org.retention_policy
+        context["retention_days"] = self.org.retention_days
+
         return context
 
     def base_match_filter(self, reports):
         """Base filtering of document reports. Extended in children views."""
         try:
             if user_org := self.request.user.account.organization:
+                self.org = user_org
                 reports = reports.filter(organization=user_org)
             else:
                 reports = DocumentReport.objects.none()
@@ -150,10 +154,10 @@ class ReportView(LoginRequiredMixin, ListView):
         return reports
 
     def apply_filters(self):
-        if self.request.GET.get('30-days') == 'false':
-            older_than_30 = time_now() - timedelta(days=30)
+        if self.org.retention_policy and self.request.GET.get('retention') == 'false':
+            older_than_ret_pol = time_now() - timedelta(days=self.org.retention_days)
             self.document_reports = self.document_reports.filter(
-                datasource_last_modified__lte=older_than_30)
+                datasource_last_modified__lte=older_than_ret_pol)
 
         if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
             self.document_reports = self.document_reports.filter(
@@ -211,7 +215,7 @@ class ReportView(LoginRequiredMixin, ListView):
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
-        context['30_days'] = self.request.GET.get('30-days', 'true')
+        context['retention'] = self.request.GET.get('retention', 'true')
 
         sensitivities = self.all_reports.order_by(
                 '-sensitivity').values(

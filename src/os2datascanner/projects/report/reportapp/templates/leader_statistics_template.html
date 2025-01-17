@@ -101,14 +101,13 @@
                   </div>
                 </th>
 
-                {% if show_30_days_column %}
+                {% if show_retention_column %}
                   <th class="column--matches column--numeral">
                     <div class="th__flex-container">
                       <label class="th-label" for="matches-caret">
-                        {% comment %} "30" here should be variable at some point {% endcomment %}
-                        <span>{% trans "Results older than 30 days" %}</span>
+                        <span>{% blocktrans %}Results older than {{ retention_days }} days{% endblocktrans %}</span>
                         <span class="help-tooltip"
-                              title="{% blocktrans trimmed %} The number of results stemming from a source, which is older than 30 days. Your organization has defined, that results may be stored for a maximum of 30 days. Results older than this should be handled as soon as possible. {% endblocktrans %}">
+                              title="{% blocktrans trimmed %} The number of results stemming from a source, which is older than {{ retention_days }} days. Your organization has defined, that results may be stored for a maximum of {{ retention_days }} days. Results older than this should be handled as soon as possible. {% endblocktrans %}">
                           <i id="help" class="material-symbols">help</i>
                         </span>
                       </label>

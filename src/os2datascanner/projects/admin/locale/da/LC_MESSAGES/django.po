@@ -947,9 +947,9 @@ msgstr "tilføj organisation"
 
 #: adminapp/templates/components/common/breadcrumb.html:81
 #: organizations/templates/organizations/org_update.html:6
-#: organizations/templates/organizations/org_update.html:196
-#: organizations/templates/organizations/org_update.html:197
-#: organizations/templates/organizations/org_update.html:198
+#: organizations/templates/organizations/org_update.html:241
+#: organizations/templates/organizations/org_update.html:242
+#: organizations/templates/organizations/org_update.html:243
 msgid "update organization"
 msgstr "opdatér organisation"
 
@@ -2327,7 +2327,7 @@ msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
 #: adminapp/templates/system_rules.html:5
-#: adminapp/templates/system_rules.html:55 organizations/admin.py:55
+#: adminapp/templates/system_rules.html:55 organizations/admin.py:61
 msgid "System rules"
 msgstr "Systemregler"
 
@@ -3364,9 +3364,13 @@ msgid "Tab access"
 msgstr "Menu-adgang"
 
 #: organizations/admin.py:47
-#: organizations/templates/organizations/org_update.html:59
+#: organizations/templates/organizations/org_update.html:105
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
+
+#: organizations/admin.py:55
+msgid "Retention policy"
+msgstr "Opbevaringspolitik"
 
 #: organizations/models/account.py:48
 #, python-brace-format
@@ -3730,15 +3734,40 @@ msgstr "Generelle indstillinger"
 msgid "Tab settings"
 msgstr "Fane indstillinger"
 
-#: organizations/templates/organizations/org_update.html:119
+#: organizations/templates/organizations/org_update.html:59
+msgid "Retention policy settings"
+msgstr "Indstillinger for opbevaringspolitik"
+
+#: organizations/templates/organizations/org_update.html:61
+msgid ""
+"Allow results to be filtered out if they stem from sources less than a "
+"specific number of days of age. This affects the report tab and the leader "
+"overview in the report module."
+msgstr ""
+"Tillad resultater at blive udfiltreret, hvis de stammer fra kilder ældre end et angivet antal "
+"dage. Dette har indflydelse på rapportfanen og lederoverblikket i rapportmodulet."
+
+#: organizations/templates/organizations/org_update.html:68
+msgid "Filtering of results by age"
+msgstr "Filtrering af resultater efter alder"
+
+#: organizations/templates/organizations/org_update.html:82
+msgid "No filtering"
+msgstr "Ingen filtrering"
+
+#: organizations/templates/organizations/org_update.html:96
+msgid "Number of days:"
+msgstr "Antal dage:"
+
+#: organizations/templates/organizations/org_update.html:165
 msgid "Synchronization settings"
 msgstr "Synkroniseringsindstillinger"
 
-#: organizations/templates/organizations/org_update.html:129
+#: organizations/templates/organizations/org_update.html:175
 msgid "Microsoft Tenant Settings"
 msgstr "Microsoft Tenant Indstillinger"
 
-#: organizations/templates/organizations/org_update.html:156
+#: organizations/templates/organizations/org_update.html:202
 msgid "Allow deletion"
 msgstr "Tillad sletning"
 

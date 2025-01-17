@@ -102,7 +102,8 @@ class TestEmailNotification:
 
         result_user1 = send_notifications_command.count_user_results(
             all_results=True, results=DocumentReport.objects.filter(
-                number_of_matches__gte=1, resolution_status__isnull=True), user=egon_account.user)
+                number_of_matches__gte=1, resolution_status__isnull=True), user=egon_account.user,
+            org=egon_account.organization)
 
         assert result_user1["user_alias_bound_results"] == personal_num
         assert result_user1["remediator_bound_results"] == remediator_num

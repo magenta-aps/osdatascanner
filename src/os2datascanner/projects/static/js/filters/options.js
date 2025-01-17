@@ -15,13 +15,13 @@ function clearFilter(elementid) { // jshint ignore:line
   var element = document.querySelector('#' + elementid + ' [value="all"]').selected = true;
   document.getElementById("filter_form", element).submit();
 }
-function thirtyDaysCheckedBox() {
-  const checkbox = document.getElementById('30-days-toggle');
-  const thirtyDays = document.getElementById('30-days');
+function retentionCheckedBox() {
+  const checkbox = document.getElementById('retention-toggle');
+  const retention = document.getElementById('retention');
   if (checkbox.checked) {
-    thirtyDays.value = 'true';
+    retention.value = 'true';
   } else {
-    thirtyDays.value = 'false';
+    retention.value = 'false';
   }
 }
 
@@ -36,9 +36,9 @@ function includeSharedCheckedBox() {
 }
 
 function setCheckEvents() { // jshint ignore:line
-  var thirtyDaysToggle = document.getElementById('30-days-toggle');
-  if (thirtyDaysToggle) {
-    thirtyDaysToggle.addEventListener('click', thirtyDaysCheckedBox);
+  var retentionToggle = document.getElementById('retention-toggle');
+  if (retentionToggle) {
+    retentionToggle.addEventListener('click', retentionCheckedBox);
   }
   let includeSharedToggle = document.getElementById('include-shared-toggle');
   if (includeSharedToggle) {
@@ -64,7 +64,7 @@ function hideOptions(toggleElement) { // jshint ignore:line
   for (const option of options) {
     const checkbox = document.getElementById(option + "_checkbox");
     const filterElem = document.getElementById(option + "_filter");
-    
+
     filterElem.hidden = !checkbox.checked;
   }
 

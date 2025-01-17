@@ -1,10 +1,10 @@
-{% extends 'organizations/base.html' %}
+{% extends "organizations/base.html" %}
 {% load i18n %}
 {% load static %}
 
 {% block title %}
   {% trans "update organization"|capfirst %}
-{% endblock %}
+{% endblock title %}
 
 {% block content %}
   {% include "components/common/breadcrumb.html" with page="organization_update" %}
@@ -19,21 +19,21 @@
 
         <div class="form__row--general">
           <span class="form__row__title">{% trans "General settings" %}</span>
- 
+
           <div class="form__row__item {% if form.name.errors %}has-error{% endif %}">
             <label class="required-form" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
             {{ form.name }}
             {% if form.name.errors %}{{ form.name.errors }}{% endif %}
           </div>
- 
+
           <div class="form__row__item {% if form.contact_email.errors %}has-error{% endif %}">
-            <label class="" for="{{ form.contact_email.id_for_label }}">{{ form.contact_email.label }}</label>
+            <label for="{{ form.contact_email.id_for_label }}">{{ form.contact_email.label }}</label>
             {{ form.contact_email }}
             {% if form.contact_email.errors %}{{ form.contact_email.errors }}{% endif %}
           </div>
- 
+
           <div class="form__row__item {% if form.contact_phone.errors %}has-error{% endif %}">
-            <label class="" for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
+            <label for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
             {{ form.contact_phone }}
             {% if form.contact_phone.errors %}{{ form.contact_phone.errors }}{% endif %}
           </div>
@@ -41,17 +41,63 @@
 
         <div class="form__row--tab-access">
           <span class="form__row__title">{% trans "Tab settings" %}</span>
- 
+
           <div class="form__row__item {% if form.leadertab_access.errors %}has-error{% endif %}">
             <label class="required-form" for="{{ form.leadertab_access.id_for_label }}">{{ form.leadertab_access.label }}</label>
             {{ form.leadertab_access }}
             {% if form.leadertab_access.errors %}{{ form.leadertab_access.errors }}{% endif %}
           </div>
- 
+
           <div class="form__row__item {% if form.dpotab_access.errors %}has-error{% endif %}">
             <label class="required-form" for="{{ form.dpotab_access.id_for_label }}">{{ form.dpotab_access.label }}</label>
             {{ form.dpotab_access }}
             {% if form.dpotab_access.errors %}{{ form.dpotab_access.errors }}{% endif %}
+          </div>
+        </div>
+
+        <div class="form__row--retention-policy">
+          <span class="form__row__title">{% trans "Retention policy settings" %}</span>
+          <span class="secondary_text">
+            {% blocktrans trimmed %}
+              Allow results to be filtered out if they stem from sources less than a specific number of days of age.
+              This affects the report tab and the leader overview in the report module.
+            {% endblocktrans %}
+          </span>
+
+          <div class="form__row__item {% if form.retention_policy.errors %}has-error{% endif %}">
+            <label class="required-form">{% trans "Filtering of results by age" %}</label>
+            {% if form.retention_policy.errors %}{{ form.retention_policy.errors }}{% endif %}
+            <div class="form__row__item__radiocontainer">
+              <label class="radio radio-before">
+                <span class="radio__input">
+                  <input id="{{ form.retention_policy.id_for_label }}_false"
+                         type="radio"
+                         name="{{ form.retention_policy.name }}"
+                         value="false"
+                         required
+                         onchange="disableRetentionDaysField()"
+                         {% if not organization.retention_policy %}checked{% endif %} />
+                  <span class="radio__control radio__control--notify"></span>
+                </span>
+                <span class="radio__label" for="{{ form.retention_policy.id_for_label }}">{% trans "No filtering" %}</span>
+              </label>
+              <label class="radio radio-before">
+                <span class="radio__input">
+                  <input id="{{ form.retention_policy.id_for_label }}_true"
+                         type="radio"
+                         name="{{ form.retention_policy.name }}"
+                         value="true"
+                         required
+                         onchange="enableRetentionDaysField()"
+                         {% if organization.retention_policy %}checked{% endif %} />
+                  <span class="radio__control radio__control--notify"></span>
+                </span>
+                <span class="radio__label" for="{{ form.retention_policy.id_for_label }}">
+                  {% trans "Number of days:" %}
+                  <span class="inline-input">{{ form.retention_days }}</span>
+                </span>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -74,7 +120,7 @@
               </label>
               {{ form.support_contact_method }}
             </div>
- 
+
             <div class="form__row__item">
               <div class="{% if form.support_name.errors %} has-error {% endif %}">
                 <label class="required-form" for="{{ form.support_name.id_for_label }}">{{ form.support_name.label }}</label>
@@ -96,7 +142,7 @@
                      for="{{ form.dpo_contact_method.id_for_label }}">{{ form.dpo_contact_method.label }}</label>
               {{ form.dpo_contact_method }}
             </div>
- 
+
             <div class="form__row__item">
               <div class="{% if form.dpo_name.errors %} has-error {% endif %}">
                 <label class="required-form" for="{{ form.dpo_name.id_for_label }}">{{ form.dpo_name.label }}</label>
@@ -104,7 +150,7 @@
                 {{ form.dpo_name.errors }}
               </div>
             </div>
- 
+
             <div class="form__row__item">
               <div class="{% if form.dpo_value.errors %} has-error {% endif %}">
                 <label class="required-form" for="{{ form.dpo_value.id_for_label }}">{{ form.dpo_value.label }}</label>
@@ -127,8 +173,8 @@
 
         <div class="form__row--outlook">
           <span class="form__row__title">{% trans "Microsoft Tenant Settings" %}</span>
- 
-          <div class="form__row__item {% if form.contact_phone.errors %}has-error{% endif %}">
+
+          <div class="form__row__item {% if form.outlook_categorize_email_permission.errors %}has-error{% endif %}">
 
             <label class="required-form"
                    for="{{ form.outlook_categorize_email_permission.id_for_label }}">
@@ -137,7 +183,7 @@
             {% if form.outlook_categorize_email_permission.errors %}
               {{ form.outlook_categorize_email_permission.errors }}
             {% endif %}
- 
+
             <div class="form__row__item__radiocontainer">
               {% for radio in form.outlook_categorize_email_permission %}
                 <label class="radio radio-before">
@@ -146,64 +192,63 @@
                     <span class="radio__control radio__control--notify"></span>
                   </span>
 
-                  <span class="radio__label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}
-                  </label>
-                {% endfor %}
-              </div>
-            </div>
-
-            <div class="form__row__item">
-              <label>{% trans "Allow deletion" %}</label>
-
-              <div class="form__row__item__checkboxcontainer ds-checkbox">
-                {{ form.outlook_delete_email_permission }}
-                <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
-                  {{ form.outlook_delete_email_permission.label }}
+                  <span class="radio__label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</span>
                 </label>
-              </div>
-
-              <div class="form__row__item__checkboxcontainer ds-checkbox">
-                {{ form.onedrive_delete_permission }}
-                <label for="{{ form.onedrive_delete_permission.id_for_label }}">{{ form.onedrive_delete_permission.label }}</label>
-              </div>
-
+              {% endfor %}
             </div>
           </div>
 
+          <div class="form__row__item">
+            <label>{% trans "Allow deletion" %}</label>
 
-          <div class="form__row__item {% if form.email_header_banner.errors %}has-error{% endif %}">
-            <label for="{{ form.email_header_banner.id_for_label }}">{{ form.email_header_banner.label }}</label>
-            {{ form.email_header_banner }}
-            {% if form.email_header_banner.errors %}{{ form.email_header_banner.errors }}{% endif %}
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.outlook_delete_email_permission }}
+              <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
+                {{ form.outlook_delete_email_permission.label }}
+              </label>
+            </div>
+
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.onedrive_delete_permission }}
+              <label for="{{ form.onedrive_delete_permission.id_for_label }}">{{ form.onedrive_delete_permission.label }}</label>
+            </div>
+
           </div>
-
-          <div class="form__row__item {% if form.email_notification_schedule.errors %}has-error{% endif %}">
-            <label class="required-form"
-                   for="{{ form.email_notification_schedule.id_for_label }}">
-              {{ form.email_notification_schedule.label }}
-            </label>
-            {{ form.email_notification_schedule }}
-            {% if form.email_notification_schedule.errors %}{{ form.email_notification_schedule.errors }}{% endif %}
-          </div>
-
-        </fieldset>
-      </section>
-
-      <div class="content-footer">
-        <div class="form__group">
-          <button type="submit"
-                  class="button button--cta-button"
-                  aria-label="{% trans 'update organization'|capfirst %}"
-                  title="{% trans 'update organization'|capfirst %}"
-                  name="save">{% trans "update organization"|capfirst %}</button>
         </div>
+
+        <div class="form__row__item {% if form.email_header_banner.errors %}has-error{% endif %}">
+          <label for="{{ form.email_header_banner.id_for_label }}">{{ form.email_header_banner.label }}</label>
+          {{ form.email_header_banner }}
+          {% if form.email_header_banner.errors %}{{ form.email_header_banner.errors }}{% endif %}
+        </div>
+
+        <div class="form__row__item {% if form.email_notification_schedule.errors %}has-error{% endif %}">
+          <label class="required-form"
+                 for="{{ form.email_notification_schedule.id_for_label }}">
+            {{ form.email_notification_schedule.label }}
+          </label>
+          {{ form.email_notification_schedule }}
+          {% if form.email_notification_schedule.errors %}{{ form.email_notification_schedule.errors }}{% endif %}
+        </div>
+
+      </fieldset>
+    </section>
+
+    <div class="content-footer">
+      <div class="form__group">
+        <button type="submit"
+                class="button button--cta-button"
+                aria-label="{% trans "update organization"|capfirst %}"
+                title="{% trans "update organization"|capfirst %}"
+                name="save">{% trans "update organization"|capfirst %}</button>
       </div>
+    </div>
 
-    </form>
+  </form>
 
-    <script src="{% static 'js/organization/organizationForm.js' %}"></script>
+  <script src="{% static "js/organization/organizationForm.js" %}"></script>
 
-    <!--
+  <!--
         TODO: add boxes with user and unit counts here (dependent on feature flag)
         <div class="flex-org">
           <section class="data-form data-org">
@@ -221,4 +266,4 @@
           </section>
         </div>
         -->
-  {% endblock %}
+{% endblock content %}

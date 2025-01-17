@@ -14,7 +14,10 @@ def olsenbanden_organization():
     return Organization.objects.create(
       name="Olsen-banden",
       dpo_name="Egon Olsen",
-      dpo_value="egon@olsenbanden.dk"
+      dpo_value="egon@olsenbanden.dk",
+      # For backwards compatibility
+      retention_policy=True,
+      retention_days=30
     )
 
 
