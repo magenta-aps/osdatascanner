@@ -19,18 +19,39 @@ WRITES_QUEUES = (
     "os2ds_metadata",
     "os2ds_status",)
 PROMETHEUS_DESCRIPTION = "Messages handled by worker"
+
 # Let the Pika background thread aggressively collect tasks. Workers should
 # always be doing something -- every centisecond of RabbitMQ overhead is time
 # wasted!
-PREFETCH_COUNT = 1
+# TODO: This was once 8, but has been turned down to 2 for consumer switching purposes, revisit
+# this if performance issues occur.
+PREFETCH_COUNT = 2
+
+
+def determine_channel(scan_spec, for_type: str) -> str:
+    scan_spec_obj = messages.ScanSpecMessage.from_json_object(scan_spec)
+    if for_type == "explorer":
+        return scan_spec_obj.explorer_queue
+    elif for_type == "conversion":
+        return scan_spec_obj.conversion_queue
+    else:
+        logger.warning("Asked to determine channel for unknown type", for_type=for_type)
 
 
 def explore(sm, msg, *, check=True):
     """ Worker-internal explorer, channels are pseudo-queues, i.e. not RabbitMQ """
     for channel, message in explorer_handler(msg, "os2ds_scan_specs", sm):
-        if channel == "os2ds_conversions":
+        # Determine channels
+        conversion_channel = "os2ds_conversions"
+        explorer_channel = "os2ds_scan_specs"
+        if scan_spec := message.get("scan_spec"):
+            conversion_channel = determine_channel(scan_spec, "conversion")
+            explorer_channel = determine_channel(scan_spec, "explorer")
+
+        # Routing
+        if channel == conversion_channel:
             yield from process(sm, message, check=check)
-        elif channel == "os2ds_scan_specs":
+        elif channel == explorer_channel:
             # Huh? Surely a standalone explorer should have handled this
             logger.warning("worker exploring unexpected nested Source")
             yield from explore(sm, message, check=check)
@@ -46,12 +67,18 @@ def process(sm, msg, *, check=True):
     """ Worker-internal processor, channels are pseudo-queues, i.e. not RabbitMQ """
     for channel, message in processor_handler(
             msg, "os2ds_conversions", sm, _check=check):
+
+        # Determine channel
+        explorer_channel = "os2ds_scan_specs"
+        if scan_spec := message.get("scan_spec"):
+            explorer_channel = determine_channel(scan_spec, "explorer")
+
         if channel == "os2ds_representations":
             # Processing this object has produced a request for a new
             # conversion; there's no need to call Resource.check() a second
             # time
             yield from match(sm, message, check=False)
-        elif channel == "os2ds_scan_specs":
+        elif channel == explorer_channel:
             # Processing this object has given us a new source to scan. Make
             # sure we don't call Resource.check() on the objects under it
             yield from explore(sm, message, check=False)
@@ -65,11 +92,16 @@ total_matches = 0
 def match(sm, msg, *, check=True):
     """ Worker-internal matcher, channels are pseudo-queues, i.e. not RabbitMQ """
     for channel, message in matcher_handler(msg, "os2ds_representations", sm):
+        # Determine channel
+        conversion_channel = "os2ds_conversions"
+        if scan_spec := message.get("scan_spec"):
+            conversion_channel = determine_channel(scan_spec, "conversion")
+
         if channel == "os2ds_handles":
             global total_matches
             total_matches += 1
             yield from tag(sm, message)
-        elif channel == "os2ds_conversions":
+        elif channel == conversion_channel:
             yield from process(sm, message, check=check)
         else:
             yield channel, message
