@@ -23,7 +23,9 @@ class UserErrorLog(models.Model):
         verbose_name = _('error log')
         verbose_name_plural = _('error logs')
 
-        permissions = [("resolve_usererrorlog", _("Can resolve error log"))]
+        permissions = [("resolve_usererrorlog", _("Can resolve error log")),
+                       ("export_usererrorlog", _("Can export error log to CSV")),
+                       ("mark_view_usererrorlog", _("Can mark error log as viewed"))]
 
     scan_status = models.ForeignKey(
         ScanStatus,

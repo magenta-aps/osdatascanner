@@ -1,4 +1,4 @@
-{% extends 'components/common/base.html' %}
+{% extends "components/common/base.html" %}
 {% load static %}
 {% load l10n %}
 {% load i18n %}
@@ -8,7 +8,7 @@
   <script src="{% static '3rdparty/htmx.min.js' %}"></script>
   <script src="{% static 'js/tables/tableBehavior.js' %}"></script>
   <script src="{% static 'js/scannerjob/highlightSearch.js' %}"></script>
-{% endblock %}
+{% endblock scripts %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -39,7 +39,7 @@
           <input type="search"
                  name="search_field"
                  id="search_field"
-                 placeholder="{% trans 'Search for error message' %}"
+                 placeholder="{% trans "Search for error message" %}"
                  value="{{ request.GET.search_field }}"
                  autocomplete="off" />
         </div>
@@ -54,23 +54,27 @@
         </div>
         <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}">
         <input type="hidden" name="order" id="order" value="{{ order }}">
- 
+
       </form>
- 
+
       {% if object_list %}
         <div class="datatable-wrapper card error_content"
              role="region"
              tabindex="0"
-             aria-label="{% trans 'Error Log' %}">
+             aria-label="{% trans "Error Log" %}">
           <form id="table_checkboxes">
             <table class="datatable">
               <colgroup>
-                <col class="datatable__column--checkbox">
+                {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
+                  <col class="datatable__column--checkbox">
+                {% endif %}
                 <col class="datatable__column--automatic">
                 <col class="datatable__column--starttime">
                 <col class="datatable__column--path">
                 <col class="datatable__column--scan">
-                <col class="datatable__column--actions">
+                {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
+                  <col class="datatable__column--actions">
+                {% endif %}
               </colgroup>
               <thead>
                 <tr class="table-topbar topbar-stick sticky">
@@ -79,18 +83,18 @@
                       {% include "components/scanstatus/remove_error.html" %}
                     {% endif %}
                     <div class="view-options button-group">
-                      {% if new_error_logs > 0 %}
+                      {% if perms.os2datascanner.mark_view_usererrorlog and new_error_logs > 0 %}
                         <button type="button"
                                 class="button button--icon-text-button"
                                 name="see_all"
-                                aria-label="{% trans 'Mark all as seen' %}"
-                                title="{% trans 'Mark all as seen' %}"
+                                aria-label="{% trans "Mark all as seen" %}"
+                                title="{% trans "Mark all as seen" %}"
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-trigger="click"
                                 hx-target=".content"
                                 hx-select=".content"
-                                hx-confirm="{% trans 'You are about to mark all error log messages as seen. This action cannot be reverted. Are you sure?' %}">
+                                hx-confirm="{% trans "You are about to mark all error log messages as seen. This action cannot be reverted. Are you sure?" %}">
                           <span>{% trans "Mark all as seen" %}</span>
                         </button>
                       {% endif %}
@@ -98,37 +102,41 @@
                         <button type="button"
                                 class="button button--icon-text-button"
                                 name="remove_all"
-                                aria-label="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
-                                title="{% trans 'Remove all' %} {% trans 'Error Log'|lower %}"
+                                aria-label="{% trans "Remove all" %} {% trans "Error Log"|lower %}"
+                                title="{% trans "Remove all" %} {% trans "Error Log"|lower %}"
                                 hx-post=""
                                 hx-swap="outerHTML"
                                 hx-trigger="click"
                                 hx-target=".content"
                                 hx-select=".content"
-                                hx-confirm="{% trans 'You are about to remove' %} {{ page_obj.paginator.count }}{% trans ' error logs. This action cannot be reverted. Are you sure?' %}">
+                                hx-confirm="{% trans "You are about to remove" %} {{ page_obj.paginator.count }}{% trans " error logs. This action cannot be reverted. Are you sure?" %}">
                           <i id="delete_forever" class="material-icons">delete_forever</i>
                           <span>{% trans "Remove all" %}</span>
                         </button>
                       {% endif %}
-                      <a href='{% url "export-error-log" %}'
-                         class="button button--icon-text-button"
-                         aria-label="{% trans 'Export to CSV' %}"
-                         title="{% trans 'Export to CSV' %}">
-                        <i id="file_download" class="material-icons" aria-hidden="true">file_download</i>
-                        <span>{% trans "Export to CSV" %}</span>
-                      </a>
+                      {% if perms.os2datascanner.export_usererrorlog %}
+                        <a href='{% url "export-error-log" %}'
+                           class="button button--icon-text-button"
+                           aria-label="{% trans "Export to CSV" %}"
+                           title="{% trans "Export to CSV" %}">
+                          <i id="file_download" class="material-icons" aria-hidden="true">file_download</i>
+                          <span>{% trans "Export to CSV" %}</span>
+                        </a>
+                      {% endif %}
                     </div>
                   </th>
                 </tr>
                 <tr class="column-headings sticky">
-                  <th class="datatable__column--checkbox">
-                    <div class="ds-checkbox">
-                      <input id="select-all" type="checkbox">
-                      <label for="select-all"
-                             aria-label="{% trans 'Select all results' %}"
-                             title="{% trans 'Select all results' %}"></label>
-                    </div>
-                  </th>
+                  {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
+                    <th class="datatable__column--checkbox">
+                      <div class="ds-checkbox">
+                        <input id="select-all" type="checkbox">
+                        <label for="select-all"
+                               aria-label="{% trans "Select all results" %}"
+                               title="{% trans "Select all results" %}"></label>
+                      </div>
+                    </th>
+                  {% endif %}
                   <th class="datatable__column--automatic">
                     <div class="th-flex-container">
                       <label for="error-caret">
@@ -137,8 +145,8 @@
                       <button type="button"
                               name="error_message"
                               id="error-caret"
-                              aria-label="{% trans 'Sort table by' %} {% trans 'error type' %}"
-                              title="{% trans 'Sort table by' %} {% trans 'error type' %}"
+                              aria-label="{% trans "Sort table by" %} {% trans "error type" %}"
+                              title="{% trans "Sort table by" %} {% trans "error type" %}"
                               class="order-by button button--caret-button{% if order_by == 'error_message' and order == 'descending' %} up{% endif %}"
                               value="{% if order_by == 'error_message' and order == 'descending' %}ascending{% else %}descending{% endif %}"
                               hx-get="{% url 'error-log' %}"
@@ -157,8 +165,8 @@
                       <button type="button"
                               name="scan_status"
                               id="scan-caret"
-                              aria-label="{% trans 'Sort table by' %} {% trans 'start time' %}"
-                              title="{% trans 'Sort table by' %} {% trans 'start time' %}"
+                              aria-label="{% trans "Sort table by" %} {% trans "start time" %}"
+                              title="{% trans "Sort table by" %} {% trans "start time" %}"
                               class="order-by button button--caret-button{% if order_by == 'scan_status' and order == 'descending' %} up{% endif %}"
                               value="{% if order_by == 'scan_status' and order == 'descending' %}ascending{% else %}descending{% endif %}"
                               hx-get="{% url 'error-log' %}"
@@ -179,8 +187,8 @@
                       <button type="button"
                               name="path"
                               id="path-caret"
-                              aria-label="{% trans 'Sort table by' %} {% trans 'path name' %}"
-                              title="{% trans 'Sort table by' %} {% trans 'path name' %}"
+                              aria-label="{% trans "Sort table by" %} {% trans "path name" %}"
+                              title="{% trans "Sort table by" %} {% trans "path name" %}"
                               class="order-by button button--caret-button{% if order_by == 'path' and order == 'descending' %} up{% endif %}"
                               value="{% if order_by == 'path' and order == 'descending' %}ascending{% else %}descending{% endif %}"
                               hx-get="{% url 'error-log' %}"
@@ -190,37 +198,41 @@
                               hx-target=".error_content"
                               hx-select=".error_content">
                         <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
- 
+
                       </button>
                     </div>
                   </th>
                   <th class="datatable__column--scan">
                     <span>{% trans "Scan" %}</span>
                   </th>
-                  <th class="datatable__column--actions">{% trans "Actions" %}</th>
+                  {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
+                    <th class="datatable__column--actions">{% trans "Actions" %}</th>
+                  {% endif %}
                 </tr>
               </thead>
- 
+
               <tbody>
                 {% for error_log in object_list %}
                   <tr id="usererrorlog_entry__{{ error_log.pk|unlocalize }}">
-                    <td class="datatable__column--checkbox">
-                      <div class="ds-checkbox">
-                        <input type="checkbox"
-                               id="table-checkbox-{{ error_log.pk|unlocalize }}"
-                               value="{{ error_log.pk|unlocalize }}"
-                               name="table-checkbox"
-                               class="datatable-checkbox"
-                               data-report-pk="{{ error_log.pk|unlocalize }}">
-                        <label for="table-checkbox-{{ error_log.pk|unlocalize }}"
-                               aria-label="{% trans 'Select results' %}"
-                               title="{% trans 'Select results' %}"></label>
-                      </div>
-                    </td>
+                    {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
+                      <td class="datatable__column--checkbox">
+                        <div class="ds-checkbox">
+                          <input type="checkbox"
+                                 id="table-checkbox-{{ error_log.pk|unlocalize }}"
+                                 value="{{ error_log.pk|unlocalize }}"
+                                 name="table-checkbox"
+                                 class="datatable-checkbox"
+                                 data-report-pk="{{ error_log.pk|unlocalize }}">
+                          <label for="table-checkbox-{{ error_log.pk|unlocalize }}"
+                                 aria-label="{% trans "Select results" %}"
+                                 title="{% trans "Select results" %}"></label>
+                        </div>
+                      </td>
+                    {% endif %}
                     <td class="datatable__column--name">
                       {{ error_log.user_friendly_error_message }}
                       {% if error_log.is_new %}
- 
+
                         <span class="bubble">{% trans "New" %}</span>
                       {% endif %}
                     </td>
@@ -231,39 +243,41 @@
                   </td>
                   <td class="datatable__column--path">{{ error_log.path }}</td>
                   <td class="datatable__column--automatic">{{ error_log.scan_status.scanner.name }}</td>
-                  <td class="datatable__column--actions">
-                    <div class="action-wrapper button-group">
-                      {% if perms.os2datascanner.resolve_usererrorlog %}
-                        <button type="button"
-                                class="button button--icon-button"
-                                name="remove_errorlog"
-                                hx-post=""
-                                hx-swap="outerHTML"
-                                hx-trigger="click"
-                                hx-target=".content"
-                                hx-select=".content"
-                                hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
-                                hx-indicator="closest tr"
-                                aria-label="{% trans 'Delete permanently' %}"
-                                title="{% trans 'Delete' %} {% trans 'error log' %}">
-                          <i id="delete_forever" class="material-icons">delete_forever</i>
-                        </button>
-                      {% endif %}
-                      {% if error_log.is_new %}
-                        <button type="button"
-                                class="button button--text-button"
-                                name="see_errorlog"
-                                hx-post=""
-                                hx-swap="outerHTML"
-                                hx-trigger="click"
-                                hx-target=".content"
-                                hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
-                                hx-select=".content"
-                                aria-label="{% trans 'Mark as seen' %}"
-                                title="{% trans 'Mark as seen' %}">{% trans "Mark as seen" %}</button>
-                      {% endif %}
-                    </div>
-                  </td>
+                  {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
+                    <td class="datatable__column--actions">
+                      <div class="action-wrapper button-group">
+                        {% if perms.os2datascanner.resolve_usererrorlog %}
+                          <button type="button"
+                                  class="button button--icon-button"
+                                  name="remove_errorlog"
+                                  hx-post=""
+                                  hx-swap="outerHTML"
+                                  hx-trigger="click"
+                                  hx-target=".content"
+                                  hx-select=".content"
+                                  hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
+                                  hx-indicator="closest tr"
+                                  aria-label="{% trans "Delete permanently" %}"
+                                  title="{% trans "Delete" %} {% trans "error log" %}">
+                            <i id="delete_forever" class="material-icons">delete_forever</i>
+                          </button>
+                        {% endif %}
+                        {% if perms.os2datascanner.mark_view_usererrorlog and error_log.is_new %}
+                          <button type="button"
+                                  class="button button--text-button"
+                                  name="see_errorlog"
+                                  hx-post=""
+                                  hx-swap="outerHTML"
+                                  hx-trigger="click"
+                                  hx-target=".content"
+                                  hx-vals='{"pk": "{{ error_log.pk|unlocalize }}"}'
+                                  hx-select=".content"
+                                  aria-label="{% trans "Mark as seen" %}"
+                                  title="{% trans "Mark as seen" %}">{% trans "Mark as seen" %}</button>
+                        {% endif %}
+                      </div>
+                    </td>
+                  {% endif %}
                 </tr>
               {% endfor %}
             </tbody>
@@ -277,4 +291,4 @@
   </div>
 
 </main>
-{% endblock %}
+{% endblock body %}

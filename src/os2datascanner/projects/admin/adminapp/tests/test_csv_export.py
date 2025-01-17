@@ -36,7 +36,7 @@ class TestExportUserErrorLog:
         from their own organization."""
 
         # Grant permission for viewing usererrorlog list
-        user_admin.user_permissions.add(Permission.objects.get(codename='view_usererrorlog'))
+        user_admin.user_permissions.add(Permission.objects.get(codename='export_usererrorlog'))
 
         UserErrorLog.objects.create(
             scan_status=basic_scanstatus2,
@@ -55,7 +55,7 @@ class TestExportUserErrorLog:
         """A user unrelated to an organization should only get header values."""
 
         # Grant permission for viewing usererrorlog list
-        user.user_permissions.add(Permission.objects.get(codename='view_usererrorlog'))
+        user.user_permissions.add(Permission.objects.get(codename='export_usererrorlog'))
 
         client.force_login(user)
         response = client.get(self.url)
