@@ -99,7 +99,7 @@ class GenericRunner(PikaPipelineThread):
 
     def _processing_complete(self, tick):
         if tick and tick % 50 == 0:
-            if self._stage in ("worker", "explorer",):
+            if self._stage in ("worker", "explorer",) and self._queue_priorities:
                 self._check_and_switch_priority()
         return super()._processing_complete(tick)
 
