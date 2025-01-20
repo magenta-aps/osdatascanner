@@ -151,6 +151,7 @@ class Command(BaseCommand):
             organization=org,
             schedule=recurrence,
             rule=cpr,
+            contact_person=user
         )
         if created:
             auth = Authentication(username=smb_user)
@@ -172,6 +173,7 @@ class Command(BaseCommand):
             schedule=recurrence,
             download_sitemap=False,
             rule=cpr,
+            contact_person=user
         )
         if created:
             self.stdout.write(self.style.SUCCESS("Webscanner created successfully!"))

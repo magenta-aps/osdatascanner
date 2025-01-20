@@ -85,7 +85,8 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
+              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
+              'contact_person']
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("grant")
     type = 'exchange'
@@ -116,7 +117,8 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
+              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
+              'contact_person']
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("grant")
     type = 'exchange'
@@ -150,7 +152,8 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives']
+              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
+              'contact_person']
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("grant")
     type = 'exchange'

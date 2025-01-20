@@ -79,7 +79,7 @@ class FinishedScannerNotificationEmail(NotificationEmail):
     def find_user(self) -> User | None:
         """Find suitable user to notify."""
         username = self.status.scan_tag.get("user")
-        user = User.objects.filter(username=username).first() if username else None
+        user = User.objects.filter(username=username).first() if username else scanner.contact_person
         return user
 
     def get_email(self) -> str:

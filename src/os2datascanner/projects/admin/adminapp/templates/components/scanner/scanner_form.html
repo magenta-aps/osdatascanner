@@ -1,4 +1,4 @@
-{% extends 'components/common/base.html' %}
+{% extends "components/common/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load mptt_tags %}
@@ -25,7 +25,7 @@
         type="text/css"
         href="{% static 'admin/css/forms.css' %}" />
   <!-- END   Admin scripts and CSS to render filter_horizontal -->
-{% endblock %}
+{% endblock extra_head_html %}
 
 {% block jquery_script %}
   <script type="text/javascript">
@@ -95,7 +95,7 @@
     <script src="{% static 'js/scannerjob/getOrgUnits.js' %}"></script>
   {% endif %}
 
-{% endblock %}
+{% endblock jquery_script %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -312,7 +312,7 @@
                     {% trans "Upload service account" %} (.json) *
                   </label>
                   <input id="upload-file-service"
-                         placeholder="{% trans 'Select a file' %}"
+                         placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
                          class="grow" />
                   <div class="fileUpload button">
@@ -322,8 +322,8 @@
                            name="{{ form.service_account_file_gmail.name }}"
                            type="file"
                            data-filename-placement="inside"
-                           aria-label="{% trans 'Click here to upload service account credentials (JSON FORMAT)' %}"
-                           title="{% trans 'Click here to upload service account credentials (JSON FORMAT)' %}" />
+                           aria-label="{% trans "Click here to upload service account credentials (JSON FORMAT)" %}"
+                           title="{% trans "Click here to upload service account credentials (JSON FORMAT)" %}" />
                   </div>
 
                   {% if form.service_account_file_gmail.help_text %}
@@ -346,7 +346,7 @@
                 <div class="form__group form__group--flex">
                   <label for="id_{{ form.user_emails_gmail.name }}" class="block">{% trans "Upload list of accounts" %} (.csv) *</label>
                   <input id="upload-file-email"
-                         placeholder="{% trans 'Select a file' %}"
+                         placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
                          class="grow" />
                   <div class="fileUpload button">
@@ -356,8 +356,8 @@
                            name="{{ form.user_emails_gmail.name }}"
                            type="file"
                            data-filename-placement="inside"
-                           aria-label="{% trans 'Click here to upload list of accounts (CSV FORMAT)' %}"
-                           title="{% trans 'Click here to upload list of accounts (CSV FORMAT)' %}" />
+                           aria-label="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}"
+                           title="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}" />
                   </div>
 
                   {% if form.user_emails_gmail.help_text %}
@@ -376,16 +376,11 @@
                 </div>
               {% endif %}
 
-
               {% if form.sitemap_url %}
                 <div id="{{ form.sitemap_url.auto_id }}_container"
                      class="form__group{% if form.sitemap_url.errors %} has-error{% endif %}">
                   <label for="id_{{ form.sitemap_url.name }}">{{ form.sitemap_url.label }}</label>
-                  <input type="text"
-                         name="{{ form.sitemap_url.name }}"
-                         id="id_{{ form.sitemap_url.name }}"
-                         placeholder="{% trans 'e.g. /sitemap.xml' %}"
-                         {% if form.sitemap_url.value %}value="{{ form.sitemap_url.value }}"{% endif %}>
+                  <input type="text" name="{{ form.sitemap_url.name }}" id="id_{{ form.sitemap_url.name }}" placeholder="{% trans "e.g. /sitemap.xml" %}" {% if form.sitemap_url.value %}value="{{ form.sitemap_url.value }}"{% endif %}>
 
                   {% if form.sitemap_url.help_text %}<span class="form__help-text">{{ form.sitemap_url.help_text }}</span>{% endif %}
 
@@ -411,7 +406,7 @@
                 <div class="form__group form__group--flex">
                   <label for="id_{{ form.sitemap.name }}" class="block">{% trans "Upload sitemap" %}</label>
                   <input id="upload-file"
-                         placeholder="{% trans 'Select a file' %}"
+                         placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
                          class="grow" />
                   <div class="fileUpload button">
@@ -421,8 +416,8 @@
                            name="{{ form.sitemap.name }}"
                            type="file"
                            data-filename-placement="inside"
-                           aria-label="{% trans 'Click here to upload sitemap.xml' %}"
-                           title="{% trans 'Click here to upload sitemap.xml' %}" />
+                           aria-label="{% trans "Click here to upload sitemap.xml" %}"
+                           title="{% trans "Click here to upload sitemap.xml" %}" />
                   </div>
 
                   {% if form.sitemap.help_text %}<span class="form__help-text">{{ form.sitemap.help_text }}</span>{% endif %}
@@ -437,7 +432,7 @@
                     {% trans "Upload service account" %} (.json) *
                   </label>
                   <input id="upload-file-service"
-                         placeholder="{% trans 'Select a file' %}"
+                         placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
                          class="grow" />
                   <div class="fileUpload button">
@@ -447,8 +442,8 @@
                            name="{{ form.service_account_file.name }}"
                            type="file"
                            data-filename-placement="inside"
-                           aria-label="{% trans 'Click here to upload service account credentials (JSON FORMAT)' %}"
-                           title="{% trans 'Click here to upload service account credentials (JSON FORMAT)' %}" />
+                           aria-label="{% trans "Click here to upload service account credentials (JSON FORMAT)" %}"
+                           title="{% trans "Click here to upload service account credentials (JSON FORMAT)" %}" />
                   </div>
 
                   {% if form.service_account_file.help_text %}
@@ -471,7 +466,7 @@
                 <div class="form__group form__group--flex">
                   <label for="id_{{ form.user_emails.name }}" class="block">{% trans "Upload list of accounts" %} (.csv) *</label>
                   <input id="upload-file-email"
-                         placeholder="{% trans 'Select a file' %}"
+                         placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
                          class="grow" />
                   <div class="fileUpload button">
@@ -481,8 +476,8 @@
                            name="{{ form.user_emails.name }}"
                            type="file"
                            data-filename-placement="inside"
-                           aria-label="{% trans 'Click here to upload list of accounts (CSV FORMAT)' %}"
-                           title="{% trans 'Click here to upload list of accounts (CSV FORMAT)' %}" />
+                           aria-label="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}"
+                           title="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}" />
                   </div>
 
                   {% if form.user_emails.help_text %}<span class="form__help-text">{{ form.user_emails.help_text }}</span>{% endif %}
@@ -527,12 +522,12 @@
                   <label class="control-label block" for="id_{{ form.userlist.name }}">
                     {% trans "List of mail users" %}
                     <span class="help-tooltip"
-                          title="{% trans 'The uploaded file should contain a newline-separated list of usernames or localparts of the email addresses, without domains.' %}">
+                          title="{% trans "The uploaded file should contain a newline-separated list of usernames or localparts of the email addresses, without domains." %}">
                       {% include "components/svg-icons/help.svg" %}
                     </span>
                   </label>
                   <input id="upload-file"
-                         placeholder="{% trans 'Select a file' %}"
+                         placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
                          class="grow" />
                   <div id="fileUpload" class="fileUpload button">
@@ -629,12 +624,9 @@
                 {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
               </div>
 
-
             </fieldset>
           </section>
-
         {% endif %}
-
 
         <section class="data-form">
           <fieldset class="form__fieldset">
@@ -751,13 +743,18 @@
           </section>
         {% endif %}
 
+        <section class="data-form">
+          <fieldset class="form__fieldset">
+            {% if form.contact_person %}
+              {% include "components/scanner/scanner_form_select_option_field.html" with field=form.contact_person required="True" %}
+            {% endif %}
+          </fieldset>
+        </section>
+
         {% include "components/rules/rule_selector.html" with rule=form.rule required="True" selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
 
-
         {% if settings.EXCLUSION_RULES %}
-
           {% include "components/rules/rule_selector.html" with rule=form.exclusion_rule selector_id="exclusion_rule" component_title="Add exclusion rule" changed_id="changed_exclusion_rule" %}
-
         {% endif %}
 
         <section class="data-form">
@@ -794,8 +791,8 @@
           <div class="form__group">
             <button type="submit"
                     class="button button--cta-button"
-                    aria-label="{% trans 'Save changes' %}"
-                    title="{% trans 'Save changes' %}"
+                    aria-label="{% trans "Save changes" %}"
+                    title="{% trans "Save changes" %}"
                     name="save">
               <span>{% trans "Save changes" %}</span>
             </button>
@@ -804,4 +801,4 @@
       </form>
     </div>
   </div>
-{% endblock %}
+{% endblock body %}

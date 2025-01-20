@@ -46,7 +46,7 @@ class WebScannerCreate(ScannerCreate):
               'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
               'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
               'rule', 'organization', 'exclude_urls', 'reduce_communication',
-              'keep_false_positives', 'always_crawl']
+              'keep_false_positives', 'always_crawl', 'contact_person']
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -81,7 +81,7 @@ class WebScannerCopy(ScannerCopy):
               'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
               'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
               'rule', 'organization', 'exclude_urls', 'reduce_communication',
-              'keep_false_positives', 'always_crawl']
+              'keep_false_positives', 'always_crawl', 'contact_person']
 
 
 class WebScannerUpdate(ScannerUpdate):
@@ -93,7 +93,7 @@ class WebScannerUpdate(ScannerUpdate):
               'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
               'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
               'rule', 'organization', 'exclude_urls', 'reduce_communication',
-              'keep_false_positives', 'always_crawl']
+              'keep_false_positives', 'always_crawl', 'contact_person']
 
     def form_valid(self, form):
         if url_contains_spaces(form):

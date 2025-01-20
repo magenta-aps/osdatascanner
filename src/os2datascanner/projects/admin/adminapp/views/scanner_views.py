@@ -17,6 +17,7 @@ from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.http import Http404
@@ -459,6 +460,15 @@ class ScannerBase(object):
 
         form.fields['organization'].initial = selected_org
 
+        form.fields['contact_person'].queryset = get_user_model().objects.filter(
+            Q(administrator_for__client=selected_org.client) |
+            Q(groups__permissions__codename="view_client") |
+            Q(user_permissions__codename="view_client") |
+            Q(is_superuser=True)
+        ).distinct()
+
+        form.fields['contact_person'].empty_label = None
+
         allowed_rules = CustomRule.objects.filter(
             Q(organization__in=org_qs) | Q(organization__isnull=True, organizations=selected_org))
 
@@ -555,6 +565,13 @@ class ScannerBase(object):
                 self.model, "supports_rule_preexec", False)
 
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        # The user is only allowed in if they have access to at least one organization
+        if hasattr(request.user, "administrator_for") or request.user.has_perm("view_client"):
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(_("User is not administrator for any client"))
 
 
 class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):

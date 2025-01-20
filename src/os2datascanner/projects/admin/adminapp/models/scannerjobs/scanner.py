@@ -31,6 +31,7 @@ from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.dispatch import receiver
 from django.urls import reverse_lazy
+from django.conf import settings
 
 from model_utils.managers import InheritanceManager, InheritanceQuerySet
 from recurrence.fields import RecurrenceField
@@ -105,6 +106,15 @@ class Scanner(models.Model):
         verbose_name=_('organization'),
         default=None,
         null=True,
+    )
+
+    contact_person = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='scannerjobs',
+        verbose_name=_('contact person'),
+        blank=False,
+        null=False
     )
 
     org_unit = TreeManyToManyField(

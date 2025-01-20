@@ -45,6 +45,7 @@ class GoogleDriveScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'rule',
         'organization',
+        'contact_person'
     ]
 
     def get_success_url(self):
@@ -68,6 +69,7 @@ class GoogleDriveScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'rule',
         'organization',
+        'contact_person'
     ]
 
     def get_success_url(self):
@@ -110,6 +112,7 @@ class GoogleDriveScannerCopy(ScannerCopy):
         'only_notify_superadmin',
         'rule',
         'organization',
+        'contact_person'
     ]
 
     def get_initial(self):
