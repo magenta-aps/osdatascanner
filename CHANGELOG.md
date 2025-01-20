@@ -32,8 +32,10 @@
 - Bumped RabbitMQ version to 3.12.14
 
 - It is now possible to configure admin-module `Client` full- and delta-scan queues, and 
-to configure explorer and worker to prioritize different message queues. Effectively allowing
-full- and delta-scans to run in parallel.
+  to configure explorer and worker to prioritize different message queues. Effectively allowing
+  full- and delta-scans to run in parallel.
+
+- Information about the leader overview has been added to the report module manual.
 
 ### Bugfixes
 

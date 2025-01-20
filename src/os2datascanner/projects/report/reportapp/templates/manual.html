@@ -272,13 +272,13 @@
           {% endblocktrans %}
         </p>
 
-        {% if settings.LEADER_OVERVIEW_30_DAYS %}
+        {% if organization.retention_policy %}
           <h3>{% trans "Retention policy" %}</h3>
 
           <p>
             {% blocktrans trimmed %}
-              Your organization has a retention policy of 30 days. This means that users are
-              allowed to keep potential results for up to 30 days, before they must be handled in
+              Your organization has a retention policy of {{ organization.retention_days }} days. This means that users are
+              allowed to keep potential results for up to {{ organization.retention_days }} days, before they must be handled in
               an appropriate way.
             {% endblocktrans %}
           </p>
