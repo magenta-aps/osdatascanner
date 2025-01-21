@@ -23,6 +23,7 @@ class Resource(ABC):
 
     Resources are short-lived -- they should only be used when you actually
     need to get to content. As such, they are not serialisable."""
+
     def __init__(self, handle, sm):
         self._handle = handle
         self._sm = sm

@@ -16,7 +16,6 @@
       margin-top: 0.7rem;
     }
   }
-
 }
 
 h1.userprofile-text {
@@ -34,21 +33,17 @@ h1.userprofile-text {
   border-spacing: 0px;
 
   tr:not(:last-child) {
-
     td {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
-
   }
 
   tr {
-
     td {
-
       &:nth-of-type(1) {
         font-weight: bold;
         color: var(--color-text-secondary);
-        width: 15rem
+        width: 15rem;
       }
 
       &:nth-of-type(2) {
@@ -69,11 +64,10 @@ h1.userprofile-text {
           margin: 0px;
 
           &:not(:last-child):after {
-            content: ", "
+            content: ", ";
           }
         }
       }
-
     }
   }
 
@@ -90,7 +84,7 @@ h1.userprofile-text {
       margin-left: 0.5rem;
     }
 
-    &.true>svg {
+    &.true > svg {
       fill: var(--color-checkmark);
     }
   }
@@ -136,7 +130,7 @@ h1.userprofile-text {
   .account_initials {
     height: 1.7rem;
     width: 1.7rem;
-    margin:0.15rem;
+    margin: 0.15rem;
     font-size: 0.875rem;
     line-height: 1.7rem;
   }
@@ -152,7 +146,6 @@ h1.userprofile-text {
     object-fit: cover;
     border-radius: 50%;
   }
-
 }
 
 .user__avatar_big {
@@ -162,7 +155,7 @@ h1.userprofile-text {
   .account_initials {
     height: 3rem;
     width: 3rem;
-    margin:0.25rem;
+    margin: 0.25rem;
     font-size: 1.5rem;
     line-height: 3rem;
   }
@@ -189,7 +182,7 @@ h1.userprofile-text {
   .account_initials {
     height: 8.5rem;
     width: 8.5rem;
-    margin:0.75rem;
+    margin: 0.75rem;
     font-size: 4.5rem;
     line-height: 8.5rem;
   }
@@ -248,7 +241,7 @@ h1.userprofile-text {
   }
 
   .user-content a,
-  .user-content >div {
+  .user-content > div {
     display: flex;
     align-items: center;
     padding: 12px 16px;

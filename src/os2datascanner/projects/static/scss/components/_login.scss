@@ -1,4 +1,5 @@
-$bg: transparent linear-gradient(180deg, #5CA4CD 0%, #21759C 100%) 0% 0% no-repeat padding-box;
+$bg: transparent linear-gradient(180deg, #5ca4cd 0%, #21759c 100%) 0% 0%
+  no-repeat padding-box;
 
 .login-bg {
   width: 100%;
@@ -24,7 +25,7 @@ $bg: transparent linear-gradient(180deg, #5CA4CD 0%, #21759C 100%) 0% 0% no-repe
     margin-left: 2rem;
     margin-right: 2rem;
   }
-  
+
   @media (min-width: $break-sm) {
     padding: 4rem 6rem 6rem;
   }

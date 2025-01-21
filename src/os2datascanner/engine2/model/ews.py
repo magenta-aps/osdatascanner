@@ -357,7 +357,7 @@ class EWSMailHandle(Handle):
         account, domain = self.source.address.split("@", 1)
 
         return f'{domain}/{account}/' \
-               f'{self._folder_name.removeprefix("/") or "(unknown folder)"}/{self._mail_subject}'
+            f'{self._folder_name.removeprefix("/") or "(unknown folder)"}/{self._mail_subject}'
 
     def guess_type(self):
         return "message/rfc822"

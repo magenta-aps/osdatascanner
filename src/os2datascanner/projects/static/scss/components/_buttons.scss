@@ -211,7 +211,6 @@
       .material-symbols-outlined {
         color: var(--color-btn-neutral);
       }
-
     }
 
     &:hover:not([disabled]),
@@ -495,7 +494,10 @@
     // Cog icon
     font-size: $icon-size;
     width: fit-content;
-    font-variation-settings: "wght" 300, "GRAD" -25, "opsz" 20;
+    font-variation-settings:
+      "wght" 300,
+      "GRAD" -25,
+      "opsz" 20;
   }
 }
 

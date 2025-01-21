@@ -12,10 +12,19 @@
     appearance: none;
     background-color: var(--color-widget-bg);
 
-    background-image: url("../svg/chevron-down.svg"), linear-gradient(to bottom, var(--color-widget-bg) 0%, var(--color-widget-bg) 100%);
+    background-image: url("../svg/chevron-down.svg"),
+      linear-gradient(
+        to bottom,
+        var(--color-widget-bg) 0%,
+        var(--color-widget-bg) 100%
+      );
     background-repeat: no-repeat, repeat;
-    background-position: right 0.75rem top 50%, 0 0;
-    background-size: 0.75rem auto, 100%;
+    background-position:
+      right 0.75rem top 50%,
+      0 0;
+    background-size:
+      0.75rem auto,
+      100%;
   }
 
   label {

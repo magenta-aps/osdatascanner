@@ -31,6 +31,7 @@ def wrap_encrypted_field(field_name: str):
     """Returns a property object that transparently manages an encrypted field:
     trying to read from it will decrypt the value, and trying to assign to it
     will first encrypt the value."""
+
     def _get(self) -> str:
         iv, ciphertext = [bytes.fromhex(c) for c in getattr(self, field_name)]
         return aes.decrypt(iv, ciphertext, settings.DECRYPTION_HEX)

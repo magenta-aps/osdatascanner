@@ -353,7 +353,7 @@ class IdentityProvider(models.Model):
             'Content-Type': 'application/json;charset=utf-8',
         }
         url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms/{self.realm}"
-                                            f"/identity-provider/instances")
+               f"/identity-provider/instances")
 
         body = self.request_body(auth_flow)
 
@@ -366,7 +366,7 @@ class IdentityProvider(models.Model):
             'Content-Type': 'application/json;charset=utf-8',
         }
         url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms/{self.realm}"
-                                            f"/identity-provider/instances/{self.alias}")
+               f"/identity-provider/instances/{self.alias}")
 
         body = self.request_body(auth_flow)
 
@@ -379,7 +379,7 @@ class IdentityProvider(models.Model):
             'Content-Type': 'application/json;charset=utf-8',
         }
         url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms"
-                                            f"/{self.realm}/identity-provider/import-config")
+               f"/{self.realm}/identity-provider/import-config")
 
         body = {
             "providerId": self.provider_id,

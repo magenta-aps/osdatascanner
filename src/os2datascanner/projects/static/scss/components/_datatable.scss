@@ -53,15 +53,22 @@
         rgba(255, 255, 255, 0)),
       linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
     background-repeat: no-repeat;
-    background-position: left top, left top, 100% 0, 100% 0;
-    background-size: calc(var(--datatable-cell-padding) * 4) 100%,
+    background-position:
+      left top,
+      left top,
+      100% 0,
+      100% 0;
+    background-size:
+      calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%,
       calc(var(--datatable-cell-padding) * 4) 100%,
       var(--datatable-cell-padding) 100%;
     background-attachment: local, scroll, local, scroll;
 
     &:focus {
-      box-shadow: var(--box-shadow-widget), 0 0 0 3px var(--color-primary-light);
+      box-shadow:
+        var(--box-shadow-widget),
+        0 0 0 3px var(--color-primary-light);
     }
   }
 }
@@ -784,8 +791,13 @@ $font-size_subtitle: 0.875rem;
           rgba(255, 255, 255, 0)),
         linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
       background-repeat: no-repeat;
-      background-position: left top, left top, 100% 0, 100% 0;
-      background-size: calc(var(--datatable-cell-padding) * 4) 100%,
+      background-position:
+        left top,
+        left top,
+        100% 0,
+        100% 0;
+      background-size:
+        calc(var(--datatable-cell-padding) * 4) 100%,
         var(--datatable-cell-padding) 100%,
         calc(var(--datatable-cell-padding) * 4) 100%,
         var(--datatable-cell-padding) 100%;
@@ -1309,7 +1321,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
               z-index: 2; // Place it on top of cloud icon to imitate "cut-out" effect
               padding-top: 0.25rem;
               color: var(--color-btn-neutral);
-              font-variation-settings: "GRAD" -25, "opsz" 20;
+              font-variation-settings:
+                "GRAD" -25,
+                "opsz" 20;
               font-size: 18px;
               text-align: center;
             }

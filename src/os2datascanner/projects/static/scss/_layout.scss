@@ -35,7 +35,7 @@ body {
   }
 }
 
-.wrapper>*:first-child {
+.wrapper > *:first-child {
   margin-top: 0;
 }
 
@@ -78,7 +78,7 @@ body {
   }
 }
 
-.content-body, 
+.content-body,
 .content-footer {
   padding: 0 1rem;
 
@@ -149,5 +149,4 @@ body {
     max-width: 100%;
     overflow-x: auto;
   }
-
 }

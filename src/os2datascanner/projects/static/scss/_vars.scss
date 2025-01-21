@@ -3,13 +3,16 @@
 :root {
   --transition-property: all;
   --transition-timing: 0.2s;
-  --transition-timing-function: cubic-bezier(.86, 0, .07, 1);
+  --transition-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
   --transition-delay: 0s;
-  --transition-default: var(--transition-property) var(--transition-timing) var(--transition-timing-function) var(--transition-delay);
+  --transition-default: var(--transition-property) var(--transition-timing)
+    var(--transition-timing-function) var(--transition-delay);
 
   --size-ds-unit: 8px;
   --size-logo-height: calc(var(--size-ds-unit) * 3.75);
-  --size-logo-width: calc(var(--size-ds-unit) * 3.75 * 7.142857143); // this number is the logo graphic's aspect ratio
+  --size-logo-width: calc(
+    var(--size-ds-unit) * 3.75 * 7.142857143
+  ); // this number is the logo graphic's aspect ratio
   --size-base-font-size: calc(var(--size-ds-unit) * 2);
 
   //primary colors
@@ -24,7 +27,7 @@
   --color-primary: #21759c;
   --color-primary-dark: #00496e;
   --color-dropdown: #e5e5e5;
-  
+
   // Status colors
   --color-checkmark: #4a9d86; // checkmarks
   --color-clear: #e24e4e; // "x"/clear (icon name is "clear" in Material Symbols/Icons)
@@ -55,16 +58,16 @@
 
   // alert/popover/snackbar colors
   --color-alert-default: var(--color-widget-bg);
-  --color-alert-default-accent: #D9D9D9;
+  --color-alert-default-accent: #d9d9d9;
 
-  --color-alert-success: #D2EEE6;
+  --color-alert-success: #d2eee6;
   --color-alert-success-accent: #489681;
 
-  --color-alert-warning: #FFF3D0;
+  --color-alert-warning: #fff3d0;
   --color-alert-warning-accent: #fed149;
 
   --color-alert-error: #ffe3e3;
-  --color-alert-error-accent: #ED9494;
+  --color-alert-error-accent: #ed9494;
 
   // datatable colors
   --color-row-expanded: rgba(92, 164, 205, 0.05);
@@ -94,12 +97,12 @@
   --border-radius-sensitivity: 20px 0px 0px 20px;
 
   //box-shadow
-  --box-shadow: 10px 10px 30px #0000001A;
+  --box-shadow: 10px 10px 30px #0000001a;
   --box-shadow-large: 0 0 2rem rgba(0, 0, 0, 0.2);
   --box-shadow-widget: 0px 0px 40px #22222229;
   --box-shadow-default: 0px 0px 5px #22222229;
   --box-shadow-filter: 0px 0px 5px #22222229;
-  --box-shadow-login: 0px 0px 40px #00496E80;
+  --box-shadow-login: 0px 0px 40px #00496e80;
 
   //z-index
   --z-index-navigation: 10;
@@ -111,7 +114,6 @@
   --color-grey-dark: #777777;
   --color-grey-light: #f5f5f5;
   --color-white: #fff; // ????
-
 
   // Size vars
   --width-sidemenu: 15rem;
