@@ -89,6 +89,9 @@
 
 - Refactoring of the results + archive datatables.
 
+- Removing and marking error messages in the admin module as seen is now only allowed for users
+  with the appropriate permissions.
+
 ### Bugfixes
 
 - Fix deletion issues for OneDrive results, by making the is_owner check case insensitive.

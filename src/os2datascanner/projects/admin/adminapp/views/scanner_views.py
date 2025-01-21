@@ -16,9 +16,10 @@ from json import dumps
 from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from pika.exceptions import AMQPError
@@ -335,7 +336,10 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
             # Only allow removal of errors if the user has the correct permissions
             if htmx_trigger in ("remove_errorlog", "remove_selected", "remove_all") \
                     and not self.request.user.has_perm('os2datascanner.resolve_usererrorlog'):
-                return HttpResponseForbidden()
+                raise PermissionDenied()
+            elif htmx_trigger in ("see_errorlog", "see_all") \
+                    and not self.request.user.has_perm('os2datascanner.mark_view_usererrorlog'):
+                raise PermissionDenied()
 
             if htmx_trigger == "remove_errorlog":
                 delete_pk = self.request.POST.get('pk')
@@ -357,6 +361,7 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
 
 
 class UserErrorLogCSVView(CSVExportMixin, UserErrorLogView):
+    permission_required = "os2datascanner.export_usererrorlog"
     exported_fields = {
         _("Scan time"): 'scan_status__scan_tag__time',
         _("Path"): 'path',

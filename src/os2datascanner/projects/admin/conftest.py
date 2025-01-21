@@ -426,6 +426,31 @@ def basic_usererrorlog(basic_scanstatus, test_org):
 
 
 @pytest.fixture
+def viewed_usererrorlog(basic_scanstatus, test_org):
+    return UserErrorLog.objects.create(
+        scan_status=basic_scanstatus,
+        path="YouCanSeeMe",
+        error_message="I'm not here!",
+        engine_error={"type": "TestError", "args": "Test was also just a test!"},
+        organization=test_org,
+        is_new=False
+    )
+
+
+@pytest.fixture
+def resolved_usererrorlog(basic_scanstatus, test_org):
+    return UserErrorLog.objects.create(
+        scan_status=basic_scanstatus,
+        path="ImAllDone",
+        error_message="Nothing to see here",
+        engine_error={"type": "TestError", "args": "Test was also just a test!"},
+        organization=test_org,
+        is_new=False,
+        is_resolved=True
+    )
+
+
+@pytest.fixture
 def a_lot_of_usererrorlogs(basic_scanstatus, test_org):
 
     import random
