@@ -945,16 +945,10 @@ $font-size_subtitle: 0.875rem;
       > :is(td, th) {
         background-color: var(--color-primary-lightest);
         box-shadow: inherit;
-
-        > :not(.ds-checkbox):not(.button--caret-button) {
-          /* Change opacity for anything BUT the checkboxes and expand-row caret. */
-          opacity: 0.75;
-          /* Remove before merge: this will nudge the users to use the mass handle function. Also it looks neat. */
-        }
       }
 
       // Shared styles for buttons and status elements
-      .button:not(.button--caret-button):not(.dropdown-container .button),
+      .button:not(.button--caret-button):not(.button--deletion-button):not(.dropdown-container .button),
       .status {
         background-color: var(--color-widget-bg) !important;
         color: var(--color-text-secondary) !important;
@@ -965,16 +959,13 @@ $font-size_subtitle: 0.875rem;
         }
       }
 
-      // .button--deletion-button {
-      //   $button-color: var(--color-primary-dark);
+      .button--deletion-button {
+        $button-color: var(--color-primary-dark);
 
-      //   background-color: $button-color;
-      //   border-color: $button-color;
-      //   color: var(--color-text-white);
-      // }
-      /* Not sure if we want to keep the visual weight difference for this button, when the row is
-      highlighted? We don't want the users to start deleting the files/mails individually, when 
-      they're marking them for mass handling. */
+        background-color: $button-color;
+        border-color: $button-color;
+        color: var(--color-text-white);
+      }
     }
   }
 
