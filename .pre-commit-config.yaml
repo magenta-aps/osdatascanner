@@ -20,3 +20,8 @@ repos:
         name: djlint
         entry: djlint --reformat --indent 2 --preserve-blank-lines --quiet
         files: src/os2datascanner/projects/
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    rev: 'v4.0.0-alpha.8'
+    hooks:
+    -   id: prettier
+        types: [scss]
