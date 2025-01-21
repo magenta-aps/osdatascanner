@@ -3,7 +3,7 @@ import pytest
 from django.contrib.auth.models import Permission
 from django.urls import reverse_lazy
 
-from ..models import Organization, Position
+from ..models import Organization, Position, OrganizationalUnit
 
 from os2datascanner.core_organizational_structure.models.organization import (
     StatisticsPageConfigChoices, DPOContactChoices, SupportContactChoices, OutlookCategorizeChoices)
@@ -707,6 +707,7 @@ class TestOrganizationalUnitListViewAddRemoveManagers:
 
 @pytest.mark.django_db
 class TestOrganizationalUnitVisibilityView:
+    headers = {"HTTP_HX-Request": "true"}
 
     def test_orgunit_visibility_access_as_superuser(self, client, superuser, test_org):
         """Superusers should have access to the view."""
@@ -752,4 +753,64 @@ class TestOrganizationalUnitVisibilityView:
         else:
             assert response.status_code == 403
 
-    # TODO: Write tests for hiding and un-hiding OUs: #63234
+    def test_toggle_orgunit_visibility(self, client, user_admin, test_org, familien_sand,
+                                       dansk_kartoffelavlerforening):
+        user_admin.user_permissions.add(
+            Permission.objects.get(codename="change_visibility_organizationalunit"))
+        client.force_login(user_admin)
+
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+
+        headers = self.headers
+        headers["HTTP_HX-Trigger-Name"] = "toggle_orgunit_hidden_state"
+
+        # Check visibility of org unit before POST
+        state = familien_sand.hidden
+
+        response = client.post(url, data={"pk": familien_sand.pk}, **headers)
+
+        assert response.status_code == 200
+
+        # Orgunit visibility should be reversed
+        familien_sand.refresh_from_db()
+        assert familien_sand.hidden != state
+
+    def test_hide_all_orgunits(self, client, user_admin, test_org, familien_sand,
+                               dansk_kartoffelavlerforening):
+        user_admin.user_permissions.add(
+            Permission.objects.get(codename="change_visibility_organizationalunit"))
+        client.force_login(user_admin)
+
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+
+        headers = self.headers
+        headers["HTTP_HX-Trigger-Name"] = "hide_all_orgunits"
+
+        # Make sure all orgunits are unhidden before sending POST
+        OrganizationalUnit.objects.update(hidden=False)
+
+        response = client.post(url, data={}, **headers)
+
+        assert response.status_code == 200
+
+        assert not OrganizationalUnit.objects.filter(hidden=False).exists()
+
+    def test_unhide_all_orgunits(self, client, user_admin, test_org, familien_sand,
+                                 dansk_kartoffelavlerforening):
+        user_admin.user_permissions.add(
+            Permission.objects.get(codename="change_visibility_organizationalunit"))
+        client.force_login(user_admin)
+
+        url = reverse_lazy("edit-orgunit-visibility-view", kwargs={"org_slug": test_org.slug})
+
+        headers = self.headers
+        headers["HTTP_HX-Trigger-Name"] = "unhide_all_orgunits"
+
+        # Make sure all orgunits are unhidden before sending POST
+        OrganizationalUnit.objects.update(hidden=True)
+
+        response = client.post(url, data={}, **headers)
+
+        assert response.status_code == 200
+
+        assert not OrganizationalUnit.objects.filter(hidden=True).exists()
