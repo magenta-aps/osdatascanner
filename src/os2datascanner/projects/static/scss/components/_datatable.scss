@@ -131,11 +131,19 @@
     }
   }
 
-  tr.open > th:first-child,
-  tr.open > td:first-child {
-    // Emulate border-left. Adding an actual border-left will shift
-    // the contents of the row
-    box-shadow: inset 4px 0 0 var(--color-primary);
+  tr {
+    &.open,
+    &.statistic_row {
+      > :is(th, td):first-child {
+        // Emulate border-left. Adding an actual border-left will shift
+        // the contents of the row
+        box-shadow: inset 4px 0 0 var(--color-primary);
+      }
+    }
+
+    &.statistic_row {
+      background-color: rgba(0, 0, 0, 0.035);
+    }
   }
 
   tr.clickable {
@@ -1783,7 +1791,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     &--resolution-status {
       /* Archive only */
       width: 13rem; // 208px, roughly fits the width of the widest status label.
-
 
       .status {
         @include pill-variant(

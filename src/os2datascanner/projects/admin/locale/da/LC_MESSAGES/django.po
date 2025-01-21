@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-09 11:20+0100\n"
+"POT-Creation-Date: 2025-01-13 13:57+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -403,24 +403,24 @@ msgstr "valideringstatus"
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:254
+#: adminapp/models/scannerjobs/scanner.py:260
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:257
+#: adminapp/models/scannerjobs/scanner.py:263
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:260
+#: adminapp/models/scannerjobs/scanner.py:266
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
-#: adminapp/models/scannerjobs/scanner.py:673
+#: adminapp/models/scannerjobs/scanner.py:679
 msgid "Can validate scannerjobs"
 msgstr "Kan godkende scannerjob"
 
-#: adminapp/models/scannerjobs/scanner.py:674
+#: adminapp/models/scannerjobs/scanner.py:680
 msgid "Can hide scannerjob from scannerjob list"
 msgstr "Kan skjule scannerjob fra scannerjoblisten"
 
@@ -488,7 +488,7 @@ msgstr "er en email notifikation blevet sendt"
 #: adminapp/models/scannerjobs/scanner_helpers.py:267
 #: adminapp/views/scanner_views.py:201
 msgid "Start time"
-msgstr "Startet"
+msgstr "Starttid"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py:270
 #: adminapp/models/usererrorlog.py:31
@@ -1854,21 +1854,33 @@ msgstr "status for kørende scanner"
 msgid "no ongoing scans"
 msgstr "der er ingen igangværende scanninger"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:7
+#: adminapp/templates/components/scanstatus/status_timeline.html:10
+msgid "Statistic for"
+msgstr "Statistik for"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:19
 msgid "Timeline"
 msgstr "Tidslinje"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:22
+#: adminapp/templates/components/scanstatus/status_timeline.html:20
+msgid "Progress of the scan from start to finish"
+msgstr "Scannets udvikling fra start til slut"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:38
+msgid "Summary of scan"
+msgstr "Opsummering af scan"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html:46
 #, python-format
 msgid "known %(onp)s skipped due to no change"
 msgstr "kendte %(onp)s sprunget over grundet ingen ændring"
-#: adminapp/templates/components/scanstatus/status_timeline.html:23
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:25
+#: adminapp/templates/components/scanstatus/status_timeline.html:51
+#, python-format
 msgid "new %(onp)s scanned"
 msgstr "nye %(onp)s scannet"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:25
+#: adminapp/templates/components/scanstatus/status_timeline.html:59
 #, python-format
 msgid "All %(onp)s scanned"
 msgstr "Alle %(onp)s scannet"

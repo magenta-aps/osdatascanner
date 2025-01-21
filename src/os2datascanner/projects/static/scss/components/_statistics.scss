@@ -950,3 +950,125 @@ table .overview_wrapper {
     }
   }
 }
+
+/***** OPTIMISING HOW WE STYLE STATISTICS RELATED LAYOUTS *****/
+
+.statistics {
+  &--finished-scans {
+    /* NOTE: Since there's an ongoing optimising happening for the DPO overview page, this needs to
+    be a little "double nested" class-wise to avoid merge issues. */
+
+    /* TODO: remove potential repeat styling after the DPO overview is done. */
+
+    .statistics {
+      &__wrapper {
+        // Empty
+      }
+
+      &__header {
+        &__title {
+          &:is(h1) {
+            font-size: medium;
+          }
+        }
+      }
+
+      &__body {
+        .statistics__section {
+          display: grid;
+          grid-template-columns: repeat(12, 1fr);
+          grid-template-rows: auto;
+          gap: 2rem;
+
+          .data-card {
+            /* Grid layout - start */
+            &--timeline,
+            &--scan-summary {
+              grid-column: span 12;
+            }
+
+            @media (min-width: 1024px) {
+              &--timeline {
+                grid-column: span 8;
+              }
+              &--scan-summary {
+                grid-column: span 4;
+              }
+            }
+
+            @media (min-width: 1200px) {
+              &--timeline,
+              &--scan-summary {
+                grid-column: span 12;
+              }
+            }
+
+            @media (min-width: 1440px) {
+              &--timeline {
+                grid-column: span 8;
+              }
+              &--scan-summary {
+                grid-column: span 4;
+              }
+            }
+            /* Grid layout - end */
+
+            &--scan-summary {
+              height: fit-content;
+              width: fit-content;
+            }
+
+            @media (min-width: 1440px) {
+              &--scan-summary {
+                width: 100%;
+                /* NOTE: Allows the summary card to take up the full width of it's grid column
+                span. It just looks nicer on larger screens. */
+              }
+            }
+
+            &__content {
+              height: fit-content;
+              ul,
+              li,
+              p {
+                margin: 0;
+              }
+
+              ul {
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              }
+            }
+          }
+        }
+      }
+
+      &__footer {
+        // Empty
+      }
+    }
+  }
+
+  /* NOTE: The following is just to be ready for future additions. */
+  &__wrapper {
+    // Empty
+  }
+
+  &__header {
+    // Empty
+
+    &__title {
+      // Empty
+    }
+  }
+
+  &__body {
+    // Empty
+  }
+
+  &__footer {
+    // Empty
+  }
+}

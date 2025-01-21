@@ -13,45 +13,47 @@ function drawTimelines(snapshotData, pk) {
   let timelinesLineChartCtx = document.querySelector("#line_chart_status__" + String(pk));
   if (timelinesLineChartCtx) {
     new Chart(timelinesLineChartCtx, {
-      type: 'line',
+      type: "line",
       data: {
         labels: timelinesLineChartLabels,
-        datasets: [{
-          data: snapshotData,
-          fill: 0,
-          tension: 0, // This makes the lines straight, with no curve
-          pointRadius: 0,
-          pointHitRadius: 20,
-          borderWidth: 4,
-          borderColor: "#21759c",
-          pointHoverRadius: 10,
-        }]
+        datasets: [
+          {
+            data: snapshotData,
+            fill: 0,
+            tension: 0, // This makes the lines straight, with no curve
+            pointRadius: 0,
+            pointHitRadius: 20,
+            borderWidth: 4,
+            borderColor: "#21759c",
+            pointHoverRadius: 10,
+          },
+        ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true, // If false, the charts will not be drawn properly in hidden elements!
+        maintainAspectRatio: false,
         tooltips: false,
         plugins: {
           legend: {
-            display: false
-          }
+            display: false,
+          },
         },
         scales: {
           x: {
-            type: 'linear',
+            type: "linear",
             title: {
               display: true,
-              text: gettext('Seconds since start of scan')
-            }
+              text: gettext("Seconds since start of scan"),
+            },
           },
           y: {
             title: {
               display: true,
-              text: gettext('% scanned')
-            }
-          }
-        }
-      }
+              text: gettext("% scanned"),
+            },
+          },
+        },
+      },
     });
   }
 }

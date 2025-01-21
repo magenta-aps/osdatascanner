@@ -526,7 +526,7 @@ msgid "PM"
 msgstr ""
 
 #: dist/js/statusTimelines.js:44 js/statusTimelines.js:44
-msgid "Seconds since start of scan"
+msgid "Seconds since the scan was started"
 msgstr ""
 
 #: dist/js/statusTimelines.js:50 js/statusTimelines.js:50
