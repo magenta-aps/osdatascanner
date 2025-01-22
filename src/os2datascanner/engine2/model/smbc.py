@@ -7,6 +7,7 @@ from typing import Optional
 from urllib.parse import quote
 from pathlib import PureWindowsPath
 from datetime import datetime
+from dateutil.tz import gettz
 from operator import or_
 from functools import reduce
 from contextlib import contextmanager
@@ -230,7 +231,10 @@ class SMBCSource(Source):
             if self._skip_super_hidden and self.is_skippable(fi.name, attrs):
                 return
 
-            hints = {}
+            hints = {
+                "ctime": fi.ctime.astimezone(gettz()),
+                "mtime": fi.mtime.astimezone(gettz())
+            }
             if owner_sid:
                 hints["owner_sid"] = owner_sid
 
@@ -414,6 +418,9 @@ class SMBCResource(FileResource):
         return self.unpack_stat()["st_size"]
 
     def get_last_modified(self):
+        ctime, mtime = self.handle.hint("ctime"), self.handle.hint("mtime")
+        if ctime or mtime:
+            return max(ctime, mtime)
         return self.unpack_stat().setdefault(OutputType.LastModified,
                                              super().get_last_modified())
 
