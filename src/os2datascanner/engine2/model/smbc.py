@@ -1,6 +1,7 @@
 import io
 from os import stat_result, O_RDONLY
 import enum
+import errno
 import structlog
 import smbc
 from typing import Optional
@@ -12,6 +13,8 @@ from operator import or_
 from functools import reduce
 from contextlib import contextmanager
 
+from os2datascanner.engine2.rules.utilities.analysis import find_cutoff
+
 from ..utilities.backoff import DefaultRetrier
 from ..conversions.types import OutputType
 from ..conversions.utilities.navigable import make_values_navigable
@@ -22,7 +25,6 @@ from .core import Source, Handle, FileResource
 from .core.errors import UncontactableError
 from .file import stat_attributes
 
-import errno
 
 logger = structlog.get_logger("engine2")
 
@@ -214,8 +216,10 @@ class SMBCSource(Source):
             # owner
             return None
 
-    def handles(self, sm):  # noqa: C901,E501,CCR001
+    def handles(self, sm, *, rule=None):  # noqa: C901,E501,CCR001
         url, context = sm.open(self)
+
+        cutoff = find_cutoff(rule)
 
         def handle_fileinfo(parents, fi, owner_sid: str = None):
             name = fi.name
@@ -232,14 +236,18 @@ class SMBCSource(Source):
                 return
 
             hints = {
-                "ctime": fi.ctime.astimezone(gettz()),
-                "mtime": fi.mtime.astimezone(gettz())
+                "ctime": (ctime := fi.ctime.astimezone(gettz())),
+                "mtime": (mtime := fi.mtime.astimezone(gettz()))
             }
             if owner_sid:
                 hints["owner_sid"] = owner_sid
 
             handle_here = SMBCHandle(self, path, hints=hints)
             if attrs & smbc.Attribute.DIRECTORY:
+                # On every filesystem we care about, creating or deleting
+                # a/b/c.txt will update the modification timestamp on a/b/ but
+                # not on a/, so we always need to explore the complete
+                # directory hierarchy
                 try:
                     try:
                         obj = context.opendir(url_here)
@@ -259,6 +267,18 @@ class SMBCSource(Source):
             else:
                 # We assume anything not tagged as a directory is (scannable as
                 # if it were) a normal file
+
+                if cutoff:
+                    # Pick whichever one is newer of the content and metadata
+                    # change timestamps
+                    updated_timestamp = max(ctime, mtime)
+                    if updated_timestamp <= cutoff:
+                        logger.debug(
+                                "skipping file not updated after cutoff",
+                                url_here=url_here,
+                                cutoff=cutoff, updated=updated_timestamp)
+                        return
+
                 yield handle_here
 
         try:
