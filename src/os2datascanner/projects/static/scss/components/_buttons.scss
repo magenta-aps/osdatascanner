@@ -163,7 +163,6 @@
     }
 
     &.up {
-
       .material-icons,
       .material-symbols,
       .material-symbols-outlined {
@@ -220,7 +219,9 @@
 
       .material-symbols,
       .material-symbols-outlined {
-        font-variation-settings: 'wght' 500, 'GRAD' -25 !important;
+        font-variation-settings:
+          "wght" 500,
+          "GRAD" -25 !important;
         color: var(--color-text-white);
       }
     }
@@ -320,15 +321,19 @@
 
   // ***** Icon specific code *****
   .material-icons#play_arrow {
-    transform: translateX(-0.063rem); // adjusts the perceived optical balance of the play icon
+    transform: translateX(
+      -0.063rem
+    ); // adjusts the perceived optical balance of the play icon
   }
 
   &--debug {
-    background: repeating-linear-gradient(45deg,
-        #ddd7,
-        #fdd7 10px,
-        #f667 10px,
-        #f667 20px);
+    background: repeating-linear-gradient(
+      45deg,
+      #ddd7,
+      #fdd7 10px,
+      #f667 10px,
+      #f667 20px
+    );
     border: 1px dashed var(--color-primary-dark);
     font-style: italic;
   }
@@ -502,7 +507,6 @@
 }
 
 .button--cta-button {
-
   // Change the background of the fake shadow when button:hover
   &:hover:not([disabled]),
   &:focus:not([disabled]) {
