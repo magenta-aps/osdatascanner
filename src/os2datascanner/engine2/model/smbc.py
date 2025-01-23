@@ -16,6 +16,7 @@ from contextlib import contextmanager
 from os2datascanner.engine2.rules.utilities.analysis import find_cutoff
 
 from ..utilities.backoff import DefaultRetrier
+from ..utilities.datetime import parse_datetime, unparse_datetime
 from ..conversions.types import OutputType
 from ..conversions.utilities.navigable import make_values_navigable
 from .smb import (
@@ -236,8 +237,10 @@ class SMBCSource(Source):
                 return
 
             hints = {
-                "ctime": (ctime := fi.ctime.astimezone(gettz())),
-                "mtime": (mtime := fi.mtime.astimezone(gettz()))
+                "ctime": unparse_datetime(
+                        ctime := fi.ctime.astimezone(gettz())),
+                "mtime": unparse_datetime(
+                        mtime := fi.mtime.astimezone(gettz()))
             }
             if owner_sid:
                 hints["owner_sid"] = owner_sid
@@ -438,11 +441,12 @@ class SMBCResource(FileResource):
         return self.unpack_stat()["st_size"]
 
     def get_last_modified(self):
-        ctime, mtime = self.handle.hint("ctime"), self.handle.hint("mtime")
-        if ctime or mtime:
-            return max(ctime, mtime)
-        return self.unpack_stat().setdefault(OutputType.LastModified,
-                                             super().get_last_modified())
+        hints = []
+        for hn in ("ctime", "mtime",):
+            if hv := self.handle.hint(hn):
+                hints.append(parse_datetime(hv))
+        return max(hints) if hints else self.unpack_stat().setdefault(
+                OutputType.LastModified, super().get_last_modified())
 
     def get_owner_sid(self):
         """Returns the Windows security identifier of the owner of this file,
