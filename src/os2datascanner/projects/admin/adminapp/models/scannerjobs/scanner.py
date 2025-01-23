@@ -25,6 +25,7 @@ from dateutil.tz import gettz
 import structlog
 
 from django.db import models
+from django.db.models import Q
 from django.core.validators import validate_comma_separated_integer_list
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
@@ -585,9 +586,8 @@ class Scanner(models.Model):
         return scan_tag.to_json_object()
 
     def get_last_successful_run_at(self) -> datetime:
-        query = ScanStatus.objects.filter(scanner=self)
-        finished = (status for status in query if status.finished)
-        last = max(finished, key=lambda status: status.start_time, default=None)
+        query = ScanStatus.objects.filter(ScanStatus._completed_Q & Q(scanner=self))
+        last = max(query, key=lambda status: status.start_time, default=None)
         return last.start_time if last else None
 
     def generate_sources(self) -> Iterator[Source]:
@@ -697,6 +697,10 @@ class Scanner(models.Model):
     def get_delete_url(self):
         return reverse_lazy(f"{self.get_type()}scanner_delete", kwargs={"pk": self.pk})
 
+    @property
+    def verbose_name(self):
+        return self._meta.verbose_name
+
     class Meta:
         abstract = False
         ordering = ['name']
@@ -704,6 +708,8 @@ class Scanner(models.Model):
         permissions = [
             ("can_validate", _("Can validate scannerjobs")),
             ("hide_scanner", _("Can hide scannerjob from scannerjob list")),
+            ("unhide_scanner", _("Can unhide scannerjob from the removed scannerjob list")),
+            ("view_hidden_scanner", _("Can view hidden scanners in the removed scannerjob list"))
         ]
 
 

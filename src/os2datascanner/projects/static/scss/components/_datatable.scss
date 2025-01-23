@@ -18,13 +18,13 @@
   }
 
   &.lg {
-    > .datatable {
+    >.datatable {
       min-width: 55rem;
     }
   }
 
   &.xl {
-    > .datatable {
+    >.datatable {
       min-width: 75rem;
     }
   }
@@ -44,17 +44,13 @@
   &.lg.card,
   &.xl.card {
     // use gradients to signify that the table is scrollable
-    background-image: linear-gradient(
-        to right,
+    background-image: linear-gradient(to right,
         white var(--datatable-cell-padding),
-        rgba(255, 255, 255, 0)
-      ),
+        rgba(255, 255, 255, 0)),
       linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
-      linear-gradient(
-        to left,
+      linear-gradient(to left,
         white var(--datatable-cell-padding),
-        rgba(255, 255, 255, 0)
-      ),
+        rgba(255, 255, 255, 0)),
       linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
     background-repeat: no-repeat;
     background-position: left top, left top, 100% 0, 100% 0;
@@ -115,8 +111,8 @@
     }
   }
 
-  tr.open > td,
-  tr.open > th {
+  tr.open>td,
+  tr.open>th {
     background-color: rgba(0, 0, 0, 0.07);
   }
 
@@ -132,6 +128,7 @@
   }
 
   tr {
+
     &.open,
     &.statistic_row {
       > :is(th, td):first-child {
@@ -172,7 +169,7 @@
       word-wrap: break-word;
       white-space: none;
 
-      & > div {
+      &>div {
         min-width: 12rem;
       }
     }
@@ -291,7 +288,7 @@
         margin: 0.25rem 0 0 0.25rem;
       }
 
-      > * {
+      >* {
         flex: 0 1 auto;
       }
     }
@@ -346,6 +343,7 @@
 }
 
 @media (min-width: $break-sm) {
+
   col.datatable__column--matchcount,
   col.datatable__column--source {
     display: table-column;
@@ -365,9 +363,11 @@
       td {
         border-top: none;
       }
+
       td:first-of-type {
         border-top-left-radius: var(--border-radius-widget);
       }
+
       td:last-of-type {
         border-top-right-radius: var(--border-radius-widget);
       }
@@ -482,20 +482,14 @@
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     background-color: #f4f4f4;
     white-space: nowrap;
-    top: calc(
-      2rem + var(--size-logo-height) + 12rem
-    ); // for sticky purposes; header height + row height of 9rem
+    top: calc(2rem + var(--size-logo-height) + 12rem); // for sticky purposes; header height + row height of 9rem
 
     @media (min-width: $break-sm) {
-      top: calc(
-        2rem + var(--size-logo-height) + 9rem
-      ); // for sticky purposes; header height + row height of 9rem
+      top: calc(2rem + var(--size-logo-height) + 9rem); // for sticky purposes; header height + row height of 9rem
     }
 
     @media (min-width: $break-md) {
-      top: calc(
-        2rem + var(--size-logo-height) + 6rem
-      ); // for sticky purposes; header height + row height of 6rem
+      top: calc(2rem + var(--size-logo-height) + 6rem); // for sticky purposes; header height + row height of 6rem
     }
 
     @media (min-width: $break-lg) {
@@ -508,9 +502,7 @@
   th {
     background-color: #fff;
     z-index: 2;
-    top: calc(
-      2rem + var(--size-logo-height)
-    ); // for sticky purposes; header height
+    top: calc(2rem + var(--size-logo-height)); // for sticky purposes; header height
 
     &:first-child {
       border-top-left-radius: var(--border-radius-widget);
@@ -577,7 +569,7 @@
   align-items: center;
   // margin-top: .5rem;
 
-  > *:not(:last-child) {
+  >*:not(:last-child) {
     margin-right: 0.5rem;
   }
 
@@ -645,6 +637,7 @@
 }
 
 .match-context {
+
   &::before,
   &::after {
     content: "[...]";
@@ -686,9 +679,7 @@
 .table {
   &__icon {
     &--warning {
-      color: var(
-        --color-warning
-      ); // Specific styling for the warning icon in tables
+      color: var(--color-warning); // Specific styling for the warning icon in tables
     }
   }
 }
@@ -784,17 +775,13 @@ $font-size_subtitle: 0.875rem;
 
       // Visual
       background-image: // use gradients to signify that the table is scrollable
-        linear-gradient(
-          to right,
+        linear-gradient(to right,
           white var(--datatable-cell-padding),
-          rgba(255, 255, 255, 0)
-        ),
+          rgba(255, 255, 255, 0)),
         linear-gradient(to right, #22222244, rgba(255, 255, 255, 0)),
-        linear-gradient(
-          to left,
+        linear-gradient(to left,
           white var(--datatable-cell-padding),
-          rgba(255, 255, 255, 0)
-        ),
+          rgba(255, 255, 255, 0)),
         linear-gradient(to left, #22222244, rgba(255, 255, 255, 0));
       background-repeat: no-repeat;
       background-position: left top, left top, 100% 0, 100% 0;
@@ -807,6 +794,7 @@ $font-size_subtitle: 0.875rem;
   }
 
   &__row {
+
     // Styles for all th + td inside datatables
     :is(th, td) {
       white-space: normal;
@@ -815,8 +803,7 @@ $font-size_subtitle: 0.875rem;
       max-width: 100%;
 
       line-height: normal;
-      padding: var(--datatable-cell-padding)
-        calc(var(--datatable-cell-padding) / 2);
+      padding: var(--datatable-cell-padding) calc(var(--datatable-cell-padding) / 2);
       vertical-align: middle;
 
       &:first-child {
@@ -849,6 +836,7 @@ $font-size_subtitle: 0.875rem;
         max-width: 100%;
 
         .overflow-ellipsis {
+
           // Only apply truncation on larger screens (desktop size)
           @media (min-width: $break-lg) {
             overflow: hidden;
@@ -888,7 +876,8 @@ $font-size_subtitle: 0.875rem;
         margin-top: calc(#{$text-size} * 0.115);
       }
 
-      &__icon.material-symbols {
+      &__icon.material-symbols,
+      &__icon.material-symbols-outlined {
         color: var(--color-primary);
         font-size: $icon-size;
         width: $icon-size;
@@ -898,7 +887,9 @@ $font-size_subtitle: 0.875rem;
 
       &--none {
         opacity: 50%;
-        .material-symbols {
+
+        .material-symbols,
+        .material-symbols-outlined {
           color: var(--color-text-secondary);
         }
       }
@@ -921,7 +912,8 @@ $font-size_subtitle: 0.875rem;
         width: $icon-size;
         height: $icon-size;
 
-        .material-symbols#help {
+        .material-symbols#help,
+        .material-symbols-outlined#help {
           color: var(--color-primary-dark);
           opacity: 50%;
           font-size: $icon-size;
@@ -939,8 +931,10 @@ $font-size_subtitle: 0.875rem;
 
   &__row,
   &__row--expanded {
+
     &.highlighted,
-    &.highlighted + .matches-list {
+    &.highlighted+.matches-list {
+
       /* Shared styles for table cells */
       > :is(td, th) {
         background-color: var(--color-primary-lightest);
@@ -970,7 +964,8 @@ $font-size_subtitle: 0.875rem;
   }
 
   .column {
-    width: auto; /* Sets all column widths to auto unless otherwise specified. */
+    width: auto;
+    /* Sets all column widths to auto unless otherwise specified. */
 
     &--checkbox {
       /* Only use this for actual checkboxes and not checkbox-typed intput disguised as a status
@@ -1003,6 +998,7 @@ $font-size_subtitle: 0.875rem;
       }
 
       @media (min-width: $break-lg) {
+
         /* Add right padding to the last numeral column in a sequence UNLESS it is the last column in the row */
         &:has(+ :not(.column--numeral)):not(:last-child) {
           /* If the next sibling is not a column--numeral, then the last numeral column needs a right padding to optimize visual navigation */
@@ -1027,6 +1023,7 @@ $font-size_subtitle: 0.875rem;
     }
 
     &--attribute {
+
       /* We have these types of icon/status/label based columns often enough to justify making
       them their own sub-class, but I must admit I don't know what to name them. 
       Is `.column--attribute` descriptive enough? I'm specifically looking for something as neat
@@ -1206,7 +1203,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &__icon {
-      &.material-symbols {
+
+      &.material-symbols,
+      &.material-symbols-outlined {
         $pill-icon-size: 1.25rem; // 20px
         font-size: $pill-icon-size;
         width: $pill-icon-size;
@@ -1244,19 +1243,15 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
   .column {
     &--name {
-      width: clamp(
-        calc(#{$min-width_25}),
+      width: clamp(calc(#{$min-width_25}),
         calc(#{$width_25}),
-        calc(#{$width_25})
-      );
+        calc(#{$width_25}));
     }
 
     &--info {
-      width: clamp(
-        calc(#{$min-width_25}),
+      width: clamp(calc(#{$min-width_25}),
         calc(#{$width_25}),
-        calc(#{$width_25})
-      );
+        calc(#{$width_25}));
 
       .info {
         // Local SCSS vars
@@ -1269,7 +1264,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           line-height: $text-size;
         }
 
-        .material-symbols {
+        .material-symbols,
+        .material-symbols-outlined {
           color: var(--color-primary);
           font-size: $icon-size;
           width: $icon-size;
@@ -1280,11 +1276,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--import {
-      width: clamp(
-        calc(#{$min-width_50}),
+      width: clamp(calc(#{$min-width_50}),
         calc(#{$width_50}),
-        calc(#{$width_50})
-      );
+        calc(#{$width_50}));
     }
 
     &--actions {
@@ -1292,6 +1286,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       width: $fixed-column_width;
 
       #sso-button {
+
         /* A "diy" icon made with existing icons from the Material Symbols library*/
         #sso-icon-container {
           $standard-icon-size: 1.5rem; // Same as the standard icon font size
@@ -1353,19 +1348,15 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     $uniform_icon-label_gap-size: 0.25rem;
 
     &--name {
-      width: clamp(
-        calc(#{$min-width_25}),
+      width: clamp(calc(#{$min-width_25}),
         calc(#{$width_25}),
-        calc(#{$width_25})
-      );
+        calc(#{$width_25}));
     }
 
     &--affiliated-accounts {
-      width: clamp(
-        calc(#{$min-width_15}),
+      width: clamp(calc(#{$min-width_15}),
         calc(#{$width_15}),
-        calc(#{$width_15})
-      );
+        calc(#{$width_15}));
 
       .content-min {
         display: block;
@@ -1417,11 +1408,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     &--managers,
     &--dpos {
-      width: clamp(
-        calc(#{$min-width_30}),
+      width: clamp(calc(#{$min-width_30}),
         calc(#{$width_30}),
-        calc(#{$width_30})
-      );
+        calc(#{$width_30}));
     }
   }
 }
@@ -1473,11 +1462,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
   .column {
     &--name {
-      width: clamp(
-        calc(#{$min-width_35}),
+      width: clamp(calc(#{$min-width_35}),
         calc(#{$width_35}),
-        calc(#{$width_35})
-      );
+        calc(#{$width_35}));
 
       .name {
         &__container {
@@ -1506,18 +1493,14 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--validation {
-      width: clamp(
-        calc(#{$min-width_25}),
+      width: clamp(calc(#{$min-width_25}),
         calc(#{$width_25}),
-        calc(#{$width_25})
-      );
+        calc(#{$width_25}));
 
       .status {
         &--valid {
-          @include pill-variant(
-            var(--color-status-good),
-            var(--color-checkmark)
-          );
+          @include pill-variant(var(--color-status-good),
+            var(--color-checkmark));
         }
 
         &--invalid {
@@ -1527,11 +1510,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--automatic {
-      width: clamp(
-        calc(#{$min-width_40}),
+      width: clamp(calc(#{$min-width_40}),
         calc(#{$width_40}),
-        calc(#{$width_40})
-      );
+        calc(#{$width_40}));
 
       .status {
         display: flex;
@@ -1539,7 +1520,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         gap: $uniform_icon-label_gap-size;
 
         &__icon {
-          &.material-symbols {
+
+          &.material-symbols,
+          &.material-symbols-outlined {
             font-variation-settings: "wght" 300;
             color: var(--color-text-secondary);
           }
@@ -1565,14 +1548,17 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         flex-wrap: nowrap;
 
         .button {
-          .material-symbols {
+
+          .material-symbols,
+          .material-symbols-outlined {
             color: var(--color-primary-dark);
           }
 
           &:hover {
             background-color: var(--color-primary-dark) !important;
 
-            .material-symbols {
+            .material-symbols,
+            .material-symbols-outlined {
               font-variation-settings: "wght" 500, "GRAD" -25 !important;
               color: var(--color-text-white);
             }
@@ -1606,21 +1592,18 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     .column {
       &--name {
-        width: clamp(
-          calc(#{$min-width_25}),
+        width: clamp(calc(#{$min-width_25}),
           calc(#{$width_25}),
-          calc(#{$width_25})
-        );
+          calc(#{$width_25}));
       }
 
       &--url {
-        width: clamp(
-          calc(#{$min-width_25}),
+        width: clamp(calc(#{$min-width_25}),
           calc(#{$width_25}),
-          calc(#{$width_25})
-        );
+          calc(#{$width_25}));
 
         .tooltip {
+
           // This could be remade as an mixin and made available for all datatables
           .overflow-ellipsis {
             word-break: break-all;
@@ -1637,19 +1620,15 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
 
       &--validation {
-        width: clamp(
-          calc(#{$min-width_20}),
+        width: clamp(calc(#{$min-width_20}),
           calc(#{$width_20}),
-          calc(#{$width_20})
-        );
+          calc(#{$width_20}));
       }
 
       &--automatic {
-        width: clamp(
-          calc(#{$min-width_30}),
+        width: clamp(calc(#{$min-width_30}),
           calc(#{$width_30}),
-          calc(#{$width_30})
-        );
+          calc(#{$width_30}));
       }
 
       // The width for "--actions" is not overwritten.
@@ -1680,28 +1659,22 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     .column {
       &--name {
-        width: clamp(
-          calc(#{$min-width_25}),
+        width: clamp(calc(#{$min-width_25}),
           calc(#{$width_25}),
-          calc(#{$width_25})
-        );
+          calc(#{$width_25}));
       }
 
       &--drive,
       &--validation {
-        width: clamp(
-          calc(#{$min-width_20}),
+        width: clamp(calc(#{$min-width_20}),
           calc(#{$width_20}),
-          calc(#{$width_20})
-        );
+          calc(#{$width_20}));
       }
 
       &--automatic {
-        width: clamp(
-          calc(#{$min-width_35}),
+        width: clamp(calc(#{$min-width_35}),
           calc(#{$width_35}),
-          calc(#{$width_35})
-        );
+          calc(#{$width_35}));
       }
 
       // The width for "--actions" is not overwritten.
@@ -1784,10 +1757,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       width: 13rem; // 208px, roughly fits the width of the widest status label.
 
       .status {
-        @include pill-variant(
-          var(--color-primary-lightest),
-          var(--color-primary-dark)
-        );
+        @include pill-variant(var(--color-primary-lightest),
+          var(--color-primary-dark));
 
         /* We should consider colour coding the status chips. For now I'm not sure how to do it
         in a non-judgemental way. */
@@ -1851,9 +1822,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     /* NOTE: Not sure if this should live here permanently. It's behaviour/styles we might wanna
     reuse in other datatables. */
 
-    > td {
-      padding: calc(var(--datatable-cell-padding) / 2)
-        var(--datatable-cell-padding);
+    >td {
+      padding: calc(var(--datatable-cell-padding) / 2) var(--datatable-cell-padding);
     }
 
     // Adding appropriate styling to the expanded row only.
@@ -1946,6 +1916,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   }
 
   .datatablex__row {
+
     // Adding appropriate styling to the expanded row only.
     &.user-overview {
       box-shadow: inset 4px 0 0 var(--color-primary);

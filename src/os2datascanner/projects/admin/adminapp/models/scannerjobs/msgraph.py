@@ -113,6 +113,9 @@ class MSGraphMailScanner(MSGraphScanner):
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
 
+    class Meta(MSGraphScanner.Meta):
+        verbose_name = _("MSGraph mailscanner")
+
 
 class MSGraphFileScanner(MSGraphScanner):
     scan_site_drives = models.BooleanField(
@@ -154,6 +157,9 @@ class MSGraphFileScanner(MSGraphScanner):
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")
 
+    class Meta(MSGraphScanner.Meta):
+        verbose_name = _("MSGraph filescanner")
+
 
 class MSGraphCalendarScanner(MSGraphScanner):
     """Model for MSGraphCalendarSource."""
@@ -179,6 +185,9 @@ class MSGraphCalendarScanner(MSGraphScanner):
     object_name = pgettext_lazy("unit of scan", "appointment")
     object_name_plural = pgettext_lazy("unit of scan", "appointments")
 
+    class Meta(MSGraphScanner.Meta):
+        verbose_name = _("MSGraph calendarscanner")
+
 
 class MSGraphTeamsFileScanner(MSGraphScanner):
 
@@ -203,3 +212,6 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")
+
+    class Meta(MSGraphScanner.Meta):
+        verbose_name = _("MSGraph Teams filescanner")

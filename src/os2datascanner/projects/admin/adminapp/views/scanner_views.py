@@ -798,3 +798,53 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
         context = super().get_context_data(**kwargs)
         context["running"] = self.scanner_running
         return context
+
+
+class RemovedScannersView(PermissionRequiredMixin, ScannerList):
+    """View for listing all removed scanners."""
+    template_name = "removed_scanners.html"
+    model = Scanner
+    queryset = Scanner.objects.unfiltered().filter(hidden=True)
+    permission_required = "os2datascanner.view_hidden_scanner"
+
+    def get_queryset(self):
+        return super().get_queryset().select_subclasses()
+
+    def get_context_data(self, **kwargs):
+        # Do not inherit from ScannerList, but from ScannerList's parent class instead.
+        # This method in ScannerList tries to fetch the url to the create view for the current
+        # scanner type. However, this view does not represent a scanner type, but rather points
+        # to the base `Scanner` model. Trying to fetch the create url for `Scanner` does not work.
+        context = super(ScannerList, self).get_context_data(**kwargs)
+        return context
+
+
+class RecreateScannerView(PermissionRequiredMixin, RestrictedUpdateView):
+    permission_required = "os2datascanner.unhide_scanner"
+    model = Scanner
+
+    def get_success_url(self):
+        return reverse_lazy("removed_scanners")
+
+    def get_queryset(self):
+        return Scanner.objects.unfiltered().filter(hidden=True)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.unhide()
+
+        messages.add_message(
+                request,
+                messages.SUCCESS,
+                _("The scannerjob was recreated."),
+                extra_tags="manual_close"
+            )
+
+        return redirect(self.get_success_url())
+
+
+class DeleteRemovedScannerView(ScannerDelete):
+    """A separate view is required for this, since the regular view cannot access hidden
+    scanners."""
+    queryset = Scanner.objects.unfiltered().filter(hidden=True)
+    success_url = reverse_lazy("removed_scanners")

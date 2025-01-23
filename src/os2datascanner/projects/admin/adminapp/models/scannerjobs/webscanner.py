@@ -190,3 +190,6 @@ class WebScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "web page")
     object_name_plural = pgettext_lazy("unit of scan", "web pages")
+
+    class Meta:
+        verbose_name = _("Webscanner")

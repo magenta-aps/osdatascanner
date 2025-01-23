@@ -21,6 +21,7 @@ import structlog
 from django.db import models
 from django.conf import settings
 from django.utils.translation import pgettext_lazy
+from django.utils.translation import gettext_lazy as _
 
 from exchangelib.errors import ErrorNonExistentMailbox
 from os2datascanner.engine2.model.ews import EWSAccountSource
@@ -166,3 +167,6 @@ class ExchangeScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
+
+    class Meta:
+        verbose_name = _("Exchangescanner")

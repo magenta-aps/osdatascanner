@@ -16,6 +16,9 @@
   - The send_notifications management command respects the retention policy if called without the
     `--all-results`-argument.
 
+- Users can now access removed scanners in the "removed scanners"-tab in the admin module under the
+  "scannerjob"-tab. From here, scanners can be recreated or deleted permanently.
+
 ### General improvements
 
 - Python's normal logical operators can now be used to compose scanner rules

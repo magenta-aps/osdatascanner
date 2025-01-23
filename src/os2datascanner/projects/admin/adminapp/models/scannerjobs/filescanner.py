@@ -86,3 +86,6 @@ class FileScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")
+
+    class Meta:
+        verbose_name = _("Filescanner")
