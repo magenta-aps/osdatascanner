@@ -2,6 +2,11 @@
 
 ## Next Release
 
+### New in this release
+
+- Each scanner now has a list of associated users as contacts, who will be notified when a scan
+  finishes or needs revalidation.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner

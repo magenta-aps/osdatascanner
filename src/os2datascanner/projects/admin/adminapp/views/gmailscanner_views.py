@@ -45,7 +45,7 @@ class GmailScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
     ]
 
     def get_success_url(self):
@@ -69,7 +69,7 @@ class GmailScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
     ]
 
     def get_success_url(self):
@@ -113,7 +113,7 @@ class GmailScannerCopy(ScannerCopy):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
     ]
 
     def get_initial(self):

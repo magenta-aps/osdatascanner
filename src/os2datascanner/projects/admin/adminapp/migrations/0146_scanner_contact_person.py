@@ -3,27 +3,31 @@
 from django.conf import settings
 from django.db import migrations, models
 from django.db.models import Q
-import django.db.models.deletion
 
 
-def connect_contact_person_to_all_scanners(apps, schema_editor):
+def connect_contacts_to_all_scanners(apps, schema_editor):
     User = apps.get_model("auth", "User")
     Scanner = apps.get_model("os2datascanner", "Scanner")
     Organization = apps.get_model("organizations", "Organization")
 
-    def determine_contact_person(scanner):
+    def determine_contact(scanner):
 
         relevant_users = User.objects.filter(
                 Q(administrator_for__client=scanner.organization.client) |
                 Q(groups__permissions__codename="view_client") |
-                Q(user_permissions__codename="view_client")
+                Q(user_permissions__codename="view_client") |
+                Q(is_superuser=True)
             ).distinct()
 
         # Try to send the email to the same email as usual
-        org_email = scanner.organization.contact_email    
-        users_with_that_email = relevant_users.filter(email=org_email)
-        if users_with_that_email.exists():
-            return users_with_that_email.first()
+        org_email = scanner.organization.contact_email
+        if org_email:
+            users_with_that_email = relevant_users.filter(email=org_email)
+            if users_with_that_email.exists():
+                print(f"Found users with the email {org_email}")
+                return users_with_that_email.first()
+        else:
+            print("Organization has no email!")
 
         # Okay, no users with that email exists. We will choose another.
         # We want to do slightly different things if there are more than one organization
@@ -31,17 +35,17 @@ def connect_contact_person_to_all_scanners(apps, schema_editor):
         if org_num == 1:
             # If there is only one organization, we are _not_ on SaaS. We will grab the first
             # user with access to all clients.
-            superadmin = relevant_users.filter(groups__name="superadmins").first()
+            superadmin = relevant_users.filter(Q(groups__permissions__codename="view_client") |
+                                               Q(user_permissions__codename="view_client") |
+                                               Q(is_superuser=True)).first()
             if superadmin:
+                print(f"Found a superadmin: {superadmin}")
                 return superadmin
 
             # Oops, no superadmin here. Ok, I guess we will use any admin
             if relevant_users.exists():
+                print(f"Found another admin: {relevant_users.first()}")
                 return relevant_users.first()
-
-            else:
-                # What? There are no users? Uh ... I guess we create one?
-                return User.objects.create(username=org_email, email=org_email)
 
         else:
             # Ok, we are most likely on SaaS. We don't want to use the superadmins group here.
@@ -50,33 +54,22 @@ def connect_contact_person_to_all_scanners(apps, schema_editor):
             if admins.exists():
                 return admins.first()
 
-            else:
-                # What? There are no users? Uh ... I guess we create one?
-                return User.objects.create(username=org_email, email=org_email)
-
     for scanner in Scanner.objects.iterator():
-        scanner.contact_person = determine_contact_person(scanner)
-        scanner.save()
+        scanner.contacts.add(determine_contact(scanner))
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('os2datascanner', '0143_add_scanner_verbose_names'),
+        ('os2datascanner', '0145_add_mimetypeprocessstat'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='scanner',
-            name='contact_person',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='scannerjobs', to='auth.user', verbose_name='contact person'),
-            preserve_default=False,
+            name='contacts',
+            field=models.ManyToManyField(related_name='contact_for', to=settings.AUTH_USER_MODEL, verbose_name='contacts', blank=True, help_text='The users who should be notified on completed scans.'),
         ),
-        migrations.RunPython(connect_contact_person_to_all_scanners, reverse_code=migrations.RunPython.noop),
-        migrations.AlterField(
-            model_name='scanner',
-            name='contact_person',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='scannerjobs', to='auth.user', verbose_name='contact person'),
-        ),
+        migrations.RunPython(connect_contacts_to_all_scanners, reverse_code=migrations.RunPython.noop),
     ]

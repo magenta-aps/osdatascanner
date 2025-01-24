@@ -460,15 +460,6 @@ class ScannerBase(object):
 
         form.fields['organization'].initial = selected_org
 
-        form.fields['contact_person'].queryset = get_user_model().objects.filter(
-            Q(administrator_for__client=selected_org.client) |
-            Q(groups__permissions__codename="view_client") |
-            Q(user_permissions__codename="view_client") |
-            Q(is_superuser=True)
-        ).distinct()
-
-        form.fields['contact_person'].empty_label = None
-
         allowed_rules = CustomRule.objects.filter(
             Q(organization__in=org_qs) | Q(organization__isnull=True, organizations=selected_org))
 
@@ -554,12 +545,22 @@ class ScannerBase(object):
         context = super().get_context_data(**kwargs)
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+
+        selected_org = self.request.GET.get('organization') or orgs.first()
+
         if self.object:
             context["remediators"] = self.object.get_remediators()
         context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
             Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
         context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
             aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
+
+        context["possible_contacts"] = get_user_model().objects.filter(
+            Q(administrator_for__client=selected_org.client) |
+            Q(groups__permissions__codename="view_client") |
+            Q(user_permissions__codename="view_client") |
+            Q(is_superuser=True)
+        ).distinct()
 
         context["supports_rule_preexec"] = getattr(
                 self.model, "supports_rule_preexec", False)

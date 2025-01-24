@@ -13,8 +13,7 @@ def scanner_daily(basic_rule, user_admin):
         name="daily scanner",
         schedule="RRULE:FREQ=DAILY;",
         rule=basic_rule,
-        validation_status=True,
-        contact_person=user_admin)
+        validation_status=True)
 
 
 @pytest.mark.django_db

@@ -108,13 +108,12 @@ class Scanner(models.Model):
         null=True,
     )
 
-    contact_person = models.ForeignKey(
+    contacts = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name='scannerjobs',
-        verbose_name=_('contact person'),
-        blank=False,
-        null=False
+        related_name='contact_for',
+        verbose_name=_('contacts'),
+        blank=True,
+        help_text=_("The users who should be notified on completed scans.")
     )
 
     org_unit = TreeManyToManyField(

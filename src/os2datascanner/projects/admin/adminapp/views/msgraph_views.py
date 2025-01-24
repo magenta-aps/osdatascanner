@@ -79,7 +79,7 @@ class _MSGraphMailScannerCreate(ScannerCreate):
         'scan_attachments',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
      ]
 
     def get_form(self, form_class=None):
@@ -110,7 +110,7 @@ class MSGraphMailScannerUpdate(ScannerUpdate):
         'scan_attachments',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
      ]
 
     def get_form(self, form_class=None):
@@ -152,7 +152,7 @@ class MSGraphMailScannerCopy(ScannerCopy):
         'scan_attachments',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
      ]
 
 
@@ -204,7 +204,7 @@ class _MSGraphFileScannerCreate(ScannerCreate):
               'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -223,7 +223,7 @@ class MSGraphFileScannerUpdate(ScannerUpdate):
               'scan_site_drives', 'scan_user_drives',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -253,7 +253,7 @@ class MSGraphFileScannerCopy(ScannerCopy):
               'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
 
 class MSGraphFileScannerAskRun(ScannerAskRun):
@@ -303,7 +303,7 @@ class _MSGraphCalendarScannerCreate(ScannerCreate):
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -321,7 +321,7 @@ class MSGraphCalendarScannerUpdate(ScannerUpdate):
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -351,7 +351,7 @@ class MSGraphCalendarScannerCopy(ScannerCopy):
     fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
 
 class MSGraphCalendarScannerAskRun(ScannerAskRun):
@@ -421,7 +421,7 @@ class MSGraphTeamsFileScannerUpdate(ScannerUpdate):
     fields = ['name', 'schedule', 'grant',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
-              'contact_person']
+              'contacts']
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -450,7 +450,7 @@ class MSGraphTeamsFileScannerCopy(ScannerCopy):
     fields = ['name', 'schedule', 'grant',
               'exclusion_rule', 'only_notify_superadmin',
               'do_ocr', 'do_last_modified_check', 'rule',
-              'organization', 'keep_false_positives', 'contact_person']
+              'organization', 'keep_false_positives', 'contacts']
 
 
 class MSGraphTeamsFileScannerAskRun(ScannerAskRun):

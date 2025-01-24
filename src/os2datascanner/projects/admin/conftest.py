@@ -106,46 +106,42 @@ def org_rule(test_org):
 
 
 @pytest.fixture
-def basic_scanner(test_org, basic_rule, user_admin):
+def basic_scanner(test_org, basic_rule):
     return Scanner.objects.create(
             name=f"SomeScanner-{test_org.name}",
             organization=test_org,
-            rule=basic_rule,
-            contact_person=user_admin
+            rule=basic_rule
         )
 
 
 @pytest.fixture
-def hidden_scanner(test_org, basic_rule, user_admin):
+def hidden_scanner(test_org, basic_rule):
     return Scanner.objects.create(
             name=f"HiddenScanner-{test_org.name}",
             organization=test_org,
             rule=basic_rule,
-            hidden=True,
-            contact_person=user_admin
+            hidden=True
         )
 
 
 @pytest.fixture
-def web_scanner(test_org, basic_rule, user_admin):
+def web_scanner(test_org, basic_rule):
     return WebScanner.objects.create(
         name=f"SomeWebScanner-{test_org.name}",
         organization=test_org,
         url="http://www.example.com/",
-        rule=basic_rule,
-        contact_person=user_admin
+        rule=basic_rule
     )
 
 
 @pytest.fixture
-def invalid_web_scanner(test_org, basic_rule, user_admin):
+def invalid_web_scanner(test_org, basic_rule):
     return WebScanner.objects.create(
         name=f"InvalidWebScanner-{test_org.name}",
         organization=test_org,
         url="http://www.example.com/",
         validation_status=Scanner.INVALID,
-        rule=basic_rule,
-        contact_person=user_admin
+        rule=basic_rule
     )
 
 
@@ -163,20 +159,19 @@ def dummy_userlist():
 
 
 @pytest.fixture
-def exchange_scanner(test_org, exchange_auth, basic_rule, user_admin):
+def exchange_scanner(test_org, exchange_auth, basic_rule):
     return ExchangeScanner.objects.create(
         name=f"SomeExchangeScanner-{test_org.name}",
         organization=test_org,
         validation_status=ExchangeScanner.VALID,
         service_endpoint="exchangeendpoint",
         authentication=exchange_auth,
-        rule=basic_rule,
-        contact_person=user_admin
+        rule=basic_rule
     )
 
 
 @pytest.fixture
-def exchange_scanner_with_userlist(test_org, dummy_userlist, exchange_auth, basic_rule, user_admin):
+def exchange_scanner_with_userlist(test_org, dummy_userlist, exchange_auth, basic_rule):
     return ExchangeScanner.objects.create(
         name=f"SomeExchangeScanner-{test_org.name}",
         organization=test_org,
@@ -184,8 +179,7 @@ def exchange_scanner_with_userlist(test_org, dummy_userlist, exchange_auth, basi
         userlist=dummy_userlist,
         service_endpoint="exchangeendpoint",
         authentication=exchange_auth,
-        rule=basic_rule,
-        contact_person=user_admin
+        rule=basic_rule
     )
 
 
@@ -200,14 +194,13 @@ def msgraph_grant(test_org):
 
 
 @pytest.fixture
-def msgraph_mailscanner(test_org, msgraph_grant, basic_rule, user_admin):
+def msgraph_mailscanner(test_org, msgraph_grant, basic_rule):
     return MSGraphMailScanner.objects.create(
         name=f"SomeMSGraphMailScanner-{test_org.name}",
         organization=test_org,
         validation_status=MSGraphMailScanner.VALID,
         grant=msgraph_grant,
-        rule=basic_rule,
-        contact_person=user_admin
+        rule=basic_rule
     )
 
 
@@ -687,23 +680,21 @@ def egon(test_org2):
 
 # Other scanner and ScanStatus fixtures with basic rule
 @pytest.fixture
-def basic_scanner2(test_org2, basic_rule, other_admin):
+def basic_scanner2(test_org2, basic_rule):
     return Scanner.objects.create(
             name=f"SomeScanner-{test_org2.name}",
             organization=test_org2,
-            rule=basic_rule,
-            contact_person=other_admin
+            rule=basic_rule
         )
 
 
 @pytest.fixture
-def web_scanner2(test_org2, basic_rule, other_admin):
+def web_scanner2(test_org2, basic_rule):
     return WebScanner.objects.create(
         name=f"SomeWebScanner-{test_org2.name}",
         organization=test_org2,
         url="http://www.example.com/",
-        rule=basic_rule,
-        contact_person=other_admin
+        rule=basic_rule
     )
 
 

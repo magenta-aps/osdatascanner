@@ -1,7 +1,6 @@
 import pytest
 
 from django.db.utils import IntegrityError
-from django.contrib.auth import get_user_model
 
 from ..models import Account
 

@@ -51,7 +51,7 @@ class FileScannerCreate(ScannerCreate):
         'unc_is_home_root',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
         ]
 
     def get_form(self, form_class=None):
@@ -86,7 +86,7 @@ class FileScannerUpdate(ScannerUpdate):
         'unc_is_home_root',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
         ]
 
     def get_form(self, form_class=None):
@@ -153,7 +153,7 @@ class FileScannerCopy(ScannerCopy):
         'unc_is_home_root',
         'rule',
         'organization',
-        'contact_person'
+        'contacts'
         ]
 
     def get_form(self, form_class=None):

@@ -40,6 +40,7 @@
         }
       });
       $('.remediator_select2').select2();
+      $('.contacts_select2').select2();
     })
   })(jQuery);
 
@@ -745,9 +746,20 @@
 
         <section class="data-form">
           <fieldset class="form__fieldset">
-            {% if form.contact_person %}
-              {% include "components/scanner/scanner_form_select_option_field.html" with field=form.contact_person required="True" %}
-            {% endif %}
+            <h3>{% trans "Contacts" %}</h3>
+            <div id="contacts_container" class="dropdown-group form__group">
+              <label for="contacts">{% trans "Contacts" %}</label>
+              <div class="dropdown">
+                <select multiple name="contacts" id="contacts" class="contacts_select2">
+                  {% for user in possible_contacts %}
+                    <option value="{{ user.pk }}"
+                            {% if user in object.contacts.all %}selected{% endif %}>{{ user }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if form.contacts.help_text %}<span class="form__help-text">{{ form.contacts.help_text }}</span>{% endif %}
+            </div>
+
           </fieldset>
         </section>
 

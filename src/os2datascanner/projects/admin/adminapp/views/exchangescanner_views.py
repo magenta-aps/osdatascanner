@@ -86,7 +86,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contact_person']
+              'contacts']
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("grant")
     type = 'exchange'
@@ -118,7 +118,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contact_person']
+              'contacts']
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("grant")
     type = 'exchange'
@@ -153,7 +153,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contact_person']
+              'contacts']
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("grant")
     type = 'exchange'

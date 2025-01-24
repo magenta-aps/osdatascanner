@@ -42,7 +42,7 @@ class TestScanner:
         assert response.context["ok"] is False
         assert response.context["error_message"] == Scanner.NOT_VALIDATED
 
-    def test_validate_domain(self, test_org, basic_rule, user_admin):
+    def test_validate_domain(self, test_org, basic_rule):
         """Test validating domains."""
         # Make sure example.com does not validate in any of the possible
         # methods
@@ -53,21 +53,19 @@ class TestScanner:
                 url="http://www.example.com/",
                 validation_method=validation_method,
                 organization=test_org,
-                pk=2, rule=basic_rule,
-                contact_person=user_admin
+                pk=2, rule=basic_rule
             )
             webscanner.save()
             assert validate_domain(webscanner) is False
 
-    def test_engine2_filescanner(self, test_org, basic_rule, user_admin):
+    def test_engine2_filescanner(self, test_org, basic_rule):
         authentication = Authentication(username="jens")
         authentication.set_password("rigtig heste batteri haefteklamme")
         scanner = FileScanner(
                 unc="//ORG/SIKKERSRV",
                 organization=test_org,
                 authentication=authentication,
-                alias="K", rule=basic_rule,
-                contact_person=user_admin)
+                alias="K", rule=basic_rule)
 
         source_generator = scanner.generate_sources()
         engine2_source = next(source_generator)

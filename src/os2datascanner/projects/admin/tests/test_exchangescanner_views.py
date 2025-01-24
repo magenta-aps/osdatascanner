@@ -241,8 +241,7 @@ class TestExchangeScannerViews:
             'username': 'dummy',
             'password': 'super_secret',
             'userlist': userlist,
-            'rule': basic_rule.pk,
-            'contact_person': user_admin.pk
+            'rule': basic_rule.pk
         })
 
         context = response.context
@@ -296,8 +295,7 @@ class TestExchangeScannerViews:
             'username': 'dummy',
             'password': 'super_secret',
             'org_unit': nisserne.uuid,
-            'rule': basic_rule.pk,
-            'contact_person': user_admin.pk
+            'rule': basic_rule.pk
         })
 
         context = response.context
