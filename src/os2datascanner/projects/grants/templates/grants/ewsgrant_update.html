@@ -1,0 +1,25 @@
+{% extends "grants/grant_update.html" %}
+{% load i18n %}
+
+{% block submit_btn %}
+  <button type="submit"
+          class="button button--cta-button"
+          aria-label="{% trans 'save EWSGrant'|capfirst %}"
+          title="{% trans 'save EWSGrant'|capfirst %}"
+          name="save">{% trans "save EWSGrant"|capfirst %}</button>
+{% endblock submit_btn %}
+
+{% block help_section %}
+  <div>
+    <h1>{% trans "What is an EWSGrant?" %}</h1>
+    <span>
+      {% blocktranslate %}
+            An EWSGrant represents a service account with impersonation access to a
+            traditional on-premises Microsoft Exchange instance.
+
+            Note that EWSGrants can no longer be used to authenticate against Office
+            365, but an appropriately configured GraphGrant can.
+      {% endblocktranslate %}
+    </span>
+  </div>
+{% endblock help_section %}

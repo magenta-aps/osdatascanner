@@ -5,11 +5,11 @@
   {% include "components/common/header.html" %}
 
   <div class="wrapper">
-    {% include "components/common/main.html" with active_tab="organizations" %}
+    {% include "components/common/main.html" with active_tab="grant-list" %}
     {% include "components/feedback/snackbarNew.html" %}
 
     <div class="content">
-      <form class="form" id="graphgrant-form" method="post">
+      <form class="form" id="grant-form" method="post">
         {% csrf_token %}
         <div class="data-form">
           <div class="form__row">
@@ -25,49 +25,28 @@
                   {% endif %}
                 </div>
 
-                {% if field.name == "expiry_date" %}
-                  <div class="field-with-button__container">
-                    {{ field }}
-                    <button type="button"
-                            class="button button--text-button"
-                            name="fetch-expiry-date"
-                            hx-post="{% url 'msgraphgrant-update' pk=graphgrant.pk %}"
-                            hx-trigger="click"
-                            hx-target="#id_expiry_date"
-                            hx-select="#id_expiry_date"
-                            hx-swap="outerHTML"
-                            hx-indicator="div.spinner">{% trans "fetch expiry date"|capfirst %}</button>
-                  </div>
+                {% block form_extras %}
+ 
+                {% endblock form_extras %}
 
-                {% else %}
-                  {{ field }}
-                {% endif %}
+                {% comment %} This is a little dirty special case handling. {% endcomment %}
+                {% if not field.name == "expiry_date" %}{{ field }}{% endif %}
 
                 {% if field.errors %}{{ field.errors }}{% endif %}
               {% endfor %}
             </div>
           </div>
         </div>
-
-        <button type="submit"
-                class="button button--cta-button"
-                aria-label="{% trans 'save GraphGrant'|capfirst %}"
-                title="{% trans 'save GraphGrant'|capfirst %}"
-                name="save">{% trans "save GraphGrant"|capfirst %}</button>
-
+        {% block submit_btn %}
+ 
+        {% endblock submit_btn %}
       </form>
 
-      <div>
-        <h1>{% trans "How do I get a new client secret?" %}</h1>
-        <span>
-          {% blocktranslate %}
-                You'll have to navigate to your Azure Portal and find the application created for OSdatascanner.
-                It's likely you've followed instructions from our documentation, in that case,
-                once you've found your created application, you can follow step 7 and 8
-          {% endblocktranslate %}
-        </span>
-        <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "here" %}</a>
-      </div>
+      {% block help_section %}
+ 
+      {% endblock help_section %}
+
+
     </div>
   </div>
 

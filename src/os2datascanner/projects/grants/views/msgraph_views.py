@@ -138,8 +138,8 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
 class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
-    template_name = "grants/grant_update.html"
-    success_url = reverse_lazy('organization-list')
+    template_name = "grants/graphgrant_update.html"
+    success_url = reverse_lazy('grant-list')
 
     def get(self, request, *args, **kwargs):
         self.end_date = kwargs.get("end_date")

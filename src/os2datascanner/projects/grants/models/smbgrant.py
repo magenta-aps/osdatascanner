@@ -18,7 +18,16 @@ class SMBGrant(UsernamePasswordGrant):
         return (f"{self.domain}\\{self.username}"
                 if self.domain else self.username)
 
+    @property
+    def display_name_identifier(self):
+        return self.__str__()
+
+    @property
+    def verbose_name(self):
+        return self._meta.verbose_name
+
     class Meta:
+        verbose_name = "SMB Service Account Grant"
         constraints = [
             models.UniqueConstraint(
                     fields=["organization", "domain", "username"],

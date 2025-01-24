@@ -43,6 +43,14 @@
           <span class="width">{% trans "Rules" %}</span>
         </a>
       </li>
+      {#   TODO: Icon messes alignment and looks funny  #}
+      <li>
+        <a href="{% url "grant-list" %}"
+           class="{% if active_tab == 'grant-list' %}active{% endif %}">
+          <i class="material-icons">volunteer_activism</i>
+          <span class="width">{% trans "Grants" %}</span>
+        </a>
+      </li>
       <li>
         <a href="{% url "organization-list" %}"
            class="{% if active_tab == 'organizations' %}active{% endif %}">

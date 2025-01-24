@@ -1,0 +1,88 @@
+{% extends 'components/common/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+
+{% block title %}
+  {% trans "grants"|capfirst %}
+{% endblock %}
+
+{% block body %}
+  {% include "components/common/header.html" %}
+  <main class="wrapper">
+    {% include "components/common/main.html" with active_tab="grant-list" %}
+
+    <svg class="page-indicator"
+         id="organization-page-indicator"
+         viewbox="0 0 100 100">
+      <circle id="circle" cx="50" cy="50" r="45"></circle>
+    </svg>
+
+    <ul>
+      <div class="content">
+        {% for organization in organizations %}
+          <div class="content-header">
+            <div class="aside">
+              <h1 class="page-title">{% trans 'grants for'|capfirst %} {{ organization.name }}</h1>
+            </div>
+          </div>
+
+
+          <div class="datatable-wrapper card lg">
+            <div class="datatablex__wrapper">
+              <table class="datatable middle">
+                <thead>
+                  <tr>
+                    <th class="column column--name">{% trans "name"|capfirst %}</th>
+                    <th class="column column--type">{% trans "type"|capfirst %}</th>
+                    <th class="column column--extrainfo">{% trans "extra information"|capfirst %}</th>
+                    {% if request.user.is_superuser %}
+                      <th class="column column--actions">{% trans "Actions" %}</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for grant in organization.grants %}
+                    <tr class="datatablex__row">
+                      <td class="column column--name">
+                        <a href="{% url 'edit-grant' pk=grant.pk type=grant.class_name %}">{{ grant }}</a>
+                      </td>
+
+                      <td class="column">
+                        <div>
+                          <div>
+                            <span>{{ grant.verbose_name }}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td class="column">
+                        <div>
+                          <div>
+                            <span>{{ grant.extra_information }}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td class="column column--actions">
+                        <div class="action-wrapper button-group"></div>
+                      </td>
+                    </tr>
+
+                  {% empty %}
+                    <tr>
+                      <td class="column nothing_found_row" colspan="4">{% trans "no grants found"|capfirst %}</td>
+                    </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </ul>
+
+  </main>
+{% endblock %}

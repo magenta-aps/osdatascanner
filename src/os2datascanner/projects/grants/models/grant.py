@@ -23,6 +23,27 @@ class Grant(models.Model):
         authenticate against the external API."""
         raise NotImplementedError("Grant.validate")
 
+    @property
+    def class_name(self):
+        """ Returns class name"""
+        return self.__class__.__name__
+
+    @property
+    def verbose_name(self):
+        """Returns the verbose name of the Grant."""
+        return NotImplementedError("Grant.verbose_name")
+
+    @property
+    def display_name_identifier(self):
+        """Returns some kind of name identifier for Grant."""
+        return NotImplementedError("Grant.display_name_identifier")
+
+    @property
+    def extra_information(self):
+        """ Returns extra information about the Grant for display.
+            F.e. expiry date or other useful information."""
+        return ""
+
     class Meta:
         abstract = True
 

@@ -1,0 +1,41 @@
+{% extends "grants/grant_update.html" %}
+{% load i18n %}
+
+{% block form_extras %}
+  {% if field.name == "expiry_date" %}
+    <div class="field-with-button__container">
+      {{ field }}
+      <button type="button"
+              class="button button--text-button"
+              name="fetch-expiry-date"
+              hx-post="{% url 'msgraphgrant-update' pk=graphgrant.pk %}"
+              hx-trigger="click"
+              hx-target="#id_expiry_date"
+              hx-select="#id_expiry_date"
+              hx-swap="outerHTML"
+              hx-indicator="div.spinner">{% trans "fetch expiry date"|capfirst %}</button>
+    </div>
+  {% endif %}
+{% endblock form_extras %}
+
+{% block submit_btn %}
+  <button type="submit"
+          class="button button--cta-button"
+          aria-label="{% trans 'save GraphGrant'|capfirst %}"
+          title="{% trans 'save GraphGrant'|capfirst %}"
+          name="save">{% trans "save GraphGrant"|capfirst %}</button>
+{% endblock submit_btn %}
+
+{% block help_section %}
+  <div>
+    <h1>{% trans "How do I get a new client secret?" %}</h1>
+    <span>
+      {% blocktranslate %}
+                You'll have to navigate to your Azure Portal and find the application created for OSdatascanner.
+                It's likely you've followed instructions from our documentation, in that case,
+                once you've found your created application, you can follow step 7 and 8
+      {% endblocktranslate %}
+    </span>
+    <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "here" %}</a>
+  </div>
+{% endblock help_section %}

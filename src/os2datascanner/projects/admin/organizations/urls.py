@@ -31,4 +31,8 @@ urlpatterns = [
     path('<uuid:org_id>/sso/add/', views.SSOCreateView.as_view(), name='add-sso'),
     path('<uuid:org_id>/sso/edit/', views.SSOUpdateView.as_view(), name='edit-sso'),
     path('sso/error', views.SSOErrorView.as_view(), name='sso-error'),
+    path('grants/', views.GrantListView.as_view(), name='grant-list'),
+    path('grants/<str:type>/<int:pk>/edit/',
+         views.GrantRedirectUpdateView.as_view(),
+         name='edit-grant'),
 ]
