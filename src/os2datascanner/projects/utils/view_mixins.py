@@ -12,7 +12,7 @@ class CSVExportMixin:
     from the view, which normally delivers context to a template, and this
     mixin. It is important, that the new view inherits from this mixin first!"""
     paginator_class = None  # We never want to paginate results
-    # Contains a dict describing each column
+    # A list of dicts describing each column
     # - 'name': A string for identifying the column.
     #           For a FIELD column, this should be the name of the field
     # - 'label': A string for the header of the csv. Should be translated
@@ -66,10 +66,11 @@ class CSVExportMixin:
         return rows
 
     def get(self, request, *args, **kwargs):
+        self.add_conditional_colums(request)
+
         # Since we are streaming, we need to select the entire queryset, and
         # stream it from memory. We are not able to make further queries after
         # streaming has begun.
-        self.add_conditional_colums(request)
         rows = self.get_rows()
 
         response = StreamingHttpResponse(
