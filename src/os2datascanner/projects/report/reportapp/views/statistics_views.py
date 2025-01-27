@@ -670,7 +670,7 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
 
     def add_conditional_colums(self, request):
         self.columns = LeaderStatisticsCSVView.columns
-        if settings.LEADER_OVERVIEW_30_DAYS:
+        if self.org.retention_policy:
             # Don't use '.append()' to avoid shallow copies
             self.columns = self.columns + [{
                     'name': 'old',

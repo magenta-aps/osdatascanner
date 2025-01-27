@@ -249,7 +249,6 @@ class TestLeaderStatisticsPageView:
         assert "Olsen-banden" not in rows[0]['Organizational units']
         assert "Kjelds Hus" in rows[0]['Organizational units']
 
-    @override_settings(LEADER_OVERVIEW_30_DAYS=True)
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_leader_csv_old_matches_column_enabled(
             self,
@@ -257,15 +256,18 @@ class TestLeaderStatisticsPageView:
             egon_manager_position,
             olsenbanden_ou,
             olsenbanden_ou_positions,
+            olsenbanden_organization,
             rf):
-        """When LEADER_OVERVIEW_30_DAYS is true, Old matches should appear as a column."""
+        """When org.retention_policy is True, Old matches should appear as a column."""
+        olsenbanden_organization.retention_policy = True
+        olsenbanden_organization.save()
         response = self.get_leader_statistics_csv_response(
             rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
         reader = csv.DictReader(line.decode() for line in response.streaming_content)
 
-        assert "Results older than 30 days" in reader.fieldnames
+        retention_days = olsenbanden_organization.retention_days
+        assert f"Results older than {retention_days} days" in reader.fieldnames
 
-    @override_settings(LEADER_OVERVIEW_30_DAYS=False)
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_leader_csv_old_matches_column_disabled(
             self,
@@ -273,13 +275,17 @@ class TestLeaderStatisticsPageView:
             egon_manager_position,
             olsenbanden_ou,
             olsenbanden_ou_positions,
+            olsenbanden_organization,
             rf):
-        """When LEADER_OVERVIEW_30_DAYS is false, Old matches shouldn't appear as a column."""
+        """When org.retention_policy is False, Old matches should appear as a column."""
+        olsenbanden_organization.retention_policy = False
+        olsenbanden_organization.save()
         response = self.get_leader_statistics_csv_response(
             rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
         reader = csv.DictReader(line.decode() for line in response.streaming_content)
 
-        assert "Results older than 30 days" not in reader.fieldnames
+        retention_days = olsenbanden_organization.retention_days
+        assert f"Results older than {retention_days} days" not in reader.fieldnames
 
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_leader_csv_status_bad(
