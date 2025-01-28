@@ -5,7 +5,7 @@ from django.views.generic import ListView
 from django.db.models import Count
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from ..models.documentreport import DocumentReport
 from os2datascanner.projects.report.organizations.models import Alias
@@ -14,9 +14,10 @@ from os2datascanner.projects.report.organizations.models import Alias
 logger = structlog.get_logger()
 
 
-class ScannerjobListView(ListView):
+class ScannerjobListView(PermissionRequiredMixin, ListView):
     model = DocumentReport
     template_name = "scannerjobs/scannerjob_list.html"
+    permission_required = 'os2datascanner_report.delete_documentreport'
 
     def get_queryset(self):
         return DocumentReport.objects.filter(
@@ -31,26 +32,22 @@ class ScannerjobListView(ListView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            self.kwargs["org"] = request.user.account.organization
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+
+        self.kwargs["org"] = request.user.account.organization
+        return super().dispatch(request, *args, **kwargs)
 
 
-class ScannerjobDeleteView(ListView):
+class ScannerjobDeleteView(PermissionRequiredMixin, ListView):
     model = DocumentReport
+    permission_required = 'os2datascanner_report.delete_documentreport'
 
     def get_queryset(self):
         all_reports = super().get_queryset().filter(organization=self.kwargs["org"])
         return all_reports.filter(scanner_job_pk=self.kwargs["pk"]).only("pk")
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            self.kwargs["org"] = request.user.account.organization
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        self.kwargs["org"] = request.user.account.organization
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset()

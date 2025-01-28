@@ -650,11 +650,10 @@ table .overview_wrapper {
     display: grid;
     gap: 2rem;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto;
+    grid-auto-rows: minmax(auto, 250px);
   }
 
-  &--weekly,
-  &--unhandled-results {
+  &--weekly {
     grid-row: span 1;
   }
 
@@ -662,19 +661,33 @@ table .overview_wrapper {
     grid-row: span 2;
   }
 
+  &--unhandled-results {
+    grid-row: span 3;
+  }
+
   &--weekly,
-  &--unhandled-results,
-  &--graph {
+  &--graph,
+  &--unhandled-results {
     grid-column: span 12;
   }
 
   @media (min-width: 1124px) {
-    &--weekly {
-      grid-column: span 8;
+    .has-unhandled-results & {
+      &--weekly,
+      &--graph {
+        grid-column: span 8;
+      }
+
+      &--unhandled-results {
+        grid-column: span 4;
+      }
     }
 
-    &--unhandled-results {
-      grid-column: span 4;
+    &:not(.has-unhandled-results) & {
+      &--weekly,
+      &--graph {
+        grid-column: span 12;
+      }
     }
   }
   // ***** Grid Layout END *****
@@ -702,6 +715,8 @@ table .overview_wrapper {
     // Box Model
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
 
     .mini-card {
       // Box Model
@@ -855,8 +870,7 @@ table .overview_wrapper {
           }
         }
       }
-    }
-
+    }  
     .mini-table {
       // Layout
       display: flex;
