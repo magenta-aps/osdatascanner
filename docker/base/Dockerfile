@@ -288,6 +288,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc \
 WORKDIR /code/src
 COPY src/ ./
 
-COPY docker/sbsys_db/db_init.sql docker/sbsys_db/sbsys-init-entrypoint.sh /
+WORKDIR /code
+COPY docker/sbsys_db/ ./
 
-ENTRYPOINT ["/bin/bash", "/sbsys-init-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/code/sbsys-init-entrypoint.sh"]

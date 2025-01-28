@@ -1,0 +1,22 @@
+DROP DATABASE IF EXISTS [SbSysNetDriftDokument0000]
+GO
+CREATE DATABASE [SbSysNetDriftDokument0000]
+GO
+USE [SbSysNetDriftDokument0000]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [SbSysNetDriftDokument0000].dbo.DokumentData (
+    [ID] [int] IDENTITY (1, 1) NOT NULL,
+    [DokumentID] [int] NULL,
+    [DokumentDataInfoID] [int] NULL,
+    [Data] [image] NULL
+ CONSTRAINT [x] PRIMARY KEY NONCLUSTERED
+(
+    [ID]
+)WITH FILLFACTOR = 90 ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
