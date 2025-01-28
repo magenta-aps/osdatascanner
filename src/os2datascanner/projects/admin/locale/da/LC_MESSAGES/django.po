@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-21 14:47+0100\n"
+"POT-Creation-Date: 2025-01-28 09:23+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -541,7 +541,7 @@ msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py:267
-#: adminapp/views/scanner_views.py:202
+#: adminapp/views/scanner_views.py:208
 msgid "Start time"
 msgstr "Starttid"
 
@@ -704,11 +704,12 @@ msgid "Can mark error log as viewed"
 msgstr "Kan markere fejlbesked som set"
 
 #: adminapp/models/usererrorlog.py:37 adminapp/templates/error_log.html:185
-#: adminapp/views/scanner_views.py:367
+#: adminapp/views/scanner_views.py:393 adminapp/views/scanner_views.py:409
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:42 adminapp/views/scanner_views.py:369
+#: adminapp/models/usererrorlog.py:42 adminapp/views/scanner_views.py:403
+#: adminapp/views/scanner_views.py:411
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -2565,47 +2566,47 @@ msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:201
+#: adminapp/views/scanner_views.py:203
 msgid "Scanner name"
 msgstr "Scanner navn"
 
-#: adminapp/views/scanner_views.py:203
+#: adminapp/views/scanner_views.py:213
 msgid "Objects found"
 msgstr "Objekter fundet"
 
-#: adminapp/views/scanner_views.py:204
+#: adminapp/views/scanner_views.py:218
 msgid "Matches found"
 msgstr "Resultater fundet"
 
-#: adminapp/views/scanner_views.py:205
+#: adminapp/views/scanner_views.py:223
 msgid "Scanning time"
 msgstr "Scanningstid"
 
-#: adminapp/views/scanner_views.py:366
+#: adminapp/views/scanner_views.py:388 adminapp/views/scanner_views.py:408
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:368
+#: adminapp/views/scanner_views.py:398 adminapp/views/scanner_views.py:410
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:581
+#: adminapp/views/scanner_views.py:623
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:601
+#: adminapp/views/scanner_views.py:643
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:627
+#: adminapp/views/scanner_views.py:669
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:642
+#: adminapp/views/scanner_views.py:684
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 
-#: adminapp/views/scanner_views.py:839
+#: adminapp/views/scanner_views.py:881
 msgid "The scannerjob was recreated."
 msgstr "Scannerjobbet blev gendannet."
 

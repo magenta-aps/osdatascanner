@@ -629,7 +629,7 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         },
         {
             'name': 'withheld',
-            'label': _("Tilbageholdte matches"),
+            'label': _("Withheld matches"),
             'type': CSVExportMixin.ColumnType.FIELD,
         },
         {
@@ -674,7 +674,7 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
             # Don't use '.append()' to avoid shallow copies
             self.columns = self.columns + [{
                     'name': 'old',
-                    'label': _("Results older than 30 days"),
+                    'label': _("Results older than %(days)s days") % {"days": self.org.retention_days},  # noqa
                     'type': CSVExportMixin.ColumnType.FIELD,
                 }]
 
