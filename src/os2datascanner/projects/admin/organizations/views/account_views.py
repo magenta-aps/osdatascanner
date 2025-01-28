@@ -10,9 +10,9 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Concat, Greatest
 from django.db.models import CharField, Value, Max
+from django.contrib.auth.models import Permission
 
-from ..models import Account, Alias, OrganizationalUnit
-from .....core_organizational_structure.models.account import AccountPermission
+from ..models import Account, Alias, OrganizationalUnit, SyncedPermission
 from ..models.aliases import AliasType
 from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
@@ -100,8 +100,15 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
         context["scanners"] = list(Scanner.objects.filter(organization=self.kwargs['org'])
                                    .exclude(pk__in=existing_pks)
                                    .values('name', 'pk'))
-        context["permissions"] = [key._value_ for key in AccountPermission
-                                  if key._value_ not in self.object.permissions]
+        context["permissions"] = Permission.objects.filter(
+                content_type__app_label=SyncedPermission._meta.app_label,
+                content_type__model=SyncedPermission._meta.model_name
+            ).exclude(codename__in=[
+                "add_syncedpermission",
+                "delete_syncedpermission",
+                "change_syncedpermission",
+                "view_syncedpermission"
+            ]).exclude(pk__in=self.object.permissions.values_list("pk", flat=True))
         return context
 
     def post(self, request, *args, **kwargs):
@@ -142,24 +149,27 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
                                      account_id=acc).delete()
 
             case 'add-permission':
-                if request.user.has_perm('organizations.can_give_permissions'):
+                if request.user.has_perm('organizations.change_permissions_account'):
                     added_permission = request.POST.get('add-permission')
 
-                    acc.permissions.append(added_permission)
+                    acc.permissions.add(added_permission)
                     acc.save()
                 else:
-                    raise PermissionDenied("User does not have the 'can_give_permissions'"
+                    raise PermissionDenied("User does not have the 'change_permissions_account'"
                                            "-permission.")
 
             case 'rem-permission':
-                if request.user.has_perm('organizations.can_take_permissions'):
+                if request.user.has_perm('organizations.change_permissions_account'):
                     removed_permission = request.POST.get('rem-permission')
 
                     acc.permissions.remove(removed_permission)
                     acc.save()
                 else:
-                    raise PermissionDenied("User does not have the 'can_take_permissions'"
+                    raise PermissionDenied("User does not have the 'change_permissions_account'"
                                            "-permission.")
+
+            case _:
+                raise PermissionDenied(f"View called from unknown source: {trigger_name}")
 
         return self.get(request, *args, **kwargs)
 

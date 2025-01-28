@@ -58,10 +58,8 @@ class Account(Core_Account, Imported):
                     config='english'),
                 name='full_name_search')]
         permissions = [
-            ("can_give_permissions",
-             _("Can grant permission to users in the report module")),
-            ("can_take_permissions",
-             _("Can take permissions away from users in the report module"))
+            ("change_permissions_account",
+             _("Can grant and take away permissions to and from users in the report module")),
         ]
 
 

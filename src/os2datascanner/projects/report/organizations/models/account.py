@@ -25,7 +25,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth.models import User, Permission
 from django.dispatch import receiver
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, m2m_changed
 
 
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
@@ -40,25 +40,6 @@ from os2datascanner.utils.system_utilities import time_now
 from ..seralizer import BaseBulkSerializer, SelfRelatingField
 
 logger = structlog.get_logger("report_organizations")
-
-
-def permission_from_identifier(identifier: str) -> Permission:
-    """Returns a Permission object from the permission identifier."""
-    match identifier.rsplit(".", maxsplit=1):
-        case [app_label, codename]:
-            return Permission.objects.get(
-                content_type__app_label=app_label,
-                codename=codename
-            )
-        case _:
-            raise ValueError("Unrecognized format of permission identifier")
-
-
-def align_user_permissions_to_account(user: User, account: Core_Account) -> User:
-    user.user_permissions.clear()
-    for permission in account.permissions:
-        user.user_permissions.add(permission_from_identifier(permission))
-    return user
 
 
 class StatusChoices(models.IntegerChoices):
@@ -239,8 +220,6 @@ class AccountManager(models.Manager):
         account = Account(**kwargs, user=user_obj)
         account.save()
 
-        align_user_permissions_to_account(user_obj, account)
-
         if (account.organization.outlook_categorize_email_permission ==
                 OutlookCategorizeChoices.ORG_LEVEL):
             acc_qs = Account.objects.filter(pk=account.pk)
@@ -266,8 +245,6 @@ class AccountManager(models.Manager):
                 })
             account.user = user_obj
 
-            align_user_permissions_to_account(user_obj, account)
-
         objects = super().bulk_create(objs, **kwargs)
 
         accounts = Account.objects.filter(
@@ -289,8 +266,6 @@ class AccountManager(models.Manager):
                 user.last_name = account.last_name or ''
                 user.is_superuser = account.is_superuser
                 user.save()
-
-                align_user_permissions_to_account(user, account)
         return super().bulk_update(objs, fields, **kwargs)
 
 
@@ -582,10 +557,34 @@ def resize_image(sender, **kwargs):
         logger.debug("image resize failed", exc_info=True)
 
 
+def get_permissions_from_codenames(codenames: list[dict]) -> models.QuerySet[Permission]:
+    """Converts permission objects from the serializer into a queryset of Permission objects."""
+    codenames = [d["codename"] for d in codenames] if codenames else []
+    permissions = Permission.objects.filter(content_type__model="syncedpermission",
+                                            codename__in=codenames)
+    return permissions
+
+
 class AccountBulkSerializer(BaseBulkSerializer):
     """ Bulk create & update logic lives in BaseBulkSerializer """
     class Meta:
         model = Account
+
+    def create(self, validated_data):
+        permissions = [obj_attrs.pop("permissions") for obj_attrs in validated_data]
+        accs = super().create(validated_data)
+        for acc, perm in zip(accs, permissions):
+            acc_perms = get_permissions_from_codenames(perm)
+            acc.permissions.set(acc_perms)
+        return accs
+
+    def update(self, instances, validated_data):
+        permissions = [obj_attrs.pop("permissions") for obj_attrs in validated_data]
+        accs = super().update(instances, validated_data)
+        for acc, perm in zip(accs, permissions):
+            acc_perms = get_permissions_from_codenames(perm)
+            acc.permissions.set(acc_perms)
+        return accs
 
 
 class AccountSerializer(Core_AccountSerializer):
@@ -620,3 +619,8 @@ Account.serializer_class = AccountSerializer
 def post_delete_user(sender, instance, *args, **kwargs):
     if instance.user:
         instance.user.delete()
+
+
+@receiver(m2m_changed, sender=Account.permissions.through)
+def permissions_changed(sender, instance, *args, **kwargs):
+    instance.user.user_permissions.set(instance.permissions.all())

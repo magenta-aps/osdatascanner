@@ -117,12 +117,12 @@
               </ul>
             </td>
           </tr>
-          {% if account.permissions %}
+          {% if account.permissions.exists %}
             <tr>
               <td>{% trans "Permissions" %}</td>
               <td>
                 <ul>
-                  {% for permission in account.permissions %}<li>{{ permission }}</li>{% endfor %}
+                  {% for permission in account.permissions.all %}<li>{{ permission }}</li>{% endfor %}
                 </ul>
               </td>
             </tr>

@@ -11,57 +11,16 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-from enum import Enum
 from uuid import uuid4
 
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.contrib.auth.models import Permission
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from .position import Role
 
 from functools import cached_property
-
-
-class AccountPermission(Enum):
-    """Enum of the identifiers of permissions that can be granted to
-    users in the report module by users in the admin module.
-
-    Identifiers must be of the form
-        <app_label>.<codename>
-
-    For example, a Permission with codename "add_account" in the app
-    "os2datascanner_report" would be
-        os2datascanner_report.add_account
-    """
-
-    @classmethod
-    def test_list(cls, lst: list[str]) -> bool:
-        """It seems like python 3.12 supports using something like
-
-        test = [var in EnumClass for var in lst]
-
-        we should probably switch to that when we can."""
-        results = []
-        for val in lst:
-            try:
-                cls(val)
-                results.append(True)
-            except ValueError:
-                results.append(False)
-        return all(results)
-
-
-def validate_list_of_enum_vals(value):
-    is_list = isinstance(value, list)
-    contained_in_enum = AccountPermission.test_list(value)
-    if not (is_list and contained_in_enum):
-        raise ValidationError(
-            "Field must only contain a list of enum-values!",
-            code="invalid",
-            params={"value": value},
-        )
 
 
 class Account(models.Model):
@@ -129,11 +88,11 @@ class Account(models.Model):
         verbose_name=_('superuser_status'),
         default=False
     )
-    permissions = models.JSONField(
-        verbose_name="Account permissions",
-        default=list,
-        validators=[validate_list_of_enum_vals],
-        blank=True
+    permissions = models.ManyToManyField(
+        "auth.Permission",
+        verbose_name=_("account permissions"),
+        blank=True,
+        limit_choices_to={"content_type__model": "syncedpermission"}
     )
 
     def get_employed_units(self):
@@ -203,7 +162,15 @@ class Account(models.Model):
         return self.aliases.filter(_alias_type=AliasType.REMEDIATOR, _value=0).exists()
 
 
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ("codename", )
+
+
 class AccountSerializer(serializers.ModelSerializer):
+    permissions = PermissionSerializer(many=True, allow_null=True, default=None)
+
     class Meta:
         fields = [
             "pk",
