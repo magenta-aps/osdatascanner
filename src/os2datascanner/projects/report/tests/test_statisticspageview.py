@@ -199,8 +199,6 @@ class TestLeaderStatisticsPageView:
         names = {row['First name'] for row in rows if int(row['Matches']) > 0}
         assert {"Egon", "Kjeld", "Børge"} == names
 
-    # Helper functions
-
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_leader_csv_orgunit_export(
             self,
@@ -250,6 +248,91 @@ class TestLeaderStatisticsPageView:
         assert len(rows) == 1
         assert "Olsen-banden" not in rows[0]['Organizational units']
         assert "Kjelds Hus" in rows[0]['Organizational units']
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_old_matches_column_enabled(
+            self,
+            egon_account,
+            egon_manager_position,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            olsenbanden_organization,
+            rf):
+        """When org.retention_policy is True, Old matches should appear as a column."""
+        olsenbanden_organization.retention_policy = True
+        olsenbanden_organization.save()
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        retention_days = olsenbanden_organization.retention_days
+        assert f"Results older than {retention_days} days" in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_old_matches_column_disabled(
+            self,
+            egon_account,
+            egon_manager_position,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            olsenbanden_organization,
+            rf):
+        """When org.retention_policy is False, Old matches should appear as a column."""
+        olsenbanden_organization.retention_policy = False
+        olsenbanden_organization.save()
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        retention_days = olsenbanden_organization.retention_days
+        assert f"Results older than {retention_days} days" not in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_status_bad(
+            self,
+            egon_account,
+            egon_manager_position,
+            kjeld_account,
+            kjeld_email_alias,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            rf):
+        """A user with status BAD, should have the string 'Completed' in their status column."""
+        create_reports_for(kjeld_email_alias)
+        kjeld_account.save()
+
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert rows[0]['Status'] == "Not accepted"
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_status_completed(
+            self,
+            egon_account,
+            egon_manager_position,
+            kjeld_account,
+            kjeld_email_alias,
+            olsenbanden_ou,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions,
+            rf):
+        """A user with status GOOD, should have the string 'Completed' in their status column."""
+        response = self.get_leader_statistics_csv_response(
+            rf, egon_account, params=f"?org_unit={str(olsenbanden_ou.uuid)}")
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert rows[0]['Status'] == "Completed"
+
+    # Helper functions
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-leader') + params)

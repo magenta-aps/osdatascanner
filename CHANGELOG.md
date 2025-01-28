@@ -44,6 +44,18 @@
   see the unhandled results statistic under user statistics and delete underlying results from
   available scannerjobs. 
 
+- The `CSVExportMixin` has been refactored to expand functionality.
+
+  - Instead of declaring a dict of database-fields to be exported in your CSV-export view,
+    you now declare a list of dicts, each discribing a column in the exported csv.
+
+  - You are now longer limited to just export database fields, but can now make functional columns.
+    These take a function that is called with an object as an arugment, once for each exported object.
+    The column is then populated with the returned values.
+
+  - A CSV-export view can now include conditional columns,
+    by implementing the method `add_conditional_columns`.
+    These conditional columns can depend on the request or properties of the view.
 
 ### Bugfixes
 

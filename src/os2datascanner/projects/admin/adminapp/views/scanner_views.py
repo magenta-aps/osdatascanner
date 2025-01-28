@@ -197,13 +197,33 @@ class StatusCompletedView(StatusBase):
 
 
 class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusCompletedView):
-    exported_fields = {
-        _("Scanner name"): 'scanner__name',
-        _("Start time"): 'scan_tag__time',
-        _("Objects found"): 'total_objects',
-        _("Matches found"): 'matches_found',
-        _("Scanning time"): 'scan_time',
-    }
+    columns = [
+        {
+            'name': 'scanner__name',
+            'label': _("Scanner name"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'scan_tag__time',
+            'label': _("Start time"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'total_objects',
+            'label': _("Objects found"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'matches_found',
+            'label': _("Matches found"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'scan_time',
+            'label': _("Scanning time"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+    ]
     exported_filename = 'os2datascanner_completed_scans'
     permission_required = 'os2datascanner.export_completed_scanstatus'
 
@@ -362,6 +382,28 @@ class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
 
 class UserErrorLogCSVView(CSVExportMixin, UserErrorLogView):
     permission_required = "os2datascanner.export_usererrorlog"
+    columns = [
+        {
+            'name': 'scan_status__scan_tag__time',
+            'label': _("Scan time"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'path',
+            'label': _("Path"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'scan_status__scanner__name',
+            'label': _("Scanner job"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'error_message',
+            'label': _("Error message"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+    ]
     exported_fields = {
         _("Scan time"): 'scan_status__scan_tag__time',
         _("Path"): 'path',
