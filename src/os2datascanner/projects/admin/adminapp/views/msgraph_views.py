@@ -55,7 +55,7 @@ def patch_form(view, form):
     user = UserWrapper(view.request.user)
 
     grant_qs = GraphGrant.objects.filter(user.make_org_Q())
-    form.fields['grant'] = ModelChoiceField(grant_qs, empty_label=None)
+    form.fields['graph_grant'] = ModelChoiceField(grant_qs, empty_label=None)
 
     return form
 
@@ -67,7 +67,7 @@ class _MSGraphMailScannerCreate(ScannerCreate):
     fields = [
         'name',
         'schedule',
-        'grant',
+        'graph_grant',
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
@@ -98,7 +98,7 @@ class MSGraphMailScannerUpdate(ScannerUpdate):
     fields = [
         'name',
         'schedule',
-        'grant',
+        'graph_grant',
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
@@ -140,7 +140,7 @@ class MSGraphMailScannerCopy(ScannerCopy):
     fields = [
         'name',
         'schedule',
-        'grant',
+        'graph_grant',
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
@@ -200,7 +200,7 @@ class _MSGraphFileScannerCreate(ScannerCreate):
     """Creates a new Microsoft Graph file scanner job."""
     model = MSGraphFileScanner
     type = 'msgraph-file'
-    fields = ['name', 'schedule', 'grant',
+    fields = ['name', 'schedule', 'graph_grant',
               'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
@@ -219,7 +219,7 @@ class MSGraphFileScannerUpdate(ScannerUpdate):
     for modification."""
     model = MSGraphFileScanner
     type = 'msgraph-filescanners'
-    fields = ['name', 'schedule', 'grant', 'org_unit',
+    fields = ['name', 'schedule', 'graph_grant', 'org_unit',
               'scan_site_drives', 'scan_user_drives',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
@@ -249,7 +249,7 @@ class MSGraphFileScannerCopy(ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphFileScanner
     type = 'msgraph-file'
-    fields = ['name', 'schedule', 'grant',
+    fields = ['name', 'schedule', 'graph_grant',
               'org_unit', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',

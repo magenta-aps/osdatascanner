@@ -27,7 +27,7 @@ from exchangelib.errors import ErrorNonExistentMailbox
 from os2datascanner.engine2.model.ews import EWSAccountSource
 from os2datascanner.engine2.model.core import SourceManager
 
-from os2datascanner.projects.grants.models import GraphGrant
+from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 from ....organizations.models.account import Account
 from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
@@ -71,8 +71,10 @@ class ExchangeScanner(Scanner):
         default=""
     )
 
-    grant = models.ForeignKey(
+    graph_grant = models.ForeignKey(
             GraphGrant, null=True, blank=True, on_delete=models.SET_NULL)
+    ews_grant = models.ForeignKey(
+            EWSGrant, null=True, blank=True, on_delete=models.SET_NULL)
 
     def get_userlist_file_path(self):
         return os.path.join(settings.MEDIA_ROOT, self.userlist.name)
@@ -162,3 +164,14 @@ class ExchangeScanner(Scanner):
 
     class Meta:
         verbose_name = _("Exchangescanner")
+
+        # TODO: Would a constraint like this be a good idea?
+        # constraints = [
+        #     CheckConstraint(
+        #         check=(
+        #             (Q(graph_grant__isnull=True) & Q(ews_grant__isnull=False)) |
+        #             (Q(graph_grant__isnull=False) & Q(ews_grant__isnull=True))
+        #         ),
+        #         name='ews_or_graphgrant_check_constraint'
+        #     )
+        # ]

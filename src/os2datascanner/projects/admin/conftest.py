@@ -199,7 +199,7 @@ def msgraph_mailscanner(test_org, msgraph_grant, basic_rule):
         name=f"SomeMSGraphMailScanner-{test_org.name}",
         organization=test_org,
         validation_status=MSGraphMailScanner.VALID,
-        grant=msgraph_grant,
+        graph_grant=msgraph_grant,
         rule=basic_rule
     )
 

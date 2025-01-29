@@ -61,7 +61,7 @@ def _create_user_list(org_unit):  # noqa
 
 
 class MSGraphScanner(Scanner):
-    grant = models.ForeignKey(GraphGrant, null=True, on_delete=models.SET_NULL)
+    graph_grant = models.ForeignKey(GraphGrant, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         abstract = True
@@ -98,9 +98,9 @@ class MSGraphMailScanner(MSGraphScanner):
 
     def generate_sources_with_accounts(self):  # noqa
         base_source = MSGraphMailSource(
-                client_id=str(self.grant.app_id),
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=self.grant.client_secret,
+                client_id=str(self.graph_grant.app_id),
+                tenant_id=str(self.graph_grant.tenant_id),
+                client_secret=self.graph_grant.client_secret,
                 scan_deleted_items_folder=self.scan_deleted_items_folder,
                 scan_syncissues_folder=self.scan_syncissues_folder,
                 scan_attachments=self.scan_attachments)
@@ -132,9 +132,9 @@ class MSGraphFileScanner(MSGraphScanner):
 
     def generate_sources_with_accounts(self):  # noqa
         base_source = MSGraphFilesSource(
-                client_id=str(self.grant.app_id),
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=self.grant.client_secret,
+                client_id=str(self.graph_grant.app_id),
+                tenant_id=str(self.graph_grant.tenant_id),
+                client_secret=self.graph_grant.client_secret,
                 site_drives=self.scan_site_drives,
                 user_drives=False)
         if self.scan_site_drives:
@@ -173,9 +173,9 @@ class MSGraphCalendarScanner(MSGraphScanner):
 
     def generate_sources_with_accounts(self):  # noqa
         base_source = MSGraphCalendarSource(
-                client_id=str(self.grant.app_id),
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=self.grant.client_secret)
+                client_id=str(self.graph_grant.app_id),
+                tenant_id=str(self.graph_grant.tenant_id),
+                client_secret=self.graph_grant.client_secret)
         for account in self.compute_covered_accounts():
             for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
                 user_mail_address: str = alias.value
@@ -206,9 +206,9 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
     def generate_sources(self):
 
         yield MSGraphTeamsFilesSource(
-                client_id=str(self.grant.app_id),
-                tenant_id=str(self.grant.tenant_id),
-                client_secret=self.grant.client_secret)
+                client_id=str(self.graph_grant.app_id),
+                tenant_id=str(self.graph_grant.tenant_id),
+                client_secret=self.graph_grant.client_secret)
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")

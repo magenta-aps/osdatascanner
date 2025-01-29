@@ -20,6 +20,7 @@ from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.core.exceptions import ValidationError
 
 from os2datascanner.engine2.model.smbc import SMBCSource
+from os2datascanner.projects.grants.models import SMBGrant
 from .scanner import Scanner
 
 # Get an instance of a logger
@@ -47,6 +48,8 @@ class FileScanner(Scanner):
                     " their owners have responsibility for everything they"
                     " contain regardless of other filesystem metadata"),
         default=False)
+
+    smb_grant = models.ForeignKey(SMBGrant, null=True, on_delete=models.SET_NULL)
 
     @property
     def root_url(self):

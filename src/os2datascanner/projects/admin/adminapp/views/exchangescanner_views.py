@@ -88,7 +88,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
               'contacts']
     if settings.MSGRAPH_EWS_AUTH:
-        fields.append("grant")
+        fields.append("graph_grant")
     type = 'exchange'
 
     def get_success_url(self):
@@ -120,7 +120,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
               'contacts']
     if settings.MSGRAPH_EWS_AUTH:
-        fields.append("grant")
+        fields.append("graph_grant")
     type = 'exchange'
 
     def get_form(self, form_class=None):
@@ -155,7 +155,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
               'contacts']
     if settings.MSGRAPH_EWS_AUTH:
-        fields.append("grant")
+        fields.append("graph_grant")
     type = 'exchange'
 
     def get_success_url(self):

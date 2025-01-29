@@ -215,8 +215,7 @@
                        value="use-grant"
                        onclick="hideExchangeCreds();"
                        id="use-grant"
-                       {% if object.grant %}checked{% endif %} />
-
+                       {% if object.graph_grant %}checked{% endif %} />
                 <label for="use-credentials">{% trans "use service account for access authentication"|capfirst %}</label>
 
                 <input type="radio"
@@ -224,7 +223,7 @@
                        value="use-credentials"
                        onclick="hideExchangeGrant();"
                        id="use-credentials"
-                       {% if not object.grant %}checked{% endif %} />
+                       {% if not object.graph_grant %}checked{% endif %} />
 
                 <script>
                   function getElements() {
@@ -260,8 +259,8 @@
 
               {% endif %}
 
-              {% if form.grant %}
-                {% include "components/scanner/scanner_form_select_option_field.html" with field=form.grant %}
+              {% if form.graph_grant %}
+                {% include "components/scanner/scanner_form_select_option_field.html" with field=form.graph_grant %}
               {% endif %}
 
               {% if form.username %}
