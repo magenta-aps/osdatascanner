@@ -266,11 +266,6 @@ class Scanner(models.Model):
         _("The scanner job could not be started because it is already running.")
     )
 
-    @property
-    def display_name(self):
-        """The name used when displaying the scanner on the web page."""
-        return "WebScanner '%s'" % self.name
-
     def __str__(self):
         """Return the name of the scanner."""
         return self.name
