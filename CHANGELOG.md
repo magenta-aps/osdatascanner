@@ -70,6 +70,8 @@
 - Highlighting a table row in the result datatable in the report module no longer wrecks the handle
   dropdown by changing the opacity for the row.
 
+- One-letter abbreviations of weekdays are now translated correctly.
+
 ## Version 3.26.3, 7th January 2025
 
 "Did you also get an airfryer for christmas?"
