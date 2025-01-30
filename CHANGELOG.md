@@ -57,6 +57,9 @@
     by implementing the method `add_conditional_columns`.
     These conditional columns can depend on the request or properties of the view.
 
+- The "admins" and "superadmins" groups are now created with a number of built-in permissions as
+  a part of admin module migrations.
+
 ### Bugfixes
 
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs
