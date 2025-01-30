@@ -133,7 +133,7 @@ class MSGraphImportJob(BackgroundJob):
                 group_name = args[0]
                 self.handled += 1
                 self.status = f"Handled {self.handled}/{self.to_handle} groups \n" \
-                              f"Last group handled: {group_name}"
+                    f"Last group handled: {group_name}"
                 self.save()
 
         self.status = "OK.. Data received, build and store relations..."

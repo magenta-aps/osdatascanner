@@ -5,6 +5,7 @@ class Batch(ABC):
     """A Batch is a convenient way of performing an operation once a certain
     number of objects have been collected. (It can also be used as a context
     manager: at exit time, it will perform the operation an extra time.)"""
+
     def __init__(self, batch_size=2000):
         self._batch = []
         self._batch_size = batch_size

@@ -11,11 +11,11 @@
   bottom: var(--service-widget-gap);
   z-index: 10;
 
-  >.service_button {
+  > .service_button {
     margin-left: auto;
     height: var(--service-button-size);
     width: var(--service-button-size);
-    border-radius: calc(var(--service-button-size)/2);
+    border-radius: calc(var(--service-button-size) / 2);
     background-color: var(--color-body-bg);
     font-size: calc(0.64 * var(--service-button-size));
     color: var(--color-main);
@@ -32,7 +32,7 @@
       color: var(--color-body-bg);
       background-color: var(--color-main);
 
-      +.popup {
+      + .popup {
         display: block;
       }
     }
@@ -55,11 +55,11 @@
     }
   }
 
-  &:hover>.popup {
+  &:hover > .popup {
     display: block;
   }
 
-  >.popup {
+  > .popup {
     margin-bottom: calc(var(--service-button-size) + var(--service-button-gap));
   }
 
@@ -85,7 +85,7 @@
       overflow-y: scroll;
     }
 
-    >ul {
+    > ul {
       list-style: none;
       padding: 1rem;
       margin: 0;
@@ -119,9 +119,8 @@
 
         &:hover {
           background-color: var(--color-main);
-          color: var(--color-widget-bg)
+          color: var(--color-widget-bg);
         }
-
       }
     }
   }

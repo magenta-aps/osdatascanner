@@ -24,7 +24,9 @@
       fill: #00496e;
     }
 
-    .st1,.st2,.st3 {
+    .st1,
+    .st2,
+    .st3 {
       stroke: #00496e;
     }
   }
@@ -37,7 +39,9 @@
       fill: #00496e;
     }
 
-    .st1,.st2,.st3 {
+    .st1,
+    .st2,
+    .st3 {
       stroke: #00496e;
       fill: none;
     }
@@ -45,7 +49,6 @@
 
   //tabs
   .tabs {
-
     &__control {
       color: #222;
 
@@ -63,7 +66,6 @@
 
   //breadcrumb
   .breadcrumb {
-
     .link-color {
       color: #21759c;
     }
@@ -90,7 +92,7 @@
 
   //buttons
   .button {
-    transition: all 0.2s cubic-bezier(.86,0,.07,1) 0s;
+    transition: all 0.2s cubic-bezier(0.86, 0, 0.07, 1) 0s;
 
     &--cta {
       background-color: #21759c;
@@ -101,7 +103,6 @@
         background-color: #00496e;
         color: #ffffff;
       }
-
     }
   }
 
@@ -127,5 +128,4 @@
       color: #ffffff;
     }
   }
-
 }

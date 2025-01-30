@@ -230,7 +230,7 @@ class OS2moImportJob(BackgroundJob):
                 org_unit_name = args[0]
                 self.handled += 1
                 self.status = f"Handled {self.handled}/{self.to_handle} org_units \n" \
-                              f"Last org_unit handled: {org_unit_name}"
+                    f"Last org_unit handled: {org_unit_name}"
                 self.save()
 
         from ...organizations.os2mo_import_actions import perform_os2mo_import

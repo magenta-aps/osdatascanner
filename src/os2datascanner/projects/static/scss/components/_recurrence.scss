@@ -1,9 +1,10 @@
 //Overwrites styling for recurrence widget
 
-.add-rule, .add-date {
+.add-rule,
+.add-date {
   background-color: transparent;
   color: var(--color-text-main) !important;
-  padding: .5rem;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   cursor: pointer;
   display: inline-block;
@@ -22,7 +23,7 @@
   float: left;
   width: 1rem;
   height: 1rem;
-  margin-right: .5rem;
+  margin-right: 0.5rem;
   fill: var(--color-primary-dark) !important;
   background-size: 100% 100%;
   background-image: url("../svg/calendar.svg");
@@ -40,7 +41,7 @@
     background-image: url("../svg/clear.svg");
     height: 2.5rem;
     width: 2.5rem;
-    margin-top: -.25rem;
+    margin-top: -0.25rem;
   }
 
   .panel-heading {
@@ -59,13 +60,13 @@
   }
 
   .panel {
-    margin-top: .5rem;
+    margin-top: 0.5rem;
     border: none !important;
   }
 
   form {
     border: none !important;
-    padding: .5rem 0rem !important;
+    padding: 0.5rem 0rem !important;
     overflow: visible !important;
 
     li {
@@ -96,7 +97,9 @@
     text-decoration: none !important;
   }
 
-  .limit, .date, .date-selector {
+  .limit,
+  .date,
+  .date-selector {
     width: 100%;
   }
 
@@ -110,7 +113,7 @@
 
   .date-field {
     width: 20rem;
-    margin-left: .75rem !important;
+    margin-left: 0.75rem !important;
   }
 
   .interval-field {
@@ -156,13 +159,13 @@
   border: 1px solid #ccc;
 
   .navigation-calendar {
-    padding: .5rem;
+    padding: 0.5rem;
     display: flex;
     flex-flow: column-reverse;
     align-items: center;
 
     td {
-      padding: .25rem;
+      padding: 0.25rem;
     }
   }
 
@@ -178,7 +181,8 @@
     background-color: #ddd;
   }
 
-  .year, .navigation {
+  .year,
+  .navigation {
     border-right: none !important;
   }
 
@@ -188,15 +192,16 @@
 
   .remove {
     z-index: 1;
-    padding: .25rem;
+    padding: 0.25rem;
     background-color: var(--color-error);
     fill: #fff !important;
     color: #fff !important;
   }
 }
 
-div.recurrence-widget select, div.recurrence-widget input {
-  margin: .25rem .25rem !important;
+div.recurrence-widget select,
+div.recurrence-widget input {
+  margin: 0.25rem 0.25rem !important;
 }
 
 div.recurrence-widget .section {
@@ -223,7 +228,6 @@ div.recurrence-widget .section {
     &.weekday {
       align-items: center;
     }
-
   }
 }
 
@@ -247,12 +251,13 @@ table.recurrence-calendar {
     .remove-btn_container {
       justify-self: start;
     }
-  
-    .remove, .remove:link {
+
+    .remove,
+    .remove:link {
       padding: 0.1em 0.4em 0.25em !important;
       float: none !important;
     }
-  
+
     .year {
       padding-right: 0 !important;
       font-size: 1rem;
@@ -268,11 +273,12 @@ table.recurrence-calendar {
       width: 8rem;
     }
 
-    a, a:link {
+    a,
+    a:link {
       text-decoration: none;
       color: var(--color-text-secondary);
-    }    
-  
+    }
+
     a:hover {
       color: var(--color-primary-dark);
       text-decoration: underline var(--color-primary-dark);
@@ -280,7 +286,8 @@ table.recurrence-calendar {
   }
 
   .body {
-    td.header, td.day {
+    td.header,
+    td.day {
       padding: 0.5em !important;
     }
   }

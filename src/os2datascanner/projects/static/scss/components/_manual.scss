@@ -1,5 +1,4 @@
 .manual {
-
   .table-of-content {
     display: none;
     background-color: var(--color-widget-bg);
@@ -49,8 +48,8 @@
       &:hover {
         color: var(--color-widget-bg);
 
-        >li,
-        >h3 {
+        > li,
+        > h3 {
           background-color: var(--color-main);
         }
       }
@@ -95,13 +94,13 @@
     }
 
     .org-name {
-      color: var(--color-text-secondary)
+      color: var(--color-text-secondary);
     }
 
     .figure-container {
       p {
         font-size: 0.8rem;
-        color: var(--color-text-secondary)
+        color: var(--color-text-secondary);
       }
 
       img {

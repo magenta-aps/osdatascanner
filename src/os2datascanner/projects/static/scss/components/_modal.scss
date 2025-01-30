@@ -39,7 +39,7 @@
     position: fixed;
   }
 
-  &>iframe {
+  & > iframe {
     height: calc(100% - 3rem);
     width: 100%;
     border-radius: var(--border-radius-widget);
@@ -183,7 +183,7 @@
   background-color: #111;
   height: 20px;
 
-  &>div {
+  & > div {
     border-radius: 100px;
     background-color: #fff;
     height: 20px;
@@ -199,7 +199,7 @@
   }
 
   .rect3 {
-    animation-delay: -1.0s;
+    animation-delay: -1s;
   }
 
   .rect4 {
@@ -208,7 +208,6 @@
 }
 
 @keyframes sk-stretchdelay {
-
   0%,
   40%,
   100% {
@@ -216,7 +215,7 @@
   }
 
   20% {
-    transform: scaleY(1.0);
+    transform: scaleY(1);
   }
 }
 
@@ -233,7 +232,7 @@
   border-radius: var(--border-radius-widget);
   border: none;
 
-  >form {
+  > form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -243,13 +242,13 @@
     padding: 1.75rem 1.75rem;
     padding: 2rem 2.25rem;
 
-    >* {
+    > * {
       width: 100%;
     }
 
     .modal__form__title {
       padding-bottom: 1.5rem; // ***** This can be removed after the form style sheet has been refactored *****
-      >h2 {
+      > h2 {
         margin: 0;
       }
     }
@@ -260,8 +259,8 @@
       align-items: stretch;
       gap: 0.5rem; // ***** This will guarantee appropriate spacing if there's more than one button *****
       padding-top: 1.5rem; // ***** This can be removed after the form style sheet has been refactored *****
-    
-      >* {
+
+      > * {
         width: inherit; // ***** This will guarantee appropriate sizing (full width) even if there's more than one button *****
       }
     }

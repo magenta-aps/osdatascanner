@@ -109,6 +109,18 @@ Lint django templates:
       --reformat --indent 2 
       --preserve-blank-lines
 
+Lint SCSS files:
+  <<: *lint-default
+  image: node:16-alpine3.11
+  stage: lint
+  script:
+    # Install prettier in this docker container
+    - npm install --save-dev --save-exact -g prettier
+
+    # Run prettier on all SCSS files
+    - prettier --check "**/*.scss"
+
+
 # Pre-build stage
 Build base image:
   extends: .build-buildkit

@@ -9,6 +9,7 @@ class ClassificationEngine:
     class AbstractTerm(ABC):
         """An AbstractTerm (usually just known as a "term") represents an
         acceptance criterion for a text."""
+
         def __init__(self, weight: int):
             self.weight = weight
 
@@ -21,6 +22,7 @@ class ClassificationEngine:
         """A BaseRegexTerm is a regular expression-based term: if a text
         contains one or more matches for the given regular expression, then it
         is accepted."""
+
         def __init__(self, weight: int, term: str, flags: int = 0):
             super().__init__(weight)
             self._re = re.compile(term, flags)
@@ -33,12 +35,14 @@ class ClassificationEngine:
 
     class RegexTerm(BaseRegexTerm):
         """A RegexTerm is a BaseRegexTerm with automatic escaping."""
+
         def __init__(self, weight: int, term: str, flags: int = 0):
             super().__init__(weight, re.escape(term), flags)
 
     class WordTerm(BaseRegexTerm):
         """A WordTerm is a BaseRegexTerm with automatic escaping and word
         boundaries."""
+
         def __init__(self, weight: int, term: str, flags: int = 0):
             super().__init__(weight, rf"\b{re.escape(term)}\b", flags)
 
@@ -69,6 +73,7 @@ class ClassificationEngine:
         score indicating the importance of the match. Classifications make a
         final decision about whether or not to accept a text on the basis of
         weight and match and term count threshold values."""
+
         def __init__(
                 self,
                 ident: str,
