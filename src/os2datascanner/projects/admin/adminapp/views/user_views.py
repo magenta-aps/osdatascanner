@@ -1,7 +1,8 @@
 from django.views.generic import DetailView, UpdateView, RedirectView
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import Http404
+from django.urls import reverse_lazy
 
 
 class UserAccessMixin(LoginRequiredMixin):
@@ -27,7 +28,17 @@ class UserDetailView(UserAccessMixin, DetailView):
     context_object_name = "user"
 
 
-class UserUpdateView(UserAccessMixin, UpdateView):
+class UserUpdateView(UserAccessMixin, PermissionRequiredMixin, UpdateView):
     model = get_user_model()
     template_name = "components/user/user_edit.html"
     context_object_name = "user"
+    permission_required = "auth.change_user"
+    fields = (
+        "first_name",
+        "last_name",
+        "email"
+    )
+
+    def get_success_url(self):
+        url = reverse_lazy("user", kwargs={"pk": self.kwargs.get("pk")})
+        return url

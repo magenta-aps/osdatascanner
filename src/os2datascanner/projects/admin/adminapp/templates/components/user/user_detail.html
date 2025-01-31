@@ -11,16 +11,17 @@
     <div class="content">
       <h1>
         {{ user.get_full_name }}
-        <span class="edit-button">
-          <a href="{% url "user-edit" user.pk %}"
-             class="button button--icon-button"
-             aria-label="{% trans "Edit user" %}"
-             title="{% trans "Edit user" %}">
-            <i id="edit" class="material-symbols">edit</i>
-          </a>
-        </span>
+        {% if perms.auth.change_user %}
+          <span class="edit-button">
+            <a href="{% url "user-edit" user.pk %}"
+               class="button button--icon-button"
+               aria-label="{% trans "Edit user" %}"
+               title="{% trans "Edit user" %}">
+              <i id="edit" class="material-symbols">edit</i>
+            </a>
+          </span>
+        {% endif %}
       </h1>
-
       <div class="userprofile-content-wrapper user-tables">
         <h2>{% trans "User information" %}</h2>
         <table class="userprofile-table account-info">
