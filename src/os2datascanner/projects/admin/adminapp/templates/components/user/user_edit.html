@@ -1,0 +1,14 @@
+{% extends "components/common/base.html" %}
+
+{% block body %}
+
+  {% include "components/common/header.html" %}
+
+  <main class="wrapper">
+    {% include "components/common/main.html" with active_tab="home" %}
+
+    <div class="content">{% include "components/navigation/scanner_tabs.html" with page="user" %}</div>
+
+  </main>
+
+{% endblock body %}
