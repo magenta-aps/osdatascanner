@@ -1,4 +1,5 @@
 import operator
+from datetime import datetime
 from functools import reduce
 
 from ..rule import Rule, SimpleRule
@@ -31,3 +32,13 @@ def compute_mss(r: Rule | None) -> set[SimpleRule]:
         case _:
             raise ValueError(
                     f"Rule fragment {r} was not recognised")
+
+
+def find_cutoff(r: Rule | None) -> datetime | None:
+    """Convenience function for simple SmartDelta implementations. Returns
+    the latest timestamp associated with a LastModifiedRule in the minimal
+    SimpleRule set of the given Rule (or None, if there weren't any)."""
+    mss_lmrs = set(
+            sr.after for sr in compute_mss(r)
+            if sr.type_label == "last-modified")
+    return max(mss_lmrs) if mss_lmrs else None

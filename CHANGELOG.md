@@ -60,6 +60,8 @@
 - The "admins" and "superadmins" groups are now created with a number of built-in permissions as
   a part of admin module migrations.
 
+- Initial support for pre-execution of rules in the file scanner.
+
 ### Bugfixes
 
 - Non-superusers can now see the ScanStatus timeline in the admin module, and can cancel scannerjobs

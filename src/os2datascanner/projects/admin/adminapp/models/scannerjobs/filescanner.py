@@ -28,6 +28,7 @@ logger = structlog.get_logger("adminapp")
 
 class FileScanner(Scanner):
     """File scanner for scanning network drives and folders"""
+    supports_rule_preexec = True
 
     unc = models.CharField(max_length=2048, blank=False, verbose_name='UNC')
     alias = models.CharField(

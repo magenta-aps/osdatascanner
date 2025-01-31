@@ -1,17 +1,22 @@
 import io
 from os import stat_result, O_RDONLY
 import enum
+import errno
 import structlog
 import smbc
 from typing import Optional
 from urllib.parse import quote
 from pathlib import PureWindowsPath
 from datetime import datetime
+from dateutil.tz import gettz
 from operator import or_
 from functools import reduce
 from contextlib import contextmanager
 
+from os2datascanner.engine2.rules.utilities.analysis import find_cutoff
+
 from ..utilities.backoff import DefaultRetrier
+from ..utilities.datetime import parse_datetime, unparse_datetime
 from ..conversions.types import OutputType
 from ..conversions.utilities.navigable import make_values_navigable
 from .smb import (
@@ -21,7 +26,6 @@ from .core import Source, Handle, FileResource
 from .core.errors import UncontactableError
 from .file import stat_attributes
 
-import errno
 
 logger = structlog.get_logger("engine2")
 
@@ -139,14 +143,14 @@ class SMBCSource(Source):
 
     def get_attrs(
             self, context: smbc.Context,
-            fi: smbc.FileInfo, url: str) -> smbc.Attribute:
+            here: smbc.FileInfo, url: str) -> smbc.Attribute:
         """Returns the (possibly overridden) Windows filesystem attributes of
         the file identified by the given URL and FileInfo."""
         logger.debug(
                 "SMBCSource.get_attrs",
-                url=url, attr=fi.attrs)
+                url=url, attr=here.attrs)
 
-        attr = fi.attrs
+        attr = here.attrs
 
         if self.allow_fake_attr:
             if raw_attr := _trivial_read(context, url + ".attr-override"):
@@ -213,52 +217,78 @@ class SMBCSource(Source):
             # owner
             return None
 
-    def handles(self, sm):  # noqa: C901,E501,CCR001
-        url, context = sm.open(self)
+    def handles(self, sm, *, rule=None):  # noqa: C901,CCR001
+        base_url, context = sm.open(self)
 
-        def handle_fileinfo(parents, fi, owner_sid: str = None):
-            name = fi.name
+        cutoff = find_cutoff(rule)
 
-            if name in (".", ".."):
+        def handle_fileinfo(  # noqa: C901,CCR001
+                chain_here: list[smbc.FileInfo],
+                owner_sid: str = None):
+            *parents, here = chain_here
+
+            if here.name in (".", ".."):
                 return
 
-            here = parents + [fi]
-            path = '/'.join([h.name for h in here])
-            url_here = url + "/" + path
+            path_here: str = '/'.join([h.name for h in chain_here])
+            url_here: str = base_url + "/" + path_here
 
-            attrs = self.get_attrs(context, fi, url_here)
-            if self._skip_super_hidden and self.is_skippable(fi.name, attrs):
+            attrs = self.get_attrs(context, here, url_here)
+            if self._skip_super_hidden and self.is_skippable(here.name, attrs):
                 return
 
-            hints = {}
+            hints = {
+                "ctime": unparse_datetime(
+                        ctime := here.ctime.astimezone(gettz())),
+                "mtime": unparse_datetime(
+                        mtime := here.mtime.astimezone(gettz()))
+            }
             if owner_sid:
                 hints["owner_sid"] = owner_sid
+            handle_here: 'SMBCHandle' = SMBCHandle(
+                    self, path_here, hints=hints)
 
-            handle_here = SMBCHandle(self, path, hints=hints)
             if attrs & smbc.Attribute.DIRECTORY:
+                # On every filesystem we care about, creating or deleting
+                # a/b/c.txt will update the modification timestamp on a/b/ but
+                # not on a/, so we always need to explore the complete
+                # directory hierarchy
                 try:
-                    try:
-                        obj = context.opendir(url_here)
-                    except MemoryError as e:
-                        # A memory error here means that the path is using
-                        # deprecated encoding. Skip the path and keep going!
-                        logger.warning(
-                                "Skipping handle with memory error",
-                                url_here=url_here)
-                        yield (handle_here, e)
-                        return
+                    obj = context.opendir(url_here)
+
                     while (fileinfo_raw := obj.readdirplus()):
                         fileinfo = smbc.FileInfo.from_raw_tuple(fileinfo_raw)
-                        yield from handle_fileinfo(here, fileinfo, owner_sid)
+                        yield from handle_fileinfo(
+                                chain_here + [fileinfo], owner_sid)
+                except MemoryError as e:
+                    # A memory error here means that the path is using
+                    # deprecated encoding. Skip the path and keep going!
+                    logger.warning(
+                            "Skipping handle with memory error",
+                            url_here=url_here)
+                    yield (handle_here, e)
+                    return
                 except (ValueError, *IGNORABLE_SMBC_EXCEPTIONS):
                     pass
             else:
                 # We assume anything not tagged as a directory is (scannable as
                 # if it were) a normal file
+
+                if cutoff:
+                    # Pick whichever one is newer of the content and metadata
+                    # change timestamps
+                    updated_timestamp = max(ctime, mtime)
+                    if updated_timestamp <= cutoff:
+                        logger.debug(
+                                "skipping file not updated after cutoff",
+                                url_here=url_here,
+                                cutoff=cutoff, updated=updated_timestamp)
+                        return
+
                 yield handle_here
 
         try:
-            obj = context.opendir(url)
+            obj = context.opendir(base_url)
         except ValueError as ex:
             code = ex.args[0]
             if code == errno.EINVAL:
@@ -269,16 +299,18 @@ class SMBCSource(Source):
         # Iterate over every folder lying directly under the provided UNC
         while (fileinfo_raw := obj.readdirplus()):
             fileinfo = smbc.FileInfo.from_raw_tuple(fileinfo_raw)
-            if fileinfo.name not in (".", "..",):
-                # If we know that the provided UNC is a folder containing user
-                # home folders, then compute the owner of each folder here.
-                # handle_dirent can use this as a hint so SMBCResource doesn't
-                # have to retrieve ownership metadata for individual files
-                if self._unc_is_home_root:
-                    owner = self._get_owner_for(url, context, fileinfo.name)
-                else:
-                    owner = None
-                yield from handle_fileinfo([], fileinfo, owner)
+            if fileinfo.name in (".", "..",):
+                continue
+
+            # If we know that the provided UNC is a folder containing user home
+            # folders, then compute the owner of each folder here.
+            # handle_fileinfo can use this as a hint so SMBCResource doesn't
+            # have to retrieve ownership metadata for individual files
+            if self._unc_is_home_root:
+                owner = self._get_owner_for(base_url, context, fileinfo.name)
+            else:
+                owner = None
+            yield from handle_fileinfo([fileinfo], owner)
 
     # For our own purposes, we need to be able to make a "smb://" URL to give
     # to pysmbc. That URL doesn't need to contain authentication details,
@@ -414,8 +446,12 @@ class SMBCResource(FileResource):
         return self.unpack_stat()["st_size"]
 
     def get_last_modified(self):
-        return self.unpack_stat().setdefault(OutputType.LastModified,
-                                             super().get_last_modified())
+        hints = []
+        for hn in ("ctime", "mtime",):
+            if hv := self.handle.hint(hn):
+                hints.append(parse_datetime(hv))
+        return max(hints) if hints else self.unpack_stat().setdefault(
+                OutputType.LastModified, super().get_last_modified())
 
     def get_owner_sid(self):
         """Returns the Windows security identifier of the owner of this file,
