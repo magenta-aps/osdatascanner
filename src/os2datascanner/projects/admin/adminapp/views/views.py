@@ -201,7 +201,7 @@ class DialogSuccess(TemplateView):
             raise Http404
         model = self.type_map[model_type]
         item = get_object_or_404(model, pk=pk)
-        context['item_description'] = item.display_name
+        context['item_description'] = item.verbose_name
         context['action'] = _("created") if created else _("saved")
         context['reload_url'] = '/' + model_type + '/'
         return context

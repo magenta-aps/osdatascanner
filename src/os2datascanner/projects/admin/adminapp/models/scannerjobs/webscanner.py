@@ -120,11 +120,6 @@ class WebScanner(Scanner):
         return []
 
     @property
-    def display_name(self):
-        """The name used when displaying the domain on the web page."""
-        return f"Domain {self.root_url}"
-
-    @property
     def root_url(self):
         """Return the root url of the domain."""
         url = self.url.replace("*.", "")
