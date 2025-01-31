@@ -14,7 +14,7 @@ class UserAccessMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class MyUserView(RedirectView):
+class MyUserView(LoginRequiredMixin, RedirectView):
     pattern_name = "user"
 
     def get_redirect_url(self, *args, **kwargs):

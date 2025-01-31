@@ -16,7 +16,7 @@ def assign_permissions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0144_create_admins_and_superadmin_groups'),
+        ('os2datascanner', '0146_scanner_contact_person'),
     ]
 
     operations = [

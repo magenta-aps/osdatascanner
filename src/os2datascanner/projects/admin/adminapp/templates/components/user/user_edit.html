@@ -11,7 +11,9 @@
     <div class="content">
       <h1>{{ user.get_full_name }}</h1>
 
-      <form method="post" action="{% url "user-edit" user.pk %}">
+      <form class="form user-form"
+            method="post"
+            action="{% url "user-edit" user.pk %}">
         {% csrf_token %}
         <div class="userprofile-content-wrapper user-tables">
           <h2>{% trans "User information" %}</h2>
@@ -19,11 +21,11 @@
             <tbody>
               <tr>
                 <td>{% trans "First name" %}</td>
-                <td>{{ form.first_name }}</td>
+                <td class="form-field">{{ form.first_name }}</td>
               </tr>
               <tr>
                 <td>{% trans "Last name" %}</td>
-                <td>{{ form.last_name }}</td>
+                <td class="form-field">{{ form.last_name }}</td>
               </tr>
               <tr>
                 <td>{% trans "Username" %}</td>
@@ -31,11 +33,11 @@
               </tr>
               <tr>
                 <td>{% trans "E-mail" %}</td>
-                <td>{{ form.email }}</td>
+                <td class="form-field">{{ form.email }}</td>
               </tr>
               {% if user.administrator_for %}
                 <tr>
-                  <td>{% trans "Client" %}</td>
+                  <td>{% trans "Administrator for" %}</td>
                   <td>{{ user.administrator_for.client }}</td>
                 </tr>
               {% endif %}

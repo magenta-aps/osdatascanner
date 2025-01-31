@@ -5,8 +5,6 @@
 }
 
 .form {
-  line-height: 1;
-
   &__content {
     display: flex;
     flex-direction: column;
@@ -555,6 +553,10 @@
       line-height: 1;
       margin-right: 0.5em;
     }
+  }
+
+  &:not(.user-form) {
+    line-height: 1;
   }
 }
 

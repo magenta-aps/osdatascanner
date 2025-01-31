@@ -7,6 +7,9 @@
 - Each scanner now has a list of associated users as contacts, who will be notified when a scan
   finishes or needs revalidation.
 
+- User page added to the admin module, accessible via the user menu in the top left corner.
+  From this page, the user can change their name and email address.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner

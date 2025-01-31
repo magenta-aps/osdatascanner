@@ -2613,13 +2613,6 @@ msgstr "Domænet er ugyldigt"
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/exchangescanner_views.py:281
-#: adminapp/views/filescanner_views.py:188
-#: organizations/templates/organizations/account_detail.html:25
-#: organizations/templates/organizations/account_list.html:56
-msgid "Username"
-msgstr "Brugernavn"
-
 #: adminapp/views/exchangescanner_views.py:286
 #: adminapp/views/filescanner_views.py:189
 msgid "Password"

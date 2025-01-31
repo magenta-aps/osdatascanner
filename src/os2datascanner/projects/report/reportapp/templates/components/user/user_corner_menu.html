@@ -19,12 +19,12 @@
       </span>
     </button>
     <div class="user-content" id="userMenu">
-      <div>
+      <a href="{% url "account-me" %}">
         <span class="user__avatar_big">
           {% include "components/user/account_image.html" with account=request.user.account %}
         </span>
         <span class="user__name--bold">{{ request.user }}</span>
-      </div>
+      </a>
       <a class="show-account" href="{% url "account-me" %}">{% trans "Show Account" %}</a>
       <a class="logout" href="{% url "logout" %}">{% trans "Logout" %}</a>
     </div>

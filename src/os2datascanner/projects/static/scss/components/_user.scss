@@ -32,9 +32,19 @@ h1.userprofile-text {
   border-collapse: separate;
   border-spacing: 0px;
 
-  tr:not(:last-child) {
-    td {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  tr {
+    &:not(:last-child) {
+      td {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    &:last-child td.form-field input {
+      border-bottom-right-radius: var(--border-radius-default);
+    }
+
+    &:first-child td.form-field input {
+      border-top-right-radius: var(--border-radius-default);
     }
   }
 
@@ -73,6 +83,10 @@ h1.userprofile-text {
 
   td {
     padding: 0.8rem 1rem;
+
+    &.form-field {
+      padding: 0 1px 0 0;
+    }
   }
 
   span.checkmark {
