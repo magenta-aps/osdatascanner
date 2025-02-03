@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-28 09:23+0100\n"
+"POT-Creation-Date: 2025-02-03 10:20+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -19,23 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adminapp/admin.py:80
+#: adminapp/admin.py:79
 msgid "CPR rule should not be used more than once"
 msgstr "CPR-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:84
+#: adminapp/admin.py:83
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:147
+#: adminapp/admin.py:146
 msgid "An errorlog cannot both be new and resolved"
 msgstr "En fejlbesked kan ikke både være ny og løst"
 
-#: adminapp/admin.py:186
+#: adminapp/admin.py:185
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:190
+#: adminapp/admin.py:189
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -44,47 +44,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har is_resolved attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:195
+#: adminapp/admin.py:194
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:199
+#: adminapp/admin.py:198
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:202
+#: adminapp/admin.py:201
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:206
+#: adminapp/admin.py:205
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:209
+#: adminapp/admin.py:208
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:213
+#: adminapp/admin.py:212
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:231
+#: adminapp/admin.py:230
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:235
+#: adminapp/admin.py:234
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:238
+#: adminapp/admin.py:237
 msgid "Change resolved-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:242
+#: adminapp/admin.py:241
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
@@ -216,7 +216,7 @@ msgid "Mime type"
 msgstr "Filformat"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py:51
-#: adminapp/models/scannerjobs/filescanner.py:87
+#: adminapp/models/scannerjobs/filescanner.py:88
 #: adminapp/models/scannerjobs/googledrivescanner.py:59
 #: adminapp/models/scannerjobs/msgraph.py:157
 #: adminapp/models/scannerjobs/msgraph.py:213
@@ -225,7 +225,7 @@ msgid "file"
 msgstr "fil"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py:52
-#: adminapp/models/scannerjobs/filescanner.py:88
+#: adminapp/models/scannerjobs/filescanner.py:89
 #: adminapp/models/scannerjobs/googledrivescanner.py:60
 #: adminapp/models/scannerjobs/msgraph.py:158
 #: adminapp/models/scannerjobs/msgraph.py:214
@@ -258,15 +258,15 @@ msgstr "mailbeskeder"
 msgid "Exchangescanner"
 msgstr "Exchangescanner"
 
-#: adminapp/models/scannerjobs/filescanner.py:35
+#: adminapp/models/scannerjobs/filescanner.py:36
 msgid "drive letter"
 msgstr "drevbogstav"
 
-#: adminapp/models/scannerjobs/filescanner.py:38
+#: adminapp/models/scannerjobs/filescanner.py:39
 msgid "skip super-hidden files"
 msgstr "spring over superskjulte filer"
 
-#: adminapp/models/scannerjobs/filescanner.py:39
+#: adminapp/models/scannerjobs/filescanner.py:40
 msgid ""
 "do not scan files with the HIDDEN and SYSTEM bits set, or files with the "
 "HIDDEN bit set whose name starts with a tilde"
@@ -274,11 +274,11 @@ msgstr ""
 "lad være med at scanne filer med både HIDDEN- og SYSTEM-attributter sat, "
 "samt filer med HIDDEN-attribut sat og et navn med tilde-tegn foran"
 
-#: adminapp/models/scannerjobs/filescanner.py:44
+#: adminapp/models/scannerjobs/filescanner.py:45
 msgid "UNC is home root"
 msgstr "UNC er brugermappernes rod"
 
-#: adminapp/models/scannerjobs/filescanner.py:45
+#: adminapp/models/scannerjobs/filescanner.py:46
 msgid ""
 "all folders under the given UNC are user home folders; their owners have "
 "responsibility for everything they contain regardless of other filesystem "
@@ -287,11 +287,11 @@ msgstr ""
 "alle mapper under det givne UNC er brugernes hjemmemapper: deres ejere har "
 "ansvar for alt, der ligger derinde, uanset hvad filsystemet ellers må sige"
 
-#: adminapp/models/scannerjobs/filescanner.py:84
+#: adminapp/models/scannerjobs/filescanner.py:85
 msgid "UNC must follow the UNC format"
 msgstr "UNC skal følge UNC-format"
 
-#: adminapp/models/scannerjobs/filescanner.py:91
+#: adminapp/models/scannerjobs/filescanner.py:92
 #: adminapp/templates/components/common/breadcrumb.html:14
 #: adminapp/templates/components/navigation/scanner_tabs.html:10
 msgid "Filescanner"
@@ -463,19 +463,19 @@ msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
-#: adminapp/models/scannerjobs/scanner.py:709
+#: adminapp/models/scannerjobs/scanner.py:704
 msgid "Can validate scannerjobs"
 msgstr "Kan godkende scannerjob"
 
-#: adminapp/models/scannerjobs/scanner.py:710
+#: adminapp/models/scannerjobs/scanner.py:705
 msgid "Can hide scannerjob from scannerjob list"
 msgstr "Kan skjule scannerjob fra scannerjoblisten"
 
-#: adminapp/models/scannerjobs/scanner.py:711
+#: adminapp/models/scannerjobs/scanner.py:706
 msgid "Can unhide scannerjob from the removed scannerjob list"
 msgstr "Kan fjerne skjulning af scannerjob fra den fjernede scannerjobliste"
 
-#: adminapp/models/scannerjobs/scanner.py:712
+#: adminapp/models/scannerjobs/scanner.py:707
 msgid "Can view hidden scanners in the removed scannerjob list"
 msgstr "Kan se skjulte scannere på den skjulte scannerjobliste"
 
@@ -638,17 +638,17 @@ msgstr ""
 "navngiv sider efter HTML-overskrift og tillad specificering af alternative "
 "visningsformer for URL'er"
 
-#: adminapp/models/scannerjobs/webscanner.py:191
+#: adminapp/models/scannerjobs/webscanner.py:186
 msgctxt "unit of scan"
 msgid "web page"
 msgstr "side"
 
-#: adminapp/models/scannerjobs/webscanner.py:192
+#: adminapp/models/scannerjobs/webscanner.py:187
 msgctxt "unit of scan"
 msgid "web pages"
 msgstr "sider"
 
-#: adminapp/models/scannerjobs/webscanner.py:195
+#: adminapp/models/scannerjobs/webscanner.py:190
 #: adminapp/templates/components/common/breadcrumb.html:10
 #: adminapp/templates/components/navigation/scanner_tabs.html:7
 msgid "Webscanner"
