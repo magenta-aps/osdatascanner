@@ -1,6 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.26.4, 3rd February 2025
+
+"MQ is for Message Queue"
 
 ### New in this release
 

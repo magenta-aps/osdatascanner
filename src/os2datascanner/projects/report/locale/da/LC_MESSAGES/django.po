@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-28 09:40+0100\n"
+"POT-Creation-Date: 2025-02-03 10:20+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1173,7 +1173,7 @@ msgstr "Håndteringsstatusser"
 
 #: reportapp/templates/dpo_statistics_template.html:242
 #: reportapp/templates/dpo_statistics_template.html:276
-#: reportapp/templates/user_statistics_template.html:165
+#: reportapp/templates/user_statistics_template.html:155
 msgid "Development overview"
 msgstr "Udviklingsoverblik"
 
@@ -1994,45 +1994,32 @@ msgstr "Uhåndterede resultater"
 msgid "Number of unhandled results per scanner job"
 msgstr "Antal uhåndterede resultater pr. scannerjob"
 
+#: reportapp/templates/user_statistics_template.html:130
 #: reportapp/templates/user_statistics_template.html:131
-#: reportapp/templates/user_statistics_template.html:132
 msgid "Delete results from"
 msgstr "Slet resultater fra"
 
-#: reportapp/templates/user_statistics_template.html:138
+#: reportapp/templates/user_statistics_template.html:137
 msgid "You are about to delete all results from the scannerjob"
 msgstr "Du er ved at slette alle resultater fra scannerjobbet"
 
-#: reportapp/templates/user_statistics_template.html:138
+#: reportapp/templates/user_statistics_template.html:137
 msgid "associated with the user"
 msgstr "tilknyttet brugeren"
 
-#: reportapp/templates/user_statistics_template.html:138
+#: reportapp/templates/user_statistics_template.html:137
 msgid "Are you sure? This action cannot be reversed."
 msgstr "Er du sikker? Denne handling kan ikke fortrydes."
 
-#: reportapp/templates/user_statistics_template.html:144
-msgid ""
-"This functionality is disabled. Only superusers have permission to delete "
-"results from scanner jobs"
-msgstr ""
-"Denne funktion er ikke slået til. Kun superbrugere har tilladelse til at "
-"slette resultater fra scannerjob"
-
-#: reportapp/templates/user_statistics_template.html:145
-msgid "Only superusers have permission to delete results from scanner jobs"
-msgstr ""
-"Kun superbrugere har tilladelse til at slette resultater fra scannerjob"
-
-#: reportapp/templates/user_statistics_template.html:158
+#: reportapp/templates/user_statistics_template.html:148
 msgid "There are no unhandled results to show"
 msgstr "Der er ingen uhåndterede resultater at vise"
 
-#: reportapp/templates/user_statistics_template.html:166
+#: reportapp/templates/user_statistics_template.html:156
 msgid "Accumulated matches over the past 52 weeks"
 msgstr "Akkumulerede matches over de sidste 52 uger"
 
-#: reportapp/templates/user_statistics_template.html:172
+#: reportapp/templates/user_statistics_template.html:162
 msgid ""
 "Chart of the change in the amount of the user's unhandled matches over the "
 "past year on a weekly basis."
@@ -2040,7 +2027,7 @@ msgstr ""
 "Graf over udviklingen af antallet af brugerens uhåndterede resultater i "
 "løbet af det sidste år på ugentlig basis."
 
-#: reportapp/templates/user_statistics_template.html:179
+#: reportapp/templates/user_statistics_template.html:169
 msgid "False positive percentage:"
 msgstr "Falsk positiv procentdel:"
 
@@ -2200,58 +2187,58 @@ msgstr "Tilbageholdte matches"
 msgid "Results older than %(days)s days"
 msgstr "Resultater ældre end %(days)s dage"
 
-#: reportapp/views/statistics_views.py:749
+#: reportapp/views/statistics_views.py:753
 #, python-format
 msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
 
-#: reportapp/views/statistics_views.py:861
+#: reportapp/views/statistics_views.py:865
 msgid "Jan"
 msgstr "Jan"
 
-#: reportapp/views/statistics_views.py:861
+#: reportapp/views/statistics_views.py:865
 msgid "Feb"
 msgstr "Feb"
 
-#: reportapp/views/statistics_views.py:861
+#: reportapp/views/statistics_views.py:865
 msgid "Mar"
 msgstr "Mar"
 
-#: reportapp/views/statistics_views.py:861
+#: reportapp/views/statistics_views.py:865
 msgid "Apr"
 msgstr "Apr"
 
-#: reportapp/views/statistics_views.py:862
+#: reportapp/views/statistics_views.py:866
 msgid "May"
 msgstr "Maj"
 
-#: reportapp/views/statistics_views.py:862
+#: reportapp/views/statistics_views.py:866
 msgid "Jun"
 msgstr "Jun"
 
-#: reportapp/views/statistics_views.py:862
+#: reportapp/views/statistics_views.py:866
 msgid "Jul"
 msgstr "Jul"
 
-#: reportapp/views/statistics_views.py:862
+#: reportapp/views/statistics_views.py:866
 msgid "Aug"
 msgstr "Aug"
 
-#: reportapp/views/statistics_views.py:863
+#: reportapp/views/statistics_views.py:867
 msgid "Sep"
 msgstr "Sep"
 
-#: reportapp/views/statistics_views.py:863
+#: reportapp/views/statistics_views.py:867
 msgid "Oct"
 msgstr "Okt"
 
-#: reportapp/views/statistics_views.py:863
+#: reportapp/views/statistics_views.py:867
 msgid "Nov"
 msgstr "Nov"
 
-#: reportapp/views/statistics_views.py:863
+#: reportapp/views/statistics_views.py:867
 msgid "Dec"
 msgstr "Dec"
 
@@ -2314,6 +2301,17 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#~ msgid ""
+#~ "This functionality is disabled. Only superusers have permission to delete "
+#~ "results from scanner jobs"
+#~ msgstr ""
+#~ "Denne funktion er ikke slået til. Kun superbrugere har tilladelse til at "
+#~ "slette resultater fra scannerjob"
+
+#~ msgid "Only superusers have permission to delete results from scanner jobs"
+#~ msgstr ""
+#~ "Kun superbrugere har tilladelse til at slette resultater fra scannerjob"
 
 #, python-brace-format
 #~ msgid "Results older than {retention_days} days"
