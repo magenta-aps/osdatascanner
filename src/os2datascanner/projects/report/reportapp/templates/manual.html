@@ -276,9 +276,9 @@
           <h3>{% trans "Retention policy" %}</h3>
 
           <p>
-            {% blocktrans trimmed %}
-              Your organization has a retention policy of {{ organization.retention_days }} days. This means that users are
-              allowed to keep potential results for up to {{ organization.retention_days }} days, before they must be handled in
+            {% blocktrans trimmed with retention_days=organization.retention_days %}
+              Your organization has a retention policy of {{ retention_days }} days. This means that users are
+              allowed to keep potential results for up to {{ retention_days }} days, before they must be handled in
               an appropriate way.
             {% endblocktrans %}
           </p>
