@@ -1,5 +1,14 @@
 # Changelog
 
+## Next Release
+
+### Bugfixes
+
+- Fixed some translations issues in the report module manual.
+
+- Accessing the report module manual without being logged in now correctly redirects to the
+  login page.
+
 ## Version 3.26.4, 3rd February 2025
 
 "MQ is for Message Queue"
