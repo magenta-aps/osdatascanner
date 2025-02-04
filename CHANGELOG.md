@@ -9,6 +9,8 @@
 - Accessing the report module manual without being logged in now correctly redirects to the
   login page.
 
+- Correctly send CleanProblemMessages when calling the ScannerQuerySet.delete-method.
+
 ## Version 3.26.4, 3rd February 2025
 
 "MQ is for Message Queue"

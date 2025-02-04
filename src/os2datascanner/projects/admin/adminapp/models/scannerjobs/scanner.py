@@ -59,7 +59,7 @@ base_dir = os.path.dirname(
 
 class ScannerQuerySet(InheritanceQuerySet):
     def delete(self):
-        scanners = self.values_list("pk", flat=True)
+        scanners = list(self.values_list("pk", flat=True))
         CleanProblemMessage.send(scanners, publisher="Scanner.objects.delete()")
         logger.info('CleanProblemMessage published to the events_queue with '
                     f'the list of scanners: {scanners}')
