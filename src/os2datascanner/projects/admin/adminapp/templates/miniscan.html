@@ -98,6 +98,15 @@
                     aria-label="{% trans 'Clear' %} {% trans 'content' %}"
                     title="{% trans 'Clear' %} {% trans 'content' %}"
                     onClick="window.location.reload();">{% trans "Clear" %}</button>
+            <a href="#create-rule-modal"
+               data-modal="modal:open"
+               class="button button--text-button"
+               aria-label="{% trans 'Save rule' %}"
+               hx-get="{% url 'miniscan_customrule_add' %}"
+               hx-include="#id_rule"
+               hx-ext="path-params"
+               hx-target="#miniscan_form_wrapper"
+               title="{% trans 'Save rule' %}">{% trans "Save" %}</a>
           </div>
 
           <h3>{% trans "Scan result" %}</h3>
@@ -133,4 +142,20 @@
       </table>
     </div>
   </div>
+
+
+  <div class="modal__content"
+       id="create-rule-modal"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="create-rule-modal-title"
+       aria-hidden="true"
+       style="height:100vh;
+              overflow-y: scroll">
+    <!-- I don't like setting height here but it feels overkill to create a new class for one attribute -->
+    {% include "components/miniscanner/miniscanner_customrule_form.html" %}
+    {% include "components/feedback/snackbarNew.html" %}
+
+  </div>
+
 {% endblock %}

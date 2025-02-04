@@ -1,10 +1,15 @@
 import json
 import structlog
 
+from django import forms
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages as django_messages
 from django.db.models import F
+from django.urls import reverse
+from django.http import HttpResponse
+
 
 from ..models.rules import CustomRule
 
@@ -15,7 +20,8 @@ from os2datascanner.engine2.model.utilities.temp_resource import (
         NamedTemporaryResource)
 from os2datascanner.engine2.pipeline import messages, worker
 from os2datascanner.projects.admin import settings
-
+from .validators import customrule_validator
+from .rule_views import RuleCreate
 
 logger = structlog.get_logger("adminapp")
 
@@ -32,6 +38,7 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
     def get_context_data(self):
         context = super().get_context_data()
+
         context["customrule_list"] = CustomRule.objects.annotate(rule_field=F("_rule"))
 
         return context
@@ -131,3 +138,35 @@ def execute_mini_scan(request):
             replies.append(m)
 
     return render(request, "components/miniscanner/miniscan_results.html", context)
+
+
+class CustomRuleCreateMiniscan(RuleCreate):
+    model = CustomRule
+    template_name = "components/miniscanner/miniscanner_customrule_form.html"
+    fields = ['name', 'description', 'sensitivity', 'organization']
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.GET:
+            form.fields['rule'] = forms.JSONField(
+                initial=json.loads(self.request.GET['rule']),
+                validators=[customrule_validator])
+        else:
+            form.fields['rule'] = forms.JSONField(
+                validators=[customrule_validator])
+
+        return form
+
+    def form_valid(self, form):
+        super().form_valid(form)
+
+        if self.request.POST:
+            django_messages.add_message(
+                    self.request,
+                    django_messages.SUCCESS,
+                    ("Success"),
+                    extra_tags="auto_close"
+                )
+        response = HttpResponse()
+        response.headers['HX-Redirect'] = reverse('miniscan')
+        return response

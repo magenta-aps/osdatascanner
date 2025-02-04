@@ -45,7 +45,7 @@ from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCom
                                   DeleteRemovedScannerView)
 
 
-from .views.miniscanner_views import MiniScanner, execute_mini_scan
+from .views.miniscanner_views import MiniScanner, execute_mini_scan, CustomRuleCreateMiniscan
 
 from .views.scanner_views import (ScannerAskRun, ScannerCleanupStaleAccounts, ScannerCopy,
                                   ScannerCreate, ScannerDelete, ScannerList, ScannerRemove,
@@ -171,6 +171,8 @@ if settings.ENABLE_MINISCAN:
     urlpatterns.extend([
         re_path(r"^miniscan/$", MiniScanner.as_view(), name="miniscan"),
         re_path(r"^miniscan/run/$", execute_mini_scan, name="miniscan_run"),
+        re_path(r"^miniscan/rule/$", CustomRuleCreateMiniscan.as_view(),
+                name="miniscan_customrule_add"),
     ])
 
 # Iteratively add all scanner urls for consistent naming
