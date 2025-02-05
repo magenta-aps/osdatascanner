@@ -66,6 +66,8 @@ LOGOUT_REDIRECT_URL = ""
 # login and logout urls
 LOGOUT_URL = ""
 OIDC_OP_LOGOUT_URL_METHOD = "os2datascanner.projects.report.reportapp.views.views.oidc_op_logout_url_method"
+OIDC_CALLBACK_CLASS = "os2datascanner.projects.report.reportapp.utils.OIDCCallback"
+OIDC_CALLBACK_WAIT = 1
 
 # [installation]
 INSTALLED_APPS = [
