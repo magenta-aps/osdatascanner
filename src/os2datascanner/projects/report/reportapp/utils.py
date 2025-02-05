@@ -1,5 +1,4 @@
 import re
-import time
 from copy import deepcopy
 import json
 import hashlib
@@ -18,7 +17,6 @@ from .models.documentreport import DocumentReport
 from os2datascanner.engine2.utilities.equality import TypePropertyEquality
 from os2datascanner.projects.report.organizations.models import (
     Alias, AliasType, Organization, Account)
-from mozilla_django_oidc.views import OIDCAuthenticationCallbackView
 
 logger = structlog.get_logger("reportapp")
 
@@ -134,14 +132,6 @@ def user_is(roles, role_cls):
     """Checks whether a list of roles contains a certain role type (role_cls)"""
     return any(isinstance(role, role_cls)
                for role in roles)
-
-
-class OIDCCallback(OIDCAuthenticationCallbackView):
-    # Relates to this issue: https://github.com/mozilla/mozilla-django-oidc/issues/435
-    # and is merely an attempt to give time enough for the session to be saved.
-    def get(self, request):
-        time.sleep(settings.OIDC_CALLBACK_WAIT)
-        super().get(request)
 
 
 class OIDCAuthenticationBackend(auth.OIDCAuthenticationBackend):
