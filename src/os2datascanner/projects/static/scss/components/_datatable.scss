@@ -943,7 +943,11 @@ $font-size_subtitle: 0.875rem;
           color: var(--color-primary-dark);
           opacity: 50%;
           font-size: $icon-size;
-          font-variation-settings: "opsz" 20;
+          font-variation-settings:
+            "FILL" 1,
+            "wght" 400,
+            "GRAD" 0,
+            "opsz" 20;
         }
       }
     }
@@ -1025,7 +1029,7 @@ $font-size_subtitle: 0.875rem;
 
       @media (min-width: $break-lg) {
         /* Add right padding to the last numeral column in a sequence UNLESS it is the last column in the row */
-        &:has(+ :not(.column--numeral)):not(:last-child) {
+        &:is(:not(col)):has(+ :not(.column--numeral)):not(:last-child) {
           /* If the next sibling is not a column--numeral, then the last numeral column needs a right padding to optimize visual navigation */
           padding-right: var(--datatable-cell-padding);
         }
@@ -1066,14 +1070,8 @@ $font-size_subtitle: 0.875rem;
       }
     }
 
-    &--loading {
-      /* The element shown while content is loaded. */
-      text-align: center;
-      // NOTE: why is this not used anywhere? Did it get deprecated in a refactor?
-    }
-
+    &--loading,
     &--nodata {
-      /* The element shown, when there's no content to show for the selected filter. */
       // Visual
       color: var(--color-text-secondary);
 
@@ -1232,7 +1230,22 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         $pill-icon-size: 1.25rem; // 20px
         font-size: $pill-icon-size;
         width: $pill-icon-size;
-        font-variation-settings: "opsz" 20;
+      }
+
+      &.material-symbols {
+        font-variation-settings:
+          "FILL" 1,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 20;
+      }
+
+      &.material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 20;
       }
     }
 
@@ -1338,6 +1351,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
               padding-top: 0.25rem;
               color: var(--color-btn-neutral);
               font-variation-settings:
+                "FILL" 1,
+                "wght" 400,
                 "GRAD" -25,
                 "opsz" 20;
               font-size: 18px;
@@ -1601,10 +1616,23 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
             .material-symbols,
             .material-symbols-outlined {
-              font-variation-settings:
-                "wght" 500,
-                "GRAD" -25 !important;
               color: var(--color-text-white);
+            }
+
+            .material-symbols {
+              font-variation-settings:
+                "FILL" 1,
+                "wght" 500,
+                "GRAD" -25,
+                "opsz" 24 !important;
+            }
+
+            .material-symbols-outlined {
+              font-variation-settings:
+                "FILL" 0,
+                "wght" 500,
+                "GRAD" -25,
+                "opsz" 24 !important;
             }
           }
         }
@@ -1926,7 +1954,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // Redmine ticket: [#60320]
 
 .leaderoverview-table {
-  min-width: 70rem;
+  font-size: 0.875rem; // 14px
 
   .column {
     &--employee {
@@ -1946,31 +1974,69 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           font-size: $font-size_subtitle;
         }
       }
+
+      .tooltip {
+        .overflow-ellipsis {
+          word-break: break-all;
+
+          // Only applying the ellipsis on pc-screens
+          @media (min-width: $break-lg) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+          }
+        }
+      }
     }
 
-    &--matches {
-      // Empty
-    }
+    &--matches-old,
+    &--matches-withheld,
+    &--matches-all {
+      width: max(16vw, 140px);
 
-    &--withheld {
-      // Empty
+      @media (min-width: $break-lg) {
+        width: max(14vw, 180px);
+      }
     }
 
     &--status {
-      // Empty
+      width: 9.625rem; // 154px
+      /* NOTE: This needs to match the rendered width of the widest tag/status element. */
+    }
+
+    &:not(.column--actions) {
+      /* NOTE: this could be a candidate for a universal style, if we added .column--checkbox to the :not() as well. */
+      @media (min-width: 1760px) {
+        width: auto;
+      }
     }
 
     &--actions {
-      // The "fixed" column of this specific table
-      width: 15.5rem; // 248px;
+      @media (max-width: 1439px) {
+        width: 7.5rem; // 120px
+
+        .wide-screen-version {
+          display: none !important;
+        }
+      }
+
+      @media (min-width: $break-xl) {
+        width: 14.125rem; // 226px
+
+        .narrow-screen-version {
+          display: none !important;
+        }
+      }
 
       .button-group {
         flex-wrap: nowrap;
-      }
+        justify-content: flex-end;
 
-      #expand_more {
-        // The caret icon
-        color: var(--color-primary-dark);
+        #expand_more {
+          // The caret icon that expands the "hidden" <tr>
+          color: var(--color-primary-dark);
+        }
       }
     }
   }

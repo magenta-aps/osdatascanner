@@ -143,10 +143,9 @@
   &--caret-button {
     // ***** For - you've guessed it - caret buttons. We primarily use them to illustrate "sort by" and "expand/collapse" in tables *****
     padding: 0;
-    margin-left: 0.25rem;
     border: var(--btn-border-default) transparent;
     background-color: transparent !important;
-    height: 26px; // This needs to be redone after the table refactoring
+    height: 24px; // This needs to be redone after the table refactoring
 
     .material-icons,
     .material-symbols,
@@ -217,13 +216,53 @@
       border: var(--btn-border-default) var(--color-primary-dark);
       background-color: var(--color-primary-dark) !important;
 
-      .material-symbols,
+      .material-symbols {
+        font-variation-settings:
+          "FILL" 1,
+          "wght" 500,
+          "GRAD" -25,
+          "opsz" 24 !important;
+      }
+
       .material-symbols-outlined {
         font-variation-settings:
+          "FILL" 0,
           "wght" 500,
-          "GRAD" -25 !important;
+          "GRAD" -25,
+          "opsz" 24 !important;
+      }
+
+      .material-symbols,
+      .material-symbols-outlined {
         color: var(--color-text-white);
       }
+    }
+  }
+
+  &--datatable {
+    /* NOTE: This is a part of an attempt at changing the readibility for the datatables. This will
+    need to be standardized properly when we've settled on a style for datatable UI elements. */
+    font-size: 14px;
+    padding: 6px 8px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+
+    .material-symbols {
+      font-size: 14px;
+      width: 14px;
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+    }
+
+    &.button--icon {
+      padding: 6px;
+      width: 24px;
     }
   }
 
@@ -500,6 +539,7 @@
     font-size: $icon-size;
     width: fit-content;
     font-variation-settings:
+      "FILL" 1,
       "wght" 300,
       "GRAD" -25,
       "opsz" 20;

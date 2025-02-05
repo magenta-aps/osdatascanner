@@ -1,20 +1,37 @@
 {% load i18n %}
 
 <tr class="datatablex__row employee_row">
-  <td class="column--employee">
+  <td class="column column--employee">
     <div class="employee__container">
-      <div class="overflow-ellipsis">
-        <span class="employee__fullname">{{ employee.get_full_name|title }}</span>
-      </div>
+      <span class="employee__fullname">{{ employee.get_full_name|title }}</span>
 
-      <div class="overflow-ellipsis">
-        <span class="employee__username">{{ employee.username|lower }}</span>
+      <div class="tooltip">
+        <div class="overflow-ellipsis">
+          <span class="employee__username" data-tooltip-text>{{ employee.username|lower }}</span>
+        </div>
+      </div>
+    </div>
+  </td>
+
+
+
+  <td class="column column--matches-all column--numeral">
+    <div class="matches_container">
+      {% if employee.false_positive_alarm %}
+        <i id="warning" class="material-symbols"
+          title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
+          warning
+        </i>
+      {% endif %}
+
+      <div class="matches">
+        <span class="datatable-numeral">{{ employee.match_count }}</span>
       </div>
     </div>
   </td>
 
   {% if show_retention_column %}
-    <td class="column--old column--numeral">
+    <td class="column column--matches-old column--numeral">
       <div class="matches_container">
         <div class="matches">
           <span class="datatable-numeral">{{ employee.old_matches }}</span>
@@ -23,22 +40,8 @@
     </td>
   {% endif %}
 
-  <td class="column--matches column--numeral">
-    <div class="matches_container">
-      <div class="matches">
-        <span class="datatable-numeral">{{ employee.match_count }}</span>
-      </div>
-      {% if employee.false_positive_alarm %}
-        <i id="warning" class="material-symbols"
-          title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
-          warning
-        </i>
-      {% endif %}
-    </div>
-  </td>
-
   {% if perms.os2datascanner_report.see_withheld_documentreport %}
-    <td class="column--withheld column--numeral">
+    <td class="column column--matches-withheld column--numeral">
       <div class="matches_container">
         <div class="matches">
           <span class="datatable-numeral">{{ employee.withheld_matches }}</span>
@@ -47,19 +50,33 @@
     </td>
   {% endif %}
 
-  <td class="column--status">
-    <div class="status tag" data-status="{{ employee.match_status }}">{{ employee.status }}</div>
+  <td class="column column--attribute column--status">
+    <div class="td__flex-container">
+      <div class="status tag" data-status="{{ employee.match_status }}">{{ employee.status }}</div>
+    </div>
   </td>
 
-  <td class="column--actions">
+  <td class="column column--actions">
     <div class="action-wrapper">
       <div class="button-group">
         <a href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}"
-           class="button button--text-button"
+           class="button button--datatable button--icon narrow-screen-version"
            aria-label="{% trans "Send notification to" %} {{ employee.get_full_name }}"
-           title="{% trans "Send notification to" %} {{ employee.get_full_name }}">{% trans "Send notification" %}</a>
+           title="{% trans "Send notification to" %} {{ employee.get_full_name }}">
+          <i id="notifications" class="material-symbols" aria-hidden="true">notifications</i>
+        </a>
+
+        <a href="mailto:{{ employee.email }}?body=Matches: {{ employee.match_count }}"
+           class="button button--datatable wide-screen-version"
+           aria-label="{% trans "Send notification to" %} {{ employee.get_full_name }}"
+           title="{% trans "Send notification to" %} {{ employee.get_full_name }}">
+          <i id="notifications" class="material-symbols" aria-hidden="true">notifications</i>
+ 
+          <span>{% trans "Send notification" %}</span>
+        </a>
+ 
         <button type="button" class="overview-expand button button--caret-button" aria-label="{% trans "Show/hide overview" %}" title="{% trans "Show/hide overview" %}">
-          <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+          <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
         </button>
       </div>
     </div>
