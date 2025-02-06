@@ -883,7 +883,7 @@ msgid "Probability"
 msgstr "Sandsynlighed"
 
 #: reportapp/templates/components/reports/match_table.html:8
-#: reportapp/templates/leader_statistics_template.html:131
+#: reportapp/templates/leader_statistics_template.html:108
 #: reportapp/templates/remediator_content.html:13
 #: reportapp/templates/scannerjobs/scannerjob_list.html:21
 #: reportapp/templates/undistributed_content.html:7
@@ -950,13 +950,13 @@ msgstr "Sti"
 #: reportapp/templates/components/reports/match_table.html:133
 #: reportapp/templates/components/reports/match_table.html:137
 #: reportapp/templates/components/reports/match_table.html:138
-#: reportapp/templates/leader_statistics_template.html:171
+#: reportapp/templates/leader_statistics_template.html:173
 #: reportapp/templates/manual.html:219 reportapp/views/statistics_views.py:637
 msgid "Status"
 msgstr "Status"
 
 #: reportapp/templates/components/reports/match_table.html:149
-#: reportapp/templates/leader_statistics_template.html:191
+#: reportapp/templates/leader_statistics_template.html:193
 #: reportapp/templates/scannerjobs/scannerjob_list.html:23
 msgid "Actions"
 msgstr "Handlinger"
@@ -966,20 +966,22 @@ msgstr "Handlinger"
 msgid "Show more matches"
 msgstr "Vis flere matches"
 
-#: reportapp/templates/components/statistics/employee_template.html:33
+#: reportapp/templates/components/statistics/employee_template.html:22
 msgid "The user's false positive rate is unusually high:"
 msgstr "Brugerens andel af falske positive resultater er ualmindeligt høj:"
 
-#: reportapp/templates/components/statistics/employee_template.html:59
-#: reportapp/templates/components/statistics/employee_template.html:60
+#: reportapp/templates/components/statistics/employee_template.html:62
+#: reportapp/templates/components/statistics/employee_template.html:63
+#: reportapp/templates/components/statistics/employee_template.html:69
+#: reportapp/templates/components/statistics/employee_template.html:70
 msgid "Send notification to"
 msgstr "Send påmindelse til"
 
-#: reportapp/templates/components/statistics/employee_template.html:60
+#: reportapp/templates/components/statistics/employee_template.html:73
 msgid "Send notification"
 msgstr "Send påmindelse"
 
-#: reportapp/templates/components/statistics/employee_template.html:61
+#: reportapp/templates/components/statistics/employee_template.html:76
 msgid "Show/hide overview"
 msgstr "Vis/skjul overblik"
 
@@ -1310,16 +1312,16 @@ msgstr "Klik her for at eksportere leder-data som en csv-fil"
 msgid "Search for employee"
 msgstr "Søg efter medarbejder"
 
-#: reportapp/templates/leader_statistics_template.html:90
+#: reportapp/templates/leader_statistics_template.html:91
 msgid "Employee"
 msgstr "Medarbejder"
 
-#: reportapp/templates/leader_statistics_template.html:108
+#: reportapp/templates/leader_statistics_template.html:127
 #, python-format
-msgid "Results older than %(retention_days)s days"
-msgstr "Resultater ældre end %(retention_days)s dage"
+msgid "Over %(retention_days)s days"
+msgstr "Over %(retention_days)s dage"
 
-#: reportapp/templates/leader_statistics_template.html:110
+#: reportapp/templates/leader_statistics_template.html:130
 #, python-format
 msgid ""
 "The number of results stemming from a source, which is older than "
@@ -1332,11 +1334,11 @@ msgstr ""
 "opbevares i maksimalt %(retention_days)s dage. Resultater ældre end dette "
 "bør håndteres hurtigst muligt."
 
-#: reportapp/templates/leader_statistics_template.html:150
+#: reportapp/templates/leader_statistics_template.html:152
 msgid "Withheld"
 msgstr "Tilbageholdte"
 
-#: reportapp/templates/leader_statistics_template.html:152
+#: reportapp/templates/leader_statistics_template.html:154
 msgid ""
 "Withheld results are results that aren't yet visible to the user, but can be "
 "delegated by a superuser. These results won't count in the development "
@@ -1346,7 +1348,7 @@ msgstr ""
 "brugeren, men som kan uddeles af en superbruger. Disse resultater tæller "
 "ikke med i udviklingsoverblikket."
 
-#: reportapp/templates/leader_statistics_template.html:173
+#: reportapp/templates/leader_statistics_template.html:175
 #, python-format
 msgid ""
 "The status of each user is determined by how many matches that user has, and "
@@ -1359,11 +1361,11 @@ msgstr ""
 "“Færdig”-statussen har ingen resultater. En bruger med “Accepteret” har "
 "håndteret mindst 75%% af sine seneste resultater."
 
-#: reportapp/templates/leader_statistics_template.html:205
+#: reportapp/templates/leader_statistics_template.html:207
 msgid "Loading employee ..."
 msgstr "Indlæser medarbejder ..."
 
-#: reportapp/templates/leader_statistics_template.html:210
+#: reportapp/templates/leader_statistics_template.html:212
 msgid "No employees found."
 msgstr "Ingen medarbejdere fundet."
 
@@ -2392,6 +2394,9 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
+#~ msgid "Older results"
+#~ msgstr "Ældre resultater"
+
 #~ msgid ""
 #~ "This functionality is disabled. Only superusers have permission to delete "
 #~ "results from scanner jobs"
@@ -2421,9 +2426,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
 #~ msgid "Withheld results"
 #~ msgstr "Tilbageholdte resultater"
-
-#~ msgid "Old results"
-#~ msgstr "Gamle resultater"
 
 #, python-format
 #~ msgid ""
