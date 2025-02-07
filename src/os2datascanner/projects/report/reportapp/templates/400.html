@@ -1,0 +1,18 @@
+{% extends "error_pages/error_base.html" %}
+
+{% load i18n %}
+
+{% block page_title %}
+  {% trans "Bad Request" %}
+{% endblock page_title %}
+
+{% block error_heading %}
+  {% trans "Something went wrong!" %}
+{% endblock error_heading %}
+
+{% block error_content %}
+  <p>
+    {% trans "Something went wrong while trying to access this page. Please click the button to refresh the page correctly." %}
+  </p>
+  <a href="{% url "index" %}" class="button button--cta-button">{% trans "Refresh" %}</a>
+{% endblock error_content %}
