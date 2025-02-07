@@ -6,6 +6,8 @@
 
 - New 400 error page in the report module with link to home page.
 
+- Added tracking of more stats in scanner jobs including time spend, total size, and object count.
+
 ### Bugfixes
 
 - Fixed some translations issues in the report module manual.

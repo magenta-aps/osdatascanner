@@ -462,6 +462,7 @@ class StatusMessage(NamedTuple):
     object_type: Optional[str] = None
     matches_found: Optional[int] = None
     skipped_by_last_modified: Optional[int] = None
+    process_time_worker: Optional[float] = None
 
     def to_json_object(self):
         return {
@@ -475,7 +476,9 @@ class StatusMessage(NamedTuple):
             "skipped_by_last_modified": self.skipped_by_last_modified,
 
             "object_size": self.object_size,
-            "object_type": self.object_type
+            "object_type": self.object_type,
+
+            "process_time_worker": self.process_time_worker,
         }
 
     @staticmethod
@@ -489,7 +492,8 @@ class StatusMessage(NamedTuple):
                 matches_found=obj.get("matches_found"),
                 skipped_by_last_modified=obj.get("skipped_by_last_modified"),
                 object_size=obj.get("object_size"),
-                object_type=obj.get("object_type"))
+                object_type=obj.get("object_type"),
+                process_time_worker=obj.get("process_time_worker"))
 
     _deep_replace = _deep_replace
 

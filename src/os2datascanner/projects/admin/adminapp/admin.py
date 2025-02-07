@@ -20,7 +20,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .models.authentication import Authentication
 from .models.apikey import APIKey
-from .models.scannerjobs.scanner_helpers import CoveredAccount
+from .models.scannerjobs.scanner_helpers import CoveredAccount, MIMETypeProcessStat
 from .models.usererrorlog import UserErrorLog
 from .models.rules import CustomRule, RuleCategory
 from .models.scannerjobs.scanner import (ScanStatus,
@@ -129,6 +129,12 @@ class ScannerAdmin(admin.ModelAdmin):
 @admin.register(CoveredAccount)
 class CoveredAccountAdmin(admin.ModelAdmin):
     list_display = ('account', 'scanner', 'scan_status')
+
+
+@admin.register(MIMETypeProcessStat)
+class MIMETypeProcessStatsAdmin(admin.ModelAdmin):
+    list_display = ('scan_status', 'mime_type', 'total_time', 'total_size', 'object_count',)
+    list_filter = ('scan_status', 'scan_status__scanner',)
 
 
 @admin.register(ScheduledCheckup)
