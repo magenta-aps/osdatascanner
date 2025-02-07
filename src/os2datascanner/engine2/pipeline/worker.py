@@ -6,7 +6,7 @@ from .processor import message_received_raw as processor_handler
 from .matcher import message_received_raw as matcher_handler
 from .tagger import message_received_raw as tagger_handler
 from . import messages
-
+import time
 
 logger = structlog.get_logger("worker")
 
@@ -115,6 +115,9 @@ def tag(sm, msg):
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 too high cognitive complexity
     global total_matches
     total_matches = 0
+
+    process_time_start = time.process_time()
+
     try:
         for channel, message in process(source_manager, body):
             if channel in WRITES_QUEUES:
@@ -122,12 +125,18 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
             else:
                 logger.error(f"unexpected message to queue {channel}")
     finally:
+        process_time_total = time.process_time() - process_time_start
+
         message = messages.ConversionMessage.from_json_object(body)
         object_size = 0
+
+        computed_type = "application/octet-stream"
         try:
             resource = message.handle.follow(source_manager)
             object_size = TimeoutRetrier(max_tries=3, seconds=10).run(
                     resource.get_size)
+            computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
+                    resource.compute_type)
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in
             # principle) be lightweight, so there may be something wrong with
@@ -144,7 +153,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                 object_size=object_size,
                 # Computing the MIME type is unnecessary -- we don't use it for
                 # anything, we just need it to be present(?)
-                object_type="application/octet-stream",
+                object_type=computed_type,
+                process_time_worker=process_time_total,
                 matches_found=total_matches).to_json_object())
 
         # Clean up after temporary files, but leave connections open

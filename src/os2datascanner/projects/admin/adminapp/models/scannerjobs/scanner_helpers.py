@@ -360,3 +360,37 @@ class CoveredAccount(models.Model):
         #
         #     CoveredAccount.objects.filter(account=..., scanner=...).latest()
         get_latest_by = "scan_status__scan_tag__time"
+
+
+class MIMETypeProcessStat(models.Model):
+    scan_status = models.ForeignKey(
+        ScanStatus,
+        on_delete=models.CASCADE,
+        related_name="process_stats"
+    )
+
+    mime_type = models.CharField(
+        max_length=256,
+        verbose_name=_("MIME type"),
+    )
+
+    total_time = models.DurationField(
+        default=0
+    )
+
+    total_size = models.PositiveBigIntegerField(
+        default=0,
+        verbose_name=_("Total size in bytes")
+    )
+
+    object_count = models.PositiveIntegerField(
+        default=0,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['scan_status', 'mime_type'],
+                name='unique_MIME_type_scan_status'
+            )
+        ]

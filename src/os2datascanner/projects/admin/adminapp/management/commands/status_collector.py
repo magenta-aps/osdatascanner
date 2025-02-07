@@ -17,7 +17,9 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
+from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat
 from ...notification import send_mail_upon_completion
+from datetime import timedelta
 
 logger = structlog.get_logger("status_collector")
 SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
@@ -75,6 +77,30 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
     snapshot_param = settings.SNAPSHOT_PARAMETER
 
     if scan_status:
+        if message.process_time_worker is not None and message.object_type is not None:
+            # select for update to lock
+            locked_stat_qs = MIMETypeProcessStat.objects.select_for_update(
+                of=('self',)).filter(
+                scan_status=scan_status,
+                mime_type=message.object_type
+                )
+            mime_type_process_stats = locked_stat_qs.first()
+
+            if mime_type_process_stats:
+                locked_stat_qs.update(
+                    total_time=F('total_time') + timedelta(seconds=message.process_time_worker),
+                    total_size=F('total_size') + message.object_size,
+                    object_count=F('object_count') + 1
+                )
+            else:
+                MIMETypeProcessStat.objects.create(
+                    scan_status=scan_status,
+                    mime_type=message.object_type,
+                    total_size=message.object_size,
+                    object_count=1,
+                    total_time=timedelta(seconds=message.process_time_worker)
+                    )
+
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()
         n_total = scan_status.total_objects
