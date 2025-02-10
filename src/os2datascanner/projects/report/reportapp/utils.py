@@ -3,6 +3,7 @@ from copy import deepcopy
 import json
 import hashlib
 import warnings
+from time import sleep
 import structlog
 
 from django.conf import settings
@@ -21,7 +22,6 @@ from os2datascanner.projects.report.organizations.models import (
     Alias, AliasType, Organization, Account)
 
 from mozilla_django_oidc.views import OIDCAuthenticationCallbackView
-
 
 logger = structlog.get_logger("reportapp")
 
@@ -156,10 +156,12 @@ class OIDCCallback(OIDCAuthenticationCallbackView):
 
             new_query = request.GET.copy()
             new_query["retry_counter"] = retry_counter + 1
-            logger.warning("SSO failed, redirecting to try again! ",
+            logger.warning("SSO failed, sleeping 1s and redirecting to try again! ",
                            retry_counter=retry_counter,
                            exc_info=True
                            )
+            sleep(1)
+            logger.warning("Slept 1 second. Redirecting ...")
             return redirect(request.path + "?" + new_query.urlencode())
 
 
