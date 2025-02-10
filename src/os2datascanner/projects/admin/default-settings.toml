@@ -41,6 +41,10 @@ SESSION_COOKIE_NAME = "sessionid"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#csrf-trusted-origins
 CSRF_TRUSTED_ORIGINS = []
 
+# TLS reverse proxy settings
+USE_X_FORWARDED_HOST = false
+SECURE_PROXY_SSL_HEADER = []
+
 REPORT_URL = "*"
 
 # [keycloak]
