@@ -25,3 +25,5 @@ repos:
     hooks:
     -   id: prettier
         types: [scss]
+        additional_dependencies:
+        -   prettier@3.4.2
