@@ -115,7 +115,7 @@ Lint SCSS files:
   stage: lint
   script:
     # Install prettier in this docker container
-    - npm install --save-dev --save-exact -g prettier
+    - npm install --save-dev --save-exact -g prettier@3.4.2
 
     # Run prettier on all SCSS files
     - prettier --check "**/*.scss"
