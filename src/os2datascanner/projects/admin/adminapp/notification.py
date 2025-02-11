@@ -14,88 +14,115 @@ from os2datascanner.utils.template_utilities import (
 logger = structlog.get_logger("adminapp")
 
 
-def send_mail_upon_completion(scanner: Scanner, scan_status: ScanStatus):
+class NotificationEmail:
+
+    def get_txt_templates(self):
+        return loader.select_template(
+            get_localised_template_names([self.txt_template_name]))
+
+    def get_html_templates(self):
+        return loader.select_template(
+            get_localised_template_names([self.html_template_name]))
+
+    def send(self, msg):
+        if msg:
+            send_msg(msg)
+        else:
+            raise ValueError("No message provided for send-method!")
+
+    def notify(self):
+        context = self.create_context()
+        logger.info(f"Created context for info mail: {context}")
+
+        email = self.get_email()
+        if not email:
+            raise ValueError("Tried to notify contact email about invalid scanner, but found no "
+                             "email address.",
+                             organization=self.scanner.organization,
+                             scanner=self.scanner)
+
+        msg = create_msg(context, self.subject, email,
+                         self.get_txt_templates(), self.get_html_templates())
+        self.send(msg)
+
+
+class FinishedScannerNotificationEmail(NotificationEmail):
     """
     Send a mail to scannerjob responsible when a scannerjob has finished.
     """
 
-    def create_context(scanner: Scanner, scan_status: ScanStatus, user: User):
+    txt_template_name = "mail/finished_scannerjob.txt"
+    html_template_name = "mail/finished_scannerjob.html"
+    subject = "Dit OSdatascanner-scan er kørt færdigt."
+
+    def __init__(self, scanner: Scanner, scan_status: ScanStatus, user: User | None = None,
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scanner = scanner
+        self.status = scan_status
+        self.user = user if user else self.find_user()
+
+    def find_user(self):
+        """Find suitable user to notify."""
+        username = self.status.scan_tag.get("user")
+        user = User.objects.filter(username=username).first() if username else None
+        return user
+
+    def get_email(self):
+        email = self.user.email if self.user else self.scanner.organization.contact_email
+        return email
+
+    def create_context(self):
         """
         Creates a context dict for the finished scannerjob ready for rendering.
         """
         user_logs = UserErrorLog.objects.filter(
-            scan_status=scan_status).count()
+            scan_status=self.status).count()
         context = {
             "admin_login_url": settings.SITE_URL,
             "institution": settings.NOTIFICATION_INSTITUTION,
-            "full_name": user.get_full_name() or user.username if user else "",
-            "total_objects": scan_status.total_objects,
-            "scanner_name": scanner.name,
-            "object_size": scan_status.scanned_size,
-            "completion_time": get_scanner_time(scan_status),
+            "full_name": self.user.get_full_name() or self.user.username if self.user else "",
+            "total_objects": self.status.total_objects,
+            "scanner_name": self.scanner.name,
+            "object_size": self.status.scanned_size,
+            "completion_time": get_scanner_time(self.status),
             "usererrorlogs": user_logs,
-            "object_plural": scanner.as_subclass().object_name_plural,
+            "object_plural": self.scanner.as_subclass().object_name_plural,
         }
 
         return context
 
-    txt_mail_template = loader.select_template(
-            get_localised_template_names(["mail/finished_scannerjob.txt"]))
-    html_mail_template = loader.select_template(
-            get_localised_template_names(["mail/finished_scannerjob.html"]))
 
-    # Find suitable user to notify.
-    username = scan_status.scan_tag.get("user")
-    user = User.objects.filter(username=username).first() if username else None
-    email = user.email if user else scanner.organization.contact_email
-
-    context = create_context(scanner, scan_status, user)
-    logger.info(f"Created context for info mail: {context}")
-
-    msg = create_msg(context, "Dit OSdatascanner-scan er kørt færdigt.", email,
-                     txt_mail_template, html_mail_template)
-
-    send_msg(msg)
-
-
-def send_email_on_invalid_scanner(scanner: Scanner):
+class InvalidScannerNotificationEmail(NotificationEmail):
     """
     Send a mail to whomever is responsible for the scanner when a scanner was not automatically
     executed due to its validation status.
     """
 
-    def create_context(scanner: Scanner):
+    txt_template_name = "mail/invalid_scannerjob.txt"
+    html_template_name = "mail/invalid_scannerjob.html"
+    subject = "OSdatascanner kunne ikke starte et job"
+
+    def __init__(self, scanner: Scanner, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scanner = scanner
+
+    def get_email(self):
+        email = self.scanner.organization.contact_email
+        return email
+
+    def create_context(self):
         """
         Creates a context dict for the invalid scannerjob ready for rendering.
         """
         context = {
             "institution": settings.NOTIFICATION_INSTITUTION,
-            "scanner_name": scanner.name,
+            "scanner_name": self.scanner.name,
             # We need to remove the trailing slash from the site url
-            "scanner_edit_url": settings.SITE_URL[:-1] + scanner.get_update_url()
+            "scanner_edit_url": settings.SITE_URL[:-1] + self.scanner.get_update_url()
         }
 
         return context
-
-    txt_mail_template = loader.select_template(
-            get_localised_template_names(["mail/invalid_scannerjob.txt"]))
-    html_mail_template = loader.select_template(
-            get_localised_template_names(["mail/invalid_scannerjob.html"]))
-
-    # Notify through the organization email
-    email = scanner.organization.contact_email
-
-    if not email:
-        logger.warning("Tried to notify contact email about invalid scanner, but found no email "
-                       "address.", organization=scanner.organization, scanner=scanner)
-        return
-
-    context = create_context(scanner)
-
-    msg = create_msg(context, "OSdatascanner kunne ikke starte et job", email,
-                     txt_mail_template, html_mail_template)
-
-    send_msg(msg)
 
 
 def get_scanner_time(scan_status: ScanStatus):
