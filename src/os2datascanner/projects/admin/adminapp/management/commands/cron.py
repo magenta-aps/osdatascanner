@@ -22,6 +22,7 @@ from django.core.management.base import BaseCommand
 
 from os2datascanner.utils.system_utilities import time_now
 from ...models.scannerjobs.scanner import Scanner, ScanStatus
+from ...notification import send_email_on_invalid_scanner
 
 logger = structlog.get_logger("adminapp")
 
@@ -32,8 +33,7 @@ def should_scanner_start(scanner: Scanner,
                          now: bool = False):
     schedule_datetime = scanner.schedule_datetime
     return (schedule_datetime is not None
-            and (current_qhr <= schedule_datetime < next_qhr or now)
-            and scanner.validation_status)
+            and (current_qhr <= schedule_datetime < next_qhr or now))
 
 
 class Command(BaseCommand):
@@ -63,6 +63,15 @@ class Command(BaseCommand):
                                          now=now)
 
             if start:
+
+                # Check for validation status and send an email notification if the scanner
+                # is not validated
+                if not scanner.validation_status:
+                    logger.warning("Scanner is not validated, sending email notification.",
+                                   scanner=scanner)
+                    send_email_on_invalid_scanner(scanner)
+                    break
+
                 # In principle, we should start this scanner now. Check that
                 # it's not already running, though
                 ScanStatus.clean_defunct()

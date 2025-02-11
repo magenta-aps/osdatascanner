@@ -18,6 +18,27 @@ def send_mail_upon_completion(scanner: Scanner, scan_status: ScanStatus):
     """
     Send a mail to scannerjob responsible when a scannerjob has finished.
     """
+
+    def create_context(scanner: Scanner, scan_status: ScanStatus, user: User):
+        """
+        Creates a context dict for the finished scannerjob ready for rendering.
+        """
+        user_logs = UserErrorLog.objects.filter(
+            scan_status=scan_status).count()
+        context = {
+            "admin_login_url": settings.SITE_URL,
+            "institution": settings.NOTIFICATION_INSTITUTION,
+            "full_name": user.get_full_name() or user.username if user else "",
+            "total_objects": scan_status.total_objects,
+            "scanner_name": scanner.name,
+            "object_size": scan_status.scanned_size,
+            "completion_time": get_scanner_time(scan_status),
+            "usererrorlogs": user_logs,
+            "object_plural": scanner.as_subclass().object_name_plural,
+        }
+
+        return context
+
     txt_mail_template = loader.select_template(
             get_localised_template_names(["mail/finished_scannerjob.txt"]))
     html_mail_template = loader.select_template(
@@ -31,31 +52,50 @@ def send_mail_upon_completion(scanner: Scanner, scan_status: ScanStatus):
     context = create_context(scanner, scan_status, user)
     logger.info(f"Created context for info mail: {context}")
 
-    msg = create_msg(context, user, email,
+    msg = create_msg(context, "Dit OSdatascanner-scan er kørt færdigt.", email,
                      txt_mail_template, html_mail_template)
 
     send_msg(msg)
 
 
-def create_context(scanner: Scanner, scan_status: ScanStatus, user: User):
+def send_email_on_invalid_scanner(scanner: Scanner):
     """
-    Creates a context dict for the finished scannerjob ready for rendering.
+    Send a mail to whomever is responsible for the scanner when a scanner was not automatically
+    executed due to its validation status.
     """
-    user_logs = UserErrorLog.objects.filter(
-        scan_status=scan_status).count()
-    context = {
-        "admin_login_url": settings.SITE_URL,
-        "institution": settings.NOTIFICATION_INSTITUTION,
-        "full_name": user.get_full_name() or user.username if user else "",
-        "total_objects": scan_status.total_objects,
-        "scanner_name": scanner.name,
-        "object_size": scan_status.scanned_size,
-        "completion_time": get_scanner_time(scan_status),
-        "usererrorlogs": user_logs,
-        "object_plural": scanner.as_subclass().object_name_plural,
-    }
 
-    return context
+    def create_context(scanner: Scanner):
+        """
+        Creates a context dict for the invalid scannerjob ready for rendering.
+        """
+        context = {
+            "institution": settings.NOTIFICATION_INSTITUTION,
+            "scanner_name": scanner.name,
+            # We need to remove the trailing slash from the site url
+            "scanner_edit_url": settings.SITE_URL[:-1] + scanner.get_update_url()
+        }
+
+        return context
+
+    txt_mail_template = loader.select_template(
+            get_localised_template_names(["mail/invalid_scannerjob.txt"]))
+    html_mail_template = loader.select_template(
+            get_localised_template_names(["mail/invalid_scannerjob.html"]))
+
+    # Notify through the organization email
+    email = scanner.organization.contact_email
+
+    if not email:
+        logger.warning("Tried to notify contact email about invalid scanner, but found no email "
+                       "address.", organization=scanner.organization, scanner=scanner)
+        return
+
+    context = create_context(scanner)
+
+    msg = create_msg(context, "OSdatascanner kunne ikke starte et job", email,
+                     txt_mail_template, html_mail_template)
+
+    send_msg(msg)
 
 
 def get_scanner_time(scan_status: ScanStatus):
@@ -71,12 +111,12 @@ def get_scanner_time(scan_status: ScanStatus):
     return str(hours) + "t" + str(minutes) + "m" + str(seconds) + "s"
 
 
-def create_msg(context, user, email, txt_mail_template, html_mail_template):
+def create_msg(context, subject, email, txt_mail_template, html_mail_template):
     """
     Creates an mail message from templates together with user and context data.
     """
     msg = EmailMultiAlternatives(
-        "Dit OS2datascanner-scan er kørt færdigt.",
+        subject,
         txt_mail_template.render(context),
         settings.DEFAULT_FROM_EMAIL,
         [email])
