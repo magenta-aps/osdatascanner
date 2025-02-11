@@ -31,8 +31,10 @@ def update_config(configuration, new_settings):
     # namespace with anything in *new_settings*, just the variables defined in
     # **configuration**.
     for key in new_settings:
-        if key in configuration:
-            if isinstance(configuration[key], dict):
+        if (key in configuration
+                or key == "__also__"
+                or key in configuration.get("__also__", [])):
+            if isinstance(configuration.get(key), dict):
                 update_config(configuration[key], new_settings[key])
             else:
                 configuration[key] = new_settings[key]
