@@ -8,6 +8,10 @@
 
 - Added tracking of more stats in scanner jobs including time spend, total size, and object count.
 
+- The TOML configuration infrastructure now allows user configuration files
+  to add extra settings on top of the base instead of just overriding the ones
+  that already exist.
+
 ### Bugfixes
 
 - Fixed some translations issues in the report module manual.

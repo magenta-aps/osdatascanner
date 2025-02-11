@@ -1,11 +1,10 @@
 # Configuration
 
-The OS2datascanner system is configured using `.toml`-files - one for each
+The OSdatascanner system is configured using `.toml`-files -- one for each
 module. Most configuration settings come with reasonable defaults and need not
 be changed for a standard set-up, but most can be adjusted as needed, and a few
 must be given in order for the system to work. Below follows minimal examples
 for each module.
-
 
 ## Configuration for the Admin-module
 
@@ -135,3 +134,25 @@ AMQP_PWD = "<amqp user password>"
 The two Django apps and the API use `Gunicorn` to serve web requests. By
 default Gunicorn starts up `CPU_COUNT*2+1` workers. To override this default
 use the `GUNICORN_WORKERS` environment variable. Eg.  `GUNICORN_WORKERS=2`.
+
+## Note
+
+The configuration system is _layered_; each module defines a basic set of
+sensible defaults, and user configuration is applied on top of that set.
+The layering is strictly enforced by default, so you can't define a setting
+not already defined by a lower level.
+
+| Base | User | Allowed? |
+| ---- | ---- | -------- |
+| `SECRET_KEY = "placeholder"` | `SECRET_KEY = "ProductionValue!4"` | yes |
+| `HOSTNAME = "localhost"` | `HOSTNAME = "production.vstkom.internal"` | yes |
+| (`TIME_ZONE` not set) | `TIME_ZONE = "Europe/Copenhagen"` | no |
+
+You can override this enforcement and extend the set of allowed settings at
+any level by setting the special setting `__also__` to a list of names of
+settings:
+
+| Base | User | Allowed? |
+| ---- | ---- | -------- |
+| (`TIME_ZONE` not set) | `TIME_ZONE = "Europe/Copenhagen"` | no |
+| (`TIME_ZONE` not set) | `__also__ = ["TIME_ZONE"]`<br>`TIME_ZONE = "Europe/Copenhagen"` | yes |
