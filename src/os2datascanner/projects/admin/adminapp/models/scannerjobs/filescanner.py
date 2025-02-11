@@ -54,13 +54,6 @@ class FileScanner(Scanner):
         url = self.unc.replace('*.', '')
         return url
 
-    @property
-    def needs_revalidation(self):
-        try:
-            return FileScanner.objects.get(pk=self.pk).unc != self.unc
-        except FileScanner.DoesNotExist:
-            return False
-
     def __str__(self):
         """Return the URL for the scanner."""
         return self.unc

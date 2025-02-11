@@ -74,14 +74,6 @@ class ExchangeScanner(Scanner):
     grant = models.ForeignKey(
             GraphGrant, null=True, blank=True, on_delete=models.SET_NULL)
 
-    @property
-    def needs_revalidation(self):
-        try:
-            return ExchangeScanner.objects.get(
-                    pk=self.pk).mail_domain != self.mail_domain
-        except ExchangeScanner.DoesNotExist:
-            return False
-
     def get_userlist_file_path(self):
         return os.path.join(settings.MEDIA_ROOT, self.userlist.name)
 

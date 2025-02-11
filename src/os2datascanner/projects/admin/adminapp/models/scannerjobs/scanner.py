@@ -215,12 +215,6 @@ class Scanner(models.Model):
         self.save()
 
     @property
-    def needs_revalidation(self) -> bool:
-        """Used to check if the url on a form object differs from the
-        corresponding field on the model object."""
-        return False
-
-    @property
     def schedule_date(self) -> datetime.date | None:
         """Returns the date for the next scheduled execution of this scanner,
         if there is one."""
