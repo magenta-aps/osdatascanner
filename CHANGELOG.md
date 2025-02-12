@@ -14,6 +14,8 @@
 through the Grants tab in the admin module. This allows for easier re-use of credentials across
 more scanner types.
 
+- Users can now save rules they've made in the miniscanner.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner
@@ -74,7 +76,7 @@ more scanner types.
 
 "MQ is for Message Queue"
 
-- Users can now save rules they've made in the miniscanner.
+- Users can now save the rules they've made in the minscanner
 
 ### New in this release
 
@@ -108,15 +110,15 @@ more scanner types.
 
 - Bumped RabbitMQ version to 3.12.14
 
-- It is now possible to configure admin-module `Client` full- and delta-scan queues, and
+- It is now possible to configure admin-module `Client` full- and delta-scan queues, and 
   to configure explorer and worker to prioritize different message queues. Effectively allowing
   full- and delta-scans to run in parallel.
 
 - Information about the leader overview has been added to the report module manual.
 
-- Only users with the "os2datascanner_report.delete_documentreport" permission, are able to
+- Only users with the "os2datascanner_report.delete_documentreport" permission, are able to 
   see the unhandled results statistic under user statistics and delete underlying results from
-  available scannerjobs.
+  available scannerjobs. 
 
 - The `CSVExportMixin` has been refactored to expand functionality.
 
@@ -144,7 +146,7 @@ more scanner types.
 - Http errors 403, 404 and 500 now correctly shows custom error pages to the user.
 
 - The line chart on the overview for finished scans no longer shrinks from full size to nothing
-  when the page is accessed from a Chrome browser and page zoom is set to 90%.
+  when the page is accessed from a Chrome browser and page zoom is set to 90%. 
 
 - Highlighting a table row in the result datatable in the report module no longer wrecks the handle
   dropdown by changing the opacity for the row.
@@ -182,7 +184,7 @@ more scanner types.
 - Permission to export scan status can now be enabled for administrators,
   with the django-permission 'export_completed_scanstatus'.
 
-- Withheld and older than 30 days (if enabled) data is now included
+- Withheld and older than 30 days (if enabled) data is now included 
   in the leader overview csv export.
 
 - LDAPConfig now uses AutoEncryptedField and as such it is no longer required to reenter password
@@ -200,7 +202,7 @@ more scanner types.
 - Button for removing a scanner from the scanner overview is now correctly hidden if the user does
   not have the correct permission.
 
-- Deletion of scannerjob results through the "Scannerjob" tab in the reportmodule
+- Deletion of scannerjob results through the "Scannerjob" tab in the reportmodule 
   no longer times out on large counts.
 
 ## Version 3.26.2, 9th December 2024
@@ -211,7 +213,7 @@ more scanner types.
 
 - It is now possible to export the history of completed scans in the admin module.
 
-- Column with the number of results from sources older than 30 days introduced in the leader
+- Column with the number of results from sources older than 30 days introduced in the leader 
   overview table. Hidden by default with an installation setting.
 
 - New button in scanner overview for _removing_ scanners. Removing a scanner from the list does
@@ -219,10 +221,10 @@ more scanner types.
 
 ### General improvements
 
-- Sorting carets in the leader overview are now highlighted when in use, and point in a more
+- Sorting carets in the leader overview are now highlighted when in use, and point in a more 
   intuitive direction to indicate ascending or descending order.
 
-- SCSS for the leader overview datatable is now less vulnerable to future changes in column
+- SCSS for the leader overview datatable is now less vulnerable to future changes in column 
   layout.
 
 ### Bugfixes
@@ -242,7 +244,7 @@ This minor bugfix release corrects a display error in the report module.
 
 ### New in this release
 
-- Single Sign-On for the report module can now be configured through the admin
+- Single Sign-On for the report module can now be configured through the admin 
   module interface, and is now relying on Keycloak.
 
 - Searching for accounts in the account overview in the admin module is now
@@ -250,10 +252,10 @@ This minor bugfix release corrects a display error in the report module.
   when searching for both an account first name and last name and username
   (or any other combination of two).
 
-- Introduces the use of django permissions in the admin module, instead of
+- Introduces the use of django permissions in the admin module, instead of 
   locking all functionality to the "is_superuser"-flag on users.
 
-  - To validate a scannerjob, users must now have the
+  - To validate a scannerjob, users must now have the 
     "can_validate"-permission.
 
   - To see organizations from clients than a user's own, the user must have the
@@ -267,7 +269,7 @@ This minor bugfix release corrects a display error in the report module.
 
   - However, this isn't navigable yet without knowledge of location as design decisions are
     to be made.
-
+  
   - Includes initial functionality to support email notification(s) when nearing
     (or past) expiration of client secret.
 
@@ -279,7 +281,7 @@ This minor bugfix release corrects a display error in the report module.
 
 - Rearranged handle dropdown order to match customer preference.
 
-- Refactor login and user page templates in report module to extend base
+- Refactor login and user page templates in report module to extend base 
   templates.
 
 - Command-line history is now available in the development environment
@@ -310,11 +312,11 @@ This minor bugfix release corrects a display error in the report module.
   These rules implements get_censor_intervals, which allows the rule to censor the context,
   of any matches the rule itself or other rules in a compound rule finds.
 
-- The datatable on "Leader Overview" has been optimized.
-  - Overall improvement of layout.
+- The datatable on "Leader Overview" has been optimized. 
+  - Overall improvement of layout. 
   - The page is the first on Report to have an overall max-width for content.
   - Expanded rows now have a visual indicator when expanded like on other tables.
-  - Overview over "unhandled results per scannerjob" is now visible for all users with access to the leader overview page. It is still only possible to delete results if you're a superuser though.
+  - Overview over "unhandled results per scannerjob" is now visible for all users with access to the leader overview page. It is still only possible to delete results if you're a superuser though. 
   - The "User Overview" page has gotten a minor update as a side-result of the refactoring.
   - Withheld results has gotten its own column.
 
@@ -353,7 +355,7 @@ This minor bugfix release corrects a display error in the report module.
   the report module.
 
 - List of scannerjobs with results in the report module, which is visible
-  to superusers. Provides functionality for deleting all results from a
+  to superusers. Provides functionality for deleting all results from a 
   scanner job.
 
 ### General improvements
@@ -381,13 +383,13 @@ This minor bugfix release corrects a display error in the report module.
 
 - The FileScanner settings "skip_super_hidden" and "unc_is_home_root" are sent
   correctly to the report module.
-
-- A bug causing CSV-exports when entering a search in the leader tab, has been
+  
+- A bug causing CSV-exports when entering a search in the leader tab, has been 
   fixed.
 
-- When users cancel a scannerjob it couldn't clear the message queue, as it threw an error when
+- When users cancel a scannerjob it couldn't clear the message queue, as it threw an error when 
   trying to reach the none-existing "scan_status" (that was deleted alongside the scannerjob).
-  "scan_status" is now only updated from the db if there actually is a "scan_status" to update.
+  "scan_status" is now only updated from the db if there actually is a "scan_status" to update. 
 
 ## Version 3.25.1, 24th October 2024
 
@@ -407,7 +409,7 @@ the risk of violating database constraints.)
   This feature is by default disabled, but can be enabled through the LEADER_CSV_EXPORT setting.
 
 - It's now possible to import managers from LDAP via group import. This can
-  be configured via a checkbox on the LDAP-configuration page, when import
+  be configured via a checkbox on the LDAP-configuration page, when import 
   based on groups is selected.
 
 - Universal DPOs can now be assigned on the org unit page. Universal DPOs can view all org units,
@@ -432,7 +434,7 @@ the risk of violating database constraints.)
 - The development environment now has an optional profile that can be used to
   test scheduled operations.
 
-- Validation errors under the organization support button settings
+- Validation errors under the organization support button settings 
   section are now shown.
 
 - Each ScanStatus can now only trigger a single email notification for a completed scanner.
@@ -440,15 +442,15 @@ the risk of violating database constraints.)
 - The user is now informed whether a rule is associated with a scanner, and shown, that
   the rule can't be deleted until the associated scanners are updated or deleted.
 
-- During LDAP import, accounts that have had their distinguishedName changed no longer
+- During LDAP import, accounts that have had their distinguishedName changed no longer 
   risk deletion, which could cause OSdatascanner database conflicts.
 
 - Load time on scanner tabs using CoveredAccounts has been improved.
 
 - Organizational units imported from OS2mo are now correctly detached from
   their parents if they are moved to the root of the remote hierarchy.
-
-- Import jobs now execute create and update before delete, to avoid incorrectly cascade deleting.
+ 
+- Import jobs now execute create and update before delete, to avoid incorrectly cascade deleting. 
   F.e. OrganizationalUnit's whose _former_ parent has been deleted.
 
 - The file scanner's "skip super-hidden files" configuration option now
@@ -470,7 +472,7 @@ the risk of violating database constraints.)
   all accounts without an email-value.
 
 - Minor refactor of the create rule view, added tests for all rule views.
-
+  
 - An optional extension to the `SIGUSR1` debug function allows for OAuth 2.0
   client credentials to be extracted from a running system and tested
   elsewhere.
@@ -526,7 +528,7 @@ the risk of violating database constraints.)
   be searched using the new categorization system.
 
 - Users can now see their false positive rate on the "My Overview"-page.
-  This overview is also visible to managers. Managers are also warned if a
+  This overview is also visible to managers. Managers are also warned if a 
   user has a positive rate more than twice the rate of the organization.
 
 ## Version 3.24.1, 29th July 2024
@@ -565,7 +567,7 @@ output until this bug is addressed.
 ### New in this release
 
 - Extra details of a finished scannerjob now holds information in regard to objects
-  skipped by last modified check.
+  skipped by last modified check. 
 
 - Initial support for pre-execution of rules:
 
@@ -593,13 +595,13 @@ output until this bug is addressed.
   where the rest of the cpr utility functions are located.
 
 - Very long paths on results in the report module can now be expanded,
-  showing the full path to the source of a match.
+  showing the full path to the source of a match. 
 
 ### Bugfixes
 
 - Documentreports with no created_timestamp no longer crashes the DPO module.
 
-- The DPO module no longer crashes if all document reports are more than a
+- The DPO module no longer crashes if all document reports are more than a 
   year old.
 
 - The CPRRule context check will no longer ignore symbols between words when
@@ -621,7 +623,7 @@ output until this bug is addressed.
 - Aliases can now be marked as "shared". Results related to a user through such
   an alias will not be attributed to them in user statistics.
 
-- Management command "test_checkup" for checking if a handle specified by a
+- Management command "test_checkup" for checking if a handle specified by a 
   ScheduledCheckup can still be reached by the system.
 
 ### General improvements
@@ -662,10 +664,10 @@ output until this bug is addressed.
   - Note that this function is disabled by default, and that the system
     administrator must configure a special service account in order to use it.
 
-- LDAP import jobs can now be configured to only import members of
+- LDAP import jobs can now be configured to only import members of 
   groups with names beginning with a given string.
 
-- Support for mass deletion of files on Windows network drives, as specified
+- Support for mass deletion of files on Windows network drives, as specified 
   above.
 
 ### General improvements
@@ -683,9 +685,9 @@ output until this bug is addressed.
 
 ### Bugfixes
 
-- The "Show/hide all matches" button works as intended, again.
+- The "Show/hide all matches" button works as intended, again. 
 
-- Handle button on match results, once again, fits texts when HANDLE_DROPDOWN is set to false.
+- Handle button on match results, once again, fits texts when HANDLE_DROPDOWN is set to false. 
 
 - Increased wait time for retry logic during OS2mo import, to better handle unavailable service(s).
 
@@ -702,7 +704,7 @@ output until this bug is addressed.
 
 - Management command for removing DocumentReports only containing problems
   from deleted scannerjobs.
-
+  
 ### General improvements
 
 - Extended test suite for account interactions in the admin module.
@@ -728,7 +730,7 @@ output until this bug is addressed.
 - Changed ScheduledCheckup indexes to reflect checkup collector's logic. An index
   on path is now available, again achieving higher database speeds.
 
-- Testing authentication of LDAP connection is now done via POST request
+- Testing authentication of LDAP connection is now done via POST request 
   instead of GET.
 
 - Reports marked as "false positive" no longer lose their handled status, when
@@ -757,14 +759,14 @@ output until this bug is addressed.
 ### General improvements
 
 - Added Google's Material Symbols as a font, so we can use it as an icon library.
-
+ 
 - The Rule Builder will now enforce so-called "invariants" when a user tries to construct
   a custom rule. This means that some rules many not be used alone and the order of how
   rules are combined matter.
 
 - Internal operation timeouts are now more reliable.
 
-- Completed scannerjobs now base their runtime on first snapshot that has recorded
+- Completed scannerjobs now base their runtime on first snapshot that has recorded 
   a scanned object, which should exclude most idle time in busy systems.
 
 - All components of the web scanner now respect the system's configured
@@ -780,10 +782,10 @@ output until this bug is addressed.
 
 - The side menu in Read the Docs now correctly shows the current section.
 
-- When adding a leader or DPO to an org unit, two accounts with the same name can
+- When adding a leader or DPO to an org unit, two accounts with the same name can 
   now be distinguished, because their username is added after their name.
 
-- Changing username attribute in LDAP configuration now updates Keycloak mapper accordingly.
+- Changing username attribute in LDAP configuration now updates Keycloak mapper accordingly. 
 
 - Two bugs in the code that submits `ScheduledCheckup`s to the scanner engine
   were fixed. (This code is now also subject to automated regression testing.)
@@ -792,28 +794,28 @@ output until this bug is addressed.
 
 "Front Doors Only"
 
-### New in this release
+### New in this release 
 
 - A shared application for common components has been added.
 
 ### General improvements
 
-- The snackbar component has been moved into the shared directive and has been given
-  a style overhaul.
+- The snackbar component has been moved into the shared directive and has been given 
+  a style overhaul. 
 
 - The unhandled matches graph in the DPO overview is now a line graph to
   accurately represent a change in the number of matches over time.
 
-- Management command 'broadcast' has been expanded with arguments to distinguish between
+- Management command 'broadcast' has been expanded with arguments to distinguish between 
   imported versus manually created objects.
 
-- Warning filters have been added to tests, and some deprecated functions aren't used any longer,
+- Warning filters have been added to tests, and some deprecated functions aren't used any longer, 
   as to decrease the number of warnings given during unit testing.
 
-- Error messages in the report module are now displayed with a warning triangle with the option
-  to hover to see the error described in a popover (toolhint but bigger).
+- Error messages in the report module are now displayed with a warning triangle with the option 
+  to hover to see the error described in a popover (toolhint but bigger). 
 
-- _datatables.scss has been prepared so it's ready for future improvement of all datatables on both
+- _datatables.scss has been prepared so it's ready for future improvement of all datatables on both 
   Admin and Report.
 
 ### Bugfixes
@@ -844,7 +846,7 @@ output until this bug is addressed.
 
 "Yesterday Was My Birthday"
 
-### New in this release
+### New in this release 
 
 - Translations and updated images have been added to the report module manual.
 
@@ -854,7 +856,7 @@ output until this bug is addressed.
 - Support for deletion of Office 365 OneDrive files directly from the report module.
 
 - Initial support for user uploaded images for use as header banner in report emails.
-
+  
 ### General improvements
 
 - DocumentReports without matches are now deleted when the corresponding
@@ -865,12 +867,12 @@ output until this bug is addressed.
 
 - When a scanner is deleted, the DocumentReports with no matches related to
   that scanner are also deleted.
-
+  
 - The search field on the account list in the admin module is slightly more
   useful, and is no longer confused when searching for both first and last
   names.
 
-- Leader overview: when an orgunit is selected in the dropdown, all related
+- Leader overview: when an orgunit is selected in the dropdown, all related 
   orgunit-children will also be displayed.
 
 ### Bugfixes
@@ -887,12 +889,12 @@ output until this bug is addressed.
 - Deleting an alias with many relations to matches will no longer cause the
   report module to attempt to load all of those matches into memory.
 
-- Scanning with only notify superadmin turned on/off will update DocumentReports of found
+- Scanning with only notify superadmin turned on/off will update DocumentReports of found 
   objects accordingly, whether or not the scan uses LastModifiedCheck.
 
-- A domain validation check has been added to ensure the domain given in an
+- A domain validation check has been added to ensure the domain given in an 
   Exchangescanner form is formatted correctly.
-
+  
 - Revisiting `ScheduledCheckup`s for files in a OneDrive/SharePoint drive no
   longer causes the administration system to incorrectly associate files with
   accounts.
@@ -905,7 +907,7 @@ output until this bug is addressed.
 
 - Account image placeholders are now the user's initials on a colored background.
 
-- The use of Outlook categories / categorization of emails containing matches,
+- The use of Outlook categories / categorization of emails containing matches, 
   can now be configured and enforced from the admin module.
 
 - Added option to skip attachments in Office 365 mail scans.
@@ -918,7 +920,7 @@ output until this bug is addressed.
   instead. The ScannerRun view has also been refactored to remove some unused
   logic.
 
-- A button has been added to the DPO statistics page allowing the users to
+- A button has been added to the DPO statistics page allowing the users to 
   download the data as a csv-file.
 
 - An option to run scannerjobs, with last modified enabled, as a full scan
@@ -927,23 +929,23 @@ output until this bug is addressed.
 - It is now possible to configure a web scan to use both the crawler and
   sitemap functions at the same time.
 
-- Error messages in the report module are now hidden by default. This
+- Error messages in the report module are now hidden by default. This 
   configuration can be changed in the settings file.
 
 - Unit tests have been added for sorting UserErrorLogs.
 
-- The layout of exported csv-files from the dpo-module,
+- The layout of exported csv-files from the dpo-module, 
   has been changed as to make data processing easier.
 
 - Convenience shortcut buttons can now be displayed when running the report
   module in development mode.
 
-- Fewer large database queries are made in the dpo-module, increasing performance
+- Fewer large database queries are made in the dpo-module, increasing performance 
   when large amounts of DocumenReports exist.
 
-- The Account model now has a email-field,
+- The Account model now has a email-field, 
   removing the reliance on Aliases when sending notifications.
-
+  
 - The diagnostics command in the admin module now presents all imported
   accounts with no related Position. This is relevant since importing accounts
   via LDAP depends on the account's relation to an Organizational Unit.
@@ -954,10 +956,10 @@ output until this bug is addressed.
 
 - The month-labels of the graphs in the dpo-module, says "Maj", and "Okt", for Danish users.
 
-- The Alias-model no longer uses recursion to clean up connections to
+- The Alias-model no longer uses recursion to clean up connections to 
   DocumentReports.
 
-- Individual iterations and dates can now be excluded when checkbox is toggled
+- Individual iterations and dates can now be excluded when checkbox is toggled 
 
 - Automatic checkups of previously-visited files are once again correctly
   handled for Microsoft Graph scans (and for all other similar scan types).
@@ -982,7 +984,7 @@ output until this bug is addressed.
 
 - Scannerjobs can now be searched from a search field in the scanner list.
 
-- Data from the DPO statistics page can be exported
+- Data from the DPO statistics page can be exported 
   by adding "csv/" to the url (ie. statistics/dpo/csv/).
   This feature is disabled by default with settings.DPO_CSV_EXPORT
 
@@ -999,12 +1001,12 @@ output until this bug is addressed.
 - The user list files given to the Exchange mail scanner can now be in an
   arbitrary character set.
 
-- The list of dates containing CPR numbers violating the Modulo-11 check, have been synced
+- The list of dates containing CPR numbers violating the Modulo-11 check, have been synced 
   with the list from the CPR office.
 
 - Sitemap-based webscans now also support sitemap-images
 
-- Filtering options in the report module can now be hidden or shown with the
+- Filtering options in the report module can now be hidden or shown with the 
   new "filter"-menu.
 
 - Added documentation for the decision history for rule validation methods.
@@ -1030,8 +1032,8 @@ output until this bug is addressed.
 
 - HTML tags: br, p and div, are now replaced with newlines, when scanning HTML.
 
-- overview.html + overview.da.html (the html files handling the "match overview" email sent
-  to users) have been mildly refactored. This will hopefully fix the rendering issues
+- overview.html + overview.da.html (the html files handling the "match overview" email sent 
+  to users) have been mildly refactored. This will hopefully fix the rendering issues 
   experienced by a number of users.
 
 ## Version 3.22.1, 2nd February 2024
@@ -1060,7 +1062,7 @@ added in connection with the changes to the Last-Modified function.
 
 - The Alias object manager now has some additional functionality:
 
-  - Creating a remediator alias with `_value=0`, a "universal remediator
+  - Creating a remediator alias with `_value=0`, a "universal remediator 
     alias", will result in all other remediator aliases for that account being
     deleted.
 
@@ -1078,11 +1080,11 @@ added in connection with the changes to the Last-Modified function.
     previously connected rules in a wrapping OR-rule. This should preserve
     functionality if the scanner is run.
 
-- It is now possible to sort the org units in the org tree in admin. The main
+- It is now possible to sort the org units in the org tree in admin. The main 
   use is, that the user can choose to sort for org units with managers, DPO's,
   or either.
 
-- Updated ReadTheDocs with a new section on button object implementation,
+- Updated ReadTheDocs with a new section on button object implementation, 
   covering usage guidelines, accessibility attributes, and styling best practices.
 
 - Last modified for Organizational Unit based scanners is now managed through 'CoveredAccount',
@@ -1092,7 +1094,7 @@ allowing last modified timestamps to be on an account basis.
 
 - The logo is now highlighted when the user hovers the mouse over it.
 
-- Reduced number of queries made in organizational unit list page by
+- Reduced number of queries made in organizational unit list page by 
   prefetching the parent of each unit.
 
 - Old unused rule-models have been removed from the admin module.
@@ -1105,26 +1107,26 @@ allowing last modified timestamps to be on an account basis.
 
 - All button elements have been refactored to optimize future development:
 
-  - The primary stylesheet (_buttons.scss) have been updated to reflect styles
-    from the current design guide. The new classes are now all named according
-    to BEM and are now (hopefully) more developer-intuitive. There are descriptive
+  - The primary stylesheet (_buttons.scss) have been updated to reflect styles 
+    from the current design guide. The new classes are now all named according 
+    to BEM and are now (hopefully) more developer-intuitive. There are descriptive 
     comments throughout the document to help with the transition.
 
-  - All button elements now have aria-labels and titles with appropriate content.
+  - All button elements now have aria-labels and titles with appropriate content. 
     A proper runthrough of the content at a later time, will be neccessary.
 
-  - Some buttons now have more user-intuitive icons i.e. buttons with "delete"
+  - Some buttons now have more user-intuitive icons i.e. buttons with "delete" 
     funtionality now have a "trashcan" icon instead of an "x"
 
-  - Generally all button elements are now constructed in a similar and recognisable
+  - Generally all button elements are now constructed in a similar and recognisable 
     manner that will improve developer-legibility.
 
   - Two utility classes have been added (.button-group and .th-flex-container).
 
-    - .button-group handles layout when we group multiple buttons inside the same
+    - .button-group handles layout when we group multiple buttons inside the same 
       parent element
 
-    - .th-flex-container handles layout for table headers with multiple children
+    - .th-flex-container handles layout for table headers with multiple children 
       (primarily those with "sort by" funtionality).
 
 - quickstart_dev now also makes the dev account a universal remediator.
@@ -1138,7 +1140,7 @@ allowing last modified timestamps to be on an account basis.
 
 - The total number of employees shown in the leader overview is now counted
   correctly.
-
+  
 - The handle dropdown is no longer hidden in the parent datatable overflow.
 
 - Remediators no longer need to be superusers to see the remediator-tab in the
@@ -1147,9 +1149,9 @@ allowing last modified timestamps to be on an account basis.
 - Matches from MS File scans are now correctly shown as such, instead of as
   matches from MS Teams scans in the report module.
 
-- The source types labels from the three Microsoft Office sources now have a
+- The source types labels from the three Microsoft Office sources now have a 
   shared syntax: "Office 365 Mail/File/Calendar".
-
+  
 - Exclusion rules can once again be chosen on the scanner forms in the UI.
 
 - Aliases created through Single Sign-On are now properly tied to the Account object as well.
@@ -1172,16 +1174,16 @@ allowing last modified timestamps to be on an account basis.
 
 ### New in this release
 
-- New logo and favicons, with name change from 'OS2datascanner' to
+- New logo and favicons, with name change from 'OS2datascanner' to 
   'OSdatascanner'.
 
 ### General improvements
 
 - quickstart_dev commands brought up-to-date, relating dev-objects for ease of use.
 
-- Mail notifications will now reference "OSdatascanner" instead of
+- Mail notifications will now reference "OSdatascanner" instead of 
   "OS2datascanner".
-
+  
 - All references to "OS2datascanner" in the UI have been changed to reference
   "OSdatascanner" instead.
 
@@ -1226,7 +1228,7 @@ allowing last modified timestamps to be on an account basis.
 
 - New setting on all scanner types allows for retaining the resolution status
   of DocumentReports marked as false positives in the report module, even for
-  scans without the "check last modified"-setting. This setting is toggled on
+  scans without the "check last modified"-setting. This setting is toggled on 
   by default.
 
 - When adding a CPR rule to a custom rule, a list of exceptions can be defined,
@@ -1242,7 +1244,7 @@ allowing last modified timestamps to be on an account basis.
 - Added validation of the formatting of the uploaded userlist to the exchange-
   scanner form, as well as a helpful tooltip in the interface.
 
-- Added bin_check to the cpr rule, which decreases the amount of false positives
+- Added bin_check to the cpr rule, which decreases the amount of false positives 
   in files with many 10 digit numbers.
 
 - The Gmail scanner dynamically discovers labels for each users mailbox.
@@ -1265,12 +1267,12 @@ allowing last modified timestamps to be on an account basis.
 - Both the administration system and the report module now have a database
   query helper management command.
 
-- Snackbar element is now displayed at the top of the page, instead of at the
-  bottom of the page.
+- Snackbar element is now displayed at the top of the page, instead of at the 
+  bottom of the page. 
 
 - DPO module now has graphs displaying top ten highest unhandled/handled/total
-  matches in an organization. Barchart data can now also be zoomed in on.
-  Total boxes will show the types and amount of matches in an organization/unit.
+  matches in an organization. Barchart data can now also be zoomed in on. 
+  Total boxes will show the types and amount of matches in an organization/unit. 
 
 ### Bugfixes
 
@@ -1315,7 +1317,7 @@ allowing last modified timestamps to be on an account basis.
 
   - It is now possible to configure the name and contact information of the
     preferred support entity, both as an email address or a web address.
-
+    
 - UserErrorLog table from database can now be exported as a CSV-file.
 
 - Categorizing emails in Outlook based on OS2datascanner results is now possible.
@@ -1335,11 +1337,11 @@ allowing last modified timestamps to be on an account basis.
 - Previously seen error messages in the user error log are now hidden by
   default. They can be shown by checking the checkbox at the top of the page.
 
-- General overhaul for Pie chart in DPO:
+- General overhaul for Pie chart in DPO: 
 
-  - Display tooltip on hover, and relative percentages are displayed alongside chart legends.
+  - Display tooltip on hover, and relative percentages are displayed alongside chart legends. 
 
-  - Added and "empty" pie for empty datasets.
+  - Added and "empty" pie for empty datasets. 
 
 - The loading time of the "completed scans"-tab has been improved by removing
   redundant logic from the view.
@@ -1360,11 +1362,11 @@ allowing last modified timestamps to be on an account basis.
 - Admins can now add users to Exchange- and Office365-scans.
 
 - When the "Open" or "Copy" -buttons on the reportmodule are clicked, the last opened match
-  will once again be highlighted.
-
+  will once again be highlighted. 
+  
 - In "My Overview", reverted matches are now counted correctly.
 
-- Delete button for MSGraph mail matches is now visible on matches
+- Delete button for MSGraph mail matches is now visible on matches 
   whether HANDLE_DROPDOWN is enabled or not.
 
 - Only notify of the number of new errors found during a scan in the subsequent
@@ -1406,12 +1408,12 @@ and proceed.
   - Using the command in the admin module gives information about the
     following objects: Account, Alias, OrganizationalUnit, Organization,
     UserErrorLog, and Rule.
-
+    
 - From this point on, it is only allowed to select one rule per scanner job.
   If one wishes to use combinations of rules, the rule builder should
   be used to create a new rule from existing ones.
-
-- Added support in the report module for deleting Office 365 emails belonging to logged-in user.
+    
+- Added support in the report module for deleting Office 365 emails belonging to logged-in user. 
 
 - A new replacement for the Health Rule has been added.
   This rule is simpler and promises far greater scanning speeds.
@@ -1426,7 +1428,7 @@ and proceed.
 
 - The scan status tab in the admin module now issues no duplicate queries to
   the database, and prefetches related scanners.
-
+  
 - Performance has been improved in the report module.
 
   - The number of queries has been greatly reduced, and is now constant
@@ -1434,12 +1436,12 @@ and proceed.
 
   - An index has been created on the "only_notify_superadmin"-field on the
     DocumentReport model.
-
+    
 - The OrganizationalUnit overview is now considerably faster.
 
 - The user manual for the report module, has been updated to match the current
   version of the system
-
+  
 ### Bugfixes
 
 - Scannerjobs for Exchangescanner won't start until validation is confirmed
@@ -1449,7 +1451,7 @@ and proceed.
 
 - The loading time of the UserErrorLogView is now considerably faster, as both
   the ScanStatus and Scanner relations are prefetched.
-
+  
 - The mini-scanner now enforces server-side validation of the file size restriction.
 
 - Workers no longer freeze during status message preparation if the object's
@@ -1482,7 +1484,7 @@ and proceed.
 
 - Excel and Spreadsheet-like files will now be processed with pandas.DataFrame
   and present a match with a precise location including sheet and row.
-
+  
 ### General improvements
 
 - The pipeline will stop execution of a rule component after it has produced
@@ -1500,7 +1502,7 @@ and proceed.
 - The estimated time of completion of scannerjobs no longer breaks, if the
   ScanStatus only has one snapshot.
 
-- Adjusted shadow effect for visualizing scrollability on tables in the admin
+- Adjusted shadow effect for visualizing scrollability on tables in the admin 
   module, ensuring compatibility with Safari browsers.
 
 - Undistributed reports from the same scannerjob with differing scan_times
@@ -1519,7 +1521,7 @@ and proceed.
 
 ### New in this release
 
-- It is now possible to scan files shared through Microsoft Teams.
+- It is now possible to scan files shared through Microsoft Teams. 
 
 - Removed expressions, "generelt" and "diverse", from HealthRule.
 
@@ -1527,7 +1529,7 @@ and proceed.
   such that workers can be assigned to serve a dedicated organisation.
   Thus, for a system we multiple workers and organisations, it is possible
   to run multiple scanner jobs in parallel.
-
+  
 - It is possible to (globally) turn on GhostScript-compression for PDF-files.
 
 ### General improvements
@@ -1536,7 +1538,7 @@ and proceed.
 
 - Added footer with current version to admin and report modules.
 
-- Removed sortByHandlers.js and formatted caret buttons to use HTMX instead
+- Removed sortByHandlers.js and formatted caret buttons to use HTMX instead 
   of hmtl + js.
 
 - The unused "expression" column has been removed from the table on the rules page.
@@ -1547,14 +1549,14 @@ and proceed.
 
 - Tooltips for overflow titles in the report module are now correctly displayed.
 
-- The `count_matches_by_week`-method on the `Account`-class has been
+- The `count_matches_by_week`-method on the `Account`-class has been 
   refactored, and is more robust towards missing created_timestamp-values on
   related DocumentReports.
 
 - Logging in with SSO now works with more than one organization in the database,
   as long as the user's account already exists.
 
-- Ordering by match count in the leader overview now reevaluates match counts
+- Ordering by match count in the leader overview now reevaluates match counts 
   for all accounts, without having to scroll to the bottom of the page first.
 
 ## Version 3.20.3, 3rd August 2023
@@ -1565,7 +1567,7 @@ and proceed.
 
 - Temporary errors produced when checking a match again are now displayed as a
   warning in the report module.
-
+  
 - The `start_scan` management command has a new convenience parameter for
   starting (partial or complete) scans that do not enforce the last
   modification date check.
@@ -1614,7 +1616,7 @@ and proceed.
 
 ### General improvements
 
-- Considerable perfomance improvement in the DPO-overview (about 90% faster
+- Considerable perfomance improvement in the DPO-overview (about 90% faster 
   database interaction).
 
 - Rows in the leader overview are now loaded dynamically as the user scrolls.
@@ -1648,7 +1650,7 @@ and proceed.
 
 ### New in this release
 
-- It is now possible to view and sort reports by the age of the scanned resource. When the screen is wide, it remains a caret, but on smaller screens (i.e. smartscreens) the sort options becomes two buttons at the top of the page.
+- It is now possible to view and sort reports by the age of the scanned resource. When the screen is wide, it remains a caret, but on smaller screens (i.e. smartscreens) the sort options becomes two buttons at the top of the page. 
 
 - Support for simple scans in the administration system:
 
@@ -1657,7 +1659,7 @@ and proceed.
 
   - This feature is useful for rapidly prototyping rules prior to running a
     full-scale scan.
-
+    
 - The "Archive"-tab returns!
 
   - This tab has three sub-tabs for personal, remediator and undistributed
@@ -1684,7 +1686,7 @@ and proceed.
 
 - Matches handled more than a year ago are no longer erroneously ignored by the
   DPO overview's trend graphs.
-
+  
 - Deleting or marking an error message in the admin module as "seen" now
   correctly refreshes the table of error messages.
 
@@ -1707,7 +1709,7 @@ and proceed.
 - It is now possible to search for substrings in the error message and path of
   user error log objects in the usr interface. Matched substrings are also
   highlighted for ease of reading.
-
+  
 - Error logs can now be sorted by name, start time and path.
 
 - Users can now create "rulesets" instead of regex rules in the "Rules"-tab
@@ -1743,7 +1745,7 @@ and proceed.
 
 - The timeline chart in the completed scans tab now correctly show axis labels
   and do not show an irrelevant legend.
-
+  
 - The leader tab now shows the correct number of employees for a manager.
 
 ## Version 3.19.3, 12th May 2023
@@ -1767,7 +1769,7 @@ and proceed.
 - Serialization logic has been refactored, for better maintainability and
   support for bulk serialization.
 
-- LDAP-, MSGraph- and OS2Mo-ImportJobs now share more infrastructure and
+- LDAP-, MSGraph- and OS2Mo-ImportJobs now share more infrastructure and 
   all support bulk operations.
 
 - "event_collector" has been reworked to support bulk operations, and refactored to significantly reduce
@@ -1797,7 +1799,7 @@ and proceed.
 
 ### General improvements
 
-- Navigating to a section in the manual now highlights the header of that
+- Navigating to a section in the manual now highlights the header of that 
   section.
 
 - In the leader overview, usernames are now shown below employees names.
@@ -1836,13 +1838,13 @@ compound document formats with the new home folder flag set
 
 - The next scheduled scanjob of a scanner is now shown on the "scanners"-page in the admin-module.
 
-- In the report module a superuser can search for a scan job to distribute if there is more
+- In the report module a superuser can search for a scan job to distribute if there is more 
   than 10 undistributed scanner jobs.
-
+  
 - In the report module a superuser can search for a scan job to distribute.
 
 - Management command "cleanup_account_results" for deleting all document
-  reports associated with a given account and scanner job from the admin
+  reports associated with a given account and scanner job from the admin 
   module.
 
 - It is now possible to configure the admin module to automatically initiate a
@@ -1855,7 +1857,7 @@ compound document formats with the new home folder flag set
 
 - Usernames of employees are now displayed in the leader overview, and it is
   possible to sort by usernames.
-
+  
 ### General improvements
 
 - Scanner objects now contain information about which accounts they cover,
@@ -1871,7 +1873,7 @@ compound document formats with the new home folder flag set
 - Paths in the administration system's error log can no longer overflow their
   table cell and make neighbouring content hard to read.
 
-- OS2mo import jobs will now ignore empty manager-objects in the imported
+- OS2mo import jobs will now ignore empty manager-objects in the imported 
   structure.
 
 - When importing from LDAP, Alias and Positions objects are no longer deleted when created manually.
@@ -1987,7 +1989,7 @@ compound document formats with the new home folder flag set
 
 ### General improvements
 
-- DocumentReport's now store "owner" in a separate, indexed, text field.
+- DocumentReport's now store "owner" in a separate, indexed, text field. 
   Thus allowing for faster database lookups, greatly improving page-load performance when result-relations are evaluated.
 
 - The four varieties of collector process now also support the `SIGUSR1`
@@ -2025,7 +2027,7 @@ compound document formats with the new home folder flag set
   - Units can now be filtered through a search field, and root units with
     no associated accounts are hidden by default.
 
-  - Users are now able to add and remove managers to and from their
+  - Users are now able to add and remove managers to and from their 
     organizational units.
 
   - Units are now paginated for increased performance.
@@ -2053,7 +2055,7 @@ compound document formats with the new home folder flag set
 - RabbitMQ clients that do not actually react to dynamic instructions from
   the administration system no longer register themselves to receive them.
 
-- Results from MSGraph based file scans can now be opened with the open-button.
+- Results from MSGraph based file scans can now be opened with the open-button. 
 
 - Added tests for organization views.
 
@@ -2065,19 +2067,19 @@ compound document formats with the new home folder flag set
 
 - Hovering over the handle button will no longer obscure it with an invisible
   element.
-
+  
 - On small screens, the buttons on the sidemenu in the admin module are no
   longer overflowing off-screen.
 
 - Email attachments which declare URLs or relative paths to be their filename
   are now handled correctly.
-
-- Fixed an issue where any user was able to add and edit organizations for any
+  
+- Fixed an issue where any user was able to add and edit organizations for any 
   client.
 
 - The administration system's signal handlers now pause until their event
   broadcasts are acknowledged, making these broadcasts much more robust.
-
+  
 - URL kwargs are no longer appended when using the "Open" and "Copy" buttons
   in the report module.
 
@@ -2172,12 +2174,12 @@ a bona fide genius, and excelled at advanced math even as a child.
 
 ### General Improvements
 
-- The URL field in the Exchangescanner and Filescanner forms are now correctly
+- The URL field in the Exchangescanner and Filescanner forms are now correctly 
   marked "domain" and "unc" instead.
 
   - Some unused calls to empty URL fields have been removed.
 
-- The "copy" and "copy folder" buttons now have the text "copy path" and "copy
+- The "copy" and "copy folder" buttons now have the text "copy path" and "copy 
   folder path" instead, and have been moved to below the path instead of below
   the name of the report.
 
@@ -2185,7 +2187,7 @@ a bona fide genius, and excelled at advanced math even as a child.
 
 ### Bugfixes
 
-- Trying to import users with deprecated emails no longer breaks the import
+- Trying to import users with deprecated emails no longer breaks the import 
   job.
 
 - The completed scan overview no longer breaks, when it encounters ScanStatus
@@ -2204,7 +2206,7 @@ a bona fide genius, and excelled at advanced math even as a child.
 
 ### New in this version
 
-- The leader overview is no longer the same as the DPO overview; Instead, the
+- The leader overview is no longer the same as the DPO overview; Instead, the 
   leader overview now contains an overview of all employees in the leader's
   organizational units, showing useful information:
 
@@ -2214,11 +2216,11 @@ a bona fide genius, and excelled at advanced math even as a child.
 
     - "Finished" for users with no current matches.
 
-    - "Accepted" for users who have handled at least 75% of the amount of new
+    - "Accepted" for users who have handled at least 75% of the amount of new 
       matches they received in the last 3 weeks.
 
-    - "Not accepted" for users with who have either not handled any matches in
-      the last 3 weeks, or have handled less than 75% of the amount of matches
+    - "Not accepted" for users with who have either not handled any matches in 
+      the last 3 weeks, or have handled less than 75% of the amount of matches 
       they received in the last 3 weeks.
 
   - Chart of user's resolution pattern for the past year.
@@ -2294,20 +2296,20 @@ a bona fide genius, and excelled at advanced math even as a child.
   - Clicking the button will show up to five options:
 
     - "Manual", a link to the manual page.
-
+    
     - "FAQ", a link to the FAQ part of the manual page. Hovering will also
       display links to the specific questions.
-
+    
     - "Contact DPO", hovering will display a list of users with the DPO role,
       which have the "contact person" option enabled on their profile. Clicking
-      one of the users will open the user's preferred mail client with contact
+      one of the users will open the user's preferred mail client with contact 
       info on the DPO.
-
-    - "Contact IT", opens the user's preferred mail client with contact
+    
+    - "Contact IT", opens the user's preferred mail client with contact 
       info on the user's organization.
-
-    - "Contact Magenta", opens the user's preferred mail client with contact
-      info on Magenta ApS's support line with prepopulated data from the user's
+    
+    - "Contact Magenta", opens the user's preferred mail client with contact 
+      info on Magenta ApS's support line with prepopulated data from the user's 
       current view.
 
 ### General Improvements
@@ -2336,7 +2338,7 @@ a bona fide genius, and excelled at advanced math even as a child.
 
 - Adjusted media root to support profile images uploaded by the user.
 
-- Path is shown correctly when editing Office 365 scannerjobs
+- Path is shown correctly when editing Office 365 scannerjobs 
 
 - "Completed scans" table now has a column showing number of results found in associated scan
 
@@ -2669,7 +2671,7 @@ a bona fide genius, and excelled at advanced math even as a child.
 
   - The user must now reenter or update the password used for authentication
     if the URL or the username of a scanner job is changed.
-
+  
   - The database encryption key can now be easily rotated with the new
     `rotate_keys` command.
 
@@ -2772,7 +2774,7 @@ it was spawned, but rather to the value of its parent object.
 - Scan status snapshots:
 
   - The system now records snapshots of the execution status of each scan.
-
+  
   - This information will be used in future releases to improve scan time
     estimates and to provide a visualisation of the system's performance.
 
@@ -3001,7 +3003,7 @@ fixes a bug in a recently-introduced migration.
 
 ### Bugfixes
 
-- Better support for extracting pdf metadata without any author.
+- Better support for extracting pdf metadata without any author. 
 
 ## Version 3.13.3, 22nd December 2021
 
@@ -3017,11 +3019,11 @@ fixes a bug in a recently-introduced migration.
 
 - The report module data migrations now supports old data formats.
 
-- Automatic reload works again in development when files are changed.
+- Automatic reload works again in development when files are changed. 
 
 ## Version 3.13.2, 7th December 2021
 
-"Erase & rewind"
+"Erase & rewind" 
 
 ### New in this version
 - Experimental support for cancelling a scan:
@@ -3073,7 +3075,7 @@ fixes a bug in a recently-introduced migration.
 
 ## Version 3.13.1, 16th November 2021
 
-"Batch Processing"
+"Batch Processing" 
 
 ### New in this version
 
@@ -3343,7 +3345,7 @@ older versions of OS2datascanner.
 ### General improvements
 
 - The administration system's scanner status page now has a cleaner and more
-  reliable presentation.
+  reliable presentation. 
 
 ## Version 3.11.4, 9th September 2021
 

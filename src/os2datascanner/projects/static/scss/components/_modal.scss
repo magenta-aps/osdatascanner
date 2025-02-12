@@ -38,6 +38,14 @@
     padding: 1rem;
     position: fixed;
   }
+  
+  &__form {
+      background-color: #fff;
+      height: calc(100vh - 2rem);
+      overflow-y: scroll;
+      padding: 1rem;
+      position: fixed;
+  }
 
   & > iframe {
     height: calc(100% - 3rem);

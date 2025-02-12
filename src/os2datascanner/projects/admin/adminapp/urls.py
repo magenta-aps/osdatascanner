@@ -169,10 +169,10 @@ urlpatterns = [
 
 if settings.ENABLE_MINISCAN:
     urlpatterns.extend([
-        re_path(r"^miniscan/$", MiniScanner.as_view(), name="miniscan"),
-        re_path(r"^miniscan/run/$", execute_mini_scan, name="miniscan_run"),
-        re_path(r"^miniscan/rule/$", CustomRuleCreateMiniscan.as_view(),
-                name="miniscan_customrule_add"),
+        path("miniscan/", MiniScanner.as_view(), name="miniscan"),
+        path("miniscan/run/", execute_mini_scan, name="miniscan_run"),
+        path("miniscan/rule/create", CustomRuleCreateMiniscan.as_view(),
+             name="miniscan_customrule_create"),
     ])
 
 # Iteratively add all scanner urls for consistent naming

@@ -1,5 +1,6 @@
 import json
 import structlog
+import re
 
 from django import forms
 from django.shortcuts import render
@@ -9,6 +10,7 @@ from django.contrib import messages as django_messages
 from django.db.models import F
 from django.urls import reverse
 from django.http import HttpResponse
+from django.utils.translation import gettext_lazy as _
 
 
 from ..models.rules import CustomRule
@@ -38,6 +40,15 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
     def get_context_data(self):
         context = super().get_context_data()
+
+        if self.request.GET.get('customrulepk'):
+            try:
+                custom_rule = CustomRule.objects.annotate(
+                    rule_field=F("_rule")).get(
+                    pk=self.request.GET.get('customrulepk'))
+            except BaseException:
+                custom_rule = None
+            context['custom_rule'] = custom_rule
 
         context["customrule_list"] = CustomRule.objects.annotate(rule_field=F("_rule"))
 
@@ -145,28 +156,56 @@ class CustomRuleCreateMiniscan(RuleCreate):
     template_name = "components/miniscanner/miniscanner_customrule_form.html"
     fields = ['name', 'description', 'sensitivity', 'organization']
 
+    def validate_exceptions_field(self, rule):
+        if "exceptions" not in rule:
+            return True
+        ex_string = rule.get('exceptions')
+        validated = ex_string == "" or bool(re.match(r'^\d{10}(,\d{10})*$', ex_string))
+        return validated
+
+    def validate_surrounding_words_exceptions(self, rule):
+        if "surrounding_exceptions" not in rule:
+            return True
+        ex_string = rule.get('surrounding_exceptions')
+        validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
+        return validated
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+        form.fields['rule'] = forms.JSONField(
+            validators=[customrule_validator])
+
         if self.request.GET:
-            form.fields['rule'] = forms.JSONField(
-                initial=json.loads(self.request.GET['rule']),
-                validators=[customrule_validator])
-        else:
-            form.fields['rule'] = forms.JSONField(
-                validators=[customrule_validator])
+            rule = json.loads(self.request.GET['rule'])
+            # cleaned_data needs to be here to add errors.
+            form.cleaned_data = ""
+            if not self.validate_exceptions_field(rule):
+                form.add_error("rule", _("The 'exceptions'-string must be a "
+                                         "comma-separated list of 10-digit numbers."))
+            elif not self.validate_surrounding_words_exceptions(rule):
+                form.add_error("rule", _("The 'surrounding_exceptions'-string must not "
+                                         "include any symbols or spaces."))
+            elif not rule:
+                form.add_error("rule", _("No rule selected"))
+            else:
+                form.fields['rule'] = forms.JSONField(
+                    initial=rule,
+                    validators=[customrule_validator])
 
         return form
 
     def form_valid(self, form):
-        super().form_valid(form)
+        response = super().form_valid(form)
 
-        if self.request.POST:
+        if response.status_code == 302:
             django_messages.add_message(
                     self.request,
                     django_messages.SUCCESS,
-                    ("Success"),
+                    _("Success"),
                     extra_tags="auto_close"
                 )
-        response = HttpResponse()
-        response.headers['HX-Redirect'] = reverse('miniscan')
+
+            response = HttpResponse()
+            response['HX-Redirect'] = reverse('miniscan') + f'?customrulepk={self.object.pk}'
+
         return response

@@ -75,9 +75,18 @@
 </textarea>
 
           <h2>{% trans "Rule to execute" %}</h2>
+ 
+
           <h4>
             {% trans "Selected rule: " %}
-            <span id="selectedRule">{% trans "None" %}</span>
+            <span id="selectedRule">
+              {% if custom_rule.name %}
+                {{ custom_rule.name }}
+              {% else %}
+                {% trans "None" %}
+              {% endif %}
+            </span>
+            {{ custom_rule.rule_field|json_script:"json" }}
           </h4>
           <p>
             <a href="#show-rules-modal"
@@ -93,20 +102,20 @@
                     aria-label="{% trans 'Run' %} {% trans 'scanner' %}"
                     title="{% trans 'Run' %} {% trans 'scanner' %}"
                     class="button button--cta-button">{% trans "Run" %}</button>
-            <button type="button"
-                    class="button button--transparent-button"
-                    aria-label="{% trans 'Clear' %} {% trans 'content' %}"
-                    title="{% trans 'Clear' %} {% trans 'content' %}"
-                    onClick="window.location.reload();">{% trans "Clear" %}</button>
             <a href="#create-rule-modal"
                data-modal="modal:open"
-               class="button button--text-button"
+               class="button button--transparent-button"
                aria-label="{% trans 'Save rule' %}"
-               hx-get="{% url 'miniscan_customrule_add' %}"
+               hx-get="{% url 'miniscan_customrule_create' %}"
                hx-include="#id_rule"
                hx-ext="path-params"
                hx-target="#miniscan_form_wrapper"
                title="{% trans 'Save rule' %}">{% trans "Save" %}</a>
+            <button type="button"
+                    class="button button--transparent-button"
+                    aria-label="{% trans 'Clear' %} {% trans 'content' %}"
+                    title="{% trans 'Clear' %} {% trans 'content' %}"
+                    onClick="window.location.replace({% url 'miniscan' %});">{% trans "Clear" %}</button>
           </div>
 
           <h3>{% trans "Scan result" %}</h3>
@@ -136,7 +145,7 @@
               class="clickable"
               onclick="saveName('{{ rule }}')">
             <td>{{ rule.name }}{{ rule.rule_field|json_script:"json" }}</td>
-            <td>{{ rule.description|truncatewords:5 }}{{ rule.rule_field|json_script:"json" }}</td>
+            <td>{{ rule.description|truncatewords:5 }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -144,18 +153,11 @@
   </div>
 
 
-  <div class="modal__content"
+  <div class="modal__form"
        id="create-rule-modal"
        tabindex="-1"
        role="dialog"
        aria-labelledby="create-rule-modal-title"
-       aria-hidden="true"
-       style="height:100vh;
-              overflow-y: scroll">
-    <!-- I don't like setting height here but it feels overkill to create a new class for one attribute -->
-    {% include "components/miniscanner/miniscanner_customrule_form.html" %}
-    {% include "components/feedback/snackbarNew.html" %}
-
-  </div>
+       aria-hidden="true">{% include "components/miniscanner/miniscanner_customrule_form.html" %}</div>
 
 {% endblock %}
