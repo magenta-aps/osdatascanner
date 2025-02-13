@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from os2datascanner.engine2.rules.rule import Rule, Sensitivity
 
@@ -25,8 +25,16 @@ def run_rule(rule, in_v):
     return rule, results
 
 
-class RuleSensitivityTests(unittest.TestCase):
-    def test_sensitivity_matches(self):
+class TestRuleSensitivity:
+    @pytest.mark.parametrize("in_v,expected", [
+        ("very bad thing", Sensitivity.CRITICAL),
+        ("moderately bad thing", Sensitivity.PROBLEM),
+        ("moderately bad very bad thing", Sensitivity.CRITICAL),
+        ("slightly moderately bad thing", Sensitivity.PROBLEM),
+        ("moderately slightly bad thing", Sensitivity.WARNING),
+        ("bad thing", Sensitivity.INFORMATION),
+        ("moderately quite bad thing", Sensitivity.INFORMATION)])
+    def test_sensitivity_matches(self, in_v, expected):
         rule = AndRule(
                 RegexRule("bad thing"),
                 OrRule(
@@ -36,20 +44,10 @@ class RuleSensitivityTests(unittest.TestCase):
                         AlwaysMatchesRule(sensitivity=Sensitivity.INFORMATION)
                     ))
 
-        expected = [
-                ("very bad thing", Sensitivity.CRITICAL),
-                ("moderately bad thing", Sensitivity.PROBLEM),
-                ("moderately bad very bad thing", Sensitivity.CRITICAL),
-                ("slightly moderately bad thing", Sensitivity.PROBLEM),
-                ("moderately slightly bad thing", Sensitivity.WARNING),
-                ("bad thing", Sensitivity.INFORMATION),
-                ("moderately quite bad thing", Sensitivity.INFORMATION)
-        ]
-
-        for in_v, sensitivity in expected:
-            matched, results = run_rule(rule, in_v)
-            self.assertEqual(matched, True)
-            self.assertEqual(sensitivity, max(
-                    [rule.sensitivity for rule, matches in results.items()
-                        if rule.sensitivity is not None and matches],
-                    key=lambda sensitivity: sensitivity.value))
+        matched, results = run_rule(rule, in_v)
+        assert matched is True
+        sensitivity = max(
+            [rule.sensitivity for rule, matches in results.items()
+                if rule.sensitivity is not None and matches],
+            key=lambda sensitivity: sensitivity.value)
+        assert sensitivity == expected
