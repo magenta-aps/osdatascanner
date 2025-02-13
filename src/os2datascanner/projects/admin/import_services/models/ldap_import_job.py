@@ -49,7 +49,13 @@ class LDAPImportJob(BackgroundJob):
                         self.handled, RDN.sequence_to_dn(path), self.to_handle)
                 self.save()
 
-        perform_import(self.realm, progress_callback=_callback)
+        try:
+            perform_import(self.realm, progress_callback=_callback)
+        except Exception:
+            self.status = (
+                "WARNING: No remote users or organisational units available for organisation;"
+                " are you sure your LDAP settings are correct?")
+            self.save()
 
         from ..utils import post_import_cleanup
         post_import_cleanup()
