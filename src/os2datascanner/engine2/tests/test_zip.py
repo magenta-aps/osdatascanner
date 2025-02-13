@@ -1,5 +1,4 @@
 import os.path
-import unittest
 
 from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.file import (
@@ -11,7 +10,7 @@ here_path = os.path.dirname(__file__)
 test_data_path = os.path.join(here_path, "data", "zip")
 
 
-class ZipTests(unittest.TestCase):
+class TestZip:
     def test_encrypted_zip(self):
         # Check that all the ZipHandles we get out of an encrypted Zip file
         # actually work. (It's fine if we don't get any, but the ones we *do*
