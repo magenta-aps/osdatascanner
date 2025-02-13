@@ -1,5 +1,5 @@
 import random
-import unittest
+import pytest
 from os2datascanner.engine2.rules.utilities.cpr_probability import (
         CprProbabilityCalculator)
 
@@ -43,50 +43,48 @@ def _cpr(time_from=None):
     return cpr_number
 
 
-class TestCprTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(self):
-        pass
+@pytest.fixture
+def cpr_calc():
+    return CprProbabilityCalculator()
 
-    def setUp(self):
-        self.cpr_calc = CprProbabilityCalculator()
 
-    def test_known_values(self):
+class TestCprTest:
+    def test_known_values(self, cpr_calc):
         valid_cpr = '1111111118'
         invalid_cpr = '1111111119'
 
-        valid_check = self.cpr_calc.cpr_check(valid_cpr)
-        invalid_check = self.cpr_calc.cpr_check(invalid_cpr)
-        self.assertTrue(valid_check > 0.6)
-        self.assertIsInstance(invalid_check, str)
+        valid_check = cpr_calc.cpr_check(valid_cpr)
+        invalid_check = cpr_calc.cpr_check(invalid_cpr)
+        assert valid_check > 0.6
+        assert isinstance(invalid_check, str)
 
-    def test_wrong_form(self):
+    def test_wrong_form(self, cpr_calc):
         short_cpr = '111111111'
         long_cpr = '11111111111'
 
-        short_check = self.cpr_calc.cpr_check(short_cpr)
-        self.assertIsInstance(short_check, str)
-        self.assertTrue(short_check.find('short') > 0)
+        short_check = cpr_calc.cpr_check(short_cpr)
+        assert isinstance(short_check, str)
+        assert short_check.find('short') > 0
 
-        long_check = self.cpr_calc.cpr_check(long_cpr)
-        self.assertIsInstance(long_check, str)
-        self.assertTrue(long_check.find('long') > 0)
+        long_check = cpr_calc.cpr_check(long_cpr)
+        assert isinstance(long_check, str)
+        assert long_check.find('long') > 0
 
-    def test_magic_dates(self):
+    def test_magic_dates(self, cpr_calc):
         """
         This test must be updated when a more refined way of handling the magic
         dates is implemented.
         """
         magic_cpr = '0101900000'
-        value = self.cpr_calc.cpr_check(magic_cpr)
-        self.assertTrue(value == 0.5)
+        value = cpr_calc.cpr_check(magic_cpr)
+        assert value == 0.5
 
-    def test_random_distribution(self):
+    def test_random_distribution(self, cpr_calc):
         distribution = {}
         tests = 10000
         for _i in range(0, tests):
             random_cpr = random.randrange(0, 9999999999)
-            check = self.cpr_calc.cpr_check(str(random_cpr).zfill(10))
+            check = cpr_calc.cpr_check(str(random_cpr).zfill(10))
             key = check if isinstance(check, str) else 'ok'
             if key in distribution:
                 distribution[key] += 1.0 / tests
@@ -99,27 +97,25 @@ class TestCprTest(unittest.TestCase):
         print('Sum: {:.4f}'.format(sum(distribution.values())))
         print()
 
-        self.assertTrue(0.001 < distribution['ok'] < 0.005)
-        self.assertTrue(0.9 < distribution['Illegal date'] < 0.999)
-        self.assertTrue(0.003 < distribution['CPR newer than today'] < 0.009)
-        self.assertTrue(
-            0.02 < distribution['Modulus 11 does not match'] < 0.035
-        )
-        self.assertTrue(0.999 < sum(distribution.values()) < 1.0001)
+        assert 0.001 < distribution['ok'] < 0.005
+        assert 0.9 < distribution['Illegal date'] < 0.999
+        assert 0.003 < distribution['CPR newer than today'] < 0.009
+        assert 0.02 < distribution['Modulus 11 does not match'] < 0.035
+        assert 0.999 < sum(distribution.values()) < 1.0001
 
-    def test_exception_date_with_mod11(self):
+    def test_exception_date_with_mod11(self, cpr_calc):
         """Test that a CPR from an exception data give expected probability"""
 
         cpr = "0101643066"
-        check = self.cpr_calc.cpr_check(cpr, do_mod11_check=True)
-        self.assertEqual(check, 0.5, "probability for an exception date should be 0.5")
+        check = cpr_calc.cpr_check(cpr, do_mod11_check=True)
+        assert check == 0.5
 
-    def test_exception_date_without_mod11(self):
+    def test_exception_date_without_mod11(self, cpr_calc):
         """Test that a CPR from an exception data give expected probability"""
 
         cpr = "0101643012"
-        check = self.cpr_calc.cpr_check(cpr, do_mod11_check=False)
-        self.assertEqual(check, 0.5, "probability for an exception date should be 0.5")
+        check = cpr_calc.cpr_check(cpr, do_mod11_check=False)
+        assert check == 0.5
 
 # NOTE: This test fails too often, that we would not know if it is failing for real.
 # Furthermore it messes up the pipeline very often and decreases productivity.
