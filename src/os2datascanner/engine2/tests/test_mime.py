@@ -1,5 +1,4 @@
 import os.path
-import unittest
 
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
@@ -14,25 +13,13 @@ docx_handle = FilesystemHandle.make_handle(
                 here_path, "data", "msoffice", "test.docx"))
 
 
-class Engine2MIMETests(unittest.TestCase):
+class TestEngine2MIME:
     def test_doc_mime(self):
-        self.assertEqual(
-                doc_handle.guess_type(),
-                "application/msword",
-                ".doc MIME guess is incorrect")
+        assert doc_handle.guess_type() == "application/msword"
         with SourceManager() as sm:
-            self.assertEqual(
-                    doc_handle.follow(sm).compute_type(),
-                    "application/msword",
-                    ".doc MIME computation is incorrect")
+            assert doc_handle.follow(sm).compute_type() == "application/msword"
 
     def test_docx_mime(self):
-        self.assertEqual(
-                docx_handle.guess_type(),
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ".docx MIME guess is incorrect")
+        assert docx_handle.guess_type() == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"  # noqa
         with SourceManager() as sm:
-            self.assertEqual(
-                    docx_handle.follow(sm).compute_type(),
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    ".docx MIME computation is incorrect")
+            assert docx_handle.follow(sm).compute_type() == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"  # noqa
