@@ -218,10 +218,10 @@
           {% if settings.HANDLE_DROPDOWN %}
             <button class="matches-handle expand button button--icon-text-button"
                     type="button"
-                    aria-label=""
-                    title="{% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}">
+                    aria-label="{{ handle_tooltip }}"
+                    title="{{ handle_tooltip }} - {{ deletion_disclaimer }}">
               <i class="material-symbols" aria-hidden="true">archive</i>
-              <span>{% trans "Handle" %}</span>
+              <span>{{ mark_as_handled }}</span>
             </button>
 
             <div class="dropdown-container">
@@ -237,7 +237,7 @@
                         hx-trigger="click"
                         name="revert-match"
                         hx-swap="outerHTML swap:300ms"
-                        hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{% trans "Revert" %}</li>
+                        hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{{ mark_as_unhandled }}</li>
                   {% endif %}
 
                   {% for choice in resolution_choices %}
@@ -254,10 +254,11 @@
             </div>
 
           {% else %}
+
             {% if "/archive/" in request.path %}
               <button class="revert-handle button button--icon-text-button"
                       type="button"
-                      title="Here is a title."
+                      title="{{ unhandle_tooltip }}"
                       hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
                       hx-swap="outerHTML swap:300ms"
                       hx-trigger="click"
@@ -265,13 +266,14 @@
                       hx-target="closest tr"
                       hx-push-url="false"
                       name="revert-match">
-                <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Revert" %}</span>
+                <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i>
+                <span>{{ mark_as_unhandled }}</span>
               </button>
 
             {% else %}
               <button class="matches-handle button button--icon-text-button"
                       type="button"
-                      title="{% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}"
+                      title="{{ handle_tooltip }} - {{ deletion_disclaimer }}"
                       hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
                       hx-swap="outerHTML swap:300ms"
                       hx-target="closest tr"
@@ -279,9 +281,10 @@
                       hx-trigger="click"
                       hx-push-url="false"
                       hx-vals='{"action":"0"}'
-                      {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
+                      {% if request.user.account.time_since_last_handle > 172800 %}hx-confirm="{{ handle_confirm_text }}"{% endif %}
                       name="handle-match">
-                <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Handle" %}</span>
+                <i class="material-icons text-secondary" aria-hidden="true">archive</i>
+                <span>{{ mark_as_handled }}</span>
               </button>
             {% endif %}
           {% endif %}

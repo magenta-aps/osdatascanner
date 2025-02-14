@@ -1,30 +1,34 @@
-{% load l10n %}
-{% load i18n %}
+{% load i18n l10n %}
 
 <div class="table-toolbar__content-left">
   {% if settings.HANDLE_DROPDOWN %}
+
     <button type="button"
             class="table-checkbox__action button button--icon-text-button"
             disabled
             id="mass_handle_button"
-            aria-label="{% trans 'handle matches' %}"
-            title="{% trans 'handle matches' %} {% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}">
-      <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Mark as handled" %}</span>
+            aria-label="{{ mass_handle_tooltip }}"
+            title="{{ mass_handle_tooltip }} - {{ deletion_disclaimer }}">
+      <i class="material-icons text-secondary" aria-hidden="true">archive</i>
+      <span>{{ mass_mark_as_handled }}</span>
     </button>
+
     <div class="dropdown-container">
       <div class="handle-dropdown">
         <ul hx-swap="afterend"
             hx-target="this"
             hx-indicator="#mass_handle_button"
-            {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans 'You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file.' %}" {% endif %}>
+            {% if request.user.account.time_since_last_handle > 172800 %}hx-confirm="{{ mass_handle_confirm_text }}"{% endif %}>
+
           {% if "/archive" in request.path %}
             <li class="handle-option button button--text-button"
                 hx-post="{% url 'mass-handle' %}"
                 hx-trigger="click"
                 name="handle-matches"
                 hx-push-url="false"
-                hx-vals='{"action":None}'>{% trans "Revert" %}</li>
+                hx-vals='{"action":None}'>{{ mark_as_unhandled }}</li>
           {% endif %}
+
           {% for choice in resolution_choices %}
             <li class="handle-option button button--text-button"
                 hx-post="{% url 'mass-handle' %}"
@@ -36,77 +40,51 @@
         </ul>
       </div>
     </div>
+
   {% else %}
+ 
     <button type="button"
             class="table-checkbox__action button button--icon-text-button"
             data-status="match-handle"
             disabled
-            aria-label="{% trans 'handle matches' %}"
-            title="{% trans 'handle matches' %} {% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}"
+            aria-label="{{ mass_handle_tooltip }}"
+            title="{{ mass_handle_tooltip }} - {{ deletion_disclaimer }}"
             name="handle-matches"
             hx-post="{% url 'mass-handle' %}"
             hx-swap="none"
             hx-trigger="click"
             hx-push-url="false"
             {% if "/archive" in request.path %} hx-vals='{"action":None}' {% else %} hx-vals='{"action":"0"}' {% endif %}
-            {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans 'You are about to handle the marked results. This action does not change the files, that the results are about. Please do not handle a result before action has been manually taken to the file.' %}" {% endif %}>
-      <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>
+            {% if request.user.account.time_since_last_handle > 172800 %}hx-confirm="{{ mass_handle_confirm_text }}"{% endif %}>
+      <i class="material-icons text-secondary" aria-hidden="true">archive</i>
+ 
+      <span>
         {% if "/archive/" in request.path %}
-          {% trans "Mark as unhandled" %}
+          {{ mark_as_unhandled }}
         {% else %}
-          {% trans "Mark as handled" %}
+          {{ mass_mark_as_handled }}
         {% endif %}
       </span>
     </button>
   {% endif %}
-  {% if show_email_delete_button and request.GET.source_type == "msgraph-mail" %}
+
+
+  {% for button in delete_buttons %}
     <button type="button"
-            class="button table-checkbox__action button--icon-text-button"
-            data-status="match-handle"
+            class="table-checkbox__action button button--icon-text-button"
             disabled
-            aria-label="{% trans 'Deletes checked emails from your mailbox' %}"
-            title="{% trans 'Deletes checked emails from your mailbox' %}"
-            hx-post="{% url 'mass-delete-mail' %}"
+            aria-label="{{ button.tooltip }}"
+            title="{{ button.tooltip }}"
+            hx-post="{{ button.url }}"
             hx-swap="none"
             hx-trigger="click"
             hx-push-url="false"
-            hx-confirm="{% blocktrans %}You are about to delete checked mails from your mailbox. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+            hx-confirm="{{ button.confirm_text }}"
             name="mass-delete">
-      <i class="material-icons">delete_forever</i><span>{% trans "Delete marked emails" %}</span>
+      <i class="material-icons">delete_forever</i>
+      <span>{{ button.button_text }}</span>
     </button>
-  {% endif %}
-  {% if show_file_delete_button and request.GET.source_type == "msgraph-files" %}
-    <button type="button"
-            class="button table-checkbox__action button--icon-text-button"
-            data-status="match-handle"
-            disabled
-            aria-label="{% trans 'Deletes checked files from your online drive' %}"
-            title="{% trans 'Deletes checked files from your online drive' %}"
-            hx-post="{% url 'mass-delete-file' %}"
-            hx-swap="none"
-            hx-trigger="click"
-            hx-push-url="false"
-            hx-confirm="{% blocktrans %}You are about to delete checked files from your online drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
-            name="mass-delete">
-      <i class="material-icons">delete_forever</i><span>{% trans "Delete marked files" %}</span>
-    </button>
-  {% endif %}
-  {% if show_smb_mass_delete_button %}
-    <button type="button"
-            class="button table-checkbox__action button--icon-text-button"
-            data-status="match-handle"
-            disabled
-            aria-label="{% trans 'Deletes checked files from your shared drive' %}"
-            title="{% trans 'Deletes checked files from your shared drive' %}"
-            hx-post="{% url 'mass-delete-smb-file' %}"
-            hx-swap="none"
-            hx-trigger="click"
-            hx-push-url="false"
-            hx-confirm="{% blocktrans %}You are about to delete checked files from your shared drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
-            name="mass-delete">
-      <i class="material-icons">delete_forever</i><span>{% trans "Delete marked files" %}</span>
-    </button>
-  {% endif %}
+  {% endfor %}
 
   <span class="selected-cb">
     <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}

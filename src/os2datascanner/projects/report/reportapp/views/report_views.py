@@ -114,8 +114,8 @@ class ReportView(LoginRequiredMixin, ListView):
 
         self.add_form_context(context)
 
-        # create a dictionary with data for the popover_component showing error messages
-        popover_data = {
+        # Define popover data for error messages
+        context["popover_data"] = {
             'status': _("No action required:"),
             'title': _(
                 "A temporary error occurred during the latest check of this result. "
@@ -124,14 +124,78 @@ class ReportView(LoginRequiredMixin, ListView):
             'subtitle': "",
         }
 
-        # pass the dictionary as a single variable
-        context["popover_data"] = popover_data
+        # Common translations that are used in multiple places
+        context["unhandle_tooltip"] = _("Revert the handling of this match")
 
-        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
-        context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
-            (self.request.GET.get("source_type") == "smbc" or
-                all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
+        context["handle_tooltip"] = _("Mark this match as handled")
+        context["mass_handle_tooltip"] = _("Mark selected matches as handled")
 
+        context["deletion_disclaimer"] = _(
+            "OSdatascanner will not delete results from the system that was scanned. "
+            "Marking a result as handled will only remove the result from OSdatascanner."
+        )
+
+        context["handle_confirm_text"] = _(
+            "You are about to handle this result. This action does not change the file, "
+            "that the result is about. Please do not handle a result before action has "
+            "been manually taken to the file."
+        )
+        context["mass_handle_confirm_text"] = _(
+            "You are about to handle these results. This action does not change the files, "
+            "that the results are about. Please do not handle results before action has "
+            "been manually taken to the files."
+        )
+
+        context["delete_confirm_text"] = _(
+            "You are about to delete checked {item_type} from your online drive. "
+            "OSdatascanner cannot reverse this action. Are you sure?"
+        )
+        context["delete_tooltip"] = _("Deletes checked {item_type} from your online drive.")
+        context["delete_button_text"] = _("Delete marked {item_type}")
+
+        context["mark_as_handled"] = _("Handle")
+        context["mass_mark_as_handled"] = _("Mark as handled")
+
+        context["mark_as_unhandled"] = _("Revert")
+
+        # Define delete buttons dynamically
+        delete_buttons = [
+            {
+                "type": "emails",
+                "source": "msgraph-mail",
+                "url": reverse_lazy("mass-delete-mail"),
+                "show": self.request.user.account.organization.has_email_delete_permission(),
+            },
+            {
+                "type": "files",
+                "source": "msgraph-files",
+                "url": reverse_lazy("mass-delete-file"),
+                "show": self.request.user.account.organization.has_file_delete_permission(),
+            },
+            {
+                "type": "shared files",
+                "source": None,
+                "url": reverse_lazy("mass-delete-smb-file"),
+                "show": settings.SMB_ALLOW_WRITE and (
+                    self.request.GET.get("source_type") == "smbc"
+                    or all(dr.source_type == "smbc" for dr in context["page_obj"].object_list)
+                ),
+            },
+        ]
+
+        # Filter buttons to only show the ones that should be visible
+        context["delete_buttons"] = [
+            {
+                "type": button["type"],
+                "url": button["url"],
+                "tooltip": context["delete_tooltip"].format(item_type=button["type"]),
+                "confirm_text": context["delete_confirm_text"].format(item_type=button["type"]),
+                "button_text": context["delete_button_text"].format(item_type=button["type"]),
+            }
+            for button in delete_buttons if button["show"]
+        ]
+
+        # Retention policy details
         context["retention_policy"] = self.org.retention_policy
         context["retention_days"] = self.org.retention_days
 
