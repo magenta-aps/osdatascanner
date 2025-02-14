@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
+from django.template.response import TemplateResponse
 from django.shortcuts import redirect
 from mozilla_django_oidc import auth
 from django.utils.translation import gettext_lazy as _
@@ -151,8 +152,14 @@ class OIDCCallback(OIDCAuthenticationCallbackView):
             return super().get(request)
 
         except SuspiciousOperation:
-            if retry_counter == 3:
-                raise
+            if retry_counter > 2:
+                self.request.oidc_error_text = _(
+                        "It appears that the one-time authentication token"
+                        " issued by your organisation's identity provider has"
+                        " already been used. Please start the log-in process"
+                        " again.")
+                self.request.oidc_try_again = True
+                return self.login_failure()
 
             new_query = request.GET.copy()
             new_query["retry_counter"] = retry_counter + 1
@@ -164,13 +171,27 @@ class OIDCCallback(OIDCAuthenticationCallbackView):
             logger.warning("Slept 1 second. Redirecting ...")
             return redirect(request.path + "?" + new_query.urlencode())
 
+    def login_failure(self):
+        return TemplateResponse(
+                self.request, "error_pages/oidc-login-error.html", status=403)
+
 
 class OIDCAuthenticationBackend(auth.OIDCAuthenticationBackend):
+    def get_userinfo(self, access_token, id_token, payload):
+        # Stash the user info in the request so we have access to it in an
+        # error situation
+        ui = super().get_userinfo(access_token, id_token, payload)
+        self.request.user_info = ui
+        return ui
+
     def filter_users_by_claims(self, claims):
         """ Defines how the OIDC process is supposed to identify Django-users by claims."""
 
         username = claims.get('preferred_username')
         if not username:
+            self.request.oidc_error_text = _(
+                    "Your organisation's identity provider did not send"
+                    " a username for your account to OSdatascanner.")
             return self.UserModel.objects.none()
 
         try:
@@ -178,6 +199,9 @@ class OIDCAuthenticationBackend(auth.OIDCAuthenticationBackend):
             return [account.user]
 
         except Account.DoesNotExist:
+            self.request.oidc_error_text = _(
+                    "No account could be found that matched the username"
+                    " sent by your organisation's identity provider.")
             return self.UserModel.objects.none()
 
     def create_user(self, claims):
