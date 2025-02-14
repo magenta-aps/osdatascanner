@@ -81,7 +81,7 @@
                   <td id="import_column__{{ organization.slug }}"
                       class="column column--import">
                     <div class="flex">
-                      <div class="button-group">
+                      <div class="button-group import_response_container">
                         <!-- NB: importservice is in one word because a reverse name was not specified on the ImportService model's relation to Organization and this is the default -->
                         {% if not organization.importservice %}
                           <a href="{% url 'add-ldap' org_id=organization.pk %}"

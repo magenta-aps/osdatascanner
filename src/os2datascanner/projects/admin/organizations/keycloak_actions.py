@@ -563,7 +563,7 @@ def perform_import_raw(  # noqa: CCR001, too high cognitive complexity
                 "no remote users or organisational units available for"
                 f" organisation {org.name}; are you sure your LDAP settings"
                 " are correct?")
-        raise Exception
+        raise Warning
 
     # Make sure that we have an OrganizationalUnit hierarchy that reflects the remote one
     path_to_unit, new_units = _create_unit_hierarchy(remote_hierarchy, org)

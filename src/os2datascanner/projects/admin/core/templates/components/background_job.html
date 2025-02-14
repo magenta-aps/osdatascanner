@@ -20,29 +20,35 @@
         </button>
       {% endif %}
       <div class="response__status-container">
-        {% if job.status|slice:"7" == "WARNING" %}
+        {% if "WARNING" in job.status %}
           <span class="response-icon response-icon--warning">
             <i class="material-icons">warning</i>
           </span>
-          <span class="response__text">{% trans job.status %}</span>
+        {% elif exec_state_value == "finished" %}
+          <span class="response-icon response-icon--success">
+            <i class="material-icons">check</i>
+          </span>
+        {% elif exec_state_value == "failed" %}
+          <span class="response-icon response-icon--error">
+            <i class="material-icons">error</i>
+          </span>
+        {% elif exec_state_value in "waiting running cancelling" %}
+          <span class="response-icon response-icon--waiting">
+            <i class="material-icons">hourglass_top</i>
+          </span>
+        {% elif exec_state_value == "cancelled" %}
+          <span class="response-icon response-icon--cancelled">
+            <i class="material-icons">block</i>
+          </span>
+        {% endif %}
+ 
+        {% if "WARNING" in job.status %}
+          <div class="response-warning__container">
+            <div class="response-warning__content">
+              <span class="response-text">{% trans job.status %}</span>
+            </div>
+          </div>
         {% else %}
-          {% if exec_state_value == "finished" %}
-            <span class="response-icon response-icon--success">
-              <i class="material-icons">check</i>
-            </span>
-          {% elif exec_state_value == "failed" %}
-            <span class="response-icon response-icon--error">
-              <i class="material-icons">error</i>
-            </span>
-          {% elif exec_state_value in "waiting running cancelling" %}
-            <span class="response-icon response-icon--waiting">
-              <i class="material-icons">hourglass_top</i>
-            </span>
-          {% elif exec_state_value == "cancelled" %}
-            <span class="response-icon response-icon--cancelled">
-              <i class="material-icons">block</i>
-            </span>
-          {% endif %}
  
           <span class="response-text">
             {% if exec_state_value == "finished" %}
@@ -51,9 +57,9 @@
               {{ job.exec_state.label|capfirst }},
             {% endif %}
             {{ job.changed_at|date:'d-m-Y H:i' }}
-          </span>
-        </div>
-      {% endif %}
+          {% endif %}
+        </span>
+      </div>
     </div>
   {% endif %}
 

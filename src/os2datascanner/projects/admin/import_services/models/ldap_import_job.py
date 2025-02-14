@@ -51,9 +51,9 @@ class LDAPImportJob(BackgroundJob):
 
         try:
             perform_import(self.realm, progress_callback=_callback)
-        except Exception:
+        except Warning:
             self.status = (
-                "WARNING: No remote users or organisational units available for organisation;"
+                "WARNING: No remote users or organisational units available;"
                 " are you sure your LDAP settings are correct?")
             self.save()
 
