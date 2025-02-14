@@ -539,7 +539,7 @@ msgid "per page"
 msgstr "pr. side"
 
 #: reportapp/templates/components/pagination/pagination.html:9
-#: reportapp/templates/components/reports/handle_match.html:112
+#: reportapp/templates/components/reports/handle_match.html:90
 #: reportapp/templates/dpo_statistics_template.html:130
 msgid "of"
 msgstr "af"
@@ -679,110 +679,7 @@ msgstr "Inkludér resultater, der er under %(retention_days)s dage gamle"
 msgid "Include results from shared mailboxes"
 msgstr "Inkludér resultater fra fælles mailbokse"
 
-#: reportapp/templates/components/reports/handle_match.html:10
-#: reportapp/templates/components/reports/handle_match.html:11
-#: reportapp/templates/components/reports/handle_match.html:44
-#: reportapp/templates/components/reports/handle_match.html:45
-msgid "handle matches"
-msgstr "håndtér matches"
-
-#: reportapp/templates/components/reports/handle_match.html:11
-#: reportapp/templates/components/reports/handle_match.html:45
-#: reportapp/templates/components/reports/match.html:222
-#: reportapp/templates/components/reports/match.html:274
-msgid ""
-"OS2datascanner will not delete results from the system that was scanned. "
-"Marking a result as handled will only remove the result from OS2datascanner."
-msgstr ""
-"OS2datascanner sletter ikke resultater fra systemet der blev scannet. "
-"Resultatet markeres udelukkende som håndteret i OS2datascanner."
-
-#: reportapp/templates/components/reports/handle_match.html:12
-#: reportapp/templates/components/reports/handle_match.html:57
-msgid "Mark as handled"
-msgstr "Markér som håndterede"
-
-#: reportapp/templates/components/reports/handle_match.html:19
-#: reportapp/templates/components/reports/match.html:233
-#: reportapp/templates/components/reports/match.html:282
-msgid ""
-"You are about to handle this result. This action does not change the file, "
-"that the result is about. Please do not handle a result before action has "
-"been manually taken to the file."
-msgstr ""
-"Du er ved at håndtere det markerede resultat. Denne handling ændrer ikke på "
-"filen, som resultatet handler om. Håndtér venligst ikke et resultat, før du "
-"manuelt har gjort noget ved filen."
-
-#: reportapp/templates/components/reports/handle_match.html:26
-#: reportapp/templates/components/reports/match.html:240
-#: reportapp/templates/components/reports/match.html:268
-msgid "Revert"
-msgstr "Fortryd"
-
-#: reportapp/templates/components/reports/handle_match.html:52
-msgid ""
-"You are about to handle the marked results. This action does not change the "
-"files, that the results are about. Please do not handle a result before "
-"action has been manually taken to the file."
-msgstr ""
-"Du er ved at håndtere de markerede resultater. Denne handling ændrer ikke på "
-"filerne, som resultaterne handler om. Håndtér venligst ikke et resultat, før "
-"du manuelt har gjort noget ved filen."
-
-#: reportapp/templates/components/reports/handle_match.html:55
-msgid "Mark as unhandled"
-msgstr "Markér som uhåndterede"
-
-#: reportapp/templates/components/reports/handle_match.html:67
-#: reportapp/templates/components/reports/handle_match.html:68
-msgid "Deletes checked emails from your mailbox"
-msgstr "Sletter markede emails fra din mailboks"
-
-#: reportapp/templates/components/reports/handle_match.html:73
-msgid ""
-"You are about to delete checked mails from your mailbox. OSdatascanner "
-"cannot reverse this action. Are you sure?"
-msgstr ""
-"Du er ved at slette markerede emails fra din mailboks. Denne handling kan "
-"ikke fortrydes i OSdatascanner. Er du sikker?"
-
-#: reportapp/templates/components/reports/handle_match.html:75
-msgid "Delete marked emails"
-msgstr "Slet markerede emails"
-
-#: reportapp/templates/components/reports/handle_match.html:83
-#: reportapp/templates/components/reports/handle_match.html:84
-msgid "Deletes checked files from your online drive"
-msgstr "Sletter markede filer fra dit online drev"
-
-#: reportapp/templates/components/reports/handle_match.html:89
-msgid ""
-"You are about to delete checked files from your online drive. OSdatascanner "
-"cannot reverse this action. Are you sure?"
-msgstr ""
-"Du er ved at slette markerede filer fra dit online drev. Denne handling kan "
-"ikke fortrydes i OSdatascanner. Er du sikker?"
-
-#: reportapp/templates/components/reports/handle_match.html:91
-#: reportapp/templates/components/reports/handle_match.html:107
-msgid "Delete marked files"
-msgstr "Slet markerede filer"
-
-#: reportapp/templates/components/reports/handle_match.html:99
-#: reportapp/templates/components/reports/handle_match.html:100
-msgid "Deletes checked files from your shared drive"
-msgstr "Sletter markede filer fra dit fællesdrev"
-
-#: reportapp/templates/components/reports/handle_match.html:105
-msgid ""
-"You are about to delete checked files from your shared drive. OSdatascanner "
-"cannot reverse this action. Are you sure?"
-msgstr ""
-"Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling "
-"kan ikke fortrydes i OSdatascanner. Er du sikker?"
-
-#: reportapp/templates/components/reports/handle_match.html:112
+#: reportapp/templates/components/reports/handle_match.html:90
 msgid "selected"
 msgstr "valgt"
 
@@ -861,24 +758,19 @@ msgstr "Kopiér sti"
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:224
-#: reportapp/templates/components/reports/match.html:284
-msgid "Handle"
-msgstr "Håndtér"
-
-#: reportapp/templates/components/reports/match.html:292
+#: reportapp/templates/components/reports/match.html:295
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:304
+#: reportapp/templates/components/reports/match.html:307
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:306
+#: reportapp/templates/components/reports/match.html:309
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:308
+#: reportapp/templates/components/reports/match.html:311
 msgid "Probability"
 msgstr "Sandsynlighed"
 
@@ -1768,7 +1660,7 @@ msgid ""
 "Enabling this feature also adds a False positive category to Outlook. Mails "
 "marked with this category will no longer be seen as a match by OSdatascanner."
 msgstr ""
-"Aktivering af kategorisering tilføjer også kategorien \"OS2datascanner false "
+"Aktivering af kategorisering tilføjer også kategorien \"OSdatascanner false "
 "positive\" til Outlook. Sættes denne kategori på en mail, vil mailen "
 "fremover ikke optræde som et match i OSdatascanner."
 
@@ -2172,14 +2064,85 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:531 reportapp/views/report_views.py:556
-#: reportapp/views/report_views.py:576 reportapp/views/report_views.py:601
-#: reportapp/views/report_views.py:620
+#: reportapp/views/report_views.py:128
+msgid "Revert the handling of this match"
+msgstr ""
+
+#: reportapp/views/report_views.py:130
+msgid "Mark this match as handled"
+msgstr "Markér dette resultat som håndteret"
+
+#: reportapp/views/report_views.py:131
+msgid "Mark selected matches as handled"
+msgstr "Markér valgte resultater som håndterede"
+
+#: reportapp/views/report_views.py:134
+msgid ""
+"OSdatascanner will not delete results from the system that was scanned. "
+"Marking a result as handled will only remove the result from OSdatascanner."
+msgstr ""
+"OSdatascanner sletter ikke resultater fra systemet der blev scannet. "
+"Resultatet markeres udelukkende som håndteret i OSdatascanner."
+
+#: reportapp/views/report_views.py:139
+msgid ""
+"You are about to handle this result. This action does not change the file, "
+"that the result is about. Please do not handle a result before action has "
+"been manually taken to the file."
+msgstr ""
+"Du er ved at håndtere dette resultat. Denne handling ændrer ikke på filen,"
+"som resultatet handler om. Håndtér venligst ikke et resultat, før du manuelt "
+"har gjort noget ved filen."
+
+#: reportapp/views/report_views.py:144
+msgid ""
+"You are about to handle these results. This action does not change the "
+"files, that the results are about. Please do not handle results before "
+"action has been manually taken to the files."
+msgstr ""
+"Du er ved at håndtere de markerede resultater. Denne handling ændrer ikke på "
+"filerne, som resultaterne handler om. Håndtér venligst ikke et resultat, før "
+"du manuelt har gjort noget ved filen."
+
+#: reportapp/views/report_views.py:150
+#, python-brace-format
+msgid ""
+"You are about to delete checked {item_type} from your online drive. "
+"OSdatascanner cannot reverse this action. Are you sure?"
+msgstr ""
+"Du er ved at slette markerede {item_type} fra dit online drev. Denne "
+"handling kan ikke fortrydes i OSdatascanner. Er du sikker?"
+
+#: reportapp/views/report_views.py:153
+#, python-brace-format
+msgid "Deletes checked {item_type} from your online drive."
+msgstr "Sletter markede {item_type} fra dit online drev"
+
+#: reportapp/views/report_views.py:154
+#, python-brace-format
+msgid "Delete marked {item_type}"
+msgstr "Slet markerede {item_type}"
+
+#: reportapp/views/report_views.py:156
+msgid "Handle"
+msgstr "Håndtér"
+
+#: reportapp/views/report_views.py:157
+msgid "Mark as handled"
+msgstr "Markér som håndterede"
+
+#: reportapp/views/report_views.py:159
+msgid "Revert"
+msgstr "Fortryd"
+
+#: reportapp/views/report_views.py:595 reportapp/views/report_views.py:620
+#: reportapp/views/report_views.py:640 reportapp/views/report_views.py:665
+#: reportapp/views/report_views.py:684
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:647
+#: reportapp/views/report_views.py:711
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"
@@ -2393,6 +2356,35 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ "Hold på grafen med musen, og træk for at markere et område, du ønsker at "
 #~ "zoome ind på. Hold shift inde, mens du scroller med musehjulet, for "
 #~ "manuelt at styre zoom. Tryk på nulstil-knappen for at nulstille zoom."
+
+#~ msgid "handle matches"
+#~ msgstr "håndtér matches"
+
+#~ msgid "Mark as unhandled"
+#~ msgstr "Markér som uhåndterede"
+
+#~ msgid "Deletes checked emails from your mailbox"
+#~ msgstr "Sletter markede emails fra din mailboks"
+
+#~ msgid ""
+#~ "You are about to delete checked mails from your mailbox. OSdatascanner "
+#~ "cannot reverse this action. Are you sure?"
+#~ msgstr ""
+#~ "Du er ved at slette markerede emails fra din mailboks. Denne handling kan "
+#~ "ikke fortrydes i OSdatascanner. Er du sikker?"
+
+#~ msgid "Delete marked emails"
+#~ msgstr "Slet markerede emails"
+
+#~ msgid "Deletes checked files from your shared drive"
+#~ msgstr "Sletter markede filer fra dit fællesdrev"
+
+#~ msgid ""
+#~ "You are about to delete checked files from your shared drive. "
+#~ "OSdatascanner cannot reverse this action. Are you sure?"
+#~ msgstr ""
+#~ "Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne "
+#~ "handling kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
 #~ msgid "Older results"
 #~ msgstr "Ældre resultater"
@@ -2668,13 +2660,13 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgid ""
 #~ "\n"
 #~ "    Currently, <strong>%(user_alias_bound_results)s</strong> results in\n"
-#~ "    the OS2datascanner system have you as the owner and require your "
+#~ "    the OSdatascanner system have you as the owner and require your "
 #~ "attention.\n"
 #~ msgstr ""
 #~ "\n"
 #~ "Der ligger i øjeblikket <strong>%(user_alias_bound_results)s</strong> "
 #~ "resultater i\n"
-#~ "OS2datascanner-systemet med direkte tilknytning til dig, der kræver din "
+#~ "OSdatascanner-systemet med direkte tilknytning til dig, der kræver din "
 #~ "opmærksomhed.\n"
 
 #~ msgid ""
@@ -2696,21 +2688,21 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #, python-format
 #~ msgid ""
 #~ "\n"
-#~ "<a href=\"%(report_login_url)s\">Log into OS2datascanner with your\n"
+#~ "<a href=\"%(report_login_url)s\">Log into OSdatascanner with your\n"
 #~ "organisation account</a> for further details.\n"
 #~ msgstr ""
 #~ "\n"
-#~ "<a href=\"%(report_login_url)s\">Log på OS2datascanner med din\n"
+#~ "<a href=\"%(report_login_url)s\">Log på OSdatascanner med din\n"
 #~ "organisationskonto</a> for at se flere detaljer.\n"
 
 #~ msgid ""
 #~ "\n"
 #~ "Kind regards,<br>\n"
-#~ "the OS2datascanner system\n"
+#~ "the OSdatascanner system\n"
 #~ msgstr ""
 #~ "\n"
 #~ "Med venlig hilsen<br>\n"
-#~ "OS2datascanner-systemet\n"
+#~ "OSdatascanner-systemet\n"
 
 #, python-format
 #~ msgid ""
@@ -2724,32 +2716,32 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #~ msgid ""
 #~ "\n"
 #~ "Currently, %(user_alias_bound_results)s results in\n"
-#~ "the OS2datascanner system have you as the owner and require your "
+#~ "the OSdatascanner system have you as the owner and require your "
 #~ "attention.\n"
 #~ msgstr ""
 #~ "\n"
 #~ "Der ligger i øjeblikket <strong>%(user_alias_bound_results)s</strong> "
 #~ "resultater i\n"
-#~ "OS2datascanner-systemet med direkte tilknytning til dig, der kræver din "
+#~ "OSdatascanner-systemet med direkte tilknytning til dig, der kræver din "
 #~ "opmærksomhed.\n"
 
 #~ msgid ""
 #~ "\n"
-#~ "Log into OS2datascanner with your organisation account for further "
+#~ "Log into OSdatascanner with your organisation account for further "
 #~ "details.\n"
 #~ msgstr ""
 #~ "\n"
-#~ "Log på OS2datascanner med din organisationskonto for at se flere "
+#~ "Log på OSdatascanner med din organisationskonto for at se flere "
 #~ "detaljer.\n"
 
 #~ msgid ""
 #~ "\n"
 #~ "Kind regards,\n"
-#~ "the OS2datascanner system\n"
+#~ "the OSdatascanner system\n"
 #~ msgstr ""
 #~ "\n"
 #~ "Med venlig hilsen<br>\n"
-#~ "OS2datascanner-systemet\n"
+#~ "OSdatascanner-systemet\n"
 
 #~ msgid "Contact manager"
 #~ msgstr "Kontakt leder"
