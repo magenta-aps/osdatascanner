@@ -12,6 +12,9 @@
   to add extra settings on top of the base instead of just overriding the ones
   that already exist.
 
+- Errors in the OIDC login process are now displayed, along with some useful
+  debugging information.
+
 ### Bugfixes
 
 - Fixed some translations issues in the report module manual.
@@ -20,6 +23,9 @@
   login page.
 
 - Correctly send CleanProblemMessages when calling the ScannerQuerySet.delete-method.
+
+- Errors in the OIDC login process no longer send the user into an infinite
+  loop of failed login attempts.
 
 ## Version 3.26.4, 3rd February 2025
 

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-07 08:35+0100\n"
+"POT-Creation-Date: 2025-02-14 13:20+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1111,9 +1111,10 @@ msgstr ""
 "OSdatascanner modtog fra serveren."
 
 #: reportapp/templates/django_saml2_auth/error.html:17
+#: reportapp/templates/error_pages/oidc-login-error.html:34
 msgid "Contact your system administrator for more information."
 msgstr ""
-"For mere information kan du kontakt organisationens systemadministrator."
+"For mere information kan du kontakte organisationens systemadministrator."
 
 #: reportapp/templates/django_saml2_auth/signout.html:6
 msgid "Signed out"
@@ -1224,6 +1225,50 @@ msgstr "Ingen organisatoriske enheder er forbundet til brugeren"
 msgid "There are no organizational units associated with"
 msgstr "Der er ikke nogle organisatoriske enheder forbundet med"
 
+#: reportapp/templates/error_pages/oidc-login-error.html:8
+msgid "OIDC login failed!"
+msgstr "OIDC-login fejlede!"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:16
+msgid "Your organisation's identity provider returned the following error:"
+msgstr "Din organisations identity provider gav følgende fejlbesked:"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:22
+#: reportapp/templates/error_pages/oidc-login-error.html:47
+#: reportapp/templates/error_pages/oidc-login-error.html:60
+#: reportapp/templates/error_pages/oidc-login-error.html:72
+msgid "Copy"
+msgstr "Kopiér"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:25
+msgid "Something went wrong when logging you in."
+msgstr "Noget gik galt under login-processen."
+
+#: reportapp/templates/error_pages/oidc-login-error.html:30
+msgid "Click here to restart the login process."
+msgstr "Klik her for at forsøge at logge ind igen."
+
+#: reportapp/templates/error_pages/oidc-login-error.html:37
+msgid "Technical information"
+msgstr "Tekniske informationer"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:40
+msgid "Request parameters"
+msgstr "Forespørgslens parametre"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:51
+msgid "Session information"
+msgstr "Session-oplysninger"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:54
+msgid "Session identifier:"
+msgstr "Session-ID:"
+
+#: reportapp/templates/error_pages/oidc-login-error.html:65
+msgid "OIDC claims"
+msgstr "OIDC-påstande"
+
+# used by Styrelsen for It og Læring
 #: reportapp/templates/error_pages/remediator-error-page.html:6
 msgid "You are not assigned as remediator!"
 msgstr "Du er ikke tildelt oprydder!"
@@ -2086,19 +2131,45 @@ msgstr "Office 365 Kalender"
 msgid "Unrecognized scan type"
 msgstr "Uidentificerbar scan type"
 
-#: reportapp/utils.py:30
+#: reportapp/utils.py:31
 msgid "%0D%0A%0D%0A--- Do not alter text below this line! ---%0D%0A"
 msgstr "%0D%0A%0D%0A--- Ændr ikke teksten under denne linje! ---%0D%0A"
 
-#: reportapp/views/report_views.py:76
+#: reportapp/utils.py:157
+msgid ""
+"It appears that the one-time authentication token issued by your "
+"organisation's identity provider has already been used. Please start the log-"
+"in process again."
+msgstr ""
+"Det ser ud til, at den engangs-godkendelsestoken, der er udstedt af din "
+"organisations identity provider, allerede er blevet brugt. Prøv venligst at "
+"logge ind igen."
+
+#: reportapp/utils.py:193
+msgid ""
+"Your organisation's identity provider did not send a username for your "
+"account to OSdatascanner."
+msgstr ""
+"Din organisations identity provider fik ikke sendt brugernavnet på din konto "
+"til OSdatascanner."
+
+#: reportapp/utils.py:203
+msgid ""
+"No account could be found that matched the username sent by your "
+"organisation's identity provider."
+msgstr ""
+"Der blev ikke fundet en konto, hvis brugernavn passede sammen med dette "
+"sendte af din organisations identity provider."
+
+#: reportapp/views/report_views.py:71
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/report_views.py:124
+#: reportapp/views/report_views.py:119
 msgid "No action required:"
 msgstr "Ingen handling påkrævet:"
 
-#: reportapp/views/report_views.py:126
+#: reportapp/views/report_views.py:121
 msgid ""
 "A temporary error occurred during the latest check of this result. "
 "OSdatascanner will automatically check this result again as part of the next "
@@ -2108,14 +2179,14 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:536 reportapp/views/report_views.py:561
-#: reportapp/views/report_views.py:581 reportapp/views/report_views.py:606
-#: reportapp/views/report_views.py:625
+#: reportapp/views/report_views.py:531 reportapp/views/report_views.py:556
+#: reportapp/views/report_views.py:576 reportapp/views/report_views.py:601
+#: reportapp/views/report_views.py:620
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:652
+#: reportapp/views/report_views.py:647
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"

@@ -1,0 +1,63 @@
+{% extends "error_pages/error_base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load debug_helpers %}
+
+{% block error_heading %}
+  {% trans "OIDC login failed!" %}
+{% endblock %}
+
+{% block error_content %}
+  <p>
+    {% if request.oidc_error_text %}
+      {{ request.oidc_error_text }}
+    {% elif request.GET.error %}
+      {% trans "Your organisation's identity provider returned the following error:" %}
+      <pre id="idp-error" style="text-align: left; width: 50%; margin-left: auto; margin-right: auto">
+{{ request.GET.error }}</pre>
+      <button type="button"
+              class="button button--text-button"
+              data-clipboard-target="#idp-error">{% trans "Copy" %}</button>
+    {% else %}
+      {% trans "Something went wrong when logging you in." %}
+    {% endif %}
+  </p>
+  <p>
+    {% if request.oidc_try_again %}
+      <a href="{% url "oidc_authentication_init" %}">{% trans "Click here to restart the login process." %}</a>
+    {% else %}
+      {% trans "Contact your system administrator for more information." %}
+    {% endif %}
+  </p>
+  <h2>{% trans "Technical information" %}</h2>
+  <h3>{% trans "Request parameters" %} (HTTP GET)</h3>
+  <pre id="request-params" style="text-align: left; width: 50%; margin-left: auto; margin-right: auto">
+{{ request.GET|as_dict|as_yaml }}</pre>
+  <button type="button"
+          class="button button--text-button"
+          data-clipboard-target="#request-params">{% trans "Copy" %}</button>
+  {% if request.session %}
+    <h3>{% trans "Session information" %}</h3>
+    <p>{% trans "Session identifier:" %} {{ request.session.session_key }}</p>
+    <pre id="session-info" style="text-align: left; width: 50%; margin-left: auto; margin-right: auto">
+{{ request.session|as_dict|as_yaml }}</pre>
+    <button type="button"
+            class="button button--text-button"
+            data-clipboard-target="#session-info">{% trans "Copy" %}</button>
+  {% endif %}
+  {% if request.user_info %}
+    <h3>{% trans "OIDC claims" %}</h3>
+    <pre id="oidc-claims" style="text-align: left; width: 50%; margin-left: auto; margin-right: auto">
+{{ request.user_info|as_dict|as_yaml }}</pre>
+    <button type="button"
+            class="button button--text-button"
+            data-clipboard-target="#oidc-claims">{% trans "Copy" %}</button>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static '3rdparty/clipboard.min.js' %} "></script>
+  <script>const clipboard = new ClipboardJS('[data-clipboard-target');</script>
+{% endblock scripts %}
