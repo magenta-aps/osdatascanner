@@ -2066,7 +2066,7 @@ msgstr ""
 
 #: reportapp/views/report_views.py:128
 msgid "Revert the handling of this match"
-msgstr ""
+msgstr "Fortryd håndteringen af dette resultat"
 
 #: reportapp/views/report_views.py:130
 msgid "Mark this match as handled"

@@ -76,6 +76,8 @@
 
 - Leader Overview datatable no longer has issues with x-overflow on narrow screens.
 
+- Removed outdated references to OS2
+
 ## Version 3.26.4, 3rd February 2025
 
 "MQ is for Message Queue"
