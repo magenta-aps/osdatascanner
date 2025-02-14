@@ -1,8 +1,3 @@
-################################################################################
-# Changes to this file requires approval from Labs. Please add a person from   #
-# Labs as required approval to your MR if you have any changes.                #
-################################################################################
-
 # For the release steps to work, the following environment variables have to set
 # in the Gitlab UI:
 # RELEASE_REGISTRY_USER
@@ -10,10 +5,10 @@
 
 # Saltbert, used for automatic deployment of our test server
 include:
-  - project: 'labs/salt-automation'
-    file: '/gitlab-ci-templates/common/saltbert.v1.yml'
-  - project: 'labs/salt-automation'
-    file: 'gitlab-ci-templates/common/docker-buildkit-meta.v1.yml'
+  - project: labs/salt-automation
+    file:
+      - /gitlab-ci-templates/common/saltbert.v1.yml
+      - gitlab-ci-templates/common/docker-build-meta.v2.yml
 
 stages:
   - lint
@@ -37,7 +32,7 @@ variables:
   ADMIN_IMAGE: ${CI_REGISTRY_IMAGE}/admin:${CI_COMMIT_SHA}
   ENGINE_IMAGE: ${CI_REGISTRY_IMAGE}/engine:${CI_COMMIT_SHA}
   API_IMAGE: ${CI_REGISTRY_IMAGE}/api:${CI_COMMIT_SHA}
-  DOCKERFILE_DIR: ${CI_PROJECT_DIR}/docker/base
+  DOCKERFILE: ${CI_PROJECT_DIR}/docker/base/Dockerfile
 
 
 # Lint stage
@@ -123,49 +118,44 @@ Lint SCSS files:
 
 # Pre-build stage
 Build base image:
-  extends: .build-buildkit
+  extends: .build-docker
   stage: pre-build
   variables:
     CI_IMAGE: ${BASE_IMAGE}
-    IMAGE_CACHE_REGISTRY: ${CI_REGISTRY_IMAGE}/cache-base
     TARGET: base
 
 # Build stage
 ##############
-.build-default: &build-default
-  extends: .build-buildkit
+.build-default:
+  extends: .build-docker
   needs: ["Build base image"]
   variables:
     # All images need to set the BASE_IMAGE arg to ensure that the base image
     # used is the one we just built
-    EXTRA_BUILD_OPTS: --opt build-arg:BASE_IMAGE=${BASE_IMAGE}
+    BUILD_DOCKER_EXTRA_FLAGS: --build-arg=BASE_IMAGE=${BASE_IMAGE}
 
 Build Report Application:
   extends: .build-default
   variables:
     CI_IMAGE: ${REPORT_IMAGE}
-    IMAGE_CACHE_REGISTRY: ${CI_REGISTRY_IMAGE}/cache-report
     TARGET: report
 
 Build Admin Application:
   extends: .build-default
   variables:
     CI_IMAGE: ${ADMIN_IMAGE}
-    IMAGE_CACHE_REGISTRY: ${CI_REGISTRY_IMAGE}/cache-admin
     TARGET: admin
 
 Build Engine:
   extends: .build-default
   variables:
     CI_IMAGE: ${ENGINE_IMAGE}
-    IMAGE_CACHE_REGISTRY: ${CI_REGISTRY_IMAGE}/cache-engine
     TARGET: engine
 
 Build API:
   extends: .build-default
   variables:
     CI_IMAGE: ${API_IMAGE}
-    IMAGE_CACHE_REGISTRY: ${CI_REGISTRY_IMAGE}/cache-api
     TARGET: api
 
 # Test stage
