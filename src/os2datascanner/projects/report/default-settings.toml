@@ -66,7 +66,6 @@ OIDC_RP_SIGN_ALGO = "RS256"
 OIDC_OP_JWKS_ENDPOINT = ""
 # redirect urls
 LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = ""
 # login and logout urls
 LOGOUT_URL = ""
 OIDC_OP_LOGOUT_URL_METHOD = "os2datascanner.projects.report.reportapp.views.views.oidc_op_logout_url_method"

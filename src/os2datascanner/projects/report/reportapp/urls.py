@@ -1,5 +1,5 @@
 import django_saml2_auth.views
-import django.contrib.auth.views
+import django.contrib.auth.views as auth_views
 from django.urls import re_path
 from django.http import HttpResponse
 from django.urls import include
@@ -11,7 +11,6 @@ from os2datascanner import __version__
 
 from .views.api import JSONAPIView
 from .views.saml import metadata
-from .views.misc_views import LogoutPageView
 from .views.statistics_views import (
     LeaderStatisticsPageView, LeaderStatisticsCSVView, DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, EmployeeView)
@@ -71,55 +70,54 @@ if settings.SAML2_ENABLED:
 
 if settings.KEYCLOAK_ENABLED:
     settings.LOGIN_URL = "oidc_authentication_init"
-    settings.LOGOUT_REDIRECT_URL = settings.SITE_URL + "accounts/logout/"
     urlpatterns.append(path('oidc/', include('mozilla_django_oidc.urls'))),
     urlpatterns.append(re_path(r'^accounts/logout/',
-                               LogoutPageView.as_view(
+                               auth_views.LogoutView.as_view(
                                    template_name='components/user/logout.html',
                                    extra_context={'body_class': 'login-bg'}
                                    ),
                                name='logout'))
 else:
     urlpatterns.append(re_path(r'^accounts/login/',
-                               django.contrib.auth.views.LoginView.as_view(
+                               auth_views.LoginView.as_view(
                                    template_name='components/user/login.html',
                                    extra_context={'body_class': 'login-bg'}
                                    ),
                                name='login'))
     urlpatterns.append(re_path(r'^accounts/logout/',
-                               django.contrib.auth.views.LogoutView.as_view(
+                               auth_views.LogoutView.as_view(
                                    template_name='components/user/logout.html',
                                    extra_context={'body_class': 'login-bg'}
                                    ),
                                name='logout'))
     urlpatterns.append(re_path(r'^accounts/password_change/',
-                               django.contrib.auth.views.PasswordChangeView.as_view(
+                               auth_views.PasswordChangeView.as_view(
                                    template_name='components/password/password_change.html',
                                    ),
                                name='password_change'))
     urlpatterns.append(re_path(r'^accounts/password_change_done/',
-                               django.contrib.auth.views.PasswordChangeDoneView.as_view(
+                               auth_views.PasswordChangeDoneView.as_view(
                                    template_name='components/password/password_change_done.html',
                                    ),
                                name='password_change_done'))
     urlpatterns.append(re_path(r'^accounts/password_reset/$',
-                               django.contrib.auth.views.PasswordResetView.as_view(
+                               auth_views.PasswordResetView.as_view(
                                    template_name='components/password/password_reset_form.html',
                                    ),
                                name='password_reset'))
     urlpatterns.append(re_path(r'^accounts/password_reset/done/',
-                               django.contrib.auth.views.PasswordResetDoneView.as_view(
+                               auth_views.PasswordResetDoneView.as_view(
                                    template_name='components/password/password_reset_done.html',
                                    ),
                                name='password_reset_done'))
     urlpatterns.append(re_path(r'^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/' +
                                '(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]*)/',
-                               django.contrib.auth.views.PasswordResetConfirmView.as_view(
+                               auth_views.PasswordResetConfirmView.as_view(
                                    template_name='components/password/password_reset_confirm.html',
                                    ),
                                name='password_reset_confirm'))
     urlpatterns.append(re_path(r'^accounts/reset/complete',
-                               django.contrib.auth.views.PasswordResetCompleteView.as_view(
+                               auth_views.PasswordResetCompleteView.as_view(
                                    template_name='components/password/password_reset_complete.html',
                                    ),
                                name='password_reset_complete'))

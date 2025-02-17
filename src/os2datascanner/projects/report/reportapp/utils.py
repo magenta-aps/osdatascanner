@@ -195,7 +195,7 @@ class OIDCAuthenticationBackend(auth.OIDCAuthenticationBackend):
             return self.UserModel.objects.none()
 
         try:
-            account = Account.objects.get(user__username=username)
+            account = Account.objects.get(user__username__iexact=username)
             return [account.user]
 
         except Account.DoesNotExist:
