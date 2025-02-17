@@ -19,14 +19,8 @@ import structlog
 from urllib.parse import urlencode
 from django.conf import settings
 
-from django.views.generic import View, TemplateView
-
 
 logger = structlog.get_logger("reportapp")
-
-
-class LogoutPageView(TemplateView, View):
-    template_name = 'components/user/logout.html'
 
 
 def oidc_op_logout_url_method(request):
