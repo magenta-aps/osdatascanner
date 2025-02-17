@@ -7,12 +7,7 @@
 # WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 # for the specific language governing rights and limitations under the
 # License.
-#
-# OS2datascanner is developed by Magenta in collaboration with the OS2 public
-# sector open source network <https://os2.eu/>.
-#
 
-from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.views import View
@@ -86,7 +81,8 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts']
+              'contacts', 'ews_grant']
+
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
     type = 'exchange'
@@ -118,15 +114,13 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts']
+              'contacts', 'ews_grant']
+
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
     type = 'exchange'
 
     def get_form(self, form_class=None):
-        """Adds special field password."""
-        # This doesn't copy over it's values, as credentials shouldn't
-        # be copyable
         if form_class is None:
             form_class = self.get_form_class()
 
@@ -153,7 +147,8 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts']
+              'contacts', 'ews_grant']
+
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
     type = 'exchange'
@@ -177,14 +172,6 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
         form = super().get_form(form_class)
         form = initialize_form(form)
 
-        exchangescanner = self.get_object()
-        authentication = exchangescanner.authentication
-
-        if authentication.username:
-            form.fields['username'].initial = authentication.username
-        if authentication.iv:
-            # if there is a set password already, use a dummy to enable the placeholder
-            form.fields['password'].initial = "dummy"
         if self.request.method == 'POST':
             form.is_valid()
             form = validate_userlist_or_org_units(form)
@@ -275,16 +262,6 @@ def initialize_form(form):
     as they are not part of the exchange scanner model."""
 
     form.fields['mail_domain'].widget.attrs['placeholder'] = _('e.g. @example.com')
-    form.fields['username'] = forms.CharField(
-        max_length=1024,
-        required=False,
-        label=_('Username')
-    )
-    form.fields['password'] = forms.CharField(
-        max_length=50,
-        required=False,
-        label=_('Password')
-    )
 
     return form
 

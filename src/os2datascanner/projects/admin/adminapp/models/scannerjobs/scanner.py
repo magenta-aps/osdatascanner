@@ -51,7 +51,6 @@ from os2datascanner.projects.admin.adminapp.utils import CleanProblemMessage
 from ..rules import Rule
 from .scanner_helpers import (  # noqa (interface backwards compatibility)
         ScanStatus, CoveredAccount, ScheduledCheckup, ScanStatusSnapshot)
-from ..authentication import Authentication
 
 logger = structlog.get_logger("adminapp")
 base_dir = os.path.dirname(
@@ -182,12 +181,6 @@ class Scanner(models.Model):
         (INVALID, _('Unverified')),
         (VALID, _('Verified')),
     )
-
-    authentication = models.OneToOneField(Authentication,
-                                          null=True,
-                                          related_name='%(app_label)s_%(class)s_authentication',
-                                          verbose_name=_('username'),
-                                          on_delete=models.SET_NULL)
 
     validation_status = models.IntegerField(choices=validation_choices,
                                             default=INVALID,

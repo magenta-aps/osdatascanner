@@ -31,7 +31,6 @@ from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 from ....organizations.models.account import Account
 from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
-from ..authentication import Authentication
 from .scanner import Scanner
 
 logger = structlog.get_logger("adminapp")
@@ -100,26 +99,22 @@ class ExchangeScanner(Scanner):
             "server": self.service_endpoint or None,
         }
 
-        match (self.grant, self.authentication):
-            # Prefer GraphGrant if we have one...
-            case (GraphGrant(), _) if settings.MSGRAPH_EWS_AUTH:
-                constructor_param_base |= {
-                    "admin_user": None,
-                    "admin_password": None,
+        if self.graph_grant:
+            constructor_param_base |= {
+                "admin_user": None,
+                "admin_password": None,
 
-                    "client_id": str(self.grant.app_id),
-                    "tenant_id": str(self.grant.tenant_id),
-                    "client_secret": self.grant.client_secret,
-                }
-            # ... but use the Authentication object if we don't (as long as it
-            # actually has a username)
-            case (_, Authentication(username=u)) if u:
-                constructor_param_base |= {
-                    "admin_user": self.authentication.username,
-                    "admin_password": self.authentication.get_password(),
-                }
-            case _:
-                raise ValueError("No authentication method available")
+                "client_id": str(self.graph_grant.app_id),
+                "tenant_id": str(self.graph_grant.tenant_id),
+                "client_secret": self.graph_grant.client_secret,
+            }
+        elif self.ews_grant:
+            constructor_param_base |= {
+                "admin_user": self.ews_grant.username,
+                "admin_password": self.ews_grant.password,
+            }
+        else:
+            raise ValueError("No authentication method available")
 
         def _make_source(**kwargs):
             return EWSAccountSource(

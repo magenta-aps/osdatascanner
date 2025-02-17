@@ -39,7 +39,7 @@ def authentication_to_grant(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0145_add_mimetypeprocessstat'),
+        ('os2datascanner', '0147_add_permission_to_admins_superadmin_group'),
     ]
 
     operations = [

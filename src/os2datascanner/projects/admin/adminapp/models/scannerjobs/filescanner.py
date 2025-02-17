@@ -68,9 +68,9 @@ class FileScanner(Scanner):
     def generate_sources(self):
         yield SMBCSource(
                 self.unc,
-                user=self.authentication.username,
-                password=self.authentication.get_password(),
-                domain=self.authentication.domain,
+                user=self.smb_grant.username,
+                password=self.smb_grant.password,
+                domain=self.smb_grant.domain,
                 driveletter=self.alias,
                 skip_super_hidden=self.skip_super_hidden,
                 unc_is_home_root=self.unc_is_home_root)
