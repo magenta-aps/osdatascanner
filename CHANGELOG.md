@@ -15,6 +15,9 @@
 - Errors in the OIDC login process are now displayed, along with some useful
   debugging information.
 
+- The OIDC login process no longer considers a username case mismatch to be
+  a reason to deny a login request.
+
 ### Bugfixes
 
 - Fixed some translations issues in the report module manual.
