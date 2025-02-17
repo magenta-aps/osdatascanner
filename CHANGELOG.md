@@ -27,6 +27,8 @@
 - Errors in the OIDC login process no longer send the user into an infinite
   loop of failed login attempts.
 
+- Leader Overview datatable no longer has issues with x-overflow on narrow screens.
+
 ## Version 3.26.4, 3rd February 2025
 
 "MQ is for Message Queue"
