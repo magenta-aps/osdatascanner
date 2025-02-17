@@ -182,17 +182,28 @@ function hasClass(elm, className) {
   return classList.indexOf(className) > -1;
 }
 
-// show a tooltip based on an event and its target. Assumes a DOM structure
-// where event.target has a descendant [data-tooltip-text]
 function showTooltip(event) {
-  let wrapper = event.target;
+  let wrapper = event.target.closest(".tooltip");
+  if (!wrapper) {
+    return;
+  }
+
   const tooltipElm = wrapper.querySelector("[data-tooltip-text]");
+  if (!tooltipElm) {
+    return;
+  }
+
   const textWidth = tooltipElm.offsetWidth;
   const wrapperStyle = getComputedStyle(wrapper);
   const wrapperWidth =
     wrapper.offsetWidth -
     parseFloat(wrapperStyle.paddingLeft) -
     parseFloat(wrapperStyle.paddingRight);
+
+  // If a tooltip already exists, don't create another one
+  if (wrapper.querySelector("[data-tooltip]")) {
+    return;
+  }
 
   if (textWidth > wrapperWidth) {
     addClass(wrapper, "cursor-help");
@@ -208,14 +219,15 @@ function showTooltip(event) {
 }
 
 function hideTooltip(event) {
-  // delete the [data-tooltip] element from the DOM
-  let targ = event.target;
-  const tooltip = document.querySelector("[data-tooltip]");
-  if (tooltip) {
-    targ.removeChild(tooltip);
+  const wrapper = event.target.closest(".tooltip");
+  if (!wrapper) {
+    return;
   }
-  // Remove the .cursor-help class from the mouseout'ed tooltip
-  removeClass(targ, "cursor-help");
+
+  const tooltip = wrapper.querySelector("[data-tooltip]");
+  if (tooltip) {
+    tooltip.remove();
+  }
 }
 
 // Function to toggle visibility of "show-more" buttons based on screen size
@@ -261,11 +273,20 @@ function prepareTable() {
   handleTableCorners();
 }
 
-// Add tooltips
-function addTooltipListeners(element) {
-  element.addEventListener("mouseenter", showTooltip);
-  element.addEventListener("mouseleave", hideTooltip);
-}
+// Delegated Event Listeners for dynamically loaded tooltips
+document.addEventListener("mouseover", function (event) {
+  const tooltip = event.target.closest(".tooltip");
+  if (tooltip) {
+    showTooltip(event);
+  }
+});
+
+document.addEventListener("mouseout", function (event) {
+  const wrapper = event.target.closest(".tooltip");
+  if (wrapper && !wrapper.contains(event.relatedTarget)) {
+    hideTooltip(event);
+  }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   prepareTable();
@@ -278,10 +299,6 @@ document.addEventListener("DOMContentLoaded", function () {
       hasClass(content, "content")
     ) {
       prepareTable();
-
-      // Attach tooltip listeners
-      const tooltips = document.querySelectorAll(".tooltip");
-      tooltips.forEach(addTooltipListeners);
 
       // Listen for click on toggle checkbox
       $("#select-all").change(function () {

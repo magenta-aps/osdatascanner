@@ -1,34 +1,35 @@
 .tag {
-  padding: 0.5rem 1rem;
-  max-height: 2.125rem;
+  padding: 0.188rem 0.625rem;
   border-radius: 50px;
   cursor: default;
-  font-weight: bold;
+
+  font-size: 0.875rem;
+  font-weight: 600;
 
   &.status {
     width: fit-content;
     text-wrap: nowrap;
 
     &[data-status="0"] {
-      background-color: var(--color-status-good);
-      color: var(--color-checkmark);
+      background-color: var(--color-tag-green-background);
+      color: var(--color-tag-green-text);
     }
 
     &[data-status="1"] {
-      background-color: var(--color-status-ok);
-      color: var(--color-ok);
+      background-color: var(--color-tag-blue-background);
+      color: var(--color-tag-blue-text);
     }
 
     &[data-status="2"] {
-      background-color: var(--color-status-bad);
-      color: var(--color-error);
+      background-color: var(--color-tag-red-background);
+      color: var(--color-tag-red-text);
     }
   }
 
   &.category {
+    background-color: var(--color-tag-blue-background);
+    color: var(--color-tag-blue-text);
     display: inline-block;
-    background-color: var(--color-status-ok);
-    color: var(--color-ok);
     margin: 0.1rem;
   }
 }
