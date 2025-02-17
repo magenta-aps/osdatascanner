@@ -26,6 +26,8 @@ class JobState(ModelChoiceEnum):
     # Execution of this job was cancelled by the user.
     FAILED = ("failed", _("failed"))
     # Execution of this job failed.
+    NOTHING_IMPORTED = ("nothing imported", _("nothing imported"))
+    # Execution of this job finished but imported nothing
 
 
 class BackgroundJob(models.Model):

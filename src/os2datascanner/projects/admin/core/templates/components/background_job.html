@@ -20,11 +20,7 @@
         </button>
       {% endif %}
       <div class="response__status-container">
-        {% if "WARNING" in job.status %}
-          <span class="response-icon response-icon--warning">
-            <i class="material-icons">warning</i>
-          </span>
-        {% elif exec_state_value == "finished" %}
+        {% if exec_state_value == "finished" %}
           <span class="response-icon response-icon--success">
             <i class="material-icons">check</i>
           </span>
@@ -40,27 +36,34 @@
           <span class="response-icon response-icon--cancelled">
             <i class="material-icons">block</i>
           </span>
-        {% endif %}
- 
-        {% if "WARNING" in job.status %}
-          <div class="response-warning__container">
-            <div class="response-warning__content">
-              <span class="response-text">{% trans job.status %}</span>
+        {% else %}
+          <span class="response-icon response-icon--warning popoverTrigger popover__trigger-element"
+                data-popover-id="popover-{{ job.pk }}">
+            <i class="material-icons">warning</i>
+          </span>
+          <div id="popover-{{ job.pk }}" class="popover popover--yellow">
+            <div id="popover-{{ popover_data.id }}" class="popover__wrapper">
+              <div class="popover__content">
+                <div class="popover__text-container">
+                  <div>
+                    <span class="popover__sub-title">{{ job.status }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        {% else %}
+        {% endif %}
  
-          <span class="response-text">
-            {% if exec_state_value == "finished" %}
-              {% trans 'last updated'|capfirst %},
-            {% else %}
-              {{ job.exec_state.label|capfirst }},
-            {% endif %}
-            {{ job.changed_at|date:'d-m-Y H:i' }}
+        <span class="response-text">
+          {% if exec_state_value == "finished" %}
+            {% trans 'last updated'|capfirst %},
+          {% else %}
+            {{ job.exec_state.label|capfirst }},
           {% endif %}
-        </span>
-      </div>
+          {{ job.changed_at|date:'d-m-Y H:i' }}
+        {% endif %}
+      </span>
     </div>
-  {% endif %}
+  </div>
 
 {% endwith %}

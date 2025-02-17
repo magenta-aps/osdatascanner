@@ -3,8 +3,9 @@ from django.db import models
 from os2datascanner.utils.ldap import RDN
 
 from os2datascanner.projects.admin.organizations.publish import get_pika_thread
-from ...core.models.background_job import BackgroundJob
+from ...core.models.background_job import BackgroundJob, JobState
 from .realm import Realm
+from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
 
 
 class LDAPImportJob(BackgroundJob):
@@ -51,10 +52,9 @@ class LDAPImportJob(BackgroundJob):
 
         try:
             perform_import(self.realm, progress_callback=_callback)
-        except Warning:
-            self.status = (
-                "WARNING: No remote users or organisational units available;"
-                " are you sure your LDAP settings are correct?")
+        except LDAPNothingImportedWarning as w:
+            self.exec_state = JobState.NOTHING_IMPORTED
+            self.status = w
             self.save()
 
         from ..utils import post_import_cleanup
