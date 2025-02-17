@@ -108,8 +108,7 @@
                aria-label="{% trans 'Save rule' %}"
                hx-get="{% url 'miniscan_customrule_create' %}"
                hx-include="#id_rule"
-               hx-ext="path-params"
-               hx-target="#miniscan_form_wrapper"
+               hx-target="#create-rule-modal"
                title="{% trans 'Save rule' %}">{% trans "Save" %}</a>
             <button type="button"
                     class="button button--transparent-button"

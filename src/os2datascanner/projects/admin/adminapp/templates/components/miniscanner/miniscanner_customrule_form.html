@@ -1,21 +1,17 @@
-{% extends 'components/common/base.html' %}
 {% load i18n %}
 
 {% block body %}
   {% include "components/feedback/snackbarNew.html" %}
-
-  <div class="wrapper" id="miniscan_form_wrapper">
-    <div class="content">
-      <div class="content-header">
-        <h1 class="page-title">{% trans "Create new rule" %}</h1>
-        {% if form.non_field_errors %}
-          <div class="alert" role="alert">
-            <ul>
-              {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-            </ul>
-          </div>
-        {% endif %}
+  <div id="miniscan_form_container" class="modal__form-container">
+    <h1 class="modal__header">{% trans "Create new rule" %}</h1>
+    {% if form.non_field_errors %}
+      <div class="alert" role="alert">
+        <ul>
+          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
       </div>
+    {% endif %}
+    <div class="modal__form-content">
       <form class="form"
             id="create-rule-form"
             hx-post="{% url 'miniscan_customrule_create' %}"
@@ -135,8 +131,7 @@
                       data-modal="modal:close">{% trans "Close" %}</button>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
-{% endblock %}
+  {% endblock %}
