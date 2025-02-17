@@ -58,9 +58,10 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
                     TrigramSimilarity("full_name", search),
                     TrigramSimilarity("username", search)
                 )
-            )
-            max_similarity = qs.aggregate(Max("search", default=0))['search__max']
-            qs = qs.filter(search__gte=max_similarity * 0.5)
+            ).exclude(search=0)
+            if qs.exists():
+                max_similarity = qs.aggregate(Max("search", default=0))['search__max']
+                qs = qs.filter(search__gte=max_similarity * 0.3)
 
         return qs
 
