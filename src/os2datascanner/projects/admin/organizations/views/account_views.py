@@ -61,6 +61,11 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
             ).exclude(search=0)
             if qs.exists():
                 max_similarity = qs.aggregate(Max("search", default=0))['search__max']
+                # We only want accounts whose similarity to the search word is at least,
+                # 0.3 times as similar as the most similar one.
+                # As such a user won't recieve an empty list of results.
+                # 0.3 has been chosen, as this threshold should include all instances of a name,
+                # including different spellings, such as "Christopher", "Cristofer", etc.
                 qs = qs.filter(search__gte=max_similarity * 0.3)
 
         return qs
