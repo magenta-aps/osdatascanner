@@ -3,328 +3,353 @@ Unit tests for utilities for use with MS Graph.
 """
 
 import requests
-import unittest
+import pytest
 
 from os2datascanner.engine2.model.msgraph import utilities as msgu
-from os2datascanner.engine2.model.msgraph.graphiti import (builder,
-                                                           baseclasses,
+from os2datascanner.engine2.model.msgraph.graphiti import (baseclasses,
                                                            exceptions,
                                                            query_parameters)
+from os2datascanner.engine2.model.msgraph.graphiti.builder import MSGraphURLBuilder
 
 
-class TestGraphUtilities(unittest.TestCase):
-    def setUp(self):
+class MockHandler:
+    def __init__(self):
         self._token = 1
 
     def _token_creator(self):
         self._token += 1
 
+    @msgu.raw_request_decorator
+    def handle(self):
+        response = requests.Response()
+        match self._token:
+            case 1:
+                response.status_code = 401
+            case _:
+                response.status_code = 200
+        return response
+
+
+class TestGraphUtilities:
     def test_rrd(self):
         """The raw_request_decorator function implements retry logic
         correctly."""
-        @msgu.raw_request_decorator
-        def handle(self):
-            response = requests.Response()
-            match self._token:
-                case 1:
-                    response.status_code = 401
-                case _:
-                    response.status_code = 200
-            return response
 
-        self.assertEqual(
-                handle(self).status_code,
-                200,
-                "didn't get the expected status code")
+        handler = MockHandler()
+        assert handler.handle().status_code == 200
 
 
-class TestMSGraphURLBuilder(unittest.TestCase):
+@pytest.fixture
+def builder():
+    return MSGraphURLBuilder()
+
+
+@pytest.fixture
+def uid():
+    return 'olsenbanden@microsoft.com'
+
+
+@pytest.fixture
+def gid():
+    return 'olsenbandensfanklub'
+
+
+@pytest.fixture
+def did():
+    return 'planer'
+
+
+@pytest.fixture
+def eid():
+    return 'det-store-kup-mod-bang-johansen'
+
+
+@pytest.fixture
+def mfid():
+    return 'hemmelige-oplysninger'
+
+
+@pytest.fixture
+def nid():
+    return 'koden-til-pengeskabet'
+
+
+class TestMSGraphURLBuilder:
     """
     Unit tests for the MSGraphURLBuilder utility class.
     """
 
-    def setUp(self):
-        self.builder = builder.MSGraphURLBuilder()
-        self.uid = 'olsenbanden@microsoft.com'
-        self.gid = 'olsenbandensfanklub'
-        self.did = 'planer'
-        self.eid = 'det-store-kup-mod-bang-johansen'
-        self.mfid = 'hemmelige-oplysninger'
-        self.nid = 'koden-til-pengeskabet'
-
-    def test_default_builder_returns_base_url(self):
+    def test_default_builder_returns_base_url(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL
 
         # Act
-        actual = self.builder.build()
+        actual = builder.build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_endpoint(self):
+    def test_v1_endpoint(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0'
 
         # Act
-        actual = self.builder.v1().build()
+        actual = builder.v1().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_beta_endpoint(self):
+    def test_beta_endpoint(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/beta'
 
         # Act
-        actual = self.builder.beta().build()
+        actual = builder.beta().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_me(self):
+    def test_v1_me(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/me'
 
         # Act
-        actual = self.builder.v1().me().build()
+        actual = builder.v1().me().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_me_calendar(self):
+    def test_v1_me_calendar(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/me/calendar'
 
         # Act
-        actual = self.builder.v1().me().calendar().build()
+        actual = builder.v1().me().calendar().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_me_calendar_groups(self):
+    def test_v1_me_calendar_groups(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/me/calendarGroups'
 
         # Act
-        actual = self.builder.v1().me().calendar_groups().build()
+        actual = builder.v1().me().calendar_groups().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_me_calendar_view(self):
+    def test_v1_me_calendar_view(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/me/calendarView'
 
         # Act
-        actual = self.builder.v1().me().calendar_view().build()
+        actual = builder.v1().me().calendar_view().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_me_drive(self):
+    def test_v1_me_drive(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/me/drive'
 
         # Act
-        actual = self.builder.v1().me().drive().build()
+        actual = builder.v1().me().drive().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_with_id(self):
+    def test_v1_users_with_id(self, builder, uid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/users/{self.uid}'
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}'
 
         # Act
-        actual = self.builder.v1().users(self.uid).build()
+        actual = builder.v1().users(uid).build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_app_role_assignments(self):
+    def test_v1_users_app_role_assignments(self, builder, uid):
         # Arrange
-        expected = (baseclasses.BASE_URL +
-                    f'/v1.0/users/{self.uid}/appRoleAssignments')
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}/appRoleAssignments'
 
         # Act
-        actual = self.builder.v1().users(self.uid).app_role_assignments().build()
+        actual = builder.v1().users(uid).app_role_assignments().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_calendars(self):
+    def test_v1_users_calendars(self, builder, uid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/users/{self.uid}/calendars'
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}/calendars'
 
         # Act
-        actual = self.builder.v1().users(self.uid).calendars().build()
+        actual = builder.v1().users(uid).calendars().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_drives(self):
+    def test_v1_users_drives(self, builder, uid, did):
         # Arrange
-        expected = (baseclasses.BASE_URL +
-                    f'/v1.0/users/{self.uid}/drives/{self.did}')
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}/drives/{did}'
 
         # Act
-        actual = self.builder.v1().users(self.uid).drives(self.did).build()
+        actual = builder.v1().users(uid).drives(did).build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_events(self):
+    def test_v1_users_events(self, builder, uid, eid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/users/{self.uid}/events/{self.eid}'
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}/events/{eid}'
 
         # Act
-        actual = self.builder.v1().users(self.uid).events(self.eid).build()
+        actual = builder.v1().users(uid).events(eid).build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_mail_folders(self):
+    def test_v1_users_mail_folders(self, builder, uid, mfid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/users/{self.uid}/mailFolders/{self.mfid}'
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}/mailFolders/{mfid}'
 
         # Act
-        actual = self.builder.v1().users(self.uid).mail_folders(self.mfid).build()
+        actual = builder.v1().users(uid).mail_folders(mfid).build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_users_onenote_notebook(self):
+    def test_v1_users_onenote_notebook(self, builder, uid, nid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/users/{self.uid}/onenote/notebook/{self.nid}'
+        expected = baseclasses.BASE_URL + f'/v1.0/users/{uid}/onenote/notebook/{nid}'
 
         # Act
-        actual = self.builder.v1().users(self.uid).onenote().notebook(self.nid).build()
+        actual = builder.v1().users(uid).onenote().notebook(nid).build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_groups(self):
+    def test_v1_groups(self, builder, gid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/groups/{self.gid}'
+        expected = baseclasses.BASE_URL + f'/v1.0/groups/{gid}'
 
         # Act
-        actual = self.builder.v1().groups(self.gid).build()
+        actual = builder.v1().groups(gid).build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_groups_sites(self):
+    def test_v1_groups_sites(self, builder, gid):
         # Arrange
-        expected = baseclasses.BASE_URL + f'/v1.0/groups/{self.gid}/sites'
+        expected = baseclasses.BASE_URL + f'/v1.0/groups/{gid}/sites'
 
         # Act
-        actual = self.builder.v1().groups(self.gid).sites().build()
+        actual = builder.v1().groups(gid).sites().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_sites_root(self):
+    def test_v1_sites_root(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/sites/root'
 
         # Act
-        actual = self.builder.v1().sites().root().build()
+        actual = builder.v1().sites().root().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_directory(self):
+    def test_v1_directory(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/directory'
 
         # Act
-        actual = self.builder.v1().directory().build()
+        actual = builder.v1().directory().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_directory_objects(self):
+    def test_v1_directory_objects(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/directoryObjects'
 
         # Act
-        actual = self.builder.v1().directory_objects().build()
+        actual = builder.v1().directory_objects().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_v1_drive(self):
+    def test_v1_drive(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0/drive'
 
         # Act
-        actual = self.builder.v1().drive().build()
+        actual = builder.v1().drive().build()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_odata_build_empty(self):
+    def test_odata_build_empty(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0'
 
         # Act
         odata = query_parameters.ODataQueryBuilder()
-        node = self.builder.v1()
+        node = builder.v1()
         actual = odata.build(node)
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_odata_build_count(self):
+    def test_odata_build_count(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0?$count=true'
 
         # Act
         odata = query_parameters.ODataQueryBuilder().count(True)
-        node = self.builder.v1()
+        node = builder.v1()
         actual = odata.build(node)
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
-    def test_odata_build_count_top(self):
+    def test_odata_build_count_top(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0?$count=true&$top=1'
 
         # Act
         odata = query_parameters.ODataQueryBuilder().count(True).top(1)
-        node = self.builder.v1()
+        node = builder.v1()
         actual = odata.build(node)
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
     def test_odata_twice_raises_error(self):
         # Act & Assert
-        with self.assertRaises(exceptions.DuplicateODataParameterError):
+        with pytest.raises(exceptions.DuplicateODataParameterError):
             query_parameters.ODataQueryBuilder().count().count()
 
     def test_odata_count_invalid_type_raises_error(self):
         # Act & Assert
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             query_parameters.ODataQueryBuilder().count('invalid argument')
 
-    def test_odata_count_remove_count_is_ok(self):
+    def test_odata_count_remove_count_is_ok(self, builder):
         # Arrange
         expected = baseclasses.BASE_URL + '/v1.0?$count=true'
 
         # Act
         odata = query_parameters.ODataQueryBuilder().count().remove('count').count()
-        node = self.builder.v1()
+        node = builder.v1()
         actual = odata.build(node)
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
     def test_odata_remove_invalid_key_type_raises_error(self):
         # Act & Assert
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             query_parameters.ODataQueryBuilder().remove(42)
 
     def test_odata_to_url_empty(self):
@@ -335,7 +360,7 @@ class TestMSGraphURLBuilder(unittest.TestCase):
         actual = query_parameters.ODataQueryBuilder().to_url()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
     def test_odata_to_url_count(self):
         # Arrange
@@ -345,7 +370,7 @@ class TestMSGraphURLBuilder(unittest.TestCase):
         actual = query_parameters.ODataQueryBuilder().count().to_url()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual
 
     def test_odata_to_url_count_top(self):
         # Arrange
@@ -355,4 +380,4 @@ class TestMSGraphURLBuilder(unittest.TestCase):
         actual = query_parameters.ODataQueryBuilder().count().top(1).to_url()
 
         # Assert
-        self.assertEqual(expected, actual)
+        assert expected == actual

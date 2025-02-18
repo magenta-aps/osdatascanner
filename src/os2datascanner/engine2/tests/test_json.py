@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from os2datascanner.engine2.model.core import (
         Source, Handle, SourceManager, UnknownSchemeError, DeserialisationError)
@@ -26,6 +26,7 @@ from os2datascanner.engine2.model.derived.pdf import (
         PDFSource, PDFPageHandle, PDFPageSource, PDFObjectHandle)
 from os2datascanner.engine2.model.derived.tar import TarSource, TarHandle
 from os2datascanner.engine2.model.derived.zip import ZipSource, ZipHandle
+
 
 example_handles = [
     FilesystemHandle(
@@ -128,34 +129,29 @@ example_handles = [
 ]
 
 
-class JSONTests(unittest.TestCase):
-    def test_json_round_trip(self):
-        for handle in example_handles:
-            with self.subTest(handle):
-                json = handle.to_json_object()
-                print(handle)
-                print(json)
-                self.assertEqual(handle, handle.from_json_object(json))
-                print("--")
+class TestJSON:
+    @pytest.mark.parametrize("handle", example_handles)
+    def test_json_round_trip(self, handle):
+        json = handle.to_json_object()
+        assert handle == handle.from_json_object(json)
 
-    def test_followable(self):
+    @pytest.mark.parametrize("handle", example_handles)
+    def test_followable(self, handle):
         with SourceManager() as sm:
-            for handle in example_handles:
-                with self.subTest(handle):
-                    try:
-                        handle.follow(sm)
-                    except TypeError:
-                        raise
-                    except Exception:
-                        pass
+            try:
+                handle.follow(sm)
+            except TypeError:
+                raise
+            except Exception:
+                pass
 
     def test_invalid_json(self):
-        with self.assertRaises(UnknownSchemeError):
+        with pytest.raises(UnknownSchemeError):
             Source.from_json_object({
                 "type": "gopher",
                 "hostname": "gopher.invalid"
             })
-        with self.assertRaises(UnknownSchemeError):
+        with pytest.raises(UnknownSchemeError):
             Handle.from_json_object({
                 "type": "gopher",
                 "source": {
@@ -166,11 +162,11 @@ class JSONTests(unittest.TestCase):
             })
 
     def test_incomplete_json(self):
-        with self.assertRaises(DeserialisationError):
+        with pytest.raises(DeserialisationError):
             Source.from_json_object({
                 "hostname": "gopher.invalid"
             })
-        with self.assertRaises(DeserialisationError):
+        with pytest.raises(DeserialisationError):
             Handle.from_json_object({
                 "source": {
                     "type": "gopher",
@@ -180,11 +176,11 @@ class JSONTests(unittest.TestCase):
             })
 
     def test_double_json_registration(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             @Source.json_handler("file")
             def handle_json(j):  # noqa
                 pass
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             @Handle.json_handler("file")
             def handle_json(j):  # noqa
                 pass

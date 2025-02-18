@@ -1,6 +1,5 @@
 import os.path
-from unittest import TestCase
-from parameterized import parameterized
+import pytest
 
 from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.file import (
@@ -46,71 +45,47 @@ invalid_encoded_subjects = {
 }
 
 
-class Engine2MailTest(TestCase):
+class TestEngine2Mail:
     def test_eml_files(self):
         fs = FilesystemSource(test_data_path)
         with SourceManager() as sm:
             for h in fs.handles(sm):
                 mail_source = Source.from_handle(h)
-                self.assertIsInstance(
-                        mail_source,
-                        MailSource,
-                        "conversion of {0} to MailSource failed".format(h))
+                assert isinstance(mail_source, MailSource)
                 for h in mail_source.handles(sm):
-                    self.assertIsInstance(
-                            h,
-                            MailPartHandle)
+                    assert isinstance(h, MailPartHandle)
                     r = h.follow(sm)
-                    self.assertEqual(
-                            h.guess_type(),
-                            r.compute_type(),
-                            "declared MIME type does not match computed type")
+                    assert h.guess_type() == r.compute_type()
 
     def test_alternative_trimming(self):
         alternative_source = MailSource(
                 FilesystemHandle.make_handle(
                         os.path.join(test_data_path, "alternative.eml")))
         with SourceManager() as sm:
-            self.assertEqual(
-                    len(list(alternative_source.handles(sm))),
-                    1,
-                    "text/plain trimming failed")
+            assert len(list(alternative_source.handles(sm))) == 1
 
-    def test_encoded_word_decoding(self):
+    @pytest.mark.parametrize("value", encoded_subjects.values())
+    def test_encoded_word_decoding(self, value):
         """Encoded-Word values can be decoded."""
-        for sort, value in encoded_subjects.items():
-            with self.subTest():
-                self.assertEqual(
-                        test_subject,
-                        decode_encoded_words(value),
-                        f"decoding {sort} failed")
+        assert test_subject == decode_encoded_words(value)
 
-    def test_encoded_word_failures(self):
+    @pytest.mark.parametrize("pair", invalid_encoded_subjects.values())
+    def test_encoded_word_failures(self, pair):
         """Broken Encoded-Word values can still be decoded (slightly)."""
-        for sort, (value, expected) in invalid_encoded_subjects.items():
-            with self.subTest():
-                self.assertEqual(
-                        expected,
-                        decode_encoded_words(value),
-                        f"fallback decoding of {sort} failed")
+        value, expected = pair
+        assert decode_encoded_words(value) == expected
 
-    @parameterized.expand([
-            "1/2/1/",
-            "/1/2/1/",
-            "//1/2/1/"])
+    @pytest.mark.parametrize("odd_path", [
+        "1/2/1/",
+        "/1/2/1/",
+        "//1/2/1/"])
     def test_mail_path_sanitation(self, odd_path):
-        self.assertEqual(
-                sanitise_path(odd_path),
-                "1/2/1/",
-                "mail path sanitation failed")
+        assert sanitise_path(odd_path) == "1/2/1/"
 
-    @parameterized.expand([
-            "1/2/1/https://www.example.com/resources/U1F928.PDF",
-            "1/2/1/files/U1F928.PDF",
-            "/1/2/1/C:/Users/af/Downloads/U1F928.PDF",
-            "//1/2/1///SHARE/Home/af/Files/U1F928.PDF"])
+    @pytest.mark.parametrize("odd_path", [
+        "1/2/1/https://www.example.com/resources/U1F928.PDF",
+        "1/2/1/files/U1F928.PDF",
+        "/1/2/1/C:/Users/af/Downloads/U1F928.PDF",
+        "//1/2/1///SHARE/Home/af/Files/U1F928.PDF"])
     def test_attachment_path_sanitation(self, odd_path):
-        self.assertEqual(
-                sanitise_path(odd_path),
-                "1/2/1/U1F928.PDF",
-                "attachment path sanitation failed")
+        assert sanitise_path(odd_path) == "1/2/1/U1F928.PDF"

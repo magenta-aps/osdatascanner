@@ -1,12 +1,7 @@
-import unittest
-
 from os2datascanner.engine2.rules.experimental.health_rule import TurboHealthRule
 
 
-class TestTurboHealthRule(unittest.TestCase):
-    def setUp(self):
-        self.rule = TurboHealthRule()
-
+class TestTurboHealthRule:
     def test_health_term_in_content(self):
         """
         A basic unit test to make sure that TurboHealthRule finds
@@ -14,13 +9,14 @@ class TestTurboHealthRule(unittest.TestCase):
         the same dataset.
         """
         # Arrange
+        rule = TurboHealthRule()
         content = "Cancer er en grim sygdom."
         expected = ["cancer", "sygdom"]
 
         # Act
-        actual = list(self.rule.match(content))
+        actual = list(rule.match(content))
 
         # Assert
-        self.assertEqual(len(actual), len(expected))
+        assert len(actual) == len(expected)
         for i, m in enumerate(actual):
-            self.assertEqual(m["match"], expected[i])
+            assert m["match"] == expected[i]

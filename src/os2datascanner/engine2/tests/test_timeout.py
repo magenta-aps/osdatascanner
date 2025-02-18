@@ -2,7 +2,7 @@
 Unit test for the timeout module which is part of engine2's utilities.
 """
 import time
-import unittest
+import pytest
 import threading
 from os2datascanner.utils.timer import TimerManager
 
@@ -28,7 +28,7 @@ def yield_from_with_timeout(seconds: float, it):
         return result
 
 
-class TestTimeoutLegacy(unittest.TestCase):
+class TestTimeoutLegacy:
     """
     Test case class for engine2.utilities.timeout module.
     """
@@ -37,7 +37,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
     def test_timeout_raises_sends_signal_when_expired(self):
         ctx = TimerManager.get().timeout(1)
-        with self.assertRaises(ctx.Timeout):
+        with pytest.raises(ctx.Timeout):
             with ctx:
                 time.sleep(2)
 
@@ -46,7 +46,7 @@ class TestTimeoutLegacy(unittest.TestCase):
         with TimerManager.get().timeout(2):
             result += 1
 
-        self.assertEqual(1, result)
+        assert result == 1
 
     def test_timeout_raises_sends_signal_for_generators(self):
         ctx = TimerManager.get().timeout(1)
@@ -57,7 +57,7 @@ class TestTimeoutLegacy(unittest.TestCase):
                     time.sleep(2)
                     yield num
 
-        with self.assertRaises(ctx.Timeout):
+        with pytest.raises(ctx.Timeout):
             list(generator())
 
     # END
@@ -66,7 +66,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
     def test_run_with_timeout_no_args_no_return_finishes_in_time(self):
         (_, result) = run_with_timeout(2, lambda: time.sleep(1))
-        self.assertEqual(None, result)
+        assert result is None
 
     def test_run_with_timeout_no_args_finishes_in_one_second(self):
         time_start = time.perf_counter()
@@ -74,8 +74,8 @@ class TestTimeoutLegacy(unittest.TestCase):
         (finished, _) = run_with_timeout(2, lambda: time.sleep(1))
 
         time_elapsed = time.perf_counter() - time_start
-        self.assertEqual(1, round(time_elapsed))
-        self.assertTrue(finished)
+        assert round(time_elapsed) == 1
+        assert finished is True
 
     def test_run_with_timeout_no_args_retval_finishes_in_time(self):
         def func():
@@ -84,8 +84,8 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         (finished, result) = run_with_timeout(2, func)
 
-        self.assertTrue(finished)
-        self.assertEqual(1, result)
+        assert finished is True
+        assert result == 1
 
     def test_run_with_timeout_one_arg_retval_finishes_in_time(self):
         def func(seconds):
@@ -96,8 +96,8 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         (finished, result) = run_with_timeout(2, func, seconds)
 
-        self.assertEqual(seconds, result)
-        self.assertTrue(finished)
+        assert result == seconds
+        assert finished is True
 
     def test_run_with_timeout_multiple_args_retval_finishes_in_time(self):
         def func(fst, snd):
@@ -108,8 +108,8 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         (finished, result) = run_with_timeout(2, func, seconds, seconds)
 
-        self.assertEqual(seconds, result)
-        self.assertTrue(finished)
+        assert result == seconds
+        assert finished is True
 
     def test_run_with_timeout_with_generator(self):
         def func(elements):
@@ -120,8 +120,8 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         (finished, result) = run_with_timeout(1, func, elements)
 
-        self.assertEqual([2, 4], list(result))
-        self.assertTrue(finished)
+        assert list(result) == [2, 4]
+        assert finished is True
 
     def test_run_with_timeout_return_generator(self):
         def func(elements):
@@ -135,7 +135,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         actual = generator()
 
-        self.assertEqual([2, 4], list(actual))
+        assert list(actual) == [2, 4]
 
     def test_run_with_timeout_no_args_no_return_raises_exception(self):
         time_start = time.perf_counter()
@@ -143,23 +143,23 @@ class TestTimeoutLegacy(unittest.TestCase):
         (finished, _) = run_with_timeout(1, lambda: time.sleep(2))
 
         time_elapsed = time.perf_counter() - time_start
-        self.assertEqual(1, round(time_elapsed))
-        self.assertFalse(finished)
+        assert round(time_elapsed) == 1
+        assert finished is False
 
     def test_run_with_timeout_raises_exception_when_time_is_zero(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_with_timeout(0, lambda: time.sleep(1))
 
     def test_run_with_timeout_raises_exception_when_time_is_negative(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_with_timeout(-1, lambda: time.sleep(1))
 
     def test_run_with_timeout_raises_exception_when_time_is_none(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_with_timeout(None, lambda: time.sleep(1))
 
     def test_run_with_timeout_raises_exception_when_time_is_invalid_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             run_with_timeout("", lambda: time.sleep(1))
 
     # END
@@ -176,7 +176,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         result = list(yield_from_with_timeout(2, func(elements)))
 
-        self.assertEqual([2, 4], result)
+        assert result == [2, 4]
 
     def test_yield_from_with_timeout_produces_half_of_the_results(self):
         def func(elements):
@@ -188,7 +188,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         result = list(yield_from_with_timeout(2, func(elements)))
 
-        self.assertEqual([2], result)
+        assert result == [2]
 
     def test_yield_from_with_timeout_generates_nothing_in_edge_case(self):
         def func(elements):
@@ -200,7 +200,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         result = list(yield_from_with_timeout(1, func(elements)))
 
-        self.assertEqual([], result)
+        assert result == []
 
     def test_yield_from_with_timeout_generated_nothing_on_timeout(self):
         def func(elements):
@@ -212,7 +212,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         result = list(yield_from_with_timeout(1, func(elements)))
 
-        self.assertEqual([], result)
+        assert result == []
 
     def test_yield_with_timeout_raises_exception_when_time_is_zero(self):
         def func(elements):
@@ -222,7 +222,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         elements = [1, 2]
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_with_timeout(0, func(elements))
 
     def test_yield_with_timeout_raises_exception_when_time_is_negative(self):
@@ -233,7 +233,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         elements = [1, 2]
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_with_timeout(-1, func(elements))
 
     def test_yield_with_timeout_raises_exception_when_time_is_none(self):
@@ -244,7 +244,7 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         elements = [1, 2]
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_with_timeout(None, func(elements))
 
     def test_yield_with_timeout_raises_exception_when_time_is_invalid_type(self):
@@ -255,87 +255,82 @@ class TestTimeoutLegacy(unittest.TestCase):
 
         elements = [1, 2]
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             run_with_timeout("", func(elements))
 
     # END
 
 
-class TestTimerManager(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.tm = TimerManager.get()
+@pytest.fixture(scope="session")
+def tm():
+    return TimerManager.get()
 
-    def test_after_basic(self):
+
+class TestTimerManager:
+    def test_after_basic(self, tm):
         k = []
-        self.tm.after(0.5, k.append, ":D")
+        tm.after(0.5, k.append, ":D")
 
         time.sleep(0.6)
 
-        self.assertEqual(
-                k,
-                [":D"])
+        assert k == [":D"]
 
-    def test_equal_time(self):
+    def test_equal_time(self, tm):
         k = []
         time_now = time.time()
         in_half_second = time_now + 0.5
 
-        self.tm.at(in_half_second, k.append, ":D")
-        self.tm.at(in_half_second, k.append, ":O")
+        tm.at(in_half_second, k.append, ":D")
+        tm.at(in_half_second, k.append, ":O")
 
         time.sleep(0.6)
 
         # Timer doesn't guarantee order, when two operations are to be called at same time
-        self.assertTrue(":D" in k and ":O" in k)
+        assert ":D" in k
+        assert ":O" in k
 
-    def test_pause(self):
+    def test_pause(self, tm):
         k = []
 
-        with self.tm.suspension(delay=False):
-            self.tm.after(0.5, k.append, ":D")
+        with tm.suspension(delay=False):
+            tm.after(0.5, k.append, ":D")
             time.sleep(0.6)
 
-            self.assertEqual(
-                    k,
-                    [])
+            assert k == []
 
         time.sleep(0.1)
-        self.assertEqual(
-                k,
-                [":D"])
+        assert k == [":D"]
 
-    def test_timeout(self):
-        ctx = self.tm.timeout(0.3)
+    def test_timeout(self, tm):
+        ctx = tm.timeout(0.3)
 
-        with (self.subTest(),
-                self.assertRaises(ctx.Timeout),
-                ctx):
+        with pytest.raises(ctx.Timeout), ctx:
             time.sleep(0.5)
 
-        with (self.subTest(),
-                ctx):
+    def test_no_timeout(self, tm):
+        ctx = tm.timeout(0.3)
+
+        with ctx:
             time.sleep(0.1)
 
-    def test_timeout_yield(self):
-        def wait_and_ret(k):
-            time.sleep(k / 10)
-            return k * 2
+    def wait_and_ret(self, k):
+        time.sleep(k / 10)
+        return k * 2
 
-        ctx = self.tm.timeout(0.35)
+    def test_timeout_yield(self, tm):
+        ctx = tm.timeout(0.35)
 
-        with (self.subTest(),
-                self.assertRaises(ctx.Timeout)):
-            generator = (wait_and_ret(k) for k in [1, 2, 3, 4])
+        with pytest.raises(ctx.Timeout):
+            generator = (self.wait_and_ret(k) for k in [1, 2, 3, 4])
             list(ctx.yield_all(generator))
 
-        with self.subTest():
-            generator = (wait_and_ret(k) for k in [1, 2, 3, 4])
-            self.assertEqual(
-                    list(ctx.yield_some(generator)),
-                    [2, 4, 6])
+    def test_yield(self, tm):
+        ctx = tm.timeout(0.35)
 
-    def test_after_complicated(self):
+        generator = (self.wait_and_ret(k) for k in [1, 2, 3, 4])
+        assert list(ctx.yield_some(generator)) == [2, 4, 6]
+
+    def test_after_complicated(self, tm):
         """Four functions scheduled to be called in a strange order are
         nonetheless called in the right order."""
         condition = threading.Condition()
@@ -346,33 +341,31 @@ class TestTimerManager(unittest.TestCase):
 
         chunks = []
 
-        self.tm.pause()
-        self.tm.after(0.4, chunks.append, "! :D")
-        self.tm.after(0.1, chunks.append, "Hello")
-        self.tm.after(0.3, chunks.append, "world")
-        self.tm.after(0.2, chunks.append, ", ")
-        self.tm.after(0.5, _notify)
+        tm.pause()
+        tm.after(0.4, chunks.append, "! :D")
+        tm.after(0.1, chunks.append, "Hello")
+        tm.after(0.3, chunks.append, "world")
+        tm.after(0.2, chunks.append, ", ")
+        tm.after(0.5, _notify)
 
-        self.tm.resume()
+        tm.resume()
         with condition:
             condition.wait()
 
-        self.assertEqual(
-                "".join(chunks),
-                "Hello, world! :D")
+        assert "".join(chunks) == "Hello, world! :D"
 
-    def test_nesting_outer(self):
+    def test_nesting_outer(self, tm):
         """If an outer timeout expires before an inner one, the outer timeout's
         distinguishable exception is raised."""
-        with (self.tm.timeout(0.1) as ctx,
-              self.tm.timeout(0.5)):
-            with self.assertRaises(ctx.Timeout):
+        with (tm.timeout(0.1) as ctx,
+              tm.timeout(0.5)):
+            with pytest.raises(ctx.Timeout):
                 time.sleep(0.2)
 
-    def test_nesting_inner(self):
+    def test_nesting_inner(self, tm):
         """If an inner timeout expires before an outer one, the inner timeout's
         distinguishable exception is raised."""
-        with (self.tm.timeout(0.5),
-              self.tm.timeout(0.1) as cty):
-            with self.assertRaises(cty.Timeout):
+        with (tm.timeout(0.5),
+              tm.timeout(0.1) as cty):
+            with pytest.raises(cty.Timeout):
                 time.sleep(0.2)

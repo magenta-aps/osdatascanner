@@ -1,5 +1,4 @@
 import re
-import unittest
 
 from os2datascanner.engine2.utilities.classification.engine import (
         ClassificationEngine)
@@ -55,7 +54,7 @@ phrases = {
 }
 
 
-class Engine2ClassificationTest(unittest.TestCase):
+class TestEngine2Classification:
     def test_basic_classification(self):
         ce = ClassificationEngine()
         for (code, name), training in characteristic_words.items():
@@ -66,14 +65,8 @@ class Engine2ClassificationTest(unittest.TestCase):
 
         for code, in_phrase in phrases.items():
             (classification, weight) = ce.classify(in_phrase)[0]
-            self.assertEqual(
-                    classification.ident,
-                    code,
-                    "language guess failed")
-            self.assertEqual(
-                    weight,
-                    50,
-                    "weight conclusion unexpected")
+            assert classification.ident == code
+            assert weight == 50
 
     def test_threshold(self):
         ce = ClassificationEngine()
@@ -90,20 +83,12 @@ class Engine2ClassificationTest(unittest.TestCase):
         Mwahahahaha! Thanks to my new evil flock of bats my nasty, wicked plans
         will finally come to fruition!"""
 
-        self.assertEqual(
-                ce.classify(text),
-                [],
-                "text with insufficiently many evil adjectives"
-                " shouldn't have matched")
+        assert ce.classify(text) == []
 
         text += """
         My vicious, malevolent revenge is within my grasp!!"""
 
-        self.assertEqual(
-                ce.classify(text)[0][0].ident,
-                "ev",
-                "text with sufficiently many evil adjectives"
-                " should have matched")
+        assert ce.classify(text)[0][0].ident == "ev"
 
     def test_contradiction(self):
         ce = ClassificationEngine()
@@ -114,16 +99,10 @@ class Engine2ClassificationTest(unittest.TestCase):
 
         text = "I am so evil..."
 
-        self.assertEqual(
-                ce.classify(text)[0][0].ident,
-                "ev",
-                "text without puppies should have matched")
+        assert ce.classify(text)[0][0].ident == "ev"
 
         text += """
         ... that I only spend HALF of my weekends rescuing puppies and giving
         them treats"""
 
-        self.assertEqual(
-                ce.classify(text),
-                [],
-                "can't be truly evil if you're nice to puppies")
+        assert ce.classify(text) == []

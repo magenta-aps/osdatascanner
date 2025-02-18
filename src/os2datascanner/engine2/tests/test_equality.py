@@ -1,5 +1,4 @@
-import unittest
-from parameterized import parameterized
+import pytest
 
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.derived.pdf import (
@@ -45,30 +44,15 @@ class Equal3(TypePropertyEquality):
         return {"_prop": self._prop}
 
 
-class Engine2EqualityTest(unittest.TestCase):
+class TestEngine2EqualityTest:
     def test(self):
-        self.assertNotEqual(
-                Plain(),
-                Plain(),
-                "object equality is weirdly defined")
-        self.assertEqual(
-                Equal1(),
-                Equal1(),
-                "TypePropertyEquality(__dict__) is broken")
-        self.assertNotEqual(
-                Equal1a(2),
-                Equal1a(3),
-                "TypePropertyEquality(__dict__) claims that 2 == 3")
-        self.assertEqual(
-                Equal2(4),
-                Equal2(5),
-                "TypePropertyEquality(eq_properties) is broken")
-        self.assertEqual(
-                Equal3(4),
-                Equal3(5),
-                "TypePropertyEquality(__getstate__) is broken")
+        assert Plain() != Plain(), "object equality is weirdly defined"
+        assert Equal1() == Equal1(), "TypePropertyEquality(__dict__) is broken"
+        assert Equal1a(2) != Equal1a(3), "TypePropertyEquality(__dict__) claims that 2 == 3"
+        assert Equal2(4) == Equal2(5), "TypePropertyEquality(eq_properties) is broken"
+        assert Equal3(4) == Equal3(5), "TypePropertyEquality(__getstate__) is broken"
 
-    @parameterized.expand([
+    @pytest.mark.parametrize("obj,crunch,hashed", [
         # The basics
         (Equal1(), "Equal1(_prop=2)", None),
         (Equal1a("b"), "Equal1a(_prop=2;_other=b)", None),
@@ -131,12 +115,6 @@ class Engine2EqualityTest(unittest.TestCase):
          "0361f26b39bea409da6f6e673fed365ed0ce92525d61e42097d11b237001"),
     ])
     def test_crunch(self, obj, crunch, hashed):
-        self.assertEqual(
-                obj.crunch(),
-                crunch,
-                "unexpected crunched representation")
+        assert obj.crunch() == crunch, "unexpected crunched representation"
         if hashed:
-            self.assertEqual(
-                    obj.crunch(hash=True),
-                    hashed,
-                    "unexpected hashed crunched representation")
+            assert obj.crunch(hash=True) == hashed, "unexpected hashed crunched representation"

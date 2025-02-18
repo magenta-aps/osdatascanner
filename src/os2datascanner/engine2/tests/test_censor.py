@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from os2datascanner.engine2.model.ews import (
         EWSMailHandle, EWSAccountSource)
@@ -10,85 +10,66 @@ from os2datascanner.engine2.model.derived.filtered import (
         GzipSource, FilteredHandle)
 
 
-class CensorTests(unittest.TestCase):
-    def test_smb_censoring(self):
-        example_handles = [
-            SMBHandle(
-                    SMBSource(
-                            "//SERVER/Resource", "username"),
-                    "~ocument.docx"),
-            SMBCHandle(
-                    SMBCSource(
-                            "//SERVER/Resource",
-                            "username", "topsecret", "WORKGROUP8"),
-                    "~ocument.docx"),
-        ]
+class TestCensor:
+    @pytest.mark.parametrize("handle", [
+        SMBHandle(
+                SMBSource(
+                        "//SERVER/Resource", "username"),
+                "~ocument.docx"),
+        SMBCHandle(
+                SMBCSource(
+                        "//SERVER/Resource",
+                        "username", "topsecret", "WORKGROUP8"),
+                "~ocument.docx"),
+    ])
+    def test_smb_censoring(self, handle):
+        handle = handle.censor()
 
-        for handle in example_handles:
-            with self.subTest(handle):
-                handle = handle.censor()
-
-                self.assertIsNone(handle.source._domain)
-                self.assertIsNone(handle.source._password)
-                self.assertIsNone(handle.source._user)
+        assert handle.source._domain is None
+        assert handle.source._password is None
+        assert handle.source._user is None
 
     def test_ews_censoring(self):
-        example_handles = [
-            EWSMailHandle(
-                    EWSAccountSource(
-                            "internet.invalid",
-                            "mail.internet.invalid",
-                            "administrator", "h4ckme",
-                            "secretary"),
-                    "notavalidfolderid.notavalidmailid",
-                    "Re: Re: Re: You may already have won! (was Fwd: Spam)",
-                    "Inbox", "notavalidentryid")
-        ]
+        handle = EWSMailHandle(
+            EWSAccountSource(
+                    "internet.invalid",
+                    "mail.internet.invalid",
+                    "administrator", "h4ckme",
+                    "secretary"),
+            "notavalidfolderid.notavalidmailid",
+            "Re: Re: Re: You may already have won! (was Fwd: Spam)",
+            "Inbox", "notavalidentryid")
 
-        for handle in example_handles:
-            with self.subTest(handle):
-                censored_handle = handle.censor()
+        censored_handle = handle.censor()
 
-                self.assertIsNone(censored_handle.source._admin_user)
-                self.assertIsNone(censored_handle.source._admin_password)
-                self.assertEqual(
-                        handle._mail_subject,
-                        censored_handle._mail_subject,
-                        "subject not preserved")
-                self.assertEqual(
-                        handle._folder_name,
-                        censored_handle._folder_name,
-                        "folder name not preserved")
-                self.assertEqual(
-                        handle._entry_id,
-                        censored_handle._entry_id,
-                        "entry_id not preserved")
+        assert censored_handle.source._admin_user is None
+        assert censored_handle.source._admin_password is None
+        assert handle._mail_subject == censored_handle._mail_subject
+        assert handle._folder_name == censored_handle._folder_name
+        assert handle._entry_id == censored_handle._entry_id
 
-    def test_nested_censoring(self):
-        example_handles = [
-            ZipHandle(
-                    ZipSource(
-                            SMBCHandle(
-                                    SMBCSource(
-                                            "//SERVER/Resource",
-                                            "username", driveletter="W"),
-                                    "Confidential Documents.zip")),
-                    "doc/Personal Information.docx"),
-            FilteredHandle(
-                    GzipSource(
-                            SMBHandle(
-                                    SMBSource(
-                                            "//SERVER/usr", "username"),
-                                    "share/doc/coreutils"
-                                    "/changelog.Debian.gz")),
-                    "changelog.Debian"),
-        ]
-
-        for handle in example_handles:
-            with self.subTest(handle):
-                self.assertIsNotNone(handle.source.handle.source._user)
-                handle = handle.censor()
-                self.assertIsNone(handle.source.handle.source._user)
+    @pytest.mark.parametrize("handle", [
+        ZipHandle(
+                ZipSource(
+                        SMBCHandle(
+                                SMBCSource(
+                                        "//SERVER/Resource",
+                                        "username", driveletter="W"),
+                                "Confidential Documents.zip")),
+                "doc/Personal Information.docx"),
+        FilteredHandle(
+                GzipSource(
+                        SMBHandle(
+                                SMBSource(
+                                        "//SERVER/usr", "username"),
+                                "share/doc/coreutils"
+                                "/changelog.Debian.gz")),
+                "changelog.Debian"),
+    ])
+    def test_nested_censoring(self, handle):
+        assert handle.source.handle.source._user is not None
+        handle = handle.censor()
+        assert handle.source.handle.source._user is None
 
     def test_top_source_mapping(self):
         share = SMBCSource("//SERVER/Resource", "username", driveletter="W")
@@ -97,23 +78,15 @@ class CensorTests(unittest.TestCase):
                         SMBCHandle(
                                 share, "Confidential Documents.zip")),
                 "doc/Personal Information.docx")
-        self.assertEqual(
-                zh.censor(),
-                zh.remap({share: share.censor()}))
-        self.assertEqual(
-                zh,
-                zh.censor().remap({share.censor(): share}))
+        assert zh.censor() == zh.remap({share: share.censor()})
+        assert zh == zh.censor().remap({share.censor(): share})
 
     def test_intermediate_source_mapping(self):
         share = SMBCSource("//SERVER/Resource", "username", driveletter="W")
         zs = ZipSource(SMBCHandle(share, "Confidential Documents.zip"))
         zh = ZipHandle(zs, "doc/Personal Information.docx")
-        self.assertEqual(
-                zh.censor(),
-                zh.remap({zs: zs.censor()}))
-        self.assertEqual(
-                zh,
-                zh.censor().remap({zs.censor(): zs}))
+        assert zh.censor() == zh.remap({zs: zs.censor()})
+        assert zh == zh.censor().remap({zs.censor(): zs})
 
     def test_data_censoring(self):
         handle = DataHandle(
@@ -122,15 +95,6 @@ class CensorTests(unittest.TestCase):
                         b"c3QgU3lzdGVtLgo=", "text/plain", "test.txt"),
                 "test.txt")
         censored_handle = handle.censor()
-        self.assertEqual(
-                censored_handle.source._content,
-                None,
-                "content not censored")
-        self.assertEqual(
-                handle.source.mime,
-                censored_handle.source.mime,
-                "MIME type not preserved")
-        self.assertEqual(
-                handle.source.name,
-                censored_handle.source.name,
-                "name not preserved")
+        assert censored_handle.source._content is None
+        assert handle.source.mime == censored_handle.source.mime
+        assert handle.source.name == censored_handle.source.name

@@ -1,11 +1,11 @@
-from unittest import TestCase
+import pytest
 
 from os2datascanner.engine2.model.msgraph.calendar import MSGraphCalendarEventHandle
 
 
-class TestMSGraphCalendarEventHandle(TestCase):
-    def setUp(self):
-        self.handle = MSGraphCalendarEventHandle(
+@pytest.fixture
+def handle():
+    return MSGraphCalendarEventHandle(
             source=None,
             path="path/to/event",
             event_subject="Event subject",
@@ -14,11 +14,13 @@ class TestMSGraphCalendarEventHandle(TestCase):
                 "dateTime": "2023-03-13T09:00:00.000",
                 "timeZone": "UTC"})
 
-    def test_start(self):
-        self.assertEqual(self.handle.start, "09:00 13/3/23")
 
-    def test_presentation_name(self):
-        self.assertEqual(self.handle.presentation_name, "[09:00 13/3/23] Event subject")
+class TestMSGraphCalendarEventHandle:
+    def test_start(self, handle):
+        assert handle.start == "09:00 13/3/23"
 
-    def test_presentation_url(self):
-        self.assertEqual(self.handle.presentation_url, "https://example.com/event")
+    def test_presentation_name(self, handle):
+        assert handle.presentation_name == "[09:00 13/3/23] Event subject"
+
+    def test_presentation_url(self, handle):
+        assert handle.presentation_url == "https://example.com/event"
