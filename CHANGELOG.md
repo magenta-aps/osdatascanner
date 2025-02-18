@@ -18,6 +18,8 @@
 - The OIDC login process no longer considers a username case mismatch to be
   a reason to deny a login request.
 
+- Most tests in engine2 now utilize pytest instead of unittest
+
 ### Bugfixes
 
 - Fixed some translations issues in the report module manual.
