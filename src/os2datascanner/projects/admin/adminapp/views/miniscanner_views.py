@@ -43,12 +43,11 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         if self.request.GET.get('customrulepk'):
             try:
-                custom_rule = CustomRule.objects.annotate(
+               context['custom_rule'] = CustomRule.objects.annotate(
                     rule_field=F("_rule")).get(
                     pk=self.request.GET.get('customrulepk'))
-            except BaseException:
-                custom_rule = None
-            context['custom_rule'] = custom_rule
+            except CustomRule.DoesNotExist:
+                logger.warning("Non-existant rule requested")
 
         context["customrule_list"] = CustomRule.objects.annotate(rule_field=F("_rule"))
 
@@ -155,20 +154,6 @@ class CustomRuleCreateMiniscan(RuleCreate):
     model = CustomRule
     template_name = "components/miniscanner/miniscanner_customrule_form.html"
     fields = ['name', 'description', 'sensitivity', 'organization']
-
-    def validate_exceptions_field(self, rule):
-        if "exceptions" not in rule:
-            return True
-        ex_string = rule.get('exceptions')
-        validated = ex_string == "" or bool(re.match(r'^\d{10}(,\d{10})*$', ex_string))
-        return validated
-
-    def validate_surrounding_words_exceptions(self, rule):
-        if "surrounding_exceptions" not in rule:
-            return True
-        ex_string = rule.get('surrounding_exceptions')
-        validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
-        return validated
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

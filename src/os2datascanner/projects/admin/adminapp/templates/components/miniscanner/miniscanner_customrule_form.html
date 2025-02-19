@@ -15,7 +15,7 @@
       <form class="form"
             id="create-rule-form"
             hx-post="{% url 'miniscan_customrule_create' %}"
-            hx-target="#miniscan_form_wrapper"
+            hx-target="#miniscan_form_container"
             hx-swap="outerHTML">
         {% csrf_token %}
         <fieldset class="form__fieldset">
