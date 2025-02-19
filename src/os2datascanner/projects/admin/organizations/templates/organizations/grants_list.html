@@ -23,7 +23,26 @@
         {% for organization in organizations %}
           <div class="content-header">
             <div class="aside">
-              <h1 class="page-title">{% trans 'grants for'|capfirst %} {{ organization.name }}</h1>
+              <h1 class="page-title">{% trans "grants for"|capfirst %} {{ organization.name }}</h1>
+
+
+              <div class="grant-dropdown">
+                <button title="{% trans 'create new grant'|capfirst %}"
+                        class="button expand button--cta-button button--icon-text-button">
+
+
+                  <svg class="icon button__plus-icon">
+                    <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                  </svg>
+                  <span>{% trans "create new grant"|capfirst %}</span>
+                </button>
+                <div class="dropdown-container no-left-right">
+                  <a href="{% url 'ewsgrant-create' org=organization.pk %}">{% trans "EWS Grant"|capfirst %}</a>
+                  <a href="{% url 'msgraphgrant-create' org=organization.pk %}">{% trans "MSGraph Grant"|capfirst %}</a>
+                  <a href="{% url 'smbgrant-create' org=organization.pk %}">{% trans "SMB Grant"|capfirst %}</a>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -35,7 +54,7 @@
                   <tr>
                     <th class="column column--name">{% trans "name"|capfirst %}</th>
                     <th class="column column--type">{% trans "type"|capfirst %}</th>
-                    <th class="column column--extrainfo">{% trans "extra information"|capfirst %}</th>
+                    <th class="column column--extrainfo">{% trans "expiry date"|capfirst %}</th>
                     {% if request.user.is_superuser %}
                       <th class="column column--actions">{% trans "Actions" %}</th>
                     {% endif %}
@@ -60,13 +79,20 @@
                       <td class="column">
                         <div>
                           <div>
-                            <span>{{ grant.extra_information }}</span>
+                            <span>{{ grant.expiry }}</span>
                           </div>
                         </div>
                       </td>
 
                       <td class="column column--actions">
-                        <div class="action-wrapper button-group"></div>
+                        <div class="action-wrapper button-group">
+                          <a href="{% url 'edit-grant' pk=grant.pk type=grant.class_name %}"
+                             class="button button--icon-button button--datatable-actions"
+                             title="{% trans 'edit grant'|capfirst %}">
+
+                            <i id="edit" class="material-symbols">edit</i>
+                          </a>
+                        </div>
                       </td>
                     </tr>
 
@@ -85,4 +111,5 @@
     </ul>
 
   </main>
+
 {% endblock %}

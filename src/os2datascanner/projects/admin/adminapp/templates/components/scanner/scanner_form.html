@@ -192,9 +192,11 @@
                 {% include "components/scanner/scanner_form_input_field.html" with field=form.token placeholder="(Uændret)" password="True" required="True" %}
               {% endif %}
 
-              {# TODO: For Exchangescan, you're able to select EWS & MSgraph grant simultaneously.
+              {% comment %}
+                TODO: For Exchangescan, you're able to select EWS & MSgraph grant simultaneously.
                  Even though you'll rarely have both options, it isn't neat.
                  GraphGrant is prioritized if both are present. #}
+              {% endcomment %}
               {% if form.ews_grant %}
                 {% include "components/scanner/scanner_form_select_option_field.html" with field=form.ews_grant %}
               {% endif %}

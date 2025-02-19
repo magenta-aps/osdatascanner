@@ -42,14 +42,14 @@ class GraphGrant(Grant):
         return self._meta.verbose_name
 
     @property
-    def extra_information(self):
-        return f"Expiry date: {self.expiry_date if self.expiry_date else 'Not known'}"
+    def expiry(self):
+        return self.expiry_date
 
     def __str__(self):
         return f"Microsoft Graph access to tenant {self.tenant_id}"
 
     class Meta:
-        verbose_name = "Microsoft Graph Grant"
+        verbose_name = "Microsoft Graph"
         constraints = [
             models.UniqueConstraint(
                     fields=["organization", "tenant_id"],

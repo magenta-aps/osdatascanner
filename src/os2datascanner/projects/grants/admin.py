@@ -12,10 +12,13 @@ class AutoEncryptedField(forms.CharField):
     widget = forms.widgets.PasswordInput
 
     def prepare_value(self, value):
-        if value:
+        # If it's a list, we have an actual saved instance.
+        # Otherwise, we're in a Create scenario, where if non-field-errors occur, the user
+        # input value would be thrown away, but visually be "unchanged".
+        if value and isinstance(value, list):
             self.widget.attrs["placeholder"] = _("(unchanged)")
-        else:
-            pass
+        elif value:
+            self.widget.attrs["value"] = value
 
     def to_python(self, value):
         if value:

@@ -27,7 +27,7 @@ class SMBGrant(UsernamePasswordGrant):
         return self._meta.verbose_name
 
     class Meta:
-        verbose_name = "SMB Service Account Grant"
+        verbose_name = "SMB Service Account"
         constraints = [
             models.UniqueConstraint(
                     fields=["organization", "domain", "username"],

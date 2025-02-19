@@ -8,8 +8,7 @@
       <button type="button"
               class="button button--text-button"
               name="fetch-expiry-date"
-              hx-post="{% url 'msgraphgrant-update' pk=graphgrant.pk %}"
-              hx-trigger="click"
+              hx-post="{{ request.path }}"
               hx-target="#id_expiry_date"
               hx-select="#id_expiry_date"
               hx-swap="outerHTML"
@@ -18,24 +17,18 @@
   {% endif %}
 {% endblock form_extras %}
 
-{% block submit_btn %}
-  <button type="submit"
-          class="button button--cta-button"
-          aria-label="{% trans 'save GraphGrant'|capfirst %}"
-          title="{% trans 'save GraphGrant'|capfirst %}"
-          name="save">{% trans "save GraphGrant"|capfirst %}</button>
-{% endblock submit_btn %}
 
-{% block help_section %}
+{% block description %}
   <div>
-    <h1>{% trans "How do I get a new client secret?" %}</h1>
     <span>
       {% blocktranslate %}
-                You'll have to navigate to your Azure Portal and find the application created for OSdatascanner.
-                It's likely you've followed instructions from our documentation, in that case,
-                once you've found your created application, you can follow step 7 and 8
+        A GraphGrant represents an entitlement to use the Microsoft Graph API
+          to explore the resources associated with a particular tenant.
+
+        Note that the specific permissions associated with this entitlement are
+        not specified here, but in the OSdatascanner application registration in
+        Microsoft's portal.
       {% endblocktranslate %}
     </span>
-    <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "here" %}</a>
   </div>
-{% endblock help_section %}
+{% endblock description %}

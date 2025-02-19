@@ -1,23 +1,14 @@
 {% extends "grants/grant_update.html" %}
 {% load i18n %}
 
-{% block submit_btn %}
-  <button type="submit"
-          class="button button--cta-button"
-          aria-label="{% trans 'save SMBGrant'|capfirst %}"
-          title="{% trans 'save SMBGrant'|capfirst %}"
-          name="save">{% trans "save SMBGrant"|capfirst %}</button>
-{% endblock submit_btn %}
-
-{% block help_section %}
+{% block description %}
   <div>
-    <h1>{% trans "What is an SMBGrant?" %}</h1>
     <span>
       {% blocktranslate %}
-                An SMBGrant represents a service account with access to a Windows domain,
-                and thereby an entitlement to access and scan that domain
-
+        An SMB Service Account grant represents a service account with access to a
+          Windows domain, and thereby an entitlement for OSdatascanner
+          to access and scan that domain.
       {% endblocktranslate %}
     </span>
   </div>
-{% endblock help_section %}
+{% endblock description %}

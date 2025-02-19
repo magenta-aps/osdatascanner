@@ -39,10 +39,9 @@ class Grant(models.Model):
         return NotImplementedError("Grant.display_name_identifier")
 
     @property
-    def extra_information(self):
-        """ Returns extra information about the Grant for display.
-            F.e. expiry date or other useful information."""
-        return ""
+    def expiry(self):
+        """ If implemented by a subclass, used to return the expiry date for grant."""
+        return "Not known"
 
     class Meta:
         abstract = True

@@ -16,4 +16,4 @@ class EWSGrant(UsernamePasswordGrant):
         return self.username
 
     class Meta(UsernamePasswordGrant.Meta):
-        verbose_name = "EWS Service Account Grant"
+        verbose_name = "EWS Service Account"

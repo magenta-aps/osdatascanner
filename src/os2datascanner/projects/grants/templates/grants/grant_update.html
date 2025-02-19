@@ -9,21 +9,27 @@
     {% include "components/feedback/snackbarNew.html" %}
 
     <div class="content">
+      <h1>
+        {% if object.pk %}
+          {% trans "edit grant"|capfirst %}
+        {% else %}
+          {% trans "create grant"|capfirst %}
+        {% endif %}
+      </h1>
+      {% for error in form.non_field_errors %}<div class="form__error">{{ error }}</div>{% endfor %}
       <form class="form" id="grant-form" method="post">
         {% csrf_token %}
-        <div class="data-form">
+        <section class="data-form">
+          <h2>{{ form.instance.verbose_name }}</h2>
+          {% block description %}
+ 
+          {% endblock description %}
+
           <div class="form__row">
             {% for field in form %}
               <div class="form__row__item">
                 <div class="form__group{% if field.errors %} has-error{% endif %}"></div>
-                <div class="flex">
-                  {{ field.label_tag }}
-                  {% if field.help_text %}
-                    <div class="help">
-                      <div class="help-icon" title="{{ field.help_text|safe }}"></div>
-                    </div>
-                  {% endif %}
-                </div>
+                <div class="flex">{{ field.label_tag }}</div>
 
                 {% block form_extras %}
  
@@ -33,19 +39,31 @@
                 {% if not field.name == "expiry_date" %}{{ field }}{% endif %}
 
                 {% if field.errors %}{{ field.errors }}{% endif %}
+
+                {% if field.help_text %}
+                  <span class="form__help-text">
+                    {{ field.help_text|safe }}
+                    {% comment %}
+                            More dirty special case handling.
+                            But I'm not sure how you'd pass a link in form field help_text.
+                    {% endcomment %}
+                    {% if field.name == "_client_secret" %}
+                      <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "step 7 and 8 here" %}</a>
+                    {% endif %}
+
+                  </span>
+                {% endif %}
               {% endfor %}
             </div>
           </div>
-        </div>
-        {% block submit_btn %}
- 
-        {% endblock submit_btn %}
+        </section>
+
+        <button type="submit"
+                class="button button--cta-button"
+                aria-label="{% trans 'save Grant'|capfirst %}"
+                title="{% trans 'save Grant'|capfirst %}"
+                name="save">{% trans "save Grant"|capfirst %}</button>
       </form>
-
-      {% block help_section %}
- 
-      {% endblock help_section %}
-
 
     </div>
   </div>
