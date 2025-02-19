@@ -98,8 +98,8 @@ class RuleCreate(RestrictedCreateView):
         # 10-digit numbers or an empty string.
         validated = ex_string == "" or bool(re.match(r'^\d{10}(,\d{10})*$', ex_string))
         return validated
-    
-    @staticmethod    
+
+    @staticmethod
     def validate_surrounding_words_exceptions(rule):
         if "surrounding_exceptions" not in rule:
             return True
@@ -110,7 +110,7 @@ class RuleCreate(RestrictedCreateView):
         # Do we only want alphanumeric characters or not?
         validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
         return validated
-        
+
     @staticmethod
     def _save_rule_form(form):
         rule = form.save(commit=False)

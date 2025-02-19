@@ -1,6 +1,5 @@
 import json
 import structlog
-import re
 
 from django import forms
 from django.shortcuts import render
@@ -43,9 +42,9 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         if self.request.GET.get('customrulepk'):
             try:
-               context['custom_rule'] = CustomRule.objects.annotate(
-                    rule_field=F("_rule")).get(
-                    pk=self.request.GET.get('customrulepk'))
+                context['custom_rule'] = CustomRule.objects.annotate(
+                     rule_field=F("_rule")).get(
+                     pk=self.request.GET.get('customrulepk'))
             except CustomRule.DoesNotExist:
                 logger.warning("Non-existant rule requested")
 
