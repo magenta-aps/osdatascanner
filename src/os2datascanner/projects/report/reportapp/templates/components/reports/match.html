@@ -218,10 +218,10 @@
           {% if settings.HANDLE_DROPDOWN %}
             <button class="matches-handle expand button button--icon-text-button"
                     type="button"
-                    aria-label="{{ handle_tooltip }}"
-                    title="{{ handle_tooltip }} - {{ deletion_disclaimer }}">
+                    aria-label=""
+                    title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
               <i class="material-symbols" aria-hidden="true">archive</i>
-              <span>{{ mark_as_handled }}</span>
+              <span>{% trans "Handle" %}</span>
             </button>
 
             <div class="dropdown-container">
@@ -231,13 +231,12 @@
                     hx-indicator="closest tr"
                     hx-push-url="false"
                     {% if request.user.profile.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}>
-
                   {% if "/archive" in request.path %}
                     <li class="revert-option button"
                         hx-trigger="click"
                         name="revert-match"
                         hx-swap="outerHTML swap:300ms"
-                        hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{{ mark_as_unhandled }}</li>
+                        hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{% trans "Revert" %}</li>
                   {% endif %}
 
                   {% for choice in resolution_choices %}
@@ -258,7 +257,7 @@
             {% if "/archive/" in request.path %}
               <button class="revert-handle button button--icon-text-button"
                       type="button"
-                      title="{{ unhandle_tooltip }}"
+                      title="{% blocktrans %}Revert the selected handling status for this result. This will remove the result from the archive and return it to the report overview.{% endblocktrans %}"
                       hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
                       hx-swap="outerHTML swap:300ms"
                       hx-trigger="click"
@@ -267,13 +266,13 @@
                       hx-push-url="false"
                       name="revert-match">
                 <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i>
-                <span>{{ mark_as_unhandled }}</span>
+                <span>{% trans "Revert" %}</span>
               </button>
 
             {% else %}
               <button class="matches-handle button button--icon-text-button"
                       type="button"
-                      title="{{ handle_tooltip }} - {{ deletion_disclaimer }}"
+                      title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}"
                       hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
                       hx-swap="outerHTML swap:300ms"
                       hx-target="closest tr"
@@ -281,10 +280,10 @@
                       hx-trigger="click"
                       hx-push-url="false"
                       hx-vals='{"action":"0"}'
-                      {% if request.user.account.time_since_last_handle > 172800 %}hx-confirm="{{ handle_confirm_text }}"{% endif %}
+                      {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
                       name="handle-match">
                 <i class="material-icons text-secondary" aria-hidden="true">archive</i>
-                <span>{{ mark_as_handled }}</span>
+                <span>{% trans "Handle" %}</span>
               </button>
             {% endif %}
           {% endif %}

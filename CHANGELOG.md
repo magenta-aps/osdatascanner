@@ -37,6 +37,8 @@
 
 - Fixed an issue where an LDAP import job would show as successful despite finding no users
 
+- Removed outdated references to OS2 from Report.
+
 ## Version 3.26.5, 25th February 2025
 
 "Named Release #1"
@@ -75,8 +77,6 @@
   loop of failed login attempts.
 
 - Leader Overview datatable no longer has issues with x-overflow on narrow screens.
-
-- Removed outdated references to OS2
 
 ## Version 3.26.4, 3rd February 2025
 
