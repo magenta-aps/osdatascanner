@@ -14,7 +14,9 @@
       {% csrf_token %}
       {{ form.as_p }}
       <input class="btn btn-primary" type="submit" value="Ja" />
-      <a class="btn btn-default" href="javascript:history.go(-1)">{% trans "No" %}</a>
+      <button type="button"
+              class="btn btn-default"
+              onclick="javascript:history.go(-1)">{% trans "No" %}</button>
     </form>
   </div>
 {% endblock %}

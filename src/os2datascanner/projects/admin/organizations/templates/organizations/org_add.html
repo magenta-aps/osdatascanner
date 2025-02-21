@@ -23,7 +23,7 @@
                  class="form__group{% if field.errors %} has-error{% endif %}">
               <label {% if field.name == "name" %}class="required-form"{% endif %}
                      for="id_{{ field.name }}">{{ field.label }}</label>
-              <input {% if password %} type="password" {% else %} type="text" {% endif %}
+              <input type="{% if password %}password{% else %}text{% endif %}"
                      class="form-control"
                      name="{{ field.name }}"
                      id="id_{{ field.name }}"

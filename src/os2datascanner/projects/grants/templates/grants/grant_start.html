@@ -23,31 +23,28 @@
         <h1 class="page-title">{% trans "Configure Microsoft Graph" %}</h1>
       </div>
 
-      <p>
-        {% trans "To use this service, you must allow OSdatascanner access to its content." %}
-        {% if auth_endpoint %}
-          {% if error %}
-            <p>
-              {% trans "The service refused to grant OSdatascanner the necessary rights:" %}
-              <pre class="alert alert--danger">{{ error_description }}</pre>
-              <p>
-                {% trans "Click the button below to try again." %}
-              {% else %}
-                {% trans "Click the button below to forward to this service." %}
-              {% endif %}
-              <p>
-                <a href="{{ auth_endpoint }}"
-                   id="button-authenticate"
-                   class="button button--cta-button btn"
-                   aria-label="{% trans 'Continue to' %} {{ service_name }}"
-                   title="{% trans 'Continue to' %} {{ service_name }}">
-                  {% trans "Continue to" %} {{ service_name }}
-                </a>
-              </p>
-              <p>{% trans "You will be forwarded to the creation form after the service has issued the necessary rights." %}</p>
-            {% else %}
-              <p>{% trans "The information pointing to the OSdatascanner system for this service is missing." %}</p>
-            {% endif %}
-          </div>
-        </div>
-      {% endblock %}
+      <p>{% trans "To use this service, you must allow OSdatascanner access to its content." %}</p>
+      {% if auth_endpoint %}
+        {% if error %}
+          <p>
+            {% trans "The service refused to grant OSdatascanner the necessary rights:" %}
+            <pre class="alert alert--danger">{{ error_description }}</pre>
+          </p>
+          <p>{% trans "Click the button below to try again." %}</p>
+        {% else %}
+          <p>{% trans "Click the button below to forward to this service." %}</p>
+        {% endif %}
+        <p>
+          <a href="{{ auth_endpoint }}"
+             id="button-authenticate"
+             class="button button--cta-button btn"
+             aria-label="{% trans 'Continue to' %} {{ service_name }}"
+             title="{% trans 'Continue to' %} {{ service_name }}">{% trans "Continue to" %} {{ service_name }}</a>
+        </p>
+        <p>{% trans "You will be forwarded to the creation form after the service has issued the necessary rights." %}</p>
+      {% else %}
+        <p>{% trans "The information pointing to the OSdatascanner system for this service is missing." %}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

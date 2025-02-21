@@ -15,26 +15,27 @@
 
   <p>
     {% trans "The source of this organization is in the cloud and an external service must allow OSdatascanner to access it's content." %}
-    {% if auth_endpoint %}
-      {% if error %}
-        <p>
-          {% trans "The service refused to grant OSdatascanner the necessary rights:" %}
-          <pre class="alert alert--danger">{{ error_description }}</pre>
-          <p>
-            {% trans "Click the button below to try again." %}
-          {% else %}
-            {% trans "Click the button below to forward to this service." %}
-          {% endif %}
-          <p>
-            <a href="{{ auth_endpoint }}"
-               id="button-authenticate"
-               class="button button--cta-button btn"
-               aria-label="{% trans 'Continue to' %} {{ service_name }}"
-               title="{% trans 'Continue to' %} {{ service_name }}">{% trans "Continue to" %} {{ service_name }}</a>
-          </p>
-          <p>{% trans "You will be forwarded to the creation form after the service has issued the necessary rights." %}</p>
-        {% else %}
-          <p>{% trans "The information pointing to the OSdatascanner system for this service is missing." %}</p>
-        {% endif %}
+  </p>
+  {% if auth_endpoint %}
+    {% if error %}
+      <p>
+        {% trans "The service refused to grant OSdatascanner the necessary rights:" %}
+        <pre class="alert alert--danger">{{ error_description }}</pre>
+      </p>
+      <p>{% trans "Click the button below to try again." %}</p>
+    {% else %}
+      <p>{% trans "Click the button below to forward to this service." %}</p>
+    {% endif %}
+    <p>
+      <a href="{{ auth_endpoint }}"
+         id="button-authenticate"
+         class="button button--cta-button btn"
+         aria-label="{% trans 'Continue to' %} {{ service_name }}"
+         title="{% trans 'Continue to' %} {{ service_name }}">{% trans "Continue to" %} {{ service_name }}</a>
+    </p>
+    <p>{% trans "You will be forwarded to the creation form after the service has issued the necessary rights." %}</p>
+  {% else %}
+    <p>{% trans "The information pointing to the OSdatascanner system for this service is missing." %}</p>
+  {% endif %}
 
-      {% endblock %}
+{% endblock %}

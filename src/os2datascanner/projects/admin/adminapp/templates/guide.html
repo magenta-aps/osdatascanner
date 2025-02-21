@@ -139,7 +139,7 @@
             </h4>
             <h5>
               <a href="#Konfigurationer-matches">Konfigurationer til åbning af matches</a>
-            </h4>
+            </h5>
             <h5>
               <a href="#Aabne-i-stifinder">Åbning af filer i stifinder</a>
             </h5>
@@ -786,64 +786,67 @@
                 <li>Logout Response (URL)</li>
                 <li>NameID Format</li>
               </ul>
-              <li>
-                SAML 2.0 SSO - nødvendig info fra OS2datascanner:
-                <ul class="square">
-                  <li>Entity ID: https://AFTALTE_DOMÆNE/saml2_auth/acs/</li>
-                  <li>Reply URL: https://AFTALTE_DOMÆNE/saml2_auth/acs/</li>
-                  <li>Logout URL: https://AFTALTE_DOMÆNE/accounts/logout/</li>
-                  <li>
-                    User attributes:
-                    <ul class="square">
-                      <li>email: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress</li>
-                      <li>username: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name</li>
-                      <li>first_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname</li>
-                      <li>last_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname</li>
-                      <li>sid: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/securityidentifier</li>
-                      <li>Public certifikatnøgle til SAML authentication-kryptering</li>
-                    </ul>
+            </li>
+            <li>
+              SAML 2.0 SSO - nødvendig info fra OS2datascanner:
+              <ul class="square">
+                <li>Entity ID: https://AFTALTE_DOMÆNE/saml2_auth/acs/</li>
+                <li>Reply URL: https://AFTALTE_DOMÆNE/saml2_auth/acs/</li>
+                <li>Logout URL: https://AFTALTE_DOMÆNE/accounts/logout/</li>
+                <li>
+                  User attributes:
+                  <ul class="square">
+                    <li>email: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress</li>
+                    <li>username: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name</li>
+                    <li>first_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname</li>
+                    <li>last_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname</li>
+                    <li>sid: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/securityidentifier</li>
+                    <li>Public certifikatnøgle til SAML authentication-kryptering</li>
                   </ul>
-                </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
 
-                <h3 id="Konfigurationer-matches">Konfigurationer til åbning af matches</h3>
-                <p>
-                  Jeres system skal konfigureres for at kunne åbne filer eller mails i henholdsvis stifinder og Outlook direkte fra rapportmodulet. Når I har fulgt nedenstående vejledninger, anbefaler vi afprøve dem i rapportmodulet.
-                </p>
+          <h3 id="Konfigurationer-matches">Konfigurationer til åbning af matches</h3>
+          <p>
+            Jeres system skal konfigureres for at kunne åbne filer eller mails i henholdsvis stifinder og Outlook direkte fra rapportmodulet. Når I har fulgt nedenstående vejledninger, anbefaler vi afprøve dem i rapportmodulet.
+          </p>
 
-                <h4 id="Aabne-i-stifinder">Åbning af filer i stifinder</h4>
-                <p>
-                  For at kunne bruge “Åbn fil”-knappen skal domænet for rapportmodulet føjes til listen over  Trusted Sites i den enkelte browser.
-                </p>
+          <h4 id="Aabne-i-stifinder">Åbning af filer i stifinder</h4>
+          <p>
+            For at kunne bruge “Åbn fil”-knappen skal domænet for rapportmodulet føjes til listen over  Trusted Sites i den enkelte browser.
+          </p>
 
-                <h4 id="Aabne-i-Outlook">Åbning af matchede mails i Outlook</h4>
-                <p>
-                  OS2datascanner kan også åbne mails direkte fra rapportmodulet. Dette gøres ved hjælp af protokollen “Outlook://”, som indtil Outlook 2007 fungerer uden yderligere opsætning. I de efterfølgende versioner er man dog nødt til at føje protokollen til Windows Registry.
-                </p>
+          <h4 id="Aabne-i-Outlook">Åbning af matchede mails i Outlook</h4>
+          <p>
+            OS2datascanner kan også åbne mails direkte fra rapportmodulet. Dette gøres ved hjælp af protokollen “Outlook://”, som indtil Outlook 2007 fungerer uden yderligere opsætning. I de efterfølgende versioner er man dog nødt til at føje protokollen til Windows Registry.
+          </p>
 
-                <p>
-                  For Outlook 2010, 2013 og 2016 er processen den samme. Den eneste forskel er, at stien til Outlook.exe er forskellige fra version til version. I Outlook 2016 kan stien eksempelvis være: ”C:\Program Files (x86)\Microsoft Office\root\Office16\outlook.exe”.
-                </p>
+          <p>
+            For Outlook 2010, 2013 og 2016 er processen den samme. Den eneste forskel er, at stien til Outlook.exe er forskellige fra version til version. I Outlook 2016 kan stien eksempelvis være: ”C:\Program Files (x86)\Microsoft Office\root\Office16\outlook.exe”.
+          </p>
 
-                <p>Opsætningen gøres på følgende måde:</p>
-                <ol>
-                  <li>Åbn Windows Registry Editor og vælg nøglen HKEY_CLASS_ROOT i roden af træet.</li>
-                  <li>Højreklik på HKEY_CLASS_ROOT og tilføj en ny nøgle, som du kalder “outlook”.</li>
-                  <li>Redigér (Default” strengværdien og tilføj URL:Outlook Folders.</li>
-                  <li>Tilføj en ny strengværdi “URL Protocol” (ingen strengværdi påkrævet).</li>
-                  <li>Tilføj undernøglen \shell\open\command.</li>
-                  <li>
-                    Vælg DefaultIcon-nøglen og indtast stien C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE (eller den sti, hvor Outlook.exe-filen ligger. Dette vil være forskelligt fra system til system og er blandt andet afhængig af, om I har installeret en 32 eller 64 bit-udgave af Outlook).
-                  </li>
-                  <li>
-                    Vælg nøglen “command” som ligger under shell\open og redigér (Default) strengværiden og tilføj værdien C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE
-                  </li>
-                </ol>
+          <p>Opsætningen gøres på følgende måde:</p>
+          <ol>
+            <li>Åbn Windows Registry Editor og vælg nøglen HKEY_CLASS_ROOT i roden af træet.</li>
+            <li>Højreklik på HKEY_CLASS_ROOT og tilføj en ny nøgle, som du kalder “outlook”.</li>
+            <li>Redigér (Default” strengværdien og tilføj URL:Outlook Folders.</li>
+            <li>Tilføj en ny strengværdi “URL Protocol” (ingen strengværdi påkrævet).</li>
+            <li>Tilføj undernøglen \shell\open\command.</li>
+            <li>
+              Vælg DefaultIcon-nøglen og indtast stien C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE (eller den sti, hvor Outlook.exe-filen ligger. Dette vil være forskelligt fra system til system og er blandt andet afhængig af, om I har installeret en 32 eller 64 bit-udgave af Outlook).
+            </li>
+            <li>
+              Vælg nøglen “command” som ligger under shell\open og redigér (Default) strengværiden og tilføj værdien C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE
+            </li>
+          </ol>
 
-                <p>
-                  Man kan også oprette en fil ved navn outlook.reg med følgende tekst (vær igen opmærksom på, at stien til Outlook.exe skal være korrekt):
-                </p>
+          <p>
+            Man kan også oprette en fil ved navn outlook.reg med følgende tekst (vær igen opmærksom på, at stien til Outlook.exe skal være korrekt):
+          </p>
 
-                <pre>Windows Registry Editor Version 5.00
+          <pre>Windows Registry Editor Version 5.00
 
 [HKEY_CURRENT_USER\SOFTWARE\Classes\outlook]
 @="URL:Outlook Folders"
@@ -855,29 +858,29 @@
 @="\"C:\\Program Files (x86)\\Microsoft Office\\Office15\\OUTLOOK.EXE\"
 /select \"%1\""</pre>
 
-                <p>
-                  Hvis du fra Registry Editor importerer outlook.reg-filen vil de forskellige nøgler automatisk blive opdateret i registry.
-                </p>
-                <br>
-                <h4 id="Arkitekturtegninger">Arkitekturtegninger</h4>
-                <a href="../static/svg/os2ds-arkitektur.png" target="_blank">
-                  <img src="../static/svg/os2ds-arkitektur.png"
-                       alt="Illustration af OS2datascanners arkitektur">
-                </a>
+          <p>
+            Hvis du fra Registry Editor importerer outlook.reg-filen vil de forskellige nøgler automatisk blive opdateret i registry.
+          </p>
+          <br>
+          <h4 id="Arkitekturtegninger">Arkitekturtegninger</h4>
+          <a href="../static/svg/os2ds-arkitektur.png" target="_blank">
+            <img src="../static/svg/os2ds-arkitektur.png"
+                 alt="Illustration af OS2datascanners arkitektur">
+          </a>
 
 
-                <h3 id="Downloads">Downloads</h3>
+          <h3 id="Downloads">Downloads</h3>
 
-                <p>
-                  <strong><a href="../static/svg/OS2DS-Brugerhaandbog.pdf" download>Brugerhåndbog</a></strong>
-                </p>
-                <p>
-                  <strong><a href="../static/svg/OS2DS-Handout.pdf" download>Handout til afdelingschefer mv.</a></strong>
-                </p>
+          <p>
+            <strong><a href="../static/svg/OS2DS-Brugerhaandbog.pdf" download>Brugerhåndbog</a></strong>
+          </p>
+          <p>
+            <strong><a href="../static/svg/OS2DS-Handout.pdf" download>Handout til afdelingschefer mv.</a></strong>
+          </p>
 
 
-              </div>
-            </div>
-          </div>
-        </main>
-      {% endblock %}
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock %}
