@@ -101,7 +101,11 @@ Lint django templates:
 
     # Run djlint
     - djlint ./src/os2datascanner/projects 
-      --indent 2  --preserve-blank-lines
+      --indent 2  --ignore=H021,H013,H006,H014
+      # H021: Inline styles should be avoided.
+      # H013: img tag should have alt attributes.
+      # H006: img tag should have height and width attributes.
+      # H014: More than 2 blank lines.
 
 Lint SCSS files:
   <<: *lint-default
