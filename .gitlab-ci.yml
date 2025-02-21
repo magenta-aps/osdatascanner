@@ -101,8 +101,7 @@ Lint django templates:
 
     # Run djlint
     - djlint ./src/os2datascanner/projects 
-      --reformat --indent 2 
-      --preserve-blank-lines
+      --indent 2  --preserve-blank-lines
 
 Lint SCSS files:
   <<: *lint-default
