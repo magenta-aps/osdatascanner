@@ -104,7 +104,7 @@
 
     <div class="content">
       <div class="content-header">
-        {% include "components/common/breadcrumb.html" with page="scannerjob"  %}
+        {% include "components/common/breadcrumb.html" with page="scannerjob" %}
         <h1 class="page-title">
           {% if view.edit %}
             {% trans "Edit scannerjob" %}
@@ -202,7 +202,7 @@
               {% if view.type == "exchange" and settings.MSGRAPH_EWS_AUTH %}
 
                 <label for="use-grant">{% trans "use grant for access authentication"|capfirst %}</label>
- 
+
                 {% comment %}
                 We need to check object.grant rather than object.authentication
                 here because Scanners /always/ have an Authentication object
@@ -215,9 +215,9 @@
                        onclick="hideExchangeCreds();"
                        id="use-grant"
                        {% if object.grant %}checked{% endif %} />
- 
+
                 <label for="use-credentials">{% trans "use service account for access authentication"|capfirst %}</label>
- 
+
                 <input type="radio"
                        name="cred-method"
                        value="use-credentials"
@@ -598,16 +598,16 @@
               </p>
 
               <label for="entire-org">{% trans "scan all accounts in this organization"|capfirst %}</label>
- 
+
               <input type="radio"
                      name="show-org-units"
                      value="hide-org-units"
                      onclick="hideOrgUnits();"
                      id="entire-org"
                      checked />
- 
+
               <label for="select-org-units">{% trans "scan accounts from selected organizational units"|capfirst %}</label>
- 
+
               <input type="radio"
                      name="show-org-units"
                      value="show-org-units"
@@ -628,8 +628,8 @@
                         disabled></select>
                 {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
               </div>
- 
-	
+
+
             </fieldset>
           </section>
 
@@ -651,7 +651,7 @@
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.do_last_modified_check %}
                   </div>
- 
+
                 {% endif %}
 
                 {% if form.keep_false_positives %}
@@ -659,12 +659,12 @@
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.keep_false_positives %}
                   </div>
                 {% endif %}
- 
+
                 {% if form.only_notify_superadmin %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.only_notify_superadmin %}
                   </div>
- 
+
                 {% endif %}
 
                 {% if form.scan_deleted_items_folder %}
@@ -684,7 +684,7 @@
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_attachments %}
                   </div>
                 {% endif %}
-	
+
                 {% if form.skip_super_hidden %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.skip_super_hidden %}
@@ -752,7 +752,7 @@
         {% endif %}
 
         {% include "components/rules/rule_selector.html" with rule=form.rule required="True" selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
- 
+
 
         {% if settings.EXCLUSION_RULES %}
 

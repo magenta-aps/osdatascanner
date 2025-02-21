@@ -12,7 +12,7 @@
        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
     {% include "components/navigation/index_navigation.html" %}
- 
+
     <div class="content-header">
       {% block content-header %}
         {% comment %}
@@ -32,7 +32,7 @@
 
     {# Snackbar for popup messages #}
     <div class="message-popup-area">
- 
+
       {% for message in messages %}
         <div class="message-popup ">
           {{ message }}

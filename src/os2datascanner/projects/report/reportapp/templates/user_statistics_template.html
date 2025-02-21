@@ -21,19 +21,19 @@
               <span class="title">{% trans "Number of matches per week" %}</span>
               <span class="subtitle">{% trans "Week" %} {{ matches_by_week.2.weeknum }} - {{ matches_by_week.0.weeknum }}</span>
             </div>
- 
+
             <div class="data-card__content">
               <div class="mini-card">
                 <div class="mini-card__content">
                   <div class="matches">
                     <span class="matches__label">{% trans "Week" %} {{ matches_by_week.2.weeknum }}</span>
- 
+
                     <div class="matches__content">
                       <span class="matches__total"
                             aria-label="{% trans 'Unhandled matches at the end of week' %} {{ matches_by_week.2.weeknum }}">
                         {{ matches_by_week.2.matches }}
                       </span>
- 
+
                       <div class="matches__dif">
                         <span class="annotation new {% if matches_by_week.2.new == 0 %}zero{% endif %}"
                               aria-label="{% trans 'New matches during week' %} {{ matches_by_week.2.weeknum }}">
@@ -46,16 +46,16 @@
                       </div>
                     </div>
                   </div>
- 
+
                   <div class="matches">
                     <span class="matches__label">{% trans "Week" %} {{ matches_by_week.1.weeknum }}</span>
- 
+
                     <div class="matches__content">
                       <span class="matches__total"
                             aria-label="{% trans 'Unhandled matches at the end of week' %} {{ matches_by_week.1.weeknum }}">
                         {{ matches_by_week.1.matches }}
                       </span>
- 
+
                       <div class="matches__dif">
                         <span class="annotation new {% if matches_by_week.1.new == 0 %}zero{% endif %}"
                               aria-label="{% trans 'New matches during week' %} {{ matches_by_week.1.weeknum }}">
@@ -68,16 +68,16 @@
                       </div>
                     </div>
                   </div>
- 
+
                   <div class="matches">
                     <span class="matches__label">{% trans "Week" %} {{ matches_by_week.0.weeknum }}</span>
- 
+
                     <div class="matches__content">
                       <span class="matches__total"
                             aria-label="{% trans 'Unhandled matches at the end of week' %} {{ matches_by_week.0.weeknum }}">
                         {{ matches_by_week.0.matches }}
                       </span>
- 
+
                       <div class="matches__dif">
                         <span class="annotation new {% if matches_by_week.0.new == 0 %}zero{% endif %}"
                               aria-label="{% trans 'New matches during week' %} {{ matches_by_week.0.weeknum }}">
@@ -90,9 +90,9 @@
                       </div>
                     </div>
                   </div>
- 
+
                 </div>
- 
+
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@
                 <span class="title">{% trans "Unhandled results" %}</span>
                 <span class="subtitle">{% trans "Number of unhandled results per scanner job" %}</span>
               </div>
- 
+
               <div class="data-card__content">
 
                 {% if scannerjobs %}
@@ -112,7 +112,7 @@
                            class="unhandled-results__container">
                         <div class="unhandled-results__label">
                           <span class="label__scannerjob-name">{{ scannerjob.scanner_job_name }}</span>
- 
+
                           <span class="label__amount">
                             {{ scannerjob.total }}
                             {% if scannerjob.total == 1 %}
@@ -122,7 +122,7 @@
                             {% endif %}
                           </span>
                         </div>
- 
+
                         <div class="unhandled-results__actions">
                           <button type="button"
                                   class="button button--icon-button button--datatable-actions"
@@ -139,11 +139,11 @@
                           </button>
                         </div>
                       </div>
- 
+
                       {% if not forloop.last %}<hr class="unhandled-results__divider">{% endif %}
                     {% endfor %}
                   </div>
- 
+
                 {% else %}
                   <p class="no-data">{% trans 'There are no unhandled results to show' %}</p>
                 {% endif %}
@@ -155,7 +155,7 @@
               <span class="title">{% trans "Development overview" %}</span>
               <span class="subtitle">{% trans "Accumulated matches over the past 52 weeks" %}</span>
             </div>
- 
+
             <div class="data-card__content">
               <div class="chart_container"
                 data-chartid="development-all-matches"
@@ -164,7 +164,7 @@
                         id="line_chart_all_matches_development__{{ account.uuid }}"></canvas>
               </div>
             </div>
- 
+
             <div class="data-card__footer">
               <span class="footer-text">{% trans "False positive percentage:" %} {{ account.false_positive_percentage }}%</span>
             </div>

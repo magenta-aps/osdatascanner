@@ -6,9 +6,9 @@
 {% endblock %}
 
 {% block content %}
- 
+
   <div class="content-header">
-    {% include "components/common/breadcrumb.html" with page="organization"  %}
+    {% include "components/common/breadcrumb.html" with page="organization" %}
 
     <h1>{% trans 'add organization'|capfirst %}</h1>
   </div>
@@ -31,7 +31,7 @@
                      {% if not password or field.value %}placeholder="{{ placeholder }}"{% endif %}
                      {% if field.name == "name" %}autofocus{% endif %}>
               {% if field.help_text %}<span class="form__help-text">{{ field.help_text }}</span>{% endif %}
- 
+
               {% if field.errors %}{{ field.errors }}{% endif %}
             </div>
           {% else %}

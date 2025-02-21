@@ -41,7 +41,7 @@
               hx-target="div#response"
               hx-encoding="multipart/form-data"
               hx-indicator="div.spinner">
- 
+
           <h2>{% trans "File to scan" %}</h2>
           {% with limit=settings.MINISCAN_FILE_SIZE_LIMIT %}
             <input name="file"
@@ -99,7 +99,7 @@
                     title="{% trans 'Clear' %} {% trans 'content' %}"
                     onClick="window.location.reload();">{% trans "Clear" %}</button>
           </div>
- 
+
           <h3>{% trans "Scan result" %}</h3>
           <div id="response">{% trans "(none yet)" %}</div>
         </form>

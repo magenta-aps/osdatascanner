@@ -11,7 +11,7 @@
         <span class="scannerjob-name">{{ status.scanner.name }}</span>
       </h1>
     </div>
- 
+
     <div class="statistics__body">
       <section class="statistics__section">
         <div class="data-card data-card--timeline">
@@ -28,7 +28,7 @@
                       height="300"
                       width="500"></canvas>
             </div>
- 
+
             {{ snapshot_data|json_script:"snapshot_data" }}
             {{ status.pk|json_script:"status_pk" }}
           </div>
@@ -52,16 +52,16 @@
                     {{ status.new_objects }} {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}new {{ onp }} scanned{% endblocktranslate %}
                   </p>
                 </li>
- 
+
               {% else %}
- 
+
                 <li>
                   <p>
                     {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}All {{ onp }} scanned{% endblocktranslate %}
                   </p>
                 </li>
               {% endif %}
- 
+
               {% comment %} TODO: Show number of errors thrown during scan. {% endcomment %}
             </ul>
           </div>
