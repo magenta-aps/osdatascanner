@@ -20,6 +20,9 @@
 
 - Most tests in engine2 now utilize pytest instead of unittest
 
+- When searching for accounts in the admin module, we use a dynamic cutoff value based on the
+  account most similar to the search term. This should avoid empty search results.
+
 ### Bugfixes
 
 - Fixed some translations issues in the report module manual.

@@ -4,7 +4,7 @@ import urllib
 from django.urls import reverse_lazy
 
 from os2datascanner.projects.admin.organizations.models import Alias, Organization, \
-    OrganizationalUnit, Position
+    OrganizationalUnit, Position, Account
 
 
 @pytest.fixture()
@@ -14,6 +14,20 @@ def user_types(superuser, user_admin, user, other_admin):
         "admin": user_admin,
         "regular_user": user,
         "other_admin": other_admin}
+
+
+@pytest.fixture
+def christophers(test_org):
+    return [
+        Account.objects.create(organization=test_org, first_name="Christopher",
+                               last_name="Nielsen", username="C1"),
+        Account.objects.create(organization=test_org, first_name="Cristopher",
+                               last_name="Jensen", username="C2"),
+        Account.objects.create(organization=test_org, first_name="Cristoffer",
+                               last_name="Larsen", username="C3"),
+        Account.objects.create(organization=test_org, first_name="Christofer",
+                               last_name="Hansen", username="C4"),
+    ]
 
 
 @pytest.mark.django_db
@@ -32,9 +46,8 @@ class TestAccountListView:
         return reverse_lazy('accounts', kwargs={'org_slug': test_org2.slug})
 
     def test_search_query_full_name(self, superuser, url, oluf, gertrud, client):
-        """When searching for the full name of Gertrud, since she shares a
-        last name with Oluf, both should be returned, but Gertrud be returned
-        first, since her similarity score is higher."""
+        """When searching for the full name of Gertrud, it is only her that should be returned,
+        as her similarity to the search is much higher than that of Oluf."""
 
         # Arrange
         client.force_login(superuser)
@@ -45,8 +58,8 @@ class TestAccountListView:
         accounts = response.context['accounts']
 
         # Assert
-        assert accounts.count() == 2
-        assert list(accounts) == [gertrud, oluf]
+        assert accounts.count() == 1
+        assert list(accounts) == [gertrud]
 
     def test_search_query_username(self, superuser, url, oluf, client):
         # Arrange
@@ -111,7 +124,7 @@ class TestAccountListView:
             fritz,
             client):
         """The trigram similarity score of any returned account should never
-        exceed 0.2."""
+        always be non-zero."""
 
         # Arrange
         client.force_login(superuser)
@@ -124,7 +137,7 @@ class TestAccountListView:
         # Assert
         assert accounts
         for account in accounts:
-            assert account.search >= 0.2
+            assert account.search >= 0
 
     def test_account_list_order(self, user_admin, url, nisserne_accounts, client):
         # Arrange
@@ -168,6 +181,33 @@ class TestAccountListView:
         # Assert
         assert response1.status_code == expected_codes[0]
         assert response2.status_code == expected_codes[1]
+
+    @pytest.mark.parametrize("search_query", [
+        "Christopher",
+        "Cristofer",
+        "Christoger",
+    ])
+    def test_similar_names(
+            self,
+            search_query,
+            superuser,
+            url,
+            christophers,
+            client):
+        """Searching for Christopher, but misspelling his name, should still return his account."""
+
+        # Arrange
+        client.force_login(superuser)
+        query = urllib.parse.urlencode({"search_field": search_query})
+
+        # Act
+        response = client.get(url + '?' + query)
+        result = response.context['accounts']
+
+        # Assert
+        assert len(result) == 4
+        for acc in christophers:
+            assert acc in result
 
 
 @pytest.mark.django_db
