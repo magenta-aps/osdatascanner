@@ -24,7 +24,7 @@ REGISTRY = CollectorRegistry()
 JOB_STATE = Enum('background_job_status',
                  'Shows the current/last state of given background job',
                  states=['waiting', 'running', 'cancelling',
-                         'finished', 'cancelled', 'failed', 'nothing imported'],
+                         'finished', 'cancelled', 'failed', 'finished with warnings'],
                  labelnames=['JobLabel', 'OrgSlug', 'OrgId'])
 REGISTRY.register(JOB_STATE)  # Register the metric
 PUSHGATEWAY_HOST = settings.PUSHGATEWAY_HOST
@@ -179,7 +179,7 @@ class Command(BaseCommand):
                             elif job.exec_state not in (
                                     JobState.FAILED,
                                     JobState.CANCELLED,
-                                    JobState.NOTHING_IMPORTED):
+                                    JobState.FINISHED_WITH_WARNINGS):
                                 job.exec_state = JobState.FINISHED
                                 job.save()
                             publish_job_state(job)

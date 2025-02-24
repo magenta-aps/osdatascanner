@@ -63,7 +63,7 @@ def progress(obj):
     caption = None
 
     if obj.exec_state in (
-            JobState.WAITING, JobState.CANCELLED, JobState.FAILED):
+            JobState.WAITING, JobState.CANCELLED, JobState.FAILED, JobState.FINISHED_WITH_WARNINGS):
         caption = obj.exec_state.label
     elif obj.exec_state in (
             JobState.RUNNING, JobState.CANCELLING, JobState.FINISHED):

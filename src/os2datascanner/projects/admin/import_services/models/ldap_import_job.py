@@ -53,7 +53,7 @@ class LDAPImportJob(BackgroundJob):
         try:
             perform_import(self.realm, progress_callback=_callback)
         except LDAPNothingImportedWarning as w:
-            self.exec_state = JobState.NOTHING_IMPORTED
+            self.exec_state = JobState.FINISHED_WITH_WARNINGS
             self.status = w
             self.save()
 

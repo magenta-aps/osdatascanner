@@ -14,6 +14,7 @@ from .models import (Alias, Account, Position,
                      Organization, OrganizationalUnit)
 from .models.aliases import AliasType
 from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
+from django.utils.translation import gettext_lazy as _
 
 logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
@@ -560,7 +561,7 @@ def perform_import_raw(  # noqa: CCR001, too high cognitive complexity
     iids_to_preserve = _get_iids_of_hiearchy(remote_hierarchy)
 
     if not iids_to_preserve:
-        no_users_warning = (
+        no_users_warning = _(
                 "No remote users or organisational units available for"
                 f" organisation {org.name}; are you sure your LDAP settings"
                 " are correct?")

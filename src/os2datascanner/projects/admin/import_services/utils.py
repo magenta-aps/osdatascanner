@@ -48,7 +48,7 @@ def start_ldap_import(ldap_conf: LDAPConfig):
             or latest_importjob.exec_state == JobState.FINISHED \
             or latest_importjob.exec_state == JobState.FAILED \
             or latest_importjob.exec_state == JobState.CANCELLED \
-            or latest_importjob.exec_state == JobState.NOTHING_IMPORTED:
+            or latest_importjob.exec_state == JobState.FINISHED_WITH_WARNINGS:
         LDAPImportJob.objects.create(
             realm=realm
         )
