@@ -1,5 +1,12 @@
 # Changelog
 
+## Next Release
+
+### General improvements
+
+- Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner
+  to become invalidated.
+
 ## Version 3.26.5, 25th February 2025
 
 "Named Release #1"
