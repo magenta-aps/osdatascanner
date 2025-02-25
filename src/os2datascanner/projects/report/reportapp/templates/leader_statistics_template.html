@@ -157,11 +157,13 @@
                       </label>
 
                       <button type="button"
-                              class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'descending' %}up{% endif %}"
+                              class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'ascending' %}up{% endif %}"
                               id="withheld-matches-caret"
                               name="withheld"
                               value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                        <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                        <i id="expand_more"
+                           class="material-symbols {% if order_by == 'withheld' %}active{% endif %}"
+                           aria-hidden="true">expand_more</i>
                       </button>
                     </div>
                   </th>
