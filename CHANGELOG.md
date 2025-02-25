@@ -1,6 +1,8 @@
 # Changelog
 
-## Next Release
+## Version 3.26.5, 25th February 2025
+
+"Named Release #1"
 
 ### General improvements
 
