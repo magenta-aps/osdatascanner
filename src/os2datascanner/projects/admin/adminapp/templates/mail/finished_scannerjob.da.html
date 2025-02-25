@@ -1,7 +1,9 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-<html>
+{# djlint:off H016 #}
+<html lang="da">
+  {# djlint:on #}
   <head>
     <style>
 
@@ -37,8 +39,8 @@
       Til orientering er dit OSdatascanner-scan @ <strong>{{ scanner_name }}</strong> lige kørt færdigt.
     </p>
     <p>
-      <strong>{{ total_objects }}</strong> {{ object_plural }} blev scannet &mdash;
-      <strong>{{ object_size|filesizeformat }}</strong> i alt &mdash; på
+      <strong>{{ total_objects }}</strong> {{ object_plural }} blev scannet –
+      <strong>{{ object_size|filesizeformat }}</strong> i alt – på
       <strong>{{ completion_time }}</strong>.
     </p>
     {% if usererrorlogs %}

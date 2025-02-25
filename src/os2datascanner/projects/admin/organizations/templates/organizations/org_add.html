@@ -6,9 +6,9 @@
 {% endblock %}
 
 {% block content %}
- 
+
   <div class="content-header">
-    {% include "components/common/breadcrumb.html" with page="organization"  %}
+    {% include "components/common/breadcrumb.html" with page="organization" %}
 
     <h1>{% trans 'add organization'|capfirst %}</h1>
   </div>
@@ -23,7 +23,7 @@
                  class="form__group{% if field.errors %} has-error{% endif %}">
               <label {% if field.name == "name" %}class="required-form"{% endif %}
                      for="id_{{ field.name }}">{{ field.label }}</label>
-              <input {% if password %} type="password" {% else %} type="text" {% endif %}
+              <input type="{% if password %}password{% else %}text{% endif %}"
                      class="form-control"
                      name="{{ field.name }}"
                      id="id_{{ field.name }}"
@@ -31,7 +31,7 @@
                      {% if not password or field.value %}placeholder="{{ placeholder }}"{% endif %}
                      {% if field.name == "name" %}autofocus{% endif %}>
               {% if field.help_text %}<span class="form__help-text">{{ field.help_text }}</span>{% endif %}
- 
+
               {% if field.errors %}{{ field.errors }}{% endif %}
             </div>
           {% else %}

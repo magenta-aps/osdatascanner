@@ -6,7 +6,7 @@
 
 <div class="content-header">
   <h1 class="page-title">{% trans "Analysis" %}</h1>
- 
+
 
   <form name="analysis_page"
         hx-get="{% url 'analysis' %}"
@@ -27,7 +27,7 @@
       </select>
     </div>
   </form>
- 
+
   {% if selected_scanner %}
     {% if supported_scannertype %}
       {% include "components/analysis/analysis_status.html" with selected_scanner=selected_scanner analysis_job=analysis_job %}
@@ -56,7 +56,7 @@
       <div class="charts-container-box">
         <h2 class="page-title__sub">{% trans "Number of files" %}</h2>
         <p class="chart_description">{% trans "Overview of the number of each identified file type" %}</p>
- 
+
         <div class="pie-charts-container">
           <div class="chart-container">
             <div class="pie-chart-content">
@@ -72,7 +72,7 @@
       <div class="charts-container-box">
         <h2 class="page-title__sub">{% trans "Storage" %}</h2>
         <p class="chart_description">{% trans "Overview of storage for different filetypes" %}</p>
- 
+
         <div class="pie-charts-container">
           <div class="chart-container">
             <div class="pie-chart-content">
@@ -88,7 +88,7 @@
       <div class="charts-container-box">
         <h2 class="page-title__sub">{% trans "File size distribution" %}</h2>
         <p class="chart_description">{% trans "Overview of number of files " %}</p>
- 
+
         <div class="bar-charts-container">
           {% for i in bar_list %}
             <div class="chart-container">
@@ -103,7 +103,7 @@
       </div>
 
     {% endif %}
- 
+
   {% else %}
     <p class="no-results">{% trans "Choose a scannerjob to start a new scan or view analysis" %}</p>
   {% endif %}

@@ -11,10 +11,10 @@
 
       {% for value, tag in field.field.choices %}
         <option value="{{ value }}"
-                {% if field.value|stringformat:"s"  == value|stringformat:"s" %} selected="selected" {% endif %}>
+                {% if field.value|stringformat:"s"  == value|stringformat:"s" %}selected="selected"{% endif %}>
           {{ tag }}
         </option>
-        {% if field.field.choices|length <= 1 %}<input type= "hidden" name="{{ field.name }}" value="{{ value }}">{% endif %}
+        {% if field.field.choices|length <= 1 %}<input type="hidden" name="{{ field.name }}" value="{{ value }}">{% endif %}
       {% endfor %}
     </select>
   </div>

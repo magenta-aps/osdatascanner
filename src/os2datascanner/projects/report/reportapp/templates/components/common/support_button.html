@@ -22,7 +22,7 @@
               {% for contact in dpo_contacts %}
                 {% if contact.email %}
                   <a href="mailto:{{ contact.email }}?subject={% trans "Question about OSdatascanner" %}">
- 
+
                     {% if contact.first_name %}
                       <li>{{ contact.get_full_name }}</li>
                     {% else %}

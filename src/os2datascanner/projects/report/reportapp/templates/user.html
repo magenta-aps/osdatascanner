@@ -9,7 +9,7 @@
     <div class="userprofile-content-wrapper user-image">
       <span class="user__avatar_verybig">{% include "components/user/account_image.html" with account=account %}</span>
     </div>
- 
+
     <div class="userprofile-content-wrapper user-tables">
       <h2>{% trans "Account information" %}</h2>
       <table class="userprofile-table account-info">
@@ -72,7 +72,7 @@
           {% endif %}
         </tbody>
       </table>
- 
+
       <h2>{% trans "User Rights" %}</h2>
       <table class="userprofile-table user-rights">
         <tbody>
@@ -119,11 +119,11 @@
           </tr>
         </tbody>
       </table>
- 
+
       {% if has_categorize_permission %}
         {% include "components/user/outlook_category_settings.html" %}
       {% endif %}
- 
+
       <h2>{% trans "Login Information" %}</h2>
       <table class="userprofile-table login-info">
         <tbody>

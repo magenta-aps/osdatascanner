@@ -21,12 +21,12 @@
                hx-vals='{"page": "{{ page_obj.previous_page_number|unlocalize }}"}'
                hx-indicator="#report-page-indicator">
               <i id="chevron_left" class="material-icons">chevron_left</i>
- 
+
               {% trans "Previous" %}
             </a>
 
           {% else %}
- 
+
             <a class="link--pre disabled flex">
               <i id="chevron_left" class="material-icons">chevron_left</i>
               {% trans "Previous" %}
@@ -50,11 +50,11 @@
                 {% if n != 1 %}<span class="page--dot">...</span>{% endif %}
 
               {% elif page_obj.number == n %}
- 
+
                 {# Current page #}
                 <a class="page page--active" href="#">{{ n }}</a>
                 {# Set how many pages on each side of current page #}
- 
+
               {% elif page_obj.number|add:'-2' < n and n < page_obj.number|add:'2' %}
 
                 {# Pages around current page #}

@@ -32,8 +32,8 @@
           {% for field in form %}
             <div class="form__row__item">
               <div class="form__group{% if field.errors %} has-error{% endif %}">
- 
- 
+
+
                 {% if field.name == "metadata_url" %}
                   <div class="flex">
                     {{ field.label_tag }}
@@ -56,7 +56,7 @@
                             hx-vals='{"realm": "{{ realm }}"}'
                             hx-indicator="div.spinner">{% trans "Fetch metadata"|capfirst %}</button>
                   </div>
- 
+
                 {% elif field.field.widget.input_type == 'checkbox' %}
                   <div class="form-checkbox-container">
                     <div class="ds-checkbox">
@@ -67,7 +67,7 @@
                              {% if field.field.disabled %}disabled{% endif %}
                              {% if field.value %}checked="checked"{% endif %}>
                       <label for="id_{{ field.name }}">{{ field.label }}</label>
- 
+
                     </div>
                     {% if field.help_text %}
                       <div class="help">
@@ -87,15 +87,15 @@
                   </div>
 
                   {{ field }}
- 
+
                 {% endif %}
- 
+
                 {% if field.errors %}{{ field.errors }}{% endif %}
               </div>
             </div>
- 
+
           {% endfor %}
- 
+
 
         </div>
 
@@ -111,7 +111,7 @@
           {% for mapper in mappers %}
             <div class="form__row__item">
               <div class="form__group">{{ mapper.as_p }}</div>
- 
+
             </div>
           {% endfor %}
         </div>

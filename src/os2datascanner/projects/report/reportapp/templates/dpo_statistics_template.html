@@ -81,16 +81,16 @@
             {% endif %}
           </div>
         </div>
- 
+
       </form>
     </div>
- 
+
     <div class="statistics_wrapper">
       <div class="statistic_total_container">
 
         <!-- Total matches - mail results -->
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.mailscan progress=mailscan_monthly_progress %}
- 
+
         <!-- Total matches - file results -->
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.filescan progress=filescan_monthly_progress %}
 
@@ -102,13 +102,13 @@
 
         <!-- Total matches - Calendar -->
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.calendarscan progress=calendarscan_monthly_progress %}
- 
+
 
         <!-- Total matches - other sources -->
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.other progress=other_monthly_progress %}
       </div>
     </div>
- 
+
     <div class="statistic_wrapper">
       <!-- Doughnut chart -->
       <div class="statistic data_box medium">

@@ -1,7 +1,10 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
+{# djlint:off H016 #}
+{% comment %} Title is defined in header.html {% endcomment %}
 <html lang="da" class="{% block rendertype %}{% endblock rendertype %}">
+  {# djlint:on #}
 
   {% include "components/common/header.html" %}
 

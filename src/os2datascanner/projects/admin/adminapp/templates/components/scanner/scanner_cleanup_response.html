@@ -20,12 +20,12 @@
         <span class="icon">{% include "components/svg-icons/scan_error.svg" %}</span>
         <div>
           {% trans "OSdatascanner was not able to delete the results from the stale accounts, since the scannerjob is currently running. Try again later." %}
-        {% else %}
-          <h1>{% trans "Stale accounts cleaned!" %}</h1>
-          <span class="icon">{% include "components/svg-icons/scan_succes.svg" %}</span>
-          <div>
-            {% trans "Success! All results belonging to the stale accounts from this scannerjobs have been deleted!" %}
-          {% endif %}
         </div>
-      </div>
-    {% endblock %}
+      {% else %}
+        <h1>{% trans "Stale accounts cleaned!" %}</h1>
+        <span class="icon">{% include "components/svg-icons/scan_succes.svg" %}</span>
+        <div>{% trans "Success! All results belonging to the stale accounts from this scannerjobs have been deleted!" %}</div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

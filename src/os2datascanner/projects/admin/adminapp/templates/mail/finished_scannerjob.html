@@ -1,7 +1,9 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-<html>
+{# djlint:off H016 #}
+<html lang="en">
+  {# djlint:on #}
   <head>
     <style>
 
@@ -37,8 +39,8 @@
       For your information, your OSdatascanner scan @ <strong>{{ scanner_name }}</strong> has just finished.
     </p>
     <p>
-      <strong>{{ total_objects }}</strong> {{ object_plural }} were scanned &mdash;
-      <strong>{{ object_size|filesizeformat }}</strong> in total &mdash; in
+      <strong>{{ total_objects }}</strong> {{ object_plural }} were scanned –
+      <strong>{{ object_size|filesizeformat }}</strong> in total – in
       <strong>{{ completion_time }}</strong>.
     </p>
     {% if usererrorlogs %}

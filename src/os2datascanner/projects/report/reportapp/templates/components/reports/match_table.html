@@ -16,7 +16,7 @@
        hx-indicator="#report-page-indicator">
 
     <div class="datatablex__wrapper no-side-scroll">
- 
+
       <table class="datatablex results-table no-side-scroll">
         {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
         sidescroll on this specific table. This should be refactored if we find, that we don't want
@@ -32,18 +32,18 @@
           {% if "/archive/" in request.path %}<col class="column column--resolution-status">{% endif %}
           <col class="column column--actions">
         </colgroup>
- 
+
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
             <th colspan="{% if '/archive' in request.path %}8{% else %}7{% endif %}">
               <div class="table-toolbar">
                 {% include "components/reports/handle_match.html" %}
- 
+
                 <div class="table-toolbar__content-right">
                   <button type="button" class="toggle probability-toggle" aria-pressed="false">
                     {% trans 'Show match probability' %}
                   </button>
- 
+
                   <button type="button"
                           class="matches-expand-all button button--caret-button button--icon-text-button"
                           aria-label="{% trans 'Show/hide all matches' %}"
@@ -55,7 +55,7 @@
               </div>
             </th>
           </tr>
- 
+
           <tr class="datatablex__row column-headings sticky">
             <th class="column column--checkbox">
               <div class="ds-checkbox">
@@ -65,11 +65,11 @@
                        title="{% trans 'Select all results' %}"></label>
               </div>
             </th>
- 
+
             <th class="column column--name">
               <div class="th__flex-container">{% trans "Name" %}</div>
             </th>
- 
+
             <th class="column column--matchcount column--numeral">
               <div class="th__flex-container">
                 <label class="th-label" for="matches-caret">
@@ -86,7 +86,7 @@
                 </button>
               </div>
             </th>
- 
+
             <th class="column column--datasource_last_modified">
               <div class="th__flex-container">
                 <label class="th-label" for="datasource_last_modified-caret">
@@ -103,16 +103,16 @@
                 </button>
               </div>
             </th>
- 
+
             <th class="column column--source column--attribute">
               <div class="th__flex-container">{% trans "Source" %}</div>
             </th>
- 
+
             <th class="column column--path">
               <div class="th__flex-container">
                 <label class="th-label" for="path-caret">{% trans "Path" %}</label>
                 {% comment %}We use a click event handler on this button to
-                submit the <form> defined in filters.html{% endcomment %}
+                submit the form defined in filters.html{% endcomment %}
                 <button type="button"
                         name="sort_key"
                         aria-label="{% trans 'Sort table by' %} {% trans 'Path'|lower %} {% trans 'name'|lower %}"
@@ -124,12 +124,12 @@
                 </button>
               </div>
             </th>
- 
+
             {% if "/archive/" in request.path %}
               <th class="column column--resolution-status">
                 <div class="th__flex-container">
                   <label class="th-label" for="status-caret">{% trans "Status" %}</label>
- 
+
                   <button type="button"
                           name="resolution_status"
                           aria-label="{% trans 'Sort table by' %} {% trans 'Status'|lower %}"
@@ -142,19 +142,19 @@
                 </div>
               </th>
             {% endif %}
- 
+
             <th class="column column--actions">
               <span aria-label="{% trans 'Actions' %}" title="{% trans 'Actions' %}">{% trans 'Actions' %}</span>
             </th>
           </tr>
         </thead>
- 
+
         <tbody>
           {% for document_report in document_reports %}
             {% include "components/reports/match.html" %}
           {% endfor %}
         </tbody>
- 
+
         <tfoot>
           {% if '/archive/' in request.path %}
             {% with colspan=8 %}
@@ -166,7 +166,7 @@
             {% endwith %}
           {% endif %}
         </tfoot>
- 
+
       </table>
     </div>
   </div>

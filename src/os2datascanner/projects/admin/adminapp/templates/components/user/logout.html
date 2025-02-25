@@ -3,7 +3,7 @@
 
 {% block body_class %}login-bg{% endblock %}
 
-{%  block title %}
+{% block title %}
   {% trans "Logout" %}
 {% endblock %}
 
@@ -11,7 +11,7 @@
 
   <section class="login-card">
     <p>{% trans "Thank you for using OSdatascanner." %}</p>
- 
+
     <a href="/accounts/login/">{% trans "Log in" %}</a> <span>{% trans "again" %}</span>
 
     <div class="form__group logo">{% include "components/common/logo-o.html" %}</div>
