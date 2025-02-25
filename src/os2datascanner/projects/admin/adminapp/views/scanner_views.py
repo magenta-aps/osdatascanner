@@ -603,7 +603,11 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
 
     def form_valid(self, form):
         """Validate the submitted form."""
-        if self.object.needs_revalidation:
+
+        # Saving the object instance here without committing to the db to check for revalidation
+        self.object = form.save(commit=False)
+
+        if not self.request.user.has_perm("os2datascanner.can_validate"):
             self.object.validation_status = Scanner.INVALID
 
         def is_in_cleaned(entry, comparable):

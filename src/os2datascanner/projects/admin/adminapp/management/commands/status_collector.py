@@ -18,7 +18,7 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
 from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat
-from ...notification import send_mail_upon_completion
+from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
 
 logger = structlog.get_logger("status_collector")
@@ -126,7 +126,7 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
             if not scan_status.email_sent:
                 # Send email upon scannerjob completion
                 logger.info("Sending notification mail for finished scannerjob.")
-                send_mail_upon_completion(scanner, scan_status)
+                FinishedScannerNotificationEmail(scanner, scan_status).notify()
                 scan_status.email_sent = True
                 scan_status.save()
             else:

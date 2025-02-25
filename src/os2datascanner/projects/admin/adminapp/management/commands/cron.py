@@ -22,18 +22,26 @@ from django.core.management.base import BaseCommand
 
 from os2datascanner.utils.system_utilities import time_now
 from ...models.scannerjobs.scanner import Scanner, ScanStatus
+from ...notification import InvalidScannerNotificationEmail
 
 logger = structlog.get_logger("adminapp")
+
+
+def scheduled_for_now(scanner: Scanner,
+                      current_qhr: datetime.datetime,
+                      next_qhr: datetime.datetime,
+                      now: bool = False):
+    schedule_datetime = scanner.schedule_datetime
+    return (schedule_datetime is not None
+            and (current_qhr <= schedule_datetime < next_qhr or now))
 
 
 def should_scanner_start(scanner: Scanner,
                          current_qhr: datetime.datetime,
                          next_qhr: datetime.datetime,
                          now: bool = False):
-    schedule_datetime = scanner.schedule_datetime
-    return (schedule_datetime is not None
-            and (current_qhr <= schedule_datetime < next_qhr or now)
-            and scanner.validation_status)
+    return scheduled_for_now(scanner, current_qhr, next_qhr, now)\
+            and scanner.validation_status
 
 
 class Command(BaseCommand):
@@ -63,6 +71,7 @@ class Command(BaseCommand):
                                          now=now)
 
             if start:
+
                 # In principle, we should start this scanner now. Check that
                 # it's not already running, though
                 ScanStatus.clean_defunct()
@@ -73,3 +82,13 @@ class Command(BaseCommand):
                 else:
                     logger.warning("Scanner is already running, not starting it again!",
                                    scanner=scanner)
+
+            else:
+                # Why not?
+                if scheduled_for_now(scanner, current_qhr=self.current_qhr, next_qhr=self.next_qhr,
+                                     now=now) and not scanner.validation_status:
+                    # If the scanner _is_ scheduled for now, but is not validated, send a
+                    # notification to someone who can do something about that.
+                    logger.warning("Scanner is not validated, sending email notification.",
+                                   scanner=scanner)
+                    InvalidScannerNotificationEmail(scanner).notify()

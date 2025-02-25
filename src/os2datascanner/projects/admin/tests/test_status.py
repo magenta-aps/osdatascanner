@@ -1,7 +1,8 @@
 import pytest
 from django.conf import settings
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
-from os2datascanner.projects.admin.adminapp.notification import create_context, get_scanner_time
+from os2datascanner.projects.admin.adminapp.notification import (
+    FinishedScannerNotificationEmail, get_scanner_time)
 
 
 def record_status(status):
@@ -87,7 +88,8 @@ class TestStatus:
                                superuser
                                ):
 
-        assert (create_context(basic_scanner, basic_scanstatus, superuser) ==
+        assert (FinishedScannerNotificationEmail(basic_scanner, basic_scanstatus, superuser)
+                .create_context() ==
                 {
             'admin_login_url': settings.SITE_URL,
             'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
@@ -105,7 +107,8 @@ class TestStatus:
                                   basic_scanstatus,
                                   ):
 
-        assert (create_context(basic_scanner, basic_scanstatus, None) ==
+        assert (FinishedScannerNotificationEmail(basic_scanner, basic_scanstatus)
+                .create_context() ==
                 {
             'admin_login_url': settings.SITE_URL,
             'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s

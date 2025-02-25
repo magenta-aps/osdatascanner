@@ -1,0 +1,15 @@
+Hello
+
+For your information, your OSdatascanner-scan @ {{ scanner_name }} was not able to run.
+
+This is because of the validation status of the job. Someone without validation permission has likely made changes to this scanner.
+
+Access the scanner page to see more:
+
+    {{ scanner_edit_url }}
+
+Kind regards,
+the OSdatascanner system
+{% if institution %}
+(on behalf of {{ institution }})
+{% endif %}

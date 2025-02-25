@@ -117,3 +117,56 @@ class TestRemovedScannerViews:
         view.setup(request)
         qs = view.get_queryset()
         return qs
+
+
+@pytest.mark.django_db
+class TestRevalidationScannerViews:
+
+    def test_admin_change_revalidation(self, client, user_admin, web_scanner):
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        client.force_login(user_admin)
+
+        web_scanner.validation_status = 1
+        web_scanner.save()
+
+        response = client.post(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}), {
+            "name": web_scanner.name,
+            "organization": web_scanner.organization.pk,
+            "url": web_scanner.url,
+            "rule": web_scanner.rule.pk,
+            "do_ocr": True  # This is the changed setting
+        })
+
+        web_scanner.refresh_from_db()
+
+        # Make sure the post request succeeded
+        assert response.status_code == 302
+
+        assert web_scanner.validation_status == 0
+
+    def test_admin_change_no_revalidation(self, client, user_admin, web_scanner):
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+
+        # Users with the "can_validate"-permission should not trigger revalidation
+        user_admin.user_permissions.add(Permission.objects.get(codename="can_validate"))
+
+        client.force_login(user_admin)
+
+        web_scanner.validation_status = 1
+        web_scanner.save()
+
+        response = client.post(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}), {
+            "name": web_scanner.name,
+            "organization": web_scanner.organization.pk,
+            "url": web_scanner.url,
+            "rule": web_scanner.rule.pk,
+            "validation_status": 1,
+            "do_ocr": True  # This is the changed setting
+        })
+
+        web_scanner.refresh_from_db()
+
+        # Make sure the post request succeeded
+        assert response.status_code == 302
+
+        assert web_scanner.validation_status == 1

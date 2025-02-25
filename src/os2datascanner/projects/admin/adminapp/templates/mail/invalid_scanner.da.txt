@@ -1,0 +1,16 @@
+Hej
+
+Til orientering kunne dit OSdatascanner-scan @ {{ scanner_name }} ikke afvikles.
+
+Dette skyldes valideringsstatus på scanneren. Nogen uden adgang til at validere scanneren har formentligt foretaget ændringer på den.
+
+Tilgå scanneren for at se mere:
+
+    {{ scanner_edit_url }}
+
+Med venlig hilsen
+OSdatascanner-systemet
+{% if institution %}
+(på vegne af {{ institution }})
+{% endif %}
+    
