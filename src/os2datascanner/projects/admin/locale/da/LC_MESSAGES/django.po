@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-03 10:20+0100\n"
+"POT-Creation-Date: 2025-02-25 13:41+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -27,15 +27,15 @@ msgstr "CPR-reglen kan ikke bruges mere end én gang"
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:146
+#: adminapp/admin.py:152
 msgid "An errorlog cannot both be new and resolved"
 msgstr "En fejlbesked kan ikke både være ny og løst"
 
-#: adminapp/admin.py:185
+#: adminapp/admin.py:191
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:189
+#: adminapp/admin.py:195
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -44,47 +44,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har is_resolved attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:194
+#: adminapp/admin.py:200
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:198
+#: adminapp/admin.py:204
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:201
+#: adminapp/admin.py:207
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:205
+#: adminapp/admin.py:211
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:208
+#: adminapp/admin.py:214
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:212
+#: adminapp/admin.py:218
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:230
+#: adminapp/admin.py:236
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:234
+#: adminapp/admin.py:240
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:237
+#: adminapp/admin.py:243
 msgid "Change resolved-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:241
+#: adminapp/admin.py:247
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
@@ -574,6 +574,14 @@ msgstr "scanstatus snapshot"
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
+#: adminapp/models/scannerjobs/scanner_helpers.py:374
+msgid "MIME type"
+msgstr "Filformat"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py:383
+msgid "Total size in bytes"
+msgstr "Samlet størrelse i bytes"
+
 #: adminapp/models/scannerjobs/webscanner.py:59
 msgid "validation method"
 msgstr "valideringsmetode"
@@ -923,7 +931,7 @@ msgid "Analysis"
 msgstr "Analyse"
 
 #: adminapp/templates/components/analysis/analysis_template.html:22
-#: organizations/templates/organizations/account_detail.html:186
+#: organizations/templates/organizations/account_detail.html:187
 msgid "Choose scannerjob"
 msgstr "Vælg scannerjob"
 
@@ -1190,7 +1198,7 @@ msgstr "Udførte scanninger"
 msgid "Error Log"
 msgstr "Fejlbeskeder"
 
-#: adminapp/templates/components/pagination/load_results.html:26
+#: adminapp/templates/components/pagination/load_results.html:28
 msgid "per page"
 msgstr "pr. side"
 
@@ -1290,8 +1298,8 @@ msgstr "Slet regel?"
 msgid "Are you sure you want to delete?"
 msgstr "Ønsker du virkelig at slette?"
 
-#: adminapp/templates/components/rules/cprrule_confirm_delete.html:17
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:21
+#: adminapp/templates/components/rules/cprrule_confirm_delete.html:19
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html:23
 #: adminapp/templates/rules.html:180
 msgid "No"
 msgstr "Nej"
@@ -1565,7 +1573,7 @@ msgstr ""
 "OSdatascanner kunne ikke slette resultaterne tilhørende de frakoblede konti, "
 "da scannerjobbet i øjeblikket er i gang. Prøv igen senere."
 
-#: adminapp/templates/components/scanner/scanner_cleanup_response.html:24
+#: adminapp/templates/components/scanner/scanner_cleanup_response.html:25
 msgid "Stale accounts cleaned!"
 msgstr "Frakoblede konti ryddet op!"
 
@@ -3384,24 +3392,24 @@ msgstr ""
 "Denne organisationsstruktur ligger i skyen, og en eksterne tjeneste skal "
 "tillade OSdatascanner adgang til dens indhold."
 
-#: import_services/templates/import_services/msgraph_oauth.html:21
+#: import_services/templates/import_services/msgraph_oauth.html:22
 msgid "The service refused to grant OSdatascanner the necessary rights:"
 msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
 
-#: import_services/templates/import_services/msgraph_oauth.html:24
+#: import_services/templates/import_services/msgraph_oauth.html:25
 msgid "Click the button below to try again."
 msgstr "Klik på knappen nedenfor for at prøve igen."
 
-#: import_services/templates/import_services/msgraph_oauth.html:26
+#: import_services/templates/import_services/msgraph_oauth.html:27
 msgid "Click the button below to forward to this service."
 msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
 
-#: import_services/templates/import_services/msgraph_oauth.html:32
 #: import_services/templates/import_services/msgraph_oauth.html:33
+#: import_services/templates/import_services/msgraph_oauth.html:34
 msgid "Continue to"
 msgstr "Fortsæt til"
 
-#: import_services/templates/import_services/msgraph_oauth.html:35
+#: import_services/templates/import_services/msgraph_oauth.html:36
 msgid ""
 "You will be forwarded to the creation form after the service has issued the "
 "necessary rights."
@@ -3409,7 +3417,7 @@ msgstr ""
 "Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
 "de nødvendige rettigheder."
 
-#: import_services/templates/import_services/msgraph_oauth.html:37
+#: import_services/templates/import_services/msgraph_oauth.html:38
 msgid ""
 "The information pointing to the OSdatascanner system for this service is "
 "missing."
@@ -3573,7 +3581,7 @@ msgid "Aliases"
 msgstr "Aliasser"
 
 #: organizations/templates/organizations/account_detail.html:97
-#: organizations/templates/organizations/account_detail.html:154
+#: organizations/templates/organizations/account_detail.html:155
 #: organizations/templates/organizations/orgunit_list.html:39
 #: organizations/templates/organizations/orgunit_list.html:263
 #: organizations/templates/organizations/orgunit_list.html:294
@@ -3581,7 +3589,7 @@ msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
 #: organizations/templates/organizations/account_detail.html:104
-#: organizations/templates/organizations/account_detail.html:163
+#: organizations/templates/organizations/account_detail.html:164
 #: organizations/templates/organizations/orgunit_list.html:46
 #: organizations/templates/organizations/orgunit_list.html:270
 #: organizations/templates/organizations/orgunit_list.html:301
@@ -3596,11 +3604,11 @@ msgstr "Klik her for at tilføje et nyt alias"
 msgid "Add alias"
 msgstr "Tilføj alias"
 
-#: organizations/templates/organizations/account_detail.html:128
+#: organizations/templates/organizations/account_detail.html:129
 msgid "Universal remediator"
 msgstr "Universel oprydder"
 
-#: organizations/templates/organizations/account_detail.html:143
+#: organizations/templates/organizations/account_detail.html:144
 msgid ""
 "By checking this box, the current user will be assigned as a remediator of "
 "all scannerjobs."
@@ -3608,23 +3616,23 @@ msgstr ""
 "Ved at markere dette felt vil brugeren blive tildelt rollen som oprydder for "
 "alle scannerjob."
 
-#: organizations/templates/organizations/account_detail.html:149
+#: organizations/templates/organizations/account_detail.html:150
 msgid "Remediator for"
 msgstr "Oprydder for"
 
-#: organizations/templates/organizations/account_detail.html:171
+#: organizations/templates/organizations/account_detail.html:172
 msgid "Click here to add a new remediator"
 msgstr "Klik her for at tilføje en ny oprydder"
 
-#: organizations/templates/organizations/account_detail.html:172
+#: organizations/templates/organizations/account_detail.html:173
 msgid "Add remediator"
 msgstr "Tilføj oprydder"
 
-#: organizations/templates/organizations/account_detail.html:198
+#: organizations/templates/organizations/account_detail.html:199
 msgid "Login Information"
 msgstr "Kontooplysninger"
 
-#: organizations/templates/organizations/account_detail.html:202
+#: organizations/templates/organizations/account_detail.html:203
 msgid "User since"
 msgstr "Bruger siden"
 
@@ -4023,15 +4031,15 @@ msgstr ""
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
-#: organizations/views/account_views.py:188
+#: organizations/views/account_views.py:196
 msgid "Choose Account"
 msgstr "Vælg konto"
 
-#: organizations/views/account_views.py:217
+#: organizations/views/account_views.py:225
 msgid "Choose new manager"
 msgstr "Vælg ny leder"
 
-#: organizations/views/account_views.py:225
+#: organizations/views/account_views.py:233
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
 
