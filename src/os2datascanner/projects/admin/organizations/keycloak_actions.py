@@ -562,12 +562,12 @@ def perform_import_raw(  # noqa: CCR001, too high cognitive complexity
 
     if not iids_to_preserve:
         no_users_warning = _(
-                "No remote users or organisational units available for"
-                f" organisation {org.name}; are you sure your LDAP settings"
-                " are correct?")
-        logger.warning(no_users_warning)
+                        "No remote users or organisational units available for"
+                        " organisation {org}; are you sure your LDAP settings"
+                        " are correct?")
+        logger.warning(no_users_warning.format(org=org.name))
 
-        raise LDAPNothingImportedWarning(no_users_warning)
+        raise LDAPNothingImportedWarning(no_users_warning.format(org=org.name))
 
     # Make sure that we have an OrganizationalUnit hierarchy that reflects the remote one
     path_to_unit, new_units = _create_unit_hierarchy(remote_hierarchy, org)
