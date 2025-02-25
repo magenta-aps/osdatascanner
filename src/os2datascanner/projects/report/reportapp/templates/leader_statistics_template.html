@@ -123,7 +123,7 @@
                 {% if show_retention_column %}
                   <th class="column column--matches-old column--numeral">
                     <div class="th__flex-container">
-                      <label class="th-label" for="matches-caret">
+                      <label class="th-label" for="old-matches-caret">
                         <span>{% blocktrans %}Over {{ retention_days }} days{% endblocktrans %}</span>
 
                         <span class="help-tooltip"
@@ -134,7 +134,7 @@
 
                       <button type="button"
                               class="order-by button button--caret-button {% if order_by == 'old' and order == 'ascending' %}up{% endif %}"
-                              id="matches-caret"
+                              id="old-matches-caret"
                               name="old"
                               value="{% if order_by == 'old' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                         <i id="expand_more"
