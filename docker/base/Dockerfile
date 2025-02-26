@@ -70,6 +70,14 @@ RUN set -ex && /code/resources/prepare.sh
 WORKDIR /code/src/os2datascanner/projects/static
 COPY --from=frontend /code/src/os2datascanner/projects/static/dist ./dist
 
+# Copy code
+WORKDIR /code/src/os2datascanner
+COPY src/os2datascanner ./
+
+# Compile engine translations
+RUN set -ex \
+  && /code/src/os2datascanner/engine2/locale/manage.sh compilemessages
+
 ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
 
 # hadolint ignore=DL3006
@@ -90,10 +98,6 @@ RUN groupadd -g 63030 -r os2ds_engine \
 
 COPY docker/engine/docker-settings.toml /code/docker/docker-settings.toml
 COPY docker/engine/docker-entrypoint.sh /code/docker/docker-entrypoint.sh
-
-# Copy code
-WORKDIR /code/src/os2datascanner
-COPY src/os2datascanner/ ./
 
 # Set up to run given command as the new user
 USER os2ds_engine:os2ds_engine
@@ -120,10 +124,6 @@ RUN groupadd -g 63050 -r os2ds_api\
 WORKDIR /code/docker
 COPY docker/api/docker-settings.toml ./docker-settings.toml
 COPY docker/api/gunicorn-settings.py ./gunicorn-settings.py
-
-# Copy code
-WORKDIR /code/src/os2datascanner
-COPY src/os2datascanner/ ./
 
 WORKDIR /code/src/os2datascanner/server
 USER os2ds_api:os2ds_api
@@ -161,10 +161,6 @@ COPY docker/admin/docker-settings.toml ./docker-settings.toml
 COPY docker/insecure-settings.toml ./insecure-settings.toml
 COPY docker/docker-entrypoint-django.sh ./docker-entrypoint.sh
 COPY docker/gunicorn-settings.py ./gunicorn-settings.py
-
-# Copy code
-WORKDIR /code/src/os2datascanner
-COPY src/os2datascanner/ ./
 
 # Run the server as the os2ds_admin user on port 5000
 WORKDIR /code/src/os2datascanner/projects/admin
@@ -223,10 +219,6 @@ COPY docker/insecure-settings.toml ./insecure-settings.toml
 COPY docker/docker-entrypoint-django.sh ./docker-entrypoint.sh
 COPY docker/gunicorn-settings.py ./gunicorn-settings.py
 
-# Copy code
-WORKDIR /code/src/os2datascanner
-COPY src/os2datascanner/ ./
-
 # Run the server as the os2ds_report user on port 5000
 WORKDIR /code/src/os2datascanner/projects/report
 # Make os2ds_report owner of /code/docker. This is only needed to remove the
@@ -270,9 +262,6 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc \
        mssql-tools18=18.2.1.1-1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /code/src
-COPY src/ ./
 
 WORKDIR /code
 COPY docker/sbsys_db/ ./
