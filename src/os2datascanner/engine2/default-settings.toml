@@ -5,6 +5,14 @@ secret_value = ""
 # [logging]
 LOG_LEVEL = "INFO"
 
+# Should engine2 attempt to translate its strings?
+USE_I18N = true
+# A list, in order of preference, of language identifiers to be given to the
+# translation infrastructure. Specify an empty list to use the default
+# gettext autodetection logic, although be warned that this may not make sense
+# outside of interactive use
+LANGUAGES = ["da"]
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"
