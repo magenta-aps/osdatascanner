@@ -3,6 +3,7 @@ import os.path
 import email
 from contextlib import contextmanager
 
+from ...utilities.i18n import gettext as _
 from ..core import Source, Handle, FileResource
 from ..utilities.mail import get_safe_filename, decode_encoded_words
 from .derived import DerivedSource
@@ -140,10 +141,10 @@ class MailPartHandle(Handle):
     @property
     def presentation_name(self):
         container = self.source.handle.presentation_name
-        if (name := self._path_name):
-            # This is a named attachment
-            return (f"attachment \"{decode_encoded_words(name)}\""
-                    f" in {container}")
+        if (raw_name := self._path_name):
+            name = decode_encoded_words(raw_name)
+            return _("attachment \"{filename}\" in {mail}").format(
+                    filename=name, mail=container)
         else:
             # This is a message body. Use its subject
             return container
@@ -155,10 +156,6 @@ class MailPartHandle(Handle):
     @property
     def presentation_place(self):
         return self.source.handle.presentation_place
-
-    def __str__(self):
-        return (f"{self.presentation_name} (attached"
-                f" to {self.presentation_place})")
 
     def guess_type(self):
         if self._mime != "application/octet-stream":

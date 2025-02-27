@@ -5,6 +5,7 @@ from typing import Mapping, Optional
 import warnings
 from mimetypes import guess_type
 
+from ...utilities.i18n import gettext as _
 from ...utilities.json import JSONSerialisable
 from ...utilities.equality import TypePropertyEquality
 from .import source as msource
@@ -140,7 +141,8 @@ class Handle(TypePropertyEquality, JSONSerialisable):
     def __str__(self):
         """Returns a (perhaps localised) human-readable string representing
         this Handle: its name and its position."""
-        return f"{self.presentation_name} (in {self.presentation_place})"
+        return _("{name} (in {place})").format(
+                name=self.presentation_name, place=self.presentation_place)
 
     @property
     def presentation(self) -> str:

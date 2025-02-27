@@ -2,6 +2,7 @@ import structlog
 import magic
 import pandas as pd
 
+from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource
 from .derived import DerivedSource
 from .utilities import office_metadata
@@ -73,14 +74,12 @@ class SpreadsheetSheetHandle(Handle):
     @property
     def presentation_name(self) -> str:
         container = self.source.handle.presentation_name
-        return f"sheet {self.relative_path} of {container}"
+        return _("sheet {title} of {file}").format(
+                title=self.relative_path, file=container)
 
     @property
     def presentation_place(self) -> str:
         return str(self.source.handle)
-
-    def __str__(self):
-        return f"{self.presentation_name} of {self.presentation_place}"
 
     @property
     def sort_key(self) -> str:

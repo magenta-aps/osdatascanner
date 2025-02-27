@@ -7,6 +7,7 @@ from subprocess import DEVNULL
 
 from ....utils.system_utilities import run_custom
 from ... import settings as engine2_settings
+from ...utilities.i18n import gettext as _
 from ..core import Handle, Source
 from ..file import FilesystemResource
 from .derived import DerivedSource
@@ -202,11 +203,11 @@ class LibreOfficeObjectHandle(Handle):
         mime = self.guess_type()
         container = self.source.handle.presentation_name
         if mime.startswith("text/"):
-            return f"text of {container}"
+            return _("text of {file}").format(file=container)
         elif mime.startswith("image/"):
-            return f"image in {container}"
+            return _("image in {file}").format(file=container)
         else:
-            return f"unknown object in {container}"
+            return _("unknown object in {file}").format(file=container)
 
     @property
     def presentation_place(self):
