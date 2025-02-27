@@ -4,10 +4,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-# Need to specify this at the top or else Docker will be confused
-ARG BASE_IMAGE=base
-
 FROM node:15 AS frontend
 
 WORKDIR /code/src/os2datascanner/projects
@@ -76,10 +72,8 @@ COPY --from=frontend /code/src/os2datascanner/projects/static/dist ./dist
 
 ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
 
-# Base image always has a default (see ARG BASE_IMAGE)
-ARG BASE_IMAGE=base
 # hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS engine
+FROM base AS engine
 
 LABEL org.opencontainers.image.title="OS2datascanner - Engine" \
       org.opencontainers.image.vendor="Magenta ApS" \
@@ -107,10 +101,8 @@ USER os2ds_engine:os2ds_engine
 EXPOSE 9091
 CMD ["explorer", "--help"]
 
-# Base image always has a default (see ARG BASE_IMAGE)
-ARG BASE_IMAGE=base
 # hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS api
+FROM base AS api
 
 LABEL org.opencontainers.image.title="OS2datascanner - API" \
       org.opencontainers.image.vendor="Magenta ApS" \
@@ -142,10 +134,8 @@ CMD ["gunicorn", \
      "--config", "/code/docker/gunicorn-settings.py", \
      "os2datascanner.server.wsgi"]
 
-# Base image always has a default (see ARG BASE_IMAGE)
-ARG BASE_IMAGE=base
 # hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS admin
+FROM base AS admin
 
 LABEL org.opencontainers.image.title="OS2datascanner - Administration" \
       org.opencontainers.image.vendor="Magenta ApS" \
@@ -205,10 +195,8 @@ ENV COMMIT_TAG=${COMMIT_TAG} \
     COMMIT_SHA=${COMMIT_SHA} \
     CURRENT_BRANCH=${CURRENT_BRANCH}
 
-# Base image always has a default (see ARG BASE_IMAGE)
-ARG BASE_IMAGE=base
 # hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS report
+FROM base AS report
 
 LABEL org.opencontainers.image.title="OS2datascanner - Report" \
       org.opencontainers.image.vendor="Magenta ApS" \
@@ -260,9 +248,7 @@ EXPOSE 5000
 ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
 CMD ["gunicorn", "--config", "/code/docker/gunicorn-settings.py", "asgi", "os2datascanner.projects.report.asgi:application"]
 
-ARG BASE_IMAGE=base
-# hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS sbsys-init
+FROM base AS sbsys-init
 
 ENV ACCEPT_EULA=Y \
     MSSQL_COLLATION=SQL_Danish_Pref_CP1_CI_AS \
