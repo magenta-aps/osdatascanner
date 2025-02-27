@@ -9,6 +9,7 @@ from requests import HTTPError
 
 from ... import settings as engine2_settings
 from ...rules.rule import Rule
+from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource, FileResource, SourceManager
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror, MailFSBuilder
@@ -340,8 +341,11 @@ class MSGraphMailMessageHandle(Handle):
 
     @property
     def presentation_place(self):
-        return f"\"{self._folder}\" of {str(self.source.handle)}" \
-            if self._folder else f"{str(self.source.handle)}"
+        format_string = _("{mail_account}")
+        if self._folder:
+            format_string = _("\"{folder}\" of {mail_account}")
+        return format_string.format(
+                folder=self._folder, mail_account=str(self.source.handle))
 
     @property
     def presentation_url(self):

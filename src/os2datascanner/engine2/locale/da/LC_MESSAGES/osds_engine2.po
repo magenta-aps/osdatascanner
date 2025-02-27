@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: engine 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-27 14:21+0100\n"
+"POT-Creation-Date: 2025-02-27 14:48+0100\n"
 "PO-Revision-Date: 2025-02-27 14:21+0100\n"
 "Last-Translator: Alexander Faithfull-Murawski <af@magenta.dk>\n"
 "Language-Team: none\n"
@@ -12,67 +12,87 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../model/core/handle.py:144
+#: src/os2datascanner/engine2/locale/../model/core/handle.py:144
 #, python-brace-format
 msgid "{name} (in {place})"
 msgstr "{name} (i {place})"
 
-#: ../model/derived/libreoffice.py:206
+#: src/os2datascanner/engine2/locale/../model/msgraph/mail.py:344
+#, python-brace-format
+msgid "{mail_account}"
+msgstr "mailkontoen {mail_account}"
+
+#: src/os2datascanner/engine2/locale/../model/msgraph/mail.py:346
+#, python-brace-format
+msgid "\"{folder}\" of {mail_account}"
+msgstr "mappen \"{folder}\" af mailkontoen {mail_account}"
+
+#: src/os2datascanner/engine2/locale/../model/msgraph/files.py:119
+#, python-brace-format
+msgid "{user_account}'s files"
+msgstr "filerne tilhørende {user_account}"
+
+#: src/os2datascanner/engine2/locale/../model/msgraph/files.py:122
+#, python-brace-format
+msgid "\"{folder_name}\" (owned by {owner})"
+msgstr "\"{folder_name}\" (ejet af {owner})"
+
+#: src/os2datascanner/engine2/locale/../model/msgraph/files.py:270
+#, python-brace-format
+msgid "{folder} (in {parent})"
+msgstr "{folder} (i {parent})"
+
+#: src/os2datascanner/engine2/locale/../model/derived/libreoffice.py:206
 #, python-brace-format
 msgid "text of {file}"
 msgstr "tekst af {file}"
 
-#: ../model/derived/libreoffice.py:208
+#: src/os2datascanner/engine2/locale/../model/derived/libreoffice.py:208
 #, python-brace-format
 msgid "image in {file}"
 msgstr "billede i {file}"
 
-#: ../model/derived/libreoffice.py:210
+#: src/os2datascanner/engine2/locale/../model/derived/libreoffice.py:210
 #, python-brace-format
 msgid "unknown object in {file}"
 msgstr "ukendt objekt i {file}"
 
-#: ../model/derived/mail.py:146
+#: src/os2datascanner/engine2/locale/../model/derived/mail.py:146
 #, python-brace-format
-msgid "attachment {filename} in {mail}"
-msgstr "vedhæftet fil {filename} i {mail}"
+msgid "attachment \"{filename}\" in {mail}"
+msgstr "vedhæftet fil \"{filename}\" i mailen {mail}"
 
-#: ../model/derived/mail.py:160
-#, python-brace-format
-msgid "{filename} (attached to {mail})"
-msgstr "{filename} (vedhæftet til {mail})"
-
-#: ../model/derived/pdf.py:78
+#: src/os2datascanner/engine2/locale/../model/derived/pdf.py:78
 #, python-brace-format
 msgid "page {page_nr}"
 msgstr "side {page_nr}"
 
-#: ../model/derived/pdf.py:85
+#: src/os2datascanner/engine2/locale/../model/derived/pdf.py:85
 #, python-brace-format
 msgid "{page_desc} of {file}"
 msgstr "{page_desc} af {file}"
 
-#: ../model/derived/pdf.py:171
+#: src/os2datascanner/engine2/locale/../model/derived/pdf.py:171
 #, python-brace-format
 msgid "text on {page} of {file}"
 msgstr "tekst på {page} af {file}"
 
-#: ../model/derived/pdf.py:174
+#: src/os2datascanner/engine2/locale/../model/derived/pdf.py:174
 #, python-brace-format
 msgid "image on {page} of {file}"
 msgstr "billede på {page} af {file}"
 
-#: ../model/derived/pdf.py:177
+#: src/os2datascanner/engine2/locale/../model/derived/pdf.py:177
 #, python-brace-format
 msgid "unknown object on {page} of {file}"
 msgstr "ukendt objekt på {page} af {file}"
 
-#: ../model/derived/pdf.py:185
+#: src/os2datascanner/engine2/locale/../model/derived/pdf.py:185
 #, python-brace-format
 msgid "{name} (on {place})"
 msgstr "{name} (på {place})"
 
-#: ../model/derived/spreadsheet.py:76
+#: src/os2datascanner/engine2/locale/../model/derived/spreadsheet.py:76
 #, python-brace-format
 msgid "sheet {title} of {file}"
 msgstr "regneark {title} af {file}"
