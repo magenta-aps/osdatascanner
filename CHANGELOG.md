@@ -7,6 +7,8 @@
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner
   to become invalidated.
 
+- Messages produced by the scanner engine are now also translated.
+
 ### Bugfixes
 
 - Fixed minor visual bugs with carets in the leader overview.
