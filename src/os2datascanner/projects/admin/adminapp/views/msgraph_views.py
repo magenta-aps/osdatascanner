@@ -18,7 +18,9 @@ from django.urls import reverse_lazy
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.grants.views import MSGraphGrantRequestView
+from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
+from .utils.grant_mixin import GrantMixin
 from ..models.scannerjobs.msgraph import MSGraphMailScanner
 from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
@@ -60,7 +62,7 @@ def patch_form(view, form):
     return form
 
 
-class _MSGraphMailScannerCreate(ScannerCreate):
+class _MSGraphMailScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
     type = 'msgraph-mail'
@@ -82,6 +84,9 @@ class _MSGraphMailScannerCreate(ScannerCreate):
         'contacts'
      ]
 
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
+
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
 
@@ -90,7 +95,7 @@ class _MSGraphMailScannerCreate(ScannerCreate):
         return '/msgraphmailscanners/%s/created/' % self.object.pk
 
 
-class MSGraphMailScannerUpdate(ScannerUpdate):
+class MSGraphMailScannerUpdate(GrantMixin, ScannerUpdate):
     """Displays the parameters of an existing Microsoft Graph mail scanner job
     for modification."""
     model = MSGraphMailScanner
@@ -112,6 +117,9 @@ class MSGraphMailScannerUpdate(ScannerUpdate):
         'organization',
         'contacts'
      ]
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -196,7 +204,7 @@ class MSGraphFileScannerCreate(View):
         return handler(request, *args, **kwargs)
 
 
-class _MSGraphFileScannerCreate(ScannerCreate):
+class _MSGraphFileScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph file scanner job."""
     model = MSGraphFileScanner
     type = 'msgraph-file'
@@ -206,6 +214,9 @@ class _MSGraphFileScannerCreate(ScannerCreate):
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
 
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
+
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
 
@@ -214,7 +225,7 @@ class _MSGraphFileScannerCreate(ScannerCreate):
         return '/msgraphfilescanners/%s/created/' % self.object.pk
 
 
-class MSGraphFileScannerUpdate(ScannerUpdate):
+class MSGraphFileScannerUpdate(GrantMixin, ScannerUpdate):
     """Displays the parameters of an existing Microsoft Graph file scanner job
     for modification."""
     model = MSGraphFileScanner
@@ -224,6 +235,9 @@ class MSGraphFileScannerUpdate(ScannerUpdate):
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -296,7 +310,7 @@ class MSGraphCalendarScannerCreate(View):
         return handler(request, *args, **kwargs)
 
 
-class _MSGraphCalendarScannerCreate(ScannerCreate):
+class _MSGraphCalendarScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph calendar scanner job."""
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
@@ -304,6 +318,9 @@ class _MSGraphCalendarScannerCreate(ScannerCreate):
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -313,7 +330,7 @@ class _MSGraphCalendarScannerCreate(ScannerCreate):
         return '/msgraphcalendarscanners/%s/created' % self.object.pk
 
 
-class MSGraphCalendarScannerUpdate(ScannerUpdate):
+class MSGraphCalendarScannerUpdate(GrantMixin, ScannerUpdate):
     """Displays the parameters of an existing Microsoft Graph mail scanner job
     for modification."""
     model = MSGraphCalendarScanner
@@ -322,6 +339,9 @@ class MSGraphCalendarScannerUpdate(ScannerUpdate):
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -396,7 +416,7 @@ class MSGraphTeamsFileScannerCreate(View):
         return handler(request, *args, **kwargs)
 
 
-class _MSGraphTeamsFileScannerCreate(ScannerCreate):
+class _MSGraphTeamsFileScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph file scanner job."""
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-file'
@@ -404,6 +424,9 @@ class _MSGraphTeamsFileScannerCreate(ScannerCreate):
               'exclusion_rule', 'only_notify_superadmin',
               'do_ocr', 'do_last_modified_check', 'rule',
               'organization', 'keep_false_positives']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -413,7 +436,7 @@ class _MSGraphTeamsFileScannerCreate(ScannerCreate):
         return '/msgraphteamsfilescanners/%s/created/' % self.object.pk
 
 
-class MSGraphTeamsFileScannerUpdate(ScannerUpdate):
+class MSGraphTeamsFileScannerUpdate(GrantMixin, ScannerUpdate):
     """Displays the parameters of an existing Microsoft Graph file scanner job
     for modification."""
     model = MSGraphTeamsFileScanner
@@ -422,6 +445,9 @@ class MSGraphTeamsFileScannerUpdate(ScannerUpdate):
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))

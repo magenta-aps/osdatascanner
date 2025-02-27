@@ -127,6 +127,22 @@ class MSGraphGrantForm(forms.ModelForm):
         self.fields["app_id"].disabled = True
 
 
+class MSGraphGrantScannerForm(MSGraphGrantForm):
+    """ Form for use in Scanner Create/Update. """
+    class Meta:
+        model = GraphGrant
+        fields = ('__all__')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["_client_secret"].initial = ""
+        self.fields["tenant_id"].initial = ""
+        self.fields["app_id"].initial = ""
+        self.fields["organization"].disabled = False
+        self.fields["tenant_id"].disabled = False
+        self.fields["app_id"].disabled = False
+
+
 class MSGraphClientSecretExpiryMixin:
     """Mixin supporting HTMX updates of form values,
      specifically the expiry date field for MSGraphGrant."""

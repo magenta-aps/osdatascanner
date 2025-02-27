@@ -8,10 +8,10 @@
 # for the specific language governing rights and limitations under the
 # License.
 #
-# OS2datascanner is developed by Magenta in collaboration with the OS2 public
-# sector open source network <https://os2.eu/>.
-#
+
 from django import forms
+
+from os2datascanner.projects.grants.views.smb_views import SMBGrantScannerForm
 from .scanner_views import (
     ScannerDelete,
     ScannerRemove,
@@ -21,6 +21,7 @@ from .scanner_views import (
     ScannerCopy,
     ScannerCreate,
     ScannerList)
+from .utils.grant_mixin import GrantMixin
 from ..models.scannerjobs.filescanner import FileScanner
 from django.utils.translation import gettext_lazy as _
 
@@ -32,7 +33,7 @@ class FileScannerList(ScannerList):
     type = 'file'
 
 
-class FileScannerCreate(ScannerCreate):
+class FileScannerCreate(GrantMixin, ScannerCreate):
     """Create a file scanner view."""
 
     model = FileScanner
@@ -55,11 +56,13 @@ class FileScannerCreate(ScannerCreate):
         'smb_grant'
         ]
 
+    def get_grant_form_classes(self):
+        return {
+            "smb_grant": SMBGrantScannerForm,
+        }
+
     def get_form(self, form_class=None):
         """Adds special field password."""
-        if form_class is None:
-            form_class = self.get_form_class()
-
         form = super().get_form(form_class)
         return initialize_form(form)
 
@@ -68,7 +71,7 @@ class FileScannerCreate(ScannerCreate):
         return '/filescanners/%s/created/' % self.object.pk
 
 
-class FileScannerUpdate(ScannerUpdate):
+class FileScannerUpdate(GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = FileScanner
@@ -91,13 +94,15 @@ class FileScannerUpdate(ScannerUpdate):
         'smb_grant'
         ]
 
-    def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
+    def get_grant_form_classes(self):
+        return {
+            "smb_grant": SMBGrantScannerForm,
+        }
 
+    def get_form(self, form_class=None):
+        """Adds special field password."""
         form = super().get_form(form_class)
-        form = initialize_form(form)
-        return form
+        return initialize_form(form)
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.

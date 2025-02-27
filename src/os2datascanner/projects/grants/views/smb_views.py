@@ -24,6 +24,13 @@ class SMBGrantCreateView(LoginRequiredMixin, CreateView):
         return {"organization": self.kwargs.get('org')}
 
 
+class SMBGrantScannerForm(SMBGrantAdminForm):
+    """ Form for use in Scanner Create/Update. """
+    class Meta:
+        model = SMBGrant
+        fields = ('__all__')
+
+
 class SMBGrantUpdateView(LoginRequiredMixin, UpdateView):
     model = SMBGrant
     form_class = SMBGrantForm

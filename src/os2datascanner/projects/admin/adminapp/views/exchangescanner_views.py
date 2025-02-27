@@ -14,7 +14,11 @@ from django.views import View
 from rest_framework.generics import ListAPIView
 import re
 
+from os2datascanner.projects.grants.views.ews_views import EWSGrantScannerForm
+from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
+from .utils.grant_mixin import GrantMixin
+
 from .scanner_views import (
     ScannerDelete,
     ScannerRemove,
@@ -74,8 +78,8 @@ class ExchangeScannerBase(View):
         return context
 
 
-class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
-    """Create a exchange scanner view."""
+class ExchangeScannerCreate(ExchangeScannerBase, GrantMixin, ScannerCreate):
+    """Create an Exchange scanner view."""
 
     model = ExchangeScanner
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
@@ -86,6 +90,15 @@ class ExchangeScannerCreate(ExchangeScannerBase, ScannerCreate):
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
     type = 'exchange'
+
+    def get_grant_form_classes(self):
+        if settings.MSGRAPH_EWS_AUTH:
+            return {
+                "ews_grant": EWSGrantScannerForm,
+                "graph_grant": MSGraphGrantScannerForm
+            }
+
+        return {"ews_grant": EWSGrantScannerForm}
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
@@ -140,7 +153,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
         return initial
 
 
-class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
+class ExchangeScannerUpdate(ExchangeScannerBase, GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = ExchangeScanner
@@ -152,6 +165,15 @@ class ExchangeScannerUpdate(ExchangeScannerBase, ScannerUpdate):
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
     type = 'exchange'
+
+    def get_grant_form_classes(self):
+        if settings.MSGRAPH_EWS_AUTH:
+            return {
+                "ews_grant": EWSGrantScannerForm,
+                "graph_grant": MSGraphGrantScannerForm
+            }
+
+        return {"ews_grant": EWSGrantScannerForm}
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.

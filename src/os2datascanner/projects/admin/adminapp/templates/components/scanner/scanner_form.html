@@ -198,15 +198,15 @@
                  GraphGrant is prioritized if both are present. #}
               {% endcomment %}
               {% if form.ews_grant %}
-                {% include "components/scanner/scanner_form_select_option_field.html" with field=form.ews_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html" with field=form.ews_grant %}
               {% endif %}
 
               {% if form.graph_grant %}
-                {% include "components/scanner/scanner_form_select_option_field.html" with field=form.graph_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.graph_grant %}
               {% endif %}
 
               {% if form.smb_grant %}
-                {% include "components/scanner/scanner_form_select_option_field.html" with field=form.smb_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.smb_grant %}
               {% endif %}
 
               {% if form.scan_site_drives %}
