@@ -9,10 +9,14 @@ from django.db.models import F, Q
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle
 import os2datascanner.engine2.pipeline.messages as messages
+from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 
 logger = structlog.get_logger("adminapp")
@@ -116,6 +120,8 @@ class AbstractScanStatus(models.Model):
         blank=True
     )
 
+    cancelled = models.BooleanField(default=False, verbose_name=_("cancelled"))
+
     @property
     def stage(self) -> int:
         # Workers have not begun scanning any objects yet
@@ -137,6 +143,10 @@ class AbstractScanStatus(models.Model):
     @property
     def finished(self) -> bool:
         return self.fraction_explored == 1.0 and self.fraction_scanned == 1.0
+
+    @property
+    def is_running(self) -> bool:
+        return (not self.finished and not self.cancelled)
 
     @property
     def fraction_explored(self) -> float | None:
@@ -186,6 +196,8 @@ class ScanStatus(AbstractScanStatus):
             Q(total_objects__gt=0)
             & Q(explored_sources=F('total_sources'))
             & Q(scanned_objects__gte=F('total_objects')))
+
+    _completed_or_cancelled_Q = _completed_Q | Q(cancelled=True)
 
     last_modified = models.DateTimeField(
         verbose_name=_("last modified"),
@@ -280,7 +292,8 @@ class ScanStatus(AbstractScanStatus):
 
         permissions = [
             ("resolve_scanstatus", _("Can resolve scan statuses")),
-            ("export_completed_scanstatus", _("Can export history of completed scans"))
+            ("export_completed_scanstatus", _("Can export history of completed scans")),
+            ("cancel_scanstatus", _("Can cancel running scan"))
         ]
 
     def __str__(self):
@@ -314,6 +327,27 @@ class ScanStatus(AbstractScanStatus):
                 rv.add(ss)
                 ss.save()
         return rv
+
+    def cancel(self, cancelled_by: User | None = None):
+        """Queues a message to RabbitMQ, telling all pipeline processes to throw away all
+        future messages from this job."""
+        if self.is_running:
+            # Instruct the pipeline to throw out all future messages from this scan
+            cancel_scan_tag_messages(self.scan_tag)
+
+            # Remove CoveredAccounts for this scan to make sure no accounts are skipped during next
+            # scan on account of this scan.
+            CoveredAccount.objects.filter(scan_status=self).delete()
+
+            # Update this object to correctly reflect that it has been cancelled
+            self.cancelled = True
+            self.save()
+            logger.info(
+                "ScanStatus cancelled.",
+                status=self,
+                cancelled_by=cancelled_by if cancelled_by else "unknown")
+        else:
+            logger.warning("Tried to cancel a scannerjob which is not running. Doing nothing.")
 
 
 class ScanStatusSnapshot(AbstractScanStatus):
@@ -394,3 +428,26 @@ class MIMETypeProcessStat(models.Model):
                 name='unique_MIME_type_scan_status'
             )
         ]
+
+
+def cancel_scan_tag_messages(tag: dict):
+    """Requests that all running pipeline
+    components blacklist and ignore messages from the scan tag."""
+    msg = messages.CommandMessage(
+            abort=messages.ScanTagFragment.from_json_object(tag))
+    with PikaPipelineThread() as p:
+        p.enqueue_message(
+                "", msg.to_json_object(),
+                "broadcast", priority=10)
+        p.enqueue_stop()
+        p.run()
+
+
+@receiver(post_delete)
+def post_delete_callback(sender, instance, using, **kwargs):
+    """Signal handler for post_delete."""
+    if not isinstance(instance, ScanStatus):
+        return
+
+    cancel_scan_tag_messages(instance.scan_tag)
+    logger.info("ScanStatus deleted. Sending abort message to message queue.", instance=instance)

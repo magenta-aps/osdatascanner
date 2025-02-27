@@ -27,11 +27,10 @@ import structlog
 from django.db import models
 from django.db.models import Q
 from django.core.validators import validate_comma_separated_integer_list
-from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
-from django.dispatch import receiver
 from django.urls import reverse_lazy
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from model_utils.managers import InheritanceManager, InheritanceQuerySet
 from recurrence.fields import RecurrenceField
@@ -208,8 +207,12 @@ class Scanner(models.Model):
         """Method documentation"""
         raise NotImplementedError("Scanner.verify")
 
-    def hide(self):
+    def hide(self, hidden_by: User | None = None):
         self.hidden = True
+        # Cancel running scan
+        last_scan = self.statuses.last()
+        if last_scan and last_scan.is_running:
+            last_scan.cancel(cancelled_by=hidden_by)
         self.save()
 
     def unhide(self):
@@ -702,21 +705,3 @@ class Scanner(models.Model):
             ("unhide_scanner", _("Can unhide scannerjob from the removed scannerjob list")),
             ("view_hidden_scanner", _("Can view hidden scanners in the removed scannerjob list"))
         ]
-
-
-@receiver(post_delete)
-def post_delete_callback(sender, instance, using, **kwargs):
-    """Signal handler for post_delete. Requests that all running pipeline
-    components blacklist and ignore the scan tag of the now-deleted scan."""
-    if not isinstance(instance, ScanStatus):
-        return
-
-    msg = messages.CommandMessage(
-            abort=messages.ScanTagFragment.from_json_object(
-                    instance.scan_tag))
-    with PikaPipelineThread() as p:
-        p.enqueue_message(
-                "", msg.to_json_object(),
-                "broadcast", priority=10)
-        p.enqueue_stop()
-        p.run()

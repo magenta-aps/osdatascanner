@@ -20,6 +20,9 @@
 
 - Users can now save rules they've made in the miniscanner.
 
+- Scans can now be cancelled instead of deleted, and will automatically be so if a scanner is hidden
+  in the scanner overview. Cancelled scans will still appear in the completed scans overview.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner

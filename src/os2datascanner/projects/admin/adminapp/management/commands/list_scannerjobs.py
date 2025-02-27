@@ -56,12 +56,14 @@ class Command(BaseCommand):
                 start_time = scan_status_obj.start_time
                 scanned_objects = scan_status_obj.scanned_objects
                 scan_status = scan_status_obj.finished
+                cancelled = scan_status_obj.cancelled
                 msg = scan_status_obj.message
 
             self.stdout.write(self.style.SUCCESS(
                 f'\nScanner PK: {pk} \nScanner Name: {name} \n'
                 f'Start Time: {start_time} \nScanned Objects: {scanned_objects} \n'
                 f'Scan Status Finished(T/F): {scan_status} \n'
+                f'Scan Status Cancelled(T/F): {cancelled} \n'
                 f'Check-up Msg Obj Count: {check_up_msgs}\n'
                 f'message: {msg}\n'))
             scannerjobs[name] = {

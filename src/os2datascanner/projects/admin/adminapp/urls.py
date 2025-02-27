@@ -40,7 +40,7 @@ from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleConnect)
 
 from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
-                                  StatusDelete, StatusTimeline, UserErrorLogView,
+                                  StatusDelete, StatusCancel, StatusTimeline, UserErrorLogView,
                                   UserErrorLogCSVView, RemovedScannersView, RecreateScannerView,
                                   DeleteRemovedScannerView)
 
@@ -72,6 +72,7 @@ urlpatterns = [
     re_path(r'^error-log/$', UserErrorLogView.as_view(), name='error-log'),
     re_path(r'^error-log/csv/$', UserErrorLogCSVView.as_view(), name='export-error-log'),
     re_path(r'^status/(?P<pk>\d+)/delete/$', StatusDelete.as_view(), name='status-delete'),
+    path("status/<int:pk>/cancel/", StatusCancel.as_view(), name="status-cancel"),
     re_path(r'^help/guide/$', GuideView.as_view(), name='guide'),
     re_path(r'^org-units-listing/', OrganizationalUnitListing.as_view(), name='org-units-listing'),
     path("scanners/removed/", RemovedScannersView.as_view(), name="removed_scanners"),

@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 ScanStatus.clean_defunct()
 
                 last_status = scanner.statuses.last()
-                if last_status is None or last_status.finished:
+                if last_status is None or not last_status.is_running:
                     scanner.run()
                 else:
                     logger.warning("Scanner is already running, not starting it again!",

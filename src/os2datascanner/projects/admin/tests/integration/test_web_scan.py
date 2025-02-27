@@ -65,7 +65,7 @@ class WebScanIntegrationTest(unittest.TestCase):
             for scan_uuid in scanner_objects:
                 scan_status = ScanStatus.objects.filter(
                         scan_tag=scanner_objects[scan_uuid]["scan_status"]).first()
-                if not scan_status.finished:
+                if scan_status.is_running:
                     running_scans.append(scan_status)
             if len(running_scans) < 1:
                 scans_running = False

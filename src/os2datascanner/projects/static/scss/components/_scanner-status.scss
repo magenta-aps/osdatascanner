@@ -131,7 +131,8 @@
 }
 
 // Completed icon
-.completed_icon {
+.completed_icon,
+.cancelled_icon {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -140,6 +141,7 @@
     fill: var(--color-checkmark);
     min-width: 1.5rem;
     min-height: 1.5rem;
+    height: 24pt;
   }
 
   .width {

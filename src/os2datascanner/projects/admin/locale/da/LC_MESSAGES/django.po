@@ -481,106 +481,111 @@ msgstr "Kan fjerne skjulning af scannerjob fra den fjernede scannerjobliste"
 msgid "Can view hidden scanners in the removed scannerjob list"
 msgstr "Kan se skjulte scannere på den skjulte scannerjobliste"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:35
+#: adminapp/models/scannerjobs/scanner_helpers.py:36
 msgid "connected scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:39
+#: adminapp/models/scannerjobs/scanner_helpers.py:40
 msgid "path"
 msgstr "sti"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:72
+#: adminapp/models/scannerjobs/scanner_helpers.py:73
 msgid "total sources"
 msgstr "antal kilder"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:77
+#: adminapp/models/scannerjobs/scanner_helpers.py:78
 msgid "explored sources"
 msgstr "udforskede kilder"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:82
+#: adminapp/models/scannerjobs/scanner_helpers.py:83
 msgid "total objects"
 msgstr "antal objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:87
+#: adminapp/models/scannerjobs/scanner_helpers.py:88
 msgid "scanned objects"
 msgstr "scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:92
+#: adminapp/models/scannerjobs/scanner_helpers.py:93
 msgid "size of scanned objects"
 msgstr "størrelse af scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:98
+#: adminapp/models/scannerjobs/scanner_helpers.py:99
 msgid "message"
 msgstr "Fejlbesked"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:106
+#: adminapp/models/scannerjobs/scanner_helpers.py:107
 msgid "matches found"
 msgstr "resultater fundet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:113
+#: adminapp/models/scannerjobs/scanner_helpers.py:114
 msgid "files skipped by last modified check"
 msgstr "uændrede filer sprunget over af 'Tjek dato for sidste ændring'"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:191
+#: adminapp/models/scannerjobs/scanner_helpers.py:120
+#: core/models/background_job.py:25
+msgid "cancelled"
+msgstr "annulleret"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py:194
 #: import_services/models/exported_mixin.py:37
 msgid "last modified"
 msgstr "senest opdateret"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:196
+#: adminapp/models/scannerjobs/scanner_helpers.py:199
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:203
+#: adminapp/models/scannerjobs/scanner_helpers.py:206
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:208
+#: adminapp/models/scannerjobs/scanner_helpers.py:211
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:213
+#: adminapp/models/scannerjobs/scanner_helpers.py:216
 msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:267
+#: adminapp/models/scannerjobs/scanner_helpers.py:270
 #: adminapp/views/scanner_views.py:208
 msgid "Start time"
 msgstr "Starttid"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:270
+#: adminapp/models/scannerjobs/scanner_helpers.py:273
 #: adminapp/models/usererrorlog.py:33
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:271
+#: adminapp/models/scannerjobs/scanner_helpers.py:274
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:282
+#: adminapp/models/scannerjobs/scanner_helpers.py:285
 msgid "Can resolve scan statuses"
 msgstr "Kan fjerne scannerstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:283
+#: adminapp/models/scannerjobs/scanner_helpers.py:286
 msgid "Can export history of completed scans"
 msgstr "Kan eksportere historik af afsluttede scanninger"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:332
+#: adminapp/models/scannerjobs/scanner_helpers.py:355
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:340
+#: adminapp/models/scannerjobs/scanner_helpers.py:363
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:341
+#: adminapp/models/scannerjobs/scanner_helpers.py:364
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:374
+#: adminapp/models/scannerjobs/scanner_helpers.py:397
 msgid "MIME type"
 msgstr "Filformat"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:383
+#: adminapp/models/scannerjobs/scanner_helpers.py:406
 msgid "Total size in bytes"
 msgstr "Samlet størrelse i bytes"
 
@@ -2844,10 +2849,6 @@ msgstr "annullering i gang"
 #: core/models/background_job.py:23
 msgid "finished"
 msgstr "afsluttet"
-
-#: core/models/background_job.py:25
-msgid "cancelled"
-msgstr "annulleret"
 
 #: core/models/background_job.py:27
 msgid "failed"

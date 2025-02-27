@@ -285,3 +285,9 @@ class TestScanners:
         assert scanners[0] == basic_scanner
         assert unfiltered_scanners.count() == 2
         assert all([basic_scanner in unfiltered_scanners, hidden_scanner in unfiltered_scanners])
+
+    def test_hiding_scanner_cancels_scannerjob(self, basic_scanner, basic_scanstatus):
+        basic_scanner.hide()
+        basic_scanstatus.refresh_from_db()
+
+        assert basic_scanstatus.cancelled

@@ -44,3 +44,18 @@ class TestStatusViews:
         client.force_login(user)
         response = client.get(reverse_lazy("status-timeline", kwargs={"pk": basic_scanstatus.pk}))
         assert response.status_code == 404
+
+    def test_status_cancel_without_permission(self, client, user_admin, basic_scanstatus):
+        client.force_login(user_admin)
+        response = client.post(reverse_lazy("status-cancel", kwargs={"pk": basic_scanstatus.pk}))
+        assert response.status_code == 403
+        basic_scanstatus.refresh_from_db()
+        assert not basic_scanstatus.cancelled
+
+    def test_status_cancel_with_permission(self, client, user_admin, basic_scanstatus):
+        user_admin.user_permissions.add(Permission.objects.get(codename="cancel_scanstatus"))
+        client.force_login(user_admin)
+        response = client.post(reverse_lazy("status-cancel", kwargs={"pk": basic_scanstatus.pk}))
+        assert response.status_code == 302
+        basic_scanstatus.refresh_from_db()
+        assert basic_scanstatus.cancelled
