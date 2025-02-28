@@ -160,7 +160,6 @@ class MSGraphClientSecretExpiryMixin:
             # request.POST is an immutable querydict, copying to circumvent.
             post_copy = self.request.POST.copy()
             post_copy["expiry_date"] = self.end_date
-
             kwargs.update({
                 'data': post_copy,
             })
@@ -180,7 +179,7 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
     return end_date
 
 
-class MSGraphGrantCreateView(LoginRequiredMixin, CreateView, MSGraphClientSecretExpiryMixin):
+class MSGraphGrantCreateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin, CreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     template_name = "grants/graphgrant_update.html"
@@ -242,7 +241,7 @@ class MSGraphGrantCreateView(LoginRequiredMixin, CreateView, MSGraphClientSecret
             return super().post(request, *args, **kwargs)
 
 
-class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView, MSGraphClientSecretExpiryMixin):
+class MSGraphGrantUpdateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin, UpdateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     template_name = "grants/graphgrant_update.html"

@@ -19,10 +19,6 @@ class SMBGrant(UsernamePasswordGrant):
                 if self.domain else self.username)
 
     @property
-    def display_name_identifier(self):
-        return self.__str__()
-
-    @property
     def verbose_name(self):
         return self._meta.verbose_name
 

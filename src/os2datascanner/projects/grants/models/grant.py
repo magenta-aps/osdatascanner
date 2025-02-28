@@ -34,11 +34,6 @@ class Grant(models.Model):
         return NotImplementedError("Grant.verbose_name")
 
     @property
-    def display_name_identifier(self):
-        """Returns some kind of name identifier for Grant."""
-        return NotImplementedError("Grant.display_name_identifier")
-
-    @property
     def expiry(self):
         """ If implemented by a subclass, used to return the expiry date for grant."""
         return "Not known"

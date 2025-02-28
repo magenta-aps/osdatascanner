@@ -116,6 +116,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, GrantMixin, ScannerCreate):
             form.is_valid()
             form = validate_userlist_or_org_units(form)
             form = validate_domain(form)
+            form = validate_grant_selected(form)
 
         return form
 
@@ -144,6 +145,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
             form.is_valid()
             form = validate_userlist_or_org_units(form)
             form = validate_domain(form)
+            form = validate_grant_selected(form)
 
         return form
 
@@ -198,6 +200,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, GrantMixin, ScannerUpdate):
             form.is_valid()
             form = validate_userlist_or_org_units(form)
             form = validate_domain(form)
+            form = validate_grant_selected(form)
 
         return form
 
@@ -259,6 +262,18 @@ def validate_userlist_or_org_units(form):  # noqa CCR001
                       "newlines, not commas or whitespace!")))
         for error in userlist_errors:
             form.add_error(*error)
+
+    return form
+
+
+def validate_grant_selected(form):
+    ews_grant = form.cleaned_data.get('ews_grant')
+    graph_grant = form.cleaned_data.get('graph_grant')
+
+    if not ews_grant or graph_grant:
+        form.add_error(
+            None,
+            _("You must select either an EWS or a Graph grant!"))
 
     return form
 

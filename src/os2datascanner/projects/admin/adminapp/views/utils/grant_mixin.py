@@ -37,7 +37,12 @@ class GrantMixin:
 
         for field_name, GrantFormClass in self.get_grant_form_classes().items():
             grant_qs = GrantFormClass.Meta.model.objects.filter(user.make_org_Q())
-            form.fields[field_name] = ModelChoiceField(grant_qs, empty_label=None)
+            # Conditionally required. Should be required when there's only one option, but can't
+            # be, when there's two or more. (F.e. ExchangeScanner)
+            form.fields[field_name] = ModelChoiceField(grant_qs, empty_label=None,
+                                                       required=False if
+                                                       len(self.get_grant_form_classes()) >= 2
+                                                       else True)
 
         return form
 

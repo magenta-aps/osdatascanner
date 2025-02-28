@@ -6,7 +6,6 @@ from django.db import connection, transaction
 
 # from os2datascanner.projects.admin.import_services.models.keycloak import KeycloakServer
 from os2datascanner.projects.admin.import_services.models.ldap_configuration import LDAPConfig
-from os2datascanner.projects.admin.adminapp.models.authentication import Authentication
 from os2datascanner.projects.admin.adminapp.aescipher import (generate_new_hex,
                                                               get_key)
 LOCK_MODE = 'ACCESS EXCLUSIVE'
@@ -20,6 +19,7 @@ def _censor_hex(secret):
 
 
 # TODO: #63329 Currently doesn't work (no tqdm module) and doesn't rotate a lot of secrets
+# TODO: Authentication doesn't exist anymore either: They're now different types of Grants
 class Command(BaseCommand):
     """Rotate DECRYPTION_HEX and all encrypted values in the database along with it."""
     help = __doc__
@@ -46,14 +46,14 @@ class Command(BaseCommand):
             with transaction.atomic():
                 # Lock the database tables for LDAPConfig and Authentication.
                 cursor.execute(f"LOCK TABLE {LDAPConfig._meta.db_table} IN {LOCK_MODE} MODE")
-                cursor.execute(f"LOCK TABLE {Authentication._meta.db_table} IN {LOCK_MODE} MODE")
+                # cursor.execute(f"LOCK TABLE {Authentication._meta.db_table} IN {LOCK_MODE} MODE")
 
                 # Query the database for all objects with encrypted data.
                 # keycloaks = KeycloakServer.objects.all()
                 ldap_configs = LDAPConfig.objects.select_for_update()
-                authentications = Authentication.objects.select_for_update()
+                # authentications = Authentication.objects.select_for_update()
 
-                count = ldap_configs.count() + authentications.count()
+                count = ldap_configs.count()  # + authentications.count()
 
                 # Check that there are some objects to update
                 if count > 0:
@@ -73,18 +73,20 @@ class Command(BaseCommand):
                         if choice.lower() == "y":
                             self.stdout.write("Initiating reencryption.")
                             # Query the database, reencrypt the data and update the progres bar
-                            with tqdm(total=count, desc="Reencrypting") as bar:
+                            with tqdm(total=count, desc="Reencrypting") as bar:  # noqa F841, unused
+                                pass
                                 # TODO: #63329 rotate_credental doesn't exist anymore
                                 # for conf in ldap_configs:
                                 #     conf.rotate_credential(key=bytes.fromhex(new_hex))
                                 #     bar.update()
                                 #     conf.save()
 
-                                for auth in authentications:
-                                    password = auth.get_password()
-                                    auth.set_password(password=password, key=bytes.fromhex(new_hex))
-                                    bar.update()
-                                    auth.save()
+                                # for auth in authentications:
+                                #     password = auth.get_password()
+                                #     auth.set_password(password=password,
+                                #       key=bytes.fromhex(new_hex))
+                                #     bar.update()
+                                #     auth.save()
 
                             self.stdout.write(self.style.SUCCESS(
                                 f"Done. {count} password(s) re-encrypted."

@@ -18,11 +18,11 @@ Unit tests for OS2datascanner.
 import pytest
 from django.urls import reverse_lazy
 
-from os2datascanner.projects.admin.adminapp.models.authentication import Authentication
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner import FileScanner
 from os2datascanner.projects.admin.adminapp.validate import validate_domain
+from os2datascanner.projects.grants.models import SMBGrant
 
 
 @pytest.mark.django_db
@@ -59,12 +59,13 @@ class TestScanner:
             assert validate_domain(webscanner) is False
 
     def test_engine2_filescanner(self, test_org, basic_rule):
-        authentication = Authentication(username="jens")
-        authentication.set_password("rigtig heste batteri haefteklamme")
+        smb_grant = SMBGrant.objects.create(username="jens",
+                                            password="rigtig heste batteri haefteklamme",
+                                            organization=test_org)
         scanner = FileScanner(
                 unc="//ORG/SIKKERSRV",
                 organization=test_org,
-                authentication=authentication,
+                smb_grant=smb_grant,
                 alias="K", rule=basic_rule)
 
         source_generator = scanner.generate_sources()
