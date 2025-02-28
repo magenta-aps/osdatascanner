@@ -4,7 +4,6 @@ from typing import Iterator
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.contrib.auth.models import User
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
 
@@ -70,7 +69,7 @@ class FinishedScannerNotificationEmail(NotificationEmail):
     html_template_name = "mail/finished_scannerjob.html"
     subject = _("Your OSdatascanner scan is finished.")
 
-    def __init__(self, scanner: Scanner, scan_status: ScanStatus, user: User | None = None,
+    def __init__(self, scanner: Scanner, scan_status: ScanStatus,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.scanner = scanner
