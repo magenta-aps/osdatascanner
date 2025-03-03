@@ -2,6 +2,7 @@ import json
 import structlog
 
 from django import forms
+from django.forms import ValidationError
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -172,9 +173,13 @@ class CustomRuleCreateMiniscan(RuleCreate):
             elif not rule:
                 form.add_error("rule", _("No rule selected"))
             else:
-                form.fields['rule'] = forms.JSONField(
-                    initial=rule,
-                    validators=[customrule_validator])
+                try:
+                    customrule_validator(rule)
+                    form.fields['rule'] = forms.JSONField(
+                        initial=rule,
+                        validators=[customrule_validator])
+                except ValidationError as error:
+                    form.add_error("rule", error)
 
         return form
 
@@ -182,10 +187,11 @@ class CustomRuleCreateMiniscan(RuleCreate):
         response = super().form_valid(form)
 
         if response.status_code == 302:
+            success_message = _("Rule '{rule_name}' created!").format(rule_name=self.object.name)
             django_messages.add_message(
                     self.request,
                     django_messages.SUCCESS,
-                    _("Success"),
+                    success_message,
                     extra_tags="auto_close"
                 )
 
