@@ -1,3 +1,6 @@
+# Should the system be a bit chattier and more tolerant of developer fiddling?
+DEBUG = false
+
 # A unique secret for this OS2datascanner engine installation, used in key
 # derivation for cryptographic primitives
 secret_value = ""
