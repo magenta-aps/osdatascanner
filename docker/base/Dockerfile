@@ -78,7 +78,14 @@ COPY src/os2datascanner ./
 RUN set -ex \
   && /code/src/os2datascanner/engine2/locale/manage.sh compilemessages
 
-ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
+ENV \
+  OS2DS_ENGINE_SYSTEM_CONFIG_PATH=/docker/settings/engine-system.toml \
+  OS2DS_ENGINE_USER_CONFIG_PATH=/docker/settings/engine-user.toml
+
+# Every component must have the engine settings available
+COPY docker/engine/docker-settings.toml /docker/settings/engine-system.toml
+
+ENTRYPOINT ["/docker/entrypoint.sh"]
 
 # hadolint ignore=DL3006
 FROM base AS engine
@@ -90,14 +97,14 @@ LABEL org.opencontainers.image.title="OS2datascanner - Engine" \
       org.opencontainers.image.documentation="https://os2datascanner.readthedocs.io/en/latest/" \
       org.opencontainers.image.source="https://github.com/os2datascanner/os2datascanner"
 
-ENV OS2DS_ENGINE_SYSTEM_CONFIG_PATH=/code/docker/docker-settings.toml \
-  OS2DS_ENGINE_USER_CONFIG_PATH=/user-settings.toml
-
 RUN groupadd -g 63030 -r os2ds_engine \
   && useradd -u 63030 --no-log-init -r -g os2ds_engine os2ds_engine
 
-COPY docker/engine/docker-settings.toml /code/docker/docker-settings.toml
-COPY docker/engine/docker-entrypoint.sh /code/docker/docker-entrypoint.sh
+ENV \
+  OS2DS_SERVER_SYSTEM_CONFIG_PATH=/docker/settings/server-system.toml \
+  OS2DS_SERVER_USER_CONFIG_PATH=/docker/settings/server-user.toml
+
+COPY docker/engine/docker-entrypoint.sh /docker/entrypoint.sh
 
 # Set up to run given command as the new user
 USER os2ds_engine:os2ds_engine
@@ -115,15 +122,11 @@ LABEL org.opencontainers.image.title="OS2datascanner - API" \
       org.opencontainers.image.documentation="https://os2datascanner.readthedocs.io/en/latest/" \
       org.opencontainers.image.source="https://github.com/os2datascanner/os2datascanner"
 
-ENV OS2DS_SERVER_SYSTEM_CONFIG_PATH=/code/docker/docker-settings.toml \
-  OS2DS_SERVER_USER_CONFIG_PATH=/user-settings.toml
-
 RUN groupadd -g 63050 -r os2ds_api\
   && useradd -u 63050 --no-log-init -r -g os2ds_api os2ds_api
 
-WORKDIR /code/docker
-COPY docker/api/docker-settings.toml ./docker-settings.toml
-COPY docker/api/gunicorn-settings.py ./gunicorn-settings.py
+COPY docker/api/docker-settings.toml /docker/settings/server-system.toml
+COPY docker/api/gunicorn-settings.py /docker/settings/server-settings.py
 
 WORKDIR /code/src/os2datascanner/server
 USER os2ds_api:os2ds_api
@@ -131,7 +134,7 @@ EXPOSE 5000
 
 ENTRYPOINT []
 CMD ["gunicorn", \
-     "--config", "/code/docker/gunicorn-settings.py", \
+     "--config", "/docker/settings/server-settings.py", \
      "os2datascanner.server.wsgi"]
 
 # hadolint ignore=DL3006
@@ -144,8 +147,9 @@ LABEL org.opencontainers.image.title="OS2datascanner - Administration" \
       org.opencontainers.image.documentation="https://os2datascanner.readthedocs.io/en/latest/" \
       org.opencontainers.image.source="https://github.com/os2datascanner/os2datascanner"
 
-ENV OS2DS_ADMIN_SYSTEM_CONFIG_PATH=/code/docker/docker-settings.toml \
-  OS2DS_ADMIN_USER_CONFIG_PATH=/user-settings.toml \
+ENV \
+  OS2DS_ADMIN_SYSTEM_CONFIG_PATH=/docker/settings/admin-system.toml \
+  OS2DS_ADMIN_USER_CONFIG_PATH=/docker/settings/admin-user.toml \ 
   DJANGO_SETTINGS_MODULE=os2datascanner.projects.admin.settings
 
 RUN groupadd -g 63020 -r os2ds_admin \
@@ -155,19 +159,18 @@ RUN groupadd -g 63020 -r os2ds_admin \
   && install -o os2ds_admin -g os2ds_admin -d /code/build \
   && install -o os2ds_admin -g os2ds_admin -d /code/var
 
-WORKDIR /code/docker/
-COPY docker/admin/crontab ./crontab
-COPY docker/admin/docker-settings.toml ./docker-settings.toml
-COPY docker/insecure-settings.toml ./insecure-settings.toml
-COPY docker/docker-entrypoint-django.sh ./docker-entrypoint.sh
-COPY docker/gunicorn-settings.py ./gunicorn-settings.py
+COPY docker/admin/crontab /docker/settings/admin-crontab
+COPY docker/admin/docker-settings.toml /docker/settings/admin-system.toml
+COPY docker/insecure-settings.toml /docker/settings/admin-insecure.toml
+COPY docker/docker-entrypoint-django.sh /docker/entrypoint.sh
+COPY docker/gunicorn-settings.py /docker/settings/admin-gunicorn.py
 
 # Run the server as the os2ds_admin user on port 5000
 WORKDIR /code/src/os2datascanner/projects/admin
 
-# Make os2ds_admin owner of /code/docker. This is only needed to remove the
+# Make os2ds_admin owner of /docker. This is only needed to remove the
 # insecure settings file after `collectstatic`.
-RUN chown -R os2ds_admin:os2ds_admin /code/docker
+RUN chown -R os2ds_admin:os2ds_admin /docker
 
 USER os2ds_admin:os2ds_admin
 
@@ -176,13 +179,13 @@ USER os2ds_admin:os2ds_admin
 # afterward. If `insecure-settings.toml` is found in any production image,
 # consider it a bug. See `insecure-settings.toml` for a detailed explanation.
 RUN set -ex \
-  && OS2DS_ADMIN_USER_CONFIG_PATH=/code/docker/insecure-settings.toml python manage.py collectstatic --no-input --clear \
-  && OS2DS_ADMIN_USER_CONFIG_PATH=/code/docker/insecure-settings.toml python manage.py compilemessages \
-  && rm /code/docker/insecure-settings.toml
+  && OS2DS_ADMIN_USER_CONFIG_PATH=/docker/settings/admin-insecure.toml OS2DS_ENGINE_USER_CONFIG_PATH='' python manage.py collectstatic --no-input --clear \
+  && OS2DS_ADMIN_USER_CONFIG_PATH=/docker/settings/admin-insecure.toml OS2DS_ENGINE_USER_CONFIG_PATH='' python manage.py compilemessages \
+  && rm /docker/settings/admin-insecure.toml
 
 EXPOSE 5000
-ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
-CMD ["gunicorn", "--config", "/code/docker/gunicorn-settings.py", "asgi", "os2datascanner.projects.report.asgi:application"]
+ENTRYPOINT ["/docker/entrypoint.sh"]
+CMD ["gunicorn", "--config", "/docker/settings/admin-gunicorn.py", "asgi", "os2datascanner.projects.report.asgi:application"]
 
 ARG COMMIT_TAG
 ARG COMMIT_SHA
@@ -201,8 +204,9 @@ LABEL org.opencontainers.image.title="OS2datascanner - Report" \
       org.opencontainers.image.documentation="https://os2datascanner.readthedocs.io/en/latest/" \
       org.opencontainers.image.source="https://github.com/os2datascanner/os2datascanner"
 
-ENV OS2DS_REPORT_SYSTEM_CONFIG_PATH=/code/docker/docker-settings.toml \
-  OS2DS_REPORT_USER_CONFIG_PATH=/user-settings.toml \
+ENV \
+  OS2DS_REPORT_SYSTEM_CONFIG_PATH=/docker/settings/report-system.toml \
+  OS2DS_REPORT_USER_CONFIG_PATH=/docker/settings/report-user.toml \
   DJANGO_SETTINGS_MODULE=os2datascanner.projects.report.settings
 
 RUN groupadd -g 63040 -r os2ds_report\
@@ -212,18 +216,17 @@ RUN groupadd -g 63040 -r os2ds_report\
   && install -o os2ds_report -g os2ds_report -d /code/static \
   && install -o os2ds_report -g os2ds_report -d /code/var
 
-WORKDIR /code/docker/
-COPY docker/report/crontab ./crontab
-COPY docker/report/docker-settings.toml ./docker-settings.toml
-COPY docker/insecure-settings.toml ./insecure-settings.toml
-COPY docker/docker-entrypoint-django.sh ./docker-entrypoint.sh
-COPY docker/gunicorn-settings.py ./gunicorn-settings.py
+COPY docker/report/crontab /docker/settings/report-crontab
+COPY docker/report/docker-settings.toml /docker/settings/report-system.toml
+COPY docker/insecure-settings.toml /docker/settings/report-insecure.toml
+COPY docker/docker-entrypoint-django.sh /docker/entrypoint.sh
+COPY docker/gunicorn-settings.py /docker/settings/report-gunicorn.py
 
 # Run the server as the os2ds_report user on port 5000
 WORKDIR /code/src/os2datascanner/projects/report
-# Make os2ds_report owner of /code/docker. This is only needed to remove the
+# Make os2ds_report owner of /docker. This is only needed to remove the
 # insecure settings file after `collectstatic`.
-RUN chown -R os2ds_report:os2ds_report /code/docker
+RUN chown -R os2ds_report:os2ds_report /docker
 
 USER os2ds_report:os2ds_report
 
@@ -232,13 +235,13 @@ USER os2ds_report:os2ds_report
 # afterward. If `insecure-settings.toml` is found in any production image,
 # consider it a bug. See `insecure-settings.toml` for a detailed explanation.
 RUN set -ex \
-  && OS2DS_REPORT_USER_CONFIG_PATH=/code/docker/insecure-settings.toml python manage.py collectstatic --no-input --clear \
-  && OS2DS_REPORT_USER_CONFIG_PATH=/code/docker/insecure-settings.toml python manage.py compilemessages \
-  && rm /code/docker/insecure-settings.toml
+  && OS2DS_REPORT_USER_CONFIG_PATH=/docker/settings/report-insecure.toml OS2DS_ENGINE_USER_CONFIG_PATH='' python manage.py collectstatic --no-input --clear \
+  && OS2DS_REPORT_USER_CONFIG_PATH=/docker/settings/report-insecure.toml OS2DS_ENGINE_USER_CONFIG_PATH='' python manage.py compilemessages \
+  && rm /docker/settings/report-insecure.toml
 
 EXPOSE 5000
-ENTRYPOINT ["/code/docker/docker-entrypoint.sh"]
-CMD ["gunicorn", "--config", "/code/docker/gunicorn-settings.py", "asgi", "os2datascanner.projects.report.asgi:application"]
+ENTRYPOINT ["/docker/entrypoint.sh"]
+CMD ["gunicorn", "--config", "/docker/report-gunicorn.py", "asgi", "os2datascanner.projects.report.asgi:application"]
 
 FROM base AS sbsys-init
 
