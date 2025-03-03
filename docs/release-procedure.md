@@ -16,6 +16,8 @@
     cd ../../core_organizational_structure/
     ../projects/admin/manage.py makemessages --all
   ```
+* Run helper script for `engine2` translations
+  * `./src/os2datascanner/engine2/locale/manage.sh makemessages`
 * Ensure migrations are up-to-date (checked by pipeline as well)
 * Commit changes
 * `git push -u origin release/%VERSION%`

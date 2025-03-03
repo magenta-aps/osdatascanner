@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 
 from ....utils.system_utilities import run_custom
 from ... import settings as engine2_settings
+from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource
 from ..file import FilesystemResource
 from .derived import DerivedSource
@@ -74,14 +75,15 @@ class PDFPageHandle(Handle):
 
     @property
     def presentation_name(self):
-        return f"page {self.relative_path}"
+        return _("page {page_nr}").format(page_nr=self.relative_path)
 
     @property
     def presentation_place(self):
         return str(self.source.handle)
 
     def __str__(self):
-        return f"{self.presentation_name} of {self.presentation_place}"
+        return _("{page_desc} of {file}").format(
+                page_desc=self.presentation_name, file=self.presentation_place)
 
     @property
     def sort_key(self):
@@ -166,15 +168,22 @@ class PDFObjectHandle(Handle):
         page = str(self.source.handle.presentation_name)
         container = self.source.handle.source.handle.presentation_name
         if mime.startswith("text/"):
-            return f"text on {page} of {container}"
+            return _("text on {page} of {file}").format(
+                    page=page, file=container)
         elif mime.startswith("image/"):
-            return f"image on {page} of {container}"
+            return _("image on {page} of {file}").format(
+                    page=page, file=container)
         else:
-            return f"unknown object on {page} of {container}"
+            return _("unknown object on {page} of {file}").format(
+                    page=page, file=container)
 
     @property
     def presentation_place(self):
         return str(self.source.handle.source.handle.presentation_place)
+
+    def __str__(self):
+        return _("{name} (on {place})").format(
+                name=self.presentation_name, place=self.presentation_place)
 
     @classmethod
     def make(cls, handle: Handle, page: int, name: str):

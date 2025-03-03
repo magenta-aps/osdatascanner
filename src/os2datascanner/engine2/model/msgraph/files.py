@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from dateutil.parser import isoparse
 from requests import HTTPError
 
+from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
@@ -115,10 +116,11 @@ class MSGraphDriveHandle(Handle):
     @property
     def presentation_name(self):
         if self._user_account:
-            return f"{self._user_account}'s files"
+            return _("{user_account}'s files").format(
+                    user_account=self._user_account)
         elif self._owner_name:
-            return "\"{0}\" (owned by {1})".format(
-                    self._folder_name, self._owner_name)
+            return _("\"{folder_name}\" (owned by {owner})").format(
+                    folder_name=self._folder_name, owner=self._owner_name)
         else:
             return "\"{0}\"".format(self._folder_name)
 
@@ -265,7 +267,8 @@ class MSGraphFileHandle(Handle):
         folder = self.relative_path.removesuffix(self.name)
         parent = str(self.source.handle)
         if folder:
-            return f"{folder} (in {parent})"
+            return _("{folder} (in {parent})").format(
+                    folder=folder, parent=parent)
         else:
             return parent
 

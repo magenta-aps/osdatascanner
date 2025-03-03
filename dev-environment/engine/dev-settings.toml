@@ -1,7 +1,8 @@
+DEBUG = true
+
 secret_value = "THIS VALUE IS NOT SECRET"
 # [logging]
 LOG_LEVEL = "DEBUG"
-
 
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module

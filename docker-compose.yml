@@ -9,8 +9,17 @@ networks:
   traefik:
     name: traefik
 
-services:
+x-common-file-references:
+  admin_user_settings: &admin_user_settings_vol
+    ./dev-environment/admin/dev-settings.toml:/docker/settings/admin-user.toml
+  engine_user_settings: &engine_user_settings_vol
+    ./dev-environment/engine/dev-settings.toml:/docker/settings/engine-user.toml
+  report_user_settings: &report_user_settings_vol
+    ./dev-environment/report/dev-settings.toml:/docker/settings/report-user.toml
+  source_code: &source_code_vol
+    ./src/os2datascanner:/code/src/os2datascanner
 
+services:
   init_SBSYS_DB:
     image: magentaaps/os2datascanner-sbsys-init:dev
     build:
@@ -129,8 +138,9 @@ services:
       target: admin
     command: ["python", "manage.py", "migrate"]
     volumes:
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *admin_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on:
       db:
         condition: service_healthy
@@ -165,9 +175,10 @@ services:
       # the built-in code from Dockerfile (this is for watchdog reasons)
       # - /code/src/os2datascanner/core_organizational_structure/
       - frontend-bundles:/code/src/os2datascanner/projects/static/dist/
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
+      - *admin_user_settings_vol
+      - *engine_user_settings_vol
       - ./dev-environment/admin/.secret:/code/.secret
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *source_code_vol
       - ./dev-environment/uploads:/code/uploads
       - ./dev-environment/admin/ipython:/home/os2ds_admin/.ipython
     ports:
@@ -198,8 +209,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *admin_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *admin_dependencies
 
   admin_status_collector:
@@ -213,8 +225,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *admin_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *admin_dependencies
 
   admin_job_runner:
@@ -231,8 +244,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *admin_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
       - ./dev-environment/uploads:/code/uploads
     depends_on: *admin_dependencies
     stop_grace_period: 1m30s
@@ -248,12 +262,13 @@ services:
       context: .
       dockerfile: docker/base/Dockerfile
       target: admin
-    command: supercronic /code/docker/crontab
+    command: supercronic /docker/settings/admin-crontab
     environment:
       - TZ=Europe/Copenhagen
     volumes:
-      - ./dev-environment/admin/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *admin_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
       - ./dev-environment/uploads:/code/uploads
     depends_on:
       admin_migrate:
@@ -275,8 +290,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *report_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on:
       db:
         condition: service_healthy
@@ -307,8 +323,9 @@ services:
       # the built-in code from Dockerfile (this is for watchdog reasons)
       # - /code/src/os2datascanner/core_organizational_structure/
       - frontend-bundles:/code/src/os2datascanner/projects/static/dist/
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *report_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
       - ./src/os2datascanner/projects/report/media:/code/uploads/report
       # used for assertion signage see dev-environment/report/dev-settings.toml
       #- ./ssl/signing.crt:/etc/ssl/certs/signing.crt:ro
@@ -343,8 +360,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *report_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
       - ./src/os2datascanner/projects/report/media:/code/uploads/report
     depends_on: *report_dependencies
 
@@ -358,8 +376,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *report_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *report_dependencies
 
   report_email_tagger:
@@ -372,8 +391,9 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *report_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *report_dependencies
 
   report_cron:
@@ -382,12 +402,13 @@ services:
       context: .
       dockerfile: docker/base/Dockerfile
       target: report
-    command: supercronic /code/docker/crontab
+    command: supercronic /docker/settings/report-crontab
     environment:
       - TZ=Europe/Copenhagen
     volumes:
-      - ./dev-environment/report/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *report_user_settings_vol
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on:
       report_migrate:
         condition: service_completed_successfully
@@ -413,8 +434,8 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: &engine_dependencies
       queue:
         condition: service_healthy
@@ -437,8 +458,8 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *engine_dependencies
 
 
@@ -460,8 +481,8 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *engine_dependencies
 
   exporter:
@@ -477,8 +498,8 @@ services:
     tty:
       true
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on: *engine_dependencies
 
   docs:
@@ -508,7 +529,7 @@ services:
       true
     volumes:
       - ./dev-environment/api/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *source_code_vol
     profiles:
       - api
     networks:
@@ -728,8 +749,8 @@ x-disabled:
     command: processor --enable-metrics
     init: true
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on:
       - queue
 
@@ -743,8 +764,8 @@ x-disabled:
     init: true
     restart: unless-stopped
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on:
       - queue
 
@@ -757,8 +778,8 @@ x-disabled:
     command: tagger --enable-metrics
     init: true
     volumes:
-      - ./dev-environment/engine/dev-settings.toml:/user-settings.toml
-      - ./src/os2datascanner:/code/src/os2datascanner
+      - *engine_user_settings_vol
+      - *source_code_vol
     depends_on:
       - queue
 
