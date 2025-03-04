@@ -1,9 +1,9 @@
 import structlog
 from abc import ABC, abstractmethod
+from typing import Iterator
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.contrib.auth.models import User
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
 
@@ -27,22 +27,22 @@ class NotificationEmail(ABC):
             get_localised_template_names([self.html_template_name]))
 
     def notify(self) -> None:
-        context = self.create_context()
-        logger.info(f"Created context for info mail: {context}")
+        users = self.get_users()
 
-        email = self.get_email()
-
-        msg = create_msg(context, self.subject, email,
-                         self.get_txt_templates(), self.get_html_templates())
-        send_msg(msg)
+        for user in users:
+            context = self.create_context(user)
+            logger.info(f"Created context for info mail: {context}")
+            msg = create_msg(context, self.subject, user.email,
+                             self.get_txt_templates(), self.get_html_templates())
+            send_msg(msg)
 
     @abstractmethod
-    def create_context(self, *args, **kwargs) -> dict:
+    def create_context(self, user, *args, **kwargs) -> dict:
         """Method to prepare context for generating a message."""
 
     @abstractmethod
-    def get_email(self, *args, **kwargs) -> str:
-        """Method for getting the recipient email of the notification."""
+    def get_users(self, *args, **kwargs) -> Iterator[str]:
+        """Method for getting the recipients of the notification."""
 
     @property
     @abstractmethod
@@ -69,24 +69,23 @@ class FinishedScannerNotificationEmail(NotificationEmail):
     html_template_name = "mail/finished_scannerjob.html"
     subject = _("Your OSdatascanner scan is finished.")
 
-    def __init__(self, scanner: Scanner, scan_status: ScanStatus, user: User | None = None,
+    def __init__(self, scanner: Scanner, scan_status: ScanStatus,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.scanner = scanner
         self.status = scan_status
-        self.user = user if user else self.find_user()
 
-    def find_user(self) -> User | None:
-        """Find suitable user to notify."""
-        username = self.status.scan_tag.get("user")
-        user = User.objects.filter(username=username).first() if username else None
-        return user
+    def get_users(self) -> Iterator[str]:
+        for user in self.scanner.contacts.iterator():
+            email = user.email
 
-    def get_email(self) -> str:
-        email = self.user.email if self.user else self.scanner.organization.contact_email
-        return email
+            if email:
+                yield user
+            else:
+                logger.info(f"No email found for user {user} while trying to notify of completed "
+                            f"scan. No email notification sent to {user}.")
 
-    def create_context(self) -> dict:
+    def create_context(self, user, *args, **kwargs) -> dict:
         """
         Creates a context dict for the finished scannerjob ready for rendering.
         """
@@ -95,7 +94,7 @@ class FinishedScannerNotificationEmail(NotificationEmail):
         context = {
             "admin_login_url": settings.SITE_URL,
             "institution": settings.NOTIFICATION_INSTITUTION,
-            "full_name": self.user.get_full_name() or self.user.username if self.user else "",
+            "full_name": user.get_full_name() or user.username if user else "",
             "total_objects": self.status.total_objects,
             "scanner_name": self.scanner.name,
             "object_size": self.status.scanned_size,
@@ -121,17 +120,17 @@ class InvalidScannerNotificationEmail(NotificationEmail):
         super().__init__(*args, **kwargs)
         self.scanner = scanner
 
-    def get_email(self) -> str:
-        email = self.scanner.organization.contact_email
+    def get_users(self) -> Iterator[str]:
+        for user in self.scanner.contacts.iterator():
+            email = user.email
 
-        if not email:
-            raise ValueError(f"Tried to notify contact email about invalid scanner "
-                             f"'{self.scanner}' for organization '{self.scanner.organization}' "
-                             "but found no email address.")
+            if email:
+                yield user
+            else:
+                logger.info(f"No email found for user {user} while trying to notify of invalid "
+                            f"scan. No email notification sent to {user}.")
 
-        return email
-
-    def create_context(self) -> dict:
+    def create_context(self, *args, **kwargs) -> dict:
         """
         Creates a context dict for the invalid scannerjob ready for rendering.
         """

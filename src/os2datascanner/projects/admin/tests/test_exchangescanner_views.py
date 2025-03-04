@@ -6,6 +6,7 @@ from django.urls.base import reverse
 from django.contrib.auth.models import Permission
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.exceptions import PermissionDenied
 
 from ..adminapp.views.exchangescanner_views import (
     ExchangeScannerCopy, ExchangeScannerCreate, ExchangeScannerUpdate)
@@ -87,9 +88,9 @@ class TestExchangeScannerViews:
             self, user, familien_sand, nisserne, olsen_banden):
         # Requires user permission
         user.user_permissions.add(Permission.objects.get(codename='add_scanner'))
-        response = get_exchangescanner_response(user)
-        tree_queryset = response.context_data['org_units']
-        assert len(tree_queryset) == 0
+
+        with pytest.raises(PermissionDenied):
+            get_exchangescanner_response(user)
 
     def test_exchangescanner_generate_source_should_use_orgunit_when_both_userlist_and_orgunit_are_present(  # noqa E501: line too long
             self,

@@ -8,7 +8,7 @@ from os2datascanner.projects.admin.adminapp.management.commands.cron import shou
 
 
 @pytest.fixture
-def scanner_daily(basic_rule):
+def scanner_daily(basic_rule, user_admin):
     return Scanner.objects.create(
         name="daily scanner",
         schedule="RRULE:FREQ=DAILY;",

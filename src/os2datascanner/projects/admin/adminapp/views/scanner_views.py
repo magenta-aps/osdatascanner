@@ -17,6 +17,7 @@ from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.core.paginator import Paginator, EmptyPage
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.http import Http404
@@ -544,6 +545,9 @@ class ScannerBase(object):
         context = super().get_context_data(**kwargs)
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+
+        selected_org = self.request.GET.get('organization') or orgs.first()
+
         if self.object:
             context["remediators"] = self.object.get_remediators()
         context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
@@ -551,10 +555,24 @@ class ScannerBase(object):
         context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
             aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
 
+        context["possible_contacts"] = get_user_model().objects.filter(
+            Q(administrator_for__client=selected_org.client) |
+            Q(groups__permissions__codename="view_client") |
+            Q(user_permissions__codename="view_client") |
+            Q(is_superuser=True)
+        ).distinct()
+
         context["supports_rule_preexec"] = getattr(
                 self.model, "supports_rule_preexec", False)
 
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        # The user is only allowed in if they have access to at least one organization
+        if hasattr(request.user, "administrator_for") or request.user.has_perm("view_client"):
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(_("User is not administrator for any client"))
 
 
 class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):

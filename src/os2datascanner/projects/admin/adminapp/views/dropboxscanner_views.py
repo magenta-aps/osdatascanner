@@ -44,6 +44,7 @@ class DropboxScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'rule',
         'organization',
+        'contacts'
     ]
 
     def get_form(self, form_class=None):
@@ -75,6 +76,7 @@ class DropboxScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'rule',
         'organization',
+        'contacts'
     ]
 
     def get_form(self, form_class=None):

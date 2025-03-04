@@ -88,31 +88,12 @@ class TestStatus:
                                superuser
                                ):
 
-        assert (FinishedScannerNotificationEmail(basic_scanner, basic_scanstatus, superuser)
-                .create_context() ==
+        assert (FinishedScannerNotificationEmail(basic_scanner, basic_scanstatus)
+                .create_context(superuser) ==
                 {
             'admin_login_url': settings.SITE_URL,
             'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
             'full_name': 'mr_superuserman',
-            'institution': 'DUMMY',
-            'object_plural': 'objekter',
-            'object_size': 0,
-            'scanner_name': 'SomeScanner-test_org',
-            'total_objects': 0,
-            'usererrorlogs': 0}
-                )
-
-    def test_mail_context_no_user(self,
-                                  basic_scanner,
-                                  basic_scanstatus,
-                                  ):
-
-        assert (FinishedScannerNotificationEmail(basic_scanner, basic_scanstatus)
-                .create_context() ==
-                {
-            'admin_login_url': settings.SITE_URL,
-            'completion_time': get_scanner_time(basic_scanstatus),  # Inconsistent, 0s or 1s
-            'full_name': '',
             'institution': 'DUMMY',
             'object_plural': 'objekter',
             'object_size': 0,
