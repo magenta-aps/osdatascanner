@@ -546,7 +546,7 @@ class ScannerBase(object):
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
 
-        selected_org = self.request.GET.get('organization') or orgs.first()
+        selected_org = orgs.get(pk=self.request.GET.get('organization', orgs.only("pk").first().pk))
 
         if self.object:
             context["remediators"] = self.object.get_remediators()
