@@ -25,127 +25,81 @@ from os2datascanner.engine2.rules.passport import PassportRule
 from os2datascanner.engine2.conversions.types import OutputType
 
 
-compound_candidates = [
-        (
-            AndRule(RegexRule("A"), OrRule(RegexRule("B"), RegexRule("C"))),
-            [
-                ("A", False, 3),
-                ("AB", True, 2),
-                ("ABC", True, 2),
-                ("BC", False, 1),
-                ("AC", True, 3),
-            ],
-        ),
-        (
-            NotRule(AndRule(RegexRule("A"), OrRule(RegexRule("B"), RegexRule("C")))),
-            [
-                ("A", True, 3),
-                ("AB", False, 2),
-                ("ABC", False, 2),
-                ("BC", True, 1),
-                ("AC", False, 3),
-            ],
-        ),
-        (
-            AndRule(NotRule(OrRule(RegexRule("B"), RegexRule("C"))), RegexRule("A")),
-            [
-                ("A", True, 3),
-                ("AB", False, 1),
-                ("ABC", False, 1),
-                ("BC", False, 1),
-                ("AC", False, 2),
-            ],
-        ),
-        (
-            AndRule(AllRule(RegexRule("A"), RegexRule("B")), RegexRule("C")),
-            [
-                ("A", False, 3),
-                ("AB", False, 3),
-                ("ABC", True, 3),
-                ("BC", True, 3),
-                ("AC", True, 3),
-                ("C", False, 2),
-            ],
-        ),
-    ]
-
-
-class TestRules:
-    @pytest.mark.parametrize("rule,in_value,expected", [
-        (
-            CPRRule(modulus_11=False, ignore_irrelevant=False),
-            """
+simple_candidates = [
+    (
+        CPRRule(modulus_11=False, ignore_irrelevant=False),
+        """
 2205995008: forbryder,
 230500 0003: forbryder,
 240501-0006: forbryder,
 250501-1987: forbryder""",
-            ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX", "2505XXXXXX"],
-        ),
-        (
-            CPRRule(modulus_11=True, ignore_irrelevant=True),
-            """
+        ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX", "2505XXXXXX"],
+    ),
+    (
+        CPRRule(modulus_11=True, ignore_irrelevant=True),
+        """
 2205995008: forbryder,
 230500 0003: forbryder,
 240501-0006: forbryder,
 250501-1987: forbryder""",
-            ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX"],
+        ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX"],
+    ),
+    (
+        CPRRule(
+            modulus_11=True, ignore_irrelevant=True, examine_context=False
         ),
-        (
-            CPRRule(
-                modulus_11=True, ignore_irrelevant=True, examine_context=False
-            ),
-            """
+        """
 Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nr. 2205995008
 Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nummer: 2305000003
 240501-0006""",
-            ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX"],
+        ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX"],
+    ),
+    (
+        CPRRule(
+            modulus_11=True, ignore_irrelevant=True, examine_context=True,
+            blacklist=[],
         ),
-        (
-            CPRRule(
-                modulus_11=True, ignore_irrelevant=True, examine_context=True,
-                blacklist=[],
-            ),
-            """
+        """
 Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nr. 2205995008
 Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nummer: 2305000003
 240501-0006""",
-            ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX"],
+        ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX"],
+    ),
+    (
+        CPRRule(
+            modulus_11=True, ignore_irrelevant=True, examine_context=True,
         ),
-        (
-            CPRRule(
-                modulus_11=True, ignore_irrelevant=True, examine_context=True,
-            ),
-            """
+        """
 Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nr. 2205995008
 Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nummer: 2305000003
 240501-0006""",
-            [],
+        [],
+    ),
+    (
+        CPRRule(
+            modulus_11=True, ignore_irrelevant=True, examine_context=True,
+            whitelist=["whiteword"]
         ),
-        (
-            CPRRule(
-                modulus_11=True, ignore_irrelevant=True, examine_context=True,
-                whitelist=["whiteword"]
-            ),
-            """
+        """
 Vejstrand Kommune, Børn- og Ungeforvaltningen. WhiteWord 2205995008
 Vejstrand Kommune, Børn- og Ungeforvaltningen. NotAcceptedCase 2305000003
 Vejstrand Kommune, 240501-0006""",
-            ["2205XXXXXX", "2405XXXXXX"],
+        ["2205XXXXXX", "2405XXXXXX"],
+    ),
+    (
+        CPRRule(
+            modulus_11=True, ignore_irrelevant=True, examine_context=True,
+            surrounding_exceptions=["account"]
         ),
-        (
-            CPRRule(
-                modulus_11=True, ignore_irrelevant=True, examine_context=True,
-                surrounding_exceptions=["account"]
-            ),
-            """
+        """
 Vejstrand Kommune, Børn- og Ungeforvaltningen, Account: 2205995008
 Vejstrand Kommune, Børn- og Ungeforvaltningen, Num: 2305000003
 240501-0006""",
-            ["2305XXXXXX", "2405XXXXXX"],
-        ),
-        (
-            RegexRule("((four|six)( [aopt]+)?|(one|seven) [aopt]+)"),
-            """
+        ["2305XXXXXX", "2405XXXXXX"],
+    ),
+    (
+        RegexRule("((four|six)( [aopt]+)?|(one|seven) [aopt]+)"),
+        """
 one
 one potato
 two potato
@@ -155,81 +109,81 @@ five potato
 six potato
 seven potato
 more!""",
-            ["one potato", "four", "six potato", "seven potato"],
+        ["one potato", "four", "six potato", "seven potato"],
+    ),
+    (
+        LastModifiedRule(
+            datetime(2019, 12, 24, 23, 59, 59, tzinfo=timezone.utc)
         ),
-        (
-            LastModifiedRule(
-                datetime(2019, 12, 24, 23, 59, 59, tzinfo=timezone.utc)
-            ),
-            datetime(2019, 12, 31, 23, 59, 59, tzinfo=timezone.utc),
-            ["2019-12-31T23:59:59+0000"],
+        datetime(2019, 12, 31, 23, 59, 59, tzinfo=timezone.utc),
+        ["2019-12-31T23:59:59+0000"],
+    ),
+    (
+        LastModifiedRule(
+            datetime(2019, 12, 24, 23, 59, 59, tzinfo=timezone.utc)
         ),
-        (
-            LastModifiedRule(
-                datetime(2019, 12, 24, 23, 59, 59, tzinfo=timezone.utc)
-            ),
-            datetime(2019, 5, 22, 0, 0, 1, tzinfo=timezone.utc),
-            None,
+        datetime(2019, 5, 22, 0, 0, 1, tzinfo=timezone.utc),
+        None,
+    ),
+    (
+        DimensionsRule(
+            width_range=range(0, 16385),
+            height_range=range(0, 16385),
+            min_dim=256,
         ),
-        (
-            DimensionsRule(
-                width_range=range(0, 16385),
-                height_range=range(0, 16385),
-                min_dim=256,
-            ),
-            (128, 256),
-            [[128, 256]],
+        (128, 256),
+        [[128, 256]],
+    ),
+    (
+        DimensionsRule(
+            width_range=range(0, 16385),
+            height_range=range(0, 16385),
+            min_dim=256,
         ),
-        (
-            DimensionsRule(
-                width_range=range(0, 16385),
-                height_range=range(0, 16385),
-                min_dim=256,
-            ),
-            (128, 255),
-            [],
+        (128, 255),
+        [],
+    ),
+    (
+        DimensionsRule(
+            width_range=range(256, 1024),
+            height_range=range(256, 1024),
+            min_dim=0,
         ),
-        (
-            DimensionsRule(
-                width_range=range(256, 1024),
-                height_range=range(256, 1024),
-                min_dim=0,
-            ),
-            (256, 256),
-            [[256, 256]],
+        (256, 256),
+        [[256, 256]],
+    ),
+    (
+        DimensionsRule(
+            width_range=range(256, 1024),
+            height_range=range(256, 1024),
+            min_dim=0,
         ),
-        (
-            DimensionsRule(
-                width_range=range(256, 1024),
-                height_range=range(256, 1024),
-                min_dim=0,
-            ),
-            (32, 32),
-            [],
+        (32, 32),
+        [],
+    ),
+    (
+        # This rule will find a match since the dict has a "subject"
+        # property whos value matches the regex 'test'.
+        EmailHeaderRule(
+            prop="subject",
+            rule=RegexRule('test'),
         ),
-        (
-            # This rule will find a match since the dict has a "subject"
-            # property whos value matches the regex 'test'.
-            EmailHeaderRule(
-                prop="subject",
-                rule=RegexRule('test'),
-            ),
-            dict(subject="This is a test subject"),
-            ['test'],
+        dict(subject="This is a test subject"),
+        ['test'],
+    ),
+    (
+        # This rule will not match since the dict does not
+        # have a "subject" property.
+        EmailHeaderRule(
+            prop="subject",
+            rule=RegexRule('test'),
         ),
-        (
-            # This rule will not match since the dict does not
-            # have a "subject" property.
-            EmailHeaderRule(
-                prop="subject",
-                rule=RegexRule('test'),
-            ),
-            dict(field="This is a test subject"),
-            [],
-        ),
-        (
-            PassportRule(),
-            """
+        dict(field="This is a test subject"),
+        [],
+    ),
+    (
+        PassportRule(),
+        """
 P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<< L898902C36UTO7408122F1204159ZE184226B<<<<<10
 P<GBRMASTERSON<<EDMUND<<<<<<<<<<<<<<<<<<<<<<4145681380GBR5110205M1601013<<<<<<<<<<<<<<00
 P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<,SPECI20142NLD6503101F2403096999999990<<<<<84
@@ -242,18 +196,69 @@ P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<,SPECI20142NLD6503101F24030979999999
 P<AUSCITIZEN<<JANE<<<<<<<<<<<<<<<<<<<<<<<<<<	PX09153981AUS8406077F1503014<61047007L<<<<34
 P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<<<<<<<<09
 """,
-            ["Passport number L898902C3 (issued by UTO)",
-                "Passport number 414568138 (issued by GBR)",
-                "Passport number SPECI2014 (issued by NLD)",
-                "Passport number PX0915398 (issued by AUS)",
-                "Passport number 150000003 (issued by USA)", ],
-        ),
-    ])
-    def test_simplerule_matches(self, rule, in_value, expected):
+        ["Passport number L898902C3 (issued by UTO)",
+            "Passport number 414568138 (issued by GBR)",
+            "Passport number SPECI2014 (issued by NLD)",
+            "Passport number PX0915398 (issued by AUS)",
+            "Passport number 150000003 (issued by USA)", ],
+    ),
+]
+
+
+compound_candidates = [
+    (
+        AndRule(RegexRule("A"), OrRule(RegexRule("B"), RegexRule("C"))),
+        [
+            ("A", False, 3),
+            ("AB", True, 2),
+            ("ABC", True, 2),
+            ("BC", False, 1),
+            ("AC", True, 3),
+        ],
+    ),
+    (
+        NotRule(AndRule(RegexRule("A"), OrRule(RegexRule("B"), RegexRule("C")))),
+        [
+            ("A", True, 3),
+            ("AB", False, 2),
+            ("ABC", False, 2),
+            ("BC", True, 1),
+            ("AC", False, 3),
+        ],
+    ),
+    (
+        AndRule(NotRule(OrRule(RegexRule("B"), RegexRule("C"))), RegexRule("A")),
+        [
+            ("A", True, 3),
+            ("AB", False, 1),
+            ("ABC", False, 1),
+            ("BC", False, 1),
+            ("AC", False, 2),
+        ],
+    ),
+    (
+        AndRule(AllRule(RegexRule("A"), RegexRule("B")), RegexRule("C")),
+        [
+            ("A", False, 3),
+            ("AB", False, 3),
+            ("ABC", True, 3),
+            ("BC", True, 3),
+            ("AC", True, 3),
+            ("C", False, 2),
+        ],
+    ),
+]
+
+
+class TestRules:
+    @pytest.mark.parametrize("rule,in_value,expected", simple_candidates)
+    def test_simplerule_json_conversion(self, rule, in_value, expected):
         json = rule.to_json_object()
         back_again = rule.from_json_object(json)
         assert rule == back_again
 
+    @pytest.mark.parametrize("rule,in_value,expected", simple_candidates)
+    def test_simplerule_matches(self, rule, in_value, expected):
         matches = rule.match(in_value)
         if expected:
             assert [match["match"] for match in matches] == expected
@@ -263,23 +268,16 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
     @pytest.mark.parametrize("rule,tests", compound_candidates)
     def test_compound_rule_matches(self, rule, tests):
         for input_string, outcome, evaluation_count in tests:
-            representations = {
-                "text": input_string
-            }
+            representations = {"text": input_string}
             conclusion, evaluations = rule.try_match(representations.get)
 
-            print(f"conclusion: input: {input_string};"
-                  f"result: {conclusion}; "
-                  f"expected: {outcome}; evaluations: {evaluations}")
             assert outcome == conclusion
             assert evaluation_count == len(evaluations)
 
     def test_or_rule_one_component(self):
         """Even though users shouldn't be allowed to create rules with one components,
         they should still be able to run without problems."""
-        representations = {
-            "text": "Testing Testing"
-        }
+        representations = {"text": "Testing Testing"}
         rule = OrRule(RegexRule("Test"))
         conclusion, evaluations = rule.try_match(representations.get)
         assert conclusion
@@ -287,9 +285,7 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
     def test_and_rule_one_component(self):
         """Even though users shouldn't be allowed to create rules with one components,
         they should still be able to run without problems."""
-        representations = {
-            "text": "Testing Testing"
-        }
+        representations = {"text": "Testing Testing"}
         rule = AndRule(RegexRule("Test"))
         conclusion, evaluations = rule.try_match(representations.get)
         assert conclusion
@@ -298,14 +294,13 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
         """Resuming execution of a rule after its try_match method has returned
         should complete the execution correctly."""
         rule = AndRule(
-                RegexRule("First fragment"),
-                AlwaysMatchesRule(),
-                RegexRule("second fragment"),
-                AlwaysMatchesRule())
+            RegexRule("First fragment"),
+            AlwaysMatchesRule(),
+            RegexRule("second fragment"),
+            AlwaysMatchesRule()
+        )
 
-        representations = {
-            "text": "First fragment goes here, and then the second fragment"
-        }
+        representations = {"text": "First fragment goes here, and then the second fragment"}
         remaining, matches1 = rule.try_match(lambda k: representations[k])
         representations["fallback"] = True
         remaining, matches2 = remaining.try_match(lambda k: representations[k])
@@ -346,6 +341,16 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
     def test_json_backwards_compatibility(self):
         assert CPRRule.from_json_object({"type": "cpr"}) == CPRRule()
 
+    def test_name_rule_json_conversion(self):
+        rule = NameRule(
+            expansive=True,
+            whitelist=["Joakim"], blacklist=["Malkeko"]
+        )
+
+        json = rule.to_json_object()
+        back_again = rule.from_json_object(json)
+        assert rule == back_again
+
     def test_name_rule_matches(self):
         rule = NameRule(
             expansive=True,
@@ -379,12 +384,15 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
             ["Nora Malkeko", 1.0],
         ])
 
+        matches = rule.match(in_value)
+        assert sorted([[match["match"], match['probability']] for match in matches]) == expected
+
+    def test_address_rule_json_conversion(self):
+        rule = AddressRule(whitelist=["Tagensvej"], blacklist=["PilÆstræde"])
+
         json = rule.to_json_object()
         back_again = rule.from_json_object(json)
         assert rule == back_again
-
-        matches = rule.match(in_value)
-        assert sorted([[match["match"], match['probability']] for match in matches]) == expected
 
     def test_address_rule_matches(self):
         # user supplied sensitivity is not used
@@ -415,10 +423,6 @@ P<USATRAVELER<<HAPPY<<<<<<<<<<<<<<<<<<<<<<<<-1500000035USA5609165M0811150<<<<<<<
             ("PilÆstræde", Sensitivity.CRITICAL.value),
             ("PilÆstræde 43,  3. sal, 1112 København", Sensitivity.CRITICAL.value)
         }
-
-        json = rule.to_json_object()
-        back_again = rule.from_json_object(json)
-        assert rule == back_again
 
         matches = rule.match(in_value)
         assert {(match["match"], match['sensitivity']) for match in matches} == expected
