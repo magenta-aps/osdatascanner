@@ -41,8 +41,8 @@ class EWSGrantAdminForm(forms.ModelForm):
         model = EWSGrant
         exclude = ("__all__")
 
-    username = forms.CharField()  # Better than the default AdminTextField
-    _password = AutoEncryptedField(required=False)
+    username = forms.CharField(label=_("Username"))  # Better than the default AdminTextField
+    _password = AutoEncryptedField(required=False, label=_("Password"))
 
     def clean__password(self):
         return choose_field_value(
@@ -61,9 +61,9 @@ class SMBGrantAdminForm(forms.ModelForm):
         model = SMBGrant
         exclude = ("__all__")
 
-    username = forms.CharField()
-    domain = forms.CharField(required=False)
-    _password = AutoEncryptedField(required=False)
+    username = forms.CharField(label=_("Username"))
+    domain = forms.CharField(required=False, label=_("Domain"))
+    _password = AutoEncryptedField(required=False, label=_("Password"))
 
     def clean__password(self):
         return choose_field_value(

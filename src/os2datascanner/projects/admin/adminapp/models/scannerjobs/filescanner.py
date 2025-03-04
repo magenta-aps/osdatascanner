@@ -49,7 +49,9 @@ class FileScanner(Scanner):
                     " contain regardless of other filesystem metadata"),
         default=False)
 
-    smb_grant = models.ForeignKey(SMBGrant, null=True, on_delete=models.SET_NULL)
+    smb_grant = models.ForeignKey(SMBGrant, null=True, on_delete=models.SET_NULL,
+                                  verbose_name=_("SMB grant")
+                                  )
 
     @property
     def root_url(self):

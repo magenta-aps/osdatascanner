@@ -12,6 +12,7 @@ from django.views.generic import UpdateView, CreateView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_datetime
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from requests import HTTPError
@@ -103,12 +104,14 @@ class MSGraphGrantForm(forms.ModelForm):
 
     _client_secret = AutoEncryptedField(
         required=False,
-        help_text=("To acquire a new client secret, navigate to your Azure Portal and find the "
-                   "application created for OSdatascanner. "
-                   "Once you've found your application, you can follow the instructions in "))
+        label=_("Client secret"),
+        help_text=_("To acquire a new client secret, navigate to your Azure Portal and find the "
+                    "application created for OSdatascanner. "
+                    "Once you've found your application, you can follow the instructions in ")
+    )
     expiry_date = forms.DateField(widget=forms.widgets.DateInput(
         attrs={"type": "date", }, format="%Y-%m-%d",),
-        required=False
+        required=False, label=_("Expiry date"),
     )
 
     def clean__client_secret(self):

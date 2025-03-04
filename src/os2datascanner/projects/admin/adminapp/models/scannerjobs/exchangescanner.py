@@ -71,9 +71,13 @@ class ExchangeScanner(Scanner):
     )
 
     graph_grant = models.ForeignKey(
-            GraphGrant, null=True, blank=True, on_delete=models.SET_NULL)
+            GraphGrant, null=True, blank=True, on_delete=models.SET_NULL,
+            verbose_name=_("Graph grant")
+    )
     ews_grant = models.ForeignKey(
-            EWSGrant, null=True, blank=True, on_delete=models.SET_NULL)
+            EWSGrant, null=True, blank=True, on_delete=models.SET_NULL,
+            verbose_name=_("EWS grant")
+    )
 
     def get_userlist_file_path(self):
         return os.path.join(settings.MEDIA_ROOT, self.userlist.name)

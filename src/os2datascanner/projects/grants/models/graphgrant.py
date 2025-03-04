@@ -1,6 +1,6 @@
 from uuid import uuid4
 from django.db import models
-
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.engine2.model.msgraph.utilities import make_token
 from .grant import Grant, wrap_encrypted_field
 
@@ -16,16 +16,16 @@ class GraphGrant(Grant):
     __match_args__ = ("app_id", "tenant_id", "client_secret",)
 
     app_id = models.UUIDField(
-            default=uuid4, editable=True, verbose_name="app ID")
+            default=uuid4, editable=True, verbose_name=_("app ID"))
 
     tenant_id = models.UUIDField(
-            default=uuid4, editable=True, verbose_name="tenant ID")
+            default=uuid4, editable=True, verbose_name=_("tenant ID"))
 
     expiry_date = models.DateField(
-        blank=True, null=True, verbose_name="expiry date"
+        blank=True, null=True, verbose_name=_("expiry date")
     )
 
-    _client_secret = models.JSONField(verbose_name="client secret")
+    _client_secret = models.JSONField(verbose_name=_("client secret"))
     client_secret = wrap_encrypted_field("_client_secret")
 
     def make_token(self):

@@ -48,7 +48,7 @@
         <a href="{% url "grant-list" %}"
            class="{% if active_tab == 'grant-list' %}active{% endif %}">
           <i class="material-icons">key</i>
-          <span class="width">{% trans "Grants" %}</span>
+          <span class="width">{% trans "Grants"|capfirst %}</span>
         </a>
       </li>
       <li>

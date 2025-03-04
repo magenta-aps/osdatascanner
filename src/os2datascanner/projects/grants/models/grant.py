@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.utils import aes
 
 
@@ -16,7 +16,9 @@ class Grant(models.Model):
             'organizations.Organization',
             related_name="%(class)s",
             related_query_name="%(class)ss",
-            on_delete=models.CASCADE)
+            on_delete=models.CASCADE,
+            verbose_name=_("Organization")
+    )
 
     def validate(self):
         """Checks that this Grant is still valid, perhaps by using it to
@@ -36,7 +38,7 @@ class Grant(models.Model):
     @property
     def expiry(self):
         """ If implemented by a subclass, used to return the expiry date for grant."""
-        return "Not known"
+        return _("Not known")
 
     class Meta:
         abstract = True
@@ -64,8 +66,8 @@ class UsernamePasswordGrant(Grant):
     username and password."""
     __match_args__ = ("username", "password",)
 
-    username = models.TextField(verbose_name="username")
-    _password = models.JSONField(verbose_name="password (encrypted)")
+    username = models.TextField(verbose_name=_("username"))
+    _password = models.JSONField(verbose_name=_("password (encrypted)"))
     password = wrap_encrypted_field("_password")
 
     class Meta:

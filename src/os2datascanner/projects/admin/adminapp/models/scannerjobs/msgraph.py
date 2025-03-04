@@ -61,7 +61,8 @@ def _create_user_list(org_unit):  # noqa
 
 
 class MSGraphScanner(Scanner):
-    graph_grant = models.ForeignKey(GraphGrant, null=True, on_delete=models.SET_NULL)
+    graph_grant = models.ForeignKey(GraphGrant, null=True, on_delete=models.SET_NULL,
+                                    verbose_name=_("Graph grant"))
 
     class Meta:
         abstract = True
