@@ -241,7 +241,7 @@ RUN set -ex \
 
 EXPOSE 5000
 ENTRYPOINT ["/docker/entrypoint.sh"]
-CMD ["gunicorn", "--config", "/docker/report-gunicorn.py", "asgi", "os2datascanner.projects.report.asgi:application"]
+CMD ["gunicorn", "--config", "/docker/settings/report-gunicorn.py", "asgi", "os2datascanner.projects.report.asgi:application"]
 
 FROM base AS sbsys-init
 
