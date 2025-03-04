@@ -50,6 +50,7 @@ from .views.miniscanner_views import MiniScanner, execute_mini_scan
 from .views.scanner_views import (ScannerAskRun, ScannerCleanupStaleAccounts, ScannerCopy,
                                   ScannerCreate, ScannerDelete, ScannerList, ScannerRemove,
                                   ScannerRun, ScannerUpdate)
+from .views.user_views import MyUserView, UserDetailView, UserUpdateView
 
 urlpatterns = [
     # App URLs
@@ -135,6 +136,11 @@ urlpatterns = [
                 template_name='components/password/password_reset_complete.html',
             ),
             name='password_reset_complete'),
+
+    # User handlers
+    path("users/me", MyUserView.as_view(), name="my-user"),
+    path("users/<int:pk>", UserDetailView.as_view(), name="user"),
+    path("users/<int:pk>/edit", UserUpdateView.as_view(), name="user-edit"),
 
     # General success handler
     re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|gmailscanners|sbsysscanners)/(\d+)/(created)/$',  # noqa

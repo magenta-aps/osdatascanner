@@ -1,0 +1,90 @@
+{% extends "components/common/base.html" %}
+{% load i18n %}
+
+{% block body %}
+
+  {% include "components/common/header.html" %}
+
+  <main class="wrapper">
+    {% include "components/common/main.html" with active_tab="home" %}
+
+    <div class="content">
+      <h1>{{ user.get_full_name }}</h1>
+
+      <form class="form user-form"
+            method="post"
+            action="{% url "user-edit" user.pk %}">
+        {% csrf_token %}
+        <div class="userprofile-content-wrapper user-tables">
+          <h2>{% trans "User information" %}</h2>
+          <table class="userprofile-table account-info">
+            <tbody>
+              <tr>
+                <td>{% trans "First name" %}</td>
+                <td class="form-field">{{ form.first_name }}</td>
+              </tr>
+              <tr>
+                <td>{% trans "Last name" %}</td>
+                <td class="form-field">{{ form.last_name }}</td>
+              </tr>
+              <tr>
+                <td>{% trans "Username" %}</td>
+                <td>{{ user.username }}</td>
+              </tr>
+              <tr>
+                <td>{% trans "E-mail" %}</td>
+                <td class="form-field">{{ form.email }}</td>
+              </tr>
+              {% if user.administrator_for %}
+                <tr>
+                  <td>{% trans "Administrator for" %}</td>
+                  <td>{{ user.administrator_for.client }}</td>
+                </tr>
+              {% endif %}
+              {% comment %} TODO: Define queryset in view for caching {% endcomment %}
+            </tbody>
+          </table>
+
+          <h2>{% trans "User access" %}</h2>
+          <table class="userprofile-table">
+            <tbody>
+              <tr>
+                <td>{% trans "Groups" %}</td>
+                <td>
+                  <ul>
+                    {% for group in user.groups.all %}<li>{{ group }}</li>{% endfor %}
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>{% trans "User permissions" %}</td>
+                <td>
+                  <ul>
+                    {% for permission in user.user_permissions.all %}<li>{{ permission }}</li>{% endfor %}
+                  </ul>
+                </td>
+              </tr>
+              {% if user.is_superuser %}
+                <tr>
+                  <td>{% trans "Superuser" %}</td>
+                  <td>
+                    <span class="checkmark true">
+                      {% include "components/svg-icons/check_circle_full.svg" %}
+                      <span class="width">{% trans "Yes" %}</span>
+                    </span>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <button class="button button--cta-button" type="submit">{% trans "Save" %}</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+{% endblock body %}

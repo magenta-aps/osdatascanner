@@ -2049,6 +2049,74 @@ msgstr "Tak, fordi du brugte OSdatascanner."
 msgid "again"
 msgstr "igen"
 
+#: adminapp/templates/components/user/user_detail.html:18
+#: adminapp/templates/components/user/user_detail.html:19
+msgid "Edit user"
+msgstr "Redigér bruger"
+
+#: adminapp/templates/components/user/user_detail.html:30
+#: adminapp/templates/components/user/user_edit.html:21
+msgid "First name"
+msgstr "Fornavn"
+
+#: adminapp/templates/components/user/user_detail.html:34
+#: adminapp/templates/components/user/user_edit.html:25
+msgid "Last name"
+msgstr "Efternavn"
+
+#: adminapp/templates/components/user/user_detail.html:38
+#: adminapp/templates/components/user/user_edit.html:29
+#: adminapp/views/exchangescanner_views.py:278
+#: adminapp/views/filescanner_views.py:185
+#: organizations/templates/organizations/account_detail.html:25
+#: organizations/templates/organizations/account_list.html:56
+msgid "Username"
+msgstr "Brugernavn"
+
+#: adminapp/templates/components/user/user_detail.html:42
+#: adminapp/templates/components/user/user_edit.html:33
+#: organizations/templates/organizations/account_detail.html:29
+msgid "E-mail"
+msgstr "E-mail"
+
+#: adminapp/templates/components/user/user_detail.html:47
+#: adminapp/templates/components/user/user_edit.html:38
+msgid "Client"
+msgstr "Kunde"
+
+#: adminapp/templates/components/user/user_detail.html:56
+#: adminapp/templates/components/user/user_edit.html:47
+msgid "User access"
+msgstr "Brugeradgang"
+
+#: adminapp/templates/components/user/user_detail.html:60
+#: adminapp/templates/components/user/user_edit.html:51
+msgid "Groups"
+msgstr "Grupper"
+
+#: adminapp/templates/components/user/user_detail.html:68
+#: adminapp/templates/components/user/user_edit.html:59
+msgid "User permissions"
+msgstr "Brugerrettigheder"
+
+#: adminapp/templates/components/user/user_detail.html:77
+#: adminapp/templates/components/user/user_edit.html:68
+#: organizations/templates/organizations/account_detail.html:66
+msgid "Superuser"
+msgstr "Superbruger"
+
+#: adminapp/templates/components/user/user_detail.html:81
+#: adminapp/templates/components/user/user_edit.html:72
+#: adminapp/templates/rules.html:177
+#: organizations/templates/organizations/account_detail.html:70
+msgid "Yes"
+msgstr "Ja"
+
+#: adminapp/templates/components/user/user_edit.html:82
+#: organizations/templates/components/modals/alias_create.html:56
+msgid "Save"
+msgstr "Gem"
+
 #: adminapp/templates/error_log.html:42
 msgid "Search for error message"
 msgstr "Søg efter fejlbesked"
@@ -2357,11 +2425,6 @@ msgstr "Ønsker du at slette"
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/rules.html:177
-#: organizations/templates/organizations/account_detail.html:70
-msgid "Yes"
-msgstr "Ja"
-
 #: adminapp/templates/scanners.html:50 adminapp/templates/scanners.html:51
 #: adminapp/templates/scanners.html:55
 msgid "Add scannerjob"
@@ -2549,13 +2612,6 @@ msgstr "Domænet er ugyldigt"
 #: adminapp/views/exchangescanner_views.py:277
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
-
-#: adminapp/views/exchangescanner_views.py:281
-#: adminapp/views/filescanner_views.py:188
-#: organizations/templates/organizations/account_detail.html:25
-#: organizations/templates/organizations/account_list.html:56
-msgid "Username"
-msgstr "Brugernavn"
 
 #: adminapp/views/exchangescanner_views.py:286
 #: adminapp/views/filescanner_views.py:189
@@ -3557,10 +3613,6 @@ msgstr "Luk"
 msgid "Save and close"
 msgstr "Gem alias og luk"
 
-#: organizations/templates/components/modals/alias_create.html:56
-msgid "Save"
-msgstr "Gem"
-
 #: organizations/templates/components/uni_dpo_dropdown.html:10
 msgid "Add universal DPO"
 msgstr "Tilføj universel DPO"
@@ -3573,10 +3625,6 @@ msgstr "Konto"
 msgid "Account information"
 msgstr "Kontoinformation"
 
-#: organizations/templates/organizations/account_detail.html:29
-msgid "E-mail"
-msgstr "E-mail"
-
 #: organizations/templates/organizations/account_detail.html:40
 msgid "Manager for"
 msgstr "Leder af"
@@ -3588,10 +3636,6 @@ msgstr "DPO af"
 #: organizations/templates/organizations/account_detail.html:61
 msgid "User Rights"
 msgstr "Brugerrettigheder"
-
-#: organizations/templates/organizations/account_detail.html:66
-msgid "Superuser"
-msgstr "Superbruger"
 
 #: organizations/templates/organizations/account_detail.html:77
 msgid "Imported aliases"
