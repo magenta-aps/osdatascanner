@@ -1,0 +1,11 @@
+{% extends "components/containers/cards/card__zoom-controls.html" %}
+
+{% load i18n l10n static %}
+
+{% block card_body %}
+  <div class="chart chart--bar" data-chartid="development-new-results">
+    <div class="canvas__wrapper">
+      <canvas class="bar_chart" id="bar_chart_new_matches_by_month"></canvas>
+    </div>
+  </div>
+{% endblock %}

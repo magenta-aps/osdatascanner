@@ -1,0 +1,17 @@
+{# Use this extender for any cards containing a chart where zoom is possible.  #}
+
+{% extends "components/containers/cards/card.html" %}
+
+{% load i18n l10n static %}
+
+{% block card_header_ui %}
+  {% with icon_name="query_stats" tooltip=tooltip %}
+    {% include "components/decoration/info-icon.html" %}
+  {% endwith %}
+
+  <button type="button"
+          class="button button--text-button"
+          onclick="resetZoomDevelopment()">
+    <span>{% trans "Reset" %}</span>
+  </button>
+{% endblock %}

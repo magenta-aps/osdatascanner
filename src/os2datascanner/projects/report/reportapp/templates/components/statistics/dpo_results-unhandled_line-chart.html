@@ -1,0 +1,12 @@
+{% extends "components/containers/cards/card__zoom-controls.html" %}
+
+{% load i18n l10n static %}
+
+{% block card_body %}
+  <div class="chart chart--line"
+       data-chartid="development-unhandled-results">
+    <div class="canvas__wrapper">
+      <canvas class="line_chart canvas_size" id="line_chart_unhandled_matches"></canvas>
+    </div>
+  </div>
+{% endblock %}

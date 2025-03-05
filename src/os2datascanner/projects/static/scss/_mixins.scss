@@ -1,0 +1,47 @@
+/************************************************/
+/************************************************/
+/***** UNIVERSAL STYLES USED IN DATASCANNER *****/
+/************************************************/
+/************************************************/
+
+/***** WHAT IS A MIXIN? *****/
+// A mixin is a reusable code block where we can define a given style once, and then use it via @include [mixin-name] whereever it's needed.
+
+/***** WHAT'S THE CRITERIA FOR A MIXIN TO LIVE HERE? *****/
+// It's already used/duplicated accross multiple stylesheets.
+// It's "generic" enough to be reused accross multiple stylesheets in the future.
+
+@mixin layout-vertical($gap: null) {
+  display: flex;
+  flex-direction: column;
+
+  @if $gap {
+    gap: $gap;
+  }
+  @content;
+
+  /* What does this do? */
+  // Instant vertical flex layout without any fuss.
+  // Applies a gap between elements if given any when included.
+  // The "@content" tag makes it possible to apply extra context relevant styles if needed (fx "justify-content: center;").
+}
+
+@mixin layout-horizontal($gap: null) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  @if $gap {
+    gap: $gap;
+  }
+  @content;
+
+  /* What does this do? */
+  // Instant horizontal flex layout without any fuss.
+  // Items are center-aligned per default. (Can be overwritten if needed).
+  // Applies a gap between elements if given any when included.
+  // The "@content" tag makes it possible to apply extra context relevant styles if needed (fx "justify-content: space-between;").
+}
+
+/***** TODO: *****/
+// Move any "flex-center-magic" based ones into this.
+// Go through every single preexisting mixin and assess if it's something that could be recycled.

@@ -1,0 +1,29 @@
+{# card.html #}
+
+{% load i18n l10n static %}
+
+<div class="card">
+  <div class="card__header">
+    <div class="card__label">
+      <h3 class="title">{% trans title %}</h3>
+
+      {% if subtitle %}
+        <p class="subtitle">{% trans subtitle %}</p>
+      {% endif %}
+    </div>
+
+    <div class="card__header-ui">
+      {% block card_header_ui %}{% endblock %}
+    </div>
+  </div>
+
+  <div class="card__body" data-chartid="{{ data_chartid }}">
+    {% block card_body %}{% endblock %}
+  </div>
+
+  {% if card_footer %}
+    <div class="card__footer">
+      {% block card_footer %}{% endblock %}
+    </div>
+  {% endif %}
+</div>
