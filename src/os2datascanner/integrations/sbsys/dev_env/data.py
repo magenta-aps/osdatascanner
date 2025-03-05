@@ -322,6 +322,12 @@ SbSysNetDrift["Sag"] = [
         "Titel": "Opsætning af skilte: Skabet til Narnia",
         "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
+        "Kommentar": "Flere borgere er forvirret over, at rådhusets garderobe"
+                     " huser en magisk portal til en anden verden -- nogen er"
+                     " endda kommet til skade derinde. Den Hvide Heks på"
+                     " portalens anden side er også mistænkt for flere"
+                     " databrud samt læk af personfølsomme informationer. Vi "
+                     " skal derfor få skiltet fænomenet for at undgå bøde.",
         "SagsStatusID": 8,
         "CreatedByID": 1,
         "Created": datetime(2013, 9, 11),
@@ -336,6 +342,9 @@ SbSysNetDrift["Sag"] = [
         "Titel": "Eiffel Tower",
         "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
+        "Kommentar": "En lille fransk kommune har fået kontakt til os og"
+                     " spørger, om vi kunne være interesseret i at erhverve et"
+                     " ældgammelt industrielt kunstværk fra 1880'erne.",
         "SagsStatusID": 5,
         "CreatedByID": 1,
         "Created": datetime(2013, 9, 11),
@@ -350,6 +359,9 @@ SbSysNetDrift["Sag"] = [
         "Titel": "Den Grimme Ælling",
         "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
+        "Kommentar": "En ikke-menneskelig borger har ansøgt om at få penge "
+                     "til plastikkirurgi fra kommunens pulje til borgernes "
+                     " almene trivsel.",
         "SagsStatusID": 8,
         "CreatedByID": 1,
         "Created": datetime(2013, 9, 11),
