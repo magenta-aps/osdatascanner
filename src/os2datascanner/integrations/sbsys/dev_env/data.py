@@ -380,8 +380,360 @@ SbSysNetDriftDokument0000 = _dr["tables"]
 with open("1111111118.pdf", "rb") as fp:
     SbSysNetDriftDokument0000["DokumentData"] = [
         {
-            "ID": 1,
-            "DokumentID": 1,
+            "ID": 16240,
+            "DokumentID": 1274,
+            "DokumentDataInfoID": 1331,
             "Data": fp.read()
         }
     ]
+
+
+SbSysNetDrift["DokumentDataInfoTypeOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 0,
+        "Navn": "Attachment"
+    },
+    {
+        "ID": 1,
+        "Navn": "Mail body"
+    },
+    {
+        "ID": 2,
+        "Navn": "Unspecified"
+    },
+    {
+        "ID": 3,
+        "Navn": "Alternate"
+    },
+    {
+        "ID": 4,
+        "Navn": "Mailbody resource"
+    },
+    {
+        "ID": 5,
+        "Navn": "UnspecifiedSubDocument"
+    },
+    {
+        "ID": 6,
+        "Navn": "Email"
+    }
+]
+
+
+SbSysNetDrift["DokumentDataTypeOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 0,
+        "Navn": "Ukendt"
+    },
+    {
+        "ID": 1,
+        "Navn": "Microsoft Word"
+    },
+    {
+        "ID": 2,
+        "Navn": "Microsoft Excel"
+    },
+    {
+        "ID": 3,
+        "Navn": "Microsoft PowerPoint"
+    },
+    {
+        "ID": 4,
+        "Navn": "Tekst"
+    },
+    {
+        "ID": 5,
+        "Navn": "RTF"
+    },
+    {
+        "ID": 6,
+        "Navn": "PDF"
+    },
+    {
+        "ID": 7,
+        "Navn": "Billede"
+    },
+    {
+        "ID": 8,
+        "Navn": "Film Klip"
+    },
+    {
+        "ID": 9,
+        "Navn": "Lyd"
+    },
+    {
+        "ID": 10,
+        "Navn": "HTML"
+    },
+    {
+        "ID": 11,
+        "Navn": "Email"
+    }
+]
+
+
+SbSysNetDrift["DokumentArtOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 1,
+        "Navn": "Indg\u00e5ende",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "0fd9387b-a0ed-4340-b466-5f0451bd67bc"
+    },
+    {
+        "ID": 2,
+        "Navn": "Udg\u00e5ende",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "6744e1ff-c166-4e61-a1db-ab7b6dbf0f35"
+    },
+    {
+        "ID": 3,
+        "Navn": "Internt",
+        "UbeskyttetStandardMarkering": False,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": True,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "4f1403a3-c55f-4d9f-bc1e-1e14dfd32bce"
+    },
+    {
+        "ID": 5,
+        "Navn": "Notat",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "6ddc6599-2e94-44cd-814e-4a4974ad7c98"
+    },
+    {
+        "ID": 6,
+        "Navn": "Andet",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "ef9ebdb7-fd93-4d86-a3c4-edc9fc93ecf5"
+    },
+    {
+        "ID": 7,
+        "Navn": "Dagsordenpunkt",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "60e72338-db2b-4409-8a5a-a5551c740f94"
+    },
+    {
+        "ID": 8,
+        "Navn": "Skema",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "af5803d3-59e6-43ae-ba05-688df08a50e1"
+    },
+    {
+        "ID": 9,
+        "Navn": "Rapport",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "cd91e596-e834-4ce7-b0f7-c9d27d06cf09"
+    },
+    {
+        "ID": 10,
+        "Navn": "Kontrakt",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "8176c171-3344-4201-80c6-344f8dd50901"
+    },
+    {
+        "ID": 11,
+        "Navn": "Dagsorden",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "4b5dbc1a-b0ee-4f5b-839e-140ac588c8a4"
+    },
+    {
+        "ID": 12,
+        "Navn": "Referat",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "4287cfcf-4e8f-4432-b88a-ade5618fca2c"
+    },
+    {
+        "ID": 13,
+        "Navn": "Brev",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "3ae1a8e9-d47d-43f1-a643-ae95e4f74243"
+    },
+    {
+        "ID": 15,
+        "Navn": "Foto",
+        "UbeskyttetStandardMarkering": True,
+        "MaaPubliseresPaaDagsorden": True,
+        "UbeskyttetTilladAendring": True,
+        "SagBeskyttetStandardMarkering": False,
+        "SagBeskyttetTilladAendring": False,
+        "DokumentBeskyttetStandardMarkering": False,
+        "DokumentBeskyttetTilladAendring": False,
+        "SagOgDokumentBeskyttetStandardMarkering": False,
+        "SagOgDokumentBeskyttetTilladAendring": False,
+        "DokumentArtIdentifier": "cacb925c-be6f-4480-bd53-9e29369b7eae"
+    }
+]
+
+
+SbSysNetDrift["DokumentTypeOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 0,
+        "Navn": "Uspecificeret",
+        "DefaultDokumentArtID": 6
+    },
+    {
+        "ID": 1,
+        "Navn": "Sbsys.Net dokument",
+        "DefaultDokumentArtID": 6
+    },
+    {
+        "ID": 2,
+        "Navn": "Journaliseret via scanner",
+        "DefaultDokumentArtID": 6
+    },
+    {
+        "ID": 3,
+        "Navn": "Journaliseret fra fil",
+        "DefaultDokumentArtID": 6
+    },
+    {
+        "ID": 4,
+        "Navn": "Papir dokument",
+        "DefaultDokumentArtID": 6
+    },
+    {
+        "ID": 5,
+        "Navn": "Journaliseret email",
+        "DefaultDokumentArtID": 1
+    },
+    {
+        "ID": 6,
+        "Navn": "Notat",
+        "DefaultDokumentArtID": 5
+    },
+    {
+        "ID": 7,
+        "Navn": "Journaliseret digitalpost",
+        "DefaultDokumentArtID": 1
+    }
+]
+
+
+SbSysNetDrift["ProcessStatusOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 0,
+        "Navn": "Skal ikke konverteres"
+    },
+    {
+        "ID": 1,
+        "Navn": "Skal konverteres"
+    },
+    {
+        "ID": 2,
+        "Navn": "Konvertering færdig"
+    },
+    {
+        "ID": 3,
+        "Navn": "Konvertering fejlede"
+    },
+    {
+        "ID": 4,
+        "Navn": "Konverteres lige nu"
+    },
+    {
+        "ID": 5,
+        "Navn": "Skal genkonverteres"
+    },
+    {
+        "ID": 6,
+        "Navn": "Genprocesseres"
+    }
+]
