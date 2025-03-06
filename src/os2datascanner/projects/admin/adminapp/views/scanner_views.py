@@ -34,7 +34,6 @@ from os2datascanner.projects.admin.organizations.models import (
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView
-from ..models.authentication import Authentication
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner, ScanStatus, ScanStatusSnapshot
 from ..models.scannerjobs.scanner_helpers import CoveredAccount
@@ -498,31 +497,6 @@ class ScannerBase(object):
     def get_scanner_object(self):
         return self.get_object()
 
-    def form_valid(self, form):
-        user = self.request.user
-        if not user.is_superuser:
-            self.object = form.save(commit=False)
-
-        # Makes sure authentication info gets stored in db.
-        domain = form.save(commit=False)
-        if domain.authentication:
-            authentication = domain.authentication
-        else:
-            authentication = Authentication()
-
-        if 'username' in form.cleaned_data:
-            authentication.username = form.cleaned_data['username']
-        if 'password' in form.cleaned_data and form.cleaned_data['password'] != "":
-            authentication.set_password(str(form.cleaned_data['password']))
-        if 'domain' in form.cleaned_data:
-            authentication.domain = form.cleaned_data['domain']
-
-        authentication.save()
-        domain.authentication = authentication
-        domain.save()
-
-        return super().form_valid(form)
-
     def create_remediator_aliases(self, request):
         remediator_uuids = request.POST.getlist('remediators')
         # It is possible to not have an object at this point, eq. if the
@@ -596,7 +570,7 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
     def get_form(self, form_class=None):
         """Get the form for the view.
 
-        Querysets used for choices in the 'domains' and 'rule' fields
+        Queryset used for choices in the 'rule' field
         will be limited by the user's organization unless the user is a
         superuser.
         """
@@ -608,9 +582,6 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
             self.old_url = self.object.mail_domain
         elif hasattr(self.object, "unc"):
             self.old_url = self.object.unc
-        if (hasattr(self.object, "authentication")
-                and hasattr(self.object.authentication, "username")):
-            self.old_user = self.object.authentication.username
         # Store the existing rules selected in the scannerjob
         self.old_rule = self.object.rule
 
@@ -632,6 +603,7 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
             data = form.cleaned_data
             return entry in data and data[entry] != comparable
 
+        # TODO: ... delete?
         if is_in_cleaned("url", self.old_url) \
                 or is_in_cleaned("mail_domain", self.old_url) \
                 or is_in_cleaned("unc", self.old_url) \

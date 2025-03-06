@@ -1,0 +1,34 @@
+{% extends "grants/grant_update.html" %}
+{% load i18n %}
+
+{% block form_extras %}
+  {% if field.name == "expiry_date" %}
+    <div class="field-with-button__container">
+      {{ field }}
+      <button type="button"
+              class="button button--text-button"
+              name="fetch-expiry-date"
+              hx-post="{{ request.path }}"
+              hx-target="#id_expiry_date"
+              hx-select="#id_expiry_date"
+              hx-swap="outerHTML"
+              hx-indicator="div.spinner">{% trans "fetch expiry date"|capfirst %}</button>
+    </div>
+  {% endif %}
+{% endblock form_extras %}
+
+
+{% block description %}
+  <div>
+    <span>
+      {% blocktranslate %}
+        A GraphGrant represents an entitlement to use the Microsoft Graph API
+          to explore the resources associated with a particular tenant.
+
+        Note that the specific permissions associated with this entitlement are
+        not specified here, but in the OSdatascanner application registration in
+        Microsoft's portal.
+      {% endblocktranslate %}
+    </span>
+  </div>
+{% endblock description %}

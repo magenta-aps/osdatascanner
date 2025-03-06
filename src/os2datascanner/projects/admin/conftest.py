@@ -23,7 +23,6 @@ from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
     Organization, OrganizationalUnit, Account, Position, Alias)
 from os2datascanner.projects.admin.core.models import Administrator, Client
-from os2datascanner.projects.admin.adminapp.models.authentication import Authentication
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import ScanStatus
 from os2datascanner.projects.admin.adminapp.models.usererrorlog import UserErrorLog
@@ -33,6 +32,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner i
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.msgraph import (
     MSGraphMailScanner)
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
+from os2datascanner.projects.grants.models import EWSGrant
 
 
 # SETTINGS OVERRIDE
@@ -146,10 +146,11 @@ def invalid_web_scanner(test_org, basic_rule):
 
 
 @pytest.fixture
-def exchange_auth():
-    return Authentication.objects.create(
+def exchange_grant(test_org):
+    return EWSGrant.objects.create(
         username="keyChainGuy",
-        domain="dummydumbdumb.dumb",
+        password="password",
+        organization=test_org,
     )
 
 
@@ -159,26 +160,26 @@ def dummy_userlist():
 
 
 @pytest.fixture
-def exchange_scanner(test_org, exchange_auth, basic_rule):
+def exchange_scanner(test_org, exchange_grant, basic_rule):
     return ExchangeScanner.objects.create(
         name=f"SomeExchangeScanner-{test_org.name}",
         organization=test_org,
         validation_status=ExchangeScanner.VALID,
         service_endpoint="exchangeendpoint",
-        authentication=exchange_auth,
+        ews_grant=exchange_grant,
         rule=basic_rule
     )
 
 
 @pytest.fixture
-def exchange_scanner_with_userlist(test_org, dummy_userlist, exchange_auth, basic_rule):
+def exchange_scanner_with_userlist(test_org, dummy_userlist, exchange_grant, basic_rule):
     return ExchangeScanner.objects.create(
         name=f"SomeExchangeScanner-{test_org.name}",
         organization=test_org,
         validation_status=ExchangeScanner.VALID,
         userlist=dummy_userlist,
         service_endpoint="exchangeendpoint",
-        authentication=exchange_auth,
+        ews_grant=exchange_grant,
         rule=basic_rule
     )
 
@@ -199,7 +200,7 @@ def msgraph_mailscanner(test_org, msgraph_grant, basic_rule):
         name=f"SomeMSGraphMailScanner-{test_org.name}",
         organization=test_org,
         validation_status=MSGraphMailScanner.VALID,
-        grant=msgraph_grant,
+        graph_grant=msgraph_grant,
         rule=basic_rule
     )
 

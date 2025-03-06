@@ -53,20 +53,6 @@
   }
 }
 
-.dropdown-container {
-  display: none;
-  position: absolute;
-  z-index: 100;
-
-  // Apply this to make z-index work on iPad OS
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-
-  &:hover {
-    display: block;
-  }
-}
-
 .graph-zoom-info {
   background: none;
   color: inherit;

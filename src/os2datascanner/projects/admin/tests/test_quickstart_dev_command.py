@@ -3,11 +3,11 @@ import pytest
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 
+from os2datascanner.projects.grants.models import SMBGrant
 from ..core.models.client import Client
 from ..organizations.models.organization import Organization
 from ..organizations.models.aliases import Alias, AliasType
 from ..adminapp.models.rules import CustomRule
-from ..adminapp.models.authentication import Authentication
 from ..adminapp.models.scannerjobs.filescanner import FileScanner
 from ..adminapp.models.scannerjobs.webscanner import WebScanner
 
@@ -59,7 +59,7 @@ class TestQuickstartDevCommand:
                                    'do_ocr': True,
                                    'validation_status': True,
                                    'do_last_modified_check': False}),
-                                 (Authentication,
+                                 (SMBGrant,
                                   {'username': 'os2'}),
                                  (WebScanner,
                                   {'name': 'Local nginx',
@@ -79,9 +79,9 @@ class TestQuickstartDevCommand:
     def test_created_autentication_password(self, debug_setting_on):
         call_command("quickstart_dev")
 
-        auth = Authentication.objects.first()
+        smb_grant = SMBGrant.objects.first()
 
-        assert auth.get_password() == "swordfish"
+        assert smb_grant.password == "swordfish"
 
     def test_created_user_password(self, debug_setting_on):
         call_command("quickstart_dev")

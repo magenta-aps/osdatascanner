@@ -12,10 +12,13 @@ class AutoEncryptedField(forms.CharField):
     widget = forms.widgets.PasswordInput
 
     def prepare_value(self, value):
-        if value:
+        # If it's a list, we have an actual saved instance.
+        # Otherwise, we're in a Create scenario, where if non-field-errors occur, the user
+        # input value would be thrown away, but visually be "unchanged".
+        if value and isinstance(value, list):
             self.widget.attrs["placeholder"] = _("(unchanged)")
-        else:
-            pass
+        elif value:
+            self.widget.attrs["value"] = value
 
     def to_python(self, value):
         if value:
@@ -33,11 +36,13 @@ def choose_field_value(new, old):
             raise ValidationError(_("This field is required."))
 
 
-class EWSGrantForm(forms.ModelForm):
-    model = EWSGrant
+class EWSGrantAdminForm(forms.ModelForm):
+    class Meta:
+        model = EWSGrant
+        exclude = ("__all__")
 
-    username = forms.CharField()  # Better than the default AdminTextField
-    _password = AutoEncryptedField(required=False)
+    username = forms.CharField(label=_("Username"))  # Better than the default AdminTextField
+    _password = AutoEncryptedField(required=False, label=_("Password"))
 
     def clean__password(self):
         return choose_field_value(
@@ -48,15 +53,17 @@ class EWSGrantForm(forms.ModelForm):
 @admin.register(EWSGrant)
 class EWSGrantAdmin(admin.ModelAdmin):
     fields = ["organization", "username", "_password"]
-    form = EWSGrantForm
+    form = EWSGrantAdminForm
 
 
-class SMBGrantForm(forms.ModelForm):
-    model = SMBGrant
+class SMBGrantAdminForm(forms.ModelForm):
+    class Meta:
+        model = SMBGrant
+        exclude = ("__all__")
 
-    username = forms.CharField()
-    domain = forms.CharField(required=False)
-    _password = AutoEncryptedField(required=False)
+    username = forms.CharField(label=_("Username"))
+    domain = forms.CharField(required=False, label=_("Domain"))
+    _password = AutoEncryptedField(required=False, label=_("Password"))
 
     def clean__password(self):
         return choose_field_value(
@@ -67,7 +74,7 @@ class SMBGrantForm(forms.ModelForm):
 @admin.register(SMBGrant)
 class SMBGrantAdmin(admin.ModelAdmin):
     fields = ["organization", "domain", "username", "_password"]
-    form = SMBGrantForm
+    form = SMBGrantAdminForm
 
 
 class GraphGrantForm(forms.ModelForm):

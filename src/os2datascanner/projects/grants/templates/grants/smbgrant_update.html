@@ -1,0 +1,14 @@
+{% extends "grants/grant_update.html" %}
+{% load i18n %}
+
+{% block description %}
+  <div>
+    <span>
+      {% blocktranslate %}
+        An SMB Service Account grant represents a service account with access to a
+          Windows domain, and thereby an entitlement for OSdatascanner
+          to access and scan that domain.
+      {% endblocktranslate %}
+    </span>
+  </div>
+{% endblock description %}

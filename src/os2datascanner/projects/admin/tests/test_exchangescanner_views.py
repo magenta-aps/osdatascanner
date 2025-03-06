@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import PermissionDenied
 
 from ..adminapp.views.exchangescanner_views import (
-    ExchangeScannerCopy, ExchangeScannerCreate, ExchangeScannerUpdate)
+    ExchangeScannerCreate)
 
 
 def get_exchangescanner_response(user):
@@ -104,7 +104,6 @@ class TestExchangeScannerViews:
         The system should choose to use the org_unit selected."""
 
         exchange_scanner_with_userlist.org_unit.add(nisserne)
-        exchange_scanner_with_userlist.authentication.set_password("password")
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         # Goes through the generator (Only one in this case because Günther and
@@ -122,7 +121,6 @@ class TestExchangeScannerViews:
             hansi):
 
         exchange_scanner_with_userlist.org_unit.add(nisserne)
-        exchange_scanner_with_userlist.authentication.set_password("password")
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for ews_source in exchange_scanner_source:
@@ -140,7 +138,6 @@ class TestExchangeScannerViews:
 
         sources_yielded = 0  # Store a count
         exchange_scanner_with_userlist.org_unit.add(nisserne)
-        exchange_scanner_with_userlist.authentication.set_password("password")
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for _ews_source in exchange_scanner_source:
@@ -152,52 +149,12 @@ class TestExchangeScannerViews:
             self,
             exchange_scanner_with_userlist):
         sources_yielded = 0  # Store a count
-        exchange_scanner_with_userlist.authentication.set_password("password")
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for _ews_source in exchange_scanner_source:
             sources_yielded += 1
 
         assert sources_yielded == 3
-
-    def test_create_form_adds_authenthication_fields(self, user_admin):
-        """Tests whether authentication is properly added in an exchangescan"""
-        create_view = ExchangeScannerCreate()
-        request = RequestFactory().post('/exchangescanners/add/')
-        request.user = user_admin
-        create_view.setup(request)
-
-        create_form = create_view.get_form()
-        assert 'username' in create_form.cleaned_data
-        assert 'password' in create_form.cleaned_data
-
-    def test_update_form_adds_authenthication_fields(self, exchange_scanner, user_admin):
-        """Tests whether authentication is properly added in an exchangescan"""
-        update_view = ExchangeScannerUpdate()
-        request = RequestFactory().post(
-            reverse('exchangescanner_update', kwargs={'pk': exchange_scanner.pk})
-        )
-        request.user = user_admin
-        update_view.setup(request, pk=exchange_scanner.pk)
-
-        update_form = update_view.get_form()
-
-        assert 'username' in update_form.cleaned_data
-        assert 'password' in update_form.cleaned_data
-
-    def test_copy_form_adds_authenthication_fields(self, exchange_scanner, user_admin):
-        """Tests whether authentication is properly added in an exchangescan"""
-        copy_view = ExchangeScannerCopy()
-        request = RequestFactory().post(
-            reverse('exchangescanner_copy', kwargs={'pk': exchange_scanner.pk})
-        )
-        request.user = user_admin
-        copy_view.setup(request, pk=exchange_scanner.pk)
-
-        copy_form = copy_view.get_form()
-
-        assert 'username' in copy_form.cleaned_data
-        assert 'password' in copy_form.cleaned_data
 
     @pytest.mark.parametrize('userlist,valid', [
         (
@@ -223,7 +180,8 @@ class TestExchangeScannerViews:
             True
         )
     ])
-    def test_userlist_formatting(self, client, user_admin, test_org, basic_rule, userlist, valid):
+    def test_userlist_formatting(self, client, user_admin, test_org,
+                                 basic_rule, userlist, valid, exchange_grant):
         """Makes sure that field errors are raised when the formatting of the
         userlist is wrong. The correct formatting is username-parts of
         email-addresses separated by newlines."""
@@ -238,8 +196,7 @@ class TestExchangeScannerViews:
             'mail_domain': '@test.mail',
             'organization': test_org.uuid,
             'validation_status': 0,
-            'username': 'dummy',
-            'password': 'super_secret',
+            'ews_grant': exchange_grant.pk,
             'userlist': userlist,
             'rule': basic_rule.pk
         })
@@ -278,7 +235,8 @@ class TestExchangeScannerViews:
             nisserne,
             basic_rule,
             mail_domain,
-            valid):
+            valid,
+            exchange_grant):
         """Makes sure that field errors are raised when the formatting of the
         domain is wrong."""
 
@@ -292,10 +250,9 @@ class TestExchangeScannerViews:
             'mail_domain': mail_domain,
             'organization': test_org.uuid,
             'validation_status': 0,
-            'username': 'dummy',
-            'password': 'super_secret',
             'org_unit': nisserne.uuid,
-            'rule': basic_rule.pk
+            'rule': basic_rule.pk,
+            'ews_grant': exchange_grant.pk
         })
 
         context = response.context

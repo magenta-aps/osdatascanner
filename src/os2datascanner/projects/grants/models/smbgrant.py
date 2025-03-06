@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils.translation import gettext_lazy as _
 from .grant import UsernamePasswordGrant
 
 
@@ -9,7 +9,7 @@ class SMBGrant(UsernamePasswordGrant):
 
     __match_args__ = ("domain", "username", "password",)
 
-    domain = models.TextField(blank=True)
+    domain = models.TextField(blank=True, verbose_name=_("Domain"))
 
     def validate(self):
         return True
@@ -18,7 +18,12 @@ class SMBGrant(UsernamePasswordGrant):
         return (f"{self.domain}\\{self.username}"
                 if self.domain else self.username)
 
+    @property
+    def verbose_name(self):
+        return self._meta.verbose_name
+
     class Meta:
+        verbose_name = "SMB Service Account"
         constraints = [
             models.UniqueConstraint(
                     fields=["organization", "domain", "username"],

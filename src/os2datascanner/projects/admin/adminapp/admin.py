@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
-from .models.authentication import Authentication
 from .models.apikey import APIKey
 from .models.scannerjobs.scanner_helpers import CoveredAccount, MIMETypeProcessStat
 from .models.usererrorlog import UserErrorLog
@@ -36,12 +35,6 @@ from .models.scannerjobs.exchangescanner import ExchangeScanner
 from .models.scannerjobs.dropboxscanner import DropboxScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.gmail import GmailScanner
-
-
-@admin.register(Authentication)
-class AuthenticationAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'username', 'domain')
-    list_display_links = ('pk', 'username')
 
 
 class RuleAdmin(admin.ModelAdmin):

@@ -56,6 +56,11 @@ label + .input {
   top: 7px;
 }
 
+/* Show the dropdown menu on hover */
+.grant-dropdown:hover .dropdown-container {
+  display: block;
+}
+
 .dropdown-container {
   display: none;
   position: absolute;
@@ -73,6 +78,30 @@ label + .input {
   &:hover {
     display: block;
   }
+
+  a {
+    background: var(--color-primary-light);
+    color: var(--color-text-white);
+    display: flex;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    opacity: 90%;
+  }
+
+  a:first-child {
+    margin-top: 0.5rem;
+  }
+
+  a:hover {
+    background-color: var(--color-primary-lighter);
+    opacity: 100%;
+  }
+}
+
+// Make grant dropdown button-width, dropdown container has left values set for match handling.
+.no-left-right {
+  left: 0;
+  right: 0;
 }
 
 .handle-dropdown {

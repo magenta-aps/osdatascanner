@@ -1,0 +1,24 @@
+{% extends "components/scanner/scanner_form_select_option_field.html" %}
+{% block grant_extra %}
+  <button type="button"
+          class="button button--icon-button"
+          hx-get=" {{ request.path }}"
+          hx-target="#{{ field.name }}-form-container"
+          hx-select="#{{ field.name }}-form-container"
+          hx-trigger="click"
+          hx-include="#hidden_organization, #id_organization"
+          hx-vals='{"grant_type": "{{ field.name }}" }'>
+    <svg class="icon button__plus-icon">
+      <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+    </svg>
+  </button>
+
+  <div id="{{ field.name }}-form-container" class="mt-3">
+
+    {% if grant_form %}
+      {% include "grants/grant_update_partial.html" with form=grant_form %}
+    {% endif %}
+  </div>
+
+
+{% endblock grant_extra %}

@@ -176,10 +176,6 @@
                 <h3>{% trans "Sitemap" %}</h3>
               {% endif %}
 
-              {% if form.domain %}
-                <h3>{% trans "User information" %}</h3>
-              {% endif %}
-
               {% if form.userlist %}
                 <h3>{% trans "User information" %}</h3>
               {% endif %}
@@ -191,85 +187,26 @@
               {% if form.service_account_file_gmail %}
                 <h3>{% trans "User information" %}</h3>
               {% endif %}
-              <!-- This is a user domain, used on Windows computers. -->
-              {% if form.domain %}
-                {% include "components/scanner/scanner_form_input_field.html" with field=form.domain placeholder="f.eks. WORKGROUP" %}
-              {% endif %}
 
               {% if form.token %}
                 {% include "components/scanner/scanner_form_input_field.html" with field=form.token placeholder="(Uændret)" password="True" required="True" %}
               {% endif %}
 
-              {% if view.type == "exchange" and settings.MSGRAPH_EWS_AUTH %}
-
-                <label for="use-grant">{% trans "use grant for access authentication"|capfirst %}</label>
-
-                {% comment %}
-                We need to check object.grant rather than object.authentication
-                here because Scanners /always/ have an Authentication object
-                (see issue #45918)
-                {% endcomment %}
-
-                <input type="radio"
-                       name="cred-method"
-                       value="use-grant"
-                       onclick="hideExchangeCreds();"
-                       id="use-grant"
-                       {% if object.grant %}checked{% endif %} />
-
-                <label for="use-credentials">{% trans "use service account for access authentication"|capfirst %}</label>
-
-                <input type="radio"
-                       name="cred-method"
-                       value="use-credentials"
-                       onclick="hideExchangeGrant();"
-                       id="use-credentials"
-                       {% if not object.grant %}checked{% endif %} />
-
-                <script>
-                  function getElements() {
-                    const grant = document.getElementById("id_grant");
-                    const credsUsername = document.getElementById("id_username");
-                    const credsPassword = document.getElementById("id_password");
-                    return {"grant": grant, "credsUsername": credsUsername, "credsPassword": credsPassword}
-                  }
-
-                  function hideExchangeGrant() {
-                    let {grant, credsUsername, credsPassword, grantCheck, credsCheck} = getElements();
-                    grant.setAttribute("disabled", true);
-                    credsUsername.removeAttribute("disabled");
-                    credsPassword.removeAttribute("disabled");
-                  }
-
-                  function hideExchangeCreds() {
-                    let {grant, credsUsername, credsPassword, grantCheck, credsCheck} = getElements();
-                    grant.removeAttribute("disabled");
-                    credsUsername.setAttribute("disabled", true);
-                    credsPassword.setAttribute("disabled", true);
-                  }
-
-                  document.addEventListener("DOMContentLoaded", () => {
-                    if (document.getElementById("use-grant").checked) {
-                      hideExchangeCreds();
-                    } else if (document.getElementById("use-credentials").checked) {
-                      hideExchangeGrant();
-                    }
-                  })
-                  
-                </script>
-
+              {% comment %}
+                TODO: For Exchangescan, you're able to select EWS & MSgraph grant simultaneously.
+                 Even though you'll rarely have both options, it isn't neat.
+                 GraphGrant is prioritized if both are present. #}
+              {% endcomment %}
+              {% if form.ews_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html" with field=form.ews_grant %}
               {% endif %}
 
-              {% if form.grant %}
-                {% include "components/scanner/scanner_form_select_option_field.html" with field=form.grant %}
+              {% if form.graph_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.graph_grant %}
               {% endif %}
 
-              {% if form.username %}
-                {% include "components/scanner/scanner_form_input_field.html" with field=form.username %}
-              {% endif %}
-
-              {% if form.password %}
-                {% include "components/scanner/scanner_form_input_field.html" with field=form.password placeholder="(Uændret)" password="True" %}
+              {% if form.smb_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.smb_grant %}
               {% endif %}
 
               {% if form.scan_site_drives %}

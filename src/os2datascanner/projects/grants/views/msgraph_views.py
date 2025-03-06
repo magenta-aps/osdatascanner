@@ -8,10 +8,11 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, CreateView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_datetime
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from requests import HTTPError
@@ -101,10 +102,16 @@ class MSGraphGrantForm(forms.ModelForm):
         model = GraphGrant
         exclude = ("__all__")
 
-    _client_secret = AutoEncryptedField(required=False)
+    _client_secret = AutoEncryptedField(
+        required=False,
+        label=_("Client secret"),
+        help_text=_("To acquire a new client secret, navigate to your Azure Portal and find the "
+                    "application created for OSdatascanner. "
+                    "Once you've found your application, you can follow the instructions in ")
+    )
     expiry_date = forms.DateField(widget=forms.widgets.DateInput(
         attrs={"type": "date", }, format="%Y-%m-%d",),
-        required=False
+        required=False, label=_("Expiry date"),
     )
 
     def clean__client_secret(self):
@@ -123,6 +130,46 @@ class MSGraphGrantForm(forms.ModelForm):
         self.fields["app_id"].disabled = True
 
 
+class MSGraphGrantScannerForm(MSGraphGrantForm):
+    """ Form for use in Scanner Create/Update. """
+    class Meta:
+        model = GraphGrant
+        fields = ('__all__')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["_client_secret"].initial = ""
+        self.fields["tenant_id"].initial = ""
+        self.fields["app_id"].initial = ""
+        self.fields["organization"].disabled = False
+        self.fields["tenant_id"].disabled = False
+        self.fields["app_id"].disabled = False
+
+
+class MSGraphClientSecretExpiryMixin:
+    """Mixin supporting HTMX updates of form values,
+     specifically the expiry date field for MSGraphGrant."""
+
+    def get(self, request, *args, **kwargs):
+        self.end_date = kwargs.get("end_date")
+        return super().get(request, *args, **kwargs)
+
+    def get_form_kwargs(self, *args, **kwargs):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+
+        if self.request.method == "POST" and self.request.headers.get(
+                "HX-Request", False) == "true":
+            # request.POST is an immutable querydict, copying to circumvent.
+            post_copy = self.request.POST.copy()
+            post_copy["expiry_date"] = self.end_date
+            kwargs.update({
+                'data': post_copy,
+            })
+
+        return kwargs
+
+
 def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
     res = (graph_caller.get(
         f"applications?$filter=(appId eq '{graph_grant.app_id}')&$select=passwordCredentials")
@@ -135,15 +182,73 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
     return end_date
 
 
-class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView):
+class MSGraphGrantCreateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin, CreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
-    template_name = "grants/grant_update.html"
-    success_url = reverse_lazy('organization-list')
+    template_name = "grants/graphgrant_update.html"
+    success_url = reverse_lazy('grant-list')
 
-    def get(self, request, *args, **kwargs):
-        self.end_date = kwargs.get("end_date")
-        return super().get(request, *args, **kwargs)
+    def get_form(self, form_class=None):
+        # TODO: Maybe allow edits of app & tenant id in general, then this override can be removed.
+        form = super().get_form(form_class)
+        form.fields["app_id"].disabled = False
+        form.fields["tenant_id"].disabled = False
+        return form
+
+    def get_initial(self):
+        return {
+            "organization": self.kwargs.get('org'),
+            "_client_secret": None,
+            "app_id": None,
+            "tenant_id": None,
+        }
+
+    def post(self, request, *args, **kwargs):
+        # TODO: Consider moving more logic to mixin, for create/update DRY purposes,
+        #  but be aware you have no get_object() available in update.
+        is_htmx = self.request.headers.get("HX-Request", False) == "true"
+        if is_htmx:
+            htmx_trigger = self.request.headers.get("HX-Trigger-Name")
+            if htmx_trigger == "fetch-expiry-date":
+                gg = GraphGrant(
+                    app_id=request.POST.get("app_id"),
+                    tenant_id=request.POST.get("tenant_id"),
+                    client_secret=request.POST.get("_client_secret")
+
+                )
+                end_date = gg.expiry_date  # Defining variable, as it's used in the return
+                from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
+                GraphCaller = MSGraphSource.GraphCaller
+
+                try:
+                    gc = GraphCaller(gg.make_token)
+                    end_date = get_secret_end_date(gg.client_secret, end_date, gc, gg)
+
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        f"Fetched end date: {end_date}",
+                        extra_tags="auto_close"
+                    )
+
+                except HTTPError as e:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        e,
+                        extra_tags="auto_close"
+                    )
+                return self.get(request, *args, end_date=end_date)
+
+        else:
+            return super().post(request, *args, **kwargs)
+
+
+class MSGraphGrantUpdateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin, UpdateView):
+    model = GraphGrant
+    form_class = MSGraphGrantForm
+    template_name = "grants/graphgrant_update.html"
+    success_url = reverse_lazy('grant-list')
 
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"
@@ -188,19 +293,3 @@ class MSGraphGrantUpdateView(LoginRequiredMixin, UpdateView):
 
         else:
             return super().post(request, *args, **kwargs)
-
-    def get_form_kwargs(self, *args, **kwargs):
-        """Return the keyword arguments for instantiating the form."""
-        kwargs = super().get_form_kwargs()
-
-        if self.request.method == "POST" and self.request.headers.get(
-                "HX-Request", False) == "true":
-            # request.POST is an immutable querydict, copying to circumvent.
-            post_copy = self.request.POST.copy()
-            post_copy["expiry_date"] = self.end_date
-
-            kwargs.update({
-                'data': post_copy,
-            })
-
-        return kwargs

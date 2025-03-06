@@ -6,11 +6,9 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from recurrence import Recurrence
 
+from os2datascanner.projects.grants.models import SMBGrant
 from ....organizations.broadcast_bulk_events import BulkCreateEvent
 from ....organizations.publish import publish_events
-from os2datascanner.projects.admin.adminapp.models.authentication import (
-    Authentication,
-)
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner import (
     FileScanner,
 )
@@ -153,10 +151,9 @@ class Command(BaseCommand):
             rule=cpr
         )
         if created:
-            auth = Authentication(username=smb_user)
-            auth.set_password(smb_password)
-            auth.save()
-            share.authentication = auth
+            smb_grant = SMBGrant(username=smb_user, password=smb_password, organization=org)
+            smb_grant.save()
+            share.smb_grant = smb_grant
             share.save()
             self.stdout.write(self.style.SUCCESS("Samba share file scanner created successfully!"))
         else:

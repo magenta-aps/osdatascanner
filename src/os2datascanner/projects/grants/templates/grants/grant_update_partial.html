@@ -1,0 +1,54 @@
+{% load i18n %}
+
+
+{% include "components/feedback/snackbarNew.html" %}
+
+{% for error in form.non_field_errors %}<div class="form__error">{{ error }}</div>{% endfor %}
+{% csrf_token %}
+<section>
+  <h2>{{ form.instance.verbose_name }}</h2>
+
+  <div class="form__row">
+
+    {% for field in form %}
+      {% if field.name == "organization" %}
+        {{ field.as_hidden }}
+      {% else %}
+
+        <div class="form__row__item">
+          <div class="form__group{% if field.errors %} has-error{% endif %}"></div>
+          <div class="flex">{{ field.label_tag }}</div>
+          {{ field }}
+          {% if field.errors %}{{ field.errors }}{% endif %}
+
+          {% if field.help_text %}
+            <span class="form__help-text">
+              {{ field.help_text|safe }}
+              {% comment %}
+                                More dirty special case handling.
+                                But I'm not sure how you'd pass a link in form field help_text.
+              {% endcomment %}
+              {% if field.name == "_client_secret" %}
+                <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "step 7 and 8 here" %}</a>
+              {% endif %}
+
+            </span>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<button type="submit"
+        form="partial-grant-form"
+        class="button button--cta-button"
+        aria-label="{% trans 'save Grant'|capfirst %}"
+        title="{% trans 'save Grant'|capfirst %}"
+        hx-post=""
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        hx-target="#id_{{ form.prefix }}_container"
+        hx-select="#id_{{ form.prefix }}_container"
+        hx-trigger="click, submit"
+        hx-vals='{"grant_type": "{{ form.prefix }}" }'
+        name="save">{% trans "save Grant"|capfirst %}</button>

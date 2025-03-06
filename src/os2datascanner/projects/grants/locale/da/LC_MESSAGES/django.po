@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-13 13:27+0200\n"
+"POT-Creation-Date: 2025-03-04 13:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,47 +18,112 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:16
+#: admin.py:19
 msgid "(unchanged)"
 msgstr "(uændret)"
 
-#: admin.py:33
+#: admin.py:36
 msgid "This field is required."
 msgstr "Dette felt er påkrævet."
+
+#: admin.py:44 admin.py:64
+msgid "Username"
+msgstr "Brugernavn"
+
+#: admin.py:45 admin.py:66
+msgid "Password"
+msgstr "Adgangskode"
+
+#: admin.py:65 models/smbgrant.py:12
+msgid "Domain"
+msgstr "Domæne"
 
 #: apps.py:8
 msgid "grants"
 msgstr "bevillinger"
 
+#: models/grant.py:20
+msgid "Organization"
+msgstr "Organisation"
+
+#: models/grant.py:41
+msgid "Not known"
+msgstr "Ukendt"
+
+#: models/grant.py:69
+msgid "username"
+msgstr "brugernavn"
+
+#: models/grant.py:70
+msgid "password (encrypted)"
+msgstr "kodeord (krypteret)"
+
+#: models/graphgrant.py:19
+msgid "app ID"
+msgstr "app ID"
+
+#: models/graphgrant.py:22
+msgid "tenant ID"
+msgstr "tenant ID"
+
+#: models/graphgrant.py:25
+msgid "expiry date"
+msgstr "udløbsdato"
+
+#: models/graphgrant.py:28
+msgid "client secret"
+msgstr "client secret"
+
+#: templates/grants/ewsgrant_update.html:7
+msgid ""
+"\n"
+"            An EWS Service Account grant represents a service account with "
+"impersonation access to a\n"
+"            traditional on-premises Microsoft Exchange instance.\n"
+"\n"
+"            Note that EWSGrants can no longer be used to authenticate "
+"against Office\n"
+"            365, but an appropriately configured GraphGrant can.\n"
+"      "
+msgstr ""
+"\n"
+"            En EWS Service Account bevilling repræsenterer en service "
+"account med efterligningsadgang til en\n"
+"            traditionel on-premises Microsoft Exchange instans.\n"
+"\n"
+"            Bemærk at en EWS bevilling ikke længere kan benyttes til "
+"autentificering mod Office 365, \n"
+"           men en korrekt konfigureret Graph bevilling kan.\n"
+"      "
+
 #: templates/grants/grant_start.html:23
 msgid "Configure Microsoft Graph"
 msgstr "Konfigurér Microsoft Graph"
 
-#: templates/grants/grant_start.html:27
+#: templates/grants/grant_start.html:26
 msgid ""
 "To use this service, you must allow OSdatascanner access to its content."
 msgstr ""
 "For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
 "tjenestens indhold."
 
-#: templates/grants/grant_start.html:31
+#: templates/grants/grant_start.html:30
 msgid "The service refused to grant OSdatascanner the necessary rights:"
 msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
 
-#: templates/grants/grant_start.html:34
+#: templates/grants/grant_start.html:33
 msgid "Click the button below to try again."
 msgstr "Klik på knappen nedenfor for at prøve igen."
 
-#: templates/grants/grant_start.html:36
+#: templates/grants/grant_start.html:35
 msgid "Click the button below to forward to this service."
 msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
 
-#: templates/grants/grant_start.html:42 templates/grants/grant_start.html:43
-#: templates/grants/grant_start.html:44
+#: templates/grants/grant_start.html:41 templates/grants/grant_start.html:42
 msgid "Continue to"
 msgstr "Fortsæt til"
 
-#: templates/grants/grant_start.html:47
+#: templates/grants/grant_start.html:44
 msgid ""
 "You will be forwarded to the creation form after the service has issued the "
 "necessary rights."
@@ -66,10 +131,95 @@ msgstr ""
 "Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
 "de nødvendige rettigheder."
 
-#: templates/grants/grant_start.html:49
+#: templates/grants/grant_start.html:46
 msgid ""
 "The information pointing to the OSdatascanner system for this service is "
 "missing."
 msgstr ""
 "De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
 "mangler."
+
+#: templates/grants/grant_update.html:14
+msgid "edit grant"
+msgstr "redigér bevillinger"
+
+#: templates/grants/grant_update.html:16
+msgid "create grant"
+msgstr "opret bevilling"
+
+#: templates/grants/grant_update.html:53
+#: templates/grants/grant_update_partial.html:33
+msgid "step 7 and 8 here"
+msgstr "trin 7 og 8 her"
+
+#: templates/grants/grant_update.html:65 templates/grants/grant_update.html:66
+#: templates/grants/grant_update.html:67
+#: templates/grants/grant_update_partial.html:47
+#: templates/grants/grant_update_partial.html:48
+#: templates/grants/grant_update_partial.html:55
+msgid "save Grant"
+msgstr "gem bevilling"
+
+#: templates/grants/graphgrant_update.html:15
+msgid "fetch expiry date"
+msgstr "hent udløbsdato"
+
+#: templates/grants/graphgrant_update.html:24
+msgid ""
+"\n"
+"        A GraphGrant represents an entitlement to use the Microsoft Graph "
+"API\n"
+"          to explore the resources associated with a particular tenant.\n"
+"\n"
+"        Note that the specific permissions associated with this entitlement "
+"are\n"
+"        not specified here, but in the OSdatascanner application "
+"registration in\n"
+"        Microsoft's portal.\n"
+"      "
+msgstr ""
+"\n"
+"        En Graph bevilling repræsenterer en berettigelse til at benytte "
+"Microsoft Graph API'et\n"
+"          til at udforske ressourcer tilknyttet en specifik tenant.\n"
+"\n"
+"        Bemærk at de specifikke tilladelser tilknyttet denne berettigelse "
+"ikke\n"
+"        er specificeret her, men i OSdatascanner applikation registreringen "
+"i\n"
+"        Microsoft's portal.\n"
+"      "
+
+#: templates/grants/smbgrant_update.html:7
+msgid ""
+"\n"
+"        An SMB Service Account grant represents a service account with "
+"access to a\n"
+"          Windows domain, and thereby an entitlement for OSdatascanner\n"
+"          to access and scan that domain.\n"
+"      "
+msgstr ""
+"\n"
+"        En SMB Service Account bevilling repræsenterer en service konto med "
+"adgang til et \n"
+"          Windows domæne, og derved en berettigelse for OSdatascanner \n"
+"          til at tilgå og scanne dette domæne. \n"
+"      "
+
+#: views/msgraph_views.py:107
+msgid "Client secret"
+msgstr "Client secret"
+
+#: views/msgraph_views.py:108
+msgid ""
+"To acquire a new client secret, navigate to your Azure Portal and find the "
+"application created for OSdatascanner. Once you've found your application, "
+"you can follow the instructions in "
+msgstr ""
+"For at erhverve en client secret, skal du navigere til Azure Portal og finde "
+"applikationen oprettet for OSdatascanner. Når du har fundet applikationen, "
+"kan du følge instruktionerne i  "
+
+#: views/msgraph_views.py:114
+msgid "Expiry date"
+msgstr "Udløbsdato"

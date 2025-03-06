@@ -27,9 +27,6 @@ class TestExchangeScanner:
             exchange_scanner,
             userlist_file,
             expected):
-
-        exchange_scanner.authentication.set_password("swordfish")
-
         exchange_scanner.userlist = userlist_file
 
         assert len(
