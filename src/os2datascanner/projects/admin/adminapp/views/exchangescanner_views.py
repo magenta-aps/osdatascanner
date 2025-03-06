@@ -270,7 +270,7 @@ def validate_grant_selected(form):
     ews_grant = form.cleaned_data.get('ews_grant')
     graph_grant = form.cleaned_data.get('graph_grant')
 
-    if not ews_grant or graph_grant:
+    if not ews_grant and not graph_grant:
         form.add_error(
             None,
             _("You must select either an EWS or a Graph grant!"))

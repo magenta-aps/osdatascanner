@@ -10,6 +10,10 @@
 - User page added to the admin module, accessible via the user menu in the top left corner.
   From this page, the user can change their name and email address.
 
+- Authentication objects have now been converted into Grants, which can now be managed
+through the Grants tab in the admin module. This allows for easier re-use of credentials across
+more scanner types.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner
