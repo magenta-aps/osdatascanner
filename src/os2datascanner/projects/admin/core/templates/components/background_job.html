@@ -36,8 +36,24 @@
           <span class="response-icon response-icon--cancelled">
             <i class="material-icons">block</i>
           </span>
+        {% else %}
+          <span class="response-icon response-icon--warning popoverTrigger popover__trigger-element"
+                data-popover-id="popover-{{ job.pk }}">
+            <i class="material-icons">warning</i>
+          </span>
+          <div id="popover-{{ job.pk }}" class="popover popover--yellow">
+            <div id="popover-{{ popover_data.id }}" class="popover__wrapper">
+              <div class="popover__content">
+                <div class="popover__text-container">
+                  <div>
+                    <span class="popover__sub-title">{{ job.status }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         {% endif %}
-
+ 
         <span class="response-text">
           {% if exec_state_value == "finished" %}
             {% trans 'last updated'|capfirst %},
@@ -45,9 +61,9 @@
             {{ job.exec_state.label|capfirst }},
           {% endif %}
           {{ job.changed_at|date:'d-m-Y H:i' }}
-        </div>
+        {% endif %}
       </span>
     </div>
-  {% endif %}
+  </div>
 
 {% endwith %}

@@ -13,6 +13,8 @@ from ..import_services import keycloak_services
 from .models import (Alias, Account, Position,
                      Organization, OrganizationalUnit)
 from .models.aliases import AliasType
+from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
+from django.utils.translation import gettext_lazy as _
 
 logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
@@ -559,11 +561,13 @@ def perform_import_raw(  # noqa: CCR001, too high cognitive complexity
     iids_to_preserve = _get_iids_of_hiearchy(remote_hierarchy)
 
     if not iids_to_preserve:
-        logger.warning(
-                "no remote users or organisational units available for"
-                f" organisation {org.name}; are you sure your LDAP settings"
-                " are correct?")
-        return 0, 0, 0
+        no_users_warning = _(
+                        "No remote users or organisational units available for"
+                        " organisation {org}; are you sure your LDAP settings"
+                        " are correct?")
+        logger.warning(no_users_warning.format(org=org.name))
+
+        raise LDAPNothingImportedWarning(no_users_warning.format(org=org.name))
 
     # Make sure that we have an OrganizationalUnit hierarchy that reflects the remote one
     path_to_unit, new_units = _create_unit_hierarchy(remote_hierarchy, org)

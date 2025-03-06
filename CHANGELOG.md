@@ -27,6 +27,8 @@ more scanner types.
 
 - Added "noindex" meta tag to prevent search engines from listing OSdatascanner in their search results. 
 
+- Fixed an issue where an LDAP import job would show as successful despite finding no users
+
 ## Version 3.26.5, 25th February 2025
 
 "Named Release #1"

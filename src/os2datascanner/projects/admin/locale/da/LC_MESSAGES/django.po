@@ -2773,12 +2773,12 @@ msgstr "vent %(metavar)s sekunder hvis der ikke var nogle jobs til afvikling"
 msgid "do not loop: run a single job and then exit"
 msgstr "kør ikke i løkke: kør et enkelt job og gå derefter ud"
 
-#: core/management/commands/run_background_jobs.py:195
+#: core/management/commands/run_background_jobs.py:196
 #, python-brace-format
 msgid "{0} job(s) completed."
 msgstr "{0} færdige job(s)."
 
-#: core/management/commands/run_background_jobs.py:196
+#: core/management/commands/run_background_jobs.py:197
 #, python-brace-format
 msgid "{0} job(s) failed."
 msgstr "{0} fejlede job(s)."
@@ -2824,19 +2824,23 @@ msgstr "annulleret"
 msgid "failed"
 msgstr "fejlet"
 
-#: core/models/background_job.py:50
+#: core/models/background_job.py:29
+msgid "finished with warnings"
+msgstr "afsluttet med advarsler"
+
+#: core/models/background_job.py:52
 msgid "job creation time"
 msgstr "job-oprettelsestid"
 
-#: core/models/background_job.py:53
+#: core/models/background_job.py:55
 msgid "job update time"
 msgstr "job-opdateringstid"
 
-#: core/models/background_job.py:58
+#: core/models/background_job.py:60
 msgid "execution state"
 msgstr "kørselsstatus"
 
-#: core/models/background_job.py:62
+#: core/models/background_job.py:64
 msgid "last status message"
 msgstr "sidste status-besked"
 
@@ -2927,7 +2931,7 @@ msgstr "{value} er ikke en gyldig værdi for {class_name}"
 msgid "Cancel task"
 msgstr "Annullér opgave"
 
-#: core/templates/components/background_job.html:43
+#: core/templates/components/background_job.html:59
 msgid "last updated"
 msgstr "sidst opdateret"
 
@@ -3542,6 +3546,15 @@ msgstr "Supportknap indstillinger"
 #: organizations/admin.py:55
 msgid "Retention policy"
 msgstr "Opbevaringspolitik"
+
+#: organizations/keycloak_actions.py:565
+#, python-brace-format
+msgid ""
+"No remote users or organisational units available for organisation {org}; "
+"are you sure your LDAP settings are correct?"
+msgstr ""
+"Ingen brugere eller organisatoriske enheder tilgængelige for organisation "
+"{org}; Er du sikker på at dine LDAP indstillinger er korrekte?"
 
 #: organizations/models/account.py:48
 #, python-brace-format

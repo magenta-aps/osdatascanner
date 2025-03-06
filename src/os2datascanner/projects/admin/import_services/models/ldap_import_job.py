@@ -3,8 +3,9 @@ from django.db import models
 from os2datascanner.utils.ldap import RDN
 
 from os2datascanner.projects.admin.organizations.publish import get_pika_thread
-from ...core.models.background_job import BackgroundJob
+from ...core.models.background_job import BackgroundJob, JobState
 from .realm import Realm
+from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
 
 
 class LDAPImportJob(BackgroundJob):
@@ -49,7 +50,12 @@ class LDAPImportJob(BackgroundJob):
                         self.handled, RDN.sequence_to_dn(path), self.to_handle)
                 self.save()
 
-        perform_import(self.realm, progress_callback=_callback)
+        try:
+            perform_import(self.realm, progress_callback=_callback)
+        except LDAPNothingImportedWarning as w:
+            self.exec_state = JobState.FINISHED_WITH_WARNINGS
+            self.status = w
+            self.save()
 
         from ..utils import post_import_cleanup
         post_import_cleanup()
