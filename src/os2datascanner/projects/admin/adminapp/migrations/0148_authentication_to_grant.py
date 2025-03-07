@@ -7,7 +7,7 @@ def authentication_to_grant(apps, schema_editor):
     FileScanner = apps.get_model('os2datascanner', 'FileScanner')
     ExchangeScanner = apps.get_model('os2datascanner', 'ExchangeScanner')
     SMBGrant = apps.get_model('grants', 'SMBGrant')
-    EWSrant = apps.get_model('grants', 'EWSGrant')
+    EWSGrant = apps.get_model('grants', 'EWSGrant')
 
     for file_scanner in FileScanner.objects.iterator():
         if auth := file_scanner.authentication:
@@ -25,9 +25,12 @@ def authentication_to_grant(apps, schema_editor):
 
 
     for ews_scanner in ExchangeScanner.objects.iterator():
-        if auth := ews_scanner.authentication and ews_scanner.graph_grant:
+        # We'll throw away Authentication objects if there's a GraphGrant, but that should
+        # be desired, as GraphGrant will take higher precedence anyway,
+        # and there's no need to store more credentials than needed.
+        if (auth := ews_scanner.authentication) and not ews_scanner.graph_grant:
 
-            ews_grant, _ = EWSrant.objects.get_or_create(username=auth.username,
+            ews_grant, _ = EWSGrant.objects.get_or_create(username=auth.username,
                                            organization=ews_scanner.organization,
                                            defaults={
                                                "_password": [auth.iv.hex(), auth.ciphertext.hex()],
