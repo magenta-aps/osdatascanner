@@ -1,4 +1,6 @@
+from io import BytesIO
 from typing import Iterable
+from functools import cached_property
 import structlog
 
 from sqlalchemy import select, MetaData, create_engine
@@ -6,7 +8,7 @@ from sqlalchemy.sql.expression import func as sql_func, text as sql_text
 
 
 from os2datascanner.engine2.model.core import (
-        Source, Handle, Resource, SourceManager)
+        Source, Handle, Resource, FileResource, SourceManager)
 from os2datascanner.engine2.model.derived import DerivedSource
 from os2datascanner.engine2.utilities.i18n import gettext as _
 
@@ -51,11 +53,14 @@ class SBSYSDBSource(Source):
 
     def handles(
             self, sm: SourceManager,
-            *, rule=None) -> Iterable['SBSYSDBCaseHandle']:
+            *, rule=None) -> Iterable['SBSYSDBHandles.Case']:
         engine, tables = sm.open(self)
         Sag = tables["Sag"]
 
-        column_labels = {"Nummer": Sag.c.Nummer, "Titel": Sag.c.Titel}
+        column_labels = {
+            label: getattr(Sag.c, label)
+            for label in SBSYSDBSources.Case.required_columns
+        }
         expr = convert_rule_to_select(
                 rule,
                 Sag, tables,
@@ -70,24 +75,12 @@ class SBSYSDBSource(Source):
                     "?Age?": sql_func.datediff(
                             sql_text("day"), Sag.c.LastChanged, sql_func.now())
                 })
-        breakpoint()
 
-        with Session(engine) as session:
-            logger.debug(
-                    "executing SBSYS database query",
-                    query=str(expr), params=expr.compile().params)
-
-            # Simulate Django's iterator() (with its default page size of 2000)
-            # to avoid allocating too much memory
-            for db_row_ in session.execute(
-                    expr, execution_options={
-                        "yield_per": 2000
-                    }):
-                db_row = dict(zip(column_labels.keys(), db_row_))
-                yield SBSYSDBCaseHandle(
-                        self,
-                        db_row["Nummer"], db_row["Titel"],
-                        hints={"db_row": db_row})
+        for db_row in exec_expr(engine, expr, *column_labels.keys()):
+            yield SBSYSDBHandles.Case(
+                    self,
+                    db_row["Nummer"], db_row["Titel"],
+                    hints={"db_row": db_row})
 
     def to_json_object(self):
         return {
@@ -99,31 +92,108 @@ class SBSYSDBSource(Source):
         }
 
 
-class SBSYSDBCaseResource(Resource):
-    def check(self):
-        return True
+class SBSYSDBHandles:
+    class Case(Handle):
+        _DUMMY_MIME = "application/vnd.magenta.osds.sbsys-case"
 
-    def compute_type(self):
-        return DUMMY_CASE_MIME
+        class _Resource(Resource):
+            def check(self):
+                return True
+
+            def compute_type(self):
+                return SBSYSDBHandles.Case._DUMMY_MIME
+
+        resource_type = _Resource
+        type_label = "sbsys-db-case"
+
+        def __init__(
+                self,
+                source: SBSYSDBSource,
+                number: str | int,
+                title: str, **kwargs):
+            super().__init__(source, str(number), **kwargs)
+            self._title = title
+
+        def guess_type(self):
+            return self._DUMMY_MIME
+
+        @property
+        def presentation_name(self):
+            if not self._title:
+                return _("case number {casenr}").format(casenr=self.relative_path)
+            else:
+                return _("case \"{title}\" (case number {casenr})").format(
+                        title=self._title, casenr=self.relative_path)
+
+        @property
+        def presentation_place(self):
+            return "SBSYS"
+
+    class Field(Handle):
+        class _Resource(FileResource):
+            def check(self):
+                return True
+
+            @cached_property
+            def _val(self):
+                return str(self.handle.source.fetch(self._sm)[
+                        self.handle.relative_path]).encode()
+
+            def make_stream(self):
+                yield BytesIO(self._val)
+
+            def get_size(self):
+                return len(self._val)
+
+            def compute_type(self):
+                return "text/plain"
+
+        type_label = "sbsys-db-case-field"
+        resource_type = _Resource
+
+        @property
+        def presentation_name(self):
+            return _("field \"{field}\" of {case}").format(
+                    field=self.relative_path,
+                    case=str(self.source.handle.presentation_name))
+
+        @property
+        def presentation_place(self):
+            return str(self.source.handle.presentation_place)
 
 
-class SBSYSDBCaseHandle(Handle):
-    type_label = "sbsys-db-case"
-    resource_type = SBSYSDBCaseResource
+class SBSYSDBSources:
+    @Source.mime_handler(SBSYSDBHandles.Case._DUMMY_MIME)
+    class Case(DerivedSource):
+        type_label = "sbsys-db-case"
+        derived_from = SBSYSDBHandles.Case
 
-    def __init__(
-            self, source, path, title, **kwargs):
-        super().__init__(source, path, **kwargs)
-        self._title = title
+        def fetch(self, sm: SourceManager):
+            engine, tables = sm.open(self)
+            Sag = tables["Sag"]
 
-    def guess_type(self):
-        return DUMMY_CASE_MIME
+            row_hints = self.handle.hint("db_row", {})
 
-    @property
-    def presentation_name(self):
-        rv = f"case {self.relative_path}"
-        return rv if not self._title else f"\"{self._title}\" ({rv})"
+            columns_to_select = [
+                    getattr(Sag.c, col)
+                    for col in self.required_columns
+                    if col not in row_hints]
 
-    @property
-    def presentation_place(self):
-        return "SBSYS"
+            db_row = None
+            if columns_to_select:
+                expr = select().add_columns(columns_to_select).where(
+                        Sag.c.Nummer == self.handle.relative_path)
+
+                db_row, = exec_expr(engine, expr, *columns_to_select)
+
+            return {col: row_hints[col]
+                    if col in row_hints
+                    else db_row[col] for col in self.required_columns}
+
+        required_columns = ("Nummer", "Titel", "Kommentar",)
+
+        def _generate_state(self, sm: SourceManager):
+            yield sm.open(self.handle.source)
+
+        def handles(self, sm: SourceManager):
+            yield SBSYSDBHandles.Field(self, "Kommentar")
