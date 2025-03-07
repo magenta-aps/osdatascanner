@@ -10,7 +10,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import UpdateView, CreateView
 from django.views.generic.base import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
@@ -184,9 +184,11 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
     return end_date
 
 
-class MSGraphGrantCreateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin, CreateView):
+class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
+                             MSGraphClientSecretExpiryMixin, CreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
+    permission_required = "grants.add_graphgrant"
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
 
@@ -246,9 +248,11 @@ class MSGraphGrantCreateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin,
             return super().post(request, *args, **kwargs)
 
 
-class MSGraphGrantUpdateView(LoginRequiredMixin, MSGraphClientSecretExpiryMixin, UpdateView):
+class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
+                             MSGraphClientSecretExpiryMixin, UpdateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
+    permission_required = "grants.change_graphgrant"
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
 
