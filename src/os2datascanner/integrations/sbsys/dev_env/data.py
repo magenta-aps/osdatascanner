@@ -369,7 +369,23 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2022, 9, 11),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
-    }
+    },
+    _SAG_BASE | {
+        "SagIdentity": "6DB35330-CDC3-41E9-A498-67127B205BCF",
+        "Nummer": "22.13.01-K02-3-13",
+        "Titel": "Personfølsomme Informationer",
+        "ErBeskyttet": 1,
+        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "Kommentar": "Borgeren Rebecca Testsen har bedt os om at opbevare sit"
+                     " CPR-nummer (111111-1118) på sikker vis.",
+        "SagsStatusID": 8,
+        "CreatedByID": 1,
+        "Created": datetime(2015, 4, 21),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2015, 4, 22),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+    },
 ]
 
 # --
