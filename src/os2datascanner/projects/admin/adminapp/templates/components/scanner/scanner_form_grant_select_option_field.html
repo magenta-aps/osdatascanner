@@ -1,17 +1,20 @@
 {% extends "components/scanner/scanner_form_select_option_field.html" %}
+{% load grant_tags %}
 {% block grant_extra %}
-  <button type="button"
-          class="button button--icon-button"
-          hx-get=" {{ request.path }}"
-          hx-target="#{{ field.name }}-form-container"
-          hx-select="#{{ field.name }}-form-container"
-          hx-trigger="click"
-          hx-include="#hidden_organization, #id_organization"
-          hx-vals='{"grant_type": "{{ field.name }}" }'>
-    <svg class="icon button__plus-icon">
-      <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-    </svg>
-  </button>
+  {% if perms|can_add:field.name %}
+    <button type="button"
+            class="button button--icon-button"
+            hx-get=" {{ request.path }}"
+            hx-target="#{{ field.name }}-form-container"
+            hx-select="#{{ field.name }}-form-container"
+            hx-trigger="click"
+            hx-include="#hidden_organization, #id_organization"
+            hx-vals='{"grant_type": "{{ field.name }}" }'>
+      <svg class="icon button__plus-icon">
+        <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+      </svg>
+    </button>
+  {% endif %}
 
   <div id="{{ field.name }}-form-container" class="mt-3">
 

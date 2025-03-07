@@ -1,6 +1,7 @@
 from django.forms import ModelChoiceField
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.contrib.auth import PermissionDenied
 from utilities import UserWrapper
 
 
@@ -18,6 +19,8 @@ class GrantMixin:
 
         if self.is_htmx == "true":
             field_name = self.request.GET.get("grant_type")
+            if not self.request.user.has_perm(f"grants.add_{field_name.replace('_', '')}"):
+                raise PermissionDenied
             GrantFormClass = self.get_grant_form_classes().get(field_name)
 
             if GrantFormClass:

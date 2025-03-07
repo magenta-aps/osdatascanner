@@ -44,13 +44,15 @@
         </a>
       </li>
       {#   TODO: Icon messes alignment and looks funny  #}
-      <li>
-        <a href="{% url "grant-list" %}"
-           class="{% if active_tab == 'grant-list' %}active{% endif %}">
-          <i class="material-icons">key</i>
-          <span class="width">{% trans "Grants"|capfirst %}</span>
-        </a>
-      </li>
+      {% if perms.grants.view_ewsgrant or perms.grants.view_graphgrant or perms.grants.view_smbgrant %}
+        <li>
+          <a href="{% url "grant-list" %}"
+             class="{% if active_tab == 'grant-list' %}active{% endif %}">
+            <i class="material-icons">key</i>
+            <span class="width">{% trans "Grants"|capfirst %}</span>
+          </a>
+        </li>
+      {% endif %}
       <li>
         <a href="{% url "organization-list" %}"
            class="{% if active_tab == 'organizations' %}active{% endif %}">

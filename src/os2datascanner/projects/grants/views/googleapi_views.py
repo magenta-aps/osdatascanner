@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView, CreateView
@@ -49,9 +49,10 @@ class GoogleApiScannerForm(GoogleApiGrantForm):
         self.fields["_service_account"].initial = ""
 
 
-class GoogleApiGrantCreateView(LoginRequiredMixin, CreateView):
+class GoogleApiGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
+    permission_required = "grants.add_googleapigrant"
     template_name = "grants/googleapigrant_update.html"
     success_url = reverse_lazy('grant-list')
 
@@ -61,8 +62,9 @@ class GoogleApiGrantCreateView(LoginRequiredMixin, CreateView):
         }
 
 
-class GoogleApiGrantUpdateView(LoginRequiredMixin, UpdateView):
+class GoogleApiGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
+    permission_required = "change_googleapigrant"
     template_name = "grants/googleapigrant_update.html"
     success_url = reverse_lazy('grant-list')
