@@ -1,8 +1,8 @@
 {% load i18n %}
 
 {% block body %}
-  {% include "components/feedback/snackbarNew.html" %}
   <div id="miniscan_form_container" class="modal__form-container">
+    {% include "components/feedback/snackbarNew.html" %}
     <h1 class="modal__header">{% trans "Create new rule" %}</h1>
     {% if form.non_field_errors %}
       <div class="alert" role="alert">
