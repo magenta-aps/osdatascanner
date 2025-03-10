@@ -30,6 +30,7 @@ from os2datascanner.engine2.model.msgraph.teams import MSGraphTeamsFilesSource
 from os2datascanner.projects.grants.models import GraphGrant
 from ....organizations.models.aliases import AliasType
 from .scanner import Scanner
+from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 
 logger = structlog.get_logger("adminapp")
 
@@ -88,6 +89,12 @@ class MSGraphMailScanner(MSGraphScanner):
         help_text=_("Scan attached files"),
     )
 
+    scan_subject = models.BooleanField(
+        default=True,
+        verbose_name=_('Scan subjects'),
+        help_text=_("Scan mail subjects"),
+    )
+
     supports_rule_preexec = True
 
     @staticmethod
@@ -113,6 +120,12 @@ class MSGraphMailScanner(MSGraphScanner):
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
+
+    def local_or_rules(self) -> list:
+        if self.scan_subject:
+            return [EmailHeaderRule(prop="subject", rule=self.rule.customrule.make_engine2_rule())]
+        else:
+            return []
 
     class Meta(MSGraphScanner.Meta):
         verbose_name = _("MSGraph mailscanner")

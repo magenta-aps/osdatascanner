@@ -79,6 +79,7 @@ class _MSGraphMailScannerCreate(GrantMixin, ScannerCreate):
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
         'scan_attachments',
+        'scan_subject',
         'rule',
         'organization',
         'contacts'
@@ -113,6 +114,7 @@ class MSGraphMailScannerUpdate(GrantMixin, ScannerUpdate):
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
         'scan_attachments',
+        'scan_subject',
         'rule',
         'organization',
         'contacts'
@@ -158,6 +160,7 @@ class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
         'scan_deleted_items_folder',
         'scan_syncissues_folder',
         'scan_attachments',
+        'scan_subject',
         'rule',
         'organization',
         'contacts'
