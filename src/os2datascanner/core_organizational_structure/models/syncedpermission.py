@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+# from django.utils.translation import gettext_lazy as _
 
 
 class SyncedPermission(models.Model):
@@ -10,6 +10,5 @@ class SyncedPermission(models.Model):
     class Meta:
         abstract = True
         permissions = [
-            ("test_permission",
-             _("This is a test permission. It does not grant access to anything."))
+            # None yet.
         ]

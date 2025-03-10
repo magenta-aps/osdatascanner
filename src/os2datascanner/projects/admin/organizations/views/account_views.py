@@ -153,7 +153,6 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
                     added_permission = request.POST.get('add-permission')
 
                     acc.permissions.add(added_permission)
-                    acc.save()
                 else:
                     raise PermissionDenied("User does not have the 'change_permissions_account'"
                                            "-permission.")
@@ -163,7 +162,6 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
                     removed_permission = request.POST.get('rem-permission')
 
                     acc.permissions.remove(removed_permission)
-                    acc.save()
                 else:
                     raise PermissionDenied("User does not have the 'change_permissions_account'"
                                            "-permission.")

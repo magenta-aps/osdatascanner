@@ -12,7 +12,7 @@
 # sector open source network <https://os2.eu/>.
 
 from abc import ABC
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from os2datascanner.utils.test_helpers import in_test_environment
 from ..broadcast_bulk_events import BulkCreateEvent, BulkUpdateEvent, BulkDeleteEvent
@@ -49,6 +49,22 @@ def post_save_broadcast(sender, instance, created, **kwargs):
         event = BulkCreateEvent(broadcastable_dict)
     else:
         event = BulkUpdateEvent(broadcastable_dict)
+
+    publish_events([event])
+
+
+@receiver(m2m_changed)
+def account_permissions_changed(sender, instance, action, *args, **kwargs):
+    """When account permissions are changed, we want to propagate that change to the report module.
+    Since permissions on the Account model is a many-to-many field, it is not always registered in
+    a post-save, so we have to do it here as well."""
+    if not sender.__name__ == "Account_permissions" or action not in ["post_add", "post_remove"]:
+        return
+    serializer = get_serializer(instance.__class__)
+    serialized_data = serializer(instance).data
+    broadcastable_dict = {instance.__class__.__name__: [serialized_data]}
+
+    event = BulkUpdateEvent(broadcastable_dict)
 
     publish_events([event])
 

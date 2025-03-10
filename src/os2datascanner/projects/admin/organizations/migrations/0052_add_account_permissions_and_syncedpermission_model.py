@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
             ],
             options={
-                'permissions': [('test_permission', 'This is a test permission. It does not grant access to anything.')],
                 'abstract': False,
+                'permissions': []
             },
         ),
         migrations.AlterModelOptions(
