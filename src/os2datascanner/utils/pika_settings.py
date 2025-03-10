@@ -16,12 +16,16 @@ class OS2DSModule(Enum):
     @classmethod
     def determine_OS2DS_module(cls):
         # TODO: Consider a more elegant way to determine this
-        if os.getenv('OS2DS_ADMIN_USER_CONFIG_PATH'):
-            return cls.ADMIN
-        if os.getenv('OS2DS_ENGINE_USER_CONFIG_PATH'):
-            return cls.ENGINE
-        if os.getenv('OS2DS_REPORT_USER_CONFIG_PATH'):
-            return cls.REPORT
+        for component, indicator in (
+                (cls.REPORT, "OS2DS_REPORT_USER_CONFIG_PATH"),
+                (cls.ADMIN, "OS2DS_ADMIN_USER_CONFIG_PATH"),
+
+                # An engine config file is ~always available, so check for it
+                # last
+                (cls.ENGINE, "OS2DS_ENGINE_USER_CONFIG_PATH")):
+            if os.getenv(indicator):
+                return component
+        raise LookupError
 
     def __init__(self, _):
         self.sys_var = f"OS2DS_{self.name}_SYSTEM_CONFIG_PATH"
