@@ -2360,8 +2360,6 @@ msgid "scanner"
 msgstr "scanner"
 
 #: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:113
-#, fuzzy
-#| msgid "Enable rule"
 msgid "Save rule"
 msgstr "Aktivér regel"
 
