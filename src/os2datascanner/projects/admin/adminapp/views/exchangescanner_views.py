@@ -121,7 +121,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, GrantMixin, ScannerCreate):
         return form
 
 
-class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
+class ExchangeScannerCopy(ExchangeScannerBase, GrantMixin, ScannerCopy):
     """Create a new copy of an existing ExchangeScanner"""
 
     model = ExchangeScanner
@@ -129,6 +129,15 @@ class ExchangeScannerCopy(ExchangeScannerBase, ScannerCopy):
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
               'contacts', 'ews_grant']
+
+    def get_grant_form_classes(self):
+        if settings.MSGRAPH_EWS_AUTH:
+            return {
+                "ews_grant": EWSGrantScannerForm,
+                "graph_grant": MSGraphGrantScannerForm
+            }
+
+        return {"ews_grant": EWSGrantScannerForm}
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")

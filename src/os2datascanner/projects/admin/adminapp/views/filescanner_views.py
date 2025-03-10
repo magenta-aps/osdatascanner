@@ -129,7 +129,7 @@ class FileScannerDelete(ScannerDelete):
     success_url = '/filescanners/'
 
 
-class FileScannerCopy(ScannerCopy):
+class FileScannerCopy(GrantMixin, ScannerCopy):
     """Create a new copy of an existing FileScanner"""
     model = FileScanner
     type = 'file'
@@ -147,8 +147,14 @@ class FileScannerCopy(ScannerCopy):
         'unc_is_home_root',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'smb_grant'
         ]
+
+    def get_grant_form_classes(self):
+        return {
+            "smb_grant": SMBGrantScannerForm,
+        }
 
     def get_form(self, form_class=None):
         """Adds special field password."""

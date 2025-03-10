@@ -141,7 +141,7 @@ class MSGraphMailScannerDelete(ScannerDelete):
     success_url = reverse_lazy("msgraphmailscanners")
 
 
-class MSGraphMailScannerCopy(ScannerCopy):
+class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
     type = 'msgraph-mail'
@@ -162,6 +162,9 @@ class MSGraphMailScannerCopy(ScannerCopy):
         'organization',
         'contacts'
      ]
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
 
 class MSGraphMailScannerAskRun(ScannerAskRun):
@@ -259,7 +262,7 @@ class MSGraphFileScannerDelete(ScannerDelete):
     success_url = reverse_lazy("msgraphfilescanners")
 
 
-class MSGraphFileScannerCopy(ScannerCopy):
+class MSGraphFileScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphFileScanner
     type = 'msgraph-file'
@@ -268,6 +271,9 @@ class MSGraphFileScannerCopy(ScannerCopy):
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
 
 class MSGraphFileScannerAskRun(ScannerAskRun):
@@ -314,7 +320,7 @@ class _MSGraphCalendarScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph calendar scanner job."""
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
-    fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
+    fields = ['name', 'schedule', 'graph_grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
@@ -335,7 +341,7 @@ class MSGraphCalendarScannerUpdate(GrantMixin, ScannerUpdate):
     for modification."""
     model = MSGraphCalendarScanner
     type = 'msgraph-calendarscanners'
-    fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
+    fields = ['name', 'schedule', 'graph_grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
@@ -364,14 +370,17 @@ class MSGraphCalendarScannerDelete(ScannerDelete):
     success_url = reverse_lazy("msgraphcalendarscanners")
 
 
-class MSGraphCalendarScannerCopy(ScannerCopy):
+class MSGraphCalendarScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph calendar scanner job."""
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
-    fields = ['name', 'schedule', 'grant', 'only_notify_superadmin',
+    fields = ['name', 'schedule', 'graph_grant', 'only_notify_superadmin',
               'do_ocr', 'org_unit', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
 
 class MSGraphCalendarScannerAskRun(ScannerAskRun):
@@ -420,7 +429,7 @@ class _MSGraphTeamsFileScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph file scanner job."""
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-file'
-    fields = ['name', 'schedule', 'grant',
+    fields = ['name', 'schedule', 'graph_grant',
               'exclusion_rule', 'only_notify_superadmin',
               'do_ocr', 'do_last_modified_check', 'rule',
               'organization', 'keep_false_positives']
@@ -441,7 +450,7 @@ class MSGraphTeamsFileScannerUpdate(GrantMixin, ScannerUpdate):
     for modification."""
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-filescanners'
-    fields = ['name', 'schedule', 'grant',
+    fields = ['name', 'schedule', 'graph_grant',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
@@ -469,14 +478,17 @@ class MSGraphTeamsFileScannerDelete(ScannerDelete):
     success_url = reverse_lazy("msgraphteamsfilescanners")
 
 
-class MSGraphTeamsFileScannerCopy(ScannerCopy):
+class MSGraphTeamsFileScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphTeamsFileScanner
     type = 'msgraph-teams-file'
-    fields = ['name', 'schedule', 'grant',
+    fields = ['name', 'schedule', 'graph_grant',
               'exclusion_rule', 'only_notify_superadmin',
               'do_ocr', 'do_last_modified_check', 'rule',
               'organization', 'keep_false_positives', 'contacts']
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
 
 
 class MSGraphTeamsFileScannerAskRun(ScannerAskRun):
