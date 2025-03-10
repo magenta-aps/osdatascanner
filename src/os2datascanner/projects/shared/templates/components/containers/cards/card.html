@@ -5,11 +5,13 @@
 <div class="card">
   <div class="card__header">
     <div class="card__label">
-      <h3 class="title">{% trans title %}</h3>
+      <h3 class="title">
+        {% block card_title %}{% endblock %}
+      </h3>
 
-      {% if subtitle %}
-        <p class="subtitle">{% trans subtitle %}</p>
-      {% endif %}
+      <p class="subtitle">
+        {% block card_subtitle %}{% endblock %}
+      </p>
     </div>
 
     <div class="card__header-ui">
@@ -21,9 +23,6 @@
     {% block card_body %}{% endblock %}
   </div>
 
-  {% if card_footer %}
-    <div class="card__footer">
-      {% block card_footer %}{% endblock %}
-    </div>
-  {% endif %}
+  {# NOTE: this isn't used anywhere yet. More thinking needs to happen to find a workaround that won't wreck the layout, but let's cross that bridge when we get to it. #}
+  {% comment %} <div class="card__footer">{% block card_footer %}{% endblock %}</div> {% endcomment %}
 </div>

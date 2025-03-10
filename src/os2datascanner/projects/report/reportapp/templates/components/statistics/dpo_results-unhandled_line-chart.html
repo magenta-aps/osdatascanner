@@ -1,6 +1,14 @@
 {% extends "components/containers/cards/card__zoom-controls.html" %}
 
-{% load i18n l10n static %}
+{% load i18n %}
+
+{% block card_title %}
+  {% trans "Development overview" %}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% trans "Accumulated unhandled results by month" %}
+{% endblock %}
 
 {% block card_body %}
   <div class="chart chart--line"

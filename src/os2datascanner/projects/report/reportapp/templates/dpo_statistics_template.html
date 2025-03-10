@@ -173,7 +173,7 @@
       </div>
     </div>
 
-    {# QUESTION: Can I just nuke this? #}
+    {# NOTE: this was added in #56797 and removed in #58836. #}
     {% comment %} This block is removed for the time being. It is causing
     considerable issues in production environments, due to unforeseen 
     organizational structure. {% endcomment %}
@@ -242,14 +242,13 @@
       <section class="statistics__section">
         <div class="section__body development-overview">
           {# Line chart - unhandled matches #}
-          {% trans "Development overview" as translated_title %}
-          {% trans "Accumulated unhandled results by month" as translated_subtitle %}
+
           {% blocktranslate trimmed asvar translated_tooltip %}
             Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the 
             mouse wheel to manually zoom. Use the reset button to return the graph to normal.
           {% endblocktranslate %}
  
-          {% with title=translated_title subtitle=translated_subtitle tooltip=translated_tooltip  %}
+          {% with tooltip=translated_tooltip  %}
             {% include "components/statistics/dpo_results-unhandled_line-chart.html" %}
           {% endwith %}
         </div>
@@ -258,8 +257,7 @@
       <section class="statistics__section">
         <div class="section__body development-overview">
           {# Bar chart - new matches #}
-          {% trans "Development overview" as translated_title %}
-          {% trans "New results by month" as translated_subtitle %}
+
           {% blocktranslate trimmed asvar translated_tooltip %}
             Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the 
             mouse wheel to manually zoom. Use the reset button to return the graph to normal.
