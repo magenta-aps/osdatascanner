@@ -1,144 +1,135 @@
 {% load i18n %}
 
-{% block body %}
-  <div class="modal__form"
-       id="create-rule-modal"
-       tabindex="-1"
-       role="dialog"
-       aria-labelledby="create-rule-modal-title"
-       aria-hidden="true">
-    {% include "components/feedback/snackbarNew.html" %}
-    <div id="miniscan_form_container" class="modal__form-container">
-      <h1 class="modal__header">{% trans "Create new rule" %}</h1>
-      {% if form.non_field_errors %}
-        <div class="alert" role="alert">
-          <ul>
-            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-          </ul>
-        </div>
-      {% endif %}
-      <div class="modal__form-content">
-        <form class="form"
-              id="create-rule-form"
-              hx-post="{% url 'miniscan_customrule_create' %}"
-              hx-target="#miniscan_form_container"
-              hx-swap="outerHTML">
-          {% csrf_token %}
-          <fieldset class="form__fieldset">
-            <h3>{% trans "General" %}</h3>
-            <p class="description">{% trans "Name the rule and choose which organization the rule should belong to" %}</p>
-
-            <div class="form__group{% if form.name.errors %} has-error{% endif %}">
-              <label class="required-form" for="id_{{ form.name.name }}">{% trans "Name" %}</label>
-              <input autofocus="autofocus"
-                     type="text"
-                     class="form-control"
-                     name="{{ form.name.name }}"
-                     id="id_{{ form.name.name }}"
-                     placeholder="{% trans 'Name of rule' %}"
-                     {% if form.name.value %}value="{{ form.name.value }}"{% endif %} />
-              {% if form.name.help_text %}<span class="form__help-text">{{ form.name.help_text }}</span>{% endif %}
-              {% if form.name.errors %}{{ form.name.errors }}{% endif %}
-            </div>
-            {% if form.organization %}
-              {% include "components/scanner/scanner_form_select_option_field.html" with field=form.organization required="True" %}
-            {% endif %}
-
-            <div class="form__group{% if form.rule.errors %} has-error{% endif %}">
-              <textarea hidden
-                        data-selector="#select_slot"
-                        data-function="stringifyRule"
-                        name="rule"
-                        readonly>{% if form %}{{ form.rule.value }}{% else %}{}{% endif %}</textarea>
-              {% if form.rule.errors %}
-                <h3 class="required-form">{% trans "Rule" %}</h3>
-              {% endif %}
-              {% if form.rule.errors %}{{ form.rule.errors }}{% endif %}
-            </div>
-          </fieldset>
-
-          <br>
-
-          <fieldset class="form__fieldset">
-            <h3 class="required-form" for="id_{{ form.sensitivity.name }}">{{ form.sensitivity.label }}</h3>
-            <p class="description">{% trans "Assess the sensitivity of the rule" %}</p>
-            <div id="{{ form.sensitivity.auto_id }}_container"
-                 class="form__group col-sm-12{% if form.sensitivity.errors %} has-error{% endif %}">
-
-              {% if form.sensitivity.help_text %}<span class="form__help-text">{{ form.sensitivity.help_text }}</span>{% endif %}
-
-              <div class="radio-content">
-                {% for value, tag in form.sensitivity.field.choices %}
-                  <label class="radio radio-before">
-                    <span class="radio__input">
-                      {% if value|add:'0' == form.sensitivity.value|add:'0' %}
-                        <input type="radio"
-                               name="{{ form.sensitivity.name }}"
-                               id="id_{{ form.sensitivity.name }}"
-                               value="{{ value }}"
-                               checked="checked" />
-                      {% else %}
-                        <input type="radio"
-                               name="{{ form.sensitivity.name }}"
-                               id="id_{{ form.sensitivity.name }}"
-                               value="{{ value }}" />
-                      {% endif %}
-                      {% if value == 0 %}
-                        <span class="radio__control radio__control--notify"></span>
-                      {% elif value == 1 %}
-                        <span class="radio__control radio__control--warning"></span>
-                      {% elif value == 2 %}
-                        <span class="radio__control radio__control--problem"></span>
-                      {% elif value == 3 %}
-                        <span class="radio__control radio__control--critical"></span>
-                      {% endif %}
-                    </span>
-
-                    <span class="radio__label">{{ tag }}</span>
-                  </label>
-                {% endfor %}
-              </div>
-
-              {% if form.sensitivity.errors %}{{ form.sensitivity.errors }}{% endif %}
-            </div>
-          </fieldset>
-
-          <br>
-
-          <fieldset class="form__fieldset">
-            <h3 class="required-form" for="id_{{ form.description.name }}">{{ form.description.label }}</h3>
-            <div id="{{ form.description.auto_id }}_container"
-                 class="form__group col-sm-12{% if form.description.errors %} has-error{% endif %}">
-              <textarea name="{{ form.description.name }}"
-                        id="id_{{ form.description.name }}"
-                        placeholder="{% trans 'Description of rule' %}"
-                        rows="3">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
-              {% if form.description.help_text %}
-                <p>
-                  <small>{{ form.description.help_text }}</small>
-                </p>
-              {% endif %}
-              {% if form.description.errors %}{{ form.description.errors }}{% endif %}
-            </div>
-          </fieldset>
-
-          <div class="content-footer" style="margin-top: 1rem;">
-            <div class="form__group">
-              <div class="button-group">
-                <button type="submit"
-                        class="button button--cta-button"
-                        aria-label="{% trans 'Save changes' %}"
-                        title="{% trans 'Save changes' %}"
-                        name="save">
-                  <span>{% trans "Save changes" %}</span>
-                </button>
-                <button type="button"
-                        class="button button--text-button btn"
-                        data-modal="modal:close">{% trans "Close" %}</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+<div id="miniscan_form_container" class="modal__form-container">
+  {% include "components/feedback/snackbarNew.html" %}
+  <h1 class="modal__header">{% trans "Create new rule" %}</h1>
+  {% if form.non_field_errors %}
+    <div class="alert" role="alert">
+      <ul>
+        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+      </ul>
     </div>
-  {% endblock %}
+  {% endif %}
+  <div class="modal__form-content">
+    <form class="form"
+          id="create-rule-form"
+          hx-post="{% url 'miniscan_customrule_create' %}"
+          hx-target="#miniscan_form_container"
+          hx-swap="outerHTML">
+      {% csrf_token %}
+      <fieldset class="form__fieldset">
+        <h3>{% trans "General" %}</h3>
+        <p class="description">{% trans "Name the rule and choose which organization the rule should belong to" %}</p>
+
+        <div class="form__group{% if form.name.errors %} has-error{% endif %}">
+          <label class="required-form" for="id_{{ form.name.name }}">{% trans "Name" %}</label>
+          <input autofocus="autofocus"
+                 type="text"
+                 class="form-control"
+                 name="{{ form.name.name }}"
+                 id="id_{{ form.name.name }}"
+                 placeholder="{% trans 'Name of rule' %}"
+                 {% if form.name.value %}value="{{ form.name.value }}"{% endif %} />
+          {% if form.name.help_text %}<span class="form__help-text">{{ form.name.help_text }}</span>{% endif %}
+          {% if form.name.errors %}{{ form.name.errors }}{% endif %}
+        </div>
+        {% if form.organization %}
+          {% include "components/scanner/scanner_form_select_option_field.html" with field=form.organization required="True" %}
+        {% endif %}
+
+        <div class="form__group{% if form.rule.errors %} has-error{% endif %}">
+          <textarea hidden
+                    data-selector="#select_slot"
+                    data-function="stringifyRule"
+                    name="rule"
+                    readonly>{% if form %}{{ form.rule.value }}{% else %}{}{% endif %}</textarea>
+          {% if form.rule.errors %}
+            <h3 class="required-form">{% trans "Rule" %}</h3>
+          {% endif %}
+          {% if form.rule.errors %}{{ form.rule.errors }}{% endif %}
+        </div>
+      </fieldset>
+
+      <br>
+
+      <fieldset class="form__fieldset">
+        <h3 class="required-form" for="id_{{ form.sensitivity.name }}">{{ form.sensitivity.label }}</h3>
+        <p class="description">{% trans "Assess the sensitivity of the rule" %}</p>
+        <div id="{{ form.sensitivity.auto_id }}_container"
+             class="form__group col-sm-12{% if form.sensitivity.errors %} has-error{% endif %}">
+
+          {% if form.sensitivity.help_text %}<span class="form__help-text">{{ form.sensitivity.help_text }}</span>{% endif %}
+
+          <div class="radio-content">
+            {% for value, tag in form.sensitivity.field.choices %}
+              <label class="radio radio-before">
+                <span class="radio__input">
+                  {% if value|add:'0' == form.sensitivity.value|add:'0' %}
+                    <input type="radio"
+                           name="{{ form.sensitivity.name }}"
+                           id="id_{{ form.sensitivity.name }}"
+                           value="{{ value }}"
+                           checked="checked" />
+                  {% else %}
+                    <input type="radio"
+                           name="{{ form.sensitivity.name }}"
+                           id="id_{{ form.sensitivity.name }}"
+                           value="{{ value }}" />
+                  {% endif %}
+                  {% if value == 0 %}
+                    <span class="radio__control radio__control--notify"></span>
+                  {% elif value == 1 %}
+                    <span class="radio__control radio__control--warning"></span>
+                  {% elif value == 2 %}
+                    <span class="radio__control radio__control--problem"></span>
+                  {% elif value == 3 %}
+                    <span class="radio__control radio__control--critical"></span>
+                  {% endif %}
+                </span>
+
+                <span class="radio__label">{{ tag }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          {% if form.sensitivity.errors %}{{ form.sensitivity.errors }}{% endif %}
+        </div>
+      </fieldset>
+
+      <br>
+
+      <fieldset class="form__fieldset">
+        <h3 class="required-form" for="id_{{ form.description.name }}">{{ form.description.label }}</h3>
+        <div id="{{ form.description.auto_id }}_container"
+             class="form__group col-sm-12{% if form.description.errors %} has-error{% endif %}">
+          <textarea name="{{ form.description.name }}"
+                    id="id_{{ form.description.name }}"
+                    placeholder="{% trans 'Description of rule' %}"
+                    rows="3">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+          {% if form.description.help_text %}
+            <p>
+              <small>{{ form.description.help_text }}</small>
+            </p>
+          {% endif %}
+          {% if form.description.errors %}{{ form.description.errors }}{% endif %}
+        </div>
+      </fieldset>
+
+      <div class="content-footer" style="margin-top: 1rem;">
+        <div class="form__group">
+          <div class="button-group">
+            <button type="submit"
+                    class="button button--cta-button"
+                    aria-label="{% trans 'Save changes' %}"
+                    title="{% trans 'Save changes' %}"
+                    name="save">
+              <span>{% trans "Save changes" %}</span>
+            </button>
+            <button type="button"
+                    class="button button--text-button btn"
+                    data-modal="modal:close">{% trans "Close" %}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

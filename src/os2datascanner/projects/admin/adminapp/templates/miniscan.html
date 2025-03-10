@@ -151,7 +151,12 @@
       </table>
     </div>
   </div>
- 
-  {% include "components/miniscanner/miniscanner_customrule_form.html" %}
+
+  <div class="modal__form"
+       id="create-rule-modal"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="create-rule-modal-title"
+       aria-hidden="true">{% include "components/miniscanner/miniscanner_customrule_form.html" %}</div>
 
 {% endblock %}
