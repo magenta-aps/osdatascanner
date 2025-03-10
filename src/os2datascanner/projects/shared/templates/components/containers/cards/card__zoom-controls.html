@@ -5,7 +5,12 @@
 {% load i18n %}
 
 {% block card_header_ui %}
-  {% with icon_name="query_stats" tooltip=tooltip %}
+  {% blocktranslate trimmed asvar translated_tooltip %}
+    Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the 
+    mouse wheel to manually zoom. Use the reset button to return the graph to normal.
+  {% endblocktranslate %}
+ 
+  {% with icon_name="query_stats" tooltip=translated_tooltip %}
     {% include "components/decoration/info-icon.html" %}
   {% endwith %}
 

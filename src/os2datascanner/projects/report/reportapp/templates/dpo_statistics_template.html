@@ -242,30 +242,14 @@
       <section class="statistics__section">
         <div class="section__body development-overview">
           {# Line chart - unhandled matches #}
-
-          {% blocktranslate trimmed asvar translated_tooltip %}
-            Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the 
-            mouse wheel to manually zoom. Use the reset button to return the graph to normal.
-          {% endblocktranslate %}
- 
-          {% with tooltip=translated_tooltip  %}
-            {% include "components/statistics/dpo_results-unhandled_line-chart.html" %}
-          {% endwith %}
+          {% include "components/statistics/dpo_results-unhandled_line-chart.html" %}
         </div>
       </section>
  
       <section class="statistics__section">
         <div class="section__body development-overview">
           {# Bar chart - new matches #}
-
-          {% blocktranslate trimmed asvar translated_tooltip %}
-            Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the 
-            mouse wheel to manually zoom. Use the reset button to return the graph to normal.
-          {% endblocktranslate %}
- 
-          {% with title=translated_title subtitle=translated_subtitle tooltip=translated_tooltip  %}
-            {% include "components/statistics/dpo_results-new_bar-chart.html" %}
-          {% endwith %}
+          {% include "components/statistics/dpo_results-new_bar-chart.html" %}
         </div>
       </section>
  
