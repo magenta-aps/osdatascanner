@@ -66,7 +66,7 @@ Once you've done that, you can visit the special URL `/grants/msgraph/request/`
 to begin the authentication flow to make OSdatascanner aware of your Azure
 tenant.
 
-[comment:] # ## Filesystem scans
+[comment]: # (## Filesystem scans)
 
 ## Google Workspace
 
