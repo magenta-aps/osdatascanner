@@ -27,15 +27,15 @@ msgstr "CPR-reglen kan ikke bruges mere end én gang"
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:152
+#: adminapp/admin.py:145
 msgid "An errorlog cannot both be new and resolved"
 msgstr "En fejlbesked kan ikke både være ny og løst"
 
-#: adminapp/admin.py:191
+#: adminapp/admin.py:184
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:195
+#: adminapp/admin.py:188
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -44,47 +44,47 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har is_resolved attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:200
+#: adminapp/admin.py:193
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:204
+#: adminapp/admin.py:197
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:207
+#: adminapp/admin.py:200
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:211
+#: adminapp/admin.py:204
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:214
+#: adminapp/admin.py:207
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:218
+#: adminapp/admin.py:211
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:236
+#: adminapp/admin.py:229
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:240
+#: adminapp/admin.py:233
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:243
+#: adminapp/admin.py:236
 msgid "Change resolved-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:247
+#: adminapp/admin.py:240
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
@@ -225,7 +225,6 @@ msgstr "Dropboxscanner"
 
 #: adminapp/models/scannerjobs/exchangescanner.py:75
 #: adminapp/models/scannerjobs/msgraph.py:65
-
 msgid "Graph grant"
 msgstr "Graph bevilling"
 
@@ -1155,7 +1154,7 @@ msgstr "Ingen resultater fundet"
 #: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:22
 #: adminapp/templates/components/rules/customrule_form.html:40
 #: adminapp/templates/components/rules/regexrule_form.html:111
-#: adminapp/templates/components/scanner/scanner_form.html:136
+#: adminapp/templates/components/scanner/scanner_form.html:137
 #: import_services/templates/import_services/ldap_edit.html:125
 msgid "General"
 msgstr "Generelt"
@@ -1201,9 +1200,9 @@ msgstr "Beskrivelse af regel"
 #: adminapp/templates/components/rules/regexrule_form.html:257
 #: adminapp/templates/components/rules/regexrule_form.html:258
 #: adminapp/templates/components/rules/regexrule_form.html:260
-#: adminapp/templates/components/scanner/scanner_form.html:799
-#: adminapp/templates/components/scanner/scanner_form.html:800
-#: adminapp/templates/components/scanner/scanner_form.html:802
+#: adminapp/templates/components/scanner/scanner_form.html:745
+#: adminapp/templates/components/scanner/scanner_form.html:746
+#: adminapp/templates/components/scanner/scanner_form.html:748
 msgid "Save changes"
 msgstr "Gem ændringer"
 
@@ -1380,23 +1379,6 @@ msgstr "Ønsker du virkelig at slette?"
 msgid "No"
 msgstr "Nej"
 
-#: adminapp/templates/components/rules/customrule_form.html:40
-#: adminapp/templates/components/rules/regexrule_form.html:111
-#: adminapp/templates/components/scanner/scanner_form.html:137
-#: import_services/templates/import_services/ldap_edit.html:125
-msgid "General"
-msgstr "Generelt"
-
-#: adminapp/templates/components/rules/customrule_form.html:41
-#: adminapp/templates/components/rules/regexrule_form.html:112
-msgid "Name the rule and choose which organization the rule should belong to"
-msgstr "Navngiv reglen og vælg hvilken organisation reglen skal tilhøre"
-
-#: adminapp/templates/components/rules/customrule_form.html:50
-#: adminapp/templates/components/rules/regexrule_form.html:121
-msgid "Name of rule"
-msgstr "Navn på regel"
-
 #: adminapp/templates/components/rules/customrule_form.html:66
 #: adminapp/templates/components/rules/regexrule_form.html:137
 msgid ""
@@ -1405,28 +1387,6 @@ msgid ""
 msgstr ""
 "En regel består af et eller flere regulære udtryk og definerer hvilke "
 "tekststrenge der søges efter i et scannerjob"
-
-#: adminapp/templates/components/rules/customrule_form.html:83
-#: adminapp/templates/components/rules/regexrule_form.html:191
-msgid "Assess the sensitivity of the rule"
-msgstr "Vurder reglens følsomhed"
-
-#: adminapp/templates/components/rules/customrule_form.html:133
-#: adminapp/templates/components/rules/regexrule_form.html:241
-msgid "Description of rule"
-msgstr "Beskrivelse af regel"
-
-#: adminapp/templates/components/rules/customrule_form.html:149
-#: adminapp/templates/components/rules/customrule_form.html:150
-#: adminapp/templates/components/rules/customrule_form.html:152
-#: adminapp/templates/components/rules/regexrule_form.html:257
-#: adminapp/templates/components/rules/regexrule_form.html:258
-#: adminapp/templates/components/rules/regexrule_form.html:260
-#: adminapp/templates/components/scanner/scanner_form.html:745
-#: adminapp/templates/components/scanner/scanner_form.html:746
-#: adminapp/templates/components/scanner/scanner_form.html:748
-msgid "Save changes"
-msgstr "Gem ændringer"
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html:6
 #: adminapp/templates/components/scanner/scan_completed.html:174
@@ -2169,6 +2129,7 @@ msgid "Yes"
 msgstr "Ja"
 
 #: adminapp/templates/components/user/user_edit.html:84
+#: adminapp/templates/miniscan.html:113
 #: organizations/templates/components/modals/alias_create.html:56
 msgid "Save"
 msgstr "Gem"
@@ -2358,15 +2319,6 @@ msgstr "Kør"
 #: adminapp/templates/miniscan.html:103 adminapp/templates/miniscan.html:104
 msgid "scanner"
 msgstr "scanner"
-
-#: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:113
-msgid "Save rule"
-msgstr "Aktivér regel"
-
-#: adminapp/templates/miniscan.html:113
-#: organizations/templates/components/modals/alias_create.html:56
-msgid "Save"
-msgstr "Gem"
 
 #: adminapp/templates/miniscan.html:116 adminapp/templates/miniscan.html:117
 #: adminapp/templates/miniscan.html:118
@@ -2741,27 +2693,27 @@ msgstr "Scan tidspunkt"
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:553
+#: adminapp/views/scanner_views.py:549
 msgid "User is not administrator for any client"
 msgstr "Brugeren er ikke administrator for en kunde"
 
-#: adminapp/views/scanner_views.py:621
+#: adminapp/views/scanner_views.py:617
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:641
+#: adminapp/views/scanner_views.py:637
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:667
+#: adminapp/views/scanner_views.py:663
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:682
+#: adminapp/views/scanner_views.py:678
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 
-#: adminapp/views/scanner_views.py:879
+#: adminapp/views/scanner_views.py:875
 msgid "The scannerjob was recreated."
 msgstr "Scannerjobbet blev gendannet."
 
