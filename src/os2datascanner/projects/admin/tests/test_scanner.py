@@ -10,6 +10,8 @@ from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.msgraph import (
         mail as graph_mail, files as graph_files)
 from os2datascanner.engine2.model.derived import mail
+from os2datascanner.engine2.rules.logical import OrRule
+from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.projects.admin.organizations.models.account \
     import Account
 from os2datascanner.projects.admin.organizations.models.organizational_unit \
@@ -202,6 +204,28 @@ class TestScanners:
 
         assert ScheduledCheckup.objects.count() == 1
         assert ScheduledCheckup.objects.first() == sc
+
+    def test_msgraph_mailscanner_construct_rule(self, msgraph_mailscanner):
+        # Arrange
+        basic_rule = msgraph_mailscanner.rule.customrule.make_engine2_rule()
+        expected = OrRule(EmailHeaderRule("subject", basic_rule), basic_rule)
+
+        # Act
+        rule = msgraph_mailscanner._construct_rule(force=False)
+
+        # Assert
+        assert rule == expected
+
+    def test_msgraph_mailscanner_construct_rule_scan_subject_false(self, msgraph_mailscanner):
+        # Arrange
+        msgraph_mailscanner.scan_subject = False
+        basic_rule = msgraph_mailscanner.rule.customrule.make_engine2_rule()
+
+        # Act
+        rule = msgraph_mailscanner._construct_rule(force=False)
+
+        # Assert
+        assert rule == basic_rule
 
     @pytest.mark.parametrize('true_handle,sources', [
         (
