@@ -11,8 +11,12 @@
   From this page, the user can change their name and email address.
 
 - Authentication objects have now been converted into Grants, which can now be managed
-through the Grants tab in the admin module. This allows for easier re-use of credentials across
-more scanner types.
+  through the Grants tab in the admin module. This allows for easier re-use of credentials across
+  more scanner types.
+
+- Permissions for interacting with the report module can now be granted to users through their
+  account relation in the admin module. Only select permissions are available for distribution in
+  this way.
 
 - Users can now save rules they've made in the miniscanner.
 

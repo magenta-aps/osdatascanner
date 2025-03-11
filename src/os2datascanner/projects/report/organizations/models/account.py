@@ -23,9 +23,9 @@ from django.db.models import Count, Q, Case, When, Value, F, IntegerField, Float
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.dispatch import receiver
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, m2m_changed
 
 
 from os2datascanner.core_organizational_structure.models import Account as Core_Account
@@ -557,10 +557,34 @@ def resize_image(sender, **kwargs):
         logger.debug("image resize failed", exc_info=True)
 
 
+def get_permissions_from_codenames(codenames: list[dict]) -> models.QuerySet[Permission]:
+    """Converts permission objects from the serializer into a queryset of Permission objects."""
+    codenames = [d["codename"] for d in codenames] if codenames else []
+    permissions = Permission.objects.filter(content_type__model="syncedpermission",
+                                            codename__in=codenames)
+    return permissions
+
+
 class AccountBulkSerializer(BaseBulkSerializer):
     """ Bulk create & update logic lives in BaseBulkSerializer """
     class Meta:
         model = Account
+
+    def create(self, validated_data):
+        permissions = [obj_attrs.pop("permissions") for obj_attrs in validated_data]
+        accs = super().create(validated_data)
+        for acc, perm in zip(accs, permissions):
+            acc_perms = get_permissions_from_codenames(perm)
+            acc.permissions.set(acc_perms)
+        return accs
+
+    def update(self, instances, validated_data):
+        permissions = [obj_attrs.pop("permissions") for obj_attrs in validated_data]
+        accs = super().update(instances, validated_data)
+        for acc, perm in zip(accs, permissions):
+            acc_perms = get_permissions_from_codenames(perm)
+            acc.permissions.set(acc_perms)
+        return accs
 
 
 class AccountSerializer(Core_AccountSerializer):
@@ -595,3 +619,8 @@ Account.serializer_class = AccountSerializer
 def post_delete_user(sender, instance, *args, **kwargs):
     if instance.user:
         instance.user.delete()
+
+
+@receiver(m2m_changed, sender=Account.permissions.through)
+def permissions_changed(sender, instance, *args, **kwargs):
+    instance.user.user_permissions.set(instance.permissions.all())

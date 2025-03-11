@@ -14,6 +14,7 @@
 from uuid import uuid4
 
 from django.db import models
+from django.contrib.auth.models import Permission
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -87,6 +88,12 @@ class Account(models.Model):
         verbose_name=_('superuser_status'),
         default=False
     )
+    permissions = models.ManyToManyField(
+        "auth.Permission",
+        verbose_name=_("account permissions"),
+        blank=True,
+        limit_choices_to={"content_type__model": "syncedpermission"}
+    )
 
     def get_employed_units(self):
         positions = self.positions.filter(role=Role.EMPLOYEE)
@@ -155,7 +162,15 @@ class Account(models.Model):
         return self.aliases.filter(_alias_type=AliasType.REMEDIATOR, _value=0).exists()
 
 
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ("codename", )
+
+
 class AccountSerializer(serializers.ModelSerializer):
+    permissions = PermissionSerializer(many=True, allow_null=True, default=None)
+
     class Meta:
         fields = [
             "pk",
@@ -166,7 +181,8 @@ class AccountSerializer(serializers.ModelSerializer):
             "manager",
             "is_superuser",
             "email",
-            "is_universal_dpo"]
+            "is_universal_dpo",
+            "permissions"]
 
     def get_unique_together_validators(self):
         # TODO: Tests implode if the serializers try to uphold unique-together

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-05 14:36+0100\n"
+"POT-Creation-Date: 2025-03-11 14:57+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -966,6 +966,20 @@ msgstr "Handlinger"
 msgid "Show more matches"
 msgstr "Vis flere matches"
 
+#: reportapp/templates/components/statistics/dpo_results-new_bar-chart.html:6
+#: reportapp/templates/components/statistics/dpo_results-unhandled_line-chart.html:6
+#: reportapp/templates/user_statistics_template.html:155
+msgid "Development overview"
+msgstr "Udviklingsoverblik"
+
+#: reportapp/templates/components/statistics/dpo_results-new_bar-chart.html:10
+msgid "New results by month"
+msgstr "Antal nye resultater per måned"
+
+#: reportapp/templates/components/statistics/dpo_results-unhandled_line-chart.html:10
+msgid "Accumulated unhandled results by month"
+msgstr "Akkumulerede uhåndterede resultater per måned"
+
 #: reportapp/templates/components/statistics/employee_template.html:22
 msgid "The user's false positive rate is unusually high:"
 msgstr "Brugerens andel af falske positive resultater er ualmindeligt høj:"
@@ -1013,7 +1027,7 @@ msgid "Username"
 msgstr "Brugernavn"
 
 #: reportapp/templates/components/user/login.html:26
-#: reportapp/templates/user.html:132
+#: reportapp/templates/user.html:142
 msgid "Password"
 msgstr "Adgangskode"
 
@@ -1191,31 +1205,6 @@ msgstr "Datakilder"
 #: reportapp/templates/dpo_statistics_template.html:153
 msgid "Resolution statuses"
 msgstr "Håndteringsstatusser"
-
-#: reportapp/templates/dpo_statistics_template.html:247
-#: reportapp/templates/dpo_statistics_template.html:263
-#: reportapp/templates/user_statistics_template.html:155
-msgid "Development overview"
-msgstr "Udviklingsoverblik"
-
-#: reportapp/templates/dpo_statistics_template.html:248
-msgid "Accumulated unhandled results by month"
-msgstr "Akkumulerede uhåndterede resultater per måned"
-
-#: reportapp/templates/dpo_statistics_template.html:249
-#: reportapp/templates/dpo_statistics_template.html:265
-msgid ""
-"Hold and drag your mouse to zoom in on part of the graph. Hold shift while "
-"using the mouse wheel to manually zoom. Use the reset button to return the "
-"graph to normal."
-msgstr ""
-"Hold på grafen med musen, og træk for at markere et område, du ønsker at "
-"zoome ind på. Hold shift inde, mens du scroller med musehjulet, for manuelt "
-"at styre zoom. Tryk på nulstil-knappen for at nulstille zoom."
-
-#: reportapp/templates/dpo_statistics_template.html:264
-msgid "New results by month"
-msgstr "Antal nye resultater per måned"
 
 #: reportapp/templates/error_pages/no-units-error.html:9
 msgid "No organizational units associated with account"
@@ -2005,15 +1994,19 @@ msgstr "Superbruger"
 msgid "Aliases"
 msgstr "Aliasser"
 
-#: reportapp/templates/user.html:127
+#: reportapp/templates/user.html:122
+msgid "Permissions"
+msgstr "Rettigheder"
+
+#: reportapp/templates/user.html:137
 msgid "Login Information"
 msgstr "Login Information"
 
-#: reportapp/templates/user.html:134
+#: reportapp/templates/user.html:144
 msgid "Change"
 msgstr "Skift"
 
-#: reportapp/templates/user.html:139
+#: reportapp/templates/user.html:149
 msgid "User since"
 msgstr "Bruger siden"
 
@@ -2391,6 +2384,15 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#~ msgid ""
+#~ "Hold and drag your mouse to zoom in on part of the graph. Hold shift "
+#~ "while using the mouse wheel to manually zoom. Use the reset button to "
+#~ "return the graph to normal."
+#~ msgstr ""
+#~ "Hold på grafen med musen, og træk for at markere et område, du ønsker at "
+#~ "zoome ind på. Hold shift inde, mens du scroller med musehjulet, for "
+#~ "manuelt at styre zoom. Tryk på nulstil-knappen for at nulstille zoom."
 
 #~ msgid "Older results"
 #~ msgstr "Ældre resultater"

@@ -6,3 +6,4 @@ from .aliases import AliasType  # noqa
 from .organizational_unit import OrganizationalUnit, OrganizationalUnitSerializer  # noqa
 from .organization import Organization, OrganizationSerializer  # noqa
 from .position import Position, PositionSerializer  # noqa
+from .syncedpermission import SyncedPermission  # noqa

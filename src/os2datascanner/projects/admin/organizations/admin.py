@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.projects.admin.import_services.admin import ImportedAdmin
 
-from .models import Organization, OrganizationalUnit, Account, Position, Alias
+from .models import Organization, OrganizationalUnit, Account, Position, Alias, SyncedPermission
 
 # Register your models here.
 
@@ -83,6 +83,7 @@ class AccountAdmin(ImportedAdmin):
     #  At the time of writing units does not work
     fields = ('username', 'first_name', 'last_name', 'email',
               'organization', 'manager', 'imported_id', 'last_import',
+              'permissions',
               'is_universal_dpo', 'is_superuser',
               )
     list_display = ('username', 'first_name', 'last_name', 'email',
@@ -94,3 +95,6 @@ class AccountAdmin(ImportedAdmin):
     list_filter = (
         'organization',
     )
+
+
+admin.site.register(SyncedPermission)

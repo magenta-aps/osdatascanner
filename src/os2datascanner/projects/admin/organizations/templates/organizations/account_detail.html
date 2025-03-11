@@ -193,18 +193,54 @@
                 </td>
               </tr>
             {% endif %}
-          </tbody>
-        </table>
-
-        <h2>{% trans "Login Information" %}</h2>
-        <table class="userprofile-table login-info">
-          <tbody>
             <tr>
-              <td>{% trans "User since" %}</td>
-              <td>{{ user.date_joined }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              <td>{% trans "Permissions" %}</td>
+              <td>
+                <ul>
+                  {% for permission in account.permissions.all %}
+                    <li {% if perms.organizations.change_permissions_account %} class="dynamic_li" title="{% trans "Click to remove" %} {{ permission.name }}" name="rem-permission" hx-post="" hx-swap="outerHTML" hx-target=".content" hx-select=".content" hx-trigger="click" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-vals='{"rem-permission": "{{ permission.pk }}"}' hx-confirm="{% trans "Are you sure you want to remove" %} {{ permission.name }}?" {% endif %}>
+                      <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+                      <!-- djlint:off -->{{ permission.name }}</li><!--djlint:on-->
+                    {% endfor %}
+                    {% if permissions and perms.organizations.change_permissions_account %}
+                      <li class="add_permission">
+                        <button type="button"
+                                class="add_button button button--icon-button"
+                                aria-label="{% trans 'Click here to add a new permission' %}"
+                                title="{% trans 'Add permission' %}">
+                          <svg class="icon icon-plus">
+                            <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                          </svg>
+                        </button>
+                        <select class="select_options"
+                                name="add-permission"
+                                hidden
+                                hx-post=""
+                                hx-swap="outerHTML"
+                                hx-target=".content"
+                                hx-select=".content"
+                                hx-trigger="change"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                          <option value="">{% trans "Choose permission" %}</option>
+                          {% for permission in permissions %}<option value="{{ permission.pk }}">{{ permission.name }}</option>{% endfor %}
+                        </select>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-    {% endblock content %}
+          <h2>{% trans "Login Information" %}</h2>
+          <table class="userprofile-table login-info">
+            <tbody>
+              <tr>
+                <td>{% trans "User since" %}</td>
+                <td>{{ user.date_joined }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      {% endblock content %}

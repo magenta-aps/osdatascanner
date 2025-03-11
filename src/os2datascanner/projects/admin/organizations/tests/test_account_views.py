@@ -251,8 +251,9 @@ class TestAccountDetailView:
             response1 = client.get(fritz_url)
             response2 = client.get(egon_url)
         elif method == "POST":
-            response1 = client.post(fritz_url)
-            response2 = client.post(egon_url)
+            # We need to pass a Trigger Name to the view to get the expected codes.
+            response1 = client.post(fritz_url, **{"HTTP_HX-Trigger-Name": "remediator-check"})
+            response2 = client.post(egon_url, **{"HTTP_HX-Trigger-Name": "remediator-check"})
 
         # Assert
         assert response1.status_code == expected_codes[0]

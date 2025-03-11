@@ -4,14 +4,15 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.views.generic import DetailView, CreateView, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Concat, Greatest
 from django.db.models import CharField, Value, Max
+from django.contrib.auth.models import Permission
 
-from ..models import Account, Alias, OrganizationalUnit
+from ..models import Account, Alias, OrganizationalUnit, SyncedPermission
 from ..models.aliases import AliasType
 from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
@@ -99,6 +100,15 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
         context["scanners"] = list(Scanner.objects.filter(organization=self.kwargs['org'])
                                    .exclude(pk__in=existing_pks)
                                    .values('name', 'pk'))
+        context["permissions"] = Permission.objects.filter(
+                content_type__app_label=SyncedPermission._meta.app_label,
+                content_type__model=SyncedPermission._meta.model_name
+            ).exclude(codename__in=[
+                "add_syncedpermission",
+                "delete_syncedpermission",
+                "change_syncedpermission",
+                "view_syncedpermission"
+            ]).exclude(pk__in=self.object.permissions.values_list("pk", flat=True))
         return context
 
     def post(self, request, *args, **kwargs):
@@ -137,6 +147,27 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
                 Alias.objects.filter(_alias_type=AliasType.REMEDIATOR,
                                      _value=removed_scanner_job_pk,
                                      account_id=acc).delete()
+
+            case 'add-permission':
+                if request.user.has_perm('organizations.change_permissions_account'):
+                    added_permission = request.POST.get('add-permission')
+
+                    acc.permissions.add(added_permission)
+                else:
+                    raise PermissionDenied("User does not have the 'change_permissions_account'"
+                                           "-permission.")
+
+            case 'rem-permission':
+                if request.user.has_perm('organizations.change_permissions_account'):
+                    removed_permission = request.POST.get('rem-permission')
+
+                    acc.permissions.remove(removed_permission)
+                else:
+                    raise PermissionDenied("User does not have the 'change_permissions_account'"
+                                           "-permission.")
+
+            case _:
+                raise PermissionDenied(f"View called from unknown source: {trigger_name}")
 
         return self.get(request, *args, **kwargs)
 
