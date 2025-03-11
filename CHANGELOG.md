@@ -14,6 +14,8 @@
 through the Grants tab in the admin module. This allows for easier re-use of credentials across
 more scanner types.
 
+- Users can now save rules they've made in the miniscanner.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner

@@ -1,10 +1,9 @@
 {% extends "components/common/base.html" %}
-
 {% load static %}
+ 
 {% load i18n %}
-
 {% block rendertype %}regular{% endblock %}
-
+ 
 {% block scripts %}
   {{ block.super }}
   <script defer src="{% static 'js/miniscanner/checkFileSize.js' %}"></script>
@@ -12,7 +11,9 @@
   <script defer src="{% static 'js/miniscanner/ruleInput.js' %}"></script>
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
 {% endblock %}
+ 
 {% block body %}
+ 
   {% include "components/common/header.html" %}
   <main class="wrapper" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include "components/common/main.html" with active_tab="miniscan" %}
@@ -21,11 +22,9 @@
         <h1>{% trans "OSdatascanner mini-scanner" %}</h1>
         <p>
           {% with limit=settings.MINISCAN_FILE_SIZE_LIMIT %}
-            {% blocktranslate trimmed %}
-              The mini-scanner lets you execute any OSdatascanner rule on a single
-              file or piece of text.
-              It returns the results directly to this page.
-            {% endblocktranslate %}
+            {% blocktranslate trimmed %} The mini-scanner lets you execute any
+            OSdatascanner rule on a single file or piece of text. It returns
+            the results directly to this page. {% endblocktranslate %}
             <br />
             <br />
             {% trans "Maximum allowed file size is: " %} {{ limit|filesizeformat }}
@@ -41,7 +40,6 @@
               hx-target="div#response"
               hx-encoding="multipart/form-data"
               hx-indicator="div.spinner">
-
           <h2>{% trans "File to scan" %}</h2>
           {% with limit=settings.MINISCAN_FILE_SIZE_LIMIT %}
             <input name="file"
@@ -71,13 +69,25 @@
 
           <h2>{% trans "Enter your text below" %}</h2>
           <!-- Hardcoded maxlength to 2000, maybe add {{ textLimit }} or something similar -->
-          <textarea name="text" id="upload-text" type="text" class="upload" spellcheck="true" maxlength="2000">
-</textarea>
+          <textarea name="text"
+                    id="upload-text"
+                    type="text"
+                    class="upload"
+                    spellcheck="true"
+                    maxlength="2000"></textarea>
 
           <h2>{% trans "Rule to execute" %}</h2>
+
           <h4>
             {% trans "Selected rule: " %}
-            <span id="selectedRule">{% trans "None" %}</span>
+            <span id="selectedRule">
+              {% if custom_rule.name %}
+                {{ custom_rule.name }}
+              {% else %}
+                {% trans "None" %}
+              {% endif %}
+            </span>
+            {{ custom_rule.rule_field|json_script:"json" }}
           </h4>
           <p>
             <a href="#show-rules-modal"
@@ -93,11 +103,19 @@
                     aria-label="{% trans 'Run' %} {% trans 'scanner' %}"
                     title="{% trans 'Run' %} {% trans 'scanner' %}"
                     class="button button--cta-button">{% trans "Run" %}</button>
+            <a href="#create-rule-modal"
+               data-modal="modal:open"
+               class="button button--transparent-button"
+               aria-label="{% trans 'Save rule' %}"
+               hx-get="{% url 'miniscan_customrule_create' %}"
+               hx-include="#id_rule"
+               hx-target="#create-rule-modal"
+               title="{% trans 'Save rule' %}">{% trans "Save" %}</a>
             <button type="button"
                     class="button button--transparent-button"
                     aria-label="{% trans 'Clear' %} {% trans 'content' %}"
                     title="{% trans 'Clear' %} {% trans 'content' %}"
-                    onClick="window.location.reload();">{% trans "Clear" %}</button>
+                    onClick="window.location.replace({% url 'miniscan' %});">{% trans "Clear" %}</button>
           </div>
 
           <h3>{% trans "Scan result" %}</h3>
@@ -108,7 +126,7 @@
     <div class="spinner" />
   </main>
 {% endblock %}
-
+ 
 {% block modal %}
   <div class="modal__content"
        id="show-rules-modal"
@@ -127,10 +145,18 @@
               class="clickable"
               onclick="saveName('{{ rule }}')">
             <td>{{ rule.name }}{{ rule.rule_field|json_script:"json" }}</td>
-            <td>{{ rule.description|truncatewords:5 }}{{ rule.rule_field|json_script:"json" }}</td>
+            <td>{{ rule.description|truncatewords:5 }}</td>
           </tr>
         {% endfor %}
       </table>
     </div>
   </div>
+
+  <div class="modal__form"
+       id="create-rule-modal"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="create-rule-modal-title"
+       aria-hidden="true">{% include "components/miniscanner/miniscanner_customrule_form.html" %}</div>
+
 {% endblock %}

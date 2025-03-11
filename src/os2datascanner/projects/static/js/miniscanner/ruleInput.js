@@ -19,3 +19,6 @@ for (let ruleItem of ruleItems) {
 function saveName(name) {
   selectedRule.innerHTML = name;
 }
+
+// loads rule from query params
+window.addEventListener("load", ruleSelected);

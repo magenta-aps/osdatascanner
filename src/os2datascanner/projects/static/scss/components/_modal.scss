@@ -39,6 +39,29 @@
     position: fixed;
   }
 
+  &__form {
+    background-color: #fff;
+    height: calc(100vh - 2rem);
+    overflow-y: scroll;
+    padding: 1rem;
+    position: fixed;
+  }
+
+  &__form-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+  }
+
+  &__form-container {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: stretch;
+    flex-direction: column;
+    padding: 2rem;
+  }
+
   & > iframe {
     height: calc(100% - 3rem);
     width: 100%;

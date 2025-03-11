@@ -90,39 +90,41 @@ class RuleCreate(RestrictedCreateView):
     fields = ['name', 'description', 'sensitivity', 'organization']
 
     @staticmethod
+    def validate_exceptions_field(rule):
+        if "exceptions" not in rule:
+            return True
+        ex_string = rule.get('exceptions')
+        # Checks that the "exceptions"-string constists of comma-separated
+        # 10-digit numbers or an empty string.
+        validated = ex_string == "" or bool(re.match(r'^\d{10}(,\d{10})*$', ex_string))
+        return validated
+
+    @staticmethod
+    def validate_surrounding_words_exceptions(rule):
+        if "surrounding_exceptions" not in rule:
+            return True
+        ex_string = rule.get('surrounding_exceptions')
+        # Check that the "surrounding_exceptions"-string only contains
+        # alphanumeric characters or is an empty string.
+        # TODO: But ... The regex does not only allow alphanumeric characters.
+        # Do we only want alphanumeric characters or not?
+        validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
+        return validated
+
+    @staticmethod
     def _save_rule_form(form):
         rule = form.save(commit=False)
         rule.name = form.cleaned_data['name']
         rule.sensitivity = form.cleaned_data['sensitivity']
         rule.description = form.cleaned_data['description']
 
-        def validate_exceptions_field(rule):
-            if "exceptions" not in rule:
-                return True
-            ex_string = rule.get('exceptions')
-            # Checks that the "exceptions"-string constists of comma-separated
-            # 10-digit numbers or an empty string.
-            validated = ex_string == "" or bool(re.match(r'^\d{10}(,\d{10})*$', ex_string))
-            return validated
-
-        def validate_surrounding_words_exceptions(rule):
-            if "surrounding_exceptions" not in rule:
-                return True
-            ex_string = rule.get('surrounding_exceptions')
-            # Check that the "surrounding_exceptions"-string only contains
-            # alphanumeric characters or is an empty string.
-            # TODO: But ... The regex does not only allow alphanumeric characters.
-            # Do we only want alphanumeric characters or not?
-            validated = bool(re.match(r'^[a-zA-Z0-9æøåÆØÅ,-]*$', ex_string))
-            return validated
-
         if crule := form.cleaned_data.get('rule'):
-            if not validate_exceptions_field(crule):
+            if not RuleCreate.validate_exceptions_field(crule):
                 form.add_error(
                     'rule', _("The 'exceptions'-string must be a "
                               "comma-separated list of 10-digit numbers."))
                 raise ValidationError(_("Formatting error"), code="formatting")
-            elif not validate_surrounding_words_exceptions(crule):
+            elif not RuleCreate.validate_surrounding_words_exceptions(crule):
                 form.add_error(
                     'rule', _("The 'surrounding_exceptions'-string must not "
                               "include any symbols or spaces."))
