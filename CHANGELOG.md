@@ -76,8 +76,6 @@ more scanner types.
 
 "MQ is for Message Queue"
 
-- Users can now save the rules they've made in the minscanner
-
 ### New in this release
 
 - Organizations can now define a retention policy. This policy replaces the previously hardcoded
