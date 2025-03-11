@@ -1,0 +1,12 @@
+{# The "i" type icons with nice-to-have information #}
+
+{% load i18n l10n static %}
+
+<div class="info-icon-wrapper"
+     title="{% blocktrans %}{{ tooltip }}{% endblocktrans %}">
+  <i id="{{ icon_name|default:"info" }}"
+     class="material-symbols"
+     aria-hidden="true">
+    {{ icon_name|default:"info" }}
+  </i>
+</div>

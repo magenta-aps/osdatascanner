@@ -173,8 +173,9 @@
       </div>
     </div>
 
+    {# NOTE: this was added in #56797 and removed in #58836. #}
     {% comment %} This block is removed for the time being. It is causing
-  considerable issues in production environments, due to unforeseen 
+    considerable issues in production environments, due to unforeseen 
     organizational structure. {% endcomment %}
     {% comment %} <div class="statistic_wrapper">
     <!-- bar chart - matches per org unit -->
@@ -231,74 +232,31 @@
       </div>
     {% endif %}
     </div> {% endcomment %}
-
-    <div class="statistic_wrapper">
-      <!-- Line chart - unhandled matches -->
-      <div class="statistic data_box large">
-        <div class="statistic_header">
-          <div>
-            <h1 class="page-title__sub">{% trans "Development overview" %}</h1>
-            <p class="chart_description"
-               data-chartid="development-unhandled-results">{% trans "Accumulated unhandled results by month" %}</p>
-          </div>
-          <div class="statistic_header_nav">
-            <div>
-              <button class="graph-zoom-info expand">
-                <i class="material-icons" aria-hidden="true">search</i>
-              </button>
-              <div class="dropdown-container">
-                <div class="graph-zoom-info-dropdown">
-                  {% trans "Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the mouse wheel to manually zoom. Use the reset button to return the graph to normal." %}
-
-                </div>
-              </div>
-            </div>
-            <div>
-              <button class="sorting-options" onclick="resetZoomDevelopment()">
-                <span>{% trans "Reset" %}</span>
-              </button>
-            </div>
-          </div>
+ 
+    {##### DPO body content container #####}
+    <div class="statistics statistics--dpo">
+      {# NOTE: This is a WIP. I'll be moving each preexisting "card" into this div - section by section. #}
+ 
+      {# NEW CARDS - START #}
+ 
+      <section class="statistics__section">
+        <div class="section__body development-overview">
+          {# Line chart - unhandled matches #}
+          {% include "components/statistics/dpo_results-unhandled_line-chart.html" %}
         </div>
-        <div class="chart_container" data-chartid="development-unhandled-results">
-          <canvas class="line_chart canvas_size" id="line_chart_unhandled_matches"></canvas>
+      </section>
+ 
+      <section class="statistics__section">
+        <div class="section__body development-overview">
+          {# Bar chart - new matches #}
+          {% include "components/statistics/dpo_results-new_bar-chart.html" %}
         </div>
-      </div>
+      </section>
+ 
+      {# NEW CARDS - END #}
     </div>
 
-    <div class="statistic_wrapper">
-      <!-- Bar chart - new matches -->
-      <div class="statistic data_box large">
-        <div class="statistic_header">
-          <div>
-            <h1 class="page-title__sub">{% trans "Development overview" %}</h1>
-            <p class="chart_description" data-chartid="development-new-results">{% trans "New results by month" %}</p>
-          </div>
-          <div class="statistic_header_nav">
-            <div>
-              <button class="graph-zoom-info expand">
-                <i class="material-icons" aria-hidden="true">search</i>
-              </button>
-              <div class="dropdown-container">
-                <div class="graph-zoom-info-dropdown">
-                  {% trans "Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the mouse wheel to manually zoom. Use the reset button to return the graph to normal." %}
 
-                </div>
-              </div>
-            </div>
-            <div>
-              <button class="sorting-options" onclick="resetZoomDevelopment()">
-                <span>{% trans "Reset" %}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="chart_container" data-chartid="development-new-results">
-          <canvas class="bar_chart canvas_size bar_chart_vertical"
-                  id="bar_chart_new_matches_by_month"></canvas>
-        </div>
-      </div>
-    </div>
 
 
     {{ total_by_source|json_script:"total_by_source" }}

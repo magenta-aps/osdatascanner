@@ -21,6 +21,8 @@ more scanner types.
 
 - Messages produced by the scanner engine are now also translated.
 
+- Added common "card" component.
+
 ### Bugfixes
 
 - Fixed minor visual bugs with carets in the leader overview.
