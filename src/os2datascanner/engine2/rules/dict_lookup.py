@@ -34,6 +34,9 @@ class DictLookupRule(SimpleRule):
             "rule": self._rule.to_json_object(),
         }
 
+    def flatten(self):
+        return {self} | self._rule.flatten()
+
     @classmethod
     def from_json_object(cls, obj):
         return cls(
