@@ -1,4 +1,5 @@
 from . import messages
+from .matcher import censor_context
 
 
 READS_QUEUES = ("os2ds_matches", "os2ds_metadata", "os2ds_problems",)
@@ -12,6 +13,11 @@ def censor_outgoing_message(message):
     if isinstance(message, messages.MetadataMessage):
         return message._replace(handle=message.handle.censor())
     elif isinstance(message, messages.MatchesMessage):
+        if hasattr(message.handle, "_mail_subject"):
+            censored_handle = message.handle
+            rules = message.scan_spec.rule.flatten()
+            censored_handle._mail_subject = censor_context(censored_handle._mail_subject, rules)
+            message._replace(handle=censored_handle)
         return message._replace(
                 handle=message.handle.censor(),
                 scan_spec=censor_outgoing_message(message.scan_spec))
