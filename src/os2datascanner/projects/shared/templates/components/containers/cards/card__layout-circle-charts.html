@@ -1,0 +1,11 @@
+{# Use this extender for any cards containing a circle chart to obtain a 50/50 layout #}
+
+{% extends "components/containers/cards/card.html" %}
+
+{% block card_body %}
+  <div class="chart chart--circle">
+    {% block circle_chart_canvas %}{% endblock %}
+
+    {% block circle_chart_legend %}{% endblock %}
+  </div>
+{% endblock %}

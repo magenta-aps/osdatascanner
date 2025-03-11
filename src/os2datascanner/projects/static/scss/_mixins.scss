@@ -42,6 +42,17 @@
   // The "@content" tag makes it possible to apply extra context relevant styles if needed (fx "justify-content: space-between;").
 }
 
+@mixin spacing-reset {
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* What does this do? */
+  // Removes all predefined margin and padding values all and any children inside this container for full control over layout.
+  // If you use this, then make sure to include this at the top and before adding any other styling for your css selector - otherwise you risk overwriting all your previous margin/padding based styles.
+}
+
 /***** TODO: *****/
 // Move any "flex-center-magic" based ones into this.
 // Go through every single preexisting mixin and assess if it's something that could be recycled.
