@@ -13,7 +13,7 @@ class DictLookupRule(SimpleRule):
         self._rule = rule
 
     def match(self, value: dict):
-        if self._prop not in value:
+        if not value or self._prop not in value:
             return
 
         # This is the magic that flattens a Rule into a SimpleRule: we call the
