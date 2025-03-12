@@ -26,6 +26,9 @@ services:
       context: .
       dockerfile: docker/base/Dockerfile
       target: sbsys-init
+    environment:
+      # We don't need any engine functions to populate the database
+      - OS2DS_ENGINE_USER_CONFIG_PATH=
     depends_on:
       SBSYS_DB:
         condition: service_healthy

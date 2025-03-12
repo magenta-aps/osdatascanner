@@ -1,3 +1,4 @@
+from .derived import DerivedSource  # noqa
 from . import pdf  # noqa
 from . import tar  # noqa
 from . import zip  # noqa

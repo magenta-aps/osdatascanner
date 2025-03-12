@@ -1,199 +1,21 @@
-from enum import Enum
+from io import BytesIO
 from typing import Iterable
-import operator
+from functools import cached_property
 import structlog
 
-from sqlalchemy import (
-        and_, or_, not_, true, false,
-        select, Table, Column, MetaData, create_engine)
-from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import (
-        Select, func as sql_func, text as sql_text)
+from sqlalchemy import select, MetaData, create_engine
+from sqlalchemy.sql.expression import func as sql_func, text as sql_text
 
 
 from os2datascanner.engine2.model.core import (
-        Source, Handle, Resource, SourceManager)
-from os2datascanner.engine2.rules import logical
-from os2datascanner.engine2.rules.rule import Rule, SimpleRule
+        Source, Handle, Resource, FileResource, SourceManager)
+from os2datascanner.engine2.model.derived import DerivedSource
+from os2datascanner.engine2.utilities.i18n import gettext as _
+
+from .sbsysdb_utilities import convert_rule_to_select, exec_expr
 
 
 logger = structlog.get_logger("engine2")
-
-
-DUMMY_CASE_MIME = "application/vnd.magenta.osds.sbsys-case"
-
-
-class SBSYSDBRule(SimpleRule):
-    class Op(Enum):
-        EQ = ("eq", operator.eq)
-        NEQ = ("neq", operator.ne)
-        LT = ("lt", operator.lt)
-        LTE = ("lte", operator.le)
-        GT = ("gt", operator.gt)
-        GTE = ("gte", operator.ge)
-
-        CONTAINS = (
-                "contains",
-                lambda haystack, needle: needle in haystack,
-                lambda column, value: column.contains(value))
-        ICONTAINS = (
-                "icontains",
-                lambda haystack, needle: (
-                        needle.casefold() in haystack.casefold()),
-                lambda column, value: column.icontains(value))
-
-        def __new__(cls, value, func_py, func_db=None):
-            obj = object.__new__(cls)
-            obj._value_ = value
-            obj.func_py = func_py
-            obj.func_db = func_db or func_py
-            return obj
-
-        def __call__(self, *args, **kwargs):
-            return self.func_py(*args, **kwargs)
-
-    type_label = "sbsys-db-fieldrule"
-    operates_on = None
-
-    __match_args__ = ("_field", "_op", "_value")
-
-    def __init__(
-            self, field: str, op: Op | str, value, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._field = field
-        self._op = op if isinstance(op, self.Op) else self.Op(op)
-        self._value = value
-
-    @property
-    def presentation_raw(self):
-        return ":D"
-
-    def match(self, db_row):
-        if self._op(db_row[self._field], self._value):
-            yield {
-                "match": db_row[self._field]
-            }
-
-    def to_json_object(self):
-        return NotImplemented
-
-
-def resolve_complex_column_name(
-        start: Table, col_name: str, all_tables) -> (Select, Column):
-    """Given a Table at which to start and a complex column name that may
-    traverse several tables (for example,
-    "Creator.ContactInfo.Address.Postcode"), returns the conjunction of all the
-    extra constraints required by the traversal and a reference to the column
-    that was eventually selected.
-
-    The traversal logic can follow foreign key relations automatically, but
-    it also supports a cast syntax ("Field as TableName") for pseudo-foreign
-    keys: "Subject as Person.Address", "Subject as Company.RegisteredAddress",
-    "Subject as Animal.Owner as Person.Address" etc."""
-    here = start
-    *field_path, last = col_name.split(".")
-
-    # Worked example: starting at Sag and trying to get to
-    # Behandler.Adresse.Landekode...
-
-    links = []
-
-    for part in field_path:
-        explicit_cast = None
-        if " as " in part:
-            # Some SBSYS columns are "soft" foreign keys: the value of another
-            # field governs what they point at (groan). To support that, we
-            # allow the points-to relation to be set explicitly
-            part, explicit_cast = part.split(" as ", maxsplit=1)
-
-        # ... we first select the "BehandlerID" column...
-        try:
-            link_column = getattr(here.c, part + "ID")
-        except AttributeError:
-            # Handle foreign key reference columns that don't use the "ID"
-            # name suffix convention
-            link_column = getattr(here.c, part)
-
-        if not explicit_cast:
-            # ... then we follow the foreign key to get a reference to the
-            # Bruger table on the other side...
-            fk, = link_column.foreign_keys
-            other_table = fk.column.table
-        else:
-            other_table = all_tables[explicit_cast]
-
-        # ... then we (implicitly) join the Bruger table into our query...
-        other_table_pk, = other_table.primary_key
-        links.append(link_column == other_table_pk)
-        # ... and continue following the chain at Bruger, where we do the
-        # same trick again for "Adresse" -> AdresseID -> <table Adresse>
-        here = other_table
-
-    # Finally, we take the last part of the column name ("Landekode") and look
-    # it up in the table we've ended up at
-    return and_(*links), getattr(here.c, last)
-
-
-def convert_rule_to_select(
-        rule: Rule,
-        table: Table, all_tables,
-        initial_select: Select, column_labels: dict[str, Column],
-        virtual_columns: dict[str, object] = None) -> Select:
-    """Converts an OSdatascanner Rule containing SBSYSDBRule objects into a
-    corresponding SQLAlchemy Select expression.
-
-    The resulting expression is guaranteed to select columns in the same order
-    as the keys of the column_labels dict. (One useful consequence of this is
-    that you can make a mapping from field names to results by just zipping
-    the keys together with a result tuple.)"""
-
-    def rule_to_constraints(r):
-        """Recursively converts an OSdatascanner Rule into a SQLAlchemy
-        constraint.
-
-        This function updates the column_labels dictionary with each new column
-        required by the expression, labelled with its name from the Rule; this
-        information will eventually be required to turn the constraint into a
-        complete Select expression."""
-        match r:
-            case logical.AndRule():
-                return and_(
-                        true(),
-                        *(rule_to_constraints(c) for c in r.components))
-
-            case logical.OrRule():
-                return or_(
-                        false(),
-                        *(rule_to_constraints(c) for c in r.components))
-
-            case logical.NotRule():
-                return not_(rule_to_constraints(r._rule))
-
-            case SBSYSDBRule(field_name, op, value) \
-                    if virtual_columns and field_name in virtual_columns:
-                virtual_column = virtual_columns.get(field_name)
-                if field_name not in column_labels:
-                    column_labels[field_name] = virtual_column
-                return op.func_db(virtual_column, value)
-
-            case SBSYSDBRule(field_name, op, value):
-                extra_constraints, column = resolve_complex_column_name(
-                        table, field_name, all_tables)
-                if field_name not in column_labels:
-                    column_labels[field_name] = column
-                return and_(extra_constraints, op.func_db(column, value))
-
-            case _:
-                # For now, we assume that any other OSdatascanner rule plays no
-                # part in the SQL query
-                return true()
-
-    constraints = rule_to_constraints(rule) if rule else true()
-    # To turn our constraint object into a valid Select expression, we need to
-    # make sure we actually select the columns required by the constraints.
-    # Luckily rule_to_constraints stashes those away in the column_labels dict
-    return initial_select.add_columns(
-            *column_labels.values()).where(constraints)
 
 
 class SBSYSDBSource(Source):
@@ -231,11 +53,14 @@ class SBSYSDBSource(Source):
 
     def handles(
             self, sm: SourceManager,
-            *, rule=None) -> Iterable['SBSYSDBCaseHandle']:
+            *, rule=None) -> Iterable['SBSYSDBHandles.Case']:
         engine, tables = sm.open(self)
         Sag = tables["Sag"]
 
-        column_labels = {"Nummer": Sag.c.Nummer, "Titel": Sag.c.Titel}
+        column_labels = {
+            label: getattr(Sag.c, label)
+            for label in SBSYSDBSources.Case.required_columns
+        }
         expr = convert_rule_to_select(
                 rule,
                 Sag, tables,
@@ -250,24 +75,12 @@ class SBSYSDBSource(Source):
                     "?Age?": sql_func.datediff(
                             sql_text("day"), Sag.c.LastChanged, sql_func.now())
                 })
-        breakpoint()
 
-        with Session(engine) as session:
-            logger.debug(
-                    "executing SBSYS database query",
-                    query=str(expr), params=expr.compile().params)
-
-            # Simulate Django's iterator() (with its default page size of 2000)
-            # to avoid allocating too much memory
-            for db_row_ in session.execute(
-                    expr, execution_options={
-                        "yield_per": 2000
-                    }):
-                db_row = dict(zip(column_labels.keys(), db_row_))
-                yield SBSYSDBCaseHandle(
-                        self,
-                        db_row["Nummer"], db_row["Titel"],
-                        hints={"db_row": db_row})
+        for db_row in exec_expr(engine, expr, *column_labels.keys()):
+            yield SBSYSDBHandles.Case(
+                    self,
+                    db_row["Nummer"], db_row["Titel"],
+                    hints={"db_row": db_row})
 
     def to_json_object(self):
         return {
@@ -279,31 +92,108 @@ class SBSYSDBSource(Source):
         }
 
 
-class SBSYSDBCaseResource(Resource):
-    def check(self):
-        return True
+class SBSYSDBHandles:
+    class Case(Handle):
+        _DUMMY_MIME = "application/vnd.magenta.osds.sbsys-case"
 
-    def compute_type(self):
-        return DUMMY_CASE_MIME
+        class _Resource(Resource):
+            def check(self):
+                return True
+
+            def compute_type(self):
+                return SBSYSDBHandles.Case._DUMMY_MIME
+
+        resource_type = _Resource
+        type_label = "sbsys-db-case"
+
+        def __init__(
+                self,
+                source: SBSYSDBSource,
+                number: str | int,
+                title: str, **kwargs):
+            super().__init__(source, str(number), **kwargs)
+            self._title = title
+
+        def guess_type(self):
+            return self._DUMMY_MIME
+
+        @property
+        def presentation_name(self):
+            if not self._title:
+                return _("case number {casenr}").format(casenr=self.relative_path)
+            else:
+                return _("case \"{title}\" (case number {casenr})").format(
+                        title=self._title, casenr=self.relative_path)
+
+        @property
+        def presentation_place(self):
+            return "SBSYS"
+
+    class Field(Handle):
+        class _Resource(FileResource):
+            def check(self):
+                return True
+
+            @cached_property
+            def _val(self):
+                return str(self.handle.source.fetch(self._sm)[
+                        self.handle.relative_path]).encode()
+
+            def make_stream(self):
+                yield BytesIO(self._val)
+
+            def get_size(self):
+                return len(self._val)
+
+            def compute_type(self):
+                return "text/plain"
+
+        type_label = "sbsys-db-case-field"
+        resource_type = _Resource
+
+        @property
+        def presentation_name(self):
+            return _("field \"{field}\" of {case}").format(
+                    field=self.relative_path,
+                    case=str(self.source.handle.presentation_name))
+
+        @property
+        def presentation_place(self):
+            return str(self.source.handle.presentation_place)
 
 
-class SBSYSDBCaseHandle(Handle):
-    type_label = "sbsys-db-case"
-    resource_type = SBSYSDBCaseResource
+class SBSYSDBSources:
+    @Source.mime_handler(SBSYSDBHandles.Case._DUMMY_MIME)
+    class Case(DerivedSource):
+        type_label = "sbsys-db-case"
+        derived_from = SBSYSDBHandles.Case
 
-    def __init__(
-            self, source, path, title, **kwargs):
-        super().__init__(source, path, **kwargs)
-        self._title = title
+        def fetch(self, sm: SourceManager):
+            engine, tables = sm.open(self)
+            Sag = tables["Sag"]
 
-    def guess_type(self):
-        return DUMMY_CASE_MIME
+            row_hints = self.handle.hint("db_row", {})
 
-    @property
-    def presentation_name(self):
-        rv = f"case {self.relative_path}"
-        return rv if not self._title else f"\"{self._title}\" ({rv})"
+            columns_to_select = [
+                    getattr(Sag.c, col)
+                    for col in self.required_columns
+                    if col not in row_hints]
 
-    @property
-    def presentation_place(self):
-        return "SBSYS"
+            db_row = None
+            if columns_to_select:
+                expr = select().add_columns(columns_to_select).where(
+                        Sag.c.Nummer == self.handle.relative_path)
+
+                db_row, = exec_expr(engine, expr, *columns_to_select)
+
+            return {col: row_hints[col]
+                    if col in row_hints
+                    else db_row[col] for col in self.required_columns}
+
+        required_columns = ("Nummer", "Titel", "Kommentar",)
+
+        def _generate_state(self, sm: SourceManager):
+            yield sm.open(self.handle.source)
+
+        def handles(self, sm: SourceManager):
+            yield SBSYSDBHandles.Field(self, "Kommentar")
