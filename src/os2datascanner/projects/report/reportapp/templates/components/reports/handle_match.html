@@ -106,6 +106,22 @@
       <i class="material-icons">delete_forever</i><span>{% trans "Delete marked files" %}</span>
     </button>
   {% endif %}
+  {% if show_ews_mass_delete_button %}
+    <button type="button"
+            class="button table-checkbox__action button--icon-text-button"
+            data-status="match-handle"
+            disabled
+            aria-label="{% trans 'deletes checked mails from your Exchange server'|capfirst %}"
+            title="{% trans 'deletes checked mails from your Exchange server'|capfirst %}"
+            hx-post="{% url 'mass-delete-ews-mail' %}"
+            hx-swap="none"
+            hx-trigger="click"
+            hx-push-url="false"
+            hx-confirm="{% blocktrans %}You are about to delete checked mails from your Exchange server. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+            name="mass-delete">
+      <i class="material-icons">delete_forever</i><span>{% trans "delete marked mails"|capfirst %}</span>
+    </button>
+  {% endif %}
 
   <span class="selected-cb">
     <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}

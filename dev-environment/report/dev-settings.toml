@@ -44,6 +44,8 @@ MSGRAPH_TENANT_ID = ""
 
 SMB_ALLOW_WRITE = true
 
+EWS_ALLOW_WRITE = true
+
 # KEYCLOAK
 # These settings require a os2datascanner client, and a osdatascanner realm in Keycloak.
 # endpoints

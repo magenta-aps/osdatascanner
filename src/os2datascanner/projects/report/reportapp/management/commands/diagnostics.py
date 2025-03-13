@@ -284,6 +284,9 @@ class Command(BaseCommand):
         print("\n# [smb]")
         print_settings("SMB_ALLOW_WRITE")
 
+        print("\n# [ews]")
+        print_settings("EWS_ALLOW_WRITE")
+
         print("\n# [logging]")
         print_settings("LOG_LEVEL")
 

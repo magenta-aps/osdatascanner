@@ -23,6 +23,8 @@
 - Scans can now be cancelled instead of deleted, and will automatically be so if a scanner is hidden
   in the scanner overview. Cancelled scans will still appear in the completed scans overview.
 
+- It is now possible to delete EWS emails from OSdatascanner.
+
 ### General improvements
 
 - Any changes made to a scanner by a user who cannot validate scanners will now cause the scanner

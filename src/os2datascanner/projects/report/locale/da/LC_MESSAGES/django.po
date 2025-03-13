@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-13 11:26+0100\n"
+"POT-Creation-Date: 2025-03-13 13:58+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -540,7 +540,7 @@ msgid "per page"
 msgstr "pr. side"
 
 #: reportapp/templates/components/pagination/pagination.html:9
-#: reportapp/templates/components/reports/handle_match.html:111
+#: reportapp/templates/components/reports/handle_match.html:127
 #: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html:22
 msgid "of"
 msgstr "af"
@@ -689,8 +689,8 @@ msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html:10
 #: reportapp/templates/components/reports/handle_match.html:44
-#: reportapp/templates/components/reports/match.html:222
-#: reportapp/templates/components/reports/match.html:276
+#: reportapp/templates/components/reports/match.html:240
+#: reportapp/templates/components/reports/match.html:293
 msgid ""
 "OSdatascanner will not delete results from the system that was scanned. "
 "Marking a result as handled will only remove the result from OSdatascanner."
@@ -704,8 +704,8 @@ msgid "Mark as handled"
 msgstr "Markér som håndterede"
 
 #: reportapp/templates/components/reports/handle_match.html:18
-#: reportapp/templates/components/reports/match.html:233
-#: reportapp/templates/components/reports/match.html:284
+#: reportapp/templates/components/reports/match.html:251
+#: reportapp/templates/components/reports/match.html:301
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -716,8 +716,8 @@ msgstr ""
 "manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/reports/handle_match.html:25
-#: reportapp/templates/components/reports/match.html:240
-#: reportapp/templates/components/reports/match.html:270
+#: reportapp/templates/components/reports/match.html:257
+#: reportapp/templates/components/reports/match.html:287
 msgid "Revert"
 msgstr "Fortryd"
 
@@ -783,7 +783,24 @@ msgstr ""
 "Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling "
 "kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/handle_match.html:111
+#: reportapp/templates/components/reports/handle_match.html:114
+#: reportapp/templates/components/reports/handle_match.html:115
+msgid "deletes checked mails from your Exchange server"
+msgstr "sletter markede mails fra din Exchange server"
+
+#: reportapp/templates/components/reports/handle_match.html:120
+msgid ""
+"You are about to delete checked mails from your Exchange server. "
+"OSdatascanner cannot reverse this action. Are you sure?"
+msgstr ""
+"Du er ved at slette valgte mails fra din Exchange server. Denne handling kan "
+"ikke fortrydes i OSdatascanner. Er du sikker?"
+
+#: reportapp/templates/components/reports/handle_match.html:122
+msgid "delete marked mails"
+msgstr "slet markerede emails"
+
+#: reportapp/templates/components/reports/handle_match.html:127
 msgid "selected"
 msgstr "valgt"
 
@@ -815,6 +832,7 @@ msgstr ""
 #: reportapp/templates/components/reports/match.html:66
 #: reportapp/templates/components/reports/match.html:83
 #: reportapp/templates/components/reports/match.html:101
+#: reportapp/templates/components/reports/match.html:118
 msgid "Delete"
 msgstr "Slet"
 
@@ -842,32 +860,44 @@ msgstr ""
 "Du er ved at slette valgte fil fra dit fælles netværksdrev. Denne handling "
 "kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
-#: reportapp/templates/components/reports/match.html:109
+#: reportapp/templates/components/reports/match.html:111
+msgid "Deletes mail from Exchange server"
+msgstr "Sletter mail fra din Exchange server"
+
+#: reportapp/templates/components/reports/match.html:117
+msgid ""
+"You are about to delete the selected mail from your Exchange server. "
+"OSdatascanner cannot reverse this action. Are you sure?"
+msgstr ""
+"Du er ved at slette valgte mail fra din Exchange server. Denne handling kan "
+"ikke fortrydes i OSdatascanner. Er du sikker?"
+
+#: reportapp/templates/components/reports/match.html:127
 msgid "Opened for"
 msgstr "Åbnet for"
 
-#: reportapp/templates/components/reports/match.html:159
+#: reportapp/templates/components/reports/match.html:177
 msgid "Show more"
 msgstr "Vis mere"
 
-#: reportapp/templates/components/reports/match.html:176
+#: reportapp/templates/components/reports/match.html:194
 msgid "Copy folder path"
 msgstr "Kopiér sti til mappe"
 
-#: reportapp/templates/components/reports/match.html:182
+#: reportapp/templates/components/reports/match.html:200
 msgid "Copy path"
 msgstr "Kopiér sti"
 
-#: reportapp/templates/components/reports/match.html:190
+#: reportapp/templates/components/reports/match.html:208
 msgid "Copy link"
 msgstr "Kopiér link"
 
-#: reportapp/templates/components/reports/match.html:224
-#: reportapp/templates/components/reports/match.html:287
+#: reportapp/templates/components/reports/match.html:242
+#: reportapp/templates/components/reports/match.html:304
 msgid "Handle"
 msgstr "Håndtér"
 
-#: reportapp/templates/components/reports/match.html:261
+#: reportapp/templates/components/reports/match.html:278
 msgid ""
 "Revert the selected handling status for this result. This will remove the "
 "result from the archive and return it to the report overview."
@@ -875,19 +905,19 @@ msgstr ""
 "Fortryd den valgte håndteringsstatus for dette resultat. Dette vil fjerne "
 "resultatet fra arkivet og returnere det til rapport overblikket."
 
-#: reportapp/templates/components/reports/match.html:295
+#: reportapp/templates/components/reports/match.html:312
 msgid "Show/hide matches"
 msgstr "Vis/skjul matches"
 
-#: reportapp/templates/components/reports/match.html:307
+#: reportapp/templates/components/reports/match.html:324
 msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
-#: reportapp/templates/components/reports/match.html:309
+#: reportapp/templates/components/reports/match.html:326
 msgid "Context"
 msgstr "Kontekst"
 
-#: reportapp/templates/components/reports/match.html:311
+#: reportapp/templates/components/reports/match.html:328
 msgid "Probability"
 msgstr "Sandsynlighed"
 
@@ -2163,15 +2193,15 @@ msgstr ""
 "Der blev ikke fundet en konto, hvis brugernavn passede sammen med dette "
 "sendte af din organisations identity provider."
 
-#: reportapp/views/report_views.py:71
+#: reportapp/views/report_views.py:72
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
 
-#: reportapp/views/report_views.py:119
+#: reportapp/views/report_views.py:120
 msgid "No action required:"
 msgstr "Ingen handling påkrævet:"
 
-#: reportapp/views/report_views.py:121
+#: reportapp/views/report_views.py:122
 msgid ""
 "A temporary error occurred during the latest check of this result. "
 "OSdatascanner will automatically check this result again as part of the next "
@@ -2181,14 +2211,14 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py:530 reportapp/views/report_views.py:555
-#: reportapp/views/report_views.py:575 reportapp/views/report_views.py:600
-#: reportapp/views/report_views.py:619
+#: reportapp/views/report_views.py:540 reportapp/views/report_views.py:565
+#: reportapp/views/report_views.py:585 reportapp/views/report_views.py:610
+#: reportapp/views/report_views.py:629 reportapp/views/report_views.py:674
 #, python-brace-format
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/report_views.py:646
+#: reportapp/views/report_views.py:656 reportapp/views/report_views.py:700
 #, python-brace-format
 msgid "Failed to delete some reports: {e}"
 msgstr "Kunne ikke slette visse rapporter: {e}"
