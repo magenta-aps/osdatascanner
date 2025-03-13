@@ -114,8 +114,8 @@ class ReportView(LoginRequiredMixin, ListView):
 
         self.add_form_context(context)
 
-        # create a dictionary with data for the popover_component showing error messages
-        popover_data = {
+        # Define popover data for error messages
+        context["popover_data"] = {
             'status': _("No action required:"),
             'title': _(
                 "A temporary error occurred during the latest check of this result. "
@@ -124,14 +124,13 @@ class ReportView(LoginRequiredMixin, ListView):
             'subtitle': "",
         }
 
-        # pass the dictionary as a single variable
-        context["popover_data"] = popover_data
-
+        # Check permissions for deleting shared files
         context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
         context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
             (self.request.GET.get("source_type") == "smbc" or
                 all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
 
+        # Retention policy details
         context["retention_policy"] = self.org.retention_policy
         context["retention_days"] = self.org.retention_days
 

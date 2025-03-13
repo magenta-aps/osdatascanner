@@ -1,5 +1,4 @@
-{% load l10n %}
-{% load i18n %}
+{% load i18n l10n %}
 
 <div class="table-toolbar__content-left">
   {% if settings.HANDLE_DROPDOWN %}
@@ -7,8 +6,8 @@
             class="table-checkbox__action button button--icon-text-button"
             disabled
             id="mass_handle_button"
-            aria-label="{% trans 'handle matches' %}"
-            title="{% trans 'handle matches' %} {% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}">
+            aria-label="{% trans 'handle matches'|capfirst %}"
+            title="{% trans 'handle matches'|capfirst %} - {% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
       <i class="material-icons text-secondary" aria-hidden="true">archive</i> <span>{% trans "Mark as handled" %}</span>
     </button>
     <div class="dropdown-container">
@@ -41,8 +40,8 @@
             class="table-checkbox__action button button--icon-text-button"
             data-status="match-handle"
             disabled
-            aria-label="{% trans 'handle matches' %}"
-            title="{% trans 'handle matches' %} {% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}"
+            aria-label="{% trans 'handle matches'|capfirst %}"
+            title="{% trans 'handle matches'|capfirst %} - {% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}"
             name="handle-matches"
             hx-post="{% url 'mass-handle' %}"
             hx-swap="none"
