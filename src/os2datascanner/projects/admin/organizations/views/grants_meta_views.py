@@ -10,6 +10,7 @@ from os2datascanner.projects.admin.organizations.models import Organization
 from os2datascanner.projects.grants.models import GraphGrant, SMBGrant, EWSGrant
 
 from os2datascanner.projects.admin.adminapp.views.views import RestrictedListView
+from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
 
 
 class GrantListView(RestrictedListView):
@@ -21,7 +22,8 @@ class GrantListView(RestrictedListView):
         queryset = self.model.objects.prefetch_related(
             Prefetch('graphgrant', to_attr='prefetched_graph_grants'),
             Prefetch('smbgrant', to_attr='prefetched_smb_grants'),
-            Prefetch('ewsgrant', to_attr='prefetched_ews_grants')
+            Prefetch('ewsgrant', to_attr='prefetched_ews_grants'),
+            Prefetch('googleapigrant', to_attr='prefetched_googleapi_grants')
         )
 
         for org in queryset:
@@ -29,7 +31,8 @@ class GrantListView(RestrictedListView):
             org.grants = list(chain(
                 org.prefetched_graph_grants,
                 org.prefetched_smb_grants,
-                org.prefetched_ews_grants
+                org.prefetched_ews_grants,
+                org.prefetched_googleapi_grants
             ))
 
         return queryset
@@ -53,6 +56,9 @@ class GrantRedirectUpdateView(LoginRequiredMixin, View):
 
             case (EWSGrant.__name__, grant_pk):
                 return redirect("ewsgrant-update", pk=grant_pk)
+
+            case (GoogleApiGrant.__name__, grant_pk):
+                return redirect("googleapigrant-update", pk=grant_pk)
 
             case _:
                 raise Http404

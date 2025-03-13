@@ -11,6 +11,8 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantMixin
+from os2datascanner.projects.grants.views.googleapi_views import GoogleApiGrantForm
 from ..models.scannerjobs.gmail import GmailScanner
 from .scanner_views import (
     ScannerDelete,
@@ -29,14 +31,13 @@ class GmailScannerList(ScannerList):
     type = 'gmail'
 
 
-class GmailScannerCreate(ScannerCreate):
+class GmailScannerCreate(ScannerCreate, GrantMixin):
     """Create a scanner view"""
 
     model = GmailScanner
     fields = [
         'name',
         'schedule',
-        'service_account_file_gmail',
         'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
@@ -45,22 +46,27 @@ class GmailScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'google_api_grant',
+        'scan_attachments',
+        'org_unit'
     ]
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
         return '/gmailscanners/%s/created/' % self.object.pk
 
+    def get_grant_form_classes(self):
+        return {"google_api_grant": GoogleApiGrantForm}
 
-class GmailScannerUpdate(ScannerUpdate):
+
+class GmailScannerUpdate(ScannerUpdate, GrantMixin):
     """Update a scanner view."""
 
     model = GmailScanner
     fields = [
         'name',
         'schedule',
-        'service_account_file_gmail',
         'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
@@ -69,7 +75,10 @@ class GmailScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'google_api_grant',
+        'scan_attachments',
+        'org_unit'
     ]
 
     def get_success_url(self):
@@ -82,6 +91,9 @@ class GmailScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/gmailscanners/%s/saved/' % self.object.pk
+
+    def get_grant_form_classes(self):
+        return {"google_api_grant": GoogleApiGrantForm}
 
 
 class GmailScannerRemove(ScannerRemove):
@@ -104,7 +116,6 @@ class GmailScannerCopy(ScannerCopy):
     fields = [
         'name',
         'schedule',
-        'service_account_file_gmail',
         'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
@@ -113,13 +124,12 @@ class GmailScannerCopy(ScannerCopy):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'google_api_grant'
     ]
 
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()
-        initial["service_account_file_gmail"] = self.get_scanner_object().service_account_file_gmail
-        initial["user_emails_gmail"] = self.get_scanner_object().user_emails_gmail
         return initial
 
 

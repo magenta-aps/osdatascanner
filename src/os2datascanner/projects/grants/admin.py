@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
+from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
 from os2datascanner.projects.utils import aes
 from .models import EWSGrant, SMBGrant, GraphGrant
 
@@ -99,3 +100,13 @@ class GraphGrantAdmin(admin.ModelAdmin):
             "app_id": "",
             "tenant_id": ""
         }
+
+
+class GoogleApiGrantForm(forms.ModelForm):
+    model = GoogleApiGrant
+
+
+@admin.register(GoogleApiGrant)
+class GoogleApiGrantAdminForm(admin.ModelAdmin):
+    fields = ["_service_account"]
+    form = GoogleApiGrantForm

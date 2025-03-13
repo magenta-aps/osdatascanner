@@ -184,7 +184,7 @@
                 <h3>{% trans "User information" %}</h3>
               {% endif %}
 
-              {% if form.service_account_file_gmail %}
+              {% if form.google_api_grant %}
                 <h3>{% trans "User information" %}</h3>
               {% endif %}
 
@@ -203,6 +203,10 @@
 
               {% if form.graph_grant %}
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.graph_grant %}
+              {% endif %}
+ 
+              {% if form.google_api_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.google_api_grant %}
               {% endif %}
 
               {% if form.smb_grant %}
@@ -244,45 +248,9 @@
                 </div>
               {% endif %}
 
-              {% if form.service_account_file_gmail %}
-                <div class="form__group form__group--flex">
-                  <label for="id_{{ form.service_account_file_gmail.name }}" class="block">
-                    {% trans "Upload service account" %} (.json) *
-                  </label>
-                  <input id="upload-file-service"
-                         placeholder="{% trans "Select a file" %}"
-                         disabled="disabled"
-                         class="grow" />
-                  <div class="fileUpload button">
-                    <span>{% trans "Upload" %}</span>
-                    <input class="upload"
-                           id="id_{{ form.service_account_file_gmail.name }}"
-                           name="{{ form.service_account_file_gmail.name }}"
-                           type="file"
-                           data-filename-placement="inside"
-                           aria-label="{% trans "Click here to upload service account credentials (JSON FORMAT)" %}"
-                           title="{% trans "Click here to upload service account credentials (JSON FORMAT)" %}" />
-                  </div>
-
-                  {% if form.service_account_file_gmail.help_text %}
-                    <span class="form__help-text">{{ form.service_account_file_gmail.help_text }}</span>
-                  {% endif %}
-
-                  {% if form.service_account_file_gmail.errors %}{{ form.service_account_file_gmail.errors }}{% endif %}
-                </div>
-              {% endif %}
-
-              {% if form.service_account_file_gmail.value %}
-                <div id="{{ form.service_account_file_gmail.auto_id }}_container"
-                     class="form__group{% if form.service_account_file_gmail.errors %} has-error{% endif %}">
-                  <label for="id_{{ form.service_account_file_gmail.name }}">{% trans "Service account" %}</label>
-                  {% trans "Current file:" %} <code>{{ form.service_account_file_gmail.value }}</code>
-                </div>
-              {% endif %}
-
               {% if form.user_emails_gmail %}
                 <div class="form__group form__group--flex">
-                  <label for="id_{{ form.user_emails_gmail.name }}" class="block">{% trans "Upload list of accounts" %} (.csv) *</label>
+                  <label for="id_{{ form.user_emails_gmail.name }}" class="block">{% trans "Upload list of accounts" %} (.csv)</label>
                   <input id="upload-file-email"
                          placeholder="{% trans "Select a file" %}"
                          disabled="disabled"
@@ -301,8 +269,6 @@
                   {% if form.user_emails_gmail.help_text %}
                     <span class="form__help-text">{{ form.user_emails_gmail.help_text }}</span>
                   {% endif %}
-
-                  {% if form.service_account_file_gmail.errors %}{{ form.user_emails_gmail.errors }}{% endif %}
                 </div>
               {% endif %}
 
