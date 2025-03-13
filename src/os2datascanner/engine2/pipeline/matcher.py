@@ -115,6 +115,13 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
                 f"{message.handle} done."
                 f" Matched status: {conclusion}")
 
+        # Censor mail subject in handle
+        if hasattr(message.handle, "_mail_subject"):
+            censored_handle = message.handle
+            rules = message.scan_spec.rule.flatten()
+            censored_handle._mail_subject = censor_context(censored_handle._mail_subject, rules)
+            message._replace(handle=censored_handle)
+
         for matches_q in ("os2ds_matches", "os2ds_checkups",):
             yield (matches_q,
                    messages.MatchesMessage(
