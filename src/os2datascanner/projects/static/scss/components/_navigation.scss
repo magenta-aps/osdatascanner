@@ -24,71 +24,48 @@
 
     .navi {
       margin-left: 1rem;
-      margin-top: 2rem;
-      position: fixed;
-      top: 2rem;
-    }
-
-    .navi li {
       margin-top: 0;
-      margin-right: 0;
-    }
+      position: fixed;
+      top: 5rem;
 
-    .navi a {
-      width: 13rem;
-      height: 3rem;
-    }
-
-    .navi i {
-      font-size: 2rem;
-    }
-
-    .navi a.active {
-      border-radius: 10px 0px 0px 10px;
-
-      &::before,
-      &::after {
-        content: "";
-        display: none;
-        width: 10px;
-        height: 10px;
-        background-size: 100% 100%;
-        background-image: url("../svg/navigation_corner.svg");
-        position: absolute;
-        right: 0;
+      ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        height: 70vh;
       }
 
-      &::before {
-        transform: rotate(90deg);
-        top: -10px;
+      a {
+        width: 13rem;
+
+        &.active {
+          border-radius: 10px 0px 0px 10px;
+
+          &::before,
+          &::after {
+            content: "";
+            display: none;
+            width: 10px;
+            height: 10px;
+            background-size: 100% 100%;
+            background-image: url("../svg/navigation_corner.svg");
+            position: absolute;
+            right: 0;
+          }
+
+          &::before {
+            transform: rotate(90deg);
+            top: -10px;
+          }
+
+          &::after {
+            bottom: -10px;
+          }
+        }
       }
 
-      &::after {
-        bottom: -10px;
-      }
-    }
-
-    @media (min-height: 650px) {
-      .navi {
-        margin-top: 3rem;
-      }
-
-      .navi li {
-        margin-top: 0.5rem;
-      }
-
-      .navi a {
-        height: 3.9rem;
-      }
-    }
-
-    @media (min-height: 820px) {
-      .navi {
-        margin-top: 5rem;
-      }
-
-      .navi li {
-        margin-top: 1.5rem;
+      i {
+        font-size: 2rem;
       }
     }
   }

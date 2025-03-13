@@ -1,5 +1,13 @@
 # Changelog
 
+## Version ???, ??th of ???? ????
+
+""
+
+### General improvements
+
+- Adjusted responsive size of navigation buttons in the admin module.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
