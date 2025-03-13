@@ -5,7 +5,7 @@
 {% load static %}
 
 {% block body %}
-  <div class="content" hx-push-url="true">
+  <div class="content content--maxwidth" hx-push-url="true">
     <div class="content-header">
       <h1 class="page-title">{% trans "DPO statistics" %}</h1>
 
@@ -109,70 +109,6 @@
       </div>
     </div>
 
-    <div class="statistic_wrapper">
-      <!-- Doughnut chart -->
-      <div class="statistic data_box medium">
-        <div class="statistic_header">
-          <div>
-            <h1 class="page-title__sub">{% trans "Handled results" %}</h1>
-            <p class="chart_description" data-chartid="handling-all-results">
-              {% trans "The organizational unit's percentage of handled results" %}
-            </p>
-          </div>
-        </div>
-        <div class="chart_container" data-chartid="handling-all-results">
-          <div class="doughnut_chart_container">
-            <div class="canvas_size donut_chart">
-              <canvas id="doughnut_chart_total"></canvas>
-            </div>
-            <div class="doughnut_info_box">
-              <h4>{% trans "Handled results" %}</h4>
-              <p>{{ match_data.handled.count }} {% trans "of" %} {{ match_data.handled.count|add:match_data.unhandled.count }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pie chart -->
-      <div class="statistic data_box medium">
-        <div class="statistic_header">
-          <div>
-            <h1 class="page-title__sub">{% trans "Distribution of results" %}</h1>
-            <p class="chart_description" data-chartid="distribution-data-sources">
-              {% trans "Results distributed by data sources" %}
-            </p>
-            <p class="hidden chart_description"
-               data-chartid="distribution-resolution-status">
-              {% trans "Results distributed by resolution statuses" %}
-            </p>
-          </div>
-          <div class="statistic_header_nav">
-            <div class="dropdown">
-              <select>
-                <option value="distribution-data-sources">{% trans "Data sources" %}</option>
-                <option value="distribution-resolution-status">{% trans "Resolution statuses" %}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="pie_chart_container chart_container canvas_size pie_chart"
-             style="height: 22rem"
-             data-chartid="distribution-data-sources">
-          <div>
-            <canvas id="pie_chart_datasources"></canvas>
-          </div>
-          <div id="pie_legend_datasources"></div>
-        </div>
-        <div class="hidden pie_chart_container chart_container canvas_size pie_chart"
-             data-chartid="distribution-resolution-status">
-          <div>
-            <canvas id="pie_chart_resolution_status"></canvas>
-          </div>
-          <div id="pie_legend_resolution_status"></div>
-        </div>
-      </div>
-    </div>
-
     {# NOTE: this was added in #56797 and removed in #58836. #}
     {% comment %} This block is removed for the time being. It is causing
     considerable issues in production environments, due to unforeseen 
@@ -238,6 +174,15 @@
       {# NOTE: This is a WIP. I'll be moving each preexisting "card" into this div - section by section. #}
  
       {# NEW CARDS - START #}
+      <section class="statistics__section">
+        <div class="section__body circle-charts">
+          {% comment %} Doughnut chart {% endcomment %}
+          {% include "components/statistics/dpo_results-handled_doughnut-chart.html" %}
+ 
+          {% comment %} Pie chart {% endcomment %}
+          {% include "components/statistics/dpo_results-distribution_pie-chart.html" %}
+        </div>
+      </section>
  
       <section class="statistics__section">
         <div class="section__body development-overview">

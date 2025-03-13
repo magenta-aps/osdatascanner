@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-13 10:04+0100\n"
+"POT-Creation-Date: 2025-03-13 11:26+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -285,6 +285,7 @@ msgid "number of matches"
 msgstr "antal matches"
 
 #: reportapp/models/documentreport.py:154
+#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html:24
 msgid "resolution status"
 msgstr "håndteringsstatus"
 
@@ -540,7 +541,7 @@ msgstr "pr. side"
 
 #: reportapp/templates/components/pagination/pagination.html:9
 #: reportapp/templates/components/reports/handle_match.html:111
-#: reportapp/templates/dpo_statistics_template.html:130
+#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html:22
 msgid "of"
 msgstr "af"
 
@@ -974,6 +975,35 @@ msgstr "Handlinger"
 msgid "Show more matches"
 msgstr "Vis flere matches"
 
+#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html:6
+msgid "distribution of results"
+msgstr "resultatfordeling"
+
+#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html:11
+#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html:19
+msgid "the distribution of results based on data sources"
+msgstr "resultatfordeling baseret på datakilde"
+
+#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html:20
+msgid "data source"
+msgstr "datakilde"
+
+#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html:23
+msgid "the distribution of results based on resolution status"
+msgstr "resultatfordeling baseret på håndteringsstatus"
+
+#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html:6
+msgid "result handling"
+msgstr "resultathåndtering"
+
+#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html:10
+msgid "the percentage of handled results for the selected filtering"
+msgstr "procentvis andel af håndterede resultater for den valgte filtrering"
+
+#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html:21
+msgid "handled results"
+msgstr "håndterede resultater"
+
 #: reportapp/templates/components/statistics/dpo_results-new_bar-chart.html:6
 #: reportapp/templates/components/statistics/dpo_results-unhandled_line-chart.html:6
 #: reportapp/templates/user_statistics_template.html:155
@@ -1184,35 +1214,6 @@ msgstr "Klik her for at eksportere DPO-data som en csv-fil"
 #: reportapp/templates/leader_statistics_template.html:63
 msgid "Export CSV"
 msgstr "Eksportér CSV"
-
-#: reportapp/templates/dpo_statistics_template.html:117
-#: reportapp/templates/dpo_statistics_template.html:129
-msgid "Handled results"
-msgstr "Håndterede resultater"
-
-#: reportapp/templates/dpo_statistics_template.html:119
-msgid "The organizational unit's percentage of handled results"
-msgstr "Afdelingens procentvise andel af håndterede resultater"
-
-#: reportapp/templates/dpo_statistics_template.html:140
-msgid "Distribution of results"
-msgstr "Fordeling af resultater"
-
-#: reportapp/templates/dpo_statistics_template.html:142
-msgid "Results distributed by data sources"
-msgstr "Resultater fordelt på datakilder"
-
-#: reportapp/templates/dpo_statistics_template.html:146
-msgid "Results distributed by resolution statuses"
-msgstr "Resultater fordelt på håndteringsstatusser"
-
-#: reportapp/templates/dpo_statistics_template.html:152
-msgid "Data sources"
-msgstr "Datakilder"
-
-#: reportapp/templates/dpo_statistics_template.html:153
-msgid "Resolution statuses"
-msgstr "Håndteringsstatusser"
 
 #: reportapp/templates/error_pages/no-units-error.html:9
 msgid "No organizational units associated with account"
@@ -2393,6 +2394,18 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
+#~ msgid "the organizational unit's percentage of handled results"
+#~ msgstr "afdelingens procentvise andel af håndterede resultater"
+
+#~ msgid "Resolution status"
+#~ msgstr "Håndteringsstatus"
+
+#~ msgid "The organizational unit's percentage of handled results"
+#~ msgstr "Afdelingens procentvise andel af håndterede resultater"
+
+#~ msgid "Results distributed by data sources"
+#~ msgstr "Resultater fordelt på datakilder"
+
 #~ msgid ""
 #~ "Hold and drag your mouse to zoom in on part of the graph. Hold shift "
 #~ "while using the mouse wheel to manually zoom. Use the reset button to "
@@ -2647,9 +2660,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 
 #~ msgid "Results distributed by sensitivities"
 #~ msgstr "Resultater fordelt på følsomheder"
-
-#~ msgid "Percentage of handled results distributed by sensitivity"
-#~ msgstr "Procentvis andel af håndterede resultater fordelt på følsomhed"
 
 #~ msgid ""
 #~ "You deleted all {account.first_name or account.username}'s results from "

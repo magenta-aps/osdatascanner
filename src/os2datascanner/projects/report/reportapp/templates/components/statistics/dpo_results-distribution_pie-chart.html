@@ -1,0 +1,50 @@
+{% extends "components/containers/cards/card__layout-circle-charts.html" %}
+
+{% load i18n %}
+
+{% block card_title %}
+  {% trans "distribution of results"|capfirst %}
+{% endblock %}
+
+
+{% block card_subtitle %}
+  {% trans "the distribution of results based on data sources"|capfirst %}
+{% endblock %}
+
+
+{% block card_header_ui %}
+  <div class="dropdown">
+    <select>
+      <option value="distribution-data-sources"
+              data-subtitle="{% trans "the distribution of results based on data sources"|capfirst %}">
+        {% trans "data source"|capfirst %}
+      </option>
+      <option value="distribution-resolution-status"
+              data-subtitle="{% trans "the distribution of results based on resolution status"|capfirst %}">
+        {% trans "resolution status"|capfirst %}
+      </option>
+    </select>
+  </div>
+{% endblock %}
+
+
+{% block circle_chart_canvas %}
+  <div class="canvas__wrapper" data-chartid="distribution-data-sources">
+    <canvas id="pie_chart_datasources"></canvas>
+  </div>
+
+  <div class="canvas__wrapper hidden"
+       data-chartid="distribution-resolution-status">
+    <canvas id="pie_chart_resolution_status"></canvas>
+  </div>
+{% endblock %}
+
+{% block circle_chart_legend %}
+  <div class="canvas__legend"
+       data-chartid="distribution-data-sources"
+       id="pie_legend_datasources"></div>
+
+  <div class="canvas__legend hidden"
+       data-chartid="distribution-resolution-status"
+       id="pie_legend_resolution_status"></div>
+{% endblock %}

@@ -28,6 +28,9 @@
 - Messages produced by the scanner engine are now also translated.
 
 - Added common "card" component.
+  - It's been applied to the line charts and circle charts on DPO. 
+
+- DPO page now has a max width for content. 
 
 ### Bugfixes
 

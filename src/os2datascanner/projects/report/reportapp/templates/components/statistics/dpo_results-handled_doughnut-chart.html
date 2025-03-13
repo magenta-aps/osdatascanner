@@ -1,0 +1,24 @@
+{% extends "components/containers/cards/card__layout-circle-charts.html" %}
+
+{% load i18n %}
+
+{% block card_title %}
+  {% trans "result handling"|capfirst %}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% trans "the percentage of handled results for the selected filtering"|capfirst %}
+{% endblock %}
+
+{% block circle_chart_canvas %}
+  <div class="canvas__wrapper">
+    <canvas id="doughnut_chart_total"></canvas>
+  </div>
+{% endblock %}
+
+{% block circle_chart_legend %}
+  <div class="canvas__legend">
+    <h4>{% trans "handled results"|capfirst %}</h4>
+    <p>{{ match_data.handled.count }} {% trans "of" %} {{ match_data.handled.count|add:match_data.unhandled.count }}</p>
+  </div>
+{% endblock %}

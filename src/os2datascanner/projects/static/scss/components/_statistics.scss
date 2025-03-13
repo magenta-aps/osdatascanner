@@ -1073,8 +1073,15 @@ table .overview_wrapper {
   }
 
   &--dpo {
-    * {
-      margin: 0;
+    @include spacing-reset;
+
+    $card-spacing: 1.5rem; // Leaving this out here to make it available for the rest of statistics layouts. It'll make sense later, I promise.
+
+    @mixin card-grid-layout($card-min-width) {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax($card-min-width, 1fr));
+      align-items: stretch;
+      gap: $card-spacing;
     }
 
     @include layout-vertical(2.5rem);
@@ -1084,76 +1091,157 @@ table .overview_wrapper {
       margin: 2.5rem 0 0;
     }
 
-    .development-overview {
-      .chart {
-        &--line,
-        &--bar {
-          .canvas__wrapper {
-            width: 100%;
-            height: 25rem;
+    .chart {
+      &--circle,
+      &--doughnut,
+      &--pie {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
 
-            @media (min-width: $break-xl) {
-              height: 30rem;
+        .canvas {
+          &__wrapper {
+            justify-self: end;
+
+            $pie-size: clamp(200px, 40cqw, 300px);
+            // 40cqw = 40% of the width of the container.
+            // Making the clamp equal to:
+            // min-size: 200px, prefered-size: 40% of container, max-size: 300px.
+            height: $pie-size;
+            width: $pie-size;
+          }
+
+          &__legend {
+            align-self: center;
+
+            .canvas-legend {
+              @include layout-vertical(1rem);
+
+              $bullet-size: 0.75rem;
+              $text-size: 1rem;
+
+              &__item {
+                @include layout-horizontal(0.25rem);
+
+                list-style: none;
+              }
+
+              &__bullet {
+                font-size: $bullet-size;
+                width: $bullet-size;
+                height: $bullet-size;
+              }
+
+              &__label {
+                font-size: $text-size;
+                line-height: 1;
+              }
             }
+          }
+        }
+      }
+
+      &--line,
+      &--bar {
+        .canvas__wrapper {
+          width: 100%;
+          height: 25rem; // 400px
+
+          @media (min-width: $break-xl) {
+            height: 30rem; // 480px
           }
         }
       }
     }
 
+    .card {
+      /* TODO: Move all card styles out of this and into it's own _cards.scss file, when the old datatables are done "hogging" the .card class. */
+
+      container-type: inline-size;
+      container-name: card-component;
+      /* NOTE: this makes it possible to add container dependent sizes to the children. */
+
+      @include layout-vertical(2rem);
+
+      // Box Model
+      padding: 1.75rem 2rem;
+      border-radius: var(--border-radius-widget);
+
+      // Visual
+      background-color: #fff;
+      color: var(--color-text-main);
+      box-shadow: var(--box-shadow-widget);
+
+      &__header {
+        @include layout-horizontal(1rem) {
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+      }
+
+      &__label {
+        @include layout-vertical(0.125rem) {
+          align-items: flex-start;
+        }
+
+        .title {
+          font-size: 1.25rem;
+        }
+
+        .subtitle {
+          font-size: 0.875rem;
+          color: var(--color-text-secondary);
+        }
+      }
+
+      &__header-ui {
+        @include layout-horizontal(1rem);
+
+        .info-icon-wrapper {
+          color: var(--color-text-secondary);
+          cursor: help;
+          height: 1.5rem;
+        }
+      }
+
+      &__body {
+        @include layout-vertical;
+      }
+
+      &__footer {
+        // Unused for now
+      }
+    }
+
     .statistics__section {
-      .card {
-        /* TODO: Move all card styles out of this and into it's own _cards.scss file, when the old datatables are done "hogging" the .card class. */
-        container-type: inline-size;
-        container-name: card-component;
-        @include layout-vertical(2rem);
+      .circle-charts {
+        // The pie and doughnut charts in DPO.
+        @include card-grid-layout(25rem);
+      }
 
-        // Box Model
-        padding: 1.75rem 2rem;
-        border-radius: var(--border-radius-widget);
+      .development-overview {
+        // The bar/line charts in DPO.
+        @include layout-vertical($card-spacing);
+      }
 
-        // Visual
-        background-color: #fff;
-        color: var(--color-text-main);
-        box-shadow: var(--box-shadow-widget);
-
-        &__header {
-          @include layout-horizontal(1rem) {
-            justify-content: space-between;
-            align-items: flex-start;
-          }
+      .hidden {
+        /* Hides the pie chart that's not selected. */
+        &.subtitle {
+          display: none;
         }
 
-        &__label {
-          @include layout-vertical(0.125rem) {
-            align-items: flex-start;
+        &.canvas {
+          &__wrapper,
+          &__legend {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1000;
+            opacity: 0;
+            pointer-events: none;
+
+            /* NOTE: We can't use "display:none;" on this object, because it makes chart.js upset. */
           }
-
-          .title {
-            font-size: 1.25rem;
-          }
-
-          .subtitle {
-            font-size: 0.875rem;
-            color: var(--color-text-secondary);
-          }
-        }
-
-        &__header-ui {
-          @include layout-horizontal(1rem);
-
-          .info-icon-wrapper {
-            color: var(--color-text-secondary);
-            cursor: help;
-            height: 1.5rem;
-          }
-        }
-
-        &__body {
-          @include layout-vertical;
-        }
-
-        &__footer {
-          // Unused for now
         }
       }
     }
