@@ -80,7 +80,7 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
         if message.process_time_worker is not None and message.object_type is not None:
             # select for update to lock
             locked_stat_qs = MIMETypeProcessStat.objects.select_for_update(
-                of=('self',)).filter(
+                ).filter(
                 scan_status=scan_status,
                 mime_type=message.object_type
                 )

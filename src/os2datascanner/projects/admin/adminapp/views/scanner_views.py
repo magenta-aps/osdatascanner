@@ -271,13 +271,13 @@ class StatusDelete(PermissionRequiredMixin, RestrictedDeleteView):
         return super().get_form(form_class)
 
     @transaction.atomic
-    def form_valid(self):
+    def delete(self, request, *args, **kwargs):
         # We need to take a lock on the status object here so our background
         # processes can't retrieve it before deletion, update it, and then save
         # it back to the database again
-        self.object = self.get_object(
-                queryset=self.get_queryset().select_for_update())
-        return super().form_valid()
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        self.get_queryset().filter(pk=pk).select_for_update().first()
+        return super().delete(request, *args, **kwargs)
 
 
 class StatusCancel(PermissionRequiredMixin, RestrictedDetailView):
