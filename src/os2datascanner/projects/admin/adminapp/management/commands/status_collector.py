@@ -122,6 +122,7 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                     skipped_by_last_modified=scan_status.skipped_by_last_modified,
                 )
 
+        # TODO: No mails are sent when scans are cancelled -- should they?
         if scan_status.finished:
             if not scan_status.email_sent:
                 # Send email upon scannerjob completion

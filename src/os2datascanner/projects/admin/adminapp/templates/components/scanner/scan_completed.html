@@ -151,18 +151,33 @@
                     {% endif %}
                   </td>
                   <td class="datatable__column--status">
-                    <span class="completed_icon">
-                      {% include "components/svg-icons/check_circle_full.svg" %}
-                      <span class="width">
-                        {% with status.scan_time.total_seconds as scan_time_item %}
-                          {% if scan_time_item %}
-                            {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan }}
-                          {% else %}
-                            {% trans "Finished" %}
-                          {% endif %}
-                        {% endwith %}
+                    {% if status.cancelled %}
+                      <span class="cancelled_icon">
+                        {% include "components/svg-icons/scan_error.svg" %}
+                        <span class="width">
+                          {% with status.scan_time.total_seconds as scan_time_item %}
+                            {% if scan_time_item %}
+                              {% trans "cancelled after"|capfirst %} {{ scan_time_item|unlocalize|format_timespan }}
+                            {% else %}
+                              {% trans "cancelled"|capfirst %}
+                            {% endif %}
+                          {% endwith %}
+                        </span>
                       </span>
-                    </span>
+                    {% else %}
+                      <span class="completed_icon">
+                        {% include "components/svg-icons/check_circle_full.svg" %}
+                        <span class="width">
+                          {% with status.scan_time.total_seconds as scan_time_item %}
+                            {% if scan_time_item %}
+                              {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan }}
+                            {% else %}
+                              {% trans "Finished" %}
+                            {% endif %}
+                          {% endwith %}
+                        </span>
+                      </span>
+                    {% endif %}
                   </td>
                   <td class="datatable__column--delete">
                     <div class="action-wrapper button-group">

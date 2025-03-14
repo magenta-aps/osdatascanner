@@ -94,8 +94,21 @@
               </td>
               <td class="datatable__column--actions">
                 <div class="action-wrapper">
+                  {% if perms.os2datascanner.cancel_scanstatus %}
+                    <form action="{% url "status-cancel" status.pk|unlocalize %}"
+                          method="post"
+                          class="status-cancel">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="button button--icon-button"
+                              aria-label="{% trans "cancel running scanner job"|capfirst %}"
+                              title="{% trans "cancel running scanner job"|capfirst %}">
+                        <i id="cancel" class="material-icons">close</i>
+                      </button>
+                    </form>
+                  {% endif %}
                   {% if perms.os2datascanner.delete_scanstatus %}
-                    <form action="/status/{{ status.pk|unlocalize }}/delete/"
+                    <form action="{% url "status-delete" status.pk|unlocalize %}"
                           method="post"
                           class="status-delete">
                       {% csrf_token %}

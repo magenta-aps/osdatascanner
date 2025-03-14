@@ -27,6 +27,8 @@ from os2datascanner.utils import debug
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
+    cancel_scan_tag_messages, )
 
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScheduledCheckup)
@@ -92,23 +94,16 @@ def checkup_message_received_raw(body):
         return
     try:
         scanner = Scanner.objects.get(pk=scan_tag.scanner.pk)
-        ss = ScanStatus.objects.get(scan_tag=scan_tag_raw)
+        ss = ScanStatus.objects.get(scan_tag=scan_tag_raw, cancelled=False)
     except Scanner.DoesNotExist:
         # This is a residual message for a scanner that the administrator has
-        # deleted. Throw it away
+        # deleted. Throw it away and all subsequent messages from it.
+        cancel_scan_tag_messages(scan_tag.to_json_object())
         return
     except ScanStatus.DoesNotExist:
         # This means that there is no corresponding ScanStatus object.
         # Likely, this means that the scan has been cancelled. Tell processes to throwaway messages.
-        msg = messages.CommandMessage(
-            abort=messages.ScanTagFragment.from_json_object(
-                scan_tag.to_json_object()))
-        with PikaPipelineThread() as p:
-            p.enqueue_message(
-                    "", msg.to_json_object(),
-                    "broadcast", priority=10)
-            p.enqueue_stop()
-            p.run()
+        cancel_scan_tag_messages(scan_tag.to_json_object())
         return
 
     scan_time = scan_tag.time

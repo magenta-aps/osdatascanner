@@ -85,7 +85,7 @@ class Command(BaseCommand):
             for _ in range(iterations):
                 scan_start = time.process_time()
                 scantag = webscanner.run()
-                while not (ScanStatus.objects.filter(scan_tag=scantag).first()).finished:
+                while (ScanStatus.objects.filter(scan_tag=scantag).first()).is_running:
                     continue
                 logger.info(f"took {time.process_time() - scan_start} sec")
         stats = pstats.Stats(profile)

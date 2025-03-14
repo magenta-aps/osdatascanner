@@ -93,7 +93,8 @@ class Organization(Core_Organization):
     def scanners_running(self) -> bool:
         org_scanners = Scanner.objects.filter(organization=self.uuid)
         scanners_running = ScanStatus.objects.exclude(
-                ScanStatus._completed_Q).filter(scanner_id__in=org_scanners)
+                ScanStatus._completed_or_cancelled_Q).filter(
+                    scanner_id__in=org_scanners)
         return scanners_running.exists()
 
 

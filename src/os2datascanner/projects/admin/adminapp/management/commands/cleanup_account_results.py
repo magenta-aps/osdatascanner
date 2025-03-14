@@ -72,7 +72,7 @@ class Command(BaseCommand):
     def construct_dict(self, accounts, scanners):
         struct = {}
         for scanner in scanners:
-            if scanner.statuses.last() and not scanner.statuses.last().finished:
+            if scanner.statuses.last() and scanner.statuses.last().is_running:
                 self.stderr.write(f"Scanner “{scanner.name}” is currently running.")
             else:
                 struct[scanner.pk] = {

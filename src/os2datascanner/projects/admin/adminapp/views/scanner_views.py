@@ -101,10 +101,11 @@ class StatusOverview(StatusBase):
     def get_queryset(self):
 
         # Only get ScanStatus objects that are not deemed "finished" (see
-        # ScanStatus._completed_Q object above). That way we avoid manual
-        # filtering in the template and only get the data we intend to display.
+        # ScanStatus._completed_Q object above) and objects which are not cancelled.
+        # That way we avoid manual filtering in the template and only get the data we
+        # intend to display.
 
-        return super().get_queryset().order_by("-pk").exclude(ScanStatus._completed_Q
+        return super().get_queryset().order_by("-pk").exclude(ScanStatus._completed_or_cancelled_Q
                                                               ).prefetch_related("scanner")
 
     def get_context_data(self, **kwargs):
@@ -152,7 +153,7 @@ class StatusCompletedView(StatusBase):
         """
 
         qs = super().get_queryset()
-        qs = qs.filter(ScanStatus._completed_Q, resolved=False).order_by(
+        qs = qs.filter(ScanStatus._completed_or_cancelled_Q, resolved=False).order_by(
                 '-scan_tag__time').prefetch_related('scanner')
 
         # The runtime of the scan is calculated from the last snapshot and the first snapshot
@@ -257,7 +258,7 @@ class StatusTimeline(RestrictedDetailView):
 class StatusDelete(PermissionRequiredMixin, RestrictedDeleteView):
     model = ScanStatus
     fields = []
-    success_url = '/status/'
+    success_url = reverse_lazy("status")
     permission_required = "os2datascanner.delete_scanstatus"
 
     def get_queryset(self):
@@ -277,6 +278,21 @@ class StatusDelete(PermissionRequiredMixin, RestrictedDeleteView):
         self.object = self.get_object(
                 queryset=self.get_queryset().select_for_update())
         return super().form_valid()
+
+
+class StatusCancel(PermissionRequiredMixin, RestrictedDetailView):
+    model = ScanStatus
+    success_url = reverse_lazy("status")
+    permission_required = "os2datascanner.cancel_scanstatus"
+
+    def get_queryset(self):
+        return super().get_queryset(org_path="scanner__organization")
+
+    def post(self, request, *args, **kwargs):
+        status = self.get_object(self.get_queryset())
+        status.cancel(request.user)
+
+        return redirect(self.success_url)
 
 
 class UserErrorLogView(PermissionRequiredMixin, RestrictedListView):
@@ -629,7 +645,7 @@ class ScannerRemove(PermissionRequiredMixin, RestrictedDeleteView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.hide()
+        self.object.hide(hidden_by=request.user)
 
         messages.add_message(
                 request,
@@ -730,7 +746,7 @@ class ScannerAskRun(RestrictedDetailView):
         elif not self.object.rule:
             ok = False
             error_message = Scanner.HAS_NO_RULES
-        elif last_status and not last_status.finished:
+        elif last_status and last_status.is_running:
             ok = False
             error_message = Scanner.ALREADY_RUNNING
         else:
@@ -789,7 +805,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
 
     @property
     def scanner_running(self):
-        return (self.object.statuses.last() and not self.object.statuses.last().finished)
+        return (self.object.statuses.last() and self.object.statuses.last().is_running)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()

@@ -101,3 +101,16 @@ class TestStatus:
             'total_objects': 0,
             'usererrorlogs': 0}
                 )
+
+    def test_cancel_running_status(self, basic_scanstatus):
+        basic_scanstatus.cancel()
+
+        assert basic_scanstatus.cancelled
+        assert not basic_scanstatus.finished
+        assert not basic_scanstatus.is_running
+
+    def test_cancel_finished_status(self, basic_scanstatus_completed):
+        basic_scanstatus_completed.cancel()
+
+        assert not basic_scanstatus_completed.cancelled
+        assert basic_scanstatus_completed.finished
