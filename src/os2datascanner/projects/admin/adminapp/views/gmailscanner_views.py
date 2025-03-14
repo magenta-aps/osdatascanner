@@ -12,7 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantMixin
-from os2datascanner.projects.grants.views.googleapi_views import GoogleApiGrantForm
+from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScannerForm
 from ..models.scannerjobs.gmail import GmailScanner
 from .scanner_views import (
     ScannerDelete,
@@ -31,7 +31,7 @@ class GmailScannerList(ScannerList):
     type = 'gmail'
 
 
-class GmailScannerCreate(ScannerCreate, GrantMixin):
+class GmailScannerCreate(GrantMixin, ScannerCreate):
     """Create a scanner view"""
 
     model = GmailScanner
@@ -57,10 +57,10 @@ class GmailScannerCreate(ScannerCreate, GrantMixin):
         return '/gmailscanners/%s/created/' % self.object.pk
 
     def get_grant_form_classes(self):
-        return {"google_api_grant": GoogleApiGrantForm}
+        return {"google_api_grant": GoogleApiScannerForm}
 
 
-class GmailScannerUpdate(ScannerUpdate, GrantMixin):
+class GmailScannerUpdate(GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = GmailScanner
@@ -93,7 +93,7 @@ class GmailScannerUpdate(ScannerUpdate, GrantMixin):
             return '/gmailscanners/%s/saved/' % self.object.pk
 
     def get_grant_form_classes(self):
-        return {"google_api_grant": GoogleApiGrantForm}
+        return {"google_api_grant": GoogleApiScannerForm}
 
 
 class GmailScannerRemove(ScannerRemove):

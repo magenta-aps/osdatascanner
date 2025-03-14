@@ -33,9 +33,13 @@ class GoogleApiGrantForm(forms.ModelForm):
 
 class GoogleApiScannerForm(GoogleApiGrantForm):
     """ Form for use in Scanner Create/Update. """
+    class Meta:
+        model = GoogleApiGrant
+        exclude = ('expiry_date',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["organization"].disabled = False
         self.fields["account_name"].disabled = False
         self.fields["_service_account"].disabled = False
         self.fields["account_name"].initial = ""
