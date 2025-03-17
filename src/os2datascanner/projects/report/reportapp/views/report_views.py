@@ -43,6 +43,7 @@ from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
 
+from .utilities.ews_utilities import try_ews_delete
 from .utilities.smb_utilities import try_smb_delete_1
 from .utilities.document_report_utilities import handle_report
 from .utilities.msgraph_utilities import delete_email, delete_file
@@ -129,6 +130,11 @@ class ReportView(LoginRequiredMixin, ListView):
         context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
             (self.request.GET.get("source_type") == "smbc" or
                 all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
+        context["show_ews_delete_button"] = settings.EWS_ALLOW_WRITE
+        context["show_ews_mass_delete_button"] = settings.EWS_ALLOW_WRITE and \
+            (self.request.GET.get("source_type") == "ews" or
+             all(dr.source_type == "ews" for dr in
+             context["page_obj"].object_list))
 
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
@@ -338,6 +344,8 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
 
         context["show_smb_delete_button"] = False
         context["show_smb_mass_delete_button"] = False
+        context["show_ews_delete_button"] = False
+        context["show_ews_mass_delete_button"] = False
         return context
 
 
@@ -358,6 +366,8 @@ class ArchiveMixin:
         context["show_file_delete_button"] = False
         context["show_smb_delete_button"] = False
         context["show_smb_mass_delete_button"] = False
+        context["show_ews_delete_button"] = False
+        context["show_ews_mass_delete_button"] = False
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -639,6 +649,50 @@ class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
 
     def delete_files(self, document_reports):
         deleted, problem = try_smb_delete_1(
+            self.request, document_reports.values_list(
+                "pk", flat=True))
+
+        if not deleted:
+            error_message = _("Failed to delete some reports: {e}").format(
+                e=problem)
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                error_message)
+
+
+class DeleteEWSMailView(HTMXEndpointView, DetailView):
+    """ View for sending a delete request for an EWS mail."""
+    model = DocumentReport
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        report = self.get_object()
+
+        deleted, problem = try_ews_delete(request, [report.pk])
+        if not deleted:
+            error_message = _("Failed to delete {pn}: {e}").format(
+                pn=report.matches.handle.presentation_name, e=problem)
+            messages.add_message(
+                request,
+                messages.WARNING,
+                error_message)
+
+        return response
+
+
+class MassDeleteEWSMailView(HTMXEndpointView, BaseMassView):
+    """View for sending delete requests for multiple EWS mails."""
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        reports = self.get_queryset()
+        self.delete_ews_mails(reports)
+
+        return response
+
+    def delete_ews_mails(self, document_reports):
+        deleted, problem = try_ews_delete(
             self.request, document_reports.values_list(
                 "pk", flat=True))
 

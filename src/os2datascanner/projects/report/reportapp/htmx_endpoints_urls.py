@@ -6,7 +6,8 @@ from .views.report_views import (
     DistributeMatchesView,
     DeleteMailView, MassDeleteMailView,
     DeleteFileView, MassDeleteFileView,
-    DeleteSMBFileView, MassDeleteSMBFileView)
+    DeleteSMBFileView, MassDeleteSMBFileView,
+    DeleteEWSMailView, MassDeleteEWSMailView)
 
 urlpatterns = [
     path('handle_match/<int:pk>/', HandleMatchView.as_view(), name='handle-match'),
@@ -25,4 +26,10 @@ if settings.SMB_ALLOW_WRITE:
     urlpatterns.extend([
         path('delete_smb_file/<int:pk>', DeleteSMBFileView.as_view(), name="delete-smb-file"),
         path('mass_delete_smb_file/', MassDeleteSMBFileView.as_view(), name="mass-delete-smb-file"),
+    ])
+
+if settings.EWS_ALLOW_WRITE:
+    urlpatterns.extend([
+        path('delete_ews_mail/<int:pk>', DeleteEWSMailView.as_view(), name="delete-ews-mail"),
+        path('mass_delete_ews_mail/', MassDeleteEWSMailView.as_view(), name="mass-delete-ews-mail"),
     ])
