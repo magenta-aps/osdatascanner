@@ -17,7 +17,10 @@
         {% endif %}
       </h1>
       {% for error in form.non_field_errors %}<div class="form__error">{{ error }}</div>{% endfor %}
-      <form class="form" id="grant-form" method="post">
+      <form class="form"
+            id="grant-form"
+            method="post"
+            {% if "_service_account" in form.fields %}enctype="multipart/form-data"{% endif %}>
         {% csrf_token %}
         <section class="data-form">
           <h2>{{ form.instance.verbose_name }}</h2>
@@ -54,6 +57,7 @@
                   </span>
                 {% endif %}
               {% endfor %}
+              {% if last_modified %}<p class="text-secondary">Last updated {{ last_modified }}</p>{% endif %}
             </div>
           </div>
         </section>

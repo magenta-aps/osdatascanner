@@ -11,13 +11,15 @@ class GoogleApiGrant(Grant):
     __match_args__ = ("service_account", "account_name")
 
     _service_account = models.JSONField(verbose_name="Service account json",
-                                        null=False)
+                                        null=True)
 
     service_account = wrap_encrypted_field("_service_account")
 
     account_name = models.CharField(verbose_name="Service Account Name", max_length=256)
 
     expiry_date = models.DateField(verbose_name="Expiration date", null=True, blank=True)
+
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Google Api Grant"

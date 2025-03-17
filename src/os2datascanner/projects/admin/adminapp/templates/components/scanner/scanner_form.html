@@ -119,7 +119,7 @@
           {% endif %}
         </h1>
       </div>
-
+ 
       {% if form.non_field_errors %}
         <div class="alert alert--warning" role="alert">
           <ul>
@@ -128,8 +128,10 @@
         </div>
       {% endif %}
 
-      <form class="form" role="form" method="post" enctype="multipart/form-data">
-
+      <form class="form"
+            role="form"
+            method="post"
+            {% if form.google_api_grant %}enctype="multipart/form-data"{% endif %}>
         <section class="data-form">
           {% csrf_token %}
 
@@ -185,7 +187,7 @@
               {% endif %}
 
               {% if form.google_api_grant %}
-                <h3>{% trans "User information" %}</h3>
+                <h3>{% trans "Grants"|capfirst %}</h3>
               {% endif %}
 
               {% if form.token %}
@@ -206,8 +208,13 @@
               {% endif %}
  
               {% if form.google_api_grant %}
-                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.google_api_grant %}
+                {% include "components/scanner/scanner_form_select_option_field.html"  with field=form.google_api_grant %}
               {% endif %}
+              {% comment %}
+                Todo: figure out how to make the scanner grant form use the AutoEncryptFileField correctly, as it currently loses track of the file somewhere along the way.
+              {% endcomment %}
+ 
+ 
 
               {% if form.smb_grant %}
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.smb_grant %}
@@ -245,38 +252,6 @@
                 <div id="{{ form.always_crawl.auto_id }}_container"
                      class="form__group{% if form.always_crawl.errors %} has-error{% endif %}">
                   {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.always_crawl %}
-                </div>
-              {% endif %}
-
-              {% if form.user_emails_gmail %}
-                <div class="form__group form__group--flex">
-                  <label for="id_{{ form.user_emails_gmail.name }}" class="block">{% trans "Upload list of accounts" %} (.csv)</label>
-                  <input id="upload-file-email"
-                         placeholder="{% trans "Select a file" %}"
-                         disabled="disabled"
-                         class="grow" />
-                  <div class="fileUpload button">
-                    <span>{% trans "Upload" %}</span>
-                    <input class="upload"
-                           id="id_{{ form.user_emails_gmail.name }}"
-                           name="{{ form.user_emails_gmail.name }}"
-                           type="file"
-                           data-filename-placement="inside"
-                           aria-label="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}"
-                           title="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}" />
-                  </div>
-
-                  {% if form.user_emails_gmail.help_text %}
-                    <span class="form__help-text">{{ form.user_emails_gmail.help_text }}</span>
-                  {% endif %}
-                </div>
-              {% endif %}
-
-              {% if form.user_emails_gmail.value %}
-                <div id="{{ form.user_emails_gmail.auto_id }}_container"
-                     class="form__group{% if form.user_emails_gmail.errors %} has-error{% endif %}">
-                  <label for="id_{{ form.user_emails_gmail.name }}">{% trans "List of accounts" %}</label>
-                  {% trans "Current file:" %} <code>{{ form.user_emails_gmail.value }}</code>
                 </div>
               {% endif %}
 
@@ -529,6 +504,41 @@
               </div>
 
             </fieldset>
+ 
+            <br>
+ 
+            {% if form.user_emails_gmail %}
+              <div class="form__group form__group--flex">
+                <label for="id_{{ form.user_emails_gmail.name }}" class="block">{% trans "Upload list of accounts" %} (.csv)</label>
+                <input id="upload-file-email"
+                       placeholder="{% trans "Select a file" %}"
+                       disabled="disabled"
+                       class="grow" />
+                <div class="fileUpload button">
+                  <span>{% trans "Upload" %}</span>
+                  <input class="upload"
+                         id="id_{{ form.user_emails_gmail.name }}"
+                         name="{{ form.user_emails_gmail.name }}"
+                         type="file"
+                         data-filename-placement="inside"
+                         aria-label="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}"
+                         title="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}" />
+                </div>
+ 
+                {% if form.user_emails_gmail.help_text %}
+                  <span class="form__help-text">{{ form.user_emails_gmail.help_text }}</span>
+                {% endif %}
+              </div>
+            {% endif %}
+ 
+            {% if form.user_emails_gmail.value %}
+              <div id="{{ form.user_emails_gmail.auto_id }}_container"
+                   class="form__group{% if form.user_emails_gmail.errors %} has-error{% endif %}">
+                <label for="id_{{ form.user_emails_gmail.name }}">{% trans "List of accounts" %}</label>
+                {% trans "Current file:" %} <code>{{ form.user_emails_gmail.value }}</code>
+              </div>
+            {% endif %}
+ 
           </section>
         {% endif %}
 

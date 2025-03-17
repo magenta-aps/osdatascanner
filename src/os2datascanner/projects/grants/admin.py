@@ -4,9 +4,8 @@ from django.core.exceptions import ValidationError
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
 from os2datascanner.projects.utils import aes
-from .models import EWSGrant, SMBGrant, GraphGrant
+from .models import EWSGrant, SMBGrant, GraphGrant, GoogleApiGrant
 
 
 class AutoEncryptedField(forms.CharField):
@@ -25,6 +24,21 @@ class AutoEncryptedField(forms.CharField):
         if value:
             return [c.hex()
                     for c in aes.encrypt(value, settings.DECRYPTION_HEX)]
+
+
+class AutoEncryptedFileField(forms.FileField):
+    valid_extensions = [".json"]
+    valid_mime_types = ["application/json"]
+
+    def to_python(self, value):
+        print(value)
+        if value:
+            if value.name.split('.')[-1] not in self.valid_extensions:
+                value = value.open().read().decode("utf-8")
+                return [c.hex()
+                        for c in aes.encrypt(value, settings.DECRYPTION_HEX)]
+            else:
+                raise ValidationError(f"File must be of allowed types: {self.valid_extensions}")
 
 
 def choose_field_value(new, old):
@@ -103,10 +117,14 @@ class GraphGrantAdmin(admin.ModelAdmin):
 
 
 class GoogleApiGrantForm(forms.ModelForm):
-    model = GoogleApiGrant
+    class Meta:
+        model = GoogleApiGrant
+        exclude = ("expiry_date",)
+    _service_account = AutoEncryptedFileField()
 
 
 @admin.register(GoogleApiGrant)
 class GoogleApiGrantAdminForm(admin.ModelAdmin):
-    fields = ["_service_account"]
+    fields = ["organization", "account_name", "_service_account", "last_modified"]
+    readonly_fields = ("last_modified",)
     form = GoogleApiGrantForm

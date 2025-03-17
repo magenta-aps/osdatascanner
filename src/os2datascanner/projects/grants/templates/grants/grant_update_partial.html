@@ -45,6 +45,7 @@
         class="button button--cta-button"
         aria-label="{% trans 'save Grant'|capfirst %}"
         title="{% trans 'save Grant'|capfirst %}"
+        {% if form.prefix == "google_api_grant" %}hx-encoding="multipart/form-data"{% endif %}
         hx-post=""
         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
         hx-target="#id_{{ form.prefix }}_container"
