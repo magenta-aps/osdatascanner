@@ -66,9 +66,7 @@
             <tr>
               <td>{% trans "User permissions" %}</td>
               <td>
-                <ul>
-                  {% for permission in user.user_permissions.all %}<li>{{ permission }}</li>{% endfor %}
-                </ul>
+                {% for permission in user.user_permissions.all %}<div class="list_box">{{ permission.name }}</div>{% endfor %}
               </td>
             </tr>
             {% if user.is_superuser %}

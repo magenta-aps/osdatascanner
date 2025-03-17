@@ -121,9 +121,7 @@
             <tr>
               <td>{% trans "Permissions" %}</td>
               <td>
-                <ul>
-                  {% for permission in account.permissions.all %}<li>{{ permission.name }}</li>{% endfor %}
-                </ul>
+                {% for permission in account.permissions.all %}<div class="list_box">{{ permission.name }}</div>{% endfor %}
               </td>
             </tr>
           {% endif %}
