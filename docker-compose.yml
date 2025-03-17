@@ -521,21 +521,23 @@ services:
       target: api
     command: [
         "gunicorn",
-        "--config", "/code/docker/gunicorn-settings.py",
+        "--config", "/docker/settings/server-gunicorn.py",
         "--workers", "2", # only two workers in local dev - to save some resources
         "--reload", # restart workers when code changes
         "os2datascanner.server.wsgi"
     ]
     environment:
-      -  OS2DS_ADMIN_USER_CONFIG_PATH="/dev-environment/api/dev-settings.toml"
+      - OS2DS_SERVER_USER_CONFIG_PATH=/docker/settings/server-user.toml
     tty:
       true
     volumes:
-      - ./dev-environment/api/dev-settings.toml:/user-settings.toml
+      - ./dev-environment/api/dev-settings.toml:/docker/settings/server-user.toml
+      - *engine_user_settings_vol
       - *source_code_vol
     profiles:
       - api
     networks:
+      - default
       - traefik
 
   swagger_ui:

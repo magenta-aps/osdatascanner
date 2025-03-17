@@ -126,7 +126,7 @@ RUN groupadd -g 63050 -r os2ds_api\
   && useradd -u 63050 --no-log-init -r -g os2ds_api os2ds_api
 
 COPY docker/api/docker-settings.toml /docker/settings/server-system.toml
-COPY docker/api/gunicorn-settings.py /docker/settings/server-settings.py
+COPY docker/api/gunicorn-settings.py /docker/settings/server-gunicorn.py
 
 WORKDIR /code/src/os2datascanner/server
 USER os2ds_api:os2ds_api
@@ -134,7 +134,7 @@ EXPOSE 5000
 
 ENTRYPOINT []
 CMD ["gunicorn", \
-     "--config", "/docker/settings/server-settings.py", \
+     "--config", "/docker/settings/server-gunicorn.py", \
      "os2datascanner.server.wsgi"]
 
 # hadolint ignore=DL3006
