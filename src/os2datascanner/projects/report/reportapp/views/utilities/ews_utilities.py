@@ -18,22 +18,38 @@ from os2datascanner.engine2.model.core import SourceManager
 logger = structlog.get_logger("reportapp")
 
 
-def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):
-    # Try to get credentials, prefer GraphGrant if available.
-    if not GraphGrant.objects.filter(organization=org).exists():
-        try:
-            return (True, EWSGrant.objects.get(organization=org))
-        except EWSGrant.DoesNotExist:
-            return (False, "no credentials available")
-        except EWSGrant.MultipleObjectsReturned:
-            return (False, "too many credentials available")
+def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR001
+    # Try to get credentials, prefer GraphGrant if available (but prefer an
+    # EWSGrant /with/ a password over a GraphGrant /without/ a client secret)
+    grant: GraphGrant | EWSGrant | None = None
+
+    for candidate in GraphGrant.objects.filter(organization=org):
+        if candidate.client_secret:
+            if grant:
+                return (False, "too many credentials available")
+            else:
+                grant = candidate
+        else:
+            logger.warning(
+                    "skipping grant candidate with empty secret",
+                    candidate=candidate)
+
+    if not grant:
+        for candidate in EWSGrant.objects.filter(organization=org):
+            if candidate.password:
+                if grant:
+                    return (False, "too many credentials available")
+                else:
+                    grant = candidate
+            else:
+                logger.warning(
+                        "skipping grant candidate with empty secret",
+                        candidate=candidate)
+
+    if grant:
+        return (True, grant)
     else:
-        try:
-            return (True, GraphGrant.objects.get(organization=org))
-        except GraphGrant.DoesNotExist:
-            return (False, "no credentials available")
-        except GraphGrant.MultipleObjectsReturned:
-            return (False, "too many credentials available")
+        return (False, "no credentials available")
 
 
 def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR001 too complex
@@ -69,7 +85,7 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
         return (False, "DocumentReport does not identify a match")
 
     grant = None
-    match (grant_ := find_exchange_grant(organization)):
+    match find_exchange_grant(organization):
         case (True, g):
             grant = g
         case (False, str()) as failure:
