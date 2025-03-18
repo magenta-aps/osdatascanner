@@ -11,6 +11,8 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantMixin
+from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScannerForm
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .scanner_views import (
     ScannerDelete,
@@ -29,15 +31,14 @@ class GoogleDriveScannerList(ScannerList):
     type = 'googledrive'
 
 
-class GoogleDriveScannerCreate(ScannerCreate):
+class GoogleDriveScannerCreate(GrantMixin, ScannerCreate):
     """Create a file scanner view"""
 
     model = GoogleDriveScanner
     fields = [
         'name',
         'schedule',
-        'service_account_file',
-        'user_emails',
+        'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -45,23 +46,27 @@ class GoogleDriveScannerCreate(ScannerCreate):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'google_api_grant',
+        'org_unit'
     ]
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
         return '/googledrivescanners/%s/created/' % self.object.pk
 
+    def get_grant_form_classes(self):
+        return {"google_api_grant": GoogleApiScannerForm}
 
-class GoogleDriveScannerUpdate(ScannerUpdate):
+
+class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = GoogleDriveScanner
     fields = [
         'name',
         'schedule',
-        'service_account_file',
-        'user_emails',
+        'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -69,7 +74,9 @@ class GoogleDriveScannerUpdate(ScannerUpdate):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'google_api_grant',
+        'org_unit'
     ]
 
     def get_success_url(self):
@@ -82,6 +89,9 @@ class GoogleDriveScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/googledrivescanners/%s/saved/' % self.object.pk
+
+    def get_grant_form_classes(self):
+        return {"google_api_grant": GoogleApiScannerForm}
 
 
 class GoogleDriveScannerRemove(ScannerRemove):
@@ -103,8 +113,7 @@ class GoogleDriveScannerCopy(ScannerCopy):
     fields = [
         'name',
         'schedule',
-        'service_account_file',
-        'user_emails',
+        'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -112,13 +121,14 @@ class GoogleDriveScannerCopy(ScannerCopy):
         'only_notify_superadmin',
         'rule',
         'organization',
-        'contacts'
+        'contacts',
+        'google_api_grant',
+        'org_unit'
     ]
 
     def get_initial(self):
         initial = super(GoogleDriveScannerCopy, self).get_initial()
-        initial["service_account_file"] = self.get_scanner_object().service_account_file
-        initial["user_emails"] = self.get_scanner_object().user_emails
+        initial["user_emails_gmail"] = self.get_scanner_object().user_emails_gmail
         return initial
 
 

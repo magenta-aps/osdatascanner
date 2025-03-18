@@ -30,11 +30,11 @@
       <a href="{% url "msgraphcalendarscanners" %}" class="link-color">{% trans "Office 365 calendarscanner" %}</a>
     {% endif %}
 
-    {% if form.service_account_file %}
+    {% if '/googledrivescanners/' in request.path %}
       <a href="/googledrivescanners/" class="link-color">{% trans "Google Drive scanner" %}</a>
     {% endif %}
 
-    {% if form.google_api_grant %}
+    {% if '/gmailscanners/' in request.path %}
       <a href="/gmailscanners/" class="link-color">{% trans "Gmailscanner" %}</a>
     {% endif %}
 

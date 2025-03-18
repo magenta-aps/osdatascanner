@@ -1,4 +1,3 @@
-import json
 from contextlib import contextmanager
 from io import BytesIO
 from google.oauth2 import service_account
@@ -21,15 +20,14 @@ class GoogleDriveSource(Source):
 
     type_label = "googledrive"
 
-    def __init__(self, service_account_file, user_email):
-        self._service_account_file = service_account_file
+    def __init__(self, google_api_grant, user_email):
+        self.google_api_grant = google_api_grant
         self._user_email = user_email
 
     def _generate_state(self, source_manager):
         SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-        service_account_info = json.loads(self._service_account_file)
         credentials = service_account.Credentials.from_service_account_info(
-            service_account_info,
+            self.google_api_grant,
             scopes=SCOPES).with_subject(self._user_email)
 
         service = build(serviceName='drive', version='v3', credentials=credentials)

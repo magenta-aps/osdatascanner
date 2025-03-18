@@ -11,7 +11,7 @@ class GoogleApiGrant(Grant):
 
     __match_args__ = ("service_account", "account_name")
 
-    _service_account = models.JSONField(verbose_name=_("Service account JSON"),
+    _service_account = models.JSONField(verbose_name=_("Service account json"),
                                         null=True)
 
     service_account = wrap_encrypted_field("_service_account")

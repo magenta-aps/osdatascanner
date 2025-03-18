@@ -130,6 +130,7 @@ class GmailScannerCopy(ScannerCopy):
 
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()
+        initial["user_emails_gmail"] = self.get_scanner_object().user_emails_gmail
         return initial
 
 
