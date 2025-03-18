@@ -17,10 +17,6 @@ class GoogleApiGrant(Grant):
 
     account_name = models.CharField(verbose_name="Service Account Name", max_length=256)
 
-    expiry_date = models.DateField(verbose_name="Expiration date", null=True, blank=True)
-
-    last_modified = models.DateTimeField(auto_now=True)
-
     class Meta:
         verbose_name = "Google Api Grant"
         constraints = [
@@ -35,7 +31,3 @@ class GoogleApiGrant(Grant):
     @property
     def verbose_name(self):
         return self._meta.verbose_name
-
-    @property
-    def expiry(self):
-        return self.expiry_date

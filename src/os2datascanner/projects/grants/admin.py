@@ -27,18 +27,14 @@ class AutoEncryptedField(forms.CharField):
 
 
 class AutoEncryptedFileField(forms.FileField):
-    valid_extensions = [".json"]
-    valid_mime_types = ["application/json"]
-
     def to_python(self, value):
-        print(value)
         if value:
-            if value.name.split('.')[-1] not in self.valid_extensions:
+            try:
                 value = value.open().read().decode("utf-8")
                 return [c.hex()
                         for c in aes.encrypt(value, settings.DECRYPTION_HEX)]
-            else:
-                raise ValidationError(f"File must be of allowed types: {self.valid_extensions}")
+            except UnicodeDecodeError as e:
+                raise ValidationError(_("Invalid file format")) from e
 
 
 def choose_field_value(new, old):
@@ -125,6 +121,6 @@ class GoogleApiGrantForm(forms.ModelForm):
 
 @admin.register(GoogleApiGrant)
 class GoogleApiGrantAdminForm(admin.ModelAdmin):
-    fields = ["organization", "account_name", "_service_account", "last_modified"]
-    readonly_fields = ("last_modified",)
+    fields = ["organization", "account_name", "_service_account", "last_updated"]
+    readonly_fields = ("last_updated",)
     form = GoogleApiGrantForm

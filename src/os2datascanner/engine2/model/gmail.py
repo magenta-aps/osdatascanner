@@ -38,7 +38,6 @@ class GmailSource(Source):
             scopes=SCOPES).with_subject(
                 self._user_email_gmail
             )
-        print(credentials)
         service = build(serviceName='gmail', version='v1', credentials=credentials)
         yield service
 

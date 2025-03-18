@@ -20,6 +20,8 @@ class Grant(models.Model):
             verbose_name=_("Organization")
     )
 
+    last_updated = models.DateTimeField(auto_now=True, verbose_name=_("last updated"), null=True)
+
     def validate(self):
         """Checks that this Grant is still valid, perhaps by using it to
         authenticate against the external API."""
