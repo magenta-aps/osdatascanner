@@ -3,12 +3,10 @@
 # This file is distributed under the same license as the Report module of
 # OS2datascanner.
 # IBP <ibp@magenta.dk>, 2020.
-# b
-#, fuzzy
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-13 13:58+0100\n"
+"POT-Creation-Date: 2025-03-18 15:49+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
