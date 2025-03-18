@@ -59,6 +59,10 @@ class GrantMixin:
             GrantFormClass = self.get_grant_form_classes().get(field_name)
 
             grant_form = GrantFormClass(request.POST, prefix=field_name)
+
+            if request.FILES:
+                grant_form.files = request.FILES
+
             if grant_form.is_valid():
                 grant = grant_form.save()
                 scanner_form.data = scanner_form.data.copy()

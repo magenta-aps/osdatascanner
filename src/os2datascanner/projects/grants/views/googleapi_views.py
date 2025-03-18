@@ -12,11 +12,10 @@ class GoogleApiGrantForm(forms.ModelForm):
         model = GoogleApiGrant
         fields = ["organization", "account_name", "_service_account"]
 
-
 # Might be jank to have html in the help text but I think its better than
 # creating checks in the template to achieve the same
     _service_account = AutoEncryptedFileField(
-        required=True, label=_("Service Account JSON File"), help_text=_(
+        required=False, label=_("Service Account JSON File"), help_text=_(
             "To create a service account follow the segments"
             " about service accounts"
             " <a href='https://developers.google.com/workspace/guides/create-credentials'>"

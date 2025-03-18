@@ -208,12 +208,8 @@
               {% endif %}
  
               {% if form.google_api_grant %}
-                {% include "components/scanner/scanner_form_select_option_field.html"  with field=form.google_api_grant %}
+                {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.google_api_grant %}
               {% endif %}
-              {% comment %}
-                Todo: figure out how to make the scanner grant form use the AutoEncryptFileField correctly, as it currently loses track of the file somewhere along the way.
-              {% endcomment %}
- 
  
 
               {% if form.smb_grant %}

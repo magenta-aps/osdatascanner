@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from .grant import Grant, wrap_encrypted_field
 
 
@@ -10,15 +11,15 @@ class GoogleApiGrant(Grant):
 
     __match_args__ = ("service_account", "account_name")
 
-    _service_account = models.JSONField(verbose_name="Service account json",
+    _service_account = models.JSONField(verbose_name=_("Service account JSON"),
                                         null=True)
 
     service_account = wrap_encrypted_field("_service_account")
 
-    account_name = models.CharField(verbose_name="Service Account Name", max_length=256)
+    account_name = models.CharField(verbose_name=_("Service Account Name"), max_length=256)
 
     class Meta:
-        verbose_name = "Google Api Grant"
+        verbose_name = _("Google Api Grant")
         constraints = [
             models.UniqueConstraint(
                     fields=["organization", "account_name"],
