@@ -1,6 +1,8 @@
 # Changelog
 
-## Next Release
+## Release 3.27.0, 18th March 2025
+
+"Wishes Granted"
 
 ### New in this release
 
@@ -47,7 +49,7 @@
 
 - Removed outdated references to OS2 from Report.
 
-- Corrected issues where deletion of ScanStatus of a running scan  
+- Corrected issues where deletion of ScanStatus of a running scan
   could result in a deadlock and/or Integrity Error.
 
 ## Version 3.26.5, 25th February 2025
