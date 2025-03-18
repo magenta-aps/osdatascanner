@@ -18,6 +18,40 @@ from os2datascanner.engine2.model.core import SourceManager
 logger = structlog.get_logger("reportapp")
 
 
+def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR001
+    # Try to get credentials, prefer GraphGrant if available (but prefer an
+    # EWSGrant /with/ a password over a GraphGrant /without/ a client secret)
+    grant: GraphGrant | EWSGrant | None = None
+
+    for candidate in GraphGrant.objects.filter(organization=org):
+        if candidate.client_secret:
+            if grant:
+                return (False, "too many credentials available")
+            else:
+                grant = candidate
+        else:
+            logger.warning(
+                    "skipping grant candidate with empty secret",
+                    candidate=candidate)
+
+    if not grant:
+        for candidate in EWSGrant.objects.filter(organization=org):
+            if candidate.password:
+                if grant:
+                    return (False, "too many credentials available")
+                else:
+                    grant = candidate
+            else:
+                logger.warning(
+                        "skipping grant candidate with empty secret",
+                        candidate=candidate)
+
+    if grant:
+        return (True, grant)
+    else:
+        return (False, "no credentials available")
+
+
 def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR001 too complex
     user = request.user
 
@@ -50,23 +84,12 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
     if reports.exclude(number_of_matches__gte=1).exists():
         return (False, "DocumentReport does not identify a match")
 
-    # Try to get credentials, prefer GraphGrant if available.
-    if not GraphGrant.objects.filter(organization=organization).exists():
-        try:
-            grant: EWSGrant = EWSGrant.objects.get(
-                    organization=organization)
-        except EWSGrant.DoesNotExist:
-            return (False, "no credentials available")
-        except EWSGrant.MultipleObjectsReturned:
-            return (False, "too many credentials available")
-    else:
-        try:
-            grant: GraphGrant = GraphGrant.objects.get(
-                    organization=organization)
-        except GraphGrant.DoesNotExist:
-            return (False, "no credentials available")
-        except GraphGrant.MultipleObjectsReturned:
-            return (False, "too many credentials available")
+    grant = None
+    match find_exchange_grant(organization):
+        case (True, g):
+            grant = g
+        case (False, str()) as failure:
+            return failure
 
     def get_ews_resource(grant, handle: EWSMailHandle) -> EWSMailResource:
         sm = SourceManager()
