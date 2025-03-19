@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
+from more_itertools.more import peekable
 
 from .models.scannerjobs.scanner import Scanner, ScanStatus
 from .models.usererrorlog import UserErrorLog
@@ -27,11 +28,19 @@ class NotificationEmail(ABC):
             get_localised_template_names([self.html_template_name]))
 
     def notify(self) -> None:
-        users = self.get_users()
+        # get_users returns an iterator (most cases a generator), which means we
+        # can't do a simple check of truthiness, but neither may we consume from it.
+        # Use more-itertools peek to check next() value without consuming,
+        # returning None as default instead of StopIteration.
+        users = peekable(self.get_users())
+
+        if not users.peek(None):
+            logger.warning("get_users() returned no users! No email notifications will be sent.")
+            return
 
         for user in users:
             context = self.create_context(user)
-            logger.info(f"Created context for info mail: {context}")
+            logger.info("Created context for info mail", context=context, for_user=user)
             msg = create_msg(context, self.subject, user.email,
                              self.get_txt_templates(), self.get_html_templates())
             send_msg(msg)
@@ -82,8 +91,8 @@ class FinishedScannerNotificationEmail(NotificationEmail):
             if email:
                 yield user
             else:
-                logger.info(f"No email found for user {user} while trying to notify of completed "
-                            f"scan. No email notification sent to {user}.")
+                logger.info("No email found for user while trying to notify of completed "
+                            "scan. No email notification sent!", for_user=user)
 
     def create_context(self, user, *args, **kwargs) -> dict:
         """
@@ -127,8 +136,8 @@ class InvalidScannerNotificationEmail(NotificationEmail):
             if email:
                 yield user
             else:
-                logger.info(f"No email found for user {user} while trying to notify of invalid "
-                            f"scan. No email notification sent to {user}.")
+                logger.info("No email found for user while trying to notify of invalid "
+                            "scan. No email notification sent!", for_user=user)
 
     def create_context(self, *args, **kwargs) -> dict:
         """
@@ -177,5 +186,6 @@ def send_msg(msg):
     try:
         msg.send()
         logger.info("Info mail sent successfully.")
-    except Exception as ex:
-        logger.info(f"Could not send mail. Error: {ex}.")
+    except Exception:
+        logger.exception("Exception occurred! Could not send mail.",
+                         exc_info=True)

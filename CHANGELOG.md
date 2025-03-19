@@ -2,6 +2,14 @@
 
 ## Next release
 
+""
+
+### New in this release
+
+### General improvements
+
+- Small adjustments in logging for admin module email notifications.
+
 ### Bugfixes
 
 - The API server is now correctly instructed where to find its configuration
