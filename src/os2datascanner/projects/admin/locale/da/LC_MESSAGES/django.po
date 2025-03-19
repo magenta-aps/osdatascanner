@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 15:49+0100\n"
+"POT-Creation-Date: 2025-03-19 11:40+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2000,10 +2000,8 @@ msgstr "Datakilden indeholder ikke nogle objekter"
 
 #: adminapp/templates/components/scanstatus/scan_status_table.html:105
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
-#, fuzzy
-#| msgid "Run scanner job"
 msgid "cancel running scanner job"
-msgstr "Kør scannerjob"
+msgstr "afbryd kørende scannerjob"
 
 #: adminapp/templates/components/scanstatus/scan_status_table.html:116
 #, python-format
@@ -3873,7 +3871,7 @@ msgstr "SMB bevilling"
 
 #: organizations/templates/organizations/grants_list.html:56
 msgid "type"
-msgstr "Filformat"
+msgstr "type"
 
 #: organizations/templates/organizations/grants_list.html:57
 msgid "expiry date"
