@@ -9,7 +9,6 @@ from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
 from ....organizations.models.aliases import AliasType
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
-from ...utils import upload_path_gmail_users, upload_path_gmail_service_account
 
 
 class GmailScanner(Scanner):
