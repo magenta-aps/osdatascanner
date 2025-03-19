@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+### Bugfixes
+
+- The API server is now correctly instructed where to find its configuration
+  files by default.
+
 ## Release 3.27.0, 18th March 2025
 
 "Wishes Granted"

@@ -100,10 +100,6 @@ LABEL org.opencontainers.image.title="OS2datascanner - Engine" \
 RUN groupadd -g 63030 -r os2ds_engine \
   && useradd -u 63030 --no-log-init -r -g os2ds_engine os2ds_engine
 
-ENV \
-  OS2DS_SERVER_SYSTEM_CONFIG_PATH=/docker/settings/server-system.toml \
-  OS2DS_SERVER_USER_CONFIG_PATH=/docker/settings/server-user.toml
-
 COPY docker/engine/docker-entrypoint.sh /docker/entrypoint.sh
 
 # Set up to run given command as the new user
@@ -124,6 +120,10 @@ LABEL org.opencontainers.image.title="OS2datascanner - API" \
 
 RUN groupadd -g 63050 -r os2ds_api\
   && useradd -u 63050 --no-log-init -r -g os2ds_api os2ds_api
+
+ENV \
+  OS2DS_SERVER_SYSTEM_CONFIG_PATH=/docker/settings/server-system.toml \
+  OS2DS_SERVER_USER_CONFIG_PATH=/docker/settings/server-user.toml
 
 COPY docker/api/docker-settings.toml /docker/settings/server-system.toml
 COPY docker/api/gunicorn-settings.py /docker/settings/server-gunicorn.py
