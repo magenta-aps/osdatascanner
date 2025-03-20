@@ -17,27 +17,40 @@
   &.add_button {
     &:hover {
       cursor: pointer;
+    }
+  }
+
+  &.add_button {
+    &::before {
+      // TODO: Replace with icon
+      content: "+";
+      margin-right: 0.5rem;
+      font-weight: bold;
+      color: var(--color-text-secondary);
+    }
+
+    &:hover {
+      background-color: var(--color-primary-lighter);
+    }
+
+    background-color: var(--color-primary-lightest);
+  }
+
+  &.can_remove {
+    &::after {
+      // TODO: Replace with icon
+      content: "×";
+      position: absolute;
+      right: 0.7rem;
+      top: calc(50% - 10px);
+      font-weight: bold;
+      color: var(--color-text-secondary);
+    }
+
+    &:hover {
       background-color: var(--color-hover);
     }
 
     padding-right: 1.7rem;
-  }
-
-  &::after {
-    position: absolute;
-    right: 0.7rem;
-    top: calc(50% - 10px);
-    font-weight: bold;
-    color: var(--color-text-secondary);
-  }
-
-  &.add_button::after {
-    // TODO: Replace with icon
-    content: "+";
-  }
-
-  &.can_remove::after {
-    // TODO: Replace with icon
-    content: "×";
   }
 }
