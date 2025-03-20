@@ -1807,8 +1807,8 @@ msgid ""
 "that this scannerjob will scan accounts from hidden organizational units as "
 "well."
 msgstr ""
-"Bemærk at hvis du vælger \"scan af alle konti i denne organisation\" vil det "
-"betyde at dette scannerjob også scanner konti fra skjule organisatoriske "
+"Bemærk at hvis du vælger \"scan alle konti i denne organisation\" vil det "
+"betyde at dette scannerjob også scanner konti fra skjulte organisatoriske "
 "enheder."
 
 #: adminapp/templates/components/scanner/scanner_form.html:535
