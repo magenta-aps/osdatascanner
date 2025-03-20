@@ -15,6 +15,9 @@
 - The API server is now correctly instructed where to find its configuration
   files by default.
 
+- EmailHeaderRule now has left precedence, allowing users to create working compound rules
+  using both EmailHeaderRule and CPRRule.
+
 ## Release 3.27.0, 18th March 2025
 
 "Wishes Granted"
