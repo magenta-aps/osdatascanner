@@ -2,6 +2,7 @@ from io import BytesIO
 from typing import Iterable
 from functools import cached_property
 import structlog
+from contextlib import contextmanager
 
 from sqlalchemy import select, MetaData, create_engine
 from sqlalchemy.sql.expression import func as sql_func, text as sql_text
@@ -11,6 +12,8 @@ from os2datascanner.engine2.model.core import (
         Source, Handle, Resource, FileResource, SourceManager)
 from os2datascanner.engine2.model.derived import DerivedSource
 from os2datascanner.engine2.utilities.i18n import gettext as _
+from os2datascanner.engine2.conversions import registry
+from os2datascanner.engine2.conversions.types import OutputType
 
 from .sbsysdb_rule import SBSYSDBRule  # noqa
 from .sbsysdb_utilities import (
@@ -116,6 +119,11 @@ class SBSYSDBHandles:
             def check(self):
                 return True
 
+            def _generate_metadata(self):
+                row = registry.convert(self, OutputType.DatabaseRow)
+                if upn := row.get("Behandler.UserPrincipalName"):
+                    yield ("user-principal-name", upn)
+
             def compute_type(self):
                 return SBSYSDBHandles.Case._DUMMY_MIME
 
@@ -170,6 +178,10 @@ class SBSYSDBHandles:
                 return str(self.handle.source.fetch(self._sm)[
                         self.handle.relative_path]).encode()
 
+            def _generate_metadata(self):
+                yield from ()
+
+            @contextmanager
             def make_stream(self):
                 yield BytesIO(self._val)
 
@@ -191,6 +203,11 @@ class SBSYSDBHandles:
         @property
         def presentation_place(self):
             return str(self.source.handle.presentation_place)
+
+
+@registry.conversion(OutputType.DatabaseRow, SBSYSDBHandles.Case._DUMMY_MIME)
+def get_database_row(r):
+    return r.handle.hint("db_row")
 
 
 class SBSYSDBSources:
