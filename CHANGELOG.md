@@ -47,6 +47,11 @@
 
 - The Scannerviews have been refactored, reducing duplicate code.
 
+- The report module's `result_importer` command has been removed. In its place
+  is a new function in the report module, available at the URL
+  `/admin/os2datascanner_report/documentreport/import/`, which can be used to
+  load test data into the system.
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.

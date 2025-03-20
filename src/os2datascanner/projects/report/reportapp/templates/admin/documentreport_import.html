@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <form method="post" action="">
+    {% csrf_token %}
+    <textarea name="json"
+              rows="30"
+              cols="100"
+              placeholder="Et eller flere JSON-objekter (eller lister af JSON-objekter)"></textarea>
+    <br>
+    <label>
+      Organization
+      <select name="org">
+        <option value="" selected>--</option>
+        {% for org in orgs %}<option value="{{ org.pk }}">{{ org.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <br>
+    <input type="submit" value="Importér">
+  </form>
+{% endblock %}
