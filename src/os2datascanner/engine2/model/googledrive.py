@@ -20,6 +20,8 @@ class GoogleDriveSource(Source):
 
     type_label = "googledrive"
 
+    eq_properties = ("_user_email",)
+
     def __init__(self, google_api_grant, user_email):
         self.google_api_grant = google_api_grant
         self._user_email = user_email
@@ -53,14 +55,14 @@ class GoogleDriveSource(Source):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            service_account_file=self._service_account_file,
+            service_account=self.google_api_grant,
             user_email=self._user_email,
         )
 
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GoogleDriveSource(obj["service_account_file"], obj["user_email"])
+        return GoogleDriveSource(obj["google_api_grant"], obj["user_email"])
 
 
 class GoogleDriveResource(FileResource):

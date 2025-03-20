@@ -17,15 +17,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='last modified')),
                 ('_service_account', models.JSONField(null=True, verbose_name='Service account json')),
-                ('account_name', models.CharField(max_length=256, verbose_name='Service Account Name')),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='googleapigrant', related_query_name='googleapigrants', to='organizations.organization', verbose_name='Organization')),
             ],
             options={
                 'verbose_name': 'Google Api Grant',
             },
-        ),
-        migrations.AddConstraint(
-            model_name='googleapigrant',
-            constraint=models.UniqueConstraint(fields=('organization', 'account_name'), name='avoid_duplicate_grants'),
         ),
     ]

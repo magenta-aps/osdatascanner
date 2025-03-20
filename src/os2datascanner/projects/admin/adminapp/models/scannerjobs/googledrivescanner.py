@@ -34,32 +34,22 @@ class GoogleDriveScanner(Scanner):
                                          on_delete=models.SET_NULL,
                                          null=True)
 
-    user_emails_gmail = models.FileField(upload_to=upload_path_gdrive_users,
-                                         null=True,
-                                         blank=True,
-                                         validators=[validate_filetype_csv])
-
-    def __str__(self):
-        """Return the URL for the scanner."""
-        return self.url
+    user_emails = models.FileField(upload_to=upload_path_gdrive_users,
+                                   null=False,
+                                   validators=[validate_filetype_csv])
 
     @staticmethod
     def get_type():
         return 'googledrive'
 
     def generate_sources(self):
-        service_account = json.loads(self.google_api_grant.service_account)
-        if self.user_emails_gmail:
-            with open(os.path.join(settings.MEDIA_ROOT, self.user_emails_gmail.name), 'r') as usrem:
-                csv_dict_reader = DictReader(usrem)
-                for row in csv_dict_reader:
-                    user_email = row['Email Address [Required]']
-                    yield GoogleDriveSource(
-                            google_api_grant=service_account,
-                            user_email=user_email
-                    )
-        else:
-            yield from (source for _, source in self.generate_sources_with_accounts())
+        google_api_grant = json.loads(self.google_api_grant.service_account)
+        with open(os.path.join(settings.MEDIA_ROOT, self.user_emails.name), 'r') as usrem:
+            csv_dict_reader = DictReader(usrem)
+            for row in csv_dict_reader:
+                user_email = row['Email Address [Required]']
+                yield GoogleDriveSource(google_api_grant=google_api_grant,
+                                        user_email=user_email)
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")

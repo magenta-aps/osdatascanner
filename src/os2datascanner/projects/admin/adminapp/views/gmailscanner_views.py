@@ -38,7 +38,6 @@ class GmailScannerCreate(GrantMixin, ScannerCreate):
     fields = [
         'name',
         'schedule',
-        'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -48,7 +47,6 @@ class GmailScannerCreate(GrantMixin, ScannerCreate):
         'organization',
         'contacts',
         'google_api_grant',
-        'scan_attachments',
         'org_unit'
     ]
 
@@ -67,7 +65,6 @@ class GmailScannerUpdate(GrantMixin, ScannerUpdate):
     fields = [
         'name',
         'schedule',
-        'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -77,7 +74,6 @@ class GmailScannerUpdate(GrantMixin, ScannerUpdate):
         'organization',
         'contacts',
         'google_api_grant',
-        'scan_attachments',
         'org_unit'
     ]
 
@@ -116,7 +112,6 @@ class GmailScannerCopy(ScannerCopy):
     fields = [
         'name',
         'schedule',
-        'user_emails_gmail',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -130,7 +125,6 @@ class GmailScannerCopy(ScannerCopy):
 
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()
-        initial["user_emails_gmail"] = self.get_scanner_object().user_emails_gmail
         return initial
 
 

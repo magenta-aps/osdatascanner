@@ -10,41 +10,43 @@ from ..admin import AutoEncryptedFileField
 class GoogleApiGrantForm(forms.ModelForm):
     class Meta:
         model = GoogleApiGrant
-        fields = ["organization", "account_name", "_service_account"]
+        fields = ["organization", "_service_account"]
+        readonly_fields = ("last_updated",)
 
-# Might be jank to have html in the help text but I think its better than
-# creating checks in the template to achieve the same
     _service_account = AutoEncryptedFileField(
-        required=False, label=_("Service Account JSON File"), help_text=_(
+        required=True, label=_("Service Account JSON File"), help_text=_(
             "To create a service account follow the segments"
             " about service accounts"
             " <a href='https://developers.google.com/workspace/guides/create-credentials'>"
             " in this guide</a>."
             " Make sure to grant it domain wide delegation"
             " if you want to scan more than one account."),
-
     )
 
-    # improve drag and drop
-    # improve feedback
+    last_updated = forms.DateTimeField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["organization"].disabled = True
+        self.fields["last_updated"].disabled = True
+        if self.instance.last_updated:
+            self.fields["last_updated"].initial = self.instance.last_updated.strftime(
+                "%d/%m-%Y %H:%M")
+        else:
+            self.fields["last_updated"].widget = forms.HiddenInput()
+            self.fields["last_updated"].label = ""
 
 
 class GoogleApiScannerForm(GoogleApiGrantForm):
     """ Form for use in Scanner Create/Update. """
     class Meta:
         model = GoogleApiGrant
-        fields = ["organization", "account_name", "_service_account"]
+        fields = ["organization", "_service_account"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["organization"].disabled = False
-        self.fields["account_name"].disabled = False
         self.fields["_service_account"].disabled = False
-        self.fields["account_name"].initial = ""
         self.fields["_service_account"].initial = ""
 
 

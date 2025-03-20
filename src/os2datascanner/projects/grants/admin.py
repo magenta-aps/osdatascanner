@@ -28,7 +28,6 @@ class AutoEncryptedField(forms.CharField):
 
 class AutoEncryptedFileField(forms.FileField):
     def to_python(self, value):
-        print(value)
         if value:
             try:
                 value = value.open().read().decode("utf-8")
@@ -36,8 +35,6 @@ class AutoEncryptedFileField(forms.FileField):
                         for c in aes.encrypt(value, settings.DECRYPTION_HEX)]
             except UnicodeDecodeError as e:
                 raise ValidationError(_("Invalid file format")) from e
-        else:
-            raise ValidationError(_("This field is required."))
 
 
 def choose_field_value(new, old):
@@ -124,6 +121,6 @@ class GoogleApiGrantForm(forms.ModelForm):
 
 @admin.register(GoogleApiGrant)
 class GoogleApiGrantAdminForm(admin.ModelAdmin):
-    fields = ["organization", "account_name", "_service_account", "last_updated"]
+    fields = ["organization", "_service_account", "last_updated"]
     readonly_fields = ("last_updated",)
     form = GoogleApiGrantForm

@@ -60,13 +60,6 @@
     document.getElementById("id_{{ form.userlist.name }}").onchange = function () {
       document.getElementById("upload-file").value = this.value;
     };
-  {% elif form.service_account_file_gmail %}
-    document.getElementById("id_{{ form.service_account_file_gmail.name }}").onchange = function () {
-      document.getElementById("upload-file-service").value = this.value;
-    };
-    document.getElementById("id_{{ form.user_emails_gmail.name }}").onchange = function () {
-      document.getElementById("upload-file-email").value = this.value;
-    };
   {% endif %}
   </script>
 
@@ -187,7 +180,7 @@
               {% endif %}
 
               {% if form.google_api_grant %}
-                <h3>{% trans "Grants"|capfirst %}</h3>
+                <h3>{% trans "grants"|capfirst %}</h3>
               {% endif %}
 
               {% if form.token %}
@@ -500,41 +493,6 @@
               </div>
 
             </fieldset>
- 
-            <br>
- 
-            {% if form.user_emails_gmail %}
-              <div class="form__group form__group--flex">
-                <label for="id_{{ form.user_emails_gmail.name }}" class="block">{% trans "Upload list of accounts" %} (.csv)</label>
-                <input id="upload-file-email"
-                       placeholder="{% trans "Select a file" %}"
-                       disabled="disabled"
-                       class="grow" />
-                <div class="fileUpload button">
-                  <span>{% trans "Upload" %}</span>
-                  <input class="upload"
-                         id="id_{{ form.user_emails_gmail.name }}"
-                         name="{{ form.user_emails_gmail.name }}"
-                         type="file"
-                         data-filename-placement="inside"
-                         aria-label="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}"
-                         title="{% trans "Click here to upload list of accounts (CSV FORMAT)" %}" />
-                </div>
- 
-                {% if form.user_emails_gmail.help_text %}
-                  <span class="form__help-text">{{ form.user_emails_gmail.help_text }}</span>
-                {% endif %}
-              </div>
-            {% endif %}
- 
-            {% if form.user_emails_gmail.value %}
-              <div id="{{ form.user_emails_gmail.auto_id }}_container"
-                   class="form__group{% if form.user_emails_gmail.errors %} has-error{% endif %}">
-                <label for="id_{{ form.user_emails_gmail.name }}">{% trans "List of accounts" %}</label>
-                {% trans "Current file:" %} <code>{{ form.user_emails_gmail.value }}</code>
-              </div>
-            {% endif %}
- 
           </section>
         {% endif %}
 
