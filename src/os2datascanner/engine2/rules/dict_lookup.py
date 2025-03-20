@@ -1,5 +1,6 @@
 from .rule import Rule, SimpleRule, Sensitivity
 from ..conversions.types import OutputType
+from .utilities.properties import RuleProperties, RulePrecedence
 
 
 class DictLookupRule(SimpleRule):
@@ -47,6 +48,10 @@ class EmailHeaderRule(DictLookupRule):
     type_label = "email-header"
 
     operates_on = OutputType.EmailHeaders
+
+    properties = RuleProperties(
+        precedence=RulePrecedence.LEFT,
+        standalone=True)
 
     @property
     def presentation_raw(self):
