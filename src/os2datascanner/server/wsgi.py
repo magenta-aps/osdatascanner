@@ -1,6 +1,7 @@
 import json
 from uuid import uuid4
 from pathlib import Path
+import structlog
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle, Source, SourceManager
@@ -14,6 +15,13 @@ from os2datascanner.engine2.pipeline.worker import (
 from os2datascanner.engine2.pipeline.exporter import (
         message_received_raw as exporter_mrr)
 from os2datascanner.server import settings
+
+if "sbsys-db" in settings.server["permitted_sources"]:
+    import os2datascanner.engine2.model._staging.sbsysdb  # noqa
+
+
+logger = structlog.get_logger("api")
+
 
 ALLOWED_FILE_FORMATS = [
     'text/plain',
@@ -138,6 +146,7 @@ def scan_1(body):  # noqa: CCR001
         source = Source.from_json_object(body["source"])
         top_type = _get_top(source).type_label
     except Exception:
+        logger.warning("couldn't parse source", exc_info=True)
         source = None
 
     if not source:
@@ -149,6 +158,7 @@ def scan_1(body):  # noqa: CCR001
         return
     elif (settings.server["permitted_sources"]
             and top_type not in settings.server["permitted_sources"]):
+        logger.warning("source type not permitted", source_type=top_type)
         yield "400 Bad Request"
         yield {
             "status": "fail",
@@ -159,6 +169,7 @@ def scan_1(body):  # noqa: CCR001
     try:
         rule = Rule.from_json_object(body["rule"])
     except Exception:
+        logger.warning("couldn't parse rule", exc_info=True)
         rule = None
 
     if not rule:
@@ -220,6 +231,7 @@ def scan_handle_1(body):  # noqa: CCR001
         handle = Handle.from_json_object(body["handle"])
         top_type = _get_top(handle.source).type_label
     except Exception:
+        logger.warning("couldn't parse handle", exc_info=True)
         handle = None
 
     if not handle:
@@ -231,6 +243,7 @@ def scan_handle_1(body):  # noqa: CCR001
         return
     elif (settings.server["permitted_sources"]
             and top_type not in settings.server["permitted_sources"]):
+        logger.warning("source type not permitted", source_type=top_type)
         yield "400 Bad Request"
         yield {
             "status": "fail",
@@ -241,6 +254,7 @@ def scan_handle_1(body):  # noqa: CCR001
     try:
         rule = Rule.from_json_object(body["rule"])
     except Exception:
+        logger.warning("couldn't parse rule", exc_info=True)
         rule = None
 
     if not rule:
@@ -368,7 +382,7 @@ endpoints = {
 def application(env, start_response):
     try:
         body = None
-        parameters = env["wsgi.input"].read().decode("ascii")
+        parameters = env["wsgi.input"].read().decode("utf-8")
         if parameters:
             body = json.loads(parameters)
         endpoint = endpoints.get(env.get("PATH_INFO"))

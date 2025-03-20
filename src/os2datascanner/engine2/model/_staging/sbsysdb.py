@@ -12,6 +12,7 @@ from os2datascanner.engine2.model.core import (
 from os2datascanner.engine2.model.derived import DerivedSource
 from os2datascanner.engine2.utilities.i18n import gettext as _
 
+from .sbsysdb_rule import SBSYSDBRule
 from .sbsysdb_utilities import convert_rule_to_select, exec_expr
 
 
