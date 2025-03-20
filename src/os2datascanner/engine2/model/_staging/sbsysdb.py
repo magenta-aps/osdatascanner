@@ -24,7 +24,7 @@ class SBSYSDBSource(Source):
     def __init__(
             self, server, port, db, user, password,
             *,
-            reflect_tables=None):
+            reflect_tables):
         self._server = server
         self._port = port
         self._db = db
@@ -38,7 +38,8 @@ class SBSYSDBSource(Source):
 
     def censor(self):
         return SBSYSDBSource(
-                self._server, self._port, self._db, None, None)
+                self._server, self._port, self._db, None, None,
+                reflect_tables=self._reflect_tables)
 
     def _generate_state(self, sm: SourceManager):
         engine = create_engine(
@@ -83,13 +84,26 @@ class SBSYSDBSource(Source):
                     hints={"db_row": db_row})
 
     def to_json_object(self):
-        return {
+        return super().to_json_object() | {
             "server": self._server,
             "port": self._port,
             "db": self._db,
             "user": self._user,
-            "password": self._password
+            "password": self._password,
+            "reflect_tables": (
+                    list(self._reflect_tables)
+                    if self._reflect_tables
+                    else None)
         }
+
+    @Source.json_handler(type_label)
+    @staticmethod
+    def from_json_object(obj):
+        reflect_tables = tuple(obj.get("reflect_tables", []))
+        return SBSYSDBSource(
+                obj["server"], obj["port"],
+                obj["db"], obj["user"], obj["password"],
+                reflect_tables=reflect_tables or None)
 
 
 class SBSYSDBHandles:
@@ -109,9 +123,9 @@ class SBSYSDBHandles:
         def __init__(
                 self,
                 source: SBSYSDBSource,
-                number: str | int,
-                title: str, **kwargs):
-            super().__init__(source, str(number), **kwargs)
+                number: str,
+                title: str | None, **kwargs):
+            super().__init__(source, number, **kwargs)
             self._title = title
 
         def guess_type(self):
@@ -129,6 +143,21 @@ class SBSYSDBHandles:
         def presentation_place(self):
             return "SBSYS"
 
+        def to_json_object(self):
+            return super().to_json_object() | {
+                "title": self._title,
+                "hints": self._hints,
+            }
+
+        @staticmethod
+        @Handle.json_handler(type_label)
+        def from_json_object(obj):
+            return SBSYSDBHandles.Case(
+                    Source.from_json_object(obj["source"]),
+                    obj["path"], obj["title"],
+                    hints=obj["hints"])
+
+    @Handle.stock_json_handler("sbsys-db-case-field")
     class Field(Handle):
         class _Resource(FileResource):
             def check(self):

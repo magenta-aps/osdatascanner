@@ -1,7 +1,8 @@
 from enum import Enum
 import operator
 
-from os2datascanner.engine2.rules.rule import SimpleRule
+from os2datascanner.engine2.rules.rule import Rule, SimpleRule
+from os2datascanner.engine2.conversions.types import OutputType
 
 
 class SBSYSDBRule(SimpleRule):
@@ -34,7 +35,7 @@ class SBSYSDBRule(SimpleRule):
             return self.func_py(*args, **kwargs)
 
     type_label = "sbsys-db-fieldrule"
-    operates_on = None
+    operates_on = OutputType.DatabaseRow
 
     __match_args__ = ("_field", "_op", "_value")
 
@@ -56,4 +57,16 @@ class SBSYSDBRule(SimpleRule):
             }
 
     def to_json_object(self):
-        return NotImplemented
+        return super().to_json_object() | {
+            "field": self._field,
+            "operator": self._op.value,
+            "value": self._value
+        }
+
+    @Rule.json_handler(type_label)
+    @staticmethod
+    def from_json_object(obj):
+        return SBSYSDBRule(
+                obj["field"],
+                obj["operator"],
+                obj["value"])
