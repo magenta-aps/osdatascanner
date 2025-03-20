@@ -1,5 +1,3 @@
-DROP DATABASE  IF EXISTS [SbSysNetDrift]
-GO
 CREATE DATABASE [SbSysNetDrift]
 GO
 USE [SbSysNetDrift]

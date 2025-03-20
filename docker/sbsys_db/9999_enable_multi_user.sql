@@ -1,0 +1,7 @@
+ALTER DATABASE [SbSysNetDrift]
+    SET MULTI_USER;
+GO
+
+ALTER DATABASE [SbSysNetDriftDokument0000]
+    SET MULTI_USER;
+GO
