@@ -24,6 +24,7 @@
     margin-top: 1rem;
     margin-bottom: 2.5rem;
   }
+
   &__body {
     display: flex;
     gap: 1.25rem;
@@ -47,9 +48,19 @@
 
   &__footer {
     .checkbox-group {
-      flex-direction: column;
+      flex-direction: row;
       gap: 1rem;
       margin: 0;
+
+      .ds-checkbox {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius-small);
+        padding: 0.625rem;
+        margin-right: 0;
+
+        line-height: 1;
+        font-size: 1em;
+      }
     }
   }
 }
