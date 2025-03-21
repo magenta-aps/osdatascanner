@@ -229,12 +229,44 @@ msgid ""
 " about service accounts"
 " <a href='https://developers.google.com/workspace/guides/create-credentials'>"
 " in this guide</a>."
-" Make sure to grant it domain wide delegation"
-" if you want to scan more than one account."
+" Make sure to grant it domain wide delegation."
 msgstr ""
 "For at oprette en service account, følg segmenterne"
 " om service accounts"
 " <a href='https://developers.google.com/workspace/guides/create-credentials'>"
 " i denne guide</a>."
-" Sørg for at give den 'domain wide delegation'"
-" hvis du vil scanne mere end en konto."
+" Sørg for at give den 'domain wide delegation'."
+
+#: templates/grants/smbgrant_update.html:7
+msgid ""
+"A Google API Grant represents a service account with access to your Google domain, which will allow OSdatascanner to access the permitted resources in your Google domain. You can control what resources the service account can access from the Google Admin panel."
+msgstr ""
+"En Google API bevilling repræsenterer en service account med adgang til din Google domæne, hvilket vil tillade OSdatascanner at tilgå de tilladte ressourcer i dit Google domæne. Du kan kontrollere hvilke ressourcer service accounten kan tilgå fra Google Admin panelet."
+
+#: views/googleapi_views.py:17
+msgid "Service Account JSON File"
+msgstr "Service Account JSON Fil"
+
+#: views/googleapi_views.py:25
+msgid "Last Updated"
+msgstr "Sidst Opdateret"
+
+#: models/googleapigrant.py:21
+msgid "Google Api Grant"
+msgstr "Google Api Bevilling"
+
+#: models/googleapigrant.py:34
+msgid "A grant using this service account already exists."
+msgstr "En bevilling, der bruger denne service account, eksisterer allerede."
+
+#: models/googleapigrant.py:36
+msgid "Service account is required"
+msgstr "Service account er påkrævet"
+
+#: models/googleapigrant.py:50
+msgid "Service account must be in JSON format"
+msgstr "Service account skal være i JSON format"
+
+#: models/googleapigrant.py:63
+msgid "Invalid service account"
+msgstr "Ugyldig service account"

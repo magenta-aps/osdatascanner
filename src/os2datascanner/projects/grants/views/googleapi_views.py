@@ -19,11 +19,10 @@ class GoogleApiGrantForm(forms.ModelForm):
             " about service accounts"
             " <a href='https://developers.google.com/workspace/guides/create-credentials'>"
             " in this guide</a>."
-            " Make sure to grant it domain wide delegation"
-            " if you want to scan more than one account."),
+            " Make sure to grant it domain wide delegation."),
     )
 
-    last_updated = forms.DateTimeField(required=False)
+    last_updated = forms.CharField(max_length=255, required=False, label=_("Last Updated"))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 11:40+0100\n"
+"POT-Creation-Date: 2025-03-21 09:52+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -202,7 +202,7 @@ msgstr "Filformat"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py:51
 #: adminapp/models/scannerjobs/filescanner.py:86
-#: adminapp/models/scannerjobs/googledrivescanner.py:59
+#: adminapp/models/scannerjobs/googledrivescanner.py:54
 #: adminapp/models/scannerjobs/msgraph.py:158
 #: adminapp/models/scannerjobs/msgraph.py:214
 msgctxt "unit of scan"
@@ -211,7 +211,7 @@ msgstr "fil"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py:52
 #: adminapp/models/scannerjobs/filescanner.py:87
-#: adminapp/models/scannerjobs/googledrivescanner.py:60
+#: adminapp/models/scannerjobs/googledrivescanner.py:55
 #: adminapp/models/scannerjobs/msgraph.py:159
 #: adminapp/models/scannerjobs/msgraph.py:215
 msgctxt "unit of scan"
@@ -233,14 +233,14 @@ msgid "EWS grant"
 msgstr "EWS bevilling"
 
 #: adminapp/models/scannerjobs/exchangescanner.py:161
-#: adminapp/models/scannerjobs/gmail.py:75
+#: adminapp/models/scannerjobs/gmail.py:50
 #: adminapp/models/scannerjobs/msgraph.py:114
 msgctxt "unit of scan"
 msgid "email message"
 msgstr "mailbesked"
 
 #: adminapp/models/scannerjobs/exchangescanner.py:162
-#: adminapp/models/scannerjobs/gmail.py:76
+#: adminapp/models/scannerjobs/gmail.py:51
 #: adminapp/models/scannerjobs/msgraph.py:115
 msgctxt "unit of scan"
 msgid "email messages"
@@ -295,21 +295,11 @@ msgstr "UNC skal følge UNC-format"
 msgid "Filescanner"
 msgstr "Filscanner"
 
-#: adminapp/models/scannerjobs/gmail.py:39
-#: adminapp/models/scannerjobs/msgraph.py:87
-msgid "Scan attachments"
-msgstr "Scan vedhæftninger"
-
-#: adminapp/models/scannerjobs/gmail.py:40
-#: adminapp/models/scannerjobs/msgraph.py:88
-msgid "Scan attached files"
-msgstr "Scan vedhæftede filer"
-
-#: adminapp/models/scannerjobs/gmail.py:79
+#: adminapp/models/scannerjobs/gmail.py:54
 msgid "Gmail scanner"
 msgstr "Gmailscanner"
 
-#: adminapp/models/scannerjobs/googledrivescanner.py:63
+#: adminapp/models/scannerjobs/googledrivescanner.py:58
 #: adminapp/templates/components/common/breadcrumb.html:34
 #: adminapp/templates/components/navigation/scanner_tabs.html:43
 msgid "Google Drive scanner"
@@ -330,6 +320,14 @@ msgstr "Scan synkroniseringsproblemer mappe"
 #: adminapp/models/scannerjobs/msgraph.py:82
 msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
+
+#: adminapp/models/scannerjobs/msgraph.py:87
+msgid "Scan attachments"
+msgstr "Scan vedhæftninger"
+
+#: adminapp/models/scannerjobs/msgraph.py:88
+msgid "Scan attached files"
+msgstr "Scan vedhæftede filer"
 
 #: adminapp/models/scannerjobs/msgraph.py:118
 msgid "MSGraph mailscanner"
@@ -1029,12 +1027,12 @@ msgid "Sbsysscanner"
 msgstr "Sbsysscanner"
 
 #: adminapp/templates/components/common/breadcrumb.html:48
-#: adminapp/templates/components/scanner/scanner_form.html:111
+#: adminapp/templates/components/scanner/scanner_form.html:104
 msgid "Edit scannerjob"
 msgstr "Rediger scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html:50
-#: adminapp/templates/components/scanner/scanner_form.html:113
+#: adminapp/templates/components/scanner/scanner_form.html:106
 #: adminapp/templates/components/scanner/scanner_no_client_credentials.html:14
 msgid "Create new scannerjob"
 msgstr "Opret nyt scannerjob"
@@ -1166,7 +1164,7 @@ msgstr "Ingen resultater fundet"
 #: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:21
 #: adminapp/templates/components/rules/customrule_form.html:40
 #: adminapp/templates/components/rules/regexrule_form.html:111
-#: adminapp/templates/components/scanner/scanner_form.html:139
+#: adminapp/templates/components/scanner/scanner_form.html:132
 #: import_services/templates/import_services/ldap_edit.html:125
 msgid "General"
 msgstr "Generelt"
@@ -1212,9 +1210,9 @@ msgstr "Beskrivelse af regel"
 #: adminapp/templates/components/rules/regexrule_form.html:257
 #: adminapp/templates/components/rules/regexrule_form.html:258
 #: adminapp/templates/components/rules/regexrule_form.html:260
-#: adminapp/templates/components/scanner/scanner_form.html:717
-#: adminapp/templates/components/scanner/scanner_form.html:718
-#: adminapp/templates/components/scanner/scanner_form.html:720
+#: adminapp/templates/components/scanner/scanner_form.html:675
+#: adminapp/templates/components/scanner/scanner_form.html:676
+#: adminapp/templates/components/scanner/scanner_form.html:678
 msgid "Save changes"
 msgstr "Gem ændringer"
 
@@ -1232,7 +1230,6 @@ msgid "Mini-scanner"
 msgstr "Miniscanner"
 
 #: adminapp/templates/components/navigation/navigation.html:51
-#: adminapp/templates/components/scanner/scanner_form.html:190
 msgid "Grants"
 msgstr "bevillinger"
 
@@ -1663,7 +1660,7 @@ msgstr "Slet resultaterne for følgende brugere:"
 msgid "Clean"
 msgstr "Ryd op"
 
-#: adminapp/templates/components/scanner/scanner_form.html:118
+#: adminapp/templates/components/scanner/scanner_form.html:111
 msgid ""
 "This scanner can take advantage of the built-in SmartDelta function for "
 "ultra-fast scans."
@@ -1671,116 +1668,114 @@ msgstr ""
 "Dette scannerjob kan benytte den indbyggede SmartDelta-funktion for "
 "lynhurtige scans."
 
-#: adminapp/templates/components/scanner/scanner_form.html:178
-#: adminapp/templates/components/scanner/scanner_form.html:270
+#: adminapp/templates/components/scanner/scanner_form.html:171
+#: adminapp/templates/components/scanner/scanner_form.html:263
 msgid "Sitemap"
 msgstr "Sitemap"
 
-#: adminapp/templates/components/scanner/scanner_form.html:182
-#: adminapp/templates/components/scanner/scanner_form.html:186
+#: adminapp/templates/components/scanner/scanner_form.html:175
+#: adminapp/templates/components/scanner/scanner_form.html:179
 #: adminapp/templates/components/user/user_detail.html:26
 #: adminapp/templates/components/user/user_edit.html:19
 msgid "User information"
 msgstr "Brugeroplysninger"
 
-#: adminapp/templates/components/scanner/scanner_form.html:259
+#: adminapp/templates/components/scanner/scanner_form.html:183
+#: organizations/templates/organizations/grants_list.html:7
+msgid "grants"
+msgstr "bevillinger"
+
+#: adminapp/templates/components/scanner/scanner_form.html:252
 msgid "e.g. /sitemap.xml"
 msgstr "f.eks. /sitemap.xml"
 
-#: adminapp/templates/components/scanner/scanner_form.html:271
+#: adminapp/templates/components/scanner/scanner_form.html:264
 msgid "Current:"
 msgstr "Aktuelt:"
 
-#: adminapp/templates/components/scanner/scanner_form.html:276
+#: adminapp/templates/components/scanner/scanner_form.html:269
 msgid "Remove"
 msgstr "Fjern"
 
-#: adminapp/templates/components/scanner/scanner_form.html:283
+#: adminapp/templates/components/scanner/scanner_form.html:276
 msgid "Upload sitemap"
 msgstr "Upload sitemap"
 
-#: adminapp/templates/components/scanner/scanner_form.html:285
-#: adminapp/templates/components/scanner/scanner_form.html:311
-#: adminapp/templates/components/scanner/scanner_form.html:345
-#: adminapp/templates/components/scanner/scanner_form.html:406
-#: adminapp/templates/components/scanner/scanner_form.html:512
+#: adminapp/templates/components/scanner/scanner_form.html:278
+#: adminapp/templates/components/scanner/scanner_form.html:304
+#: adminapp/templates/components/scanner/scanner_form.html:338
+#: adminapp/templates/components/scanner/scanner_form.html:399
 msgid "Select a file"
 msgstr "Vælg en fil"
 
-#: adminapp/templates/components/scanner/scanner_form.html:289
-#: adminapp/templates/components/scanner/scanner_form.html:315
-#: adminapp/templates/components/scanner/scanner_form.html:349
-#: adminapp/templates/components/scanner/scanner_form.html:410
-#: adminapp/templates/components/scanner/scanner_form.html:516
+#: adminapp/templates/components/scanner/scanner_form.html:282
+#: adminapp/templates/components/scanner/scanner_form.html:308
+#: adminapp/templates/components/scanner/scanner_form.html:342
+#: adminapp/templates/components/scanner/scanner_form.html:403
 msgid "Upload"
 msgstr "Upload"
 
-#: adminapp/templates/components/scanner/scanner_form.html:295
-#: adminapp/templates/components/scanner/scanner_form.html:296
+#: adminapp/templates/components/scanner/scanner_form.html:288
+#: adminapp/templates/components/scanner/scanner_form.html:289
 msgid "Click here to upload sitemap.xml"
 msgstr "Klik her for at uploade sitemap.xml"
 
-#: adminapp/templates/components/scanner/scanner_form.html:308
+#: adminapp/templates/components/scanner/scanner_form.html:301
 msgid "Upload service account"
 msgstr "Upload servicekonto"
 
-#: adminapp/templates/components/scanner/scanner_form.html:321
-#: adminapp/templates/components/scanner/scanner_form.html:322
+#: adminapp/templates/components/scanner/scanner_form.html:314
+#: adminapp/templates/components/scanner/scanner_form.html:315
 msgid "Click here to upload service account credentials (JSON FORMAT)"
 msgstr ""
 "Klik her for at uploade servicekonto legitimationsoplysninger (JSON FORMAT)"
 
-#: adminapp/templates/components/scanner/scanner_form.html:336
+#: adminapp/templates/components/scanner/scanner_form.html:329
 msgid "Service account"
 msgstr "Servicekonto"
 
-#: adminapp/templates/components/scanner/scanner_form.html:337
-#: adminapp/templates/components/scanner/scanner_form.html:369
-#: adminapp/templates/components/scanner/scanner_form.html:536
+#: adminapp/templates/components/scanner/scanner_form.html:330
+#: adminapp/templates/components/scanner/scanner_form.html:362
 msgid "Current file:"
 msgstr "Nuværende fil:"
 
-#: adminapp/templates/components/scanner/scanner_form.html:343
-#: adminapp/templates/components/scanner/scanner_form.html:510
+#: adminapp/templates/components/scanner/scanner_form.html:336
 msgid "Upload list of accounts"
 msgstr "Upload liste af konti"
 
-#: adminapp/templates/components/scanner/scanner_form.html:355
-#: adminapp/templates/components/scanner/scanner_form.html:356
-#: adminapp/templates/components/scanner/scanner_form.html:522
-#: adminapp/templates/components/scanner/scanner_form.html:523
+#: adminapp/templates/components/scanner/scanner_form.html:348
+#: adminapp/templates/components/scanner/scanner_form.html:349
 msgid "Click here to upload list of accounts (CSV FORMAT)"
 msgstr "Klik her for at uploade liste af konti (CSV FORMAT)"
 
-#: adminapp/templates/components/scanner/scanner_form.html:368
-#: adminapp/templates/components/scanner/scanner_form.html:535
+#: adminapp/templates/components/scanner/scanner_form.html:361
 msgid "List of accounts"
 msgstr "Liste af konti"
 
-#: adminapp/templates/components/scanner/scanner_form.html:379
+#: adminapp/templates/components/scanner/scanner_form.html:372
 msgid "add users"
 msgstr "tilføj brugere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:380
+#: adminapp/templates/components/scanner/scanner_form.html:373
 msgid "select users from"
 msgstr "vælg brugere fra"
 
-#: adminapp/templates/components/scanner/scanner_form.html:383
-#: adminapp/templates/components/scanner/scanner_form.html:493
+#: adminapp/templates/components/scanner/scanner_form.html:376
+#: adminapp/templates/components/scanner/scanner_form.html:486
 #: import_services/models/ldap_configuration.py:127
 #: organizations/templates/organizations/orgunit_list.html:195
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
-#: adminapp/templates/components/scanner/scanner_form.html:393
+#: adminapp/templates/components/scanner/scanner_form.html:386
 msgid "or upload"
 msgstr "eller upload"
 
-#: adminapp/templates/components/scanner/scanner_form.html:399
+#: adminapp/templates/components/scanner/scanner_form.html:392
 msgid "List of mail users"
 msgstr "Liste af mail brugere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:401
+#: adminapp/templates/components/scanner/scanner_form.html:394
 msgid ""
 "The uploaded file should contain a newline-separated list of usernames or "
 "localparts of the email addresses, without domains."
@@ -1788,15 +1783,15 @@ msgstr ""
 "Den uploadede fil skal indeholde ét email-brugernavn uden domæne på hver "
 "linje."
 
-#: adminapp/templates/components/scanner/scanner_form.html:419
+#: adminapp/templates/components/scanner/scanner_form.html:412
 msgid "Existing file:"
 msgstr "Eksisterende fil:"
 
-#: adminapp/templates/components/scanner/scanner_form.html:467
+#: adminapp/templates/components/scanner/scanner_form.html:460
 msgid "add accounts"
 msgstr "tilføj konti"
 
-#: adminapp/templates/components/scanner/scanner_form.html:469
+#: adminapp/templates/components/scanner/scanner_form.html:462
 msgid ""
 "Note that opting to \"scan all accounts in this organization\" will mean "
 "that this scannerjob will scan accounts from hidden organizational units as "
@@ -1806,28 +1801,28 @@ msgstr ""
 "betyde at dette scannerjob også scanner konti fra skjulte organisatoriske "
 "enheder."
 
-#: adminapp/templates/components/scanner/scanner_form.html:472
+#: adminapp/templates/components/scanner/scanner_form.html:465
 msgid "scan all accounts in this organization"
 msgstr "scan alle konti i denne organisation"
 
-#: adminapp/templates/components/scanner/scanner_form.html:481
+#: adminapp/templates/components/scanner/scanner_form.html:474
 msgid "scan accounts from selected organizational units"
 msgstr "scan konti fra udvalgte organisatoriske enheder"
 
-#: adminapp/templates/components/scanner/scanner_form.html:489
+#: adminapp/templates/components/scanner/scanner_form.html:482
 msgid "scan accounts from"
 msgstr "scan konti fra"
 
-#: adminapp/templates/components/scanner/scanner_form.html:545
+#: adminapp/templates/components/scanner/scanner_form.html:503
 msgid "Scanner settings"
 msgstr "Scannerindstillinger"
 
-#: adminapp/templates/components/scanner/scanner_form.html:623
-#: adminapp/templates/components/scanner/scanner_form.html:626
+#: adminapp/templates/components/scanner/scanner_form.html:581
+#: adminapp/templates/components/scanner/scanner_form.html:584
 msgid "Remediators"
 msgstr "Opryddere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:639
+#: adminapp/templates/components/scanner/scanner_form.html:597
 msgid ""
 "If any matches from the scanner job cannot be delegated to a specific user, "
 "the remediator(s) will see the results in their report module instead."
@@ -1835,11 +1830,11 @@ msgstr ""
 "Hvis nogle matches fra scannerjobbet ikke kan tildeles en bestemt bruger, "
 "vil oprydderne få vist resultatet i deres rapportmodul i stedet for."
 
-#: adminapp/templates/components/scanner/scanner_form.html:644
+#: adminapp/templates/components/scanner/scanner_form.html:602
 msgid "Universal remediators"
 msgstr "Universelle opryddere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:652
+#: adminapp/templates/components/scanner/scanner_form.html:610
 msgid ""
 "Universal remediators are automatically assigned as remediators for all "
 "scanner jobs."
@@ -1847,16 +1842,16 @@ msgstr ""
 "Universelle opryddere er automatisk tildelt oprydderrollen for alle "
 "scannerjobs."
 
-#: adminapp/templates/components/scanner/scanner_form.html:660
-#: adminapp/templates/components/scanner/scanner_form.html:662
+#: adminapp/templates/components/scanner/scanner_form.html:618
+#: adminapp/templates/components/scanner/scanner_form.html:620
 msgid "Contacts"
 msgstr "Kontakter"
 
-#: adminapp/templates/components/scanner/scanner_form.html:685
+#: adminapp/templates/components/scanner/scanner_form.html:643
 msgid "Schedule scan"
 msgstr "Planlæg scan"
 
-#: adminapp/templates/components/scanner/scanner_form.html:692
+#: adminapp/templates/components/scanner/scanner_form.html:650
 msgid ""
 "Schedule your scan by creating a fixed interval or adding a date to complete "
 "the scannerjob."
@@ -1864,7 +1859,7 @@ msgstr ""
 "Planlæg dit scan ved at oprette et fast interval eller tilføj en dato for "
 "afvikling af scannerjobbet."
 
-#: adminapp/templates/components/scanner/scanner_form.html:705
+#: adminapp/templates/components/scanner/scanner_form.html:663
 msgid "The scanner will start at the following time for the selected days:"
 msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 
@@ -1995,7 +1990,6 @@ msgstr "Datakilden indeholder ikke nogle objekter"
 
 #: adminapp/templates/components/scanstatus/scan_status_table.html:105
 #: adminapp/templates/components/scanstatus/scan_status_table.html:106
-#: adminapp/models/scannerjobs/scanner_helpers.py:296
 msgid "cancel running scanner job"
 msgstr "afbryd kørende scannerjob"
 
@@ -2913,7 +2907,6 @@ msgid "Microsoft Graph - file scan"
 msgstr "Microsoft Graph - filscan"
 
 #: core/models/client.py:33
-#: organizations/templates/organizations/grants_list.html:43
 msgid "Google - drive scan"
 msgstr "Google - drevscan"
 
@@ -3841,10 +3834,6 @@ msgstr "gå tilbage"
 msgid "you don't have the right credentials to access this page"
 msgstr "du har ikke de rigtige rettigheder til at tilgå denne side"
 
-#: organizations/templates/organizations/grants_list.html:7
-msgid "grants"
-msgstr "bevillinger"
-
 #: organizations/templates/organizations/grants_list.html:26
 msgid "grants for"
 msgstr "bevillinger for"
@@ -3865,6 +3854,12 @@ msgstr "MSGraph bevilling"
 #: organizations/templates/organizations/grants_list.html:42
 msgid "SMB Grant"
 msgstr "SMB bevilling"
+
+#: organizations/templates/organizations/grants_list.html:43
+#, fuzzy
+#| msgid "Google - drive scan"
+msgid "Google API Grant"
+msgstr "Google - drevscan"
 
 #: organizations/templates/organizations/grants_list.html:57
 msgid "type"
