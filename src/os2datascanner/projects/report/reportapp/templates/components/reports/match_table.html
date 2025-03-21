@@ -150,9 +150,15 @@
         </thead>
 
         <tbody>
-          {% for document_report in document_reports %}
-            {% include "components/reports/match.html" %}
-          {% endfor %}
+          {% if not document_reports %}
+            <tr class="datatablex__row">
+              <td colspan="10" class="datatable__column--nodata">{% trans "No results were found" %}</td>
+            </tr>
+          {% else %}
+            {% for document_report in document_reports %}
+              {% include "components/reports/match.html" %}
+            {% endfor %}
+          {% endif %}
         </tbody>
 
         <tfoot>
