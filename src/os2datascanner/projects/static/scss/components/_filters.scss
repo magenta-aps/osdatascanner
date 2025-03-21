@@ -60,6 +60,13 @@
 
         line-height: 1;
         font-size: 1em;
+
+        cursor: pointer;
+
+        &.toggled__true,
+        &:hover {
+          background-color: var(--color-primary-lightest);
+        }
       }
     }
   }
