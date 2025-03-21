@@ -559,7 +559,7 @@ class ScannerBase(object):
 
     def dispatch(self, request, *args, **kwargs):
         # The user is only allowed in if they have access to at least one organization
-        if hasattr(request.user, "administrator_for") or request.user.has_perm("view_client"):
+        if hasattr(request.user, "administrator_for") or request.user.has_perm("core.view_client"):
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("User is not administrator for any client"))

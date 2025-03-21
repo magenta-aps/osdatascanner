@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 
 from ..adminapp.views.exchangescanner_views import (
     ExchangeScannerCreate)
+from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
 
 
 def get_exchangescanner_response(user):
@@ -35,7 +36,8 @@ class TestExchangeScannerViews:
         but instead an organization administrator."""
 
         # Requires user permission
-        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label='os2datascanner', codename='add_scanner'))
 
         response = get_exchangescanner_response(user_admin)
 
@@ -87,7 +89,8 @@ class TestExchangeScannerViews:
     def test_exchangescanner_org_units_list_as_normal_user(
             self, user, familien_sand, nisserne, olsen_banden):
         # Requires user permission
-        user.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+        user.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename='add_scanner'))
 
         with pytest.raises(PermissionDenied):
             get_exchangescanner_response(user)
@@ -189,7 +192,8 @@ class TestExchangeScannerViews:
         client.force_login(user_admin)
 
         # Requires user permission
-        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename='add_scanner'))
 
         response = client.post(reverse('exchangescanner_add'), {
             'name': 'test_scanner',
@@ -243,7 +247,8 @@ class TestExchangeScannerViews:
         client.force_login(user_admin)
 
         # Requires user permission
-        user_admin.user_permissions.add(Permission.objects.get(codename='add_scanner'))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename='add_scanner'))
 
         response = client.post(reverse('exchangescanner_add'), {
             'name': 'test_scanner',
@@ -265,7 +270,8 @@ class TestExchangeScannerViews:
 
     def test_createview_with_permission(self, client, user_admin):
         client.force_login(user_admin)
-        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename="add_scanner"))
         response = client.get(reverse("exchangescanner_add"))
 
         assert response.status_code == 200
@@ -278,7 +284,8 @@ class TestExchangeScannerViews:
 
     def test_editview_with_permission(self, client, user_admin, exchange_scanner):
         client.force_login(user_admin)
-        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename="change_scanner"))
         response = client.get(reverse("exchangescanner_update", kwargs={"pk": exchange_scanner.pk}))
 
         assert response.status_code == 200
@@ -291,7 +298,8 @@ class TestExchangeScannerViews:
 
     def test_deleteview_with_permission(self, client, user_admin, exchange_scanner):
         client.force_login(user_admin)
-        user_admin.user_permissions.add(Permission.objects.get(codename="delete_scanner"))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename="delete_scanner"))
         response = client.post(
             reverse(
                 "exchangescanner_delete",
@@ -312,7 +320,8 @@ class TestExchangeScannerViews:
 
     def test_removeview_with_permission(self, client, user_admin, exchange_scanner):
         client.force_login(user_admin)
-        user_admin.user_permissions.add(Permission.objects.get(codename="hide_scanner"))
+        user_admin.user_permissions.add(Permission.objects.get(
+            content_type__app_label="os2datascanner", codename="hide_scanner"))
         response = client.post(
             reverse(
                 "exchangescanner_remove",
@@ -330,3 +339,91 @@ class TestExchangeScannerViews:
                     "pk": exchange_scanner.pk}))
 
         assert response.status_code == 403
+
+    def test_view_client_permission_add_scanner(self, client, user, test_org):
+        """Users with the 'view_client'-permission should be able to add new scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(content_type__app_label="core", codename="view_client"),
+            Permission.objects.get(content_type__app_label="os2datascanner", codename="add_scanner")
+        )
+
+        client.force_login(user)
+        response = client.get(reverse("exchangescanner_add"))
+
+        assert response.status_code == 200
+
+    def test_view_client_permission_copy_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to copy scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(content_type__app_label="core", codename="view_client"),
+            Permission.objects.get(content_type__app_label="os2datascanner", codename="add_scanner")
+        )
+
+        client.force_login(user)
+        client.force_login(user)
+        response = client.get(
+            reverse("exchangescanner_copy",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 200
+
+    def test_view_client_permission_edit_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to edit scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(content_type__app_label="core", codename="view_client"),
+            Permission.objects.get(content_type__app_label="os2datascanner",
+                                   codename="change_scanner")
+        )
+
+        client.force_login(user)
+        response = client.get(
+            reverse("exchangescanner_update",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 200
+
+    def test_view_client_permission_delete_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to delete scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(content_type__app_label="core", codename="view_client"),
+            Permission.objects.get(content_type__app_label="os2datascanner",
+                                   codename="delete_scanner")
+        )
+
+        client.force_login(user)
+        response = client.post(
+            reverse("exchangescanner_delete",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 302
+
+        with pytest.raises(ExchangeScanner.DoesNotExist):
+            exchange_scanner.refresh_from_db()
+
+    def test_view_client_permission_hide_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to hide scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(content_type__app_label="core", codename="view_client"),
+            Permission.objects.get(content_type__app_label="os2datascanner",
+                                   codename="hide_scanner")
+        )
+
+        client.force_login(user)
+        response = client.post(
+            reverse("exchangescanner_remove",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 302
+
+        exchange_scanner.refresh_from_db()
+
+        assert exchange_scanner.hidden
