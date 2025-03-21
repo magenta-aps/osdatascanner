@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.projects.utils import aes
-from .models import EWSGrant, SMBGrant, GraphGrant
+from .models import EWSGrant, SMBGrant, GraphGrant, GoogleApiGrant
 
 
 class AutoEncryptedField(forms.CharField):
@@ -24,6 +24,17 @@ class AutoEncryptedField(forms.CharField):
         if value:
             return [c.hex()
                     for c in aes.encrypt(value, settings.DECRYPTION_HEX)]
+
+
+class AutoEncryptedFileField(forms.FileField):
+    def to_python(self, value):
+        if value:
+            try:
+                value = value.open().read().decode("utf-8")
+                return [c.hex()
+                        for c in aes.encrypt(value, settings.DECRYPTION_HEX)]
+            except UnicodeDecodeError as e:
+                raise ValidationError(_("Invalid file format")) from e
 
 
 def choose_field_value(new, old):
@@ -99,3 +110,17 @@ class GraphGrantAdmin(admin.ModelAdmin):
             "app_id": "",
             "tenant_id": ""
         }
+
+
+class GoogleApiGrantForm(forms.ModelForm):
+    class Meta:
+        model = GoogleApiGrant
+        exclude = ("expiry_date",)
+    _service_account = AutoEncryptedFileField()
+
+
+@admin.register(GoogleApiGrant)
+class GoogleApiGrantAdminForm(admin.ModelAdmin):
+    fields = ["organization", "_service_account", "last_updated"]
+    readonly_fields = ("last_updated",)
+    form = GoogleApiGrantForm

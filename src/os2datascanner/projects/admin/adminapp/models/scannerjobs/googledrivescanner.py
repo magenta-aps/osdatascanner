@@ -9,7 +9,7 @@ from django.utils.translation import pgettext_lazy
 
 from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
-from ...utils import upload_path_gdrive_users, upload_path_gdrive_service_account
+from ...utils import upload_path_gdrive_users
 from os2datascanner.engine2.model.googledrive import GoogleDriveSource
 
 
@@ -30,30 +30,25 @@ class GoogleDriveScanner(Scanner):
                 'csv fil hentes af admin fra: https://admin.google.com/ac/users'
             )
 
-    service_account_file = models.FileField(upload_to=upload_path_gdrive_service_account,
-                                            null=False,
-                                            validators=[validate_filetype_json])
+    google_api_grant = models.ForeignKey("grants.GoogleApiGrant",
+                                         on_delete=models.SET_NULL,
+                                         null=True)
 
     user_emails = models.FileField(upload_to=upload_path_gdrive_users,
                                    null=False,
                                    validators=[validate_filetype_csv])
-
-    def __str__(self):
-        """Return the URL for the scanner."""
-        return self.url
 
     @staticmethod
     def get_type():
         return 'googledrive'
 
     def generate_sources(self):
-        with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file.name)) as saf:
-            temp = json.load(saf)
+        google_api_grant = json.loads(self.google_api_grant.service_account)
         with open(os.path.join(settings.MEDIA_ROOT, self.user_emails.name), 'r') as usrem:
             csv_dict_reader = DictReader(usrem)
             for row in csv_dict_reader:
                 user_email = row['Email Address [Required]']
-                yield GoogleDriveSource(service_account_file=json.dumps(temp),
+                yield GoogleDriveSource(google_api_grant=google_api_grant,
                                         user_email=user_email)
 
     object_name = pgettext_lazy("unit of scan", "file")

@@ -6,6 +6,10 @@
 
 ### New in this release
 
+- Added a new grant for storing google service accounts.
+
+- Gmail and Google Drive scanner can now scan by org units.
+
 ### General improvements
 
 - Small adjustments in logging for admin module email notifications.

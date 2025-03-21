@@ -1,16 +1,13 @@
-import os
 import json
-from csv import DictReader
 
 from django.db import models
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
 from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
-from ...utils import upload_path_gmail_users, upload_path_gmail_service_account
+from ....organizations.models.aliases import AliasType
 
 
 class GmailScanner(Scanner):
@@ -30,27 +27,25 @@ class GmailScanner(Scanner):
                 'csv fil hentes af admin fra: https://admin.google.com/ac/users'
             )
 
-    service_account_file_gmail = models.FileField(upload_to=upload_path_gmail_service_account,
-                                                  null=False,
-                                                  validators=[validate_filetype_json])
-
-    user_emails_gmail = models.FileField(upload_to=upload_path_gmail_users,
-                                         null=False,
-                                         validators=[validate_filetype_csv])
+    google_api_grant = models.ForeignKey("grants.GoogleApiGrant",
+                                         on_delete=models.SET_NULL,
+                                         null=True)
 
     @staticmethod
     def get_type():
         return 'gmail'
 
     def generate_sources(self):
-        with open(os.path.join(settings.MEDIA_ROOT, self.service_account_file_gmail.name)) as saf:
-            temp = json.load(saf)
-        with open(os.path.join(settings.MEDIA_ROOT, self.user_emails_gmail.name), 'r') as usrem:
-            csv_dict_reader = DictReader(usrem)
-            for row in csv_dict_reader:
-                user_email = row['Email Address [Required]']
-                yield GmailSource(service_account_file_gmail=json.dumps(temp),
-                                  user_email_gmail=user_email)
+        yield from (source for _, source in self.generate_sources_with_accounts())
+
+    def generate_sources_with_accounts(self):
+        google_api_grant = json.loads(self.google_api_grant.service_account)
+        for account in self.compute_covered_accounts():
+            for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
+                yield (account, GmailSource(
+                        google_api_grant=google_api_grant,
+                        user_email_gmail=alias.value
+                ))
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")

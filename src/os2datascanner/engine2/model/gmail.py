@@ -6,7 +6,6 @@ from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 
-import json
 import base64
 
 
@@ -28,19 +27,17 @@ class GmailSource(Source):
 
     eq_properties = ("_user_email_gmail",)
 
-    def __init__(self, service_account_file_gmail, user_email_gmail):
-        self._service_account_file_gmail = service_account_file_gmail
+    def __init__(self, google_api_grant, user_email_gmail):
+        self.google_api_grant = google_api_grant
         self._user_email_gmail = user_email_gmail
 
     def _generate_state(self, source_manager):
         SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-        service_account_info = json.loads(self._service_account_file_gmail)
         credentials = service_account.Credentials.from_service_account_info(
-            service_account_info,
+            self.google_api_grant,
             scopes=SCOPES).with_subject(
                 self._user_email_gmail
             )
-
         service = build(serviceName='gmail', version='v1', credentials=credentials)
         yield service
 
@@ -87,14 +84,14 @@ class GmailSource(Source):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            service_account_file=self._service_account_file_gmail,
+            google_api_grant=self.google_api_grant,
             user_email=self._user_email_gmail,
         )
 
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GmailSource(obj["service_account_file"], obj["user_email"])
+        return GmailSource(obj["google_api_grant"], obj["user_email"])
 
 
 class GmailResource(FileResource):

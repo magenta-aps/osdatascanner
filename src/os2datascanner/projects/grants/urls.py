@@ -1,6 +1,6 @@
 from django.urls import path
 
-from os2datascanner.projects.grants.views import msgraph_views, smb_views, ews_views
+from os2datascanner.projects.grants.views import msgraph_views, smb_views, ews_views, googleapi_views  # noqa
 
 
 urlpatterns = [
@@ -20,6 +20,9 @@ urlpatterns = [
     path('<uuid:org>/smb/',
          smb_views.SMBGrantCreateView.as_view(),
          name='smbgrant-create'),
+    path('<uuid:org>/googleapigrant/',
+         googleapi_views.GoogleApiGrantCreateView.as_view(),
+         name='googleapigrant-create'),
     path('msgraph/<int:pk>/',
          msgraph_views.MSGraphGrantUpdateView.as_view(),
          name='msgraphgrant-update'),
@@ -29,4 +32,7 @@ urlpatterns = [
     path('ews/<int:pk>/',
          ews_views.EWSGrantUpdateView.as_view(),
          name='ewsgrant-update'),
+    path('googleapi/<int:pk>/',
+         googleapi_views.GoogleApiGrantUpdateView.as_view(),
+         name='googleapigrant-update'),
 ]

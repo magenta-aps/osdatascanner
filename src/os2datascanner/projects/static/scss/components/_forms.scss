@@ -833,3 +833,31 @@
     }
   }
 }
+
+input[type="file"] {
+  width: 350px;
+  max-width: 100%;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #555;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 20px;
+  padding: 0.75rem 1rem !important;
+  border: var(--btn-border-default) var(--color-primary);
+
+  color: var(--color-text-white);
+  background-color: var(--color-primary);
+
+  font-weight: 600;
+
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+input[type="file"]::file-selector-button:hover {
+  border: var(--btn-border-default) var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
+}

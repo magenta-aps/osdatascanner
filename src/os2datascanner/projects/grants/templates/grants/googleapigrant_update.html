@@ -1,0 +1,10 @@
+{% extends "grants/grant_update.html" %}
+{% load i18n %}
+
+{% block description %}
+  <div>
+    <span>
+      {% blocktranslate %}A Google API Grant represents a service account with access to your Google domain, which will allow OSdatascanner to access the permitted resources in your Google domain. You can control what resources the service account can access from the Google Admin panel.{% endblocktranslate %}
+    </span>
+  </div>
+{% endblock description %}
