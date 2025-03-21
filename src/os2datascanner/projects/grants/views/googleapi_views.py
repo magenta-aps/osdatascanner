@@ -22,15 +22,15 @@ class GoogleApiGrantForm(forms.ModelForm):
             " Make sure to grant it domain wide delegation."),
     )
 
-    last_updated = forms.CharField(max_length=255, required=False, label=_("Last Updated"))
+    last_updated = forms.DateTimeField(widget=forms.widgets.DateTimeInput(
+       format="%d/%m-%Y %H:%M"), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["organization"].disabled = True
         self.fields["last_updated"].disabled = True
         if self.instance.last_updated:
-            self.fields["last_updated"].initial = self.instance.last_updated.strftime(
-                "%d/%m-%Y %H:%M")
+            self.fields["last_updated"].initial = self.instance.last_updated
         else:
             self.fields["last_updated"].widget = forms.HiddenInput()
             self.fields["last_updated"].label = ""

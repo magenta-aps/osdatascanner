@@ -3855,11 +3855,6 @@ msgstr "MSGraph bevilling"
 msgid "SMB Grant"
 msgstr "SMB bevilling"
 
-#: organizations/templates/organizations/grants_list.html:43
-#, fuzzy
-#| msgid "Google - drive scan"
-msgid "Google API Grant"
-msgstr "Google - drevscan"
 
 #: organizations/templates/organizations/grants_list.html:57
 msgid "type"
