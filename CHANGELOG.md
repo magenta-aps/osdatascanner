@@ -18,6 +18,8 @@
 - EmailHeaderRule now has left precedence, allowing users to create working compound rules
   using both EmailHeaderRule and CPRRule.
 
+- Allow users with the "view_client"-permission to interact with scanners as intended.
+
 ## Release 3.27.0, 18th March 2025
 
 "Wishes Granted"
