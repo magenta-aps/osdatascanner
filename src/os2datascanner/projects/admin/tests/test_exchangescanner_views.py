@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 
 from ..adminapp.views.exchangescanner_views import (
     ExchangeScannerCreate)
+from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
 
 
 def get_exchangescanner_response(user):
@@ -330,3 +331,88 @@ class TestExchangeScannerViews:
                     "pk": exchange_scanner.pk}))
 
         assert response.status_code == 403
+
+    def test_view_client_permission_add_scanner(self, client, user, test_org):
+        """Users with the 'view_client'-permission should be able to add new scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(codename="view_client"),
+            Permission.objects.get(codename="add_scanner")
+        )
+
+        client.force_login(user)
+        response = client.get(reverse("exchangescanner_add"))
+
+        assert response.status_code == 200
+
+    def test_view_client_permission_copy_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to copy scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(codename="view_client"),
+            Permission.objects.get(codename="add_scanner")
+        )
+
+        client.force_login(user)
+        client.force_login(user)
+        response = client.get(
+            reverse("exchangescanner_copy",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 200
+
+    def test_view_client_permission_edit_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to edit scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(codename="view_client"),
+            Permission.objects.get(codename="change_scanner")
+        )
+
+        client.force_login(user)
+        response = client.get(
+            reverse("exchangescanner_update",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 200
+
+    def test_view_client_permission_delete_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to delete scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(codename="view_client"),
+            Permission.objects.get(codename="delete_scanner")
+        )
+
+        client.force_login(user)
+        response = client.post(
+            reverse("exchangescanner_delete",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 302
+
+        with pytest.raises(ExchangeScanner.DoesNotExist):
+            exchange_scanner.refresh_from_db()
+
+    def test_view_client_permission_hide_scanner(self, client, user, exchange_scanner):
+        """Users with the 'view_client'-permission should be able to hide scanners on behalf of
+        all organizations, even without being an administrator for any clients."""
+        user.user_permissions.add(
+            Permission.objects.get(codename="view_client"),
+            Permission.objects.get(codename="hide_scanner")
+        )
+
+        client.force_login(user)
+        response = client.post(
+            reverse("exchangescanner_remove",
+                    kwargs={"pk": exchange_scanner.pk})
+        )
+
+        assert response.status_code == 302
+
+        exchange_scanner.refresh_from_db()
+
+        assert exchange_scanner.hidden
