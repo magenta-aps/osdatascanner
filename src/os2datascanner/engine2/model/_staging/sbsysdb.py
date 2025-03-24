@@ -29,13 +29,15 @@ class SBSYSDBSource(Source):
     def __init__(
             self, server, port, db, user, password,
             *,
-            reflect_tables):
+            reflect_tables: tuple[str, ...] | None,
+            base_weblink: str | None):
         self._server = server
         self._port = port
         self._db = db
         self._user = user
         self._password = password
         self._reflect_tables = reflect_tables
+        self._base_weblink = base_weblink
 
     @property
     def reflect_tables(self):
@@ -44,7 +46,8 @@ class SBSYSDBSource(Source):
     def censor(self):
         return SBSYSDBSource(
                 self._server, self._port, self._db, None, None,
-                reflect_tables=self._reflect_tables)
+                reflect_tables=self._reflect_tables,
+                base_weblink=self.base_weblink)
 
     def _generate_state(self, sm: SourceManager):
         engine = create_engine(
@@ -83,9 +86,14 @@ class SBSYSDBSource(Source):
                 })
 
         for db_row in exec_expr(engine, expr, *column_labels.keys()):
+            match (self._base_weblink, db_row):
+                case (str() as wl, {"ID": cid}):
+                    weblink = f"{wl}#/sager/{cid}"
+                case _:
+                    weblink = None
             yield SBSYSDBHandles.Case(
                     self,
-                    db_row["Nummer"], db_row["Titel"],
+                    db_row["Nummer"], db_row["Titel"], weblink,
                     hints={"db_row": db_row})
 
     def to_json_object(self):
@@ -98,7 +106,8 @@ class SBSYSDBSource(Source):
             "reflect_tables": (
                     list(self._reflect_tables)
                     if self._reflect_tables
-                    else None)
+                    else None),
+            "base_weblink": self._base_weblink
         }
 
     @Source.json_handler(type_label)
@@ -108,7 +117,8 @@ class SBSYSDBSource(Source):
         return SBSYSDBSource(
                 obj["server"], obj["port"],
                 obj["db"], obj["user"], obj["password"],
-                reflect_tables=reflect_tables or None)
+                reflect_tables=reflect_tables or None,
+                base_weblink=obj.get("base_weblink"))
 
 
 class SBSYSDBHandles:
@@ -134,12 +144,19 @@ class SBSYSDBHandles:
                 self,
                 source: SBSYSDBSource,
                 number: str,
-                title: str | None, **kwargs):
+                title: str | None,
+                weblink: str | None,
+                **kwargs):
             super().__init__(source, number, **kwargs)
             self._title = title
+            self._weblink = weblink
 
         def guess_type(self):
             return self._DUMMY_MIME
+
+        @property
+        def presentation_url(self):
+            return self._weblink
 
         @property
         def presentation_name(self):
@@ -157,6 +174,7 @@ class SBSYSDBHandles:
             return super().to_json_object() | {
                 "title": self._title,
                 "hints": self._hints,
+                "weblink": self._weblink,
             }
 
         @staticmethod
@@ -165,6 +183,7 @@ class SBSYSDBHandles:
             return SBSYSDBHandles.Case(
                     Source.from_json_object(obj["source"]),
                     obj["path"], obj["title"],
+                    obj.get("weblink"),
                     hints=obj["hints"])
 
     @Handle.stock_json_handler("sbsys-db-case-field")
@@ -239,7 +258,7 @@ class SBSYSDBSources:
                     else db_row[col] for col in self.required_columns}
 
         required_columns = (
-                "Nummer", "Titel", "Kommentar",
+                "ID", "Nummer", "Titel", "Kommentar",
                 "Behandler.UserPrincipalName",)
 
         def _generate_state(self, sm: SourceManager):

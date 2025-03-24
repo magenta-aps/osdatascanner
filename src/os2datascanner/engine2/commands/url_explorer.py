@@ -42,9 +42,13 @@ def print_source(  # noqa
             if hints:
                 for k, v in (handle._hints or {}).items():
                     printfunc(format_d(depth + 1, "hint:{0} {1}", k, v))
-                # This is a hint of sorts, but isn't stored in _hints
+
+                # These are hints of sorts, but aren't stored in _hints
                 printfunc(format_d(
                         depth + 1, "hint:referrer {0}", handle.referrer))
+                if p_url := handle.presentation_url:
+                    printfunc(format_d(
+                            depth + 1, "hint:presentation_url {0}", p_url))
 
             if handle not in base_source:
                 printfunc(format_d(depth + 1, "(foreign Handle)"))
