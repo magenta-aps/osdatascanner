@@ -1,8 +1,8 @@
 # Changelog
 
-## Next release
+## Version 3.27.1, 24th March 2025
 
-""
+"Team Rocket is Blasting Off Again"
 
 ### New in this release
 
@@ -24,7 +24,7 @@
 
 - Allow users with the "view_client"-permission to interact with scanners as intended.
 
-## Release 3.27.0, 18th March 2025
+## Version 3.27.0, 18th March 2025
 
 "Wishes Granted"
 
