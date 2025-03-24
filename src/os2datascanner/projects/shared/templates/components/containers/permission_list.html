@@ -1,0 +1,52 @@
+{% load i18n %}
+
+{% comment %} 
+  This component shows a neat list of permissions as small little boxes.
+  The component takes a few arguments:
+  - permissions: A list of the permissions already applied.
+  - can_remove: Whether permissions can be removed from the list by the user.
+  - can_add: Whether new permissions can be added to the list by the user.
+  - available_permissions: A list of the permissions the user can add to the target.
+{% endcomment %}
+
+{% for permission in permissions %}
+  {% if can_remove %}
+    <div class="list_box can_remove"
+         title="{% trans "Click to remove" %} {{ permission.name }}"
+         name="rem-permission"
+         hx-post=""
+         hx-swap="outerHTML"
+         hx-target=".content"
+         hx-select=".content"
+         hx-trigger="click"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+         hx-vals='{"rem-permission": "{{ permission.pk }}"}'
+         hx-confirm="{% trans "Are you sure you want to remove" %} {{ permission.name }}?">
+      <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+      <!-- djlint:off -->{{ permission.name }}</div><!--djlint:on-->
+    {% else %}
+      <div class="list_box">
+        <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
+        <!-- djlint:off -->{{ permission.name }}</div><!--djlint:on-->
+      {% endif %}
+    {% endfor %}
+    {% if available_permissions and can_add %}
+      <div class="add_button list_box"
+           aria-label="{% trans "Click here to add a new permission" %}"
+           title="{% trans "Add permission" %}">{% trans "add permission"|capfirst %}</div>
+      <select class="select_options"
+              name="add-permission"
+              hidden
+              hx-post=""
+              hx-swap="outerHTML"
+              hx-target=".content"
+              hx-select=".content"
+              hx-trigger="change"
+              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+              autocomplete="off">
+        <option value="" selected>{% trans "Choose permission" %}</option>
+        {% for permission in available_permissions %}
+          <option value="{{ permission.pk }}">{{ permission.name }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}

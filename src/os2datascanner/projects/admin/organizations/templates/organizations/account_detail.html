@@ -198,59 +198,21 @@
             <tr>
               <td>{% trans "Permissions" %}</td>
               <td>
-                {% for permission in account.permissions.all %}
-                  {% if perms.organizations.change_permissions_account %}
-                    <div class="list_box can_remove"
-                         title="{% trans "Click to remove" %} {{ permission.name }}"
-                         name="rem-permission"
-                         hx-post=""
-                         hx-swap="outerHTML"
-                         hx-target=".content"
-                         hx-select=".content"
-                         hx-trigger="click"
-                         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                         hx-vals='{"rem-permission": "{{ permission.pk }}"}'
-                         hx-confirm="{% trans "Are you sure you want to remove" %} {{ permission.name }}?">
-                      <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-                      <!-- djlint:off -->{{ permission.name }}</div><!--djlint:on-->
-                    {% else %}
-                      <div class="list_box">
-                        <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-                        <!-- djlint:off -->{{ permission.name }}</div><!--djlint:on-->
-                      {% endif %}
-                    {% endfor %}
-                    {% if permissions and perms.organizations.change_permissions_account %}
-                      <div class="add_button list_box"
-                           aria-label="{% trans 'Click here to add a new permission' %}"
-                           title="{% trans 'Add permission' %}">{% trans "add permission"|capfirst %}</div>
-                      <select class="select_options"
-                              name="add-permission"
-                              hidden
-                              hx-post=""
-                              hx-swap="outerHTML"
-                              hx-target=".content"
-                              hx-select=".content"
-                              hx-trigger="change"
-                              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                              autocomplete="off">
-                        <option value="" selected>{% trans "Choose permission" %}</option>
-                        {% for permission in permissions %}<option value="{{ permission.pk }}">{{ permission.name }}</option>{% endfor %}
-                      </select>
-                    {% endif %}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                {% include "components/containers/permission_list.html" with permissions=account.permissions.all can_remove=perms.organizations.change_permissions_account can_add=perms.organizations.change_permissions_account available_permissions=permissions %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-            <h2>{% trans "Login Information" %}</h2>
-            <table class="userprofile-table login-info">
-              <tbody>
-                <tr>
-                  <td>{% trans "User since" %}</td>
-                  <td>{{ user.date_joined }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <h2>{% trans "Login Information" %}</h2>
+        <table class="userprofile-table login-info">
+          <tbody>
+            <tr>
+              <td>{% trans "User since" %}</td>
+              <td>{{ user.date_joined }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        {% endblock content %}
+    {% endblock content %}
