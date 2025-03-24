@@ -48,7 +48,8 @@ class GmailScannerCreate(GrantMixin, ScannerCreate):
         'organization',
         'contacts',
         'google_api_grant',
-        'org_unit'
+        'org_unit',
+        'scan_attachments'
     ]
 
     def get_success_url(self):
@@ -76,7 +77,8 @@ class GmailScannerUpdate(GrantMixin, ScannerUpdate):
         'organization',
         'contacts',
         'google_api_grant',
-        'org_unit'
+        'org_unit',
+        'scan_attachments'
     ]
 
     def get_success_url(self):
@@ -123,7 +125,9 @@ class GmailScannerCopy(ScannerCopy):
         'rule',
         'organization',
         'contacts',
-        'google_api_grant'
+        'google_api_grant',
+        'org_unit',
+        'scan_attachments'
     ]
 
     def get_initial(self):

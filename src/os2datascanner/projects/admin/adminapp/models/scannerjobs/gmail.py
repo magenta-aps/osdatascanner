@@ -37,6 +37,11 @@ class GmailScanner(Scanner):
         help_text=_("Scan mail subjects"),
     )
 
+    scan_attachments = models.BooleanField(
+        default=True,
+        verbose_name=_("Scan attachments"),
+        help_text=_("Scan attached files"))
+
     @staticmethod
     def get_type():
         return 'gmail'
@@ -50,7 +55,8 @@ class GmailScanner(Scanner):
             if account.email:
                 yield (account, GmailSource(
                         google_api_grant=google_api_grant,
-                        user_email_gmail=account.email
+                        user_email_gmail=account.email,
+                        scan_attachments=self.scan_attachments
                 ))
 
     object_name = pgettext_lazy("unit of scan", "email message")
