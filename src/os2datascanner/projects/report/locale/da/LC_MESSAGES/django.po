@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-24 11:24+0100\n"
+"POT-Creation-Date: 2025-03-25 14:37+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -669,12 +669,12 @@ msgstr "Følsomhed"
 msgid "All sensitivities"
 msgstr "Alle følsomheder"
 
-#: reportapp/templates/components/reports/filters.html:226
+#: reportapp/templates/components/reports/filters.html:213
 #, python-format
 msgid " Include results, that are less than %(retention_days)s days old "
 msgstr "Inkludér resultater, der er under %(retention_days)s dage gamle"
 
-#: reportapp/templates/components/reports/filters.html:247
+#: reportapp/templates/components/reports/filters.html:219
 msgid "Include results from shared mailboxes"
 msgstr "Inkludér resultater fra fælles mailbokse"
 
@@ -998,6 +998,12 @@ msgstr "Status"
 msgid "Actions"
 msgstr "Handlinger"
 
+#: reportapp/templates/components/reports/match_table.html:157
+#: reportapp/templates/remediator_content.html:24
+#: reportapp/templates/undistributed_content.html:52
+msgid "No results were found"
+msgstr "Der er ingen resultater"
+
 #: reportapp/templates/components/reports/show_more_matches.html:27
 #: reportapp/templates/components/reports/show_more_matches.html:36
 msgid "Show more matches"
@@ -1093,7 +1099,7 @@ msgid "Username"
 msgstr "Brugernavn"
 
 #: reportapp/templates/components/user/login.html:26
-#: reportapp/templates/user.html:142
+#: reportapp/templates/user.html:140
 msgid "Password"
 msgstr "Adgangskode"
 
@@ -1918,12 +1924,6 @@ msgstr ""
 msgid "results"
 msgstr "resultater"
 
-#: reportapp/templates/remediator_content.html:24
-#: reportapp/templates/undistributed_content.html:52
-#: reportapp/templates/user_content.html:14
-msgid "No results were found"
-msgstr "Der er ingen resultater"
-
 #: reportapp/templates/scannerjobs/scannerjob_list.html:51
 msgid "Do you really want to delete all reports from this scanner?"
 msgstr ""
@@ -2035,15 +2035,15 @@ msgstr "Aliasser"
 msgid "Permissions"
 msgstr "Rettigheder"
 
-#: reportapp/templates/user.html:137
+#: reportapp/templates/user.html:135
 msgid "Login Information"
 msgstr "Login Information"
 
-#: reportapp/templates/user.html:144
+#: reportapp/templates/user.html:142
 msgid "Change"
 msgstr "Skift"
 
-#: reportapp/templates/user.html:149
+#: reportapp/templates/user.html:147
 msgid "User since"
 msgstr "Bruger siden"
 

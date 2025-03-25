@@ -10,6 +10,8 @@
 
 - Present permissions on user and account pages in little boxes instead of comma-separated lists.
 
+- Prettier checkboxes in the report module filtering options.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
