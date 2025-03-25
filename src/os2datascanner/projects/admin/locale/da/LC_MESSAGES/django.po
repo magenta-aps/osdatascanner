@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-24 11:31+0100\n"
+"POT-Creation-Date: 2025-03-24 15:11+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -951,7 +951,7 @@ msgid "Analysis"
 msgstr "Analyse"
 
 #: adminapp/templates/components/analysis/analysis_template.html:22
-#: organizations/templates/organizations/account_detail.html:187
+#: organizations/templates/organizations/account_detail.html:189
 msgid "Choose scannerjob"
 msgstr "Vælg scannerjob"
 
@@ -1178,7 +1178,7 @@ msgstr "Navngiv reglen og vælg hvilken organisation reglen skal tilhøre"
 #: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:25
 #: adminapp/templates/removed_scanners.html:52 adminapp/templates/rules.html:64
 #: adminapp/templates/scanners.html:70 adminapp/templates/system_rules.html:67
-#: organizations/templates/organizations/account_detail.html:21
+#: organizations/templates/organizations/account_detail.html:23
 #: organizations/templates/organizations/account_list.html:55
 msgid "Name"
 msgstr "Navn"
@@ -2093,14 +2093,14 @@ msgstr "Efternavn"
 
 #: adminapp/templates/components/user/user_detail.html:38
 #: adminapp/templates/components/user/user_edit.html:31
-#: organizations/templates/organizations/account_detail.html:25
+#: organizations/templates/organizations/account_detail.html:27
 #: organizations/templates/organizations/account_list.html:56
 msgid "Username"
 msgstr "Brugernavn"
 
 #: adminapp/templates/components/user/user_detail.html:42
 #: adminapp/templates/components/user/user_edit.html:35
-#: organizations/templates/organizations/account_detail.html:29
+#: organizations/templates/organizations/account_detail.html:31
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -2124,20 +2124,20 @@ msgstr "Grupper"
 msgid "User permissions"
 msgstr "Brugerrettigheder"
 
-#: adminapp/templates/components/user/user_detail.html:77
-#: adminapp/templates/components/user/user_edit.html:70
-#: organizations/templates/organizations/account_detail.html:66
+#: adminapp/templates/components/user/user_detail.html:75
+#: adminapp/templates/components/user/user_edit.html:68
+#: organizations/templates/organizations/account_detail.html:68
 msgid "Superuser"
 msgstr "Superbruger"
 
-#: adminapp/templates/components/user/user_detail.html:81
-#: adminapp/templates/components/user/user_edit.html:74
+#: adminapp/templates/components/user/user_detail.html:79
+#: adminapp/templates/components/user/user_edit.html:72
 #: adminapp/templates/rules.html:177
-#: organizations/templates/organizations/account_detail.html:70
+#: organizations/templates/organizations/account_detail.html:72
 msgid "Yes"
 msgstr "Ja"
 
-#: adminapp/templates/components/user/user_edit.html:84
+#: adminapp/templates/components/user/user_edit.html:82
 #: adminapp/templates/miniscan.html:113
 #: organizations/templates/components/modals/alias_create.html:56
 msgid "Save"
@@ -2398,7 +2398,7 @@ msgid "Add rule"
 msgstr "Tilføj regel"
 
 #: adminapp/templates/rules.html:65
-#: organizations/templates/organizations/account_detail.html:33
+#: organizations/templates/organizations/account_detail.html:35
 msgid "Organization"
 msgstr "Organisation"
 
@@ -3658,69 +3658,67 @@ msgstr "Gem alias og luk"
 msgid "Add universal DPO"
 msgstr "Tilføj universel DPO"
 
-#: organizations/templates/organizations/account_detail.html:10
+#: organizations/templates/organizations/account_detail.html:12
 msgid "Account"
 msgstr "Konto"
 
-#: organizations/templates/organizations/account_detail.html:17
+#: organizations/templates/organizations/account_detail.html:19
 msgid "Account information"
 msgstr "Kontoinformation"
 
-#: organizations/templates/organizations/account_detail.html:40
+#: organizations/templates/organizations/account_detail.html:42
 msgid "Manager for"
 msgstr "Leder af"
 
-#: organizations/templates/organizations/account_detail.html:50
+#: organizations/templates/organizations/account_detail.html:52
 msgid "DPO for"
 msgstr "DPO af"
 
-#: organizations/templates/organizations/account_detail.html:61
+#: organizations/templates/organizations/account_detail.html:63
 msgid "User Rights"
 msgstr "Brugerrettigheder"
 
-#: organizations/templates/organizations/account_detail.html:77
+#: organizations/templates/organizations/account_detail.html:79
 msgid "Imported aliases"
 msgstr "Importerede aliasser"
 
-#: organizations/templates/organizations/account_detail.html:88
+#: organizations/templates/organizations/account_detail.html:90
 msgid "Other aliases"
 msgstr "Andre aliasser"
 
-#: organizations/templates/organizations/account_detail.html:90
+#: organizations/templates/organizations/account_detail.html:92
 msgid "Aliases"
 msgstr "Aliasser"
 
-#: organizations/templates/organizations/account_detail.html:97
-#: organizations/templates/organizations/account_detail.html:155
-#: organizations/templates/organizations/account_detail.html:201
+#: organizations/templates/organizations/account_detail.html:99
+#: organizations/templates/organizations/account_detail.html:157
 #: organizations/templates/organizations/orgunit_list.html:39
 #: organizations/templates/organizations/orgunit_list.html:263
 #: organizations/templates/organizations/orgunit_list.html:294
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
-#: organizations/templates/organizations/account_detail.html:104
-#: organizations/templates/organizations/account_detail.html:164
-#: organizations/templates/organizations/account_detail.html:201
+#: organizations/templates/organizations/account_detail.html:106
+#: organizations/templates/organizations/account_detail.html:166
 #: organizations/templates/organizations/orgunit_list.html:46
 #: organizations/templates/organizations/orgunit_list.html:270
 #: organizations/templates/organizations/orgunit_list.html:301
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
-#: organizations/templates/organizations/account_detail.html:111
+#: organizations/templates/organizations/account_detail.html:113
 msgid "Click here to add a new alias"
 msgstr "Klik her for at tilføje et nyt alias"
 
-#: organizations/templates/organizations/account_detail.html:112
+#: organizations/templates/organizations/account_detail.html:114
 msgid "Add alias"
 msgstr "Tilføj alias"
 
-#: organizations/templates/organizations/account_detail.html:129
+#: organizations/templates/organizations/account_detail.html:131
 msgid "Universal remediator"
 msgstr "Universel oprydder"
 
-#: organizations/templates/organizations/account_detail.html:144
+#: organizations/templates/organizations/account_detail.html:146
 msgid ""
 "By checking this box, the current user will be assigned as a remediator of "
 "all scannerjobs."
@@ -3728,39 +3726,27 @@ msgstr ""
 "Ved at markere dette felt vil brugeren blive tildelt rollen som oprydder for "
 "alle scannerjob."
 
-#: organizations/templates/organizations/account_detail.html:150
+#: organizations/templates/organizations/account_detail.html:152
 msgid "Remediator for"
 msgstr "Oprydder for"
 
-#: organizations/templates/organizations/account_detail.html:172
+#: organizations/templates/organizations/account_detail.html:174
 msgid "Click here to add a new remediator"
 msgstr "Klik her for at tilføje en ny oprydder"
 
-#: organizations/templates/organizations/account_detail.html:173
+#: organizations/templates/organizations/account_detail.html:175
 msgid "Add remediator"
 msgstr "Tilføj oprydder"
 
-#: organizations/templates/organizations/account_detail.html:197
+#: organizations/templates/organizations/account_detail.html:199
 msgid "Permissions"
 msgstr "Rettigheder"
 
-#: organizations/templates/organizations/account_detail.html:209
-msgid "Click here to add a new permission"
-msgstr "Klik her for at tilføje en ny rettighed"
-
-#: organizations/templates/organizations/account_detail.html:210
-msgid "Add permission"
-msgstr "Tilføj rettighed"
-
-#: organizations/templates/organizations/account_detail.html:224
-msgid "Choose permission"
-msgstr "Vælg rettighed"
-
-#: organizations/templates/organizations/account_detail.html:235
+#: organizations/templates/organizations/account_detail.html:207
 msgid "Login Information"
 msgstr "Kontooplysninger"
 
-#: organizations/templates/organizations/account_detail.html:239
+#: organizations/templates/organizations/account_detail.html:211
 msgid "User since"
 msgstr "Bruger siden"
 
@@ -4223,6 +4209,15 @@ msgstr "Claim attribut"
 #: organizations/views/org_views.py:69 organizations/views/org_views.py:117
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
+
+#~ msgid "Click here to add a new permission"
+#~ msgstr "Klik her for at tilføje en ny rettighed"
+
+#~ msgid "Add permission"
+#~ msgstr "Tilføj rettighed"
+
+#~ msgid "Choose permission"
+#~ msgstr "Vælg rettighed"
 
 #~ msgid "Brugernavn"
 #~ msgstr "Username"

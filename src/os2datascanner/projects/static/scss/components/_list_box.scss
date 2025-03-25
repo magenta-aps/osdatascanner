@@ -1,0 +1,56 @@
+.list_box {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-default);
+  padding: 0.3rem 0.7rem;
+  margin: 0.3rem 0;
+  cursor: default;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  &.can_remove,
+  &.add_button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &.add_button {
+    &::before {
+      // TODO: Replace with icon
+      content: "+";
+      margin-right: 0.5rem;
+      font-weight: bold;
+      color: var(--color-text-secondary);
+    }
+
+    &:hover {
+      background-color: var(--color-primary-lighter);
+    }
+
+    background-color: var(--color-primary-lightest);
+  }
+
+  &.can_remove {
+    &::after {
+      // TODO: Replace with icon
+      content: "×";
+      position: absolute;
+      right: 0.7rem;
+      top: calc(50% - 10px);
+      font-weight: bold;
+      color: var(--color-text-secondary);
+    }
+
+    &:hover {
+      background-color: var(--color-hover);
+    }
+
+    padding-right: 1.7rem;
+  }
+}

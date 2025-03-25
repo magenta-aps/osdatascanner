@@ -66,9 +66,7 @@
             <tr>
               <td>{% trans "User permissions" %}</td>
               <td>
-                <ul>
-                  {% for permission in user.user_permissions.all %}<li>{{ permission }}</li>{% endfor %}
-                </ul>
+                {% include "components/containers/permission_list.html" with permissions=user.user_permissions.all can_remove=false can_add=false %}
               </td>
             </tr>
             {% if user.is_superuser %}
