@@ -1,0 +1,13 @@
+<label for="{{ name }}-toggle" class="ds-checkbox toggled__{{ value }}">
+  {% comment %}
+      We use the hidden input field below to track whether retention is enabled or not.
+      If we used the checkbox, unticking it would make it disappear from the form's GET action
+  {% endcomment %}
+  <input type="hidden" id="{{ name }}" name="{{ name }}" value="{{ value }}">
+  <input type="checkbox"
+         id="{{ name }}-toggle"
+         class="{{ name }}-toggle"
+         autocomplete="off"
+         {% if value == "true" %}checked{% endif %}>
+  <label for="{{ name }}-toggle">{{ label }}</label>
+</label>
