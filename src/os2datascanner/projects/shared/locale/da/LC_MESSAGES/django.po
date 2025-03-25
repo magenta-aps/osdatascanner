@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-25 07:46+0100\n"
+"POT-Creation-Date: 2025-03-25 10:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,14 +45,11 @@ msgid "Click here to add a new permission"
 msgstr "Klik her for at tilføje en ny rettighed"
 
 #: templates/components/containers/permission_list.html:36
-msgid "Add permission"
-msgstr "Tilføj rettighed"
-
-#: templates/components/containers/permission_list.html:36
+#: templates/components/containers/permission_list.html:37
 msgid "add permission"
 msgstr "tilføj rettighed"
 
-#: templates/components/containers/permission_list.html:47
+#: templates/components/containers/permission_list.html:49
 msgid "Choose permission"
 msgstr "Vælg rettighed"
 
