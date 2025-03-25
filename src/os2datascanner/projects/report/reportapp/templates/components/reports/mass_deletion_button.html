@@ -1,0 +1,24 @@
+{% load i18n %}
+
+{% comment %} 
+    This component contains a button for mass deletion of files or mails.
+    The component takes three arguments:
+    - source_type: A string describing the type of source, eg. "emails" or "files".
+    - source: The name of the scanned source, eg. "mailbox" or "online drive".
+    - url: The url name of the endpoint view.
+{% endcomment %}
+
+<button type="button"
+        class="button table-checkbox__action button--icon-text-button"
+        data-status="match-handle"
+        disabled
+        aria-label="{% blocktrans %}Deletes checked {{ source_type }} from your {{ source }}{% endblocktrans%}"
+        title="{% blocktrans %}Deletes checked {{ source_type }} from your {{ source }}{% endblocktrans%}"
+        hx-post="{% url url_name %}"
+        hx-swap="none"
+        hx-trigger="click"
+        hx-push-url="false"
+        hx-confirm="{% blocktrans %}You are about to delete checked {{ source_type }} from your {{ source }}. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+        name="mass-delete">
+  <i class="material-icons">delete_forever</i><span>{% blocktrans %}Delete marked {{ source_type }}{% endblocktrans %}</span>
+</button>
