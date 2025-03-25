@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+# from django.utils.translation import gettext_lazy as _
 
 
 class SyncedPermission(models.Model):
@@ -11,8 +11,4 @@ class SyncedPermission(models.Model):
         abstract = True
         permissions = [
             # None yet.
-            # For this MR only. Removed before merge.
-            ("very_important", _("A very important permission")),
-            ("destroy_univserse", _("Allowed to destroy the universe")),
-            ("universal_keys", _("Access to all Google infrastructure"))
         ]

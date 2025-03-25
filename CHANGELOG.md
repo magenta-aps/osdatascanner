@@ -8,6 +8,8 @@
 
 - Adjusted responsive size of navigation buttons in the admin module.
 
+- Present permissions on user and account pages in little boxes instead of comma-separated lists.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
