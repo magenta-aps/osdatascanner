@@ -272,12 +272,14 @@ class ReportView(LoginRequiredMixin, ListView):
         filtered = self.request.GET.get("source_type") == source_type
 
         # Check if there is anything on the page.
-        page_exists = bool(page_obj.object_list)
+        page_exists = page_obj.object_list.exists()
 
         # Check if all elements of the page stem from this source type
-        all_objects = all(dr.source_type == source_type for dr in page_obj.object_list)
+        all_from_source = not DocumentReport.objects.filter(
+                pk__in=page_obj.object_list.values_list("pk")
+            ).exclude(source_type=source_type).exists()
 
-        return filtered or (page_exists and all_objects)
+        return filtered or (page_exists and all_from_source)
 
 
 class UserReportView(ReportView):

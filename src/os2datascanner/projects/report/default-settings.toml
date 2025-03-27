@@ -147,6 +147,8 @@ SETTINGS_EXPORT = [
     'MSGRAPH_APP_ID',
     'MSGRAPH_CLIENT_SECRET',
     'MSGRAPH_ALLOW_WRITE',
+    'SMB_ALLOW_WRITE',
+    'EWS_ALLOW_WRITE'
 ]
 
 # [internationalization]
