@@ -93,7 +93,7 @@ class GmailSource(Source):
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GmailSource(obj["google_api_grant"], obj["user_email"], obj["scan_attachments"])
+        return GmailSource(obj["google_api_grant"], obj["user_email"], obj.get("scan_attachments"))
 
 
 class GmailResource(FileResource):
