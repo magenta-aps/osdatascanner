@@ -71,7 +71,7 @@ LOGGING = {
             'os2datascanner': {
                 'handlers': ['console'],
                 'level': globals()['LOG_LEVEL'],
-                'propagate': True,
+                'propagate': False,
             },
         }
     }
@@ -108,6 +108,9 @@ structlog.configure(
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.processors.StackInfoRenderer(),
+        # format_exc_info will print a more "classic" (non-colorized and non-"enhanced") exc. trace.
+        # Which means we'll print an exception twice, but sometimes one prefers one over the other
+        # for different reasons.
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,

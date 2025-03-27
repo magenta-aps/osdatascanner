@@ -6,6 +6,8 @@ import pathlib
 import structlog
 import sys
 
+from django.dispatch import receiver
+from django_structlog import signals
 from os2datascanner.projects.django_toml_configuration import process_toml_conf_for_django
 from structlog.processors import CallsiteParameter
 
@@ -92,6 +94,7 @@ structlog.stdlib.BoundLogger.trace = trace
 
 structlog.configure(
     processors=[
+        structlog.contextvars.merge_contextvars,
         structlog.stdlib.filter_by_level,
         # Includes module and function name in log messages.
         structlog.processors.CallsiteParameterAdder(
@@ -102,14 +105,26 @@ structlog.configure(
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.processors.StackInfoRenderer(),
+        # format_exc_info will print a more "classic" (non-colorized and non-"enhanced") exc. trace.
+        # Which means we'll print an exception twice, but sometimes one prefers one over the other
+        # for different reasons.
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
+
+
+@receiver(signals.bind_extra_request_metadata)
+def structlog_extra_binds(request, logger, **kwargs):
+    structlog.contextvars.bind_contextvars(user=request.user.username)
+    # I don't think we've ever needed request_id, so to reduce noise: be gone
+    structlog.contextvars.unbind_contextvars("request_id")
+
 
 # Logging
 
@@ -165,13 +180,6 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "console",
         },
-        "debug_log": {
-            "level": "DEBUG",
-            "class": "logging.handlers.WatchedFileHandler",
-            "filename": globals()['VAR_DIR'] + '/debug.log',
-            'filters': ['require_debug_true'],
-            "formatter": "key_value",
-        },
     },
     'root': {
         'handlers': ['console'],
@@ -180,19 +188,19 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
         },
         'django_structlog': {
-            'handlers': ['debug_log'],
+            'handlers': ['console'],
             'level': globals()['LOG_LEVEL'],
-            'propagate': True,
+            'propagate': False,
         },
         'os2datascanner': {
-            'handlers': ['debug_log'],
+            'handlers': ['console'],
             'level': globals()['LOG_LEVEL'],
-            'propagate': True,
+            'propagate': False,
         },
     }
 }
