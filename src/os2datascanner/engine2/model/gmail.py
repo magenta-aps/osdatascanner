@@ -151,11 +151,14 @@ class GmailHandle(Handle):
     def __init__(self, source, relpath, mail_subject):
         super().__init__(source, relpath)
         self._mail_subject = mail_subject
-        self.scan_attachments = source.scan_attachments
 
     @property
     def presentation_name(self):
         return f"\"{self._mail_subject}\""
+
+    @property
+    def scan_attachments(self):
+        return self.source.scan_attachments
 
     @property
     def presentation_place(self):
