@@ -71,6 +71,9 @@ def get_deviations(report: DocumentReport) -> list[str]:
                 case rule.Op.CONTAINS | rule.Op.ICONTAINS:
                     format_str = _(
                             "{field} contains {value!r}")
+                case rule.Op.IN | rule.Op.IIN:
+                    format_str = _(
+                            "{field} is one of {value!r}")
                 case e:
                     raise ValueError(e)
 

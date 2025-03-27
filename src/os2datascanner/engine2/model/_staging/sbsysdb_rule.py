@@ -1,8 +1,39 @@
 from enum import Enum
 import operator
+from functools import partial
+
+from sqlalchemy.sql.expression import func as sql_func
+from sqlalchemy.types import String
 
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 from os2datascanner.engine2.conversions.types import OutputType
+
+
+def maybe(*descriptors):
+    """Returns a function that attempts to apply one of the given descriptors
+    to its argument, returning the argument unchanged if that was not
+    possible."""
+
+    def _maybe(v):
+        for descriptor in descriptors:
+            try:
+                return descriptor(v)
+            except TypeError:
+                pass
+        return v
+
+    return _maybe
+
+
+_maybe_lower = maybe(str.lower)
+
+
+def _in(column, value, case_sensitive=False):
+    if isinstance(column.type, String) and not case_sensitive:
+        return sql_func.lower(column).in_(
+                [_maybe_lower(v) for v in value])
+    else:
+        return column.in_(value)
 
 
 class SBSYSDBRule(SimpleRule):
@@ -24,6 +55,18 @@ class SBSYSDBRule(SimpleRule):
                         needle.casefold() in haystack.casefold()),
                 lambda column, value: column.icontains(value))
 
+        IN = (
+                "in",
+                lambda needle, haystack: needle in haystack,
+                partial(_in, case_sensitive=True))
+
+        IIN = (
+                "iin",
+                lambda needle, haystack: any(
+                        _maybe_lower(needle) == _maybe_lower(h)
+                        for h in haystack),
+                partial(_in, case_sensitive=False))
+
         def __new__(cls, value, func_py, func_db=None):
             obj = object.__new__(cls)
             obj._value_ = value
@@ -44,7 +87,7 @@ class SBSYSDBRule(SimpleRule):
         super().__init__(*args, **kwargs)
         self._field = field
         self._op = op if isinstance(op, self.Op) else self.Op(op)
-        self._value = value
+        self._value = value if not isinstance(value, list) else tuple(value)
 
     @property
     def presentation_raw(self):
@@ -60,7 +103,10 @@ class SBSYSDBRule(SimpleRule):
         return super().to_json_object() | {
             "field": self._field,
             "operator": self._op.value,
-            "value": self._value
+            "value": (
+                    self._value
+                    if not isinstance(self._value, tuple)
+                    else list(self._value))
         }
 
     @Rule.json_handler(type_label)
