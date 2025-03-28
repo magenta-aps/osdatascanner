@@ -131,6 +131,10 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
     except TransactionManagementError:
         logger.exception("Transaction Management Error! \n"
                          "You'll likely need to purge before retrying!")
+    except Alias.DoesNotExist:
+        logger.exception("Alias lookup failed!\n"
+                         "Admin and report are out of sync!\n"
+                         "You'll likely need to purge before retrying!")
     except IntegrityError:
         logger.exception("Integrity Error! \n "
                          "Some objects probably already exist! \n"
