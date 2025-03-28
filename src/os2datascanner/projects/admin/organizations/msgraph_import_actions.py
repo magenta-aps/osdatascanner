@@ -12,6 +12,7 @@ logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
 SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
+UPN_ALIAS_IMPORTED_ID_SUFFIX = "/upn"
 
 
 @suppress_django_signals
@@ -117,7 +118,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             logger.info(f'Object not of type user or empty UPN for user: {member}')
             return None, None
 
-    def evaluate_aliases(account: Account, email: str, sid: str):  # noqa: CCR001
+    def evaluate_aliases(account: Account, email: str, sid: str, upn: str):  # noqa: CCR001
         def get_or_update_alias(imported_id_suffix, alias_type, value):
             imported_id = f"{account.imported_id}{imported_id_suffix}"
             alias = aliases.get(imported_id)
@@ -153,6 +154,15 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
         else:
             logger.info(f"No SID for account {account.username}")
 
+        if upn:
+            get_or_update_alias(
+                    UPN_ALIAS_IMPORTED_ID_SUFFIX,
+                    AliasType.USER_PRINCIPAL_NAME.value, upn)
+        else:
+            # The absence of the UPN is a bit more suspicious, as we use it as
+            # the username for Microsoft Graph accounts
+            logger.warning("no UPN given for account(?)", account=account)
+
     manager_relations = {}
     for group in data:
         unit = evaluate_org_unit(group)
@@ -164,7 +174,8 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             if acc:
                 evaluate_aliases(account=acc,
                                  email=member.get("email"),
-                                 sid=member.get("sid"))
+                                 sid=member.get("sid"),
+                                 upn=member.get("userPrincipalName"))
 
                 try:
                     Position.employees.get(account=acc, unit=unit, imported=True)
