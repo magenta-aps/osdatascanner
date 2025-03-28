@@ -83,6 +83,15 @@ class GoogleDriveResource(FileResource):
         yield "email-account", self.handle.source._user_email
         yield from super()._generate_metadata()
 
+    def compute_type(self):
+        ct = None
+        if 'vnd.google-apps' in self.metadata.get('mimeType'):
+            # Google-type files are exported as pdf
+            ct = 'application/pdf'
+        else:
+            ct = self.metadata.get('mimeType', 'application/octet-stream')
+        return ct
+
     @contextmanager
     def open_file(self):
         service = self._get_cookie()
