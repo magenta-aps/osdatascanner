@@ -38,7 +38,6 @@ class GoogleDriveScannerCreate(GrantMixin, ScannerCreate):
     fields = [
         'name',
         'schedule',
-        'user_emails',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -47,7 +46,8 @@ class GoogleDriveScannerCreate(GrantMixin, ScannerCreate):
         'rule',
         'organization',
         'contacts',
-        'google_api_grant'
+        'google_api_grant',
+        'org_unit'
     ]
 
     def get_success_url(self):
@@ -65,7 +65,6 @@ class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
     fields = [
         'name',
         'schedule',
-        'user_emails',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -74,7 +73,8 @@ class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
         'rule',
         'organization',
         'contacts',
-        'google_api_grant'
+        'google_api_grant',
+        'org_unit'
     ]
 
     def get_success_url(self):
@@ -111,7 +111,6 @@ class GoogleDriveScannerCopy(ScannerCopy):
     fields = [
         'name',
         'schedule',
-        'user_emails',
         'exclusion_rule',
         'do_ocr',
         'do_last_modified_check',
@@ -120,7 +119,8 @@ class GoogleDriveScannerCopy(ScannerCopy):
         'rule',
         'organization',
         'contacts',
-        'google_api_grant'
+        'google_api_grant',
+        'org_unit'
     ]
 
     def get_initial(self):
