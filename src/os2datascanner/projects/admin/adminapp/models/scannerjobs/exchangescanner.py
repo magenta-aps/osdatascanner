@@ -29,7 +29,6 @@ from os2datascanner.engine2.model.core import SourceManager
 
 from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 from ....organizations.models.account import Account
-from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
 from .scanner import Scanner
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
@@ -136,12 +135,9 @@ class ExchangeScanner(Scanner):
             for account in covered_accounts:
                 # Only try to scan mail addresses that belong to the domain
                 # associated with this scanner
-                for alias in account.aliases.filter(
-                        _alias_type=AliasType.EMAIL,
-                        _value__iendswith=self.mail_domain):
-                    user_mail_address: str = alias.value
-                    local_part = user_mail_address.split("@", maxsplit=1)[0]
-                    yield (account, _make_source(user=local_part))
+                user_mail_address: str = account.email
+                local_part = user_mail_address.split("@", maxsplit=1)[0]
+                yield (account, _make_source(user=local_part))
         elif self.userlist:
             user_list = get_users_from_file(self.userlist)
             for u in user_list:
