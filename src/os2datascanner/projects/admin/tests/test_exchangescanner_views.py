@@ -101,29 +101,27 @@ class TestExchangeScannerViews:
             nisserne,
             fritz,
             günther,
-            hansi,
-            fritz_email_alias):
+            hansi):
         """ The used scannerjob has a filepath stored but also an org_unit chosen.
         The system should choose to use the org_unit selected."""
 
         exchange_scanner_with_userlist.org_unit.add(nisserne)
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
-        # Goes through the generator (Only one in this case because Günther and
-        # Hansi have no email alias)
+        nisse_usernames = [acc.username for acc in (fritz, günther, hansi)]
+
+        # Goes through the generator
         # Checks the user on the EWSAccountSource
         for ews_source in exchange_scanner_source:
-            assert ews_source.user == fritz.username
+            assert ews_source.user in nisse_usernames
 
     def test_exchangescanner_generate_source_with_no_email_aliases_in_org_unit(
             self,
             exchange_scanner_with_userlist,
-            nisserne,
-            fritz,
-            günther,
-            hansi):
+            familien_sand,
+            oluf, gertrud):
 
-        exchange_scanner_with_userlist.org_unit.add(nisserne)
+        exchange_scanner_with_userlist.org_unit.add(familien_sand)
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for ews_source in exchange_scanner_source:
@@ -132,20 +130,19 @@ class TestExchangeScannerViews:
     def test_exchangescanner_generate_source_org_unit_user_length(
             self,
             exchange_scanner_with_userlist,
-            nisserne,
-            fritz_email_alias,
-            günther_email_alias,
-            hansi_email_alias):
+            nisserne, familien_sand,
+            fritz, günther, hansi, oluf, gertrud):
         """ Test that amount of sources yielded correspond to amount
-        of users with email aliases"""
+        of users with email values"""
 
         sources_yielded = 0  # Store a count
-        exchange_scanner_with_userlist.org_unit.add(nisserne)
+        exchange_scanner_with_userlist.org_unit.set((nisserne, familien_sand))
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for _ews_source in exchange_scanner_source:
             sources_yielded += 1
 
+        # Fritz, Hansi, and Günther have emails, Oluf and Gertrud do not.
         assert sources_yielded == 3
 
     def test_exchangescanner_generate_source_with_uploaded_userlist(
