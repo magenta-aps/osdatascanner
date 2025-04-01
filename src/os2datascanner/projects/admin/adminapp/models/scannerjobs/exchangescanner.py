@@ -136,8 +136,9 @@ class ExchangeScanner(Scanner):
                 # Only try to scan mail addresses that belong to the domain
                 # associated with this scanner
                 user_mail_address: str = account.email
-                local_part = user_mail_address.split("@", maxsplit=1)[0]
-                yield (account, _make_source(user=local_part))
+                if user_mail_address:
+                    local_part = user_mail_address.split("@", maxsplit=1)[0]
+                    yield (account, _make_source(user=local_part))
         elif self.userlist:
             user_list = get_users_from_file(self.userlist)
             for u in user_list:

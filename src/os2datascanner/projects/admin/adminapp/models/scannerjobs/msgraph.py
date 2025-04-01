@@ -114,8 +114,9 @@ class MSGraphMailScanner(MSGraphScanner):
                 scan_attachments=self.scan_attachments)
         for account in self.compute_covered_accounts():
             user_mail_address: str = account.email
-            yield (account, MSGraphMailAccountSource(
-                MSGraphMailAccountHandle(base_source, user_mail_address)))
+            if user_mail_address:
+                yield (account, MSGraphMailAccountSource(
+                    MSGraphMailAccountHandle(base_source, user_mail_address)))
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
@@ -156,15 +157,16 @@ class MSGraphFileScanner(MSGraphScanner):
         if self.scan_user_drives:
             for account in self.compute_covered_accounts():
                 user_mail_address: str = account.email
-                yield (account, MSGraphDriveSource(
-                    MSGraphDriveHandle(
-                        base_source,
-                        None,  # don't need a drive ID when we specify user_account
-                        None,  # ... or a folder name :D
-                        None,  # or a human name 🤨
-                        user_account=user_mail_address
-                    )
-                ))
+                if user_mail_address:
+                    yield (account, MSGraphDriveSource(
+                        MSGraphDriveHandle(
+                            base_source,
+                            None,  # don't need a drive ID when we specify user_account
+                            None,  # ... or a folder name :D
+                            None,  # or a human name 🤨
+                            user_account=user_mail_address
+                        )
+                    ))
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")
@@ -191,8 +193,9 @@ class MSGraphCalendarScanner(MSGraphScanner):
         for account in self.compute_covered_accounts():
 
             user_mail_address: str = account.email
-            yield (account, MSGraphCalendarAccountSource(
-                MSGraphCalendarAccountHandle(base_source, user_mail_address)))
+            if user_mail_address:
+                yield (account, MSGraphCalendarAccountSource(
+                    MSGraphCalendarAccountHandle(base_source, user_mail_address)))
 
     object_name = pgettext_lazy("unit of scan", "appointment")
     object_name_plural = pgettext_lazy("unit of scan", "appointments")

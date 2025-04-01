@@ -1,4 +1,5 @@
 import pytest
+import json
 
 from uuid import UUID
 
@@ -7,7 +8,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
-from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.engine2.model.file import (
     FilesystemHandle, FilesystemSource)
 from os2datascanner.engine2.model.http import (
@@ -29,10 +29,11 @@ from os2datascanner.projects.admin.adminapp.models.usererrorlog import UserError
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner import (
     ExchangeScanner)
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.gmail import GmailScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.msgraph import (
-    MSGraphMailScanner)
+    MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner)
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
-from os2datascanner.projects.grants.models import EWSGrant
+from os2datascanner.projects.grants.models import EWSGrant, GoogleApiGrant, GraphGrant
 
 
 # SETTINGS OVERRIDE
@@ -155,6 +156,25 @@ def exchange_grant(test_org):
 
 
 @pytest.fixture
+def google_api_grant(test_org):
+    grant = GoogleApiGrant.objects.create(
+        organization=test_org,
+    )
+    grant.service_account = json.dumps({
+            "type": None,
+            "project_id": "abcd1234",
+            "private_key_id": "superSecretCamelKeyId",
+            "private_key": "superSecretCamelKey",
+            "client_email": "admin@notarealaccount.store",
+            "client_id": "xyz987",
+            "auth_uri": "path.to.somewhere",
+            "token_uri": "this.is.a.token"
+        })
+    grant.save()
+    return grant
+
+
+@pytest.fixture
 def dummy_userlist():
     return SimpleUploadedFile("dummy.txt", b"aleph\nalex\nfred")
 
@@ -185,13 +205,27 @@ def exchange_scanner_with_userlist(test_org, dummy_userlist, exchange_grant, bas
 
 
 @pytest.fixture
+def gmail_scanner(test_org, google_api_grant, basic_rule):
+    return GmailScanner.objects.create(
+        name=f"SomeGmailScanner-{test_org.name}",
+        organization=test_org,
+        validation_status=GmailScanner.VALID,
+        google_api_grant=google_api_grant,
+        rule=basic_rule
+    )
+
+
+@pytest.fixture
 def msgraph_grant(test_org):
-    return GraphGrant.objects.create(
+    grant = GraphGrant.objects.create(
         organization=test_org,
         app_id="12345678-1234-1234-1234-123456789012",
         tenant_id="12345678-1234-1234-1234-123456789012",
-        _client_secret="A very secret secret",
+        _client_secret="placeholder"
     )
+    grant.client_secret = "A very secret secret"
+    grant.save()
+    return grant
 
 
 @pytest.fixture
@@ -200,6 +234,30 @@ def msgraph_mailscanner(test_org, msgraph_grant, basic_rule):
         name=f"SomeMSGraphMailScanner-{test_org.name}",
         organization=test_org,
         validation_status=MSGraphMailScanner.VALID,
+        graph_grant=msgraph_grant,
+        rule=basic_rule
+    )
+
+
+@pytest.fixture
+def msgraph_filescanner(test_org, msgraph_grant, basic_rule):
+    return MSGraphFileScanner.objects.create(
+        name=f"SomeMSGraphFileScanner-{test_org.name}",
+        organization=test_org,
+        validation_status=MSGraphFileScanner.VALID,
+        graph_grant=msgraph_grant,
+        rule=basic_rule,
+        scan_user_drives=True,
+        scan_site_drives=False,
+    )
+
+
+@pytest.fixture
+def msgraph_calendarscanner(test_org, msgraph_grant, basic_rule):
+    return MSGraphCalendarScanner.objects.create(
+        name=f"SomeMSGraphCalendarScanner-{test_org.name}",
+        organization=test_org,
+        validation_status=MSGraphCalendarScanner.VALID,
         graph_grant=msgraph_grant,
         rule=basic_rule
     )
@@ -558,6 +616,7 @@ def günther(test_org, nisserne):
     günther = Account.objects.create(
         username="günther",
         first_name="Günther",
+        email="günther@nisserne.gl",
         organization=test_org)
     günther.units.add(nisserne)
     return günther
@@ -574,7 +633,11 @@ def günther_email_alias(günther):
 
 @pytest.fixture
 def hansi(test_org, nisserne):
-    hansi = Account.objects.create(username="hansi", first_name="Hansi", organization=test_org)
+    hansi = Account.objects.create(
+        username="hansi",
+        first_name="Hansi",
+        email="hansi@nisserne.gl",
+        organization=test_org)
     hansi.units.add(nisserne)
     return hansi
 

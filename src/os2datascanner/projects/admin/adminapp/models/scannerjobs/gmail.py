@@ -48,10 +48,11 @@ class GmailScanner(Scanner):
     def generate_sources_with_accounts(self):
         google_api_grant = json.loads(self.google_api_grant.service_account)
         for account in self.compute_covered_accounts():
-            yield (account, GmailSource(
-                    google_api_grant=google_api_grant,
-                    user_email_gmail=account.email
-            ))
+            if account.email:
+                yield (account, GmailSource(
+                        google_api_grant=google_api_grant,
+                        user_email_gmail=account.email
+                ))
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
