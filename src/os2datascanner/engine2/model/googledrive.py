@@ -55,7 +55,7 @@ class GoogleDriveSource(Source):
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            service_account=self.google_api_grant,
+            google_api_grant=self.google_api_grant,
             user_email=self._user_email,
         )
 
@@ -79,12 +79,27 @@ class GoogleDriveResource(FileResource):
                 return False
             raise
 
+    def _generate_metadata(self):
+        # This will only be the right email for personal drives and not shared drives.
+        # Todo: Implement logic to handle shared drives
+        yield "email-account", self.handle.source._user_email
+        yield from super()._generate_metadata()
+
+    def compute_type(self):
+        ct = None
+        if 'vnd.google-apps' in self.metadata.get('mimeType'):
+            # Google-type files are exported as pdf
+            ct = 'application/pdf'
+        else:
+            ct = self.metadata.get('mimeType', 'application/octet-stream')
+        return ct
+
     @contextmanager
     def open_file(self):
         service = self._get_cookie()
-        metadata = service.files().get(fileId=self.handle.relative_path).execute()
         # Export and download Google-type files to pdf
-        if 'vnd.google-apps' in metadata.get('mimeType'):
+        # Exported file can't exceed 10MB
+        if 'vnd.google-apps' in self.metadata.get('mimeType'):
             request = service.files().export_media(
                 fileId=self.handle.relative_path,
                 fields='files(id, name)',
@@ -115,7 +130,7 @@ class GoogleDriveResource(FileResource):
         if not self._metadata:
             self._metadata = self._get_cookie().files().get(
                     fileId=self.handle.relative_path,
-                    fields='name, size, quotaBytesUsed').execute()
+                    fields='name, size, quotaBytesUsed, mimeType').execute()
 
         return self._metadata
 
