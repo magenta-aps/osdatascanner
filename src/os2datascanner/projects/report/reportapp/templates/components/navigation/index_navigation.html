@@ -5,6 +5,13 @@
   <a id="report"
      class="tabs__control{% if request.path == '/' or '/reports' in request.path %} active{% endif %}"
      href="{% if '/archive' in request.path %}{% url "reports-archive" %}{% else %}{% url "reports" %}{% endif %}">{% trans "Personal" %}</a>
+ 
+  {% if settings.SBSYS_TAB %}
+    <a id="sbsys"
+       class="tabs__control{% if '/sbsys' in request.path %} active{% endif %}"
+       href="{% if '/archive' in request.path %}{% url "sbsys-archive" %}{% else %}{% url "sbsys" %}{% endif %}">{% trans "Personal - SBSYS" %}</a>
+  {% endif %}
+
   {% if user.account.is_remediator or user.is_superuser %}
     <a id="remediator"
        class="tabs__control{% if '/remediator' in request.path %} active{% endif %}"

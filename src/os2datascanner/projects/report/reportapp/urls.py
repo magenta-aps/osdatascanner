@@ -15,7 +15,9 @@ from .views.statistics_views import (
     LeaderStatisticsPageView, LeaderStatisticsCSVView, DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, EmployeeView)
 from .views.report_views import (
-    UserReportView, UserArchiveView, RemediatorView, RemediatorArchiveView,
+    UserReportView, UserArchiveView,
+    SBSYSView, SBSYSArchiveView,
+    RemediatorView, RemediatorArchiveView,
     UndistributedView, UndistributedArchiveView)
 from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
@@ -25,9 +27,11 @@ from .views.support_views import SupportButtonView
 urlpatterns = [
     re_path(r'^$',      UserReportView.as_view(),     name="index"),
     re_path(r'^reports$', UserReportView.as_view(), name="reports"),
+    re_path(r'^sbsys$', SBSYSView.as_view(), name="sbsys"),
     re_path(r'^remediator$', RemediatorView.as_view(), name="remediator"),
     re_path(r'^undistributed$', UndistributedView.as_view(), name="undistributed"),
     re_path(r'^archive/reports', UserArchiveView.as_view(), name="reports-archive"),
+    re_path(r'^archive/sbsys', SBSYSArchiveView.as_view(), name="sbsys-archive"),
     re_path(r'^archive/remediator', RemediatorArchiveView.as_view(), name="remediator-archive"),
     re_path(r'^archive/undistributed', UndistributedArchiveView.as_view(),
             name="undistributed-archive"),

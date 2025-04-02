@@ -10,6 +10,7 @@ from django.template.response import TemplateResponse
 
 from .models.documentreport import DocumentReport
 
+from os2datascanner.engine2.pipeline import messages  # noqa
 from os2datascanner.projects.report.organizations.models import Organization, Account
 from os2datascanner.projects.report.reportapp.management.commands import (
         result_collector as r_c)

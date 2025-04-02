@@ -310,6 +310,14 @@ class UserReportView(ReportView):
         return context
 
 
+class SBSYSView(ReportView):
+    """Presents the user with their personal unhandled SBSYS results."""
+
+    type = "sbsys"
+    template_name = "sbsys_content.html"
+    report_type = Account.ReportType.PERSONAL_AND_SHARED
+
+
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
 
@@ -396,6 +404,10 @@ class ArchiveMixin:
 
 class UserArchiveView(ArchiveMixin, UserReportView):
     """Presents the user with their personal handled results."""
+
+
+class SBSYSArchiveView(ArchiveMixin, SBSYSView):
+    """Presents the user with their personal handled SBSYS results."""
 
 
 class RemediatorArchiveView(ArchiveMixin, RemediatorView):

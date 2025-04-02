@@ -1804,9 +1804,11 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     &--flexible {
       width: 100%;
 
-      &.column--numeral {
-        width: max(10vw, 140px);
-        // Min-width is 140px unless 10vw > 140px
+      &.column {
+        &--numeral {
+          width: max(10vw, 140px);
+          // Min-width is 140px unless 10vw > 140px
+        }
       }
     }
 
@@ -1891,8 +1893,35 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
     }
 
+    &--deviations {
+      .td__flex-container {
+        flex-wrap: wrap;
+      }
+
+      .status {
+        @include pill-variant(
+          var(--color-primary-lighter),
+          var(--color-text-white)
+        );
+      }
+    }
+
+    &--kle {
+      $num_chars_kle: 17ch; // Unsure if this is a reliable solution, but it's a guestimate on the average amount of chars in a KLE-number.
+      width: calc(var(--datatable-cell-padding) + #{$num_chars_kle});
+
+      @media (min-width: $break-lg) {
+        width: calc((var(--datatable-cell-padding) * 1.5) + #{$num_chars_kle});
+      }
+    }
+
     &--actions {
-      width: 12.25rem; // 196px
+      &.expand-row {
+        /* Wider width if there's a caret to expand more content for the row. */
+        width: 12.25rem; // 196px
+      }
+
+      width: 10rem; // 160px
 
       .button-group {
         flex-wrap: nowrap;
