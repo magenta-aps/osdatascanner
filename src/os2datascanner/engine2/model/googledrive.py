@@ -80,6 +80,8 @@ class GoogleDriveResource(FileResource):
             raise
 
     def _generate_metadata(self):
+        # This will only be the right email for personal drives and not shared drives.
+        # Todo: Implement logic to handle shared drives
         yield "email-account", self.handle.source._user_email
         yield from super()._generate_metadata()
 
@@ -96,6 +98,7 @@ class GoogleDriveResource(FileResource):
     def open_file(self):
         service = self._get_cookie()
         # Export and download Google-type files to pdf
+        # Exported file can't exceed 10MB
         if 'vnd.google-apps' in self.metadata.get('mimeType'):
             request = service.files().export_media(
                 fileId=self.handle.relative_path,
