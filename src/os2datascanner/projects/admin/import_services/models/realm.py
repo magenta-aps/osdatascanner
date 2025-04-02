@@ -9,15 +9,14 @@
 # License.
 from enum import Enum
 
-import requests
-import json
 import structlog
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from os2datascanner.utils.token_caller import TokenCaller
 from .exported_mixin import Exported
-from ..keycloak_services import refresh_token, request_access_token
+from ..keycloak_services import request_access_token
 
 logger = structlog.get_logger("import_services")
 
@@ -48,86 +47,86 @@ class Realm(Exported, models.Model):
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self.realm_id}>"
 
-    def setup_federated_sso_flow(self, token=None):
+    def make_caller(self):
+        """Returns a TokenCaller object configured to make Keycloak API
+        requests for this realm."""
+        return TokenCaller(
+                request_access_token,
+                f"{settings.KEYCLOAK_BASE_URL}"
+                f"/auth/admin/realms/{self.realm_id}")
+
+    def setup_federated_sso_flow(self):
         # 1. Create an authentication flow
         auth_flow, auth_flow_created = AuthenticationFlow.objects.get_or_create(
             realm=self,
             flow_name="LDAP-FEDERATED-LOGIN-FLOW")
 
         if auth_flow_created:
-            auth_flow.create_LDAP_auth_flow(token=token)
+            auth_flow.create_LDAP_auth_flow()
 
         # 2. Create needed flow executions
             for execution in self.FEDERATED_LOGIN_FLOW_EXECUTIONS:
                 self.create_flow_execution(
                     auth_flow, execution,
-                    FlowExecution.Requirement.REQUIRED, token=token)
+                    FlowExecution.Requirement.REQUIRED)
 
         # Return the thing you just made, woah.
         return auth_flow
 
-    def setup_non_federated_sso_flow(self, token=None):
+    def setup_non_federated_sso_flow(self):
         # 1. Create an authentication flow
         auth_flow, auth_flow_created = AuthenticationFlow.objects.get_or_create(
             realm=self,
             flow_name="NON-FEDERATED-LOGIN-FLOW")
 
         if auth_flow_created:
-            auth_flow.create_LDAP_auth_flow(token=token)
+            auth_flow.create_LDAP_auth_flow()
 
         # 2. Create needed flow executions
             for execution in self.NON_FEDERATED_LOGIN_FLOW_EXECUTIONS:
                 self.create_flow_execution(
                     auth_flow, execution,
-                    FlowExecution.Requirement.ALTERNATIVE, token=token
+                    FlowExecution.Requirement.ALTERNATIVE
                 )
 
         # Return the thing you just made, woah.
         return auth_flow
 
-    def create_flow_execution(self, auth_flow, execution, requirement, token=None):
+    def create_flow_execution(self, auth_flow, execution, requirement):
         flow_exec, created = FlowExecution.objects.get_or_create(
             realm=self, flow=auth_flow, provider=execution
         )
 
         if created:
             # Create the execution
-            flow_exec.create_authentication_flow_execution(token=token)
+            flow_exec.create_authentication_flow_execution()
             # Get its ID, because we're going to need it ...
             flow_exec_id = flow_exec.get_authentication_flow_execution_id()
             flow_exec.exec_flow_id = flow_exec_id
             flow_exec.save()
             # ... because you have to set requirement in a separate call ... why...
             flow_exec.set_authentication_flow_execution_requirement(
-                requirement=requirement, token=token
+                requirement=requirement
             )
 
         else:
             # Todo: probably look to check it's there to make it idempotent.
             logger.warning("Didn't create any new flow execution")
 
-    @refresh_token
-    def set_default_idp(self, idp, token=None):
+    def set_default_idp(self, idp):
         # We don't want the Keycloak login screen when using SSO, it doesn't make sense for our
         # single-tenant on-prem customers. This can be circumvented by altering the "browser"
         # authentication flow, setting a default identity provider.
         # (which we should have created by the time we run this function)
 
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
+        caller = self.make_caller()
 
         # We need the ID of this particular execution first.
         flow_name = "browser"  # A Keycloak Built-in flow.
         idp_redirector = "identity-provider-redirector"
         idp_redirector_exec_id = None
 
-        url_get_id = (settings.KEYCLOAK_BASE_URL +
-                      f"/auth/admin/realms/{self}"
-                      f"/authentication/flows/{flow_name}/executions")
-
-        response = requests.get(url_get_id, headers=headers)
+        response = caller.get(f"/authentication/flows/{flow_name}/executions")
 
         # TODO: probably need some error handling / in case it isn't found.
         for execution in response.json():
@@ -136,19 +135,18 @@ class Realm(Exported, models.Model):
                 idp_redirector_exec_id = execution["id"]
 
         if idp_redirector_exec_id:
-            url = (settings.KEYCLOAK_BASE_URL +
-                   f"/auth/admin/realms/{self}/authentication"
-                   f"/executions/{idp_redirector_exec_id}/config")
-
-            body = {
-                "alias": "sso",  # This is just an alias for the execution itself.
-                "config":
-                    {
-                        "defaultProvider": idp.alias  # This bit is what matters.
-                    }
-            }
-
-            return requests.post(url, headers=headers, data=json.dumps(body))
+            return caller.post(
+                    f"/authentication/executions/"
+                    f"{idp_redirector_exec_id}/config",
+                    json={
+                        # This is just an alias for the execution itself.
+                        "alias": "sso",
+                        "config":
+                            {
+                                # This bit is what matters.
+                                "defaultProvider": idp.alias
+                            }
+                    })
 
         else:
             logger.warning("Something went wrong trying to set default IdP..")
@@ -170,27 +168,20 @@ class KeycloakClient(models.Model):
 
     redirect_uri = models.CharField(max_length=255, default="*")
 
-    @refresh_token
-    def create_keycloak_client(self, token=None):
+    def create_keycloak_client(self):
         # Root url = Hostname
         # Valid redirect /* (anything appended to hostname)
         # Rest are default settings
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-        url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms/{self.realm}/clients")
-
-        body = {
-            "protocol": self.protocol,
-            "clientId": self.client_id,
-            # TODO: Be careful here.. If rootUrl has a trailing /, you can't have one
-            # in your redirect
-            "rootUrl": self.root_url,
-            "redirectUris": [self.redirect_uri],
-        }
-
-        return requests.post(url, headers=headers, data=json.dumps(body))
+        return self.realm.make_caller().post(
+                "/clients",
+                json={
+                    "protocol": self.protocol,
+                    "clientId": self.client_id,
+                    # TODO: Be careful here.. If rootUrl has a trailing /,
+                    # you can't have one in your redirect
+                    "rootUrl": self.root_url,
+                    "redirectUris": [self.redirect_uri],
+                })
 
 
 class IdentityProvider(models.Model):
@@ -346,46 +337,23 @@ class IdentityProvider(models.Model):
         }
         return body
 
-    @refresh_token
-    def create_identity_provider(self, auth_flow, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-        url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms/{self.realm}"
-               f"/identity-provider/instances")
+    def create_identity_provider(self, auth_flow):
+        return self.realm.make_caller().post(
+                "/identity-provider/instances",
+                json=self.request_body(auth_flow))
 
-        body = self.request_body(auth_flow)
+    def update_identity_provider(self, auth_flow):
+        return self.realm.make_caller().put(
+                f"/identity-provider/instances/{self.alias}",
+                json=self.request_body(auth_flow))
 
-        return requests.post(url, headers=headers, data=json.dumps(body))
-
-    @refresh_token
-    def update_identity_provider(self, auth_flow, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-        url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms/{self.realm}"
-               f"/identity-provider/instances/{self.alias}")
-
-        body = self.request_body(auth_flow)
-
-        return requests.put(url, headers=headers, data=json.dumps(body))
-
-    @refresh_token
-    def read_metadata_url(self, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-        url = (settings.KEYCLOAK_BASE_URL + f"/auth/admin/realms"
-               f"/{self.realm}/identity-provider/import-config")
-
-        body = {
-            "providerId": self.provider_id,
-            "fromUrl": self.metadata_url}
-
-        return requests.post(url, headers=headers, data=json.dumps(body))
+    def read_metadata_url(self):
+        return self.realm.make_caller().post(
+                "/identity-provider/import-config",
+                json={
+                    "providerId": self.provider_id,
+                    "fromUrl": self.metadata_url
+                })
 
 
 class IdPMappers(models.Model):
@@ -398,24 +366,13 @@ class IdPMappers(models.Model):
     saml_attr = models.CharField(max_length=255,)
     keycloak_attr = models.CharField(max_length=255)
 
-    @refresh_token
-    def get_idp_mappers(self, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
+    def get_idp_mappers(self):
+        return self.idp.realm.make_caller().get(
+                "/identity-provider/instances/SAML-SSO/mappers")
 
-        url = (settings.KEYCLOAK_BASE_URL +
-               f"/auth/admin/realms/{self.idp.realm}/identity-provider/instances/SAML-SSO/mappers")
+    def update_or_create_idp_mapper(self):
+        caller = self.idp.realm.make_caller()
 
-        return requests.get(url, headers=headers)
-
-    @refresh_token
-    def update_or_create_idp_mapper(self, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
         body = {
             "name": self.keycloak_attr,
             "config": {
@@ -431,11 +388,8 @@ class IdPMappers(models.Model):
             "identityProviderAlias": self.idp.alias
         }
 
-        url = (settings.KEYCLOAK_BASE_URL +
-               f"/auth/admin/realms/{self.idp.realm}"
-               f"/identity-provider/instances/{self.idp.alias}/mappers")
-
-        existing_idp_mappers = self.get_idp_mappers(token=token).json()
+        url = f"/identity-provider/instances/{self.idp.alias}/mappers"
+        existing_idp_mappers = self.get_idp_mappers().json()
 
         name_to_id = {d["name"]: d["id"] for d in existing_idp_mappers}
         mapper_id = name_to_id.get(self.keycloak_attr)
@@ -446,31 +400,23 @@ class IdPMappers(models.Model):
             # Adding id to request body
             body["id"] = mapper_id
 
-            return requests.put(url + f"/{mapper_id}", headers=headers, data=json.dumps(body))
+            return caller.put(url + f"/{mapper_id}", json=body)
 
         else:
             logger.info("No existing IdP mapper, creating one.", keycloak_attr=self.keycloak_attr)
-            return requests.post(url, headers=headers, data=json.dumps(body))
+            return caller.post(url, json=body)
 
-    @refresh_token
-    def delete_idp_mapper(self, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-
-        existing_idp_mappers = self.get_idp_mappers(token=token).json()
+    def delete_idp_mapper(self):
+        existing_idp_mappers = self.get_idp_mappers().json()
 
         name_to_id = {d["name"]: d["id"] for d in existing_idp_mappers}
         mapper_id = name_to_id.get(self.keycloak_attr)
 
-        url = (settings.KEYCLOAK_BASE_URL +
-               f"/auth/admin/realms/{self.idp.realm}"
-               f"/identity-provider/instances/{self.idp.alias}/mappers/{mapper_id}")
-
         if mapper_id:
             logger.info("Deleting IdP mapper.", keycloak_attr=self.keycloak_attr)
-            return requests.delete(url, headers=headers)
+            return self.idp.realm.make_caller().delete(
+                    f"/identity-provider/instances/{self.idp.alias}/mappers"
+                    f"/{mapper_id}")
 
         else:
             logger.info("There was mo existing IdP mapper in Keycloak.",
@@ -485,24 +431,16 @@ class AuthenticationFlow(models.Model):
 
     flow_name = models.CharField(max_length=255, unique=True)
 
-    @refresh_token
-    def create_LDAP_auth_flow(self, token=None):
-        url = (settings.KEYCLOAK_BASE_URL +
-               f'/auth/admin/realms/{self.realm}/authentication/flows')
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-
-        body = {
-            "alias": self.flow_name,
-            "description": "",
-            "providerId": "basic-flow",
-            "builtIn": False,
-            "topLevel": True
-        }
-
-        return requests.post(url, headers=headers, data=json.dumps(body))
+    def create_LDAP_auth_flow(self):
+        return self.realm.make_caller().post(
+                "/authentication/flows",
+                json={
+                    "alias": self.flow_name,
+                    "description": "",
+                    "providerId": "basic-flow",
+                    "builtIn": False,
+                    "topLevel": True
+                })
 
 
 class FlowExecution(models.Model):
@@ -531,33 +469,17 @@ class FlowExecution(models.Model):
         ALTERNATIVE = "ALTERNATIVE"
         DISABLED = "DISABLED"
 
-    @refresh_token
-    def create_authentication_flow_execution(self, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-
-        url = (settings.KEYCLOAK_BASE_URL +
-               f"/auth/admin/realms/{self.flow.realm}"
-               f"/authentication/flows/{self.flow.flow_name}/executions/execution")
-
-        body = {"provider": self.provider}
-
-        return requests.post(url, headers=headers, data=json.dumps(body))
+    def create_authentication_flow_execution(self):
+        return self.flow.realm.make_caller().post(
+                f"/authentication/flows/{self.flow.flow_name}"
+                "/executions/execution",
+                json={
+                    "provider": self.provider
+                })
 
     def get_authentication_flow_execution_id(self) -> str:
-        # Not returning a request response here, so can't use refresh_token.
-        token = request_access_token()
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-        url = (settings.KEYCLOAK_BASE_URL +
-               f"/auth/admin/realms/{self.flow.realm}"
-               f"/authentication/flows/{self.flow.flow_name}/executions")
-
-        response = requests.get(url, headers=headers)
+        response = self.flow.realm.make_caller().get(
+                f"/authentication/flows/{self.flow.flow_name}/executions")
 
         # TODO: probably need some error handling / in case it isn't found.
         for execution in response.json():
@@ -565,23 +487,15 @@ class FlowExecution(models.Model):
             if execution.get("providerId", "") == self.provider:
                 return execution["id"]
 
-    @refresh_token
-    def set_authentication_flow_execution_requirement(self, requirement: Requirement, token=None):
-
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-
-        url = (settings.KEYCLOAK_BASE_URL +
-               f"/auth/admin/realms/{self.flow.realm}"
-               f"/authentication/flows/{self.flow.flow_name}/executions")
-
-        body = {
-            "id": self.exec_flow_id,
-            "providerId": self.provider,
-            "requirement": requirement.value,
-            "requirementChoices": ["REQUIRED", "ALTERNATIVE", "DISABLED"]
-        }
-
-        return requests.put(url, headers=headers, data=json.dumps(body))
+    def set_authentication_flow_execution_requirement(
+            self, requirement: Requirement):
+        return self.flow.realm.make_caller().put(
+                f"/authentication/flows/{self.flow.flow_name}/executions",
+                json={
+                    "id": self.exec_flow_id,
+                    "providerId": self.provider,
+                    "requirement": requirement.value,
+                    "requirementChoices": [
+                        "REQUIRED", "ALTERNATIVE", "DISABLED"
+                    ]
+                })

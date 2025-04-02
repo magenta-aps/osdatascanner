@@ -78,14 +78,13 @@ def perform_import(  # noqa: CCR001, too high cognitive complexity
     if import_service.ldapconfig.import_into == "group":
         name_selector = keycloak_group_dn_selector
 
-    token = keycloak_services.request_access_token()
     # Timeout set to 30 minutes
     sync_message = keycloak_services.sync_users(
-            realm.realm_id, realm.organization.pk, token=token, timeout=1800)
+            realm, realm.organization.pk, timeout=1800)
     sync_message.raise_for_status()
 
     # If the client doesn't have a group_filter_mapper they haven't updated their ldap config
-    mappers = import_service.ldapconfig.get_mappers(token=token).json()
+    mappers = import_service.ldapconfig.get_mappers().json()
     has_group_filter = any(mapper['name'] == "group_filter_mapper" for mapper in mappers)
     if import_service.ldapconfig.import_into == "group" and not has_group_filter:
         logger.debug("LDAP configuration not updated. Importing without group filter.")
@@ -97,7 +96,7 @@ def perform_import(  # noqa: CCR001, too high cognitive complexity
         # Gets all groups in the realm, and then gets every member of the groups
 
         # List object of all groups in realm
-        group_list = list(keycloak_services.iter_groups(realm.realm_id, token=token, timeout=1800))
+        group_list = list(keycloak_services.iter_groups(realm, timeout=1800))
 
         # If the import_managers attribute is enabled, get the group managers
         if import_service.ldapconfig.import_managers:
@@ -112,8 +111,8 @@ def perform_import(  # noqa: CCR001, too high cognitive complexity
         def user_iter(groups):
             for group in groups:
                 members = keycloak_services.iter_group_members(
-                    realm.realm_id, group['id'], group["attributes"]["distinguishedName"][0],
-                    token=token, timeout=1800, page_size=1000
+                    realm, group['id'], group["attributes"]["distinguishedName"][0],
+                    timeout=1800, page_size=1000
                 )
                 yield from members
 
@@ -122,7 +121,7 @@ def perform_import(  # noqa: CCR001, too high cognitive complexity
     else:
         # Gets all users in the given realm
         all_users = keycloak_services.iter_users(
-                        realm.realm_id, token=token, timeout=1800, page_size=1000)
+                        realm, timeout=1800, page_size=1000)
 
     return perform_import_raw(
         org,
