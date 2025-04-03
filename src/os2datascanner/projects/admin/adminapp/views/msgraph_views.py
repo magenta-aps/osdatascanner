@@ -73,6 +73,7 @@ class _MSGraphMailScannerCreate(GrantMixin, ScannerCreate):
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
+        'scan_entire_org',
         'exclusion_rule',
         'do_last_modified_check',
         'keep_false_positives',
@@ -108,6 +109,7 @@ class MSGraphMailScannerUpdate(GrantMixin, ScannerUpdate):
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
+        'scan_entire_org',
         'exclusion_rule',
         'do_last_modified_check',
         'keep_false_positives',
@@ -154,6 +156,7 @@ class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
         'only_notify_superadmin',
         'do_ocr',
         'org_unit',
+        'scan_entire_org',
         'exclusion_rule',
         'do_last_modified_check',
         'keep_false_positives',
@@ -215,7 +218,7 @@ class _MSGraphFileScannerCreate(GrantMixin, ScannerCreate):
     model = MSGraphFileScanner
     type = 'msgraph-file'
     fields = ['name', 'schedule', 'graph_grant',
-              'org_unit', 'exclusion_rule', 'only_notify_superadmin',
+              'org_unit', 'scan_entire_org', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
@@ -236,7 +239,7 @@ class MSGraphFileScannerUpdate(GrantMixin, ScannerUpdate):
     for modification."""
     model = MSGraphFileScanner
     type = 'msgraph-filescanners'
-    fields = ['name', 'schedule', 'graph_grant', 'org_unit',
+    fields = ['name', 'schedule', 'graph_grant', 'org_unit', 'scan_entire_org',
               'scan_site_drives', 'scan_user_drives',
               'do_ocr', 'only_notify_superadmin', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
@@ -270,7 +273,7 @@ class MSGraphFileScannerCopy(GrantMixin, ScannerCopy):
     model = MSGraphFileScanner
     type = 'msgraph-file'
     fields = ['name', 'schedule', 'graph_grant',
-              'org_unit', 'exclusion_rule', 'only_notify_superadmin',
+              'org_unit', 'scan_entire_org', 'exclusion_rule', 'only_notify_superadmin',
               'scan_site_drives', 'scan_user_drives', 'do_ocr',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
@@ -324,7 +327,7 @@ class _MSGraphCalendarScannerCreate(GrantMixin, ScannerCreate):
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
     fields = ['name', 'schedule', 'graph_grant', 'only_notify_superadmin',
-              'do_ocr', 'org_unit', 'exclusion_rule',
+              'do_ocr', 'org_unit', 'scan_entire_org', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
 
@@ -345,7 +348,7 @@ class MSGraphCalendarScannerUpdate(GrantMixin, ScannerUpdate):
     model = MSGraphCalendarScanner
     type = 'msgraph-calendarscanners'
     fields = ['name', 'schedule', 'graph_grant', 'only_notify_superadmin',
-              'do_ocr', 'org_unit', 'exclusion_rule',
+              'do_ocr', 'org_unit', 'scan_entire_org', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
 
@@ -378,7 +381,7 @@ class MSGraphCalendarScannerCopy(GrantMixin, ScannerCopy):
     model = MSGraphCalendarScanner
     type = 'msgraph-calendar'
     fields = ['name', 'schedule', 'graph_grant', 'only_notify_superadmin',
-              'do_ocr', 'org_unit', 'exclusion_rule',
+              'do_ocr', 'org_unit', 'scan_entire_org', 'exclusion_rule',
               'do_last_modified_check', 'rule', 'organization', 'keep_false_positives',
               'contacts']
 
