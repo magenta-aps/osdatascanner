@@ -603,7 +603,7 @@ class Scanner(models.Model):
         from os2datascanner.projects.admin.organizations.models import Position, Account, OrganizationalUnit  # noqa: avoid circular import
         if self.org_unit.exists():
             relevant_units = self.org_unit.all()
-        elif self._supports_account_annotations:
+        elif self._supports_account_annotations and self.scan_entire_org:
             relevant_units = OrganizationalUnit.objects.filter(
                     organization=self.organization)
         else:
