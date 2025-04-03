@@ -121,6 +121,11 @@ class Scanner(models.Model):
         verbose_name=_("organizational unit"),
     )
 
+    scan_entire_org = models.BooleanField(
+        verbose_name=_("scan all accounts in organization"),
+        default=False,
+    )
+
     schedule = RecurrenceField(
         max_length=1024,
         null=True,
