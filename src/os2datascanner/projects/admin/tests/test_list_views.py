@@ -23,6 +23,7 @@ all_scanner_list_urls = [
         reverse_lazy('msgraphcalendarscanners'),
         reverse_lazy('msgraphfilescanners'),
         reverse_lazy('msgraphmailscanners'),
+        reverse_lazy('msgraphteamsfilescanners')
     ]
 
 path_and_class = [

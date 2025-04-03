@@ -19,6 +19,10 @@
 - The "Fetch expiry date" button in the graph grant form has been placed last,
   to indicate the other fields should be filled before it works.
 
+### Bugfixes
+
+- Correctly show scanner types in breadcrumbs in the admin module.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"

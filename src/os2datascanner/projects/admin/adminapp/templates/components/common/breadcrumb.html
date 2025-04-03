@@ -2,20 +2,20 @@
 
 <div class="breadcrumb">
   {% if page == 'scannerjob' %}
-    <a href="/" class="link-color">{% trans "Scannerjob" %}</a>
+    <a href="{% url "index" %}" class="link-color">{% trans "Scannerjob" %}</a>
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 
-    {% if form.sitemap %}
-      <a href="/webscanners/" class="link-color">{% trans "Webscanner" %}</a>
+    {% if '/webscanners/' in request.path %}
+      <a href="{% url "webscanners" %}" class="link-color">{% trans "Webscanner" %}</a>
     {% endif %}
 
-    {% if form.domain %}
-      <a href="/filescanners/" class="link-color">{% trans "Filescanner" %}</a>
+    {% if '/filescanners/' in request.path %}
+      <a href="{% url "filescanners" %}" class="link-color">{% trans "Filescanner" %}</a>
     {% endif %}
 
-    {% if form.userlist %}
-      <a href="/exchangescanners/" class="link-color">{% trans "Exchangescanner" %}</a>
+    {% if '/exchangescanners/' in request.path %}
+      <a href="{% url "exchangescanners" %}" class="link-color">{% trans "Exchangescanner" %}</a>
     {% endif %}
 
     {% if '/msgraphmailscanners/' in request.path %}
@@ -30,16 +30,20 @@
       <a href="{% url "msgraphcalendarscanners" %}" class="link-color">{% trans "Office 365 calendarscanner" %}</a>
     {% endif %}
 
+    {% if '/msgraphteamsfilescanners/' in request.path %}
+      <a href="{% url "msgraphteamsfilescanners" %}" class="link-color">{% trans "Office 365 Teams filescanner" %}</a>
+    {% endif %}
+
     {% if '/googledrivescanners/' in request.path %}
-      <a href="/googledrivescanners/" class="link-color">{% trans "Google Drive scanner" %}</a>
+      <a href="{% url "googledrivescanners" %}" class="link-color">{% trans "Google Drive scanner" %}</a>
     {% endif %}
 
     {% if '/gmailscanners/' in request.path %}
-      <a href="/gmailscanners/" class="link-color">{% trans "Gmailscanner" %}</a>
+      <a href="{% url "gmailscanners" %}" class="link-color">{% trans "Gmailscanner" %}</a>
     {% endif %}
 
-    {% if request.path == '/sbsysscanners/add/' %}
-      <a href="/sbsysscanners/" class="link-color">{% trans "Sbsysscanner" %}</a>
+    {% if '/sbsysscanners/' in request.path %}
+      <a href="{% url "sbsysscanners" %}" class="link-color">{% trans "Sbsysscanner" %}</a>
     {% endif %}
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
@@ -52,7 +56,7 @@
   {% endif %}
 
   {% if page == 'rule_views' %}
-    <a href="/rules/" class="link-color">{% trans "Rules" %}</a>
+    <a href="{% url "rules" %}" class="link-color">{% trans "Rules" %}</a>
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 
@@ -65,35 +69,25 @@
     {% endif %}
   {% endif %}
 
-  {% if page == 'organization' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
+  {% if '/organizations/' in request.path %}
+    <a href="{% url "organization-list" %}" class="link-color">{% trans "organizations"|capfirst %}</a>
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
+  {% endif %}
 
+  {% if page == 'organization' %}
     <span class="text-grey">{% trans "add organization"|capfirst %}</span>
   {% endif %}
 
   {% if page == 'organization_update' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     <span class="text-grey">{% trans "update organization"|capfirst %}</span>
   {% endif %}
 
   {% if page == 'orgunit_list' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     <span class="text-grey">{% trans "organizational hierarchy"|capfirst %}</span>
   {% endif %}
 
   {% if page == 'edit_orgunit_visibility' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     <a href="{% url "orgunit-list" org_slug=organization.slug %}"
        class="link-color">{% trans "organizational hierarchy"|capfirst %}</a>
 
@@ -103,18 +97,10 @@
   {% endif %}
 
   {% if page == 'accounts' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     <span class="text-grey">{% trans "accounts"|capfirst %}</span>
   {% endif %}
 
   {% if page == 'account' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     <a href="{% url "accounts" account.organization.slug %}"
        class="link-color">{% trans "accounts"|capfirst %}</a>
 
@@ -124,38 +110,26 @@
   {% endif %}
 
   {% if page == 'ldap' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     {% if is_new %}
-      <span class="text-grey">{% trans 'add LDAP configuration'|capfirst %}</span>
+      <span class="text-grey">{% trans "add LDAP configuration"|capfirst %}</span>
     {% else %}
-      <span class="text-grey">{% trans 'update LDAP configuration'|capfirst %}</span>
+      <span class="text-grey">{% trans "update LDAP configuration"|capfirst %}</span>
     {% endif %}
   {% endif %}
 
   {% if page == 'msgraph' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     {% if is_new %}
-      <span class="text-grey">{% trans 'add MS Graph configuration'|capfirst %}</span>
+      <span class="text-grey">{% trans "add MS Graph configuration"|capfirst %}</span>
     {% else %}
-      <span class="text-grey">{% trans 'update MS Graph configuration'|capfirst %}</span>
+      <span class="text-grey">{% trans "update MS Graph configuration"|capfirst %}</span>
     {% endif %}
   {% endif %}
 
   {% if page == 'os2mo' %}
-    <a href="/organizations/" class="link-color">{% trans "organizations"|capfirst %}</a>
-
-    <i id="chevron_right" class="material-icons">chevron_right</i>
-
     {% if is_new %}
-      <span class="text-grey">{% trans 'add OS2mo configuration'|capfirst %}</span>
+      <span class="text-grey">{% trans "add OS2mo configuration"|capfirst %}</span>
     {% else %}
-      <span class="text-grey">{% trans 'update OS2mo configuration'|capfirst %}</span>
+      <span class="text-grey">{% trans "update OS2mo configuration"|capfirst %}</span>
     {% endif %}
   {% endif %}
 </div>
