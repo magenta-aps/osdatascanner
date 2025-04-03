@@ -4,6 +4,10 @@
 
 ""
 
+### New in this release
+
+- Mail scanners now have a setting for scanning email subjects.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.
