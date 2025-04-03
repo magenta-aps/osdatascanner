@@ -32,6 +32,7 @@ from ....organizations.models.account import Account
 from ....organizations.models.aliases import AliasType
 from ...utils import upload_path_exchange_users
 from .scanner import Scanner
+from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 
 logger = structlog.get_logger("adminapp")
 
@@ -77,6 +78,12 @@ class ExchangeScanner(Scanner):
     ews_grant = models.ForeignKey(
             EWSGrant, null=True, blank=True, on_delete=models.SET_NULL,
             verbose_name=_("EWS grant")
+    )
+
+    scan_subject = models.BooleanField(
+        default=True,
+        verbose_name=_('Scan subjects'),
+        help_text=_("Scan mail subjects"),
     )
 
     def get_userlist_file_path(self):
@@ -157,6 +164,12 @@ class ExchangeScanner(Scanner):
                     logger.info("Mailbox {0} does not exits".format(account.address))
                     return False
         return True
+
+    def local_or_rules(self) -> list:
+        if self.scan_subject:
+            return [EmailHeaderRule(prop="subject", rule=self.rule.customrule.make_engine2_rule())]
+        else:
+            return []
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")

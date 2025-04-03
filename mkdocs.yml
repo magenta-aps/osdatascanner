@@ -17,6 +17,7 @@ nav:
     - The model: engine2.md
     - The rule engine: rules.md
     - Pre-execution of rules (SmartDelta): smartdelta.md
+    - Scanner settings: scanner-settings.md
   - Security Architecture: architecture/security.md
   - Scan API: api.md
   - Accessing the Microsoft Graph API with graphiti: graphiti.md

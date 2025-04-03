@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
 from ....organizations.models.aliases import AliasType
+from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 
 
 class GmailScanner(Scanner):
@@ -31,6 +32,12 @@ class GmailScanner(Scanner):
                                          on_delete=models.SET_NULL,
                                          null=True)
 
+    scan_subject = models.BooleanField(
+        default=True,
+        verbose_name=_('Scan subjects'),
+        help_text=_("Scan mail subjects"),
+    )
+
     @staticmethod
     def get_type():
         return 'gmail'
@@ -49,6 +56,12 @@ class GmailScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "email message")
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
+
+    def local_or_rules(self) -> list:
+        if self.scan_subject:
+            return [EmailHeaderRule(prop="subject", rule=self.rule.customrule.make_engine2_rule())]
+        else:
+            return []
 
     class Meta:
         verbose_name = _("Gmail scanner")

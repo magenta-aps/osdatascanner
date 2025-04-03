@@ -13,7 +13,7 @@ class DictLookupRule(SimpleRule):
         self._rule = rule
 
     def match(self, value: dict):
-        if self._prop not in value:
+        if not value or self._prop not in value:
             return
 
         # This is the magic that flattens a Rule into a SimpleRule: we call the
@@ -33,6 +33,9 @@ class DictLookupRule(SimpleRule):
             "property": self._prop,
             "rule": self._rule.to_json_object(),
         }
+
+    def flatten(self):
+        return {self} | self._rule.flatten()
 
     @classmethod
     def from_json_object(cls, obj):
@@ -57,6 +60,23 @@ class EmailHeaderRule(DictLookupRule):
     def presentation_raw(self):
         return (f"email header value \"{self._prop}\""
                 f" matches the rule \"{self._rule.presentation}\"")
+
+    def match(self, value: dict):
+        if not value or self._prop not in value:
+            return
+
+        # This is the magic that flattens a Rule into a SimpleRule: we call the
+        # underlying Rule with a single representation, the dictionary value
+        # we've extracted, and we return success only if that was enough
+        representations = {
+            OutputType.Text.value: value[self._prop],
+            OutputType.EmailHeaders.value: value  # In case self._rule contains an EmailHeaderRule
+        }
+        conclusion, all_matches = self._rule.try_match(representations)
+
+        if conclusion is True:
+            for _, rms in all_matches:
+                yield from (r for r in rms if r["match"])
 
 
 Rule.json_handler(EmailHeaderRule.type_label)(EmailHeaderRule.from_json_object)

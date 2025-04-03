@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-24 15:11+0100\n"
+"POT-Creation-Date: 2025-04-03 14:00+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -202,18 +202,18 @@ msgstr "Filformat"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py:51
 #: adminapp/models/scannerjobs/filescanner.py:86
-#: adminapp/models/scannerjobs/googledrivescanner.py:54
-#: adminapp/models/scannerjobs/msgraph.py:158
-#: adminapp/models/scannerjobs/msgraph.py:214
+#: adminapp/models/scannerjobs/googledrivescanner.py:49
+#: adminapp/models/scannerjobs/msgraph.py:171
+#: adminapp/models/scannerjobs/msgraph.py:227
 msgctxt "unit of scan"
 msgid "file"
 msgstr "fil"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py:52
 #: adminapp/models/scannerjobs/filescanner.py:87
-#: adminapp/models/scannerjobs/googledrivescanner.py:55
-#: adminapp/models/scannerjobs/msgraph.py:159
-#: adminapp/models/scannerjobs/msgraph.py:215
+#: adminapp/models/scannerjobs/googledrivescanner.py:50
+#: adminapp/models/scannerjobs/msgraph.py:172
+#: adminapp/models/scannerjobs/msgraph.py:228
 msgctxt "unit of scan"
 msgid "files"
 msgstr "filer"
@@ -223,30 +223,42 @@ msgstr "filer"
 msgid "Dropboxscanner"
 msgstr "Dropboxscanner"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:75
-#: adminapp/models/scannerjobs/msgraph.py:65
+#: adminapp/models/scannerjobs/exchangescanner.py:76
+#: adminapp/models/scannerjobs/msgraph.py:66
 msgid "Graph grant"
 msgstr "Graph bevilling"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:79
+#: adminapp/models/scannerjobs/exchangescanner.py:80
 msgid "EWS grant"
 msgstr "EWS bevilling"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:161
-#: adminapp/models/scannerjobs/gmail.py:50
-#: adminapp/models/scannerjobs/msgraph.py:114
+#: adminapp/models/scannerjobs/exchangescanner.py:85
+#: adminapp/models/scannerjobs/gmail.py:37
+#: adminapp/models/scannerjobs/msgraph.py:94
+msgid "Scan subjects"
+msgstr "Scan emnefelter"
+
+#: adminapp/models/scannerjobs/exchangescanner.py:86
+#: adminapp/models/scannerjobs/gmail.py:38
+#: adminapp/models/scannerjobs/msgraph.py:95
+msgid "Scan mail subjects"
+msgstr "Scan email-emnefelter"
+
+#: adminapp/models/scannerjobs/exchangescanner.py:174
+#: adminapp/models/scannerjobs/gmail.py:57
+#: adminapp/models/scannerjobs/msgraph.py:121
 msgctxt "unit of scan"
 msgid "email message"
 msgstr "mailbesked"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:162
-#: adminapp/models/scannerjobs/gmail.py:51
-#: adminapp/models/scannerjobs/msgraph.py:115
+#: adminapp/models/scannerjobs/exchangescanner.py:175
+#: adminapp/models/scannerjobs/gmail.py:58
+#: adminapp/models/scannerjobs/msgraph.py:122
 msgctxt "unit of scan"
 msgid "email messages"
 msgstr "mailbeskeder"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:165
+#: adminapp/models/scannerjobs/exchangescanner.py:178
 #: adminapp/templates/components/common/breadcrumb.html:18
 #: adminapp/templates/components/navigation/scanner_tabs.html:15
 msgid "Exchangescanner"
@@ -295,68 +307,68 @@ msgstr "UNC skal følge UNC-format"
 msgid "Filescanner"
 msgstr "Filscanner"
 
-#: adminapp/models/scannerjobs/gmail.py:54
+#: adminapp/models/scannerjobs/gmail.py:67
 msgid "Gmail scanner"
 msgstr "Gmailscanner"
 
-#: adminapp/models/scannerjobs/googledrivescanner.py:58
+#: adminapp/models/scannerjobs/googledrivescanner.py:53
 #: adminapp/templates/components/common/breadcrumb.html:34
 #: adminapp/templates/components/navigation/scanner_tabs.html:43
 msgid "Google Drive scanner"
 msgstr "Google Drive scanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:75
+#: adminapp/models/scannerjobs/msgraph.py:76
 msgid "Scan deleted items folder"
 msgstr "Scan slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:76
+#: adminapp/models/scannerjobs/msgraph.py:77
 msgid "Include emails in the deleted post folder"
 msgstr "Inkludér emails i slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:81
+#: adminapp/models/scannerjobs/msgraph.py:82
 msgid "Scan syncissues folder"
 msgstr "Scan synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:82
+#: adminapp/models/scannerjobs/msgraph.py:83
 msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:87
+#: adminapp/models/scannerjobs/msgraph.py:88
 msgid "Scan attachments"
 msgstr "Scan vedhæftninger"
 
-#: adminapp/models/scannerjobs/msgraph.py:88
+#: adminapp/models/scannerjobs/msgraph.py:89
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
-#: adminapp/models/scannerjobs/msgraph.py:118
+#: adminapp/models/scannerjobs/msgraph.py:131
 msgid "MSGraph mailscanner"
 msgstr "MSGraph mailscanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:162
+#: adminapp/models/scannerjobs/msgraph.py:175
 msgid "MSGraph filescanner"
 msgstr "MSGraph filscanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:186
+#: adminapp/models/scannerjobs/msgraph.py:199
 msgctxt "unit of scan"
 msgid "appointment"
 msgstr "begivenhed"
 
-#: adminapp/models/scannerjobs/msgraph.py:187
+#: adminapp/models/scannerjobs/msgraph.py:200
 msgctxt "unit of scan"
 msgid "appointments"
 msgstr "begivenheder"
 
-#: adminapp/models/scannerjobs/msgraph.py:190
+#: adminapp/models/scannerjobs/msgraph.py:203
 msgid "MSGraph calendarscanner"
 msgstr "MSGraph kalenderscanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:199
+#: adminapp/models/scannerjobs/msgraph.py:212
 #: adminapp/models/scannerjobs/webscanner.py:43
 msgid "check dead links"
 msgstr "tjek døde links"
 
-#: adminapp/models/scannerjobs/msgraph.py:218
+#: adminapp/models/scannerjobs/msgraph.py:231
 msgid "MSGraph Teams filescanner"
 msgstr "MSGraph Teams filscanner"
 
@@ -1210,9 +1222,9 @@ msgstr "Beskrivelse af regel"
 #: adminapp/templates/components/rules/regexrule_form.html:257
 #: adminapp/templates/components/rules/regexrule_form.html:258
 #: adminapp/templates/components/rules/regexrule_form.html:260
-#: adminapp/templates/components/scanner/scanner_form.html:675
-#: adminapp/templates/components/scanner/scanner_form.html:676
-#: adminapp/templates/components/scanner/scanner_form.html:678
+#: adminapp/templates/components/scanner/scanner_form.html:681
+#: adminapp/templates/components/scanner/scanner_form.html:682
+#: adminapp/templates/components/scanner/scanner_form.html:684
 msgid "Save changes"
 msgstr "Gem ændringer"
 
@@ -1817,12 +1829,12 @@ msgstr "scan konti fra"
 msgid "Scanner settings"
 msgstr "Scannerindstillinger"
 
-#: adminapp/templates/components/scanner/scanner_form.html:581
-#: adminapp/templates/components/scanner/scanner_form.html:584
+#: adminapp/templates/components/scanner/scanner_form.html:587
+#: adminapp/templates/components/scanner/scanner_form.html:590
 msgid "Remediators"
 msgstr "Opryddere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:597
+#: adminapp/templates/components/scanner/scanner_form.html:603
 msgid ""
 "If any matches from the scanner job cannot be delegated to a specific user, "
 "the remediator(s) will see the results in their report module instead."
@@ -1830,11 +1842,11 @@ msgstr ""
 "Hvis nogle matches fra scannerjobbet ikke kan tildeles en bestemt bruger, "
 "vil oprydderne få vist resultatet i deres rapportmodul i stedet for."
 
-#: adminapp/templates/components/scanner/scanner_form.html:602
+#: adminapp/templates/components/scanner/scanner_form.html:608
 msgid "Universal remediators"
 msgstr "Universelle opryddere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:610
+#: adminapp/templates/components/scanner/scanner_form.html:616
 msgid ""
 "Universal remediators are automatically assigned as remediators for all "
 "scanner jobs."
@@ -1842,16 +1854,16 @@ msgstr ""
 "Universelle opryddere er automatisk tildelt oprydderrollen for alle "
 "scannerjobs."
 
-#: adminapp/templates/components/scanner/scanner_form.html:618
-#: adminapp/templates/components/scanner/scanner_form.html:620
+#: adminapp/templates/components/scanner/scanner_form.html:624
+#: adminapp/templates/components/scanner/scanner_form.html:626
 msgid "Contacts"
 msgstr "Kontakter"
 
-#: adminapp/templates/components/scanner/scanner_form.html:643
+#: adminapp/templates/components/scanner/scanner_form.html:649
 msgid "Schedule scan"
 msgstr "Planlæg scan"
 
-#: adminapp/templates/components/scanner/scanner_form.html:650
+#: adminapp/templates/components/scanner/scanner_form.html:656
 msgid ""
 "Schedule your scan by creating a fixed interval or adding a date to complete "
 "the scannerjob."
@@ -1859,7 +1871,7 @@ msgstr ""
 "Planlæg dit scan ved at oprette et fast interval eller tilføj en dato for "
 "afvikling af scannerjobbet."
 
-#: adminapp/templates/components/scanner/scanner_form.html:663
+#: adminapp/templates/components/scanner/scanner_form.html:669
 msgid "The scanner will start at the following time for the selected days:"
 msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 

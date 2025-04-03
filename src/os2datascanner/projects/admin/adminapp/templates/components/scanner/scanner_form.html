@@ -545,6 +545,12 @@
                   </div>
                 {% endif %}
 
+                {% if form.scan_subject %}
+                  <div class="checkbox-group form__group">
+                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_subject %}
+                  </div>
+                {% endif %}
+
                 {% if form.skip_super_hidden %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.skip_super_hidden %}

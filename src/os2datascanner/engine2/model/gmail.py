@@ -73,7 +73,7 @@ class GmailSource(Source):
                     email = service.users().messages().get(userId=self._user_email_gmail,
                                                            id=msgId).execute()
                     headers = email["payload"]["headers"]
-                    subject = [i['value'] for i in headers if i["name"] == "Subject"]
+                    subject = [i['value'] for i in headers if i["name"] == "Subject"][0]
                     # Id of given email is set to be path.
                     yield GmailHandle(self, msgId, mail_subject=subject)
 

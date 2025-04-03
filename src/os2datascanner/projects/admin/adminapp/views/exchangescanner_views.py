@@ -85,7 +85,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, GrantMixin, ScannerCreate):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts', 'ews_grant']
+              'contacts', 'ews_grant', 'scan_subject']
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
@@ -128,7 +128,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, GrantMixin, ScannerCopy):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts', 'ews_grant']
+              'contacts', 'ews_grant', 'scan_subject']
 
     def get_grant_form_classes(self):
         if settings.MSGRAPH_EWS_AUTH:
@@ -171,7 +171,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, GrantMixin, ScannerUpdate):
     fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
               'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
               'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts', 'ews_grant']
+              'contacts', 'ews_grant', 'scan_subject']
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")

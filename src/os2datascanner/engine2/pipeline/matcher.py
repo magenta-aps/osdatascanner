@@ -1,6 +1,6 @@
 import structlog
 
-from ..conversions.types import decode_dict, OutputType
+from ..conversions.types import decode_dict
 from ...utils.replace_regions import replace_regions
 from . import messages
 from .. import settings
@@ -57,16 +57,15 @@ def postprocess_match(
         base_rule: Rule,
         match_object: tuple[SimpleRule, list[dict]]):
     rule, matches = match_object
-    """Goes through all found matches and censors their context, if the rule operates on text."""
+    """Goes through all found matches and censors their context."""
 
     if not matches:
         return (rule, None)
 
-    if rule.operates_on == OutputType.Text:
-        all_rules = base_rule.flatten()
-        for match_dict in matches:
-            if context := match_dict.get("context", None):
-                match_dict["context"] = censor_context(context, all_rules)
+    all_rules = base_rule.flatten()
+    for match_dict in matches:
+        if context := match_dict.get("context", None):
+            match_dict["context"] = censor_context(context, all_rules)
 
     return (rule, matches)
 
@@ -106,7 +105,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
 
     final_matches = message.progress.matches
     for match in new_matches:
-        sub_rule, matches = postprocess_match(rule, match)
+        sub_rule, matches = postprocess_match(message.scan_spec.rule, match)
         final_matches.append(messages.MatchFragment(sub_rule, matches))
 
     if isinstance(conclusion, bool):
@@ -115,6 +114,13 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
         logger.info(
                 f"{message.handle} done."
                 f" Matched status: {conclusion}")
+
+        # Censor mail subject in handle
+        if hasattr(message.handle, "_mail_subject"):
+            censored_handle = message.handle
+            rules = message.scan_spec.rule.flatten()
+            censored_handle._mail_subject = censor_context(censored_handle._mail_subject, rules)
+            message._replace(handle=censored_handle)
 
         for matches_q in ("os2ds_matches", "os2ds_checkups",):
             yield (matches_q,
