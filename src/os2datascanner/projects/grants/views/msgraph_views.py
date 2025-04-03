@@ -114,6 +114,8 @@ class MSGraphGrantForm(forms.ModelForm):
         required=False, label=_("Expiry date"),
     )
 
+    field_order = ["organization", "app_id", "tenant_id", "_client_secret", "expiry_date"]
+
     def clean__client_secret(self):
         return choose_field_value(
               self.cleaned_data["_client_secret"],
