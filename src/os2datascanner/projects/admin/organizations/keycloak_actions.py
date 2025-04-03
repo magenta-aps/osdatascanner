@@ -20,6 +20,7 @@ logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
 SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
+UPN_ALIAS_IMPORTED_ID_SUFFIX = "/upn"
 
 
 class Action(Enum):
@@ -407,18 +408,31 @@ def _update_account(account: Account, path: Sequence[RDN], remote_node: LDAPNode
     """Updates an Accounts properties and aliases to match its remote node."""
     mail_address = remote_node.properties.get("email")
 
-    # SID is hidden a level further down, we'll have to unpack...
-    object_sid = None
-    sid_attr = remote_node.properties.get("attributes", {}).get("objectSid")
-    if sid_attr:
-        object_sid = _convert_sid(sid_attr[0])
+    # Unpack the list in a dict in a dict that contains the SID...
+    match remote_node.properties:
+        case {"attributes": {"objectSid": [s_v]}}:
+            object_sid = _convert_sid(s_v)
+        case _:
+            object_sid = None
+
+    # ... and the other one that contains the UPN (shame we need a separate
+    # match block for that, but you only get to match one case...)
+    match remote_node.properties:
+        case {"attributes": {"userPrincipalName": [u_v]}}:
+            upn = u_v
+        case _:
+            upn = None
 
     imported_id = f"{account.imported_id}{EMAIL_ALIAS_IMPORTED_ID_SUFFIX}"
     imported_id_sid = f"{account.imported_id}{SID_ALIAS_IMPORTED_ID_SUFFIX}"
+    imported_id_upn = f"{account.imported_id}{UPN_ALIAS_IMPORTED_ID_SUFFIX}"
 
     for action in _update_alias(account, mail_address, AliasType.EMAIL, imported_id):
         yield action
     for action in _update_alias(account, object_sid, AliasType.SID, imported_id_sid):
+        yield action
+    for action in _update_alias(
+            account, upn, AliasType.USER_PRINCIPAL_NAME, imported_id_upn):
         yield action
 
     iid = _node_to_iid(path, remote_node)

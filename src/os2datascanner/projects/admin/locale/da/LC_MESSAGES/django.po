@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 13:17+0200\n"
+"POT-Creation-Date: 2025-04-11 13:02+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -397,10 +397,6 @@ msgstr "Brugere der skal underrettes ved færdige scanninger."
 #: adminapp/models/scannerjobs/scanner.py
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
-
-#: adminapp/models/scannerjobs/scanner.py
-msgid "scan all accounts in organization"
-msgstr "scan alle konti i organisation"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "planned execution"
@@ -1726,12 +1722,21 @@ msgstr "tilføj konti"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
-"Note that opting to \"Scan all accounts in organization\" will mean that "
-"this scannerjob will scan accounts from hidden organizational units as well."
+"Note that opting to \"scan all accounts in this organization\" will mean "
+"that this scannerjob will scan accounts from hidden organizational units as "
+"well."
 msgstr ""
-"Bemærk at hvis du vælger \"Scan alle konti i denne organisation\" vil det "
+"Bemærk at hvis du vælger \"scan alle konti i denne organisation\" vil det "
 "betyde at dette scannerjob også scanner konti fra skjulte organisatoriske "
 "enheder."
+
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "scan all accounts in this organization"
+msgstr "scan alle konti i denne organisation"
+
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "scan accounts from selected organizational units"
+msgstr "scan konti fra udvalgte organisatoriske enheder"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "scan accounts from"
@@ -2993,6 +2998,20 @@ msgstr "LDAP-attribut for fornavn"
 
 #: import_services/models/ldap_configuration.py
 msgid ""
+"Name of the LDAP attribute containing the user principal name, the modern "
+"Windows unique account identifier that looks like an e-mail address. This is "
+"usually just 'userPrincipalName'."
+msgstr ""
+"Navnet på den LDAP-attribut, der giver brugerens hovednavn (UPN), dvs. det "
+"moderne unikke navn givet til Windows-konti, der ligner en mailadresse. Som "
+"regel er det bare 'userPrincipalName'."
+
+#: import_services/models/ldap_configuration.py
+msgid "User principal name LDAP attribute"
+msgstr "LDAP-attribut for brugerens hovednavn (UPN)"
+
+#: import_services/models/ldap_configuration.py
+msgid ""
 "Name of LDAP attribute, which is used as RDN of typical user DN. Usually, "
 "but not necessarily, the same as username LDAP attribute. For example for "
 "Active Directory, it is common to use 'cn' as RDN attribute when username "
@@ -3513,6 +3532,10 @@ msgstr "vælg"
 #: organizations/templates/components/modals/alias_create.html
 msgid "email"
 msgstr "e-mail"
+
+#: organizations/templates/components/modals/alias_create.html
+msgid "user principal name"
+msgstr "brugerens hovednavn (UPN)"
 
 #: organizations/templates/components/modals/alias_create.html
 msgid "generic"
@@ -4049,9 +4072,6 @@ msgstr "Claim attribut"
 #: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
-
-#~ msgid "scan accounts from selected organizational units"
-#~ msgstr "scan konti fra udvalgte organisatoriske enheder"
 
 #~ msgid "Click here to add a new permission"
 #~ msgstr "Klik her for at tilføje en ny rettighed"

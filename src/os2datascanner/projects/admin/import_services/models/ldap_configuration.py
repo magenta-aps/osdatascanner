@@ -74,6 +74,12 @@ class LDAPSIDMapper(LDAPUserAttributeMapper):
                          user_attr="objectSid", binary_attr=True)
 
 
+class LDAPUPNAttributeMapper(LDAPUserAttributeMapper):
+    def __init__(self, ldap_attr: str):
+        super().__init__(name="user principal name", ldap_attr=ldap_attr,
+                         user_attr="userPrincipalName")
+
+
 class LDAPGroupFilterMapper:
     def __init__(self, dn, prefix):
         self.name = "group_filter_mapper"
@@ -163,6 +169,17 @@ class LDAPConfig(Exported, ImportService):
         verbose_name=_("First name LDAP attribute"),
         # We're too late to the party, not setting a default value as it is AD vendor dependant.
         # If not populated, we're sticking to whatever Keycloak does behind the scenes.
+        null=True,
+        blank=True
+    )
+    upn_attribute = models.CharField(
+        max_length=64,
+        help_text=_(
+            "Name of the LDAP attribute containing the user principal name,"
+            " the modern Windows unique account identifier that looks like an"
+            " e-mail address. This is usually just 'userPrincipalName'."
+        ),
+        verbose_name=_("User principal name LDAP attribute"),
         null=True,
         blank=True
     )

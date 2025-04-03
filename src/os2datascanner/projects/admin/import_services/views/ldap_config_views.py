@@ -13,8 +13,10 @@ from os2datascanner.projects.admin.import_services.keycloak_services import (
 from os2datascanner.projects.admin.organizations.models import Organization
 from os2datascanner.projects.admin.import_services.models import LDAPConfig, Realm
 from os2datascanner.projects.admin.import_services.utils import start_ldap_import
-from os2datascanner.projects.admin.import_services.models.ldap_configuration import \
-    LDAPUsernameAttributeMapper, LDAPSIDMapper, LDAPFirstNameAttributeMapper, LDAPGroupFilterMapper
+from os2datascanner.projects.admin.import_services.models.ldap_configuration import (
+        LDAPUsernameAttributeMapper, LDAPSIDMapper,
+        LDAPFirstNameAttributeMapper, LDAPGroupFilterMapper,
+        LDAPUPNAttributeMapper)
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from os2datascanner.projects.admin.import_services.views.keycloak_api_views import (
     verify_authentication, verify_connection)
@@ -40,6 +42,7 @@ class LDAPEditForm(forms.ModelForm):
             'uuid_attribute',
             'object_sid_attribute',
             'firstname_attribute',
+            'upn_attribute',
             'users_dn',
             'search_scope',
             'custom_user_filter',
@@ -95,6 +98,7 @@ class LDAPEditForm(forms.ModelForm):
             'uuid_attribute',
             'object_sid_attribute',
             'firstname_attribute',
+            'upn_attribute',
         ]
         return fields
 
@@ -176,6 +180,13 @@ def _keycloak_creation(config_instance):
         )
         config_instance.update_or_create_mapper(firstname_attr_mapper)
 
+    # Create UPN mapper - if one is set.
+    if config_instance.upn_attribute:
+        upn_attr_mapper = LDAPUPNAttributeMapper(
+            ldap_attr=config_instance.upn_attribute
+        )
+        config_instance.update_or_create_mapper(upn_attr_mapper)
+
     # Create group filter mapper - if one is set.
     if config_instance.import_into == "group":
         group_filter_mapper = LDAPGroupFilterMapper(config_instance.users_dn,
@@ -208,6 +219,13 @@ def _keycloak_update(config_instance):
             ldap_attr=config_instance.firstname_attribute
         )
         config_instance.update_or_create_mapper(firstname_attr_mapper)
+
+    # Update or create UPN mapper - if one is set.
+    if config_instance.upn_attribute:
+        upn_attr_mapper = LDAPUPNAttributeMapper(
+            ldap_attr=config_instance.upn_attribute
+        )
+        config_instance.update_or_create_mapper(upn_attr_mapper)
 
     # Update or create group filter mapper - if one is set.
     if config_instance.import_into == "group":
