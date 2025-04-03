@@ -146,6 +146,7 @@ class TestScanners:
         """When used on a complete organisation,
         Scanner.compute_covered_accounts() returns each account precisely
         once."""
+        basic_scanner.scan_entire_org = True
         # Pretend this Scanner can associate Accounts with Sources
         basic_scanner.generate_sources_with_accounts = "doesn't really"
 
@@ -157,6 +158,28 @@ class TestScanners:
 
         assert covered_accounts.count() == 3
         assert all(acc in covered_accounts for acc in (fritz, günther, hansi))
+
+    def test_compute_no_covered_accounts(
+            self,
+            test_org,
+            basic_scanner,
+            nisserne,
+            fritz,
+            günther,
+            hansi):
+        """When used on a organisation, with scan_entire_org set to False
+        Scanner.compute_covered_accounts() returns no accounts."""
+        basic_scanner.scan_entire_org = False
+        # Pretend this Scanner can associate Accounts with Sources
+        basic_scanner.generate_sources_with_accounts = "doesn't really"
+
+        everybody = OrganizationalUnit.objects.create(
+            name="Everybody", organization=test_org)
+        everybody.account_set.add(fritz, günther, hansi)
+
+        covered_accounts = basic_scanner.compute_covered_accounts()
+
+        assert not covered_accounts.exists()
 
     @skip("Accounts are now required, but this test doesn't create one")
     def test_scheduled_checkup_cleanup_bug(
