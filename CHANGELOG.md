@@ -33,6 +33,8 @@
 
 - Correctly show scanner types in breadcrumbs in the admin module.
 
+- A bug, causing scans with no connected org units to scan every org unit, has been fixed.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
