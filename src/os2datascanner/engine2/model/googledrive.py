@@ -40,10 +40,13 @@ class GoogleDriveSource(Source):
         page_token = None
         while True:
             files = service.files().list(q="mimeType !='application/vnd.google-apps.folder'",
-                                         fields='nextPageToken, files(id, name, mimeType)',
+                                         fields='nextPageToken, files(id, name, mimeType, parents)',
                                          pageToken=page_token).execute()
             for file in files.get('files', []):
-                yield GoogleDriveHandle(self, file.get('id'), name=file.get('name'))
+                location = self.get_location(file.get('parents', []), service)
+                yield GoogleDriveHandle(self, file.get('id'),
+                                        name=file.get('name'),
+                                        location=location)
             page_token = files.get('nextPageToken', None)
             if page_token is None:
                 break
@@ -51,6 +54,21 @@ class GoogleDriveSource(Source):
     # Censoring service account file info and user email.
     def censor(self):
         return GoogleDriveSource(None, self._user_email)
+
+    def get_location(self, parents, service):
+        """
+        Finds the path for a google drive file by traversing the parents.
+        """
+        path = ""
+        for parent in parents:
+            parent_id = parent
+            parent = service.files().get(fileId=parent_id, fields='id, name, parents').execute()
+            path = parent.get('name') + '/' + path
+            while parent.get('parents'):
+                parent_id = parent.get('parents')[0]
+                parent = service.files().get(fileId=parent_id, fields='id, name, parents').execute()
+                path = parent.get('name') + '/' + path
+            return path
 
     def to_json_object(self):
         return dict(
@@ -131,7 +149,6 @@ class GoogleDriveResource(FileResource):
             self._metadata = self._get_cookie().files().get(
                     fileId=self.handle.relative_path,
                     fields='name, size, quotaBytesUsed, mimeType').execute()
-
         return self._metadata
 
     def get_size(self):
@@ -142,9 +159,15 @@ class GoogleDriveHandle(Handle):
     type_label = "googledrive"
     resource_type = GoogleDriveResource
 
-    def __init__(self, source, relpath, name):
+    def __init__(self, source, relpath, name, location):
         super().__init__(source, relpath)
         self._name = name
+        self._location = location
+
+    def __str__(self):
+        if self._location:
+            return self._location + self._name
+        return self._name
 
     @property
     def presentation_name(self):
@@ -152,8 +175,7 @@ class GoogleDriveHandle(Handle):
 
     @property
     def presentation_place(self):
-        return (f"folder {self.relative_path.strip(' ')}"
-                f" of account {self.source._user_email}")
+        return self._location
 
     @property
     def sort_key(self):
@@ -163,10 +185,10 @@ class GoogleDriveHandle(Handle):
         return f'{domain}/{account}/{self.relative_path}/{self._name}'
 
     def to_json_object(self):
-        return dict(**super().to_json_object(), name=self._name)
+        return dict(**super().to_json_object(), name=self._name, location=self._location)
 
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
         return GoogleDriveHandle(Source.from_json_object(obj["source"]),
-                                 obj["path"], obj.get('name'))
+                                 obj["path"], obj.get('name'), obj.get('location'))
