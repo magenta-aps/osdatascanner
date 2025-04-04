@@ -4,6 +4,7 @@ import structlog
 import requests
 
 from os2datascanner.utils.oauth2 import mint_cc_token
+from os2datascanner.utils.token_caller import TokenCaller
 from os2datascanner.engine2 import settings as engine2_settings
 from os2datascanner.engine2.utilities.backoff import WebRetrier
 
@@ -65,25 +66,13 @@ class MSGraphSource(Source):
     def _list_users(self, sm):
         yield from sm.open(self).paginated_get("users")
 
-    class GraphCaller:
+    class GraphCaller(TokenCaller):
         def __init__(self, token_creator, session=None):
-            self._token_creator = token_creator
-            self._token = token_creator()
-
-            self._session = session or requests
-
-        def _make_headers(self):
-            return {
-                "authorization": "Bearer {0}".format(self._token),
-            }
-
-        @raw_request_decorator
-        def get(self, tail, timeout=engine2_settings.model["msgraph"]["timeout"]):
-            return WebRetrier().run(
-                self._session.get,
-                "https://graph.microsoft.com/v1.0/{0}".format(tail),
-                headers=self._make_headers(),
-                timeout=timeout)
+            super().__init__(
+                    token_creator, "https://graph.microsoft.com/v1.0/",
+                    session)
+            self.extra_kwargs["timeout"] = (
+                    engine2_settings.model["msgraph"]["timeout"])
 
         def paginated_get(self, endpoint: str):
             """ Performs a GET request on specified MSGraph endpoint and
@@ -96,74 +85,43 @@ class MSGraphSource(Source):
                 result = self.follow_next_link(result["@odata.nextLink"]).json()
                 yield from result.get('value')
 
-        @raw_request_decorator
-        def head(self, tail):
-            return WebRetrier().run(
-                self._session.head,
-                "https://graph.microsoft.com/v1.0/{0}".format(tail),
-                headers=self._make_headers())
-
-        @raw_request_decorator
         def delete_message(self, owner, msg_id):
-            return WebRetrier().run(
-                self._session.delete,
-                f"https://graph.microsoft.com/v1.0/users/{owner}/messages/{msg_id}",
-                headers=self._make_headers(),
-            )
+            return self.delete(f"users/{owner}/messages/{msg_id}")
 
-        @raw_request_decorator
         def delete_file(self, owner, item_path):
-            return WebRetrier().run(
-                self._session.delete,
-                f"https://graph.microsoft.com/v1.0/users/{owner}/drive/root:/{item_path}",
-                headers=self._make_headers(),
-            )
+            return self.delete(f"users/{owner}/drive/root:/{item_path}")
 
-        @raw_request_decorator
         def create_outlook_category(self, owner, category_name, category_colour):
-            json_params = {"displayName": f"{category_name}",
-                           "color": f"{category_colour}"}
-            return WebRetrier().run(
-                self._session.post,
-                f"https://graph.microsoft.com/v1.0/users/{owner}/outlook/masterCategories",
-                headers=self._make_headers(), json=json_params,
+            return self.post(
+                    f"users/{owner}/outlook/masterCategories",
+                    json={
+                        "displayName": category_name,
+                        "color": category_colour
+                    })
 
-            )
-
-        @raw_request_decorator
         def categorize_mail(self, owner: str, msg_id: str, categories: list):
-            json_params = {"categories": categories}
-            return WebRetrier().run(
-                self._session.patch,
-                f"https://graph.microsoft.com/v1.0/users/{owner}/messages/{msg_id}",
-                headers=self._make_headers(), json=json_params,
-            )
+            return self.patch(
+                    f"users/{owner}/outlook/messages/{msg_id}",
+                    json={
+                        "categories": categories
+                    })
 
-        @raw_request_decorator
         def update_category_colour(self, owner: str, category_id: str, category_colour: str):
-            json_params = {"color": category_colour}
-            return WebRetrier().run(
-                self._session.patch,
-                f"https://graph.microsoft.com/v1.0/users/{owner}"
-                f"/outlook/masterCategories/{category_id}",
-                headers=self._make_headers(), json=json_params,
-            )
+            return self.patch(
+                    f"users/{owner}/outlook/masterCategories/{category_id}",
+                    json={
+                        "color": category_colour
+                    })
 
-        @raw_request_decorator
         def delete_category(self, owner: str, category_id: str):
-            return WebRetrier().run(
-                self._session.delete,
-                f"https://graph.microsoft.com/v1.0/users/{owner}/outlook/"
-                f"masterCategories/{category_id}",
-                headers=self._make_headers(),
-            )
+            return self.delete(
+                    f"users/{owner}/outlook/masterCategories/{category_id}")
 
-        @raw_request_decorator
         def follow_next_link(self, next_page):
-            return WebRetrier().run(
-                self._session.get,
-                next_page,
-                headers=self._make_headers())
+            if not next_page.startswith(self._base_url):
+                raise ValueError
+            interesting_part = next_page[len(self._base_url):]
+            return self.get(interesting_part)
 
     def to_json_object(self):
         return dict(

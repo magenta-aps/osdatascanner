@@ -1,14 +1,16 @@
 from requests.exceptions import ReadTimeout
+import structlog
 
 from django.http import JsonResponse
 
 from ..keycloak_services import check_ldap_connection
 from ..keycloak_services import check_ldap_authentication
-from ..keycloak_services import request_access_token
+
+
+logger = structlog.get_logger("keycloak_api_views")
 
 
 def process_request(request, parameter_keys, kc_call):
-    token = request_access_token()
     parameters = []
     missing_parameters = []
     for key in parameter_keys:
@@ -25,8 +27,7 @@ def process_request(request, parameter_keys, kc_call):
     status = 400
     json_data = {'errorMessage': "LDAP test error"}
     try:
-        check_response = kc_call(
-            'master', token, *parameters, timeout=0.4)
+        check_response = kc_call(*parameters, timeout=0.4)
         if check_response.status_code == 204:
             status = 200
             json_data = {'successMessage': "LDAP test success"}
@@ -36,6 +37,8 @@ def process_request(request, parameter_keys, kc_call):
     except ReadTimeout:
         status = 408
         json_data['errorMessage'] = "Keycloak: no response"
+    except BaseException:
+        logger.exception("LDAP connection test raised unexpected error")
     finally:
         return JsonResponse(json_data, status=status)  # noqa: B012,
         # return inside finally blocks cause exceptions to be silenced

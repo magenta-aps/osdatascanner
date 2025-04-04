@@ -19,6 +19,11 @@
 - The "Fetch expiry date" button in the graph grant form has been placed last,
   to indicate the other fields should be filled before it works.
 
+- The system now uses a single common implementation of the OAuth 2.0 client
+  credentials flow, simplifying the code and making error handling for
+  Keycloak and Microsoft Graph more reliable.
+
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.

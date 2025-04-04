@@ -11,11 +11,8 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-import json
-import requests
 import structlog
 
-from django.conf import settings
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -23,7 +20,6 @@ from django.utils.translation import gettext_lazy as _
 from .exported_mixin import Exported
 from .import_service import ImportService
 from .realm import Realm
-from ..keycloak_services import refresh_token
 from os2datascanner.projects.grants.models.grant import wrap_encrypted_field
 
 
@@ -345,32 +341,18 @@ class LDAPConfig(Exported, ImportService):
         }
 
     # API calls
-    @refresh_token
-    def get_mappers(self, token=None):
-        url = (settings.KEYCLOAK_BASE_URL +
-               f'/auth/admin/realms/{str(self.realm)}/components?parent={str(self.pk)}'
-               f'&type=org.keycloak.storage.ldap.mappers.LDAPStorageMapper')
+    def get_mappers(self):
+        return self.realm.make_caller().get(
+                f"/components?parent={self.pk!s}"
+                "&type=org.keycloak.storage.ldap.mappers.LDAPStorageMapper")
 
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-
-        return requests.get(url, headers=headers)
-
-    @refresh_token
     def update_or_create_mapper(
             self,
-            mapper: LDAPUserAttributeMapper | LDAPGroupFilterMapper,
-            token=None):
-
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
+            mapper: LDAPUserAttributeMapper | LDAPGroupFilterMapper):
+        caller = self.realm.make_caller()
 
         # API call - gets existing mappers in json format - returns a list of dictionaries.
-        existing_mappers = self.get_mappers(token=token).json()
+        existing_mappers = self.get_mappers().json()
         # Unpack - if there is an existing one, we need its id.
         name_to_id = {d["name"]: d["id"] for d in existing_mappers}
         mapper_id = name_to_id.get(mapper.name)
@@ -378,29 +360,19 @@ class LDAPConfig(Exported, ImportService):
         payload = mapper.to_payload_json(config_id=str(self.pk))
 
         if mapper_id:  # Means there's an existing mapper
-            url = (settings.KEYCLOAK_BASE_URL +
-                   f'/auth/admin/realms/{str(self.realm)}/components/{mapper_id}')
             logger.info(f"Existing mapper: {mapper.name} found! Updating it..")
-            return requests.put(url, data=json.dumps(payload), headers=headers)
+            return caller.put(f"/components/{mapper_id}", json=payload)
 
         else:  # Means there isn't an existing one - create it.
-            url = (settings.KEYCLOAK_BASE_URL + f'/auth/admin/realms/{str(self.realm)}/components/')
             logger.info(f"No mapper: {mapper.name} found! Creating one..")
-            return requests.post(url, data=json.dumps(payload), headers=headers)
+            return caller.post("/components/", json=payload)
 
-    def delete_mapper(self, mapper_name, token=None):
-        headers = {
-            'Authorization': f'bearer {token}',
-            'Content-Type': 'application/json;charset=utf-8',
-        }
-
+    def delete_mapper(self, mapper_name):
         # API call - gets existing mappers in json format - returns a list of dictionaries.
-        existing_mappers = self.get_mappers(token=token).json()
+        existing_mappers = self.get_mappers().json()
         # Unpack - if there is an existing one, we need its id.
         name_to_id = {d["name"]: d["id"] for d in existing_mappers}
 
         if mapper_id := name_to_id.get(mapper_name):
-            url = (settings.KEYCLOAK_BASE_URL +
-                   f'/auth/admin/realms/{str(self.realm)}/components/{mapper_id}')
             logger.info(f"Existing mapper: {mapper_name} found! Deleting it..")
-            return requests.delete(url, headers=headers)
+            return self.realm.make_caller().delete(f"/components/{mapper_id}")
