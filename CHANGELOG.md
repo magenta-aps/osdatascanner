@@ -23,6 +23,7 @@
   credentials flow, simplifying the code and making error handling for
   Keycloak and Microsoft Graph more reliable.
 
+- Email sources are now scanned based on the Account.email-field rather than related email aliases.
 
 ### Bugfixes
 

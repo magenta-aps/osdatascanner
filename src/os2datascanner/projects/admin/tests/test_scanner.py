@@ -12,10 +12,7 @@ from os2datascanner.engine2.model.msgraph import (
 from os2datascanner.engine2.model.derived import mail
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
-from os2datascanner.projects.admin.organizations.models.account \
-    import Account
-from os2datascanner.projects.admin.organizations.models.organizational_unit \
-    import OrganizationalUnit
+from os2datascanner.projects.admin.organizations.models import OrganizationalUnit, Alias, Account
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
 from os2datascanner.projects.admin.adminapp.views.webscanner_views \
@@ -315,3 +312,87 @@ class TestScanners:
         basic_scanstatus.refresh_from_db()
 
         assert basic_scanstatus.cancelled
+
+
+@pytest.fixture
+def accounts_without_emails(oluf, gertrud, benny):
+    """Returns three accounts without an email value, but with associated email aliases."""
+
+    # Creating email aliases for all these accounts
+    accounts = (oluf, gertrud)
+    for acc in accounts:
+        assert not acc.email
+        Alias.objects.create(
+            account=acc,
+            _alias_type="email",
+            _value=f"{acc.username}@yahoo.com")
+    return accounts
+
+
+@pytest.fixture
+def accounts_with_emails(fritz, günther, hansi):
+    """Returns three accounts with an email value, but without associated email aliases."""
+    accounts = (fritz, günther, hansi)
+    for acc in accounts:
+        assert acc.email
+    return accounts
+
+
+@pytest.mark.django_db
+class TestScannerSourcesWithAccounts:
+
+    def test_exchangescanner_generate_sources_with_accounts(
+            self, accounts_without_emails, accounts_with_emails, nisserne, familien_sand,
+            exchange_scanner):
+        """Make sure the 'generate_sources_with_accounts'-method on the ExchangeScanner-model
+        only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
+
+        exchange_scanner.org_unit.set((nisserne, familien_sand))
+
+        for acc, _ in exchange_scanner.generate_sources_with_accounts():
+            assert acc in accounts_with_emails
+            assert acc not in accounts_without_emails
+
+    def test_gmailscanner_generate_sources_with_accounts(
+            self, accounts_without_emails, accounts_with_emails, nisserne, familien_sand,
+            gmail_scanner):
+        """Make sure the 'generate_sources_with_accounts'-method on the GmailScanner-model
+        only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
+        gmail_scanner.org_unit.set((nisserne, familien_sand))
+
+        for acc, _ in gmail_scanner.generate_sources_with_accounts():
+            assert acc in accounts_with_emails
+            assert acc not in accounts_without_emails
+
+    def test_msgraphmailscanner_generate_sources_with_accounts(
+            self, accounts_without_emails, accounts_with_emails, nisserne, familien_sand,
+            msgraph_mailscanner):
+        """Make sure the 'generate_sources_with_accounts'-method on the MSGraphMailScanner-model
+        only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
+        msgraph_mailscanner.org_unit.set((nisserne, familien_sand))
+
+        for acc, _ in msgraph_mailscanner.generate_sources_with_accounts():
+            assert acc in accounts_with_emails
+            assert acc not in accounts_without_emails
+
+    def test_msgraphfilescanner_generate_sources_with_accounts(
+            self, accounts_without_emails, accounts_with_emails, nisserne, familien_sand,
+            msgraph_filescanner):
+        """Make sure the 'generate_sources_with_accounts'-method on the MSGraphMailScanner-model
+        only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
+        msgraph_filescanner.org_unit.set((nisserne, familien_sand))
+
+        for acc, _ in msgraph_filescanner.generate_sources_with_accounts():
+            assert acc in accounts_with_emails
+            assert acc not in accounts_without_emails
+
+    def test_msgraphcalendarscanner_generate_sources_with_accounts(
+            self, accounts_without_emails, accounts_with_emails, nisserne, familien_sand,
+            msgraph_calendarscanner):
+        """Make sure the 'generate_sources_with_accounts'-method on the MSGraphMailScanner-model
+        only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
+        msgraph_calendarscanner.org_unit.set((nisserne, familien_sand))
+
+        for acc, _ in msgraph_calendarscanner.generate_sources_with_accounts():
+            assert acc in accounts_with_emails
+            assert acc not in accounts_without_emails

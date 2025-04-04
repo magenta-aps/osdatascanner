@@ -113,8 +113,8 @@ class MSGraphMailScanner(MSGraphScanner):
                 scan_syncissues_folder=self.scan_syncissues_folder,
                 scan_attachments=self.scan_attachments)
         for account in self.compute_covered_accounts():
-            for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
-                user_mail_address: str = alias.value
+            user_mail_address: str = account.email
+            if user_mail_address:
                 yield (account, MSGraphMailAccountSource(
                     MSGraphMailAccountHandle(base_source, user_mail_address)))
 
@@ -156,8 +156,8 @@ class MSGraphFileScanner(MSGraphScanner):
             yield None, base_source
         if self.scan_user_drives:
             for account in self.compute_covered_accounts():
-                for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
-                    user_mail_address: str = alias.value
+                user_mail_address: str = account.email
+                if user_mail_address:
                     yield (account, MSGraphDriveSource(
                         MSGraphDriveHandle(
                             base_source,
@@ -191,8 +191,9 @@ class MSGraphCalendarScanner(MSGraphScanner):
                 tenant_id=str(self.graph_grant.tenant_id),
                 client_secret=self.graph_grant.client_secret)
         for account in self.compute_covered_accounts():
-            for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
-                user_mail_address: str = alias.value
+
+            user_mail_address: str = account.email
+            if user_mail_address:
                 yield (account, MSGraphCalendarAccountSource(
                     MSGraphCalendarAccountHandle(base_source, user_mail_address)))
 

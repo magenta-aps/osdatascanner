@@ -7,7 +7,6 @@ from django.utils.translation import pgettext_lazy
 from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
-from ....organizations.models.aliases import AliasType
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 
 
@@ -48,10 +47,10 @@ class GmailScanner(Scanner):
     def generate_sources_with_accounts(self):
         google_api_grant = json.loads(self.google_api_grant.service_account)
         for account in self.compute_covered_accounts():
-            for alias in account.aliases.filter(_alias_type=AliasType.EMAIL):
+            if account.email:
                 yield (account, GmailSource(
                         google_api_grant=google_api_grant,
-                        user_email_gmail=alias.value
+                        user_email_gmail=account.email
                 ))
 
     object_name = pgettext_lazy("unit of scan", "email message")
