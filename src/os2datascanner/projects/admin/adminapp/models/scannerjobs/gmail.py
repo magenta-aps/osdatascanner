@@ -7,7 +7,6 @@ from django.utils.translation import pgettext_lazy
 from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
 from os2datascanner.engine2.model.gmail import GmailSource
-from ....organizations.models.aliases import AliasType
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 
 
