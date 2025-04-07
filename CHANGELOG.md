@@ -8,6 +8,8 @@
 
 - Mail scanners now have a setting for scanning email subjects.
 
+- Gmail attachment scanning is now optional.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.
