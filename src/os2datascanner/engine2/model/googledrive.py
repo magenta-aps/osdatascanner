@@ -43,7 +43,7 @@ class GoogleDriveSource(Source):
                                          fields='nextPageToken, files(id, name, mimeType, parents)',
                                          pageToken=page_token).execute()
             for file in files.get('files', []):
-                location = self.get_location(file.get('parents', []), service)
+                location = self.get_location(file.get('parents')[0], service)
                 yield GoogleDriveHandle(self, file.get('id'),
                                         name=file.get('name'),
                                         location=location)
@@ -55,20 +55,20 @@ class GoogleDriveSource(Source):
     def censor(self):
         return GoogleDriveSource(None, self._user_email)
 
-    def get_location(self, parents, service):
+    def get_location(self, parent_id, service):
         """
         Finds the path for a google drive file by traversing the parents.
         """
         path = ""
-        for parent in parents:
-            parent_id = parent
+        # Files _can_ technically (rarely) have multiple parent folders but for the purpose of
+        # building a path to the file exploring the first parent will do.
+        parent = service.files().get(fileId=parent_id, fields='id, name, parents').execute()
+        path = parent.get('name') + '/' + path
+        while parent.get('parents'):
+            parent_id = parent.get('parents')[0]
             parent = service.files().get(fileId=parent_id, fields='id, name, parents').execute()
             path = parent.get('name') + '/' + path
-            while parent.get('parents'):
-                parent_id = parent.get('parents')[0]
-                parent = service.files().get(fileId=parent_id, fields='id, name, parents').execute()
-                path = parent.get('name') + '/' + path
-            return path
+        return path
 
     def to_json_object(self):
         return dict(
