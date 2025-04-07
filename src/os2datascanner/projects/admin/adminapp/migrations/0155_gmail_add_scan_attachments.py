@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0152_gmail_remove_file_fields'),
+        ('os2datascanner', '0154_add_scan_subject_option'),
     ]
 
     operations = [
