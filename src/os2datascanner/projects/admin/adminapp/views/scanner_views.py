@@ -564,6 +564,18 @@ class ScannerBase(object):
         else:
             raise PermissionDenied(_("User is not administrator for any client"))
 
+    def form_valid(self, form):
+        data = form.cleaned_data
+        if 'org_unit' in data and 'scan_entire_org' in data:
+            # This scanner scans based on org units
+            # The user should have either chosen some org units, or chosen to scan the entire org
+            if not data['org_unit'].exists() and not data.get('scan_entire_org', False):
+                form.add_error("org_unit",
+                               _("You should either choose organizational units to scan, "
+                                 "or choose to scan the entire organization."))
+                return super().form_invalid(form)
+        return super().form_valid(form)
+
 
 class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
     """View for creating a new scannerjob."""
