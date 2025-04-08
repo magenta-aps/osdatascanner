@@ -4,11 +4,20 @@ from django.db import migrations, models
 
 
 def set_scan_entire_org(apps, schema_editor):
-    Scanner = apps.get_model('os2datascanner', 'Scanner')
+    model_names = [
+        "MSGraphMailScanner",
+        "MSGraphFileScanner",
+        "MSGraphCalendarScanner",
+        "GmailScanner",
+        "GoogleDriveScanner",
+    ]
 
-    for scanner in Scanner.objects.iterator():
-        scanner.scan_entire_org = not scanner.org_unit.exists()
-        scanner.save()
+    for model_name in model_names:
+        model = apps.get_model('os2datascanner', model_name)
+        for scanner in model.objects.iterator():
+            if not scanner.org_unit.exists():
+                scanner.scan_entire_org = True
+                scanner.save(update_fields=['scan_entire_org'])
 
 
 class Migration(migrations.Migration):
