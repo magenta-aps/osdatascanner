@@ -408,7 +408,7 @@ def make_fake_dropbox_handle():
 def make_fake_google_drive_handle():
     path_name, file_name, mail, user = generate_fake_data()
     file_source = GoogleDriveSource(path_name, mail)
-    file_handle = GoogleDriveHandle(file_source, path_name, file_name)
+    file_handle = GoogleDriveHandle(file_source, path_name, file_name, location=path_name)
     return file_handle
 
 

@@ -27,6 +27,8 @@
 
 - Email sources are now scanned based on the Account.email-field rather than related email aliases.
 
+- Google Drive results now show their file path, as it is in Google Drive, instead of showing their ID.
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.
