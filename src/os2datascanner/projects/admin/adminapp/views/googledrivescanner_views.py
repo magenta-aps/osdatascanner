@@ -47,7 +47,8 @@ class GoogleDriveScannerCreate(GrantMixin, ScannerCreate):
         'organization',
         'contacts',
         'google_api_grant',
-        'org_unit'
+        'org_unit',
+        'scan_entire_org',
     ]
 
     def get_success_url(self):
@@ -74,7 +75,8 @@ class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
         'organization',
         'contacts',
         'google_api_grant',
-        'org_unit'
+        'org_unit',
+        'scan_entire_org',
     ]
 
     def get_success_url(self):
@@ -120,7 +122,8 @@ class GoogleDriveScannerCopy(ScannerCopy):
         'organization',
         'contacts',
         'google_api_grant',
-        'org_unit'
+        'org_unit',
+        'scan_entire_org',
     ]
 
     def get_initial(self):

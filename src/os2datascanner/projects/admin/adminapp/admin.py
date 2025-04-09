@@ -108,13 +108,27 @@ class ScannerAdmin(admin.ModelAdmin):
                                 MSGraphMailScanner,
                                 MSGraphFileScanner,
                                 MSGraphCalendarScanner,
-                                MSGraphTeamsFileScanner]
+                                MSGraphTeamsFileScanner,
+                                GmailScanner,
+                                GoogleDriveScanner]
+
+    # For exclusing scan_entire_org
+    include_scan_entire_org_scanners = [
+        MSGraphMailScanner,
+        MSGraphFileScanner,
+        MSGraphCalendarScanner,
+        GmailScanner,
+        GoogleDriveScanner,
+    ]
 
     def get_fields(self, request, obj=None):
         """Only show organizational units if relevant."""
 
         if type(obj) not in self.include_orgunit_scanners:
             self.exclude = ('org_unit', )
+
+        if type(obj) not in self.include_scan_entire_org_scanners:
+            self.exclude = ('scan_entire_org', )
 
         return super().get_fields(request, obj=obj)
 
