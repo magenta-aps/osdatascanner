@@ -24,7 +24,7 @@ def assign_permissions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0152_gmail_remove_file_fields'),
+        ('os2datascanner', '0156_scanner_scan_entire_org'),
     ]
 
     operations = [

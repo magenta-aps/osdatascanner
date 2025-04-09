@@ -6,7 +6,7 @@
 
 {% block title %}
   {% trans "grants"|capfirst %}
-{% endblock %}
+{% endblock title %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -26,13 +26,10 @@
             <div class="aside">
               <h1 class="page-title">{% trans "grants for"|capfirst %} {{ organization.name }}</h1>
 
-
-              {% if perms.grants.add_ewsgrant or perms.grants.add_graphgrant or perms.grants.add_smbgrant %}
+              {% if perms.grants.add_ewsgrant or perms.grants.add_graphgrant or perms.grants.add_smbgrant or perms.grants.add_googleapigrant %}
                 <div class="grant-dropdown">
                   <button title="{% trans 'create new grant'|capfirst %}"
                           class="button expand button--cta-button button--icon-text-button">
-
-
                     <svg class="icon button__plus-icon">
                       <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
                     </svg>
@@ -54,11 +51,8 @@
                   </div>
                 </div>
               {% endif %}
-
-
             </div>
           </div>
-
 
           <div class="datatable-wrapper card lg">
             <div class="datatablex__wrapper">
@@ -131,4 +125,4 @@
 
   </main>
 
-{% endblock %}
+{% endblock body %}

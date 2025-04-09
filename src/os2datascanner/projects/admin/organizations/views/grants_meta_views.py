@@ -24,7 +24,7 @@ class GrantListView(RestrictedListView):
         eg_perm = self.request.user.has_perm("grants.view_ewsgrant")
         gag_perm = self.request.user.has_perm("grants.view_googleapigrant")
 
-        if not (gg_perm or sg_perm or eg_perm):
+        if not (gg_perm or sg_perm or eg_perm or gag_perm):
             raise PermissionDenied
 
         prefetches = [

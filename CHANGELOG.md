@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 3.2?.?, ??? ??? ????
+
+""
+
+### General improvements
+
+- Access to creating and editing grants now requires a django permission in the admin module.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"

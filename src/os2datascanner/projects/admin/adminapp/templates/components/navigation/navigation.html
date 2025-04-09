@@ -44,7 +44,7 @@
         </a>
       </li>
       {#   TODO: Icon messes alignment and looks funny  #}
-      {% if perms.grants.view_ewsgrant or perms.grants.view_graphgrant or perms.grants.view_smbgrant %}
+      {% if perms.grants.view_ewsgrant or perms.grants.view_graphgrant or perms.grants.view_smbgrant or perms.grants.view_googleapigrant %}
         <li>
           <a href="{% url "grant-list" %}"
              class="{% if active_tab == 'grant-list' %}active{% endif %}">

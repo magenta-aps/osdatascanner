@@ -5,6 +5,18 @@ from django.contrib.auth import PermissionDenied
 from utilities import UserWrapper
 
 
+def grant_permission_map(field_name: str) -> str:
+    grant_permission_name_map = {
+        "graph_grant": "graphgrant",
+        "SMBGrant": "smbgrant",
+        "smb_grant": "smbgrant",
+        "ews_grant": "ewsgrant",
+        "GoogleApiGrant": "googleapigrant",
+        "google_api_grant": "googleapigrant"
+    }
+    return grant_permission_name_map[field_name]
+
+
 class GrantMixin:
     """Mixin for dynamic grant form support."""
 
@@ -19,7 +31,7 @@ class GrantMixin:
 
         if self.is_htmx == "true":
             field_name = self.request.GET.get("grant_type")
-            if not self.request.user.has_perm(f"grants.add_{field_name.replace('_', '')}"):
+            if not self.request.user.has_perm(f"grants.add_{grant_permission_map(field_name)}"):
                 raise PermissionDenied
             GrantFormClass = self.get_grant_form_classes().get(field_name)
 

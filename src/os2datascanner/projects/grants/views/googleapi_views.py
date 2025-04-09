@@ -65,6 +65,6 @@ class GoogleApiGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, Crea
 class GoogleApiGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
-    permission_required = "change_googleapigrant"
+    permission_required = "grants.change_googleapigrant"
     template_name = "grants/googleapigrant_update.html"
     success_url = reverse_lazy('grant-list')
