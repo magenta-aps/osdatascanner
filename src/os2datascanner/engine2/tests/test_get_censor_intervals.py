@@ -30,6 +30,15 @@ class TestCensorMethods:
 
         assert response == expected
 
+    @pytest.mark.parametrize("expression", ["A|B", "(A)|B", "A|(B)", "(A)|(B)"])
+    def test_regex_groups(self, expression):
+        rule = RegexRule(expression)
+
+        response = list(rule.get_censor_intervals("AB"))
+
+        expected = [(0, 1), (1, 2)]
+        assert response == expected
+
     def test_adress(self):
         """Not implemented, returns []"""
         rule = AddressRule()
