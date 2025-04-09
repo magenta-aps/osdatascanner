@@ -15,6 +15,7 @@ from uuid import uuid4
 
 from django.db import models
 from django.contrib.auth.models import Permission
+from django.db.models import Deferrable
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -112,7 +113,13 @@ class Account(models.Model):
         verbose_name = _('account')
         verbose_name_plural = _('accounts')
 
-        unique_together = ('organization', 'username')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['organization', 'username'],
+                name='unique_org_username',
+                deferrable=Deferrable.DEFERRED,
+            )
+        ]
 
     def __str__(self):
         return self.username

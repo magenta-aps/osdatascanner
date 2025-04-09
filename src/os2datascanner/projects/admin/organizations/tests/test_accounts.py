@@ -5,10 +5,12 @@ from django.db.utils import IntegrityError
 from ..models import Account
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 class TestAccounts:
 
     def test_account_username_org_constraint(self, test_org, oluf):
+        # If the test class isn't transaction marked, we'll also be throwing a
+        # psycopg2.errors.UniqueViolation at test teardown. That isn't what we're looking for.
         with pytest.raises(IntegrityError):
             Account.objects.create(
                 username=oluf.username,
