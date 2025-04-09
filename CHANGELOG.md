@@ -35,6 +35,9 @@
 
 - A bug, causing scans with no connected org units to scan every org unit, has been fixed.
 
+- The RegexRule didn't censor the context of matches correctly, if the expression contained groups.
+  This has now been fixed.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"

@@ -40,10 +40,12 @@ class RegexRule(SimpleTextRule):
 
     def get_censor_intervals(self, context):
         for m in self._compiled_expression.finditer(context):
-            if (m.groups()):
-                for i in range(len(m.groups())):
+            any_valid_span = False
+            for i in range(len(m.groups())):
+                if m.span(i+1) != (-1, -1):
                     yield m.span(i+1)
-            else:
+                    any_valid_span = True
+            if not any_valid_span:
                 yield m.span()
 
     def to_json_object(self) -> dict:
