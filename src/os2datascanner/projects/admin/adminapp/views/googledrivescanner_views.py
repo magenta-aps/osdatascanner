@@ -16,10 +16,6 @@ from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScanne
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .scanner_views import (
     ScannerBase,
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
@@ -74,18 +70,6 @@ class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
         return {"google_api_grant": GoogleApiScannerForm}
 
 
-class GoogleDriveScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = GoogleDriveScanner
-    success_url = '/googledrivescanners/'
-
-
-class GoogleDriveScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = GoogleDriveScanner
-    success_url = '/googledrivescanners/'
-
-
 class GoogleDriveScannerCopy(ScannerCopy):
     """Create a new copy of an existing Google Drive Scanner"""
     model = GoogleDriveScanner
@@ -95,14 +79,3 @@ class GoogleDriveScannerCopy(ScannerCopy):
         initial = super(GoogleDriveScannerCopy, self).get_initial()
         initial["user_emails"] = self.get_scanner_object().user_emails
         return initial
-
-
-class GoogleDriveScannerAskRun(ScannerAskRun):
-    """Prompt for starting google drive scan, validate first."""
-    model = GoogleDriveScanner
-    run_url_name = "googledrivescanner_run"
-
-
-class GoogleDriveScannerRun(ScannerRun):
-    """View that handles starting of a scanner run."""
-    model = GoogleDriveScanner

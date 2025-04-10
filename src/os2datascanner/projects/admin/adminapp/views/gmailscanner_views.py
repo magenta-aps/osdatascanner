@@ -16,10 +16,6 @@ from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScanne
 from ..models.scannerjobs.gmail import GmailScanner
 from .scanner_views import (
     ScannerBase,
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
@@ -76,18 +72,6 @@ class GmailScannerUpdate(GrantMixin, ScannerUpdate):
         return {"google_api_grant": GoogleApiScannerForm}
 
 
-class GmailScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = GmailScanner
-    success_url = '/gmailscanners/'
-
-
-class GmailScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = GmailScanner
-    success_url = '/gmailscanners/'
-
-
 class GmailScannerCopy(ScannerCopy):
     """Create a new copy of an existing GmailScanner"""
 
@@ -97,14 +81,3 @@ class GmailScannerCopy(ScannerCopy):
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()
         return initial
-
-
-class GmailScannerAskRun(ScannerAskRun):
-    """Prompt for starting gmail scan, validate first."""
-    model = GmailScanner
-    run_url_name = "gmailscanner_run"
-
-
-class GmailScannerRun(ScannerRun):
-    """View that handles starting of a scanner run."""
-    model = GmailScanner

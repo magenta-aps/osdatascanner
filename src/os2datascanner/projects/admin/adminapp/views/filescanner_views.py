@@ -14,10 +14,6 @@ from django import forms
 from os2datascanner.projects.grants.views.smb_views import SMBGrantScannerForm
 from .scanner_views import (
     ScannerBase,
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
@@ -94,18 +90,6 @@ class FileScannerUpdate(GrantMixin, ScannerUpdate):
             return '/filescanners/%s/saved/' % self.object.pk
 
 
-class FileScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = FileScanner
-    success_url = '/filescanners/'
-
-
-class FileScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = FileScanner
-    success_url = '/filescanners/'
-
-
 class FileScannerCopy(GrantMixin, ScannerCopy):
     """Create a new copy of an existing FileScanner"""
     model = FileScanner
@@ -126,19 +110,6 @@ class FileScannerCopy(GrantMixin, ScannerCopy):
 
         form = super().get_form(form_class)
         return initialize_form(form)
-
-
-class FileScannerAskRun(ScannerAskRun):
-    """Prompt for starting file scan, validate first."""
-
-    model = FileScanner
-    run_url_name = "filescanner_run"
-
-
-class FileScannerRun(ScannerRun):
-    """View that handles starting of a file scanner run."""
-
-    model = FileScanner
 
 
 def initialize_form(form):

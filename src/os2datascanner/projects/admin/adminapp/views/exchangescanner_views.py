@@ -21,10 +21,6 @@ from .utils.grant_mixin import GrantMixin
 
 from .scanner_views import (
     ScannerBase,
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
@@ -213,31 +209,6 @@ class ExchangeScannerUpdate(ExchangeScannerBase, GrantMixin, ScannerUpdate):
             form = validate_grant_selected(form)
 
         return form
-
-
-class ExchangeScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = ExchangeScanner
-    success_url = '/exchangescanners/'
-
-
-class ExchangeScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = ExchangeScanner
-    success_url = '/exchangescanners/'
-
-
-class ExchangeScannerAskRun(ScannerAskRun):
-    """Prompt for starting exchange scan, validate first."""
-
-    model = ExchangeScanner
-    run_url_name = 'exchangescanner_run'
-
-
-class ExchangeScannerRun(ScannerRun):
-    """View that handles starting of a exchange scanner run."""
-
-    model = ExchangeScanner
 
 
 def validate_userlist_or_org_units(form):  # noqa CCR001

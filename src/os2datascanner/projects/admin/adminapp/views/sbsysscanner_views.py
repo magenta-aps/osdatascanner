@@ -16,8 +16,7 @@ from django.views import View
 from django.views.generic.base import TemplateView
 
 from .views import LoginRequiredMixin
-from .scanner_views import (ScannerBase, ScannerRun, ScannerList, ScannerRemove,
-                            ScannerAskRun, ScannerCreate, ScannerDelete, ScannerUpdate)
+from .scanner_views import ScannerBase, ScannerList, ScannerCreate, ScannerUpdate
 from ..models.scannerjobs.sbsysscanner import SbsysScanner
 
 
@@ -66,27 +65,3 @@ class SbsysScannerUpdate(ScannerUpdate):
 
     def get_success_url(self):
         return '/sbsysscanners/%s/saved/' % self.object.pk
-
-
-class SbsysScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = SbsysScanner
-    success_url = '/sbysscanners/'
-
-
-class SbsysScannerDelete(ScannerDelete):
-    """ Deletes a Sbsys scannerjob"""
-    model = SbsysScanner
-    type = "sbsys"
-    success_url = '/sbsysscanners/'
-
-
-class SbsysScannerAskRun(ScannerAskRun):
-    """Prompts for confirmation before running scannerjob"""
-    model = SbsysScanner
-    run_url_name = "sbsysscanner_run"
-
-
-class SbsysScannerRun(ScannerRun):
-    """ Runs the Sbsys scannerjob."""
-    model = SbsysScanner

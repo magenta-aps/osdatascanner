@@ -14,7 +14,6 @@
 
 from django.forms import ModelChoiceField
 from django.views import View
-from django.urls import reverse_lazy
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.grants.views import MSGraphGrantRequestView
@@ -27,15 +26,11 @@ from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
 from .scanner_views import (
     ScannerBase,
-    ScannerRun,
     ScannerList,
-    ScannerAskRun,
     ScannerCreate,
-    ScannerDelete,
     ScannerUpdate,
     ScannerCopy,
-    ScannerCleanupStaleAccounts,
-    ScannerRemove)
+    ScannerCleanupStaleAccounts)
 
 
 class MSGraphMailScannerList(ScannerList):
@@ -115,18 +110,6 @@ class MSGraphMailScannerUpdate(GrantMixin, ScannerUpdate):
         return '/msgraphmailscanners/%s/saved/' % self.object.pk
 
 
-class MSGraphMailScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = MSGraphMailScanner
-    success_url = reverse_lazy("msgraphmailscanners")
-
-
-class MSGraphMailScannerDelete(ScannerDelete):
-    """Deletes a Microsoft Graph mail scanner job."""
-    model = MSGraphMailScanner
-    success_url = reverse_lazy("msgraphmailscanners")
-
-
 class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
@@ -135,19 +118,6 @@ class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
-
-
-class MSGraphMailScannerAskRun(ScannerAskRun):
-    """Prompts the user for confirmation before running a Microsoft Graph mail
-    scanner job."""
-    model = MSGraphMailScanner
-    run_url_name = "msgraphmailscanner_run"
-
-
-class MSGraphMailScannerRun(ScannerRun):
-    """Runs a Microsoft Graph mail scanner job, displaying the new scan tag on
-    success and error details on failure."""
-    model = MSGraphMailScanner
 
 
 class MSGraphMailScannerCleanup(ScannerCleanupStaleAccounts):
@@ -219,19 +189,6 @@ class MSGraphFileScannerUpdate(GrantMixin, ScannerUpdate):
         return '/msgraphfilescanners/%s/saved/' % self.object.pk
 
 
-class MSGraphFileScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = MSGraphFileScanner
-    success_url = reverse_lazy("msgraphfilescanners")
-
-
-class MSGraphFileScannerDelete(ScannerDelete):
-    """Deletes a Microsoft Graph file scanner job."""
-    model = MSGraphFileScanner
-    fields = []
-    success_url = reverse_lazy("msgraphfilescanners")
-
-
 class MSGraphFileScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphFileScanner
@@ -244,19 +201,6 @@ class MSGraphFileScannerCopy(GrantMixin, ScannerCopy):
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
-
-
-class MSGraphFileScannerAskRun(ScannerAskRun):
-    """Prompts the user for confirmation before running a Microsoft Graph file
-    scanner job."""
-    model = MSGraphFileScanner
-    run_url_name = "msgraphfilescanner_run"
-
-
-class MSGraphFileScannerRun(ScannerRun):
-    """Runs a Microsoft Graph file scanner job, displaying the new scan tag on
-    success and error details on failure."""
-    model = MSGraphFileScanner
 
 
 class MSGraphFileScannerCleanup(ScannerCleanupStaleAccounts):
@@ -326,20 +270,6 @@ class MSGraphCalendarScannerUpdate(GrantMixin, ScannerUpdate):
         return '/msgraphcalendarscanners/%s/saved/' % self.object.pk
 
 
-class MSGraphCalendarScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = MSGraphCalendarScanner
-    success_url = reverse_lazy("msgraphcalendarscanners")
-
-
-class MSGraphCalendarScannerDelete(ScannerDelete):
-    """Deletes a Microsoft Graph calendar scanner job."""
-    model = MSGraphCalendarScanner
-    type = 'msgraph-calendar'
-    fields = []
-    success_url = reverse_lazy("msgraphcalendarscanners")
-
-
 class MSGraphCalendarScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph calendar scanner job."""
     model = MSGraphCalendarScanner
@@ -351,21 +281,6 @@ class MSGraphCalendarScannerCopy(GrantMixin, ScannerCopy):
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
-
-
-class MSGraphCalendarScannerAskRun(ScannerAskRun):
-    """Prompts the user for confirmation before running a Microsoft Graph
-    calendar scanner job."""
-    model = MSGraphCalendarScanner
-    type = 'msgraph-calendar'
-    run_url_name = "msgraphcalendarscanner_run"
-
-
-class MSGraphCalendarScannerRun(ScannerRun):
-    """Runs a Microsoft Graph calendar scanner job, displaying the new scan tag on
-    success and error details on failure."""
-    model = MSGraphCalendarScanner
-    type = 'msgraph-calendar'
 
 
 class MSGraphCalendarScannerCleanup(ScannerCleanupStaleAccounts):
@@ -435,19 +350,6 @@ class MSGraphTeamsFileScannerUpdate(GrantMixin, ScannerUpdate):
         return '/msgraphteamsfilescanners/%s/saved/' % self.object.pk
 
 
-class MSGraphTeamsFileScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = MSGraphTeamsFileScanner
-    success_url = reverse_lazy("msgraphteamsfilescanners")
-
-
-class MSGraphTeamsFileScannerDelete(ScannerDelete):
-    """Deletes a Microsoft Graph file scanner job."""
-    model = MSGraphTeamsFileScanner
-    fields = []
-    success_url = reverse_lazy("msgraphteamsfilescanners")
-
-
 class MSGraphTeamsFileScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphTeamsFileScanner
@@ -459,16 +361,3 @@ class MSGraphTeamsFileScannerCopy(GrantMixin, ScannerCopy):
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
-
-
-class MSGraphTeamsFileScannerAskRun(ScannerAskRun):
-    """Prompts the user for confirmation before running a Microsoft Graph file
-    scanner job."""
-    model = MSGraphTeamsFileScanner
-    run_url_name = "msgraphteamsfilescanner_run"
-
-
-class MSGraphTeamsFileScannerRun(ScannerRun):
-    """Runs a Microsoft Graph file scanner job, displaying the new scan tag on
-    success and error details on failure."""
-    model = MSGraphTeamsFileScanner

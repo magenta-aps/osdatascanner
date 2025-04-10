@@ -348,6 +348,7 @@ class ScannerAskRun(RestrictedDetailView):
     fields = []
     context_object_name = "scanner"
     template_name = 'components/scanner/scanner_ask_run.html'
+    run_url_name = ""
 
     def get_context_data(self, **kwargs):
         """Check that user is allowed to run this scanner."""

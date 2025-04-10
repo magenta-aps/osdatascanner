@@ -13,10 +13,6 @@
 #
 from .scanner_views import (
     ScannerBase,
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
     ScannerUpdate,
     ScannerCreate,
     ScannerList)
@@ -80,28 +76,3 @@ class DropboxScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/dropboxscanners/%s/saved/' % self.object.pk
-
-
-class DropboxScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = DropboxScanner
-    success_url = '/dropboxscanners/'
-
-
-class DropboxScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = DropboxScanner
-    success_url = '/dropboxscanners/'
-
-
-class DropboxScannerAskRun(ScannerAskRun):
-    """Prompt for starting dropbox scan, validate first."""
-
-    model = DropboxScanner
-    run_url_name = 'dropboxscanner_run'
-
-
-class DropboxScannerRun(ScannerRun):
-    """View that handles starting of a file scanner run."""
-
-    model = DropboxScanner
