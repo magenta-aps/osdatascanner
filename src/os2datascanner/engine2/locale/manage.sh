@@ -22,6 +22,7 @@ do
         die 4 "$0: command '$command' not found; have you installed gettext?"
 done
 
+# shellcheck disable=SC2086
 makemessages() {
     case "$1" in
         --help | -h)
@@ -36,9 +37,10 @@ END
     esac
 
     echo "$0: building translation template"
+    update_args="--add-location=file --sort-output"
     pot="$locale_path/$domain.pot"
     find "$source_path/" -iname '*.py' -print0 | \
-            xargs -0 -- xgettext --output "$pot"
+            xargs -0 -- xgettext $update_args --sort-output
     for language in "$locale_path"/*/
     do
         po="$language/LC_MESSAGES/$domain.po"
@@ -46,7 +48,8 @@ END
         if [ -f "$po" ]
         then
             echo "$0: updating translation file $po"
-            msgmerge --quiet --backup off --update "$po" "$pot"
+            msgmerge --quiet --backup off --update "$po" \
+                    $update_args "$pot"
         else
             echo "$0: creating translation file $po"
             msginit --no-translator -i "$pot" -o "$po"

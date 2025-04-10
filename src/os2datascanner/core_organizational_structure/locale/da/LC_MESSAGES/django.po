@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-24 15:12+0100\n"
+"POT-Creation-Date: 2025-04-10 13:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,88 +17,87 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps.py:8
+#: apps.py
 msgid "core_organizational_structure"
 msgstr "core_organizational_structure"
 
-#: models/account.py:43 models/organization.py:72
-#: models/organizational_unit.py:40
+#: models/account.py models/organization.py models/organizational_unit.py
 msgid "UUID"
 msgstr "UUID"
 
-#: models/account.py:47
+#: models/account.py
 msgid "username"
 msgstr "brugernavn"
 
-#: models/account.py:51
+#: models/account.py
 msgid "first name"
 msgstr "fornavn"
 
-#: models/account.py:57
+#: models/account.py
 msgid "last name"
 msgstr "efternavn"
 
-#: models/account.py:62
+#: models/account.py
 msgid "contact email"
 msgstr "kontakt email"
 
-#: models/account.py:70 models/organization.py:225
+#: models/account.py models/organization.py
 msgid "organization"
 msgstr "organisation"
 
-#: models/account.py:84
+#: models/account.py
 msgid "universal dpo status"
 msgstr "universel dpo status"
 
-#: models/account.py:88
+#: models/account.py
 msgid "superuser_status"
 msgstr "superbruger status"
 
-#: models/account.py:93
+#: models/account.py
 msgid "account permissions"
 msgstr "Brugerrettigheder"
 
-#: models/account.py:112 models/aliases.py:79 models/position.py:95
+#: models/account.py models/aliases.py models/position.py
 msgid "account"
 msgstr "konto"
 
-#: models/account.py:113
+#: models/account.py
 msgid "accounts"
 msgstr "konti"
 
-#: models/aliases.py:51
+#: models/aliases.py
 msgid "SID"
 msgstr "SID"
 
-#: models/aliases.py:52 models/organization.py:82
+#: models/aliases.py models/organization.py
 msgid "email"
 msgstr "email"
 
-#: models/aliases.py:53
+#: models/aliases.py
 msgid "remediator"
 msgstr "oprydder"
 
-#: models/aliases.py:55
+#: models/aliases.py
 msgid "generic"
 msgstr "generisk"
 
-#: models/aliases.py:73
+#: models/aliases.py
 msgid "alias ID"
 msgstr "alias ID"
 
-#: models/aliases.py:86
+#: models/aliases.py
 msgid "alias type"
 msgstr "alias type"
 
-#: models/aliases.py:90
+#: models/aliases.py
 msgid "value"
 msgstr "værdi"
 
-#: models/aliases.py:92
+#: models/aliases.py
 msgid "shared"
 msgstr "delt"
 
-#: models/aliases.py:93
+#: models/aliases.py
 msgid ""
 "The results related to the user through this alias is shared with other "
 "users. Matches associated through this alias will not be taken into account "
@@ -108,88 +107,88 @@ msgstr ""
 "brugere. Matches forbundet via dette alias vill ikke blive taget i "
 "betragtning i brugerstatistikker."
 
-#: models/aliases.py:116
+#: models/aliases.py
 msgid "alias"
 msgstr "alias"
 
-#: models/aliases.py:117
+#: models/aliases.py
 msgid "aliases"
 msgstr "aliasser"
 
-#: models/aliases.py:126
+#: models/aliases.py
 #, python-brace-format
 msgid "Alias ({type}) for {account_user}: {value}"
 msgstr "Alias ({type}) for {account_user}: {value}"
 
-#: models/organization.py:35 models/organization.py:41
+#: models/organization.py
 msgid "None"
 msgstr "Ingen"
 
-#: models/organization.py:36
+#: models/organization.py
 msgid "Website"
 msgstr "Hjemmeside"
 
-#: models/organization.py:37
+#: models/organization.py
 msgid "Email"
 msgstr "Email"
 
-#: models/organization.py:42
+#: models/organization.py
 msgid "Single DPO"
 msgstr "Enkel DPO"
 
-#: models/organization.py:43
+#: models/organization.py
 msgid "Unit DPO"
 msgstr "Enheds DPO"
 
-#: models/organization.py:47
+#: models/organization.py
 msgid "Enable automatic categorization for entire organization"
 msgstr "Automatisk kategorisering for alle i organisationen"
 
-#: models/organization.py:48
+#: models/organization.py
 msgid "Allow users to categorize emails"
 msgstr "Tillad brugere at kategorisere emails"
 
-#: models/organization.py:49
+#: models/organization.py
 msgid "No categorization"
 msgstr "Ingen kategorisering"
 
-#: models/organization.py:76 models/organizational_unit.py:45
+#: models/organization.py models/organizational_unit.py
 msgid "name"
 msgstr "navn"
 
-#: models/organization.py:88
+#: models/organization.py
 msgid "phone number"
 msgstr "telefonnummer"
 
-#: models/organization.py:97
+#: models/organization.py
 msgid "Email notification interval"
 msgstr "Emailudsendelse interval"
 
-#: models/organization.py:100
+#: models/organization.py
 msgid "schedule start time"
 msgstr "planlæg starttid"
 
-#: models/organization.py:103
+#: models/organization.py
 msgid "Email header banner"
 msgstr "E-mail-header banner"
 
-#: models/organization.py:106
+#: models/organization.py
 msgid "retention policy"
 msgstr ""
 
-#: models/organization.py:108
+#: models/organization.py
 msgid "retention days"
 msgstr ""
 
-#: models/organization.py:113
+#: models/organization.py
 msgid "allow deletion of emails directly"
 msgstr "tillad direkte sletning af emails"
 
-#: models/organization.py:119
+#: models/organization.py
 msgid "Outlook category settings"
 msgstr "Outlook kategori indstillinger"
 
-#: models/organization.py:120
+#: models/organization.py
 msgid ""
 "configure whether OSdatascanner should create Outlook categories and "
 "categorize found matches, and decide whether you want to enforce this on an "
@@ -199,110 +198,98 @@ msgstr ""
 "kategorisere fundne resultater, samt hvorvidt du ønsker at håndhæve dette "
 "for hele organisationen, eller lade dette være op til den enkelte."
 
-#: models/organization.py:128
+#: models/organization.py
 msgid "allow deletion of online drive files directly"
 msgstr "tillad direkte sletning af filer på online drev"
 
-#: models/organization.py:136
+#: models/organization.py
 msgid "Leadertab access"
 msgstr "Lederfane adgang"
 
-#: models/organization.py:142
+#: models/organization.py
 msgid "Dpotab access"
 msgstr "DPOfane adgang"
 
-#: models/organization.py:147
+#: models/organization.py
 msgid "show support button"
 msgstr "vis supportknap"
 
-#: models/organization.py:152
+#: models/organization.py
 msgid "support contact method"
 msgstr "support kontaktform"
 
-#: models/organization.py:157
+#: models/organization.py
 msgid "support name"
 msgstr "support navn"
 
-#: models/organization.py:160
+#: models/organization.py
 msgid "support value"
 msgstr "support værdi"
 
-#: models/organization.py:165
+#: models/organization.py
 msgid "DPO contact method"
 msgstr "DPO kontaktform"
 
-#: models/organization.py:170
+#: models/organization.py
 msgid "DPO name"
 msgstr "DPO navn"
 
-#: models/organization.py:173
+#: models/organization.py
 msgid "DPO value"
 msgstr "DPO værdi"
 
-#: models/organization.py:187
+#: models/organization.py
 msgid "Provide a name of the support contact."
 msgstr "Angiv navn på support kontakt"
 
-#: models/organization.py:195
+#: models/organization.py
 msgid "Provide a name of the DPO."
 msgstr "Angiv navn på DPO"
 
-#: models/organization.py:226
+#: models/organization.py
 msgid "organizations"
 msgstr "organisationer"
 
-#: models/organizational_unit.py:53
+#: models/organizational_unit.py
 msgid "parent unit"
 msgstr "overordnet enhed"
 
-#: models/organizational_unit.py:64
+#: models/organizational_unit.py
 msgid "hidden"
 msgstr "skjult"
 
-#: models/organizational_unit.py:81 models/position.py:100
+#: models/organizational_unit.py models/position.py
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: models/organizational_unit.py:82
+#: models/organizational_unit.py
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
-#: models/position.py:28
+#: models/position.py
 msgid "employee"
 msgstr "medarbejder"
 
-#: models/position.py:29
+#: models/position.py
 msgid "manager"
 msgstr "leder"
 
-#: models/position.py:30
+#: models/position.py
 msgid "data protection officer"
 msgstr "data protection officer"
 
-#: models/position.py:114
+#: models/position.py
 msgid "position"
 msgstr "tilknytning"
 
-#: models/position.py:115
+#: models/position.py
 msgid "positions"
 msgstr "tilknytninger"
 
-#: models/position.py:124
+#: models/position.py
 #, python-brace-format
 msgid "{cls}: {account} ({role}) at {unit}"
 msgstr "{cls}: {account} ({role}) i {unit}"
-
-#: models/syncedpermission.py:15
-msgid "A very important permission"
-msgstr ""
-
-#: models/syncedpermission.py:16
-msgid "Allowed to destroy the universe"
-msgstr ""
-
-#: models/syncedpermission.py:17
-msgid "Access to all Google infrastructure"
-msgstr ""
 
 #~ msgid "Delete emails"
 #~ msgstr "Slet emails"

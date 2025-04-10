@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 15:49+0100\n"
+"POT-Creation-Date: 2025-04-10 13:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,63 +17,95 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:19
+#: admin.py
 msgid "(unchanged)"
 msgstr "(uændret)"
 
-#: admin.py:36
+#: admin.py
+msgid "Invalid file format"
+msgstr "Ugyldigt filformat"
+
+#: admin.py
 msgid "This field is required."
 msgstr "Dette felt er påkrævet."
 
-#: admin.py:44 admin.py:64
+#: admin.py
 msgid "Username"
 msgstr "Brugernavn"
 
-#: admin.py:45 admin.py:66
+#: admin.py
 msgid "Password"
 msgstr "Adgangskode"
 
-#: admin.py:65 models/smbgrant.py:12
+#: admin.py models/smbgrant.py
 msgid "Domain"
 msgstr "Domæne"
 
-#: apps.py:8
+#: apps.py
 msgid "grants"
 msgstr "bevillinger"
 
-#: models/grant.py:20
+#: models/googleapigrant.py
+msgid "Service account json"
+msgstr "JSON for servicekontoen"
+
+#: models/googleapigrant.py
+msgid "Google Api Grant"
+msgstr "Google Api Bevilling"
+
+#: models/googleapigrant.py
+msgid "A grant using this service account already exists."
+msgstr "En bevilling, der bruger denne service account, eksisterer allerede."
+
+#: models/googleapigrant.py
+msgid "Service account is required"
+msgstr "Service account er påkrævet"
+
+#: models/googleapigrant.py
+msgid "Service account must be in JSON format"
+msgstr "Service account skal være i JSON format"
+
+#: models/googleapigrant.py
+msgid "Invalid service account"
+msgstr "Ugyldig service account"
+
+#: models/grant.py
 msgid "Organization"
 msgstr "Organisation"
 
-#: models/grant.py:41
+#: models/grant.py
+msgid "last updated"
+msgstr "sidst opdateret"
+
+#: models/grant.py
 msgid "Not known"
 msgstr "Ukendt"
 
-#: models/grant.py:69
+#: models/grant.py
 msgid "username"
 msgstr "brugernavn"
 
-#: models/grant.py:70
+#: models/grant.py
 msgid "password (encrypted)"
 msgstr "kodeord (krypteret)"
 
-#: models/graphgrant.py:19
+#: models/graphgrant.py
 msgid "app ID"
 msgstr "app ID"
 
-#: models/graphgrant.py:22
+#: models/graphgrant.py
 msgid "tenant ID"
 msgstr "tenant ID"
 
-#: models/graphgrant.py:25
+#: models/graphgrant.py
 msgid "expiry date"
 msgstr "udløbsdato"
 
-#: models/graphgrant.py:28
+#: models/graphgrant.py
 msgid "client secret"
 msgstr "client secret"
 
-#: templates/grants/ewsgrant_update.html:7
+#: templates/grants/ewsgrant_update.html
 msgid ""
 "\n"
 "            An EWS Service Account grant represents a service account with "
@@ -95,34 +127,46 @@ msgstr ""
 "           men en korrekt konfigureret Graph bevilling kan.\n"
 "      "
 
-#: templates/grants/grant_start.html:23
+#: templates/grants/googleapigrant_update.html
+msgid ""
+"A Google API Grant represents a service account with access to your Google "
+"domain, which will allow OSdatascanner to access the permitted resources in "
+"your Google domain. You can control what resources the service account can "
+"access from the Google Admin panel."
+msgstr ""
+"En Google API bevilling repræsenterer en service account med adgang til din "
+"Google domæne, hvilket vil tillade OSdatascanner at tilgå de tilladte "
+"ressourcer i dit Google domæne. Du kan kontrollere hvilke ressourcer service "
+"accounten kan tilgå fra Google Admin panelet."
+
+#: templates/grants/grant_start.html
 msgid "Configure Microsoft Graph"
 msgstr "Konfigurér Microsoft Graph"
 
-#: templates/grants/grant_start.html:26
+#: templates/grants/grant_start.html
 msgid ""
 "To use this service, you must allow OSdatascanner access to its content."
 msgstr ""
 "For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
 "tjenestens indhold."
 
-#: templates/grants/grant_start.html:30
+#: templates/grants/grant_start.html
 msgid "The service refused to grant OSdatascanner the necessary rights:"
 msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
 
-#: templates/grants/grant_start.html:33
+#: templates/grants/grant_start.html
 msgid "Click the button below to try again."
 msgstr "Klik på knappen nedenfor for at prøve igen."
 
-#: templates/grants/grant_start.html:35
+#: templates/grants/grant_start.html
 msgid "Click the button below to forward to this service."
 msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
 
-#: templates/grants/grant_start.html:41 templates/grants/grant_start.html:42
+#: templates/grants/grant_start.html
 msgid "Continue to"
 msgstr "Fortsæt til"
 
-#: templates/grants/grant_start.html:44
+#: templates/grants/grant_start.html
 msgid ""
 "You will be forwarded to the creation form after the service has issued the "
 "necessary rights."
@@ -130,7 +174,7 @@ msgstr ""
 "Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
 "de nødvendige rettigheder."
 
-#: templates/grants/grant_start.html:46
+#: templates/grants/grant_start.html
 msgid ""
 "The information pointing to the OSdatascanner system for this service is "
 "missing."
@@ -138,32 +182,29 @@ msgstr ""
 "De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
 "mangler."
 
-#: templates/grants/grant_update.html:14
+#: templates/grants/grant_update.html
 msgid "edit grant"
 msgstr "redigér bevillinger"
 
-#: templates/grants/grant_update.html:16
+#: templates/grants/grant_update.html
 msgid "create grant"
 msgstr "opret bevilling"
 
-#: templates/grants/grant_update.html:53
-#: templates/grants/grant_update_partial.html:33
+#: templates/grants/grant_update.html
+#: templates/grants/grant_update_partial.html
 msgid "step 7 and 8 here"
 msgstr "trin 7 og 8 her"
 
-#: templates/grants/grant_update.html:65 templates/grants/grant_update.html:66
-#: templates/grants/grant_update.html:67
-#: templates/grants/grant_update_partial.html:47
-#: templates/grants/grant_update_partial.html:48
-#: templates/grants/grant_update_partial.html:55
+#: templates/grants/grant_update.html
+#: templates/grants/grant_update_partial.html
 msgid "save Grant"
 msgstr "gem bevilling"
 
-#: templates/grants/graphgrant_update.html:15
+#: templates/grants/graphgrant_update.html
 msgid "fetch expiry date"
 msgstr "hent udløbsdato"
 
-#: templates/grants/graphgrant_update.html:24
+#: templates/grants/graphgrant_update.html
 msgid ""
 "\n"
 "        A GraphGrant represents an entitlement to use the Microsoft Graph "
@@ -189,7 +230,7 @@ msgstr ""
 "        Microsoft's portal.\n"
 "      "
 
-#: templates/grants/smbgrant_update.html:7
+#: templates/grants/smbgrant_update.html
 msgid ""
 "\n"
 "        An SMB Service Account grant represents a service account with "
@@ -205,11 +246,25 @@ msgstr ""
 "          til at tilgå og scanne dette domæne. \n"
 "      "
 
-#: views/msgraph_views.py:107
+#: views/googleapi_views.py
+msgid "Service Account JSON File"
+msgstr "Service Account JSON Fil"
+
+#: views/googleapi_views.py
+msgid ""
+"To create a service account follow the segments about service accounts <a "
+"href='https://developers.google.com/workspace/guides/create-credentials'> in "
+"this guide</a>. Make sure to grant it domain wide delegation."
+msgstr ""
+"For at oprette en service account, følg segmenterne om service accounts <a "
+"href='https://developers.google.com/workspace/guides/create-credentials'> i "
+"denne guide</a>. Sørg for at give den 'domain wide delegation'."
+
+#: views/msgraph_views.py
 msgid "Client secret"
 msgstr "Client secret"
 
-#: views/msgraph_views.py:108
+#: views/msgraph_views.py
 msgid ""
 "To acquire a new client secret, navigate to your Azure Portal and find the "
 "application created for OSdatascanner. Once you've found your application, "
@@ -219,54 +274,6 @@ msgstr ""
 "applikationen oprettet for OSdatascanner. Når du har fundet applikationen, "
 "kan du følge instruktionerne i  "
 
-#: views/msgraph_views.py:114
+#: views/msgraph_views.py
 msgid "Expiry date"
 msgstr "Udløbsdato"
-
-#: views/googleapi_views.py:17
-msgid ""
-"To create a service account follow the segments"
-" about service accounts"
-" <a href='https://developers.google.com/workspace/guides/create-credentials'>"
-" in this guide</a>."
-" Make sure to grant it domain wide delegation."
-msgstr ""
-"For at oprette en service account, følg segmenterne"
-" om service accounts"
-" <a href='https://developers.google.com/workspace/guides/create-credentials'>"
-" i denne guide</a>."
-" Sørg for at give den 'domain wide delegation'."
-
-#: templates/grants/smbgrant_update.html:7
-msgid ""
-"A Google API Grant represents a service account with access to your Google domain, which will allow OSdatascanner to access the permitted resources in your Google domain. You can control what resources the service account can access from the Google Admin panel."
-msgstr ""
-"En Google API bevilling repræsenterer en service account med adgang til din Google domæne, hvilket vil tillade OSdatascanner at tilgå de tilladte ressourcer i dit Google domæne. Du kan kontrollere hvilke ressourcer service accounten kan tilgå fra Google Admin panelet."
-
-#: views/googleapi_views.py:17
-msgid "Service Account JSON File"
-msgstr "Service Account JSON Fil"
-
-#: views/googleapi_views.py:25
-msgid "Last Updated"
-msgstr "Sidst Opdateret"
-
-#: models/googleapigrant.py:21
-msgid "Google Api Grant"
-msgstr "Google Api Bevilling"
-
-#: models/googleapigrant.py:34
-msgid "A grant using this service account already exists."
-msgstr "En bevilling, der bruger denne service account, eksisterer allerede."
-
-#: models/googleapigrant.py:36
-msgid "Service account is required"
-msgstr "Service account er påkrævet"
-
-#: models/googleapigrant.py:50
-msgid "Service account must be in JSON format"
-msgstr "Service account skal være i JSON format"
-
-#: models/googleapigrant.py:63
-msgid "Invalid service account"
-msgstr "Ugyldig service account"
