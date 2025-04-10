@@ -338,11 +338,9 @@ class ScannerCopy(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
         # Copied scannerjobs should be "Invalid" by default
         # to avoid being able to misuse this feature.
         initial["validation_status"] = Scanner.INVALID
-        while True:
-            scanner_obj.name = f'{scanner_obj.name} Copy'
-            if not Scanner.objects.filter(name=scanner_obj.name).exists():
-                initial["name"] = scanner_obj.name
-                break
+        while Scanner.objects.unfiltered().filter(name=scanner_obj.name).exists():
+            scanner_obj.name += " " + _("Copy")
+        initial["name"] = scanner_obj.name
 
         return initial
 
