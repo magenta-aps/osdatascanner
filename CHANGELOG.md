@@ -38,6 +38,9 @@
 - The RegexRule didn't censor the context of matches correctly, if the expression contained groups.
   This has now been fixed.
 
+- Addressed import job issue where an account is deleted and recreated in the same transaction
+  (with a new UUID), by deferring unique organization-account username constraint.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
