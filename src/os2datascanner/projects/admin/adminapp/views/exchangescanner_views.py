@@ -20,6 +20,7 @@ from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
 
 from .scanner_views import (
+    ScannerBase,
     ScannerDelete,
     ScannerRemove,
     ScannerAskRun,
@@ -64,8 +65,17 @@ class ExchangeScannerList(ScannerList):
         return super().get_queryset()
 
 
-class ExchangeScannerBase(View):
+exchange_scanner_fields = [
+    'mail_domain',
+    'userlist',
+    'service_endpoint',
+    'ews_grant',
+    'org_unit',
+    'scan_subject',
+]
 
+
+class ExchangeScannerBase(View):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = UserWrapper(self.request.user)
@@ -82,10 +92,7 @@ class ExchangeScannerCreate(ExchangeScannerBase, GrantMixin, ScannerCreate):
     """Create an Exchange scanner view."""
 
     model = ExchangeScanner
-    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
-              'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts', 'ews_grant', 'scan_subject']
+    fields = ScannerBase.fields + exchange_scanner_fields
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
@@ -125,10 +132,7 @@ class ExchangeScannerCopy(ExchangeScannerBase, GrantMixin, ScannerCopy):
     """Create a new copy of an existing ExchangeScanner"""
 
     model = ExchangeScanner
-    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
-              'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts', 'ews_grant', 'scan_subject']
+    fields = ScannerBase.fields + exchange_scanner_fields
 
     def get_grant_form_classes(self):
         if settings.MSGRAPH_EWS_AUTH:
@@ -168,10 +172,7 @@ class ExchangeScannerUpdate(ExchangeScannerBase, GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = ExchangeScanner
-    fields = ['name', 'mail_domain', 'schedule', 'exclusion_rule', 'do_ocr',
-              'do_last_modified_check', 'rule', 'userlist', 'only_notify_superadmin',
-              'service_endpoint', 'organization', 'org_unit', 'keep_false_positives',
-              'contacts', 'ews_grant', 'scan_subject']
+    fields = ScannerBase.fields + exchange_scanner_fields
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
@@ -223,7 +224,6 @@ class ExchangeScannerRemove(ScannerRemove):
 class ExchangeScannerDelete(ScannerDelete):
     """Delete a scanner view."""
     model = ExchangeScanner
-    fields = []
     success_url = '/exchangescanners/'
 
 

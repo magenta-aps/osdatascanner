@@ -12,6 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 from .scanner_views import (
+    ScannerBase,
     ScannerDelete,
     ScannerRemove,
     ScannerAskRun,
@@ -29,23 +30,16 @@ class DropboxScannerList(ScannerList):
     type = 'dropbox'
 
 
+dropbox_scanner_fields = [
+    'token',
+]
+
+
 class DropboxScannerCreate(ScannerCreate):
     """Create a file scanner view."""
 
     model = DropboxScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'token',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts'
-    ]
+    fields = ScannerBase.fields + dropbox_scanner_fields
 
     def get_form(self, form_class=None):
         """Adds special field password."""
@@ -65,19 +59,7 @@ class DropboxScannerUpdate(ScannerUpdate):
     """Update a scanner view."""
 
     model = DropboxScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'token',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts'
-    ]
+    fields = ScannerBase.fields + dropbox_scanner_fields
 
     def get_form(self, form_class=None):
         """Adds special field password and decrypts password."""
@@ -109,7 +91,6 @@ class DropboxScannerRemove(ScannerRemove):
 class DropboxScannerDelete(ScannerDelete):
     """Delete a scanner view."""
     model = DropboxScanner
-    fields = []
     success_url = '/dropboxscanners/'
 
 

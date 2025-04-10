@@ -15,6 +15,7 @@ from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import Grant
 from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScannerForm
 from ..models.scannerjobs.gmail import GmailScanner
 from .scanner_views import (
+    ScannerBase,
     ScannerDelete,
     ScannerRemove,
     ScannerAskRun,
@@ -31,27 +32,20 @@ class GmailScannerList(ScannerList):
     type = 'gmail'
 
 
+gmail_scanner_fields = [
+    'scan_subject',
+    'google_api_grant',
+    'org_unit',
+    'scan_attachments',
+    'scan_entire_org',
+]
+
+
 class GmailScannerCreate(GrantMixin, ScannerCreate):
     """Create a scanner view"""
 
     model = GmailScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'scan_subject',
-        'rule',
-        'organization',
-        'contacts',
-        'google_api_grant',
-        'org_unit',
-        'scan_attachments',
-        'scan_entire_org',
-    ]
+    fields = ScannerBase.fields + gmail_scanner_fields
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
@@ -65,23 +59,7 @@ class GmailScannerUpdate(GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = GmailScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'scan_subject',
-        'rule',
-        'organization',
-        'contacts',
-        'google_api_grant',
-        'org_unit',
-        'scan_attachments',
-        'scan_entire_org',
-    ]
+    fields = ScannerBase.fields + gmail_scanner_fields
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.
@@ -107,7 +85,6 @@ class GmailScannerRemove(ScannerRemove):
 class GmailScannerDelete(ScannerDelete):
     """Delete a scanner view."""
     model = GmailScanner
-    fields = []
     success_url = '/gmailscanners/'
 
 
@@ -115,23 +92,7 @@ class GmailScannerCopy(ScannerCopy):
     """Create a new copy of an existing GmailScanner"""
 
     model = GmailScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'scan_subject',
-        'rule',
-        'organization',
-        'contacts',
-        'google_api_grant',
-        'org_unit',
-        'scan_attachments',
-        'scan_entire_org',
-    ]
+    fields = ScannerBase.fields + gmail_scanner_fields
 
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()

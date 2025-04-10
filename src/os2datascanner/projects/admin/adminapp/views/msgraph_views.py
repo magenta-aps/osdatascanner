@@ -26,8 +26,16 @@ from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
 from .scanner_views import (
-        ScannerRun, ScannerList, ScannerAskRun, ScannerCreate, ScannerDelete,
-        ScannerUpdate, ScannerCopy, ScannerCleanupStaleAccounts, ScannerRemove)
+    ScannerBase,
+    ScannerRun,
+    ScannerList,
+    ScannerAskRun,
+    ScannerCreate,
+    ScannerDelete,
+    ScannerUpdate,
+    ScannerCopy,
+    ScannerCleanupStaleAccounts,
+    ScannerRemove)
 
 
 class MSGraphMailScannerList(ScannerList):
@@ -62,29 +70,22 @@ def patch_form(view, form):
     return form
 
 
+msgraph_scanner_fields = [
+    'graph_grant',
+    'org_unit',
+    'scan_entire_org',
+    'scan_deleted_items_folder',
+    'scan_syncissues_folder',
+    'scan_attachments',
+    'scan_subject',
+]
+
+
 class _MSGraphMailScannerCreate(GrantMixin, ScannerCreate):
     """Creates a new Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
     type = 'msgraph-mail'
-    fields = [
-        'name',
-        'schedule',
-        'graph_grant',
-        'only_notify_superadmin',
-        'do_ocr',
-        'org_unit',
-        'scan_entire_org',
-        'exclusion_rule',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'scan_deleted_items_folder',
-        'scan_syncissues_folder',
-        'scan_attachments',
-        'scan_subject',
-        'rule',
-        'organization',
-        'contacts'
-     ]
+    fields = ScannerBase.fields + msgraph_scanner_fields
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
@@ -102,25 +103,7 @@ class MSGraphMailScannerUpdate(GrantMixin, ScannerUpdate):
     for modification."""
     model = MSGraphMailScanner
     type = 'msgraph-mailscanners'
-    fields = [
-        'name',
-        'schedule',
-        'graph_grant',
-        'only_notify_superadmin',
-        'do_ocr',
-        'org_unit',
-        'scan_entire_org',
-        'exclusion_rule',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'scan_deleted_items_folder',
-        'scan_syncissues_folder',
-        'scan_attachments',
-        'scan_subject',
-        'rule',
-        'organization',
-        'contacts'
-     ]
+    fields = ScannerBase.fields + msgraph_scanner_fields
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
@@ -141,7 +124,6 @@ class MSGraphMailScannerRemove(ScannerRemove):
 class MSGraphMailScannerDelete(ScannerDelete):
     """Deletes a Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
-    fields = []
     success_url = reverse_lazy("msgraphmailscanners")
 
 
@@ -149,25 +131,7 @@ class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
     """Creates a copy of an existing Microsoft Graph mail scanner job."""
     model = MSGraphMailScanner
     type = 'msgraph-mail'
-    fields = [
-        'name',
-        'schedule',
-        'graph_grant',
-        'only_notify_superadmin',
-        'do_ocr',
-        'org_unit',
-        'scan_entire_org',
-        'exclusion_rule',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'scan_deleted_items_folder',
-        'scan_syncissues_folder',
-        'scan_attachments',
-        'scan_subject',
-        'rule',
-        'organization',
-        'contacts'
-     ]
+    fields = ScannerBase.fields + msgraph_scanner_fields
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}

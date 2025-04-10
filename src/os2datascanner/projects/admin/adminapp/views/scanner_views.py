@@ -61,6 +61,18 @@ class ScannerList(RestrictedListView):
 class ScannerBase(object):
     template_name = 'components/scanner/scanner_form.html'
 
+    fields = [
+        'name',
+        'schedule',
+        'do_ocr',
+        'do_last_modified_check',
+        'keep_false_positives',
+        'only_notify_superadmin',
+        'rule',
+        'organization',
+        'contacts',
+    ]
+
     def get_form(self, form_class=None):
         """Get the form for the view.
 
@@ -87,7 +99,7 @@ class ScannerBase(object):
         form.fields["rule"] = ModelChoiceField(
             allowed_rules,
             validators=ModelMultipleChoiceField.default_validators,
-            )
+        )
 
         form.fields["exclusion_rule"] = ModelChoiceField(
             allowed_rules,
@@ -196,10 +208,9 @@ class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
 class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
     """View for editing an existing scannerjob."""
     permission_required = "os2datascanner.change_scanner"
-    edit = True
     old_url = ''
     old_rule = None
-    old_user = ''
+    edit = True
 
     def get_form(self, form_class=None):
         """Get the form for the view.
@@ -216,7 +227,7 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
             self.old_url = self.object.mail_domain
         elif hasattr(self.object, "unc"):
             self.old_url = self.object.unc
-        # Store the existing rules selected in the scannerjob
+        # Store the existing rule selected in the scannerjob
         self.old_rule = self.object.rule
 
         return form
@@ -237,19 +248,6 @@ class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
             data = form.cleaned_data
             return entry in data and data[entry] != comparable
 
-        # TODO: ... delete?
-        if is_in_cleaned("url", self.old_url) \
-                or is_in_cleaned("mail_domain", self.old_url) \
-                or is_in_cleaned("unc", self.old_url) \
-                or is_in_cleaned("username", self.old_user):
-            # No password supplied for new username or URL, displaying error to user.
-            if 'password' in form.cleaned_data \
-                    and 'creds-method' in form.cleaned_data \
-                    and form.cleaned_data['creds-method'] == 'use-credentials' \
-                    and form.cleaned_data["password"] == "":
-                form.add_error("password",
-                               _("Password must be updated, when changing username or url."))
-                return super().form_invalid(form)
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -277,9 +275,9 @@ class ScannerRemove(PermissionRequiredMixin, RestrictedDeleteView):
 
 class ScannerDelete(PermissionRequiredMixin, RestrictedDeleteView):
     permission_required = "os2datascanner.delete_scanner"
+    fields = []
 
     def get_form(self, form_class=None):
-        """Adds special field password and decrypts password."""
         if form_class is None:
             form_class = self.get_form_class()
 

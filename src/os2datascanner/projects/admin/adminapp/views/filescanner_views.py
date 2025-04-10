@@ -13,6 +13,7 @@ from django import forms
 
 from os2datascanner.projects.grants.views.smb_views import SMBGrantScannerForm
 from .scanner_views import (
+    ScannerBase,
     ScannerDelete,
     ScannerRemove,
     ScannerAskRun,
@@ -33,28 +34,21 @@ class FileScannerList(ScannerList):
     type = 'file'
 
 
+file_scanner_fields = [
+    'unc',
+    'alias',
+    'skip_super_hidden',
+    'unc_is_home_root',
+    'smb_grant'
+]
+
+
 class FileScannerCreate(GrantMixin, ScannerCreate):
     """Create a file scanner view."""
 
     model = FileScanner
     type = 'file'
-    fields = [
-        'name',
-        'schedule',
-        'unc',
-        'exclusion_rule',
-        'alias',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'skip_super_hidden',
-        'unc_is_home_root',
-        'rule',
-        'organization',
-        'contacts',
-        'smb_grant'
-        ]
+    fields = ScannerBase.fields + file_scanner_fields
 
     def get_grant_form_classes(self):
         return {
@@ -76,23 +70,7 @@ class FileScannerUpdate(GrantMixin, ScannerUpdate):
 
     model = FileScanner
     type = 'file'
-    fields = [
-        'name',
-        'schedule',
-        'unc',
-        'exclusion_rule',
-        'alias',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'skip_super_hidden',
-        'unc_is_home_root',
-        'rule',
-        'organization',
-        'contacts',
-        'smb_grant'
-        ]
+    fields = ScannerBase.fields + file_scanner_fields
 
     def get_grant_form_classes(self):
         return {
@@ -125,7 +103,6 @@ class FileScannerRemove(ScannerRemove):
 class FileScannerDelete(ScannerDelete):
     """Delete a scanner view."""
     model = FileScanner
-    fields = []
     success_url = '/filescanners/'
 
 
@@ -133,23 +110,7 @@ class FileScannerCopy(GrantMixin, ScannerCopy):
     """Create a new copy of an existing FileScanner"""
     model = FileScanner
     type = 'file'
-    fields = [
-        'name',
-        'schedule',
-        'unc',
-        'exclusion_rule',
-        'alias',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'skip_super_hidden',
-        'unc_is_home_root',
-        'rule',
-        'organization',
-        'contacts',
-        'smb_grant'
-        ]
+    fields = ScannerBase.fields + file_scanner_fields
 
     def get_grant_form_classes(self):
         return {

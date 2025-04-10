@@ -15,6 +15,7 @@ from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import Grant
 from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScannerForm
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .scanner_views import (
+    ScannerBase,
     ScannerDelete,
     ScannerRemove,
     ScannerAskRun,
@@ -31,25 +32,18 @@ class GoogleDriveScannerList(ScannerList):
     type = 'googledrive'
 
 
+google_drive_scanner_fields = [
+    'google_api_grant',
+    'org_unit',
+    'scan_entire_org',
+]
+
+
 class GoogleDriveScannerCreate(GrantMixin, ScannerCreate):
     """Create a file scanner view"""
 
     model = GoogleDriveScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts',
-        'google_api_grant',
-        'org_unit',
-        'scan_entire_org',
-    ]
+    fields = ScannerBase.fields + google_drive_scanner_fields
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
@@ -63,21 +57,7 @@ class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
     """Update a scanner view."""
 
     model = GoogleDriveScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts',
-        'google_api_grant',
-        'org_unit',
-        'scan_entire_org',
-    ]
+    fields = ScannerBase.fields + google_drive_scanner_fields
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.
@@ -103,28 +83,13 @@ class GoogleDriveScannerRemove(ScannerRemove):
 class GoogleDriveScannerDelete(ScannerDelete):
     """Delete a scanner view."""
     model = GoogleDriveScanner
-    fields = []
     success_url = '/googledrivescanners/'
 
 
 class GoogleDriveScannerCopy(ScannerCopy):
     """Create a new copy of an existing Google Drive Scanner"""
     model = GoogleDriveScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts',
-        'google_api_grant',
-        'org_unit',
-        'scan_entire_org',
-    ]
+    fields = ScannerBase.fields + google_drive_scanner_fields
 
     def get_initial(self):
         initial = super(GoogleDriveScannerCopy, self).get_initial()
