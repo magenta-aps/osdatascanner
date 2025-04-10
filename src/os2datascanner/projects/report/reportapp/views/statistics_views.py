@@ -34,7 +34,6 @@ from django.conf import settings
 
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account, StatusChoices
-from ...organizations.models.aliases import AliasType
 from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
 from ....utils.view_mixins import CSVExportMixin
@@ -706,13 +705,7 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
         matches_by_week = account.count_matches_by_week()
         context["matches_by_week"] = matches_by_week
         scannerjobs = (
-            filter_inapplicable_matches(
-                user=account.user,
-                matches=DocumentReport.objects.filter(
-                        number_of_matches__gte=1,
-                        resolution_status__isnull=True
-                    ),
-                only_personal=True)
+            account.get_report(Account.ReportType.PERSONAL)
             .order_by(
                 "scanner_job_pk"
             ).values(
@@ -741,13 +734,8 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
         scannerjob_name = request.POST.get("name")
         account = Account.objects.get(pk=pk)
 
-        reports = filter_inapplicable_matches(
-            user=account.user,
-            matches=DocumentReport.objects.filter(
-                scanner_job_pk=scannerjob_pk,
-                resolution_status__isnull=True,
-                number_of_matches__gte=1),
-            only_personal=True)
+        reports = account.get_report(Account.ReportType.PERSONAL).filter(
+                scanner_job_pk=scannerjob_pk)
 
         response_string = _(
             'You have deleted all results from %(scannerjob)s associated with '
@@ -810,52 +798,6 @@ class EmployeeView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['show_retention_column'] = self.org.retention_policy
         return context
-
-
-# Logic separated to function to allow usability in send_notifications.py
-
-
-def filter_inapplicable_matches(user, matches, account=None, only_personal=False):
-    """ Filters matches by organization
-    and role. """
-
-    # Filter by organization
-    try:
-        user_organization = user.account.organization
-        if user_organization:
-            matches = matches.filter(organization=user_organization)
-    except Account.DoesNotExist:
-        # No Account has been set on the request user
-        # Check if we have received an account as arg (from send_notifications.py) and use
-        # its organization to locate matches.
-        if account:
-            matches = matches.filter(organization=account.organization)
-
-    if not only_personal and user.is_superuser:
-        hidden_matches = matches.filter(only_notify_superadmin=True)
-        user_matches = matches.filter(
-            alias_relation__in=user.aliases.exclude(_alias_type=AliasType.REMEDIATOR),
-            only_notify_superadmin=False)
-
-        matches_all = hidden_matches | user_matches
-    elif only_personal:
-        matches_all = matches.filter(
-            alias_relation__in=user.aliases.exclude(
-                _alias_type=AliasType.REMEDIATOR, shared=True),
-            only_notify_superadmin=False)
-    else:
-        matches_all = matches.filter(
-            alias_relation__in=user.aliases.exclude(_alias_type=AliasType.REMEDIATOR),
-            only_notify_superadmin=False)
-
-    if not only_personal and user.account.is_remediator:
-        matches = matches.filter(
-            alias_relation__in=user.aliases.all(),
-            only_notify_superadmin=False)
-    else:
-        matches = matches_all
-
-    return matches
 
 
 def sort_by_keys(d: dict) -> dict:
