@@ -1,3 +1,4 @@
+import pytest
 import os.path
 
 from os2datascanner.engine2.model.core import SourceManager
@@ -26,7 +27,12 @@ class TestEngine2Images:
                 resource = h.follow(sm)
                 assert convert(resource, OutputType.Text) is None
 
-    def test_size_computation(self):
+    @pytest.mark.parametrize("test_data_path, expected_size", [
+        (os.path.join(test_data_path, "good"), expected_size),
+        (os.path.join(test_data_path, "corrupted"), expected_size),
+        (os.path.join(test_data_path, "large"), (4000, 4000)),
+    ])
+    def test_size_computation(self, test_data_path, expected_size):
         fs = FilesystemSource(test_data_path)
         with SourceManager() as sm:
             for h in fs.handles(sm):
@@ -37,3 +43,12 @@ class TestEngine2Images:
                         # Pillow RGBA bug detected -- skipping
                         continue
                 assert size == expected_size
+
+    def test_downscaling_conversions(self):
+        """ Tests images larger than 2000x2000 (which will be downscaled) still
+            produce expected result. """
+        fs = FilesystemSource(os.path.join(test_data_path, "large"))
+        with SourceManager() as sm:
+            for h in fs.handles(sm):
+                resource = h.follow(sm)
+                assert convert(resource, OutputType.Text) == expected_result
