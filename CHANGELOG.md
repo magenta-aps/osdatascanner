@@ -41,6 +41,8 @@
 - Addressed import job issue where an account is deleted and recreated in the same transaction
   (with a new UUID), by deferring unique organization-account username constraint.
 
+- Downscaling large images before OCR scanning to avoid a lot of timeout errors.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
