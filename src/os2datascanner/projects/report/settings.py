@@ -46,16 +46,6 @@ if not SAML2_AUTH['METADATA_LOCAL_FILE_PATH']:  # noqa: F821
     del SAML2_AUTH['METADATA_LOCAL_FILE_PATH']  # noqa: F821
 
 
-# https://github.com/django/channels/issues/624#issuecomment-609483480
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)]
-        }
-    }
-}
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

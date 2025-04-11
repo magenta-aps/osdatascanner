@@ -349,9 +349,6 @@ services:
       queue:
         condition: service_healthy
 
-  redis:
-    # Channel layer backend
-    image: redis:latest
 
   report_event_collector:
     image: magentaaps/os2datascanner-report:dev

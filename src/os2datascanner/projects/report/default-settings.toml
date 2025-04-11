@@ -89,8 +89,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_prometheus',
     'recurrence',
-    'channels',
-    'channels_redis',
     'django_structlog',
     'os2datascanner.core_organizational_structure.apps.CoreOrganizationalStructureConfig',
     'os2datascanner.projects.report.organizations.apps.OrganizationsConfig',

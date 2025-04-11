@@ -89,8 +89,6 @@ def perform_import(  # noqa: CCR001, too high cognitive complexity
     if import_service.ldapconfig.import_into == "group" and not has_group_filter:
         logger.debug("LDAP configuration not updated. Importing without group filter.")
 
-    # TODO: In the future this kind of logic should be reimplemented using
-    # websockets.
     # Timeout set to 30 minutes
     if import_service.ldapconfig.import_into == "group" and has_group_filter:
         # Gets all groups in the realm, and then gets every member of the groups
