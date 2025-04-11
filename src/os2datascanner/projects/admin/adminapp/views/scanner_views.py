@@ -43,9 +43,6 @@ from ...organizations.models.aliases import AliasType
 from ....utils.view_mixins import CSVExportMixin
 from django.utils.translation import gettext_lazy as _
 
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-
 logger = structlog.get_logger("adminapp")
 
 
@@ -86,17 +83,6 @@ class StatusBase(RestrictedListView):
 class StatusOverview(StatusBase):
     template_name = "scan_status.html"
     model = ScanStatus
-
-    # Function for sending message to socket
-    def send_socket_message():
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'get_updates',
-            {
-                'type': 'websocket_receive',
-                'message': 'new matches'
-            }
-        )
 
     def get_queryset(self):
 

@@ -115,8 +115,6 @@ INSTALLED_APPS = [
     'mptt',
     'django_extensions',
     'django_prometheus',
-    'channels',
-    'channels_redis',
     'rest_framework',
     'django_structlog'
 ]

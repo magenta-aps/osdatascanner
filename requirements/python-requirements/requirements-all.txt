@@ -10,14 +10,10 @@ anyio==3.6.2
     # via watchfiles
 asgiref==3.8.1
     # via
-    #   channels
-    #   channels-redis
     #   django
     #   django-structlog
 asttokens==2.0.8
     # via stack-data
-async-timeout==4.0.2
-    # via redis
 attrs==22.1.0
     # via pytest
 backcall==0.2.0
@@ -33,12 +29,6 @@ cffi==1.15.1
     #   cryptography
     #   pynacl
     #   xattr
-channels==4.0.0
-    # via
-    #   -r requirements-all.in
-    #   channels-redis
-channels-redis==4.0.0
-    # via -r requirements-all.in
 chardet==5.0.0
     # via -r requirements-all.in
 charset-normalizer==2.1.1
@@ -67,12 +57,9 @@ defusedxml==0.7.1
     #   exchangelib
     #   odfpy
     #   pysaml2
-deprecated==1.2.13
-    # via redis
 django==3.2.11
     # via
     #   -r requirements-all.in
-    #   channels
     #   django-debug-toolbar
     #   django-extensions
     #   django-js-asset
@@ -217,8 +204,6 @@ more-itertools==10.3.0
     # via -r requirements-all.in
 mozilla-django-oidc==2.0.0
     # via -r requirements-all.in
-msgpack==1.0.4
-    # via channels-redis
 ntlm-auth==1.5.0
     # via requests-ntlm
 numpy==1.25.2
@@ -240,9 +225,7 @@ openpyxl==3.1.2
 os2ds-rules==0.1.0
     # via -r requirements-all.in
 packaging==21.3
-    # via
-    #   pytest
-    #   redis
+    # via pytest
 pandas==2.1.0
     # via -r requirements-all.in
 parameterized==0.8.1
@@ -378,8 +361,6 @@ pyyaml==6.0
     # via uvicorn
 randomtimestamp==2.2
     # via -r requirements-all.in
-redis==4.3.4
-    # via channels-redis
 regex==2022.9.13
     # via -r requirements-all.in
 requests==2.31.0
@@ -472,8 +453,6 @@ websockets==10.3
     # via uvicorn
 whitenoise==6.2.0
     # via -r requirements-all.in
-wrapt==1.14.1
-    # via deprecated
 xattr==0.9.9
     # via -r requirements-all.in
 xlrd==2.0.1
