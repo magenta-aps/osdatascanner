@@ -120,6 +120,12 @@ Lint SCSS files:
     # Run prettier on all SCSS files
     - prettier --check "**/*.scss"
 
+Check for line numbers in translations:
+  <<: *lint-default
+  image: buildpack-deps:bookworm
+  stage: lint
+  script:
+    - (find . -iname '*.po' -print0 | xargs -0 -- egrep -l '#:(.+):' && exit 1) || exit 0
 
 # Pre-build stage
 Build base image:

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-25 10:24+0100\n"
+"POT-Creation-Date: 2025-04-10 13:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/components/containers/cards/card__zoom-controls.html:8
+#: templates/components/containers/cards/card__zoom-controls.html
 msgid ""
 "Hold and drag your mouse to zoom in on part of the graph. Hold shift while "
 "using the mouse wheel to manually zoom. Use the reset button to return the "
@@ -28,32 +27,31 @@ msgstr ""
 "Hold shift nede mens du ruller med musehjulet for at zoome manuelt. Benyt "
 "nulstil-knappen for at nulstille zoom på grafen."
 
-#: templates/components/containers/cards/card__zoom-controls.html:20
+#: templates/components/containers/cards/card__zoom-controls.html
 msgid "Reset"
 msgstr "Nulstil"
 
-#: templates/components/containers/permission_list.html:15
+#: templates/components/containers/permission_list.html
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
-#: templates/components/containers/permission_list.html:24
+#: templates/components/containers/permission_list.html
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
-#: templates/components/containers/permission_list.html:35
+#: templates/components/containers/permission_list.html
 msgid "Click here to add a new permission"
 msgstr "Klik her for at tilføje en ny rettighed"
 
-#: templates/components/containers/permission_list.html:36
-#: templates/components/containers/permission_list.html:37
+#: templates/components/containers/permission_list.html
 msgid "add permission"
 msgstr "tilføj rettighed"
 
-#: templates/components/containers/permission_list.html:49
+#: templates/components/containers/permission_list.html
 msgid "Choose permission"
 msgstr "Vælg rettighed"
 
-#: templates/components/decoration/info-icon.html:6
+#: templates/components/decoration/info-icon.html
 #, python-format
 msgid "%(tooltip)s"
 msgstr "%(tooltip)s"

@@ -4,12 +4,11 @@
 # OS2datascanner.
 # IBP <ibp@magenta.dk>, 2021.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-08 10:42+0200\n"
+"POT-Creation-Date: 2025-04-10 13:17+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -19,23 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adminapp/admin.py:72
+#: adminapp/admin.py
 msgid "CPR rule should not be used more than once"
 msgstr "CPR-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:76
+#: adminapp/admin.py
 msgid "Health-information rule should not be used more than once"
 msgstr "Helbredsinformations-reglen kan ikke bruges mere end én gang"
 
-#: adminapp/admin.py:145
+#: adminapp/admin.py
 msgid "An errorlog cannot both be new and resolved"
 msgstr "En fejlbesked kan ikke både være ny og løst"
 
-#: adminapp/admin.py:184
+#: adminapp/admin.py
 msgid "Change new-status to True"
 msgstr "Sæt ny-status til True"
 
-#: adminapp/admin.py:188
+#: adminapp/admin.py
 #, python-brace-format
 msgid ""
 "Changed {qs_count} elements new-status to True. Note: if the element has its "
@@ -44,56 +43,56 @@ msgstr ""
 "Ændrede {qs_count} elementers ny-status til True. Bemærk: hvis et element "
 "har is_resolved attributtet sat til True, så er den ikke blevet ændret"
 
-#: adminapp/admin.py:193
+#: adminapp/admin.py
 msgid "Change new-status to False"
 msgstr "Sæt ny-status til False"
 
-#: adminapp/admin.py:197
+#: adminapp/admin.py
 #, python-brace-format
 msgid "Changed {qs_count} elements new-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/admin.py:200
+#: adminapp/admin.py
 msgid "Change removed-status to True"
 msgstr "Sæt fjernet-status til True"
 
-#: adminapp/admin.py:204
+#: adminapp/admin.py
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to True"
 msgstr "Ændrede {qs_count} elementers fjernet-status til True"
 
-#: adminapp/admin.py:207
+#: adminapp/admin.py
 msgid "Change removed-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:211
+#: adminapp/admin.py
 #, python-brace-format
 msgid "Changed {qs_count} elements removed-status to False"
 msgstr "Ændrede {qs_count} elementers fjernet-status til False"
 
-#: adminapp/admin.py:229
+#: adminapp/admin.py
 msgid "Change resolved-status to True"
 msgstr "Sæt løst-status til True"
 
-#: adminapp/admin.py:233
+#: adminapp/admin.py
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to True"
 msgstr "Ændrede {qs_count} elementers ny-status til True"
 
-#: adminapp/admin.py:236
+#: adminapp/admin.py
 msgid "Change resolved-status to False"
 msgstr "Sæt fjernet-status til False"
 
-#: adminapp/admin.py:240
+#: adminapp/admin.py
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
-#: adminapp/management/commands/graphgrant_expiry_check.py:13
+#: adminapp/management/commands/graphgrant_expiry_check.py
 msgid "Your GraphGrant needs updating!"
 msgstr ""
 
-#: adminapp/management/commands/graphgrant_expiry_check.py:15
+#: adminapp/management/commands/graphgrant_expiry_check.py
 #, python-brace-format
 msgid ""
 "Your GraphGrant client secret has an expiration date of: {exp_date}! \n"
@@ -101,178 +100,169 @@ msgid ""
 "loss! \n"
 msgstr ""
 
-#: adminapp/management/commands/start_scan.py:19
+#: adminapp/management/commands/start_scan.py
 msgid "the primary key of the scanner job to start"
 msgstr "primærnøglen på det scannerjob, der skal startes"
 
-#: adminapp/management/commands/start_scan.py:23
+#: adminapp/management/commands/start_scan.py
 msgid "only scan objects previously scheduled for a checkup"
 msgstr "scan kun objekter, der har checkup tilknyttet"
 
-#: adminapp/management/commands/start_scan.py:27
+#: adminapp/management/commands/start_scan.py
 msgid "disable the last modification date check for everything in this scan"
 msgstr "slå sidst ændret-funktion fra for alt i dette scan"
 
-#: adminapp/management/commands/start_scan.py:35
+#: adminapp/management/commands/start_scan.py
 #, python-brace-format
 msgid "no scanner job exists with id {id}"
 msgstr "intet scannerjob findes med id {id}"
 
-#: adminapp/management/commands/test_checkup.py:22
+#: adminapp/management/commands/test_checkup.py
 msgid "the primary key of the scheduled checkup to touch"
 msgstr "primærnøglen på det checkup der skal berøres"
 
-#: adminapp/management/commands/test_checkup.py:26
+#: adminapp/management/commands/test_checkup.py
 msgid "print metadata of the touched checkup"
 msgstr "udskriv metadata af det berørte checkup"
 
-#: adminapp/management/commands/test_checkup.py:35
+#: adminapp/management/commands/test_checkup.py
 #, python-brace-format
 msgid "no scheduled checkup exists with id {id}"
 msgstr "intet planlagt checkup findes med id {id}"
 
-#: adminapp/models/apikey.py:16 adminapp/models/rules.py:47
-#: adminapp/models/scannerjobs/scanner.py:104
-#: adminapp/models/usererrorlog.py:56
-#: import_services/models/msgraph_import_job.py:28
-#: import_services/models/os2mo_import_job.py:70
-#: import_services/models/realm.py:33
+#: adminapp/models/apikey.py adminapp/models/rules.py
+#: adminapp/models/scannerjobs/scanner.py adminapp/models/usererrorlog.py
+#: import_services/models/msgraph_import_job.py
+#: import_services/models/os2mo_import_job.py import_services/models/realm.py
 msgid "organization"
 msgstr "organisation"
 
-#: adminapp/models/apikey.py:30
+#: adminapp/models/apikey.py
 msgid "API key"
 msgstr "API-nøgle"
 
-#: adminapp/models/apikey.py:31
+#: adminapp/models/apikey.py
 msgid "API keys"
 msgstr "API-nøgler"
 
-#: adminapp/models/rules.py:40 adminapp/models/rules.py:101
-#: adminapp/models/scannerjobs/scanner.py:97 core/models/client.py:75
-#: organizations/templates/organizations/grants_list.html:56
-#: organizations/templates/organizations/org_table.html:39
-#: organizations/templates/organizations/orgunit_list.html:202
+#: adminapp/models/rules.py adminapp/models/scannerjobs/scanner.py
+#: core/models/client.py organizations/templates/organizations/grants_list.html
+#: organizations/templates/organizations/org_table.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "name"
 msgstr "navn"
 
-#: adminapp/models/rules.py:53
+#: adminapp/models/rules.py
 msgid "description"
 msgstr "Beskrivelse"
 
-#: adminapp/models/rules.py:59
+#: adminapp/models/rules.py
 msgid "sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/models/rules.py:90
+#: adminapp/models/rules.py
 msgid "number ID"
 msgstr "identifikationsnummer"
 
-#: adminapp/models/rules.py:91
-#: adminapp/templates/components/admin_widgets/rule_builder.html:32
+#: adminapp/models/rules.py
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "names"
 msgstr "personnavne"
 
-#: adminapp/models/rules.py:92
+#: adminapp/models/rules.py
 msgid "addresses"
 msgstr "adresser"
 
-#: adminapp/models/rules.py:93
+#: adminapp/models/rules.py
 msgid "sick leave"
 msgstr "sygemelding"
 
-#: adminapp/models/rules.py:96
+#: adminapp/models/rules.py
 msgid "Danish"
 msgstr "dansk"
 
-#: adminapp/models/rules.py:120
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:47
-#: adminapp/templates/components/rules/customrule_form.html:64
-#: adminapp/templates/components/rules/regexrule_form.html:135
+#: adminapp/models/rules.py
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Rule"
 msgstr "Regel"
 
-#: adminapp/models/rules.py:124
+#: adminapp/models/rules.py
 msgid "categories"
 msgstr "kategorier"
 
-#: adminapp/models/scannerjobs/analysisscanner.py:71
+#: adminapp/models/scannerjobs/analysisscanner.py
 msgid "Mime type"
 msgstr "Filformat"
 
-#: adminapp/models/scannerjobs/dropboxscanner.py:51
-#: adminapp/models/scannerjobs/filescanner.py:86
-#: adminapp/models/scannerjobs/googledrivescanner.py:49
-#: adminapp/models/scannerjobs/msgraph.py:171
-#: adminapp/models/scannerjobs/msgraph.py:228
+#: adminapp/models/scannerjobs/dropboxscanner.py
+#: adminapp/models/scannerjobs/filescanner.py
+#: adminapp/models/scannerjobs/googledrivescanner.py
+#: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "file"
 msgstr "fil"
 
-#: adminapp/models/scannerjobs/dropboxscanner.py:52
-#: adminapp/models/scannerjobs/filescanner.py:87
-#: adminapp/models/scannerjobs/googledrivescanner.py:50
-#: adminapp/models/scannerjobs/msgraph.py:172
-#: adminapp/models/scannerjobs/msgraph.py:229
+#: adminapp/models/scannerjobs/dropboxscanner.py
+#: adminapp/models/scannerjobs/filescanner.py
+#: adminapp/models/scannerjobs/googledrivescanner.py
+#: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "files"
 msgstr "filer"
 
-#: adminapp/models/scannerjobs/dropboxscanner.py:55
-#: adminapp/templates/components/navigation/scanner_tabs.html:18
+#: adminapp/models/scannerjobs/dropboxscanner.py
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Dropboxscanner"
 msgstr "Dropboxscanner"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:75
-#: adminapp/models/scannerjobs/msgraph.py:66
+#: adminapp/models/scannerjobs/exchangescanner.py
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "Graph grant"
 msgstr "Graph bevilling"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:79
+#: adminapp/models/scannerjobs/exchangescanner.py
 msgid "EWS grant"
 msgstr "EWS bevilling"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:84
-#: adminapp/models/scannerjobs/gmail.py:36
-#: adminapp/models/scannerjobs/msgraph.py:94
+#: adminapp/models/scannerjobs/exchangescanner.py
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgid "Scan subjects"
 msgstr "Scan emnefelter"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:85
-#: adminapp/models/scannerjobs/gmail.py:37
-#: adminapp/models/scannerjobs/msgraph.py:95
+#: adminapp/models/scannerjobs/exchangescanner.py
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgid "Scan mail subjects"
 msgstr "Scan email-emnefelter"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:171
-#: adminapp/models/scannerjobs/gmail.py:62
-#: adminapp/models/scannerjobs/msgraph.py:121
+#: adminapp/models/scannerjobs/exchangescanner.py
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "email message"
 msgstr "mailbesked"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:172
-#: adminapp/models/scannerjobs/gmail.py:63
-#: adminapp/models/scannerjobs/msgraph.py:122
+#: adminapp/models/scannerjobs/exchangescanner.py
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "email messages"
 msgstr "mailbeskeder"
 
-#: adminapp/models/scannerjobs/exchangescanner.py:175
-#: adminapp/templates/components/common/breadcrumb.html:18
-#: adminapp/templates/components/navigation/scanner_tabs.html:15
+#: adminapp/models/scannerjobs/exchangescanner.py
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Exchangescanner"
 msgstr "Exchangescanner"
 
-#: adminapp/models/scannerjobs/filescanner.py:37
+#: adminapp/models/scannerjobs/filescanner.py
 msgid "drive letter"
 msgstr "drevbogstav"
 
-#: adminapp/models/scannerjobs/filescanner.py:40
+#: adminapp/models/scannerjobs/filescanner.py
 msgid "skip super-hidden files"
 msgstr "spring over superskjulte filer"
 
-#: adminapp/models/scannerjobs/filescanner.py:41
+#: adminapp/models/scannerjobs/filescanner.py
 msgid ""
 "do not scan files with the HIDDEN and SYSTEM bits set, or files with the "
 "HIDDEN bit set whose name starts with a tilde"
@@ -280,11 +270,11 @@ msgstr ""
 "lad være med at scanne filer med både HIDDEN- og SYSTEM-attributter sat, "
 "samt filer med HIDDEN-attribut sat og et navn med tilde-tegn foran"
 
-#: adminapp/models/scannerjobs/filescanner.py:46
+#: adminapp/models/scannerjobs/filescanner.py
 msgid "UNC is home root"
 msgstr "UNC er brugermappernes rod"
 
-#: adminapp/models/scannerjobs/filescanner.py:47
+#: adminapp/models/scannerjobs/filescanner.py
 msgid ""
 "all folders under the given UNC are user home folders; their owners have "
 "responsibility for everything they contain regardless of other filesystem "
@@ -293,156 +283,154 @@ msgstr ""
 "alle mapper under det givne UNC er brugernes hjemmemapper: deres ejere har "
 "ansvar for alt, der ligger derinde, uanset hvad filsystemet ellers må sige"
 
-#: adminapp/models/scannerjobs/filescanner.py:53
+#: adminapp/models/scannerjobs/filescanner.py
 msgid "SMB grant"
 msgstr "SMB bevilling"
 
-#: adminapp/models/scannerjobs/filescanner.py:83
+#: adminapp/models/scannerjobs/filescanner.py
 msgid "UNC must follow the UNC format"
 msgstr "UNC skal følge UNC-format"
 
-#: adminapp/models/scannerjobs/filescanner.py:90
-#: adminapp/templates/components/common/breadcrumb.html:14
-#: adminapp/templates/components/navigation/scanner_tabs.html:10
+#: adminapp/models/scannerjobs/filescanner.py
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Filescanner"
 msgstr "Filscanner"
 
-#: adminapp/models/scannerjobs/gmail.py:42
-#: adminapp/models/scannerjobs/msgraph.py:88
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgid "Scan attachments"
 msgstr "Scan vedhæftninger"
 
-#: adminapp/models/scannerjobs/gmail.py:43
-#: adminapp/models/scannerjobs/msgraph.py:89
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
-#: adminapp/models/scannerjobs/gmail.py:72
+#: adminapp/models/scannerjobs/gmail.py
 msgid "Gmail scanner"
 msgstr "Gmailscanner"
 
-#: adminapp/models/scannerjobs/googledrivescanner.py:53
-#: adminapp/templates/components/common/breadcrumb.html:38
-#: adminapp/templates/components/navigation/scanner_tabs.html:43
+#: adminapp/models/scannerjobs/googledrivescanner.py
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Google Drive scanner"
 msgstr "Google Drive scanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:76
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "Scan deleted items folder"
 msgstr "Scan slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:77
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "Include emails in the deleted post folder"
 msgstr "Inkludér emails i slettet post mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:82
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "Scan syncissues folder"
 msgstr "Scan synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:83
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
-#: adminapp/models/scannerjobs/msgraph.py:131
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "MSGraph mailscanner"
 msgstr "MSGraph mailscanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:175
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "MSGraph filescanner"
 msgstr "MSGraph filscanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:200
+#: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "appointment"
 msgstr "begivenhed"
 
-#: adminapp/models/scannerjobs/msgraph.py:201
+#: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "appointments"
 msgstr "begivenheder"
 
-#: adminapp/models/scannerjobs/msgraph.py:204
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "MSGraph calendarscanner"
 msgstr "MSGraph kalenderscanner"
 
-#: adminapp/models/scannerjobs/msgraph.py:213
-#: adminapp/models/scannerjobs/webscanner.py:43
+#: adminapp/models/scannerjobs/msgraph.py
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "check dead links"
 msgstr "tjek døde links"
 
-#: adminapp/models/scannerjobs/msgraph.py:232
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "MSGraph Teams filescanner"
 msgstr "MSGraph Teams filscanner"
 
-#: adminapp/models/scannerjobs/sbsysscanner.py:23
+#: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
 msgid "case"
 msgstr "sag"
 
-#: adminapp/models/scannerjobs/sbsysscanner.py:24
+#: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
 msgid "cases"
 msgstr "sager"
 
-#: adminapp/models/scannerjobs/sbsysscanner.py:27
+#: adminapp/models/scannerjobs/sbsysscanner.py
 msgid "SBSYS scanner"
 msgstr "SBSYS-scanner"
 
-#: adminapp/models/scannerjobs/scanner.py:89
+#: adminapp/models/scannerjobs/scanner.py
 msgctxt "unit of scan"
 msgid "object"
 msgstr "objekt"
 
-#: adminapp/models/scannerjobs/scanner.py:90
+#: adminapp/models/scannerjobs/scanner.py
 msgctxt "unit of scan"
 msgid "objects"
 msgstr "objekter"
 
-#: adminapp/models/scannerjobs/scanner.py:112
+#: adminapp/models/scannerjobs/scanner.py
 msgid "contacts"
 msgstr "kontakter"
 
-#: adminapp/models/scannerjobs/scanner.py:114
+#: adminapp/models/scannerjobs/scanner.py
 msgid "The users who should be notified on completed scans."
 msgstr "Brugere der skal underrettes ved færdige scanninger."
 
-#: adminapp/models/scannerjobs/scanner.py:121
+#: adminapp/models/scannerjobs/scanner.py
 msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
-#: adminapp/models/scannerjobs/scanner.py:125
+#: adminapp/models/scannerjobs/scanner.py
 msgid "scan all accounts in organization"
 msgstr "scan alle konti i organisation"
 
-#: adminapp/models/scannerjobs/scanner.py:134
+#: adminapp/models/scannerjobs/scanner.py
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
-#: adminapp/models/scannerjobs/scanner.py:138
+#: adminapp/models/scannerjobs/scanner.py
 msgid "hidden"
 msgstr "skjult"
 
-#: adminapp/models/scannerjobs/scanner.py:145
+#: adminapp/models/scannerjobs/scanner.py
 msgid "schedule start time"
 msgstr "skema starttidspunkt"
 
-#: adminapp/models/scannerjobs/scanner.py:150
+#: adminapp/models/scannerjobs/scanner.py
 msgid "scan images"
 msgstr "scan billeder"
 
-#: adminapp/models/scannerjobs/scanner.py:155
+#: adminapp/models/scannerjobs/scanner.py
 msgid "check date of last modification"
 msgstr "tjek dato for sidste ændring"
 
-#: adminapp/models/scannerjobs/scanner.py:160
+#: adminapp/models/scannerjobs/scanner.py
 msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
-#: adminapp/models/scannerjobs/scanner.py:165
+#: adminapp/models/scannerjobs/scanner.py
 msgid "keep false positives"
 msgstr "behold falske positive"
 
-#: adminapp/models/scannerjobs/scanner.py:166
+#: adminapp/models/scannerjobs/scanner.py
 msgid ""
 "Retain false positives in the report module, regardless of the current state "
 "of the matched sources."
@@ -450,185 +438,185 @@ msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
 
-#: adminapp/models/scannerjobs/scanner.py:177
+#: adminapp/models/scannerjobs/scanner.py
 msgid "rule"
 msgstr "regel"
 
-#: adminapp/models/scannerjobs/scanner.py:185
+#: adminapp/models/scannerjobs/scanner.py
 msgid "Unverified"
 msgstr "Ugyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:186
+#: adminapp/models/scannerjobs/scanner.py
 msgid "Verified"
 msgstr "Gyldig"
 
-#: adminapp/models/scannerjobs/scanner.py:191
+#: adminapp/models/scannerjobs/scanner.py
 msgid "validation status"
 msgstr "valideringstatus"
 
-#: adminapp/models/scannerjobs/scanner.py:196
+#: adminapp/models/scannerjobs/scanner.py
 msgid "exclusion rule"
 msgstr "udelukkelsesregel"
 
-#: adminapp/models/scannerjobs/scanner.py:264
+#: adminapp/models/scannerjobs/scanner.py
 msgid "The scanner job could not be started because it has no assigned rules."
 msgstr ""
 "Scannerjobbet kunne ikke startes, da det ikke har nogle tilknyttede regler."
 
-#: adminapp/models/scannerjobs/scanner.py:267
+#: adminapp/models/scannerjobs/scanner.py
 msgid "The scanner job could not be started because it is not validated."
 msgstr "Scannerjobbet kunne ikke startes, da det ikke er valideret."
 
-#: adminapp/models/scannerjobs/scanner.py:270
+#: adminapp/models/scannerjobs/scanner.py
 msgid "The scanner job could not be started because it is already running."
 msgstr "Scannerjobbet kunne ikke startes, da det allerede er i gang."
 
-#: adminapp/models/scannerjobs/scanner.py:708
+#: adminapp/models/scannerjobs/scanner.py
 msgid "Can validate scannerjobs"
 msgstr "Kan godkende scannerjob"
 
-#: adminapp/models/scannerjobs/scanner.py:709
+#: adminapp/models/scannerjobs/scanner.py
 msgid "Can hide scannerjob from scannerjob list"
 msgstr "Kan skjule scannerjob fra scannerjoblisten"
 
-#: adminapp/models/scannerjobs/scanner.py:710
+#: adminapp/models/scannerjobs/scanner.py
 msgid "Can unhide scannerjob from the removed scannerjob list"
 msgstr "Kan fjerne skjulning af scannerjob fra den fjernede scannerjobliste"
 
-#: adminapp/models/scannerjobs/scanner.py:711
+#: adminapp/models/scannerjobs/scanner.py
 msgid "Can view hidden scanners in the removed scannerjob list"
 msgstr "Kan se skjulte scannere på den skjulte scannerjobliste"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:39
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "connected scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:43
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "path"
 msgstr "sti"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:76
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "total sources"
 msgstr "antal kilder"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:81
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "explored sources"
 msgstr "udforskede kilder"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:86
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "total objects"
 msgstr "antal objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:91
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "scanned objects"
 msgstr "scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:96
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "size of scanned objects"
 msgstr "størrelse af scannede objekter"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:102
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "message"
 msgstr "Fejlbesked"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:110
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "matches found"
 msgstr "resultater fundet"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:117
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "files skipped by last modified check"
 msgstr "uændrede filer sprunget over af 'Tjek dato for sidste ændring'"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:123
-#: adminapp/templates/components/scanner/scan_completed.html:162
-#: core/models/background_job.py:25
+#: adminapp/models/scannerjobs/scanner_helpers.py
+#: adminapp/templates/components/scanner/scan_completed.html
+#: core/models/background_job.py
 msgid "cancelled"
 msgstr "annulleret"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:203
-#: import_services/models/exported_mixin.py:37
+#: adminapp/models/scannerjobs/scanner_helpers.py
+#: import_services/models/exported_mixin.py
 msgid "last modified"
 msgstr "senest opdateret"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:208
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "scan tag"
 msgstr "scan tag"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:215
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "associated scanner job"
 msgstr "tilknyttet scannerjob"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:220
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "resolved"
 msgstr "løst"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:225
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:279
-#: adminapp/views/scanner_views.py:209
+#: adminapp/models/scannerjobs/scanner_helpers.py
+#: adminapp/views/scanner_views.py
 msgid "Start time"
 msgstr "Starttid"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:282
-#: adminapp/models/usererrorlog.py:33
+#: adminapp/models/scannerjobs/scanner_helpers.py
+#: adminapp/models/usererrorlog.py
 msgid "scan status"
 msgstr "scanstatus"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:283
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "scan statuses"
 msgstr "scanstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:294
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Can resolve scan statuses"
 msgstr "Kan fjerne scannerstatusser"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:295
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Can export history of completed scans"
 msgstr "Kan eksportere historik af afsluttede scanninger"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:296
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Can cancel running scan"
 msgstr "Kan annullere kørende scannerjobs"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:366
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "timestamp"
 msgstr "tidsstempel"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:374
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "scan status snapshot"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:375
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:408
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "MIME type"
 msgstr "Filformat"
 
-#: adminapp/models/scannerjobs/scanner_helpers.py:417
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Total size in bytes"
 msgstr "Samlet størrelse i bytes"
 
-#: adminapp/models/scannerjobs/webscanner.py:59
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "validation method"
 msgstr "valideringsmetode"
 
-#: adminapp/models/scannerjobs/webscanner.py:65
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "sitemap file"
 msgstr "sitemap fil"
 
-#: adminapp/models/scannerjobs/webscanner.py:72
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "sitemap url"
 msgstr "sitemap url"
 
-#: adminapp/models/scannerjobs/webscanner.py:77
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "crawl the sitemap's content"
 msgstr "crawle i sitemap-filens indhold"
 
-#: adminapp/models/scannerjobs/webscanner.py:79
+#: adminapp/models/scannerjobs/webscanner.py
 msgid ""
 "instead of just treating the sitemap as a complete list of links, run the "
 "crawler on those links as well"
@@ -636,15 +624,15 @@ msgstr ""
 "i stedet for at betragte sitemap-filen som en liste af alle relevante links, "
 "kør crawleren på selve disse links"
 
-#: adminapp/models/scannerjobs/webscanner.py:85
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "download Sitemap from server"
 msgstr "hent Sitemap fra serveren"
 
-#: adminapp/models/scannerjobs/webscanner.py:90
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "reduce communication"
 msgstr "formindsk kommunikation"
 
-#: adminapp/models/scannerjobs/webscanner.py:92
+#: adminapp/models/scannerjobs/webscanner.py
 msgid ""
 "reduce the number of HTTP requests made to the server by unconditionally "
 "trusting the content of the sitemap"
@@ -652,11 +640,11 @@ msgstr ""
 "formindsk antallet af HTTP-anmodninger til serveren ved at stole ubetinget "
 "på sitemap-filens indhold"
 
-#: adminapp/models/scannerjobs/webscanner.py:100
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "comma-separated list of urls to exclude"
 msgstr "Kommasepareret liste af URLs der skal eksluderes"
 
-#: adminapp/models/scannerjobs/webscanner.py:102
+#: adminapp/models/scannerjobs/webscanner.py
 msgid ""
 "Be sure to include a trailing '/'to enforce path matching, i.e. https://"
 "example.com/images/ instead of https://example.com/images"
@@ -664,11 +652,11 @@ msgstr ""
 "Afslut URL'en med '/' for at sikre sti-matching, i.e. https://example.com/"
 "images/ i stedet for https://example.com/images"
 
-#: adminapp/models/scannerjobs/webscanner.py:108
+#: adminapp/models/scannerjobs/webscanner.py
 msgid "extended hint support"
 msgstr "udvidet hint-understøttelse"
 
-#: adminapp/models/scannerjobs/webscanner.py:110
+#: adminapp/models/scannerjobs/webscanner.py
 msgid ""
 "present pages by their HTML titles and allow the presentation of links to be "
 "overridden"
@@ -676,44 +664,44 @@ msgstr ""
 "navngiv sider efter HTML-overskrift og tillad specificering af alternative "
 "visningsformer for URL'er"
 
-#: adminapp/models/scannerjobs/webscanner.py:179
+#: adminapp/models/scannerjobs/webscanner.py
 msgctxt "unit of scan"
 msgid "web page"
 msgstr "side"
 
-#: adminapp/models/scannerjobs/webscanner.py:180
+#: adminapp/models/scannerjobs/webscanner.py
 msgctxt "unit of scan"
 msgid "web pages"
 msgstr "sider"
 
-#: adminapp/models/scannerjobs/webscanner.py:183
-#: adminapp/templates/components/common/breadcrumb.html:10
-#: adminapp/templates/components/navigation/scanner_tabs.html:7
+#: adminapp/models/scannerjobs/webscanner.py
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Webscanner"
 msgstr "Webscanner"
 
-#: adminapp/models/sensitivity_level.py:33
+#: adminapp/models/sensitivity_level.py
 msgid "Critical"
 msgstr "Kritisk"
 
-#: adminapp/models/sensitivity_level.py:34
+#: adminapp/models/sensitivity_level.py
 msgid "Problem"
 msgstr "Problem"
 
-#: adminapp/models/sensitivity_level.py:35
+#: adminapp/models/sensitivity_level.py
 msgid "Warning"
 msgstr "Advarsel"
 
-#: adminapp/models/sensitivity_level.py:36
+#: adminapp/models/sensitivity_level.py
 msgid "Notification"
 msgstr "Notifikation"
 
-#: adminapp/models/usererrorlog.py:10
+#: adminapp/models/usererrorlog.py
 msgid ""
 "Folder at the path is using outdated encoding. Please rename the folder."
 msgstr "Mappe på stien indeholder forældet indkodning. Omdøb venligst mappen."
 
-#: adminapp/models/usererrorlog.py:13
+#: adminapp/models/usererrorlog.py
 msgid ""
 "An object was skipped either because it could not be opened or it was taking "
 "too long to scan."
@@ -721,70 +709,69 @@ msgstr ""
 "Et objekt blev sprunget over enten fordi det ikke kunne åbnes eller at det "
 "tog for lang tid at skanne."
 
-#: adminapp/models/usererrorlog.py:23 adminapp/templates/error_log.html:261
+#: adminapp/models/usererrorlog.py adminapp/templates/error_log.html
 msgid "error log"
 msgstr "fejlbesked"
 
-#: adminapp/models/usererrorlog.py:24
+#: adminapp/models/usererrorlog.py
 msgid "error logs"
 msgstr "fejlbeskeder"
 
-#: adminapp/models/usererrorlog.py:26
+#: adminapp/models/usererrorlog.py
 msgid "Can resolve error log"
 msgstr "Kan løse fejlbesked"
 
-#: adminapp/models/usererrorlog.py:27
+#: adminapp/models/usererrorlog.py
 msgid "Can export error log to CSV"
 msgstr "Kan eksportere fejlbeskeder til CSV"
 
-#: adminapp/models/usererrorlog.py:28
+#: adminapp/models/usererrorlog.py
 msgid "Can mark error log as viewed"
 msgstr "Kan markere fejlbesked som set"
 
-#: adminapp/models/usererrorlog.py:37 adminapp/templates/error_log.html:185
-#: adminapp/views/scanner_views.py:409 adminapp/views/scanner_views.py:425
+#: adminapp/models/usererrorlog.py adminapp/templates/error_log.html
+#: adminapp/views/scanner_views.py
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py:42 adminapp/views/scanner_views.py:419
-#: adminapp/views/scanner_views.py:427
+#: adminapp/models/usererrorlog.py adminapp/views/scanner_views.py
 msgid "Error message"
 msgstr "Fejlbesked"
 
-#: adminapp/models/usererrorlog.py:61
+#: adminapp/models/usererrorlog.py
 msgid "Is new"
 msgstr "Er ny"
 
-#: adminapp/models/usererrorlog.py:65
+#: adminapp/models/usererrorlog.py
 msgid "Is resolved"
 msgstr "Er løst"
 
-#: adminapp/models/usererrorlog.py:75
+#: adminapp/models/usererrorlog.py
 #, python-brace-format
 msgid "Could not open a connection to {0}"
 msgstr "Kunne ikke åbne en forbindelse til {0}"
 
-#: adminapp/models/usererrorlog.py:81
+#: adminapp/models/usererrorlog.py
 msgid "User friendly error message"
 msgstr "Brugervenlig fejlbesked"
 
-#: adminapp/notification.py:79
+#: adminapp/notification.py
 msgid "Your OSdatascanner scan is finished."
 msgstr "Dit OSdatascanner-job er kørt færdigt."
 
-#: adminapp/notification.py:126
+#: adminapp/notification.py
 msgid "OSdatascanner could not execute the scan."
 msgstr "Et OSdatascanner job kunne ikke startes."
 
-#: adminapp/templates/403.html:6 adminapp/templates/404.html:6
+#: adminapp/templates/403.html adminapp/templates/404.html
 msgid "Page not found"
 msgstr "Siden blev ikke fundet"
 
-#: adminapp/templates/403.html:10
+#: adminapp/templates/403.html
 msgid "You need permission to perform this action"
 msgstr "Du har ikke tilladelse til at udføre denne handling"
 
-#: adminapp/templates/403.html:15
+#: adminapp/templates/403.html
 msgid ""
 "You lack the required permission to perform this action. Please contact us "
 "if you think this is an error."
@@ -792,27 +779,27 @@ msgstr ""
 "Du mangler den nødvendige tilladelse til at udføre denne handling. Kontakt "
 "os venligst hvis du mener dette er en fejl."
 
-#: adminapp/templates/404.html:10
+#: adminapp/templates/404.html
 msgid "The page could not be found"
 msgstr "Siden kunne ikke findes"
 
-#: adminapp/templates/404.html:15
+#: adminapp/templates/404.html
 msgid "Unfortunately, we could not find the page"
 msgstr "Vi kunne desværre ikke finde siden"
 
-#: adminapp/templates/404.html:18
+#: adminapp/templates/404.html
 msgid "Go to the front page"
 msgstr "Gå til forsiden"
 
-#: adminapp/templates/500.html:6
+#: adminapp/templates/500.html
 msgid "Server error"
 msgstr "Serverfejl"
 
-#: adminapp/templates/500.html:10
+#: adminapp/templates/500.html
 msgid "It looks like something went wrong"
 msgstr "Det ser ud til, at der er gået noget galt"
 
-#: adminapp/templates/500.html:15
+#: adminapp/templates/500.html
 msgid ""
 "Unfortunately, we can't process your request at the moment. If the problem "
 "persists, you're more than welcome to contact us."
@@ -820,105 +807,100 @@ msgstr ""
 "Vi kan desværre ikke behandle din forespørgsel lige nu. Hvis problemet "
 "bliver ved, er du meget velkommen til at kontakte os."
 
-#: adminapp/templates/500.html:18
+#: adminapp/templates/500.html
 msgid "In the meantime, you may attempt to refresh the page or"
 msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 
-#: adminapp/templates/500.html:18
+#: adminapp/templates/500.html
 msgid "go to the front page"
 msgstr "gå til forsiden"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:26
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "all of"
 msgstr "alle fra"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:27
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "one of"
 msgstr "én fra"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:28
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "not"
 msgstr "ikke"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:29
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "CPR-nr."
 msgstr "CPR-nr."
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:30
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "regular expression"
 msgstr "regulært udtryk"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:31
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "health information"
 msgstr "helbredsinformation"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:33
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "address"
 msgstr "adresse"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:34
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "e-mail header"
 msgstr "e-mail header"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:35
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Experimental"
 msgstr "Eksperimentel"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:36
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "CPR-nr. (Turbo)"
 msgstr "CPR-nr. (Turbo)"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:37
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "health information (Turbo)"
 msgstr "helbredsinformation (Turbo)"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:38
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "passport"
 msgstr "pas"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:45
-#: adminapp/templates/components/admin_widgets/rule_builder.html:86
-#: adminapp/templates/components/admin_widgets/rule_builder.html:146
-#: adminapp/templatetags/utility_tags.py:62
+#: adminapp/templates/components/admin_widgets/rule_builder.html
+#: adminapp/templatetags/utility_tags.py
 msgid "and"
 msgstr "og"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:60
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "or"
 msgstr "eller"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:77
-#: adminapp/templates/components/admin_widgets/rule_builder.html:112
-#: adminapp/templates/components/admin_widgets/rule_builder.html:141
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "with"
 msgstr "med"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:80
-#: adminapp/templates/components/admin_widgets/rule_builder.html:144
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "modulus 11-,"
 msgstr "modulus 11-,"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:84
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "probability,-"
 msgstr "sandsynligheds-,"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:89
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "context check."
 msgstr "konteksttjek."
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:92
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Exceptions:"
 msgstr "Undtagelser:"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:96
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Surrounding exceptions:"
 msgstr "Omkringliggende undtagelser"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:99
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "word1,word2"
 msgstr "Ord1,Ord2"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:102
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid ""
 "Enter specific words that prevents the scanner from marking a 10-digit "
 "number as a match if found within the first 3 surrounding words. "
@@ -926,422 +908,395 @@ msgstr ""
 "Indtast specifikke ord, der forhindrer scanneren i at markere et 10-cifret "
 "nummer som et match, hvis det findes blandt de første 3 omkringliggende ord. "
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:108
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Regular expression"
 msgstr "Regulært udtryk"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:115
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "expanded matching"
 msgstr "udvidet søgning"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:122
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Street name exceptions:"
 msgstr "Undtagelser af vejnavne:"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:125
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Electric Avenue, Privet Drive, Downing Street"
 msgstr "Rabalderstræde, Ligustervænget, Prins Jørgens Gård"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:127
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Specific address exceptions:"
 msgstr "Undtagelser af specifikke adresser:"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:130
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Electric Avenue 1, Privet Drive 10, Downing Street 100"
 msgstr "Rabalderstræde 1, Ligustervænget 10, Prins Jørgens Gård 100"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:133
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "field name"
 msgstr "navn på felt"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:135
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgctxt "verb"
 msgid "matches"
 msgstr "resultater fundet"
 
-#: adminapp/templates/components/admin_widgets/rule_builder.html:149
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "context check"
 msgstr "konteksttjek"
 
-#: adminapp/templates/components/analysis/analysis_template.html:8
-#: adminapp/templates/components/navigation/navigation.html:35
+#: adminapp/templates/components/analysis/analysis_template.html
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Analysis"
 msgstr "Analyse"
 
-#: adminapp/templates/components/analysis/analysis_template.html:22
-#: organizations/templates/organizations/account_detail.html:189
+#: adminapp/templates/components/analysis/analysis_template.html
+#: organizations/templates/organizations/account_detail.html
 msgid "Choose scannerjob"
 msgstr "Vælg scannerjob"
 
-#: adminapp/templates/components/analysis/analysis_template.html:43
-#: adminapp/templates/components/analysis/analysis_template.html:44
-#: adminapp/templates/components/analysis/analysis_template.html:46
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Run analysis scan"
 msgstr "Kør analyse-scan"
 
-#: adminapp/templates/components/analysis/analysis_template.html:51
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "This scannertype is not supported by analysis scans! ... Yet!"
 msgstr "Denne scannertype er ikke understøttet af analysescan! ... Endnu!"
 
-#: adminapp/templates/components/analysis/analysis_template.html:57
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Number of files"
 msgstr "Antal filer"
 
-#: adminapp/templates/components/analysis/analysis_template.html:58
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Overview of the number of each identified file type"
 msgstr "Overblik over antallet af hver enkelt identificeret filtype"
 
-#: adminapp/templates/components/analysis/analysis_template.html:73
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Storage"
 msgstr "Opbevaringsplads"
 
-#: adminapp/templates/components/analysis/analysis_template.html:74
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Overview of storage for different filetypes"
 msgstr "Overblik over opbevaringsplads for de forskellige filtyper"
 
-#: adminapp/templates/components/analysis/analysis_template.html:89
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "File size distribution"
 msgstr "Distribution af filstørrelser"
 
-#: adminapp/templates/components/analysis/analysis_template.html:90
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Overview of number of files "
 msgstr "Overblik over antallet af filer"
 
-#: adminapp/templates/components/analysis/analysis_template.html:108
+#: adminapp/templates/components/analysis/analysis_template.html
 msgid "Choose a scannerjob to start a new scan or view analysis"
 msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 
-#: adminapp/templates/components/common/breadcrumb.html:5
-#: adminapp/templates/components/navigation/navigation.html:18
-#: adminapp/templates/components/scanner/scan_completed.html:95
-#: adminapp/templates/components/scanstatus/scan_status_table.html:39
-#: adminapp/templates/removed_scanners.html:25
-#: adminapp/templates/scanners.html:25
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/navigation.html
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
 msgid "Scannerjob"
 msgstr "Scannerjob"
 
-#: adminapp/templates/components/common/breadcrumb.html:22
-#: adminapp/templates/components/navigation/scanner_tabs.html:23
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 mailscanner"
 msgstr "Office 365 mailscanner"
 
-#: adminapp/templates/components/common/breadcrumb.html:26
-#: adminapp/templates/components/navigation/scanner_tabs.html:28
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 OneDrive filescanner"
 msgstr "Office 365 OneDrive filscanner"
 
-#: adminapp/templates/components/common/breadcrumb.html:30
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "Office 365 calendarscanner"
 msgstr "Office 365 kalenderscanner"
 
-#: adminapp/templates/components/common/breadcrumb.html:34
-#: adminapp/templates/components/navigation/scanner_tabs.html:33
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 Teams filescanner"
 msgstr "Office 365 Teams filscanner"
 
-#: adminapp/templates/components/common/breadcrumb.html:42
-#: adminapp/templates/components/navigation/scanner_tabs.html:46
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Gmailscanner"
 msgstr "Gmailscanner"
 
-#: adminapp/templates/components/common/breadcrumb.html:46
-#: adminapp/templates/components/navigation/scanner_tabs.html:49
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Sbsysscanner"
 msgstr "Sbsysscanner"
 
-#: adminapp/templates/components/common/breadcrumb.html:52
-#: adminapp/templates/components/scanner/scanner_form.html:105
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Edit scannerjob"
 msgstr "Rediger scannerjob"
 
-#: adminapp/templates/components/common/breadcrumb.html:54
-#: adminapp/templates/components/scanner/scanner_form.html:107
-#: adminapp/templates/components/scanner/scanner_no_client_credentials.html:14
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/scanner/scanner_form.html
+#: adminapp/templates/components/scanner/scanner_no_client_credentials.html
 msgid "Create new scannerjob"
 msgstr "Opret nyt scannerjob"
 
-#: adminapp/templates/components/common/breadcrumb.html:59
-#: adminapp/templates/components/navigation/navigation.html:43
-#: adminapp/templates/rules.html:32 adminapp/templates/rules.html:53
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/navigation.html
+#: adminapp/templates/rules.html
 msgid "Rules"
 msgstr "Regler"
 
-#: adminapp/templates/components/common/breadcrumb.html:64
-#: adminapp/templates/components/rules/customrule_form.html:19
-#: adminapp/templates/components/rules/regexrule_form.html:90
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Edit rule"
 msgstr "Redigér regel"
 
-#: adminapp/templates/components/common/breadcrumb.html:68
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:5
-#: adminapp/templates/components/rules/customrule_form.html:23
-#: adminapp/templates/components/rules/regexrule_form.html:94
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Create new rule"
 msgstr "Opret ny regel"
 
-#: adminapp/templates/components/common/breadcrumb.html:73
-#: adminapp/templates/components/navigation/navigation.html:58
-#: organizations/apps.py:8
-#: organizations/templates/organizations/org_list.html:7
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/navigation.html
+#: organizations/apps.py organizations/templates/organizations/org_list.html
 msgid "organizations"
 msgstr "organisationer"
 
-#: adminapp/templates/components/common/breadcrumb.html:79
-#: organizations/templates/organizations/org_add.html:5
-#: organizations/templates/organizations/org_add.html:13
+#: adminapp/templates/components/common/breadcrumb.html
+#: organizations/templates/organizations/org_add.html
 msgid "add organization"
 msgstr "tilføj organisation"
 
-#: adminapp/templates/components/common/breadcrumb.html:83
-#: organizations/templates/organizations/org_update.html:6
-#: organizations/templates/organizations/org_update.html:241
-#: organizations/templates/organizations/org_update.html:242
-#: organizations/templates/organizations/org_update.html:243
+#: adminapp/templates/components/common/breadcrumb.html
+#: organizations/templates/organizations/org_update.html
 msgid "update organization"
 msgstr "opdatér organisation"
 
-#: adminapp/templates/components/common/breadcrumb.html:87
-#: adminapp/templates/components/common/breadcrumb.html:92
-#: organizations/templates/organizations/orgunit_list.html:6
+#: adminapp/templates/components/common/breadcrumb.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "organizational hierarchy"
 msgstr "organisatorisk struktur"
 
-#: adminapp/templates/components/common/breadcrumb.html:96
-#: organizations/templates/organizations/edit_hidden_state_page.html:8
-#: organizations/templates/organizations/orgunit_list.html:183
+#: adminapp/templates/components/common/breadcrumb.html
+#: organizations/templates/organizations/edit_hidden_state_page.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Edit visibility"
 msgstr "Redigér synlighed"
 
-#: adminapp/templates/components/common/breadcrumb.html:100
-#: adminapp/templates/components/common/breadcrumb.html:105
-#: organizations/templates/organizations/account_list.html:5
-#: organizations/templates/organizations/orgunit_list.html:205
+#: adminapp/templates/components/common/breadcrumb.html
+#: organizations/templates/organizations/account_list.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "accounts"
 msgstr "konti"
 
-#: adminapp/templates/components/common/breadcrumb.html:114
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "add LDAP configuration"
 msgstr "tilføj LDAP-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:116
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "update LDAP configuration"
 msgstr "opdatér LDAP-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:122
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "add MS Graph configuration"
 msgstr "Tilføj Microsoft Graph konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:124
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "update MS Graph configuration"
 msgstr "opdatér Microsoft Graph konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:130
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "add OS2mo configuration"
 msgstr "tilføj OS2mo-konfiguration"
 
-#: adminapp/templates/components/common/breadcrumb.html:132
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "update OS2mo configuration"
 msgstr "opdatér OS2mo-konfiguration"
 
-#: adminapp/templates/components/common/main.html:11
-#: organizations/templates/organizations/base.html:43
+#: adminapp/templates/components/common/main.html
+#: organizations/templates/organizations/base.html
 msgid "OSdatascanner version"
 msgstr "OSdatascanner version"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:4
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "No file or text uploaded."
 msgstr "Ingen fil eller tekst uploadet"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:8
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "File too big"
 msgstr "Valgte fil er for stor"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:12
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "No rule specified."
 msgstr "Ingen regel var givet"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:17
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "Location"
 msgstr "Lokation"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:18
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "Match"
 msgstr "Match"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:19
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "Match context"
 msgstr "Kontekst for match"
 
-#: adminapp/templates/components/miniscanner/miniscan_results.html:37
+#: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "No matches found"
 msgstr "Ingen resultater fundet"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:21
-#: adminapp/templates/components/rules/customrule_form.html:40
-#: adminapp/templates/components/rules/regexrule_form.html:111
-#: adminapp/templates/components/scanner/scanner_form.html:133
-#: import_services/templates/import_services/ldap_edit.html:125
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
+#: adminapp/templates/components/scanner/scanner_form.html
+#: import_services/templates/import_services/ldap_edit.html
 msgid "General"
 msgstr "Generelt"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:22
-#: adminapp/templates/components/rules/customrule_form.html:41
-#: adminapp/templates/components/rules/regexrule_form.html:112
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Name the rule and choose which organization the rule should belong to"
 msgstr "Navngiv reglen og vælg hvilken organisation reglen skal tilhøre"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:25
-#: adminapp/templates/removed_scanners.html:52 adminapp/templates/rules.html:64
-#: adminapp/templates/scanners.html:70 adminapp/templates/system_rules.html:67
-#: organizations/templates/organizations/account_detail.html:23
-#: organizations/templates/organizations/account_list.html:55
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/removed_scanners.html adminapp/templates/rules.html
+#: adminapp/templates/scanners.html adminapp/templates/system_rules.html
+#: organizations/templates/organizations/account_detail.html
+#: organizations/templates/organizations/account_list.html
 msgid "Name"
 msgstr "Navn"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:31
-#: adminapp/templates/components/rules/customrule_form.html:50
-#: adminapp/templates/components/rules/regexrule_form.html:121
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Name of rule"
 msgstr "Navn på regel"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:57
-#: adminapp/templates/components/rules/customrule_form.html:83
-#: adminapp/templates/components/rules/regexrule_form.html:191
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Assess the sensitivity of the rule"
 msgstr "Vurder reglens følsomhed"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:107
-#: adminapp/templates/components/rules/customrule_form.html:133
-#: adminapp/templates/components/rules/regexrule_form.html:241
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Description of rule"
 msgstr "Beskrivelse af regel"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:123
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:124
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:126
-#: adminapp/templates/components/rules/customrule_form.html:149
-#: adminapp/templates/components/rules/customrule_form.html:150
-#: adminapp/templates/components/rules/customrule_form.html:152
-#: adminapp/templates/components/rules/regexrule_form.html:257
-#: adminapp/templates/components/rules/regexrule_form.html:258
-#: adminapp/templates/components/rules/regexrule_form.html:260
-#: adminapp/templates/components/scanner/scanner_form.html:680
-#: adminapp/templates/components/scanner/scanner_form.html:681
-#: adminapp/templates/components/scanner/scanner_form.html:683
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Save changes"
 msgstr "Gem ændringer"
 
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html:130
-#: organizations/templates/components/modals/alias_create.html:52
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: organizations/templates/components/modals/alias_create.html
 msgid "Close"
 msgstr "Luk"
 
-#: adminapp/templates/components/navigation/navigation.html:11
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Scanner status"
 msgstr "Scannerstatus"
 
-#: adminapp/templates/components/navigation/navigation.html:26
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Mini-scanner"
 msgstr "Miniscanner"
 
-#: adminapp/templates/components/navigation/navigation.html:51
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Grants"
 msgstr "bevillinger"
 
-#: adminapp/templates/components/navigation/navigation.html:64
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Report module"
 msgstr "Rapportmodul"
 
-#: adminapp/templates/components/navigation/navigation.html:71
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Administration"
 msgstr "Administration"
 
-#: adminapp/templates/components/navigation/navigation.html:80
+#: adminapp/templates/components/navigation/navigation.html
 msgid "Guide"
 msgstr "Håndbog"
 
-#: adminapp/templates/components/navigation/navigation.html:89
-#: adminapp/templates/components/user/logout.html:7
-#: adminapp/templates/components/user/user.html:30
+#: adminapp/templates/components/navigation/navigation.html
+#: adminapp/templates/components/user/logout.html
+#: adminapp/templates/components/user/user.html
 msgid "Logout"
 msgstr "Log ud"
 
-#: adminapp/templates/components/navigation/scanner_tabs.html:38
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 kalenderscanner"
 msgstr "Office 365 kalenderscanner"
 
-#: adminapp/templates/components/navigation/scanner_tabs.html:54
+#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Removed scanners"
 msgstr "Fjernede scannere"
 
-#: adminapp/templates/components/navigation/scanner_tabs.html:70
-#: adminapp/templates/components/scanstatus/scan_status_table.html:29
-#: adminapp/templates/scan_status.html:21
+#: adminapp/templates/components/navigation/scanner_tabs.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/scan_status.html
 msgid "Scans in progress"
 msgstr "Igangværende scanninger"
 
-#: adminapp/templates/components/navigation/scanner_tabs.html:73
-#: adminapp/templates/components/scanner/scan_completed.html:30
-#: adminapp/templates/components/scanner/scan_completed.html:37
-#: adminapp/templates/components/scanner/scan_completed.html:60
-#: adminapp/templates/components/scanner/scan_completed.html:61
+#: adminapp/templates/components/navigation/scanner_tabs.html
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Completed scans"
 msgstr "Udførte scanninger"
 
-#: adminapp/templates/components/navigation/scanner_tabs.html:75
-#: adminapp/templates/error_log.html:25 adminapp/templates/error_log.html:64
-#: adminapp/templates/error_log.html:105 adminapp/templates/error_log.html:106
+#: adminapp/templates/components/navigation/scanner_tabs.html
+#: adminapp/templates/error_log.html
 msgid "Error Log"
 msgstr "Fejlbeskeder"
 
-#: adminapp/templates/components/pagination/load_results.html:28
+#: adminapp/templates/components/pagination/load_results.html
 msgid "per page"
 msgstr "pr. side"
 
-#: adminapp/templates/components/pagination/pagination.html:10
-#: adminapp/templates/components/scanstatus/remove_error.html:22
-#: adminapp/templates/components/scanstatus/resolve_status.html:22
+#: adminapp/templates/components/pagination/pagination.html
+#: adminapp/templates/components/scanstatus/remove_error.html
+#: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "of"
 msgstr "af"
 
-#: adminapp/templates/components/pagination/pagination.html:26
-#: adminapp/templates/components/pagination/pagination.html:31
+#: adminapp/templates/components/pagination/pagination.html
 msgid "Previous"
 msgstr "Forrige"
 
-#: adminapp/templates/components/pagination/pagination.html:95
-#: adminapp/templates/components/pagination/pagination.html:100
+#: adminapp/templates/components/pagination/pagination.html
 msgid "Next"
 msgstr "Næste"
 
-#: adminapp/templates/components/password/password_change.html:6
-#: adminapp/templates/components/password/password_change.html:15
-#: adminapp/templates/components/password/password_change.html:54
-#: adminapp/templates/components/password/password_reset_confirm.html:42
-#: adminapp/templates/components/user/user.html:29
+#: adminapp/templates/components/password/password_change.html
+#: adminapp/templates/components/password/password_reset_confirm.html
+#: adminapp/templates/components/user/user.html
 msgid "Change password"
 msgstr "Skift password"
 
-#: adminapp/templates/components/password/password_change_done.html:6
-#: adminapp/templates/components/password/password_change_done.html:12
+#: adminapp/templates/components/password/password_change_done.html
 msgid "Password change successful"
 msgstr "Adgangskode ændring"
 
-#: adminapp/templates/components/password/password_change_done.html:17
+#: adminapp/templates/components/password/password_change_done.html
 msgid "Your password was changed."
 msgstr "Din adgangskode blev ændret."
 
-#: adminapp/templates/components/password/password_change_done.html:20
-#: adminapp/templates/components/password/password_reset_complete.html:16
-#: adminapp/templates/components/user/logout.html:15
+#: adminapp/templates/components/password/password_change_done.html
+#: adminapp/templates/components/password/password_reset_complete.html
+#: adminapp/templates/components/user/logout.html
 msgid "Log in"
 msgstr "Log ind"
 
-#: adminapp/templates/components/password/password_reset_complete.html:13
+#: adminapp/templates/components/password/password_reset_complete.html
 msgid "Your password has been set. You may go ahead and log in now."
 msgstr "Din adgangskode er ændret. Du kan nu gå videre og logge ind."
 
-#: adminapp/templates/components/password/password_reset_confirm.html:13
+#: adminapp/templates/components/password/password_reset_confirm.html
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
@@ -1349,7 +1304,7 @@ msgstr ""
 "Indtast din nye adgangskode to gange, så vi kan bekræfte, at du har skrevet "
 "den korrekt."
 
-#: adminapp/templates/components/password/password_reset_confirm.html:49
+#: adminapp/templates/components/password/password_reset_confirm.html
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used. Please request a new password reset."
@@ -1357,7 +1312,7 @@ msgstr ""
 "Linket til nulstilling af adgangskode er ugyldigt, muligvis fordi det "
 "allerede har været brugt. Bed om en ny nulstilling af adgangskoden."
 
-#: adminapp/templates/components/password/password_reset_done.html:13
+#: adminapp/templates/components/password/password_reset_done.html
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
@@ -1366,7 +1321,7 @@ msgstr ""
 "hvis en konto eksisterer tilknyttet den indtastede e-mail. Du bør modtage "
 "instruktionerne snarest."
 
-#: adminapp/templates/components/password/password_reset_done.html:17
+#: adminapp/templates/components/password/password_reset_done.html
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
@@ -1374,7 +1329,7 @@ msgstr ""
 "Hvis du ikke modtager en e-mail, skal du sørge for, at e-mailadressen du har "
 "indtastet er den rigtige, og tjekke din spam mappe."
 
-#: adminapp/templates/components/password/password_reset_form.html:15
+#: adminapp/templates/components/password/password_reset_form.html
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
@@ -1382,26 +1337,26 @@ msgstr ""
 "Har du glemt din adgangskode? Skriv din e-mail-adresse herunder, så sender "
 "vi dig instruktioner i at vælge en ny adgangskode."
 
-#: adminapp/templates/components/password/password_reset_form.html:33
+#: adminapp/templates/components/password/password_reset_form.html
 msgid "Reset my password"
 msgstr "Nulstil min adgangskode"
 
-#: adminapp/templates/components/rules/cprrule_confirm_delete.html:7
+#: adminapp/templates/components/rules/cprrule_confirm_delete.html
 msgid "Delete rule?"
 msgstr "Slet regel?"
 
-#: adminapp/templates/components/rules/cprrule_confirm_delete.html:12
+#: adminapp/templates/components/rules/cprrule_confirm_delete.html
 msgid "Are you sure you want to delete?"
 msgstr "Ønsker du virkelig at slette?"
 
-#: adminapp/templates/components/rules/cprrule_confirm_delete.html:19
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:23
-#: adminapp/templates/rules.html:180
+#: adminapp/templates/components/rules/cprrule_confirm_delete.html
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html
+#: adminapp/templates/rules.html
 msgid "No"
 msgstr "Nej"
 
-#: adminapp/templates/components/rules/customrule_form.html:66
-#: adminapp/templates/components/rules/regexrule_form.html:137
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid ""
 "A rule consists one or more regular expressions and defines which text "
 "strings are searched in a scannerjob"
@@ -1409,59 +1364,52 @@ msgstr ""
 "En regel består af et eller flere regulære udtryk og definerer hvilke "
 "tekststrenge der søges efter i et scannerjob"
 
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:6
-#: adminapp/templates/components/scanner/scan_completed.html:189
-#: adminapp/templates/components/scanner/scan_completed.html:190
-#: adminapp/templates/components/scanstatus/scan_status_table.html:120
-#: adminapp/templates/components/scanstatus/scan_status_table.html:121
-#: adminapp/templates/error_log.html:261 adminapp/templates/rules.html:98
-#: adminapp/templates/rules.html:99
-#: organizations/templates/organizations/org_table.html:222
-#: organizations/templates/organizations/org_table.html:223
-#: organizations/templates/organizations/org_table.html:234
-#: organizations/templates/organizations/org_table.html:235
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/error_log.html adminapp/templates/rules.html
+#: organizations/templates/organizations/org_table.html
 msgid "Delete"
 msgstr "Slet"
 
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:11
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html
 msgid ""
 "This action cannot be undone. Are you sure you want to delete this rule?"
 msgstr ""
 "Ønsker du virkelig at slette denne regel? Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:13
-#: adminapp/templates/rules.html:170
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html
+#: adminapp/templates/rules.html
 msgid "Please note that this rule is currently included in"
 msgstr "Bemærk venligst at denne regel i øjeblikket indgår i"
 
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:14
-#: adminapp/templates/rules.html:172
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html
+#: adminapp/templates/rules.html
 msgid "scannerjob and"
 msgstr "scannerjob og"
 
-#: adminapp/templates/components/rules/regexrule_confirm_delete.html:15
-#: adminapp/templates/rules.html:173
+#: adminapp/templates/components/rules/regexrule_confirm_delete.html
+#: adminapp/templates/rules.html
 msgid "reports."
 msgstr "rapporter."
 
-#: adminapp/templates/components/rules/regexrule_form.html:145
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Regular Expression"
 msgstr "Regulært Udtryk"
 
-#: adminapp/templates/components/rules/regexrule_form.html:151
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "e.g. organization"
 msgstr "f.eks. organisation"
 
-#: adminapp/templates/components/rules/regexrule_form.html:157
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Remove expression"
 msgstr "Fjern udtryk"
 
-#: adminapp/templates/components/rules/regexrule_form.html:176
-#: adminapp/templates/components/rules/regexrule_form.html:179
+#: adminapp/templates/components/rules/regexrule_form.html
 msgid "Add another regular expression"
 msgstr "Tilføj endnu et regulært udtryk"
 
-#: adminapp/templates/components/rules/rule_selector.html:42
+#: adminapp/templates/components/rules/rule_selector.html
 msgid ""
 "Note, that rule changes will not affect previously scanned objects unless a "
 "full scan is run."
@@ -1469,53 +1417,47 @@ msgstr ""
 "Bemærk, at regelændringer ikke vil påvirke tidligere scannede objekter "
 "medmindre der køres et fuldt scan."
 
-#: adminapp/templates/components/scanner/scan_completed.html:60
-#: adminapp/templates/components/scanner/scan_completed.html:61
-#: adminapp/templates/components/scanner/scan_completed.html:69
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Delete all"
 msgstr "Slet alle"
 
-#: adminapp/templates/components/scanner/scan_completed.html:67
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "You are about to delete"
 msgstr "Du er ved at slette"
 
-#: adminapp/templates/components/scanner/scan_completed.html:67
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid " scan status data. This action cannot be reverted. Are you sure?"
 msgstr " datascanninger. Denne handling kan ikke fortrydes. Er du sikker?"
 
-#: adminapp/templates/components/scanner/scan_completed.html:75
-#: adminapp/templates/components/scanner/scan_completed.html:76
-#: adminapp/templates/components/scanner/scan_completed.html:78
-#: adminapp/templates/error_log.html:120 adminapp/templates/error_log.html:121
-#: adminapp/templates/error_log.html:123
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/error_log.html
 msgid "Export to CSV"
 msgstr "Eksportér til CSV"
 
-#: adminapp/templates/components/scanner/scan_completed.html:90
-#: adminapp/templates/components/scanner/scan_completed.html:91
-#: adminapp/templates/error_log.html:135 adminapp/templates/error_log.html:136
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/error_log.html
 msgid "Select all results"
 msgstr "Vælg alle resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:96
-#: adminapp/templates/error_log.html:164
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/error_log.html
 msgid "Started"
 msgstr "Startet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:97
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Objects"
 msgstr "Objekter"
 
-#: adminapp/templates/components/scanner/scan_completed.html:98
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Results"
 msgstr "Resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:100
-#: adminapp/templates/components/scanstatus/scan_status_table.html:41
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Status"
 msgstr "Status"
 
-#: adminapp/templates/components/scanner/scan_completed.html:102
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid ""
 "Status for given job as well as an indication of its running time. Be aware "
 "that runtimes may not be fully accurate, they do not necessarily include any "
@@ -1525,85 +1467,80 @@ msgstr ""
 "køretider ikke nødvendigvis er fuldstændigt akkurate. Der inkluderes ikke "
 "nødvendigvis tid brugt i udforskningsfasen. Køretider vises uden spildtid."
 
-#: adminapp/templates/components/scanner/scan_completed.html:106
-#: adminapp/templates/components/scanstatus/scan_status_table.html:42
-#: adminapp/templates/error_log.html:209
-#: adminapp/templates/removed_scanners.html:58
-#: organizations/templates/organizations/grants_list.html:60
-#: organizations/templates/organizations/org_table.html:49
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/error_log.html adminapp/templates/removed_scanners.html
+#: organizations/templates/organizations/grants_list.html
+#: organizations/templates/organizations/org_table.html
 msgid "Actions"
 msgstr "Handlinger"
 
-#: adminapp/templates/components/scanner/scan_completed.html:123
-#: adminapp/templates/components/scanner/scan_completed.html:124
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Select result"
 msgstr "Vælg resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:137
-#: adminapp/templates/components/scanstatus/scan_status_table.html:71
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 #, python-format
 msgid "%(obj)s %(onp)s scanned"
 msgstr "%(obj)s %(onp)s scannet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:143
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Not available"
 msgstr "Ikke tilgængelig"
 
-#: adminapp/templates/components/scanner/scan_completed.html:147
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "result"
 msgstr "resultat"
 
-#: adminapp/templates/components/scanner/scan_completed.html:149
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "results"
 msgstr "resultater"
 
-#: adminapp/templates/components/scanner/scan_completed.html:160
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "cancelled after"
 msgstr "annulleret efter"
 
-#: adminapp/templates/components/scanner/scan_completed.html:173
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Finished in"
 msgstr "Afsluttet på"
 
-#: adminapp/templates/components/scanner/scan_completed.html:175
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Finished"
 msgstr "Afsluttet"
 
-#: adminapp/templates/components/scanner/scan_completed.html:189
-#: adminapp/templates/components/scanner/scan_completed.html:190
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "scannerjob"
 msgstr "scannerjob"
 
-#: adminapp/templates/components/scanner/scan_completed.html:202
-#: adminapp/templates/components/scanner/scan_completed.html:203
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
-#: adminapp/templates/components/scanner/scan_completed.html:234
+#: adminapp/templates/components/scanner/scan_completed.html
 msgid "no scans done"
 msgstr "der er ingen udførte scanninger"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:22
-#: adminapp/templates/components/scanner/scanner_ask_run.html:52
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid "Run scanner"
 msgstr "Kør scanner"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:24
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid "Are you sure you want to start the scanner?"
 msgstr "Er du sikker på, at du vil starte scanneren?"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:30
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid ""
 "Perform a standard scan, only scanning the changes since the previous scan."
 msgstr ""
 "Foretag et standard scan, hvor alt, som ikke har ændret sig siden sidste "
 "scanning, ignoreres."
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:30
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid "Standard scan"
 msgstr "Standard scan"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:33
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid ""
 "Perform a thorough scan, scanning everything within the sources even if they "
 "were scanned previously."
@@ -1611,23 +1548,23 @@ msgstr ""
 "Foretag en udførlig scanning, hvor alt indhold i kilderne scannes, uanset om "
 "det er blevet scannet tidligere."
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:33
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid "Thorough scan"
 msgstr "Udførligt scan"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:36
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid "Let's go!"
 msgstr "Ja, kør"
 
-#: adminapp/templates/components/scanner/scanner_ask_run.html:43
+#: adminapp/templates/components/scanner/scanner_ask_run.html
 msgid "Waiting..."
 msgstr "Afventer..."
 
-#: adminapp/templates/components/scanner/scanner_cleanup_response.html:19
+#: adminapp/templates/components/scanner/scanner_cleanup_response.html
 msgid "Scannerjob is running!"
 msgstr "Scannerjobbet er i gang!"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_response.html:22
+#: adminapp/templates/components/scanner/scanner_cleanup_response.html
 msgid ""
 "OSdatascanner was not able to delete the results from the stale accounts, "
 "since the scannerjob is currently running. Try again later."
@@ -1635,11 +1572,11 @@ msgstr ""
 "OSdatascanner kunne ikke slette resultaterne tilhørende de frakoblede konti, "
 "da scannerjobbet i øjeblikket er i gang. Prøv igen senere."
 
-#: adminapp/templates/components/scanner/scanner_cleanup_response.html:25
+#: adminapp/templates/components/scanner/scanner_cleanup_response.html
 msgid "Stale accounts cleaned!"
 msgstr "Frakoblede konti ryddet op!"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_response.html:27
+#: adminapp/templates/components/scanner/scanner_cleanup_response.html
 msgid ""
 "Success! All results belonging to the stale accounts from this scannerjobs "
 "have been deleted!"
@@ -1647,11 +1584,11 @@ msgstr ""
 "Succes! Alle resultater tilhørende de frakoblede konti fra dette scannerjob "
 "er blevet slettet!"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:28
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html
 msgid "Clean up stale accounts"
 msgstr "Ryd op i frakoblede konti"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:30
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html
 msgid ""
 "OSdatascanner has registered, that some users, which were previously scanned "
 "with this scanner job, are no longer covered. These accounts will no longer "
@@ -1661,17 +1598,15 @@ msgstr ""
 "scannet af dette scannerjob, ikke længere er tilknyttet scannerjobbet. Disse "
 "konti vil ikke længere blive scannet af dette scannerjob."
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:32
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html
 msgid "Delete the report results for the following users:"
 msgstr "Slet resultaterne for følgende brugere:"
 
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:49
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:50
-#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html:57
+#: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html
 msgid "Clean"
 msgstr "Ryd op"
 
-#: adminapp/templates/components/scanner/scanner_form.html:112
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "This scanner can take advantage of the built-in SmartDelta function for "
 "ultra-fast scans."
@@ -1679,114 +1614,101 @@ msgstr ""
 "Dette scannerjob kan benytte den indbyggede SmartDelta-funktion for "
 "lynhurtige scans."
 
-#: adminapp/templates/components/scanner/scanner_form.html:172
-#: adminapp/templates/components/scanner/scanner_form.html:264
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Sitemap"
 msgstr "Sitemap"
 
-#: adminapp/templates/components/scanner/scanner_form.html:176
-#: adminapp/templates/components/scanner/scanner_form.html:180
-#: adminapp/templates/components/user/user_detail.html:26
-#: adminapp/templates/components/user/user_edit.html:19
+#: adminapp/templates/components/scanner/scanner_form.html
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "User information"
 msgstr "Brugeroplysninger"
 
-#: adminapp/templates/components/scanner/scanner_form.html:184
-#: organizations/templates/organizations/grants_list.html:7
+#: adminapp/templates/components/scanner/scanner_form.html
+#: organizations/templates/organizations/grants_list.html
 msgid "grants"
 msgstr "bevillinger"
 
-#: adminapp/templates/components/scanner/scanner_form.html:253
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "e.g. /sitemap.xml"
 msgstr "f.eks. /sitemap.xml"
 
-#: adminapp/templates/components/scanner/scanner_form.html:265
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Current:"
 msgstr "Aktuelt:"
 
-#: adminapp/templates/components/scanner/scanner_form.html:270
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Remove"
 msgstr "Fjern"
 
-#: adminapp/templates/components/scanner/scanner_form.html:277
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Upload sitemap"
 msgstr "Upload sitemap"
 
-#: adminapp/templates/components/scanner/scanner_form.html:279
-#: adminapp/templates/components/scanner/scanner_form.html:305
-#: adminapp/templates/components/scanner/scanner_form.html:339
-#: adminapp/templates/components/scanner/scanner_form.html:400
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Select a file"
 msgstr "Vælg en fil"
 
-#: adminapp/templates/components/scanner/scanner_form.html:283
-#: adminapp/templates/components/scanner/scanner_form.html:309
-#: adminapp/templates/components/scanner/scanner_form.html:343
-#: adminapp/templates/components/scanner/scanner_form.html:404
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Upload"
 msgstr "Upload"
 
-#: adminapp/templates/components/scanner/scanner_form.html:289
-#: adminapp/templates/components/scanner/scanner_form.html:290
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Click here to upload sitemap.xml"
 msgstr "Klik her for at uploade sitemap.xml"
 
-#: adminapp/templates/components/scanner/scanner_form.html:302
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Upload service account"
 msgstr "Upload servicekonto"
 
-#: adminapp/templates/components/scanner/scanner_form.html:315
-#: adminapp/templates/components/scanner/scanner_form.html:316
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Click here to upload service account credentials (JSON FORMAT)"
 msgstr ""
 "Klik her for at uploade servicekonto legitimationsoplysninger (JSON FORMAT)"
 
-#: adminapp/templates/components/scanner/scanner_form.html:330
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Service account"
 msgstr "Servicekonto"
 
-#: adminapp/templates/components/scanner/scanner_form.html:331
-#: adminapp/templates/components/scanner/scanner_form.html:363
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Current file:"
 msgstr "Nuværende fil:"
 
-#: adminapp/templates/components/scanner/scanner_form.html:337
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Upload list of accounts"
 msgstr "Upload liste af konti"
 
-#: adminapp/templates/components/scanner/scanner_form.html:349
-#: adminapp/templates/components/scanner/scanner_form.html:350
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Click here to upload list of accounts (CSV FORMAT)"
 msgstr "Klik her for at uploade liste af konti (CSV FORMAT)"
 
-#: adminapp/templates/components/scanner/scanner_form.html:362
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "List of accounts"
 msgstr "Liste af konti"
 
-#: adminapp/templates/components/scanner/scanner_form.html:373
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "add users"
 msgstr "tilføj brugere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:374
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "select users from"
 msgstr "vælg brugere fra"
 
-#: adminapp/templates/components/scanner/scanner_form.html:377
-#: adminapp/templates/components/scanner/scanner_form.html:485
-#: import_services/models/ldap_configuration.py:123
-#: organizations/templates/organizations/orgunit_list.html:195
+#: adminapp/templates/components/scanner/scanner_form.html
+#: import_services/models/ldap_configuration.py
+#: organizations/templates/organizations/orgunit_list.html
 msgid "organizational units"
 msgstr "organisatoriske enheder"
 
-#: adminapp/templates/components/scanner/scanner_form.html:387
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "or upload"
 msgstr "eller upload"
 
-#: adminapp/templates/components/scanner/scanner_form.html:393
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "List of mail users"
 msgstr "Liste af mail brugere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:395
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "The uploaded file should contain a newline-separated list of usernames or "
 "localparts of the email addresses, without domains."
@@ -1794,15 +1716,15 @@ msgstr ""
 "Den uploadede fil skal indeholde ét email-brugernavn uden domæne på hver "
 "linje."
 
-#: adminapp/templates/components/scanner/scanner_form.html:413
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Existing file:"
 msgstr "Eksisterende fil:"
 
-#: adminapp/templates/components/scanner/scanner_form.html:461
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "add accounts"
 msgstr "tilføj konti"
 
-#: adminapp/templates/components/scanner/scanner_form.html:463
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "Note that opting to \"Scan all accounts in organization\" will mean that "
 "this scannerjob will scan accounts from hidden organizational units as well."
@@ -1811,20 +1733,19 @@ msgstr ""
 "betyde at dette scannerjob også scanner konti fra skjulte organisatoriske "
 "enheder."
 
-#: adminapp/templates/components/scanner/scanner_form.html:481
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "scan accounts from"
 msgstr "scan konti fra"
 
-#: adminapp/templates/components/scanner/scanner_form.html:502
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Scanner settings"
 msgstr "Scannerindstillinger"
 
-#: adminapp/templates/components/scanner/scanner_form.html:586
-#: adminapp/templates/components/scanner/scanner_form.html:589
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Remediators"
 msgstr "Opryddere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:602
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "If any matches from the scanner job cannot be delegated to a specific user, "
 "the remediator(s) will see the results in their report module instead."
@@ -1832,11 +1753,11 @@ msgstr ""
 "Hvis nogle matches fra scannerjobbet ikke kan tildeles en bestemt bruger, "
 "vil oprydderne få vist resultatet i deres rapportmodul i stedet for."
 
-#: adminapp/templates/components/scanner/scanner_form.html:607
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Universal remediators"
 msgstr "Universelle opryddere"
 
-#: adminapp/templates/components/scanner/scanner_form.html:615
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "Universal remediators are automatically assigned as remediators for all "
 "scanner jobs."
@@ -1844,16 +1765,15 @@ msgstr ""
 "Universelle opryddere er automatisk tildelt oprydderrollen for alle "
 "scannerjobs."
 
-#: adminapp/templates/components/scanner/scanner_form.html:623
-#: adminapp/templates/components/scanner/scanner_form.html:625
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Contacts"
 msgstr "Kontakter"
 
-#: adminapp/templates/components/scanner/scanner_form.html:648
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Schedule scan"
 msgstr "Planlæg scan"
 
-#: adminapp/templates/components/scanner/scanner_form.html:655
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "Schedule your scan by creating a fixed interval or adding a date to complete "
 "the scannerjob."
@@ -1861,11 +1781,11 @@ msgstr ""
 "Planlæg dit scan ved at oprette et fast interval eller tilføj en dato for "
 "afvikling af scannerjobbet."
 
-#: adminapp/templates/components/scanner/scanner_form.html:668
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "The scanner will start at the following time for the selected days:"
 msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 
-#: adminapp/templates/components/scanner/scanner_no_client_credentials.html:18
+#: adminapp/templates/components/scanner/scanner_no_client_credentials.html
 msgid ""
 "To use this data source, credentials for SBSYS must be set up in "
 "OSdatascanner. These credentials are not currently in the system."
@@ -1874,60 +1794,52 @@ msgstr ""
 "OSdatascanner. Disse credentials findes på nuværende tidspunkt ikke i "
 "systemet."
 
-#: adminapp/templates/components/scanner/scanner_run.html:21
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Success"
 msgstr "Succes"
 
-#: adminapp/templates/components/scanner/scanner_run.html:24
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Scan details have been sent to the scanner engine, and"
 msgstr "Scan-detaljer er blevet sendt til scannermotoren, og"
 
-#: adminapp/templates/components/scanner/scanner_run.html:26
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "scan will be performed as soon as possible."
 msgstr "scan bliver udført snarest muligt."
 
-#: adminapp/templates/components/scanner/scanner_run.html:31
-#: adminapp/templates/components/scanner/scanner_run.html:32
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Take me to scanner status"
 msgstr "Vis mig scanner status"
 
-#: adminapp/templates/components/scanner/scanner_run.html:43
-#: adminapp/templates/components/scanner/scanner_run.html:72
-#: adminapp/templates/components/scanner/scanner_run.html:102
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Technical details"
 msgstr "Tekniske detaljer"
 
-#: adminapp/templates/components/scanner/scanner_run.html:56
-#: adminapp/templates/components/scanner/scanner_run.html:86
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Oops, an error occurred"
 msgstr "Hov, der opstod en fejl"
 
-#: adminapp/templates/components/scanner/scanner_run.html:59
-#: adminapp/templates/components/scanner/scanner_run.html:89
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Scan details could not be sent to the scanner engine."
 msgstr "Scan-detaljer kunne ikke sendes til scannermotoren."
 
-#: adminapp/templates/components/scanner/scanner_run.html:61
-#: adminapp/templates/components/scanner/scanner_run.html:91
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "See technical details for more information"
 msgstr "Se tekniske detaljer for mere information"
 
-#: adminapp/templates/components/scanner/scanner_run.html:76
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Could not open data source:"
 msgstr "Kunne ikke åbne datakilden:"
 
-#: adminapp/templates/components/scanner/scanner_run.html:106
+#: adminapp/templates/components/scanner/scanner_run.html
 msgid "Could not communicate with the scanner engine:"
 msgstr "Kunne ikke kommunikere med scannermotoren:"
 
-#: adminapp/templates/components/scanstatus/remove_error.html:8
-#: adminapp/templates/components/scanstatus/remove_error.html:9
-#: adminapp/templates/components/scanstatus/resolve_status.html:8
-#: adminapp/templates/components/scanstatus/resolve_status.html:9
+#: adminapp/templates/components/scanstatus/remove_error.html
+#: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "Remove selected scan data"
 msgstr "Fjern valgte scan data"
 
-#: adminapp/templates/components/scanstatus/remove_error.html:16
+#: adminapp/templates/components/scanstatus/remove_error.html
 msgid ""
 "You are about to remove the selected logs. This action cannot be reverted. "
 "Are you sure?"
@@ -1935,17 +1847,17 @@ msgstr ""
 "Du er ved at slette de valgte fejlbeskeder. Denne handling kan ikke "
 "fortrydes. Er du sikker?"
 
-#: adminapp/templates/components/scanstatus/remove_error.html:19
-#: adminapp/templates/components/scanstatus/resolve_status.html:19
+#: adminapp/templates/components/scanstatus/remove_error.html
+#: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "Remove selected"
 msgstr "Fjern valgte"
 
-#: adminapp/templates/components/scanstatus/remove_error.html:22
-#: adminapp/templates/components/scanstatus/resolve_status.html:22
+#: adminapp/templates/components/scanstatus/remove_error.html
+#: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "selected"
 msgstr "valgt"
 
-#: adminapp/templates/components/scanstatus/resolve_status.html:16
+#: adminapp/templates/components/scanstatus/resolve_status.html
 msgid ""
 "You are about to remove the selected data. This action cannot be reverted. "
 "Are you sure?"
@@ -1953,49 +1865,48 @@ msgstr ""
 "Du er ved at slette den valgte data. Denne handling kan ikke fortrydes. Er "
 "du sikker?"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:40
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Phase"
 msgstr "Fase"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:55
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Indexing data ..."
 msgstr "Indekserer data ..."
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:57
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Scanning data (still indexing) ..."
 msgstr "Scanner data (indekserer fortsat) ..."
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:59
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Scanning data ..."
 msgstr "Scanner data ..."
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:62
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "No objects to scan"
 msgstr "Ingen objekter at scanne"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:69
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Building index"
 msgstr "Opbygger indeks"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:73
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 #, python-format
 msgid "%(obj)s out of %(total)s %(onp)s scanned"
 msgstr "%(obj)s ud af %(total)s %(onp)s scannet"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:84
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Estimated finished"
 msgstr "Forventes afsluttet"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:89
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "The sources do not contain any scannable objects"
 msgstr "Datakilden indeholder ikke nogle objekter"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:105
-#: adminapp/templates/components/scanstatus/scan_status_table.html:106
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "cancel running scanner job"
 msgstr "afbryd kørende scannerjob"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:116
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 #, python-format
 msgid ""
 "Do you really want to delete the status object for scanner "
@@ -2003,162 +1914,156 @@ msgid ""
 msgstr ""
 "Er du sikker på, at du vil slette status for scanner »%%(scanner_name)s«?"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:120
-#: adminapp/templates/components/scanstatus/scan_status_table.html:121
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "status for running scanner"
 msgstr "status for kørende scanner"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html:139
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "no ongoing scans"
 msgstr "der er ingen igangværende scanninger"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:10
+#: adminapp/templates/components/scanstatus/status_timeline.html
 msgid "Statistic for"
 msgstr "Statistik for"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:19
+#: adminapp/templates/components/scanstatus/status_timeline.html
 msgid "Timeline"
 msgstr "Tidslinje"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:20
+#: adminapp/templates/components/scanstatus/status_timeline.html
 msgid "Progress of the scan from start to finish"
 msgstr "Scannets udvikling fra start til slut"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:39
+#: adminapp/templates/components/scanstatus/status_timeline.html
 msgid "Summary of scan"
 msgstr "Opsummering af scan"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:47
+#: adminapp/templates/components/scanstatus/status_timeline.html
 #, python-format
 msgid "known %(onp)s skipped due to no change"
 msgstr "kendte %(onp)s sprunget over grundet ingen ændring"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:52
+#: adminapp/templates/components/scanstatus/status_timeline.html
 #, python-format
 msgid "new %(onp)s scanned"
 msgstr "nye %(onp)s scannet"
 
-#: adminapp/templates/components/scanstatus/status_timeline.html:60
+#: adminapp/templates/components/scanstatus/status_timeline.html
 #, python-format
 msgid "All %(onp)s scanned"
 msgstr "Alle %(onp)s scannet"
 
-#: adminapp/templates/components/user/login.html:7
-#: adminapp/templates/components/user/login.html:17
-#: adminapp/templates/components/user/login.html:56
-#: adminapp/templates/components/user/login.html:73
+#: adminapp/templates/components/user/login.html
 msgid "Login"
 msgstr "Log ind"
 
-#: adminapp/templates/components/user/login.html:19
+#: adminapp/templates/components/user/login.html
 msgid "admin module"
 msgstr "administrationsmodulet"
 
-#: adminapp/templates/components/user/login.html:51
+#: adminapp/templates/components/user/login.html
 msgid "Remember me"
 msgstr "Husk mig"
 
-#: adminapp/templates/components/user/login.html:61
+#: adminapp/templates/components/user/login.html
 msgid "Did you forget your password?"
 msgstr "Har du glemt din adgangskode?"
 
-#: adminapp/templates/components/user/login.html:62
+#: adminapp/templates/components/user/login.html
 msgid "Click here"
 msgstr "Klik her"
 
-#: adminapp/templates/components/user/logout.html:13
+#: adminapp/templates/components/user/logout.html
 msgid "Thank you for using OSdatascanner."
 msgstr "Tak, fordi du brugte OSdatascanner."
 
-#: adminapp/templates/components/user/logout.html:15
+#: adminapp/templates/components/user/logout.html
 msgid "again"
 msgstr "igen"
 
-#: adminapp/templates/components/user/user.html:28
+#: adminapp/templates/components/user/user.html
 msgid "Show User"
 msgstr ""
 
-#: adminapp/templates/components/user/user_detail.html:18
-#: adminapp/templates/components/user/user_detail.html:19
+#: adminapp/templates/components/user/user_detail.html
 msgid "Edit user"
 msgstr "Redigér bruger"
 
-#: adminapp/templates/components/user/user_detail.html:30
-#: adminapp/templates/components/user/user_edit.html:23
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "First name"
 msgstr "Fornavn"
 
-#: adminapp/templates/components/user/user_detail.html:34
-#: adminapp/templates/components/user/user_edit.html:27
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "Last name"
 msgstr "Efternavn"
 
-#: adminapp/templates/components/user/user_detail.html:38
-#: adminapp/templates/components/user/user_edit.html:31
-#: organizations/templates/organizations/account_detail.html:27
-#: organizations/templates/organizations/account_list.html:56
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
+#: organizations/templates/organizations/account_detail.html
+#: organizations/templates/organizations/account_list.html
 msgid "Username"
 msgstr "Brugernavn"
 
-#: adminapp/templates/components/user/user_detail.html:42
-#: adminapp/templates/components/user/user_edit.html:35
-#: organizations/templates/organizations/account_detail.html:31
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
+#: organizations/templates/organizations/account_detail.html
 msgid "E-mail"
 msgstr "E-mail"
 
-#: adminapp/templates/components/user/user_detail.html:47
-#: adminapp/templates/components/user/user_edit.html:40
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "Administrator for"
 msgstr "Administrator for"
 
-#: adminapp/templates/components/user/user_detail.html:56
-#: adminapp/templates/components/user/user_edit.html:49
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "User access"
 msgstr "Brugeradgang"
 
-#: adminapp/templates/components/user/user_detail.html:60
-#: adminapp/templates/components/user/user_edit.html:53
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "Groups"
 msgstr "Grupper"
 
-#: adminapp/templates/components/user/user_detail.html:68
-#: adminapp/templates/components/user/user_edit.html:61
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
 msgid "User permissions"
 msgstr "Brugerrettigheder"
 
-#: adminapp/templates/components/user/user_detail.html:75
-#: adminapp/templates/components/user/user_edit.html:68
-#: organizations/templates/organizations/account_detail.html:68
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
+#: organizations/templates/organizations/account_detail.html
 msgid "Superuser"
 msgstr "Superbruger"
 
-#: adminapp/templates/components/user/user_detail.html:79
-#: adminapp/templates/components/user/user_edit.html:72
-#: adminapp/templates/rules.html:177
-#: organizations/templates/organizations/account_detail.html:72
+#: adminapp/templates/components/user/user_detail.html
+#: adminapp/templates/components/user/user_edit.html
+#: adminapp/templates/rules.html
+#: organizations/templates/organizations/account_detail.html
 msgid "Yes"
 msgstr "Ja"
 
-#: adminapp/templates/components/user/user_edit.html:82
-#: adminapp/templates/miniscan.html:113
-#: organizations/templates/components/modals/alias_create.html:56
+#: adminapp/templates/components/user/user_edit.html
+#: adminapp/templates/miniscan.html
+#: organizations/templates/components/modals/alias_create.html
 msgid "Save"
 msgstr "Gem"
 
-#: adminapp/templates/error_log.html:42
+#: adminapp/templates/error_log.html
 msgid "Search for error message"
 msgstr "Søg efter fejlbesked"
 
-#: adminapp/templates/error_log.html:53
+#: adminapp/templates/error_log.html
 msgid "Show seen error messages"
 msgstr "Vis sete fejlbeskeder"
 
-#: adminapp/templates/error_log.html:90 adminapp/templates/error_log.html:91
-#: adminapp/templates/error_log.html:98
+#: adminapp/templates/error_log.html
 msgid "Mark all as seen"
 msgstr "Markér alle som set"
 
-#: adminapp/templates/error_log.html:97
+#: adminapp/templates/error_log.html
 msgid ""
 "You are about to mark all error log messages as seen. This action cannot be "
 "reverted. Are you sure?"
@@ -2166,66 +2071,63 @@ msgstr ""
 "Du er ved at markere alle fejlbeskeder som set. Denne handling kan ikke "
 "fortrydes. Er du sikker?"
 
-#: adminapp/templates/error_log.html:105 adminapp/templates/error_log.html:106
-#: adminapp/templates/error_log.html:114
+#: adminapp/templates/error_log.html
 msgid "Remove all"
 msgstr "Slet alle"
 
-#: adminapp/templates/error_log.html:112
+#: adminapp/templates/error_log.html
 msgid "You are about to remove"
 msgstr "Du er ved at slette"
 
-#: adminapp/templates/error_log.html:112
+#: adminapp/templates/error_log.html
 msgid " error logs. This action cannot be reverted. Are you sure?"
 msgstr " fejlbeskeder. Denne handling kan ikke fortrydes. Er du sikker?"
 
-#: adminapp/templates/error_log.html:143
+#: adminapp/templates/error_log.html
 msgid "Error"
 msgstr "Fejl"
 
-#: adminapp/templates/error_log.html:148 adminapp/templates/error_log.html:149
-#: adminapp/templates/error_log.html:168 adminapp/templates/error_log.html:169
-#: adminapp/templates/error_log.html:190 adminapp/templates/error_log.html:191
+#: adminapp/templates/error_log.html
 msgid "Sort table by"
 msgstr "Sortér tabel efter"
 
-#: adminapp/templates/error_log.html:148 adminapp/templates/error_log.html:149
+#: adminapp/templates/error_log.html
 msgid "error type"
 msgstr "fejltype"
 
-#: adminapp/templates/error_log.html:168 adminapp/templates/error_log.html:169
+#: adminapp/templates/error_log.html
 msgid "start time"
 msgstr "startet"
 
-#: adminapp/templates/error_log.html:190 adminapp/templates/error_log.html:191
+#: adminapp/templates/error_log.html
 msgid "path name"
 msgstr "sti navn"
 
-#: adminapp/templates/error_log.html:206
+#: adminapp/templates/error_log.html
 msgid "Scan"
 msgstr "Scan"
 
-#: adminapp/templates/error_log.html:227 adminapp/templates/error_log.html:228
+#: adminapp/templates/error_log.html
 msgid "Select results"
 msgstr "Vælg resultater"
 
-#: adminapp/templates/error_log.html:236
+#: adminapp/templates/error_log.html
 msgid "New"
 msgstr "Ny"
 
-#: adminapp/templates/error_log.html:260
+#: adminapp/templates/error_log.html
 msgid "Delete permanently"
 msgstr "Slet permanent"
 
-#: adminapp/templates/error_log.html:275 adminapp/templates/error_log.html:276
+#: adminapp/templates/error_log.html
 msgid "Mark as seen"
 msgstr "Markér som set"
 
-#: adminapp/templates/error_log.html:289
+#: adminapp/templates/error_log.html
 msgid "no errors found."
 msgstr "ingen fejl fundet."
 
-#: adminapp/templates/mail/password_reset_email.html:4
+#: adminapp/templates/mail/password_reset_email.html
 #, python-format
 msgid ""
 "\n"
@@ -2238,19 +2140,19 @@ msgstr ""
 "adgangskode til din bruger på %(site_name)s.\n"
 "  "
 
-#: adminapp/templates/mail/password_reset_email.html:8
+#: adminapp/templates/mail/password_reset_email.html
 msgid "Please go to the following page and choose a new password:"
 msgstr "Gå venligst til følgende side og vælg en ny adgangskode:"
 
-#: adminapp/templates/mail/password_reset_email.html:14
+#: adminapp/templates/mail/password_reset_email.html
 msgid "Your username, in case you've forgotten:"
 msgstr "Dit brugernavn er følgende, hvis du har glemt det:"
 
-#: adminapp/templates/mail/password_reset_email.html:17
+#: adminapp/templates/mail/password_reset_email.html
 msgid "Thanks for using our site!"
 msgstr "Tak, fordi du brugte vores side!"
 
-#: adminapp/templates/mail/password_reset_email.html:19
+#: adminapp/templates/mail/password_reset_email.html
 #, python-format
 msgid ""
 "\n"
@@ -2261,11 +2163,11 @@ msgstr ""
 "  %(site_name)s teamet\n"
 "  "
 
-#: adminapp/templates/miniscan.html:22
+#: adminapp/templates/miniscan.html
 msgid "OSdatascanner mini-scanner"
 msgstr "OSdatascanner miniscanner"
 
-#: adminapp/templates/miniscan.html:25
+#: adminapp/templates/miniscan.html
 msgid ""
 "The mini-scanner lets you execute any OSdatascanner rule on a single file or "
 "piece of text. It returns the results directly to this page."
@@ -2273,116 +2175,108 @@ msgstr ""
 "Med miniscanneren kan man afvikle en vilkårlig OSdatascanner-regel på én "
 "enkel fil eller tekst-stykke. Resultaterne vises længere nede på denne side."
 
-#: adminapp/templates/miniscan.html:30 adminapp/templates/miniscan.html:64
+#: adminapp/templates/miniscan.html
 msgid "Maximum allowed file size is: "
 msgstr "Den maksimalt tilladte filstørrelse er: "
 
-#: adminapp/templates/miniscan.html:43
+#: adminapp/templates/miniscan.html
 msgid "File to scan"
 msgstr "Upload fil"
 
-#: adminapp/templates/miniscan.html:54 adminapp/templates/miniscan.html:55
+#: adminapp/templates/miniscan.html
 msgid "Clear selected file"
 msgstr "Ryd valgt fil"
 
-#: adminapp/templates/miniscan.html:58
+#: adminapp/templates/miniscan.html
 msgid "Clear file"
 msgstr "Ryd fil"
 
-#: adminapp/templates/miniscan.html:62
+#: adminapp/templates/miniscan.html
 msgid "The selected file is too big!"
 msgstr "Den valgte fil er for stor!"
 
-#: adminapp/templates/miniscan.html:66
+#: adminapp/templates/miniscan.html
 msgid "Please, select another (smaller) file to scan."
 msgstr "Vælg venligst at scanne en anden (mindre) fil."
 
-#: adminapp/templates/miniscan.html:70
+#: adminapp/templates/miniscan.html
 msgid "Enter your text below"
 msgstr "Tast venligst text nedenfor"
 
-#: adminapp/templates/miniscan.html:79
+#: adminapp/templates/miniscan.html
 msgid "Rule to execute"
 msgstr "Definér regel"
 
-#: adminapp/templates/miniscan.html:82
+#: adminapp/templates/miniscan.html
 msgid "Selected rule: "
 msgstr "Valgte regel: "
 
-#: adminapp/templates/miniscan.html:87
+#: adminapp/templates/miniscan.html
 msgid "None"
 msgstr "Ingen"
 
-#: adminapp/templates/miniscan.html:96 adminapp/templates/miniscan.html:97
-#: adminapp/templates/miniscan.html:138
+#: adminapp/templates/miniscan.html
 msgid "Upload a rule from the list"
 msgstr "Indlæs en regel fra listen"
 
-#: adminapp/templates/miniscan.html:97
+#: adminapp/templates/miniscan.html
 msgid "Load rule"
 msgstr "Indlæs regel"
 
-#: adminapp/templates/miniscan.html:103 adminapp/templates/miniscan.html:104
-#: adminapp/templates/miniscan.html:105
+#: adminapp/templates/miniscan.html
 msgid "Run"
 msgstr "Kør"
 
-#: adminapp/templates/miniscan.html:103 adminapp/templates/miniscan.html:104
+#: adminapp/templates/miniscan.html
 msgid "scanner"
 msgstr "scanner"
 
-#: adminapp/templates/miniscan.html:109 adminapp/templates/miniscan.html:113
+#: adminapp/templates/miniscan.html
 msgid "Save rule"
 msgstr "Gem regel"
 
-#: adminapp/templates/miniscan.html:116 adminapp/templates/miniscan.html:117
-#: adminapp/templates/miniscan.html:118
+#: adminapp/templates/miniscan.html
 msgid "Clear"
 msgstr "Ryd"
 
-#: adminapp/templates/miniscan.html:116 adminapp/templates/miniscan.html:117
+#: adminapp/templates/miniscan.html
 msgid "content"
 msgstr "indhold"
 
-#: adminapp/templates/miniscan.html:121
+#: adminapp/templates/miniscan.html
 msgid "Scan result"
 msgstr "Scanresultat"
 
-#: adminapp/templates/miniscan.html:122
+#: adminapp/templates/miniscan.html
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
-#: adminapp/templates/removed_scanners.html:31
-#: adminapp/templates/scanners.html:31
+#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
 msgid "Search for scanner"
 msgstr "Søg efter scanner"
 
-#: adminapp/templates/removed_scanners.html:54
+#: adminapp/templates/removed_scanners.html
 msgid "Type"
 msgstr "Type"
 
-#: adminapp/templates/removed_scanners.html:56
+#: adminapp/templates/removed_scanners.html
 msgid "Last scan"
 msgstr "Sidste scan"
 
-#: adminapp/templates/removed_scanners.html:108
-#: adminapp/templates/removed_scanners.html:109
+#: adminapp/templates/removed_scanners.html
 msgid "Recreate scanner job."
 msgstr "Genskab scannerjob"
 
-#: adminapp/templates/removed_scanners.html:131
-#: adminapp/templates/scanners.html:252
+#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
 msgid "Do you really want to delete this scanner?"
 msgstr "Er du sikker på, at du vil slette denne scanner?"
 
-#: adminapp/templates/removed_scanners.html:131
-#: adminapp/templates/rules.html:97 adminapp/templates/scanners.html:252
+#: adminapp/templates/removed_scanners.html adminapp/templates/rules.html
+#: adminapp/templates/scanners.html
 msgid "The action cannot be reversed"
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/removed_scanners.html:132
-#: adminapp/templates/removed_scanners.html:133
-#: adminapp/templates/scanners.html:253 adminapp/templates/scanners.html:254
+#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
 msgid ""
 "Delete scanner job. The scannerjob and the related scanning history will be "
 "permanently deleted."
@@ -2390,88 +2284,85 @@ msgstr ""
 "Slet scannerjobbet. Scannerjobbet og den relaterede scanningshistorik bliver "
 "permanent slettet."
 
-#: adminapp/templates/removed_scanners.html:144
+#: adminapp/templates/removed_scanners.html
 msgid "No removed scanners found"
 msgstr "Ingen fjernede scannere fundet"
 
-#: adminapp/templates/rules.html:37 adminapp/templates/rules.html:38
-#: adminapp/templates/rules.html:42
+#: adminapp/templates/rules.html
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html:65
-#: organizations/templates/organizations/account_detail.html:35
+#: adminapp/templates/rules.html
+#: organizations/templates/organizations/account_detail.html
 msgid "Organization"
 msgstr "Organisation"
 
-#: adminapp/templates/rules.html:66 adminapp/templates/system_rules.html:69
+#: adminapp/templates/rules.html adminapp/templates/system_rules.html
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: adminapp/templates/rules.html:67 adminapp/templates/system_rules.html:70
+#: adminapp/templates/rules.html adminapp/templates/system_rules.html
 msgid "Sensitivity"
 msgstr "Følsomhed"
 
-#: adminapp/templates/rules.html:68 adminapp/templates/scanners.html:84
+#: adminapp/templates/rules.html adminapp/templates/scanners.html
 msgid "Action"
 msgstr "Handling"
 
-#: adminapp/templates/rules.html:87 adminapp/templates/rules.html:88
-#: adminapp/templates/scanners.html:95 adminapp/templates/scanners.html:96
+#: adminapp/templates/rules.html adminapp/templates/scanners.html
 msgid "Edit"
 msgstr "Redigér"
 
-#: adminapp/templates/rules.html:97
+#: adminapp/templates/rules.html
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
-#: adminapp/templates/rules.html:99
+#: adminapp/templates/rules.html
 msgid "This rule cannot be deleted, as it is used in the following scanners"
 msgstr ""
 "Denne regel kan ikke slettes, da den bliver benyttet af følgende scannere"
 
-#: adminapp/templates/rules.html:99
+#: adminapp/templates/rules.html
 msgid "Update or delete the scanners first in order to delete the rule"
 msgstr "Opdater eller slet disse scannere først for at kunne slette reglen"
 
-#: adminapp/templates/rules.html:129
+#: adminapp/templates/rules.html
 msgid "No rules added yet"
 msgstr "Der er endnu ikke tilføjet nogle regler"
 
-#: adminapp/templates/rules.html:147 adminapp/templates/rules.html:158
+#: adminapp/templates/rules.html
 msgid "Delete rule"
 msgstr "Slet regel"
 
-#: adminapp/templates/rules.html:166
+#: adminapp/templates/rules.html
 msgid "Do you want to delete"
 msgstr "Ønsker du at slette"
 
-#: adminapp/templates/rules.html:167
+#: adminapp/templates/rules.html
 msgid "This action cannot be undone."
 msgstr "Handlingen kan ikke fortrydes."
 
-#: adminapp/templates/scanners.html:50 adminapp/templates/scanners.html:51
-#: adminapp/templates/scanners.html:55
+#: adminapp/templates/scanners.html
 msgid "Add scannerjob"
 msgstr "Tilføj scannerjob"
 
-#: adminapp/templates/scanners.html:73
+#: adminapp/templates/scanners.html
 msgid "URL"
 msgstr "URL"
 
-#: adminapp/templates/scanners.html:77
+#: adminapp/templates/scanners.html
 msgid "Drive"
 msgstr "Drev"
 
-#: adminapp/templates/scanners.html:80
+#: adminapp/templates/scanners.html
 msgid "Validation"
 msgstr "Validering"
 
-#: adminapp/templates/scanners.html:82
+#: adminapp/templates/scanners.html
 msgid "Next scan"
 msgstr "Næste scan"
 
-#: adminapp/templates/scanners.html:111
+#: adminapp/templates/scanners.html
 msgid ""
 "The following users are no longer covered by this scannerjob, but have been "
 "scanned previously:"
@@ -2479,150 +2370,146 @@ msgstr ""
 "Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
 "blevet scannet:"
 
-#: adminapp/templates/scanners.html:114
+#: adminapp/templates/scanners.html
 msgid "Stale accounts"
 msgstr "Frakoblede konti"
 
-#: adminapp/templates/scanners.html:145 adminapp/templates/scanners.html:154
+#: adminapp/templates/scanners.html
 msgid "Validation status for this scanner job has been set to"
 msgstr "Valideringstatus for dette scannerjob er blevet indstillet til"
 
-#: adminapp/templates/scanners.html:145 adminapp/templates/scanners.html:148
+#: adminapp/templates/scanners.html
 msgid "Valid"
 msgstr "Gyldig"
 
-#: adminapp/templates/scanners.html:154 adminapp/templates/scanners.html:157
+#: adminapp/templates/scanners.html
 msgid "Invalid"
 msgstr "Ugyldig"
 
-#: adminapp/templates/scanners.html:166
+#: adminapp/templates/scanners.html
 msgid "Next scan will run the"
 msgstr "Næste scan vil køre den"
 
-#: adminapp/templates/scanners.html:173
+#: adminapp/templates/scanners.html
 msgid "There are currently no scans scheduled for this scanner job"
 msgstr "Der er i øjeblikket ingen planlagte scan for dette scannerjob"
 
-#: adminapp/templates/scanners.html:177
+#: adminapp/templates/scanners.html
 msgid "Not scheduled"
 msgstr "Ikke planlagt"
 
-#: adminapp/templates/scanners.html:188 adminapp/templates/scanners.html:189
+#: adminapp/templates/scanners.html
 msgid "Run scanner job"
 msgstr "Kør scannerjob"
 
-#: adminapp/templates/scanners.html:196 adminapp/templates/scanners.html:197
+#: adminapp/templates/scanners.html
 msgid "Edit scanner job"
 msgstr "Redigér scannerjob"
 
-#: adminapp/templates/scanners.html:205 adminapp/templates/scanners.html:206
+#: adminapp/templates/scanners.html
 msgid "Copy scanner job"
 msgstr "Kopiér scannerjob"
 
-#: adminapp/templates/scanners.html:228 adminapp/templates/scanners.html:229
+#: adminapp/templates/scanners.html
 msgid ""
 "Remove scanner job. This does not delete the scanner's scanning history."
 msgstr "Fjern scannerjob. Dette sletter ikke scannerens scanningshistorik."
 
-#: adminapp/templates/scanners.html:269
+#: adminapp/templates/scanners.html
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
 
-#: adminapp/templates/system_rules.html:5
-#: adminapp/templates/system_rules.html:55 organizations/admin.py:61
+#: adminapp/templates/system_rules.html organizations/admin.py
 msgid "System rules"
 msgstr "Systemregler"
 
-#: adminapp/templates/system_rules.html:16
+#: adminapp/templates/system_rules.html
 msgid "Filter for categories"
 msgstr "Filtrér efter kategorier"
 
-#: adminapp/templates/system_rules.html:29
-#: adminapp/templates/system_rules.html:30
+#: adminapp/templates/system_rules.html
 msgid "Filter system rules by the chosen categories."
 msgstr "Filtrér systemreglerne efter de valgte kategorier"
 
-#: adminapp/templates/system_rules.html:31
-#: organizations/templates/organizations/orgunit_list.html:89
-#: organizations/templates/organizations/orgunit_list.html:162
+#: adminapp/templates/system_rules.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "filter"
 msgstr "filtrér"
 
-#: adminapp/templates/system_rules.html:34
+#: adminapp/templates/system_rules.html
 msgid "Choose system rules for organization"
 msgstr "Vælg systemregler for organizationen"
 
-#: adminapp/templates/system_rules.html:68
+#: adminapp/templates/system_rules.html
 msgid "Categories"
 msgstr "Kategorier"
 
-#: adminapp/templates/system_rules.html:93
-#: adminapp/templates/system_rules.html:94
+#: adminapp/templates/system_rules.html
 msgid "Enable rule"
 msgstr "Aktivér regel"
 
-#: adminapp/templates/system_rules.html:112
+#: adminapp/templates/system_rules.html
 msgid "No rules found with the chosen categories"
 msgstr "Ingen regler fundet for de valgte kategorier"
 
-#: adminapp/templatetags/utility_tags.py:24
+#: adminapp/templatetags/utility_tags.py
 msgid "day"
 msgstr "dag"
 
-#: adminapp/templatetags/utility_tags.py:25
+#: adminapp/templatetags/utility_tags.py
 msgid "days"
 msgstr "dage"
 
-#: adminapp/templatetags/utility_tags.py:29
+#: adminapp/templatetags/utility_tags.py
 msgid "hour"
 msgstr "time"
 
-#: adminapp/templatetags/utility_tags.py:30
+#: adminapp/templatetags/utility_tags.py
 msgid "hours"
 msgstr "timer"
 
-#: adminapp/templatetags/utility_tags.py:34
+#: adminapp/templatetags/utility_tags.py
 msgid "minute"
 msgstr "minut"
 
-#: adminapp/templatetags/utility_tags.py:35
+#: adminapp/templatetags/utility_tags.py
 msgid "minutes"
 msgstr "minutter"
 
-#: adminapp/templatetags/utility_tags.py:39
+#: adminapp/templatetags/utility_tags.py
 msgid "second"
 msgstr "sekund"
 
-#: adminapp/templatetags/utility_tags.py:40
+#: adminapp/templatetags/utility_tags.py
 msgid "seconds"
 msgstr "sekunder"
 
-#: adminapp/templatetags/utility_tags.py:44
+#: adminapp/templatetags/utility_tags.py
 msgid "millisecond"
 msgstr "millisekund"
 
-#: adminapp/templatetags/utility_tags.py:45
+#: adminapp/templatetags/utility_tags.py
 msgid "milliseconds"
 msgstr "millisekunder"
 
-#: adminapp/views/exchangescanner_views.py:248
+#: adminapp/views/exchangescanner_views.py
 msgid "No organizational units has been selected"
 msgstr "Der er ikke valgt nogen organisatoriske enheder"
 
-#: adminapp/views/exchangescanner_views.py:249
+#: adminapp/views/exchangescanner_views.py
 msgid "No userlist has been selected"
 msgstr "Der er ikke valgt nogen brugerliste"
 
-#: adminapp/views/exchangescanner_views.py:259
+#: adminapp/views/exchangescanner_views.py
 msgid "The uploaded file does not appear to be a text file"
 msgstr "Den uploadede fil viser sig ikke at være en tekstfil"
 
-#: adminapp/views/exchangescanner_views.py:265
+#: adminapp/views/exchangescanner_views.py
 msgid ""
 "The userlist should only include the usernames of the users, not the domain!"
 msgstr "Brugerlisten skal kun indeholde brugernavne på brugerne, ikke domæne!"
 
-#: adminapp/views/exchangescanner_views.py:270
+#: adminapp/views/exchangescanner_views.py
 msgid ""
 "Usernames in the userlist should be separated by newlines, not commas or "
 "whitespace!"
@@ -2630,89 +2517,89 @@ msgstr ""
 "Brugernavnene i brugerlisten skal adskilles af linjeskift, ikke komma eller "
 "mellemrum!"
 
-#: adminapp/views/exchangescanner_views.py:285
+#: adminapp/views/exchangescanner_views.py
 msgid "You must select either an EWS or a Graph grant!"
 msgstr "Du skal vælge enten en EWS eller Graph bevilling!"
 
-#: adminapp/views/exchangescanner_views.py:301
+#: adminapp/views/exchangescanner_views.py
 msgid "The domain is invalid"
 msgstr "Domænet er ugyldigt"
 
-#: adminapp/views/exchangescanner_views.py:310
+#: adminapp/views/exchangescanner_views.py
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/filescanner_views.py:187
+#: adminapp/views/filescanner_views.py
 msgid "e.g. //network-domain/top-folder"
 msgstr "f.eks. //network-domain/top-folder"
 
-#: adminapp/views/filescanner_views.py:188
+#: adminapp/views/filescanner_views.py
 msgid "Drive letter"
 msgstr "Drevbogstav"
 
-#: adminapp/views/miniscanner_views.py:168 adminapp/views/rule_views.py:124
+#: adminapp/views/miniscanner_views.py adminapp/views/rule_views.py
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
 msgstr ""
 "Listen af undtagelser skal være adskilt af kommaer og bestå af ticifrede tal."
 
-#: adminapp/views/miniscanner_views.py:171 adminapp/views/rule_views.py:129
+#: adminapp/views/miniscanner_views.py adminapp/views/rule_views.py
 msgid ""
 "The 'surrounding_exceptions'-string must not include any symbols or spaces."
 msgstr ""
 "Listen af omkringliggende undtagelser må ikke indeholde symboler eller "
 "mellemrum."
 
-#: adminapp/views/miniscanner_views.py:174
+#: adminapp/views/miniscanner_views.py
 msgid "No rule selected"
 msgstr "Ingen regel var givet"
 
-#: adminapp/views/miniscanner_views.py:190
+#: adminapp/views/miniscanner_views.py
 #, python-brace-format
 msgid "Rule '{rule_name}' created!"
 msgstr "Regel '{rule_name}' oprettet"
 
-#: adminapp/views/rule_views.py:126 adminapp/views/rule_views.py:131
+#: adminapp/views/rule_views.py
 msgid "Formatting error"
 msgstr "Formateringsfejl"
 
-#: adminapp/views/rule_views.py:226
+#: adminapp/views/rule_views.py
 msgid "This rule cannot be deleted, because it's associated with a scanner."
 msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 
-#: adminapp/views/scanner_views.py:71
+#: adminapp/views/scanner_views.py
 msgid "The page does not exist"
 msgstr "Siden findes ikke"
 
-#: adminapp/views/scanner_views.py:204
+#: adminapp/views/scanner_views.py
 msgid "Scanner name"
 msgstr "Scanner navn"
 
-#: adminapp/views/scanner_views.py:214
+#: adminapp/views/scanner_views.py
 msgid "Objects found"
 msgstr "Objekter fundet"
 
-#: adminapp/views/scanner_views.py:219
+#: adminapp/views/scanner_views.py
 msgid "Matches found"
 msgstr "Resultater fundet"
 
-#: adminapp/views/scanner_views.py:224
+#: adminapp/views/scanner_views.py
 msgid "Scanning time"
 msgstr "Scanningstid"
 
-#: adminapp/views/scanner_views.py:404 adminapp/views/scanner_views.py:424
+#: adminapp/views/scanner_views.py
 msgid "Scan time"
 msgstr "Scan tidspunkt"
 
-#: adminapp/views/scanner_views.py:414 adminapp/views/scanner_views.py:426
+#: adminapp/views/scanner_views.py
 msgid "Scanner job"
 msgstr "Scannerjob"
 
-#: adminapp/views/scanner_views.py:565
+#: adminapp/views/scanner_views.py
 msgid "User is not administrator for any client"
 msgstr "Brugeren er ikke administrator for en kunde"
 
-#: adminapp/views/scanner_views.py:574
+#: adminapp/views/scanner_views.py
 msgid ""
 "You should either choose organizational units to scan, or choose to scan the "
 "entire organization."
@@ -2720,27 +2607,27 @@ msgstr ""
 "Du skal enten vælge organisatoriske enheder at scanne, eller vælge at scanne "
 "hele organisationen."
 
-#: adminapp/views/scanner_views.py:645
+#: adminapp/views/scanner_views.py
 msgid "Password must be updated, when changing username or url."
 msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
-#: adminapp/views/scanner_views.py:665
+#: adminapp/views/scanner_views.py
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 
-#: adminapp/views/scanner_views.py:691
+#: adminapp/views/scanner_views.py
 msgid "The scannerjob was deleted."
 msgstr "Scannerjobbet blev slettet."
 
-#: adminapp/views/scanner_views.py:706
+#: adminapp/views/scanner_views.py
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 
-#: adminapp/views/scanner_views.py:903
+#: adminapp/views/scanner_views.py
 msgid "The scannerjob was recreated."
 msgstr "Scannerjobbet blev gendannet."
 
-#: adminapp/views/validators.py:18
+#: adminapp/views/validators.py
 #, python-format
 msgid ""
 "Cannot build rule: %(r1)s may not precede %(r2)s. Please change the order."
@@ -2748,312 +2635,311 @@ msgstr ""
 "Kan ikke bygge regel: %(r1)s må ikke komme før %(r2)s. Byt venligst om på "
 "rækkefølgen."
 
-#: adminapp/views/validators.py:20
+#: adminapp/views/validators.py
 #, python-format
 msgid ""
 "Cannot build rule: %(r1)s must be used in conjunction with another rule."
 msgstr "Kan ikke bygge regel: %(r1)s skal benyttes sammen med en anden regel."
 
-#: adminapp/views/validators.py:22
+#: adminapp/views/validators.py
 #, python-format
 msgid "Cannot build rule: %(r1)s must include at least 2 components."
 msgstr "Kan ikke bygge regel: %(r1)s skal have mindst 2 delregler."
 
-#: adminapp/views/views.py:205 import_services/models/exported_mixin.py:31
+#: adminapp/views/views.py import_services/models/exported_mixin.py
 msgid "created"
 msgstr "oprettet"
 
-#: adminapp/views/views.py:205
+#: adminapp/views/views.py
 msgid "saved"
 msgstr "gemt"
 
-#: adminapp/views/webscanner_views.py:58
+#: adminapp/views/webscanner_views.py
 msgid "e.g. https://example.com"
 msgstr "f.eks. https://example.com"
 
-#: adminapp/views/webscanner_views.py:60
+#: adminapp/views/webscanner_views.py
 msgid "e.g. https://example.com/exclude1, https://example.com/exclude2"
 msgstr "f.eks. https://example.com/exclude1, https://example.com/exclude2"
 
-#: adminapp/views/webscanner_views.py:66 adminapp/views/webscanner_views.py:100
+#: adminapp/views/webscanner_views.py
 msgid "Space is not allowed in the web-domain name."
 msgstr "Mellemrum er ikke tilladt i web-domænenavnet."
 
-#: core/admin.py:33
+#: core/admin.py
 msgid "Users who are already Administrators are not shown."
 msgstr "Viser ikke brugere, der allerede er administratorer."
 
-#: core/admin.py:36
+#: core/admin.py
 msgid "-- No valid users available --"
 msgstr "-- Der findes ingen gyldige brugere --"
 
-#: core/apps.py:8
+#: core/apps.py
 msgctxt "Verbose name for core app"
 msgid "Management"
 msgstr "Administration"
 
-#: core/forms.py:32 core/models/client.py:89
+#: core/forms.py core/models/client.py
 msgid "enabled features"
 msgstr "aktiverede features"
 
-#: core/forms.py:33
+#: core/forms.py
 msgid "Select a feature to enable it for this client."
 msgstr "Vælg en feature for at aktivere den for denne kunde."
 
-#: core/forms.py:40 core/models/client.py:95
+#: core/forms.py core/models/client.py
 msgid "activated scan types"
 msgstr "tilgængelige scannertyper"
 
-#: core/forms.py:41
+#: core/forms.py
 msgid "Select a scan type to activate it for this client."
 msgstr "Vælg en scannertype for at gøre den tilgængelig for denne kunde."
 
-#: core/forms.py:70
+#: core/forms.py
 msgid "Only one type of import service can be active at a time."
 msgstr "Kun en type af importservice kan være aktiveret."
 
-#: core/management/commands/run_background_jobs.py:105
+#: core/management/commands/run_background_jobs.py
 #, python-format
 msgid "sleep for %(metavar)s seconds if there were no jobs to run"
 msgstr "vent %(metavar)s sekunder hvis der ikke var nogle jobs til afvikling"
 
-#: core/management/commands/run_background_jobs.py:112
+#: core/management/commands/run_background_jobs.py
 msgid "do not loop: run a single job and then exit"
 msgstr "kør ikke i løkke: kør et enkelt job og gå derefter ud"
 
-#: core/management/commands/run_background_jobs.py:196
+#: core/management/commands/run_background_jobs.py
 #, python-brace-format
 msgid "{0} job(s) completed."
 msgstr "{0} færdige job(s)."
 
-#: core/management/commands/run_background_jobs.py:197
+#: core/management/commands/run_background_jobs.py
 #, python-brace-format
 msgid "{0} job(s) failed."
 msgstr "{0} fejlede job(s)."
 
-#: core/models/administrator.py:31
+#: core/models/administrator.py
 msgid "user"
 msgstr "bruger"
 
-#: core/models/administrator.py:37 core/models/client.py:128
-#: organizations/models/organization.py:64
+#: core/models/administrator.py core/models/client.py
+#: organizations/models/organization.py
 msgid "client"
 msgstr "kunde"
 
-#: core/models/administrator.py:42
+#: core/models/administrator.py
 msgid "administrator"
 msgstr "administrator"
 
-#: core/models/administrator.py:43
+#: core/models/administrator.py
 msgid "administrators"
 msgstr "administratorer"
 
-#: core/models/background_job.py:14
+#: core/models/background_job.py
 msgid "waiting"
 msgstr "afventer"
 
-#: core/models/background_job.py:17
+#: core/models/background_job.py
 msgid "running"
 msgstr "kører"
 
-#: core/models/background_job.py:19
+#: core/models/background_job.py
 msgid "cancelling"
 msgstr "annullering i gang"
 
-#: core/models/background_job.py:23
+#: core/models/background_job.py
 msgid "finished"
 msgstr "afsluttet"
 
-#: core/models/background_job.py:27
+#: core/models/background_job.py
 msgid "failed"
 msgstr "fejlet"
 
-#: core/models/background_job.py:29
+#: core/models/background_job.py
 msgid "finished with warnings"
 msgstr "afsluttet med advarsler"
 
-#: core/models/background_job.py:52
+#: core/models/background_job.py
 msgid "job creation time"
 msgstr "job-oprettelsestid"
 
-#: core/models/background_job.py:55
+#: core/models/background_job.py
 msgid "job update time"
 msgstr "job-opdateringstid"
 
-#: core/models/background_job.py:60
+#: core/models/background_job.py
 msgid "execution state"
 msgstr "kørselsstatus"
 
-#: core/models/background_job.py:64
+#: core/models/background_job.py
 msgid "last status message"
 msgstr "sidste status-besked"
 
-#: core/models/client.py:26
+#: core/models/client.py
 msgid "web scan"
 msgstr "webscan"
 
-#: core/models/client.py:27
+#: core/models/client.py
 msgid "file scan"
 msgstr "filscan"
 
-#: core/models/client.py:28
+#: core/models/client.py
 msgid "Exchange scan"
 msgstr "Exchange-scan"
 
-#: core/models/client.py:29
+#: core/models/client.py
 msgid "SBSYS scan"
 msgstr "SBSYS-scan"
 
-#: core/models/client.py:30
+#: core/models/client.py
 msgid "Dropbox scan"
 msgstr "Dropbox-scan"
 
-#: core/models/client.py:31
+#: core/models/client.py
 msgid "Microsoft Graph - mail scan"
 msgstr "Microsoft Graph - mailscan"
 
-#: core/models/client.py:32
+#: core/models/client.py
 msgid "Microsoft Graph - file scan"
 msgstr "Microsoft Graph - filscan"
 
-#: core/models/client.py:33
+#: core/models/client.py
 msgid "Google - drive scan"
 msgstr "Google - drevscan"
 
-#: core/models/client.py:34
+#: core/models/client.py
 msgid "Google - mail scan"
 msgstr "Google - mailscan"
 
-#: core/models/client.py:35
+#: core/models/client.py
 msgid "Microsoft Graph - Teams file scan"
 msgstr "Microsoft Graph - Teams filscan"
 
-#: core/models/client.py:42
+#: core/models/client.py
 msgid "administration API"
 msgstr "administrations-API"
 
-#: core/models/client.py:49
+#: core/models/client.py
 msgid "structured organization support"
 msgstr "understøttelse af strukturerede organisationer"
 
-#: core/models/client.py:50 import_services/apps.py:8
-#: import_services/models/import_service.py:44
+#: core/models/client.py import_services/apps.py
+#: import_services/models/import_service.py
 msgid "import services"
 msgstr "importtjenester"
 
-#: core/models/client.py:51
+#: core/models/client.py
 msgid "import services (MS Graph)"
 msgstr "importtjenester (MS Graph)"
 
-#: core/models/client.py:52
+#: core/models/client.py
 msgid "import services (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
-#: core/models/client.py:70
+#: core/models/client.py
 msgid "client ID"
 msgstr "kunde-ID"
 
-#: core/models/client.py:79
+#: core/models/client.py
 msgid "e-mail"
 msgstr "e-mail"
 
-#: core/models/client.py:83
+#: core/models/client.py
 msgid "phone number"
 msgstr "telefonnummer"
 
-#: core/models/client.py:129
+#: core/models/client.py
 msgid "clients"
 msgstr "kunder"
 
-#: core/models/utilities.py:64
+#: core/models/utilities.py
 #, python-brace-format
 msgid "{value} is not a valid {class_name}"
 msgstr "{value} er ikke en gyldig værdi for {class_name}"
 
-#: core/templates/components/background_job.html:13
-#: core/templates/components/background_job.html:14
+#: core/templates/components/background_job.html
 msgid "Cancel task"
 msgstr "Annullér opgave"
 
-#: core/templates/components/background_job.html:59
+#: core/templates/components/background_job.html
 msgid "last updated"
 msgstr "sidst opdateret"
 
-#: import_services/models/exported_mixin.py:42
+#: import_services/models/exported_mixin.py
 msgid "last successful export"
 msgstr "senest exporteret med success"
 
-#: import_services/models/exported_mixin.py:47
+#: import_services/models/exported_mixin.py
 msgid "marked for deletion at"
 msgstr "markeret til sletning kl"
 
-#: import_services/models/import_service.py:39
+#: import_services/models/import_service.py
 msgid "organization UUID"
 msgstr "UUID for organisation"
 
-#: import_services/models/import_service.py:43
-#: organizations/templates/organizations/org_table.html:42
+#: import_services/models/import_service.py
+#: organizations/templates/organizations/org_table.html
 msgid "import service"
 msgstr "importservice"
 
-#: import_services/models/import_service.py:48
+#: import_services/models/import_service.py
 #, python-brace-format
 msgid "{cls} for {org}"
 msgstr "{cls} for {org}"
 
-#: import_services/models/imported_mixin.py:32
+#: import_services/models/imported_mixin.py
 msgid "has been imported"
 msgstr "er blevet importeret"
 
-#: import_services/models/imported_mixin.py:39
+#: import_services/models/imported_mixin.py
 msgid "imported unique ID"
 msgstr "importeret unikt ID"
 
-#: import_services/models/imported_mixin.py:45
+#: import_services/models/imported_mixin.py
 msgid "last time an update was requested"
 msgstr "sidste gang der blev anmodet om en opdatering"
 
-#: import_services/models/imported_mixin.py:51
+#: import_services/models/imported_mixin.py
 msgid "last successful import"
 msgstr "sidste succesfulde importering"
 
-#: import_services/models/keycloak.py:28
+#: import_services/models/keycloak.py
 msgid "UUID"
 msgstr "UUID"
 
-#: import_services/models/keycloak.py:31
+#: import_services/models/keycloak.py
 msgid "server URL"
 msgstr "server-URL"
 
-#: import_services/models/keycloak.py:65
+#: import_services/models/keycloak.py
 msgid "Keycloak server"
 msgstr "Keycloak-server"
 
-#: import_services/models/keycloak.py:66
+#: import_services/models/keycloak.py
 msgid "Keycloak servers"
 msgstr "Keycloak-servere"
 
-#: import_services/models/ldap_configuration.py:114
+#: import_services/models/ldap_configuration.py
 msgid "Active Directory"
 msgstr "Active Directory"
 
-#: import_services/models/ldap_configuration.py:115
+#: import_services/models/ldap_configuration.py
 msgid "other"
 msgstr "anden leverandør"
 
-#: import_services/models/ldap_configuration.py:117
+#: import_services/models/ldap_configuration.py
 msgid "vendor"
 msgstr "leverandør"
 
-#: import_services/models/ldap_configuration.py:122
+#: import_services/models/ldap_configuration.py
 msgid "groups"
 msgstr "grupper"
 
-#: import_services/models/ldap_configuration.py:126
+#: import_services/models/ldap_configuration.py
 msgid "import users into"
 msgstr "importér brugere baseret på"
 
-#: import_services/models/ldap_configuration.py:131
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Groups will only be imported, if their name begins with the given string. "
 "Only works for group based imports. "
@@ -3061,11 +2947,11 @@ msgstr ""
 "Grupper importeres kun, hvis deres navn begynder med den givne streng. "
 "Virker kun for gruppe-baseret importjobs. "
 
-#: import_services/models/ldap_configuration.py:136
+#: import_services/models/ldap_configuration.py
 msgid "group prefix filter"
 msgstr "gruppe præfix filter"
 
-#: import_services/models/ldap_configuration.py:141
+#: import_services/models/ldap_configuration.py
 msgid ""
 "If true, any imported group with a managedBy attribute will have that user "
 "added as a manager"
@@ -3073,11 +2959,11 @@ msgstr ""
 "Hvis denne boks er checket, vil alle importerede grupper med et managedBy "
 "attribut få tilføjet denne bruger som leder"
 
-#: import_services/models/ldap_configuration.py:144
+#: import_services/models/ldap_configuration.py
 msgid "Set managing users as managers"
 msgstr "Sæt administrerende brugere som leder"
 
-#: import_services/models/ldap_configuration.py:149
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Name of LDAP attribute, which is mapped as username. For many LDAP server "
 "vendors it can be 'uid'. For Active Directory it can be 'sAMAccountName' or "
@@ -3089,11 +2975,11 @@ msgstr ""
 "eller 'cn'. Attributten skal findes for alle de brugere, der skal importeres "
 "fra LDAP."
 
-#: import_services/models/ldap_configuration.py:155
+#: import_services/models/ldap_configuration.py
 msgid "username LDAP attribute"
 msgstr "LDAP-attribut for brugernavn"
 
-#: import_services/models/ldap_configuration.py:160
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Name of the LDAP attribute which is mapped as first name. For many LDAP "
 "server vendors it can be 'givenName'"
@@ -3101,11 +2987,11 @@ msgstr ""
 "Navnet på den LDAP-attribut der bruges som fornavn på brugere. Typisk "
 "defineret som 'givenName'"
 
-#: import_services/models/ldap_configuration.py:163
+#: import_services/models/ldap_configuration.py
 msgid "First name LDAP attribute"
 msgstr "LDAP-attribut for fornavn"
 
-#: import_services/models/ldap_configuration.py:173
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Name of LDAP attribute, which is used as RDN of typical user DN. Usually, "
 "but not necessarily, the same as username LDAP attribute. For example for "
@@ -3118,11 +3004,11 @@ msgstr ""
 "meget almindeligt at bruge 'cn' som RDN-attribut mens brugernavns-"
 "attributten ofte er 'sAMAccountName'"
 
-#: import_services/models/ldap_configuration.py:178
+#: import_services/models/ldap_configuration.py
 msgid "RDN LDAP attribute"
 msgstr "LDAP-attribut for RDN"
 
-#: import_services/models/ldap_configuration.py:183
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Name of LDAP attribute, which is used as unique object identifier (UUID) for "
 "objects in LDAP. For many LDAP server vendors, it is 'entryUUID'; however "
@@ -3136,11 +3022,11 @@ msgstr ""
 "'objectGUID'. Understøtter din LDAP-server ikke UUID-værdier, kan du i "
 "stedet benytte en anden unik værdi, såsom 'uid' eller 'entryDN'."
 
-#: import_services/models/ldap_configuration.py:191
+#: import_services/models/ldap_configuration.py
 msgid "UUID LDAP attribute"
 msgstr "LDAP-attribut for UUID"
 
-#: import_services/models/ldap_configuration.py:198
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Name of LDAP attribute, which stores the object security identifier. (SID) "
 "Often this is stored as 'objectSid' or 'securityIdentifier'. Without this "
@@ -3151,11 +3037,11 @@ msgstr ""
 "Typisk findes denne som 'objectSid' eller 'securityIdentifier'. Uden denne "
 "attribut, kan OSdatascanner ikke identificere ejerskab af on-premise filer."
 
-#: import_services/models/ldap_configuration.py:203
+#: import_services/models/ldap_configuration.py
 msgid "Object security identifier"
 msgstr "Object security identifier (SID)"
 
-#: import_services/models/ldap_configuration.py:207
+#: import_services/models/ldap_configuration.py
 msgid ""
 "All values of LDAP objectClass attribute for users in LDAP divided by comma. "
 "For example: 'inetOrgPerson, organizationalPerson'. User records are only "
@@ -3165,11 +3051,11 @@ msgstr ""
 "LDAP. For eksempel: 'inetOrgPerson, organizationalPerson'. Brugere bliver "
 "kun importeret, hvis de har samtlige klasser i listen."
 
-#: import_services/models/ldap_configuration.py:212
+#: import_services/models/ldap_configuration.py
 msgid "user object classes"
 msgstr "klasser for bruger-objekter"
 
-#: import_services/models/ldap_configuration.py:218
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Additional LDAP Filter for filtering searched users. Leave this empty if you "
 "don't need additional filter. Make sure that it starts with '(' and ends "
@@ -3179,11 +3065,11 @@ msgstr ""
 "hvis du ikke har brug for yderligere filtrering. Sikr dig at denne værdi "
 "starter med '(' og slutter med ')'"
 
-#: import_services/models/ldap_configuration.py:222
+#: import_services/models/ldap_configuration.py
 msgid "custom LDAP user filter"
 msgstr "brugerdefineret LDAP brugerfilter"
 
-#: import_services/models/ldap_configuration.py:230
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Choose between an encrypted connection protocol (ldaps) or an unencrypted "
 "one (ldap). Only select the unencrypted protocol if absolutely necessary."
@@ -3191,19 +3077,19 @@ msgstr ""
 "Vælg mellem en krypteret forbindelsesprotokol (ldaps) eller en ukrypteret "
 "(ldap). Det anbefales at vælge den krypterede protokol."
 
-#: import_services/models/ldap_configuration.py:234
+#: import_services/models/ldap_configuration.py
 msgid "connection protocol"
 msgstr "forbindelsesprotokol"
 
-#: import_services/models/ldap_configuration.py:239
+#: import_services/models/ldap_configuration.py
 msgid "Connection URL to the LDAP server. "
 msgstr "Forbindelses-URL til LDAP-serveren."
 
-#: import_services/models/ldap_configuration.py:241
+#: import_services/models/ldap_configuration.py
 msgid "connection URL"
 msgstr "forbindelses-URL"
 
-#: import_services/models/ldap_configuration.py:245
+#: import_services/models/ldap_configuration.py
 msgid ""
 "Distinguished name for the (top) OU in which to search for users. Groups "
 "present under this OU will not necessarily be imported, as OSdatascanner "
@@ -3213,19 +3099,19 @@ msgstr ""
 "brugere. Grupper under denne OU bliver ikke nødvendigvis importeret, da "
 "OSdatascanner opbygger grupper ud fra brugernes gruppemedlemskab."
 
-#: import_services/models/ldap_configuration.py:250
+#: import_services/models/ldap_configuration.py
 msgid "DN for users (OU)"
 msgstr "DN for brugere (OU)"
 
-#: import_services/models/ldap_configuration.py:254
+#: import_services/models/ldap_configuration.py
 msgid "one level"
 msgstr "kun øverste lag"
 
-#: import_services/models/ldap_configuration.py:255
+#: import_services/models/ldap_configuration.py
 msgid "subtree"
 msgstr "hele undertræet"
 
-#: import_services/models/ldap_configuration.py:258
+#: import_services/models/ldap_configuration.py
 msgid ""
 "For one level, the search applies only for users in the DNs specified by "
 "User DNs. For subtree, the search applies to the whole subtree. See LDAP "
@@ -3236,117 +3122,117 @@ msgstr ""
 "angivne OU, samt alle underliggende OU'er. Se LDAP dokumentationen for flere "
 "detaljer."
 
-#: import_services/models/ldap_configuration.py:263
+#: import_services/models/ldap_configuration.py
 msgid "search scope"
 msgstr "omfang af søgningen"
 
-#: import_services/models/ldap_configuration.py:267
+#: import_services/models/ldap_configuration.py
 msgid "Distinguished name for the service account allowing access to LDAP"
 msgstr "'Distinguished name' for servicekontoen, der giver adgang til LDAP"
 
-#: import_services/models/ldap_configuration.py:269
+#: import_services/models/ldap_configuration.py
 msgid "LDAP service account user name"
 msgstr "brugernavn for servicekontoen til LDAP"
 
-#: import_services/models/ldap_configuration.py:272
+#: import_services/models/ldap_configuration.py
 msgid "LDAP password (encrypted)"
 msgstr ""
 
-#: import_services/models/ldap_configuration.py:281
-#: import_services/templates/import_services/ldap_edit.html:6
+#: import_services/models/ldap_configuration.py
+#: import_services/templates/import_services/ldap_edit.html
 msgid "LDAP configuration"
 msgstr "LDAP-konfiguration"
 
-#: import_services/models/ldap_configuration.py:282
+#: import_services/models/ldap_configuration.py
 msgid "LDAP configurations"
 msgstr "LDAP-konfigurationer"
 
-#: import_services/models/msgraph_configuration.py:13
+#: import_services/models/msgraph_configuration.py
 msgid "MSGraph configuration"
 msgstr "MSGraph-konfiguration"
 
-#: import_services/models/msgraph_configuration.py:14
+#: import_services/models/msgraph_configuration.py
 msgid "MSGraph configurations"
 msgstr "MSGraph-konfigurationer"
 
-#: import_services/models/os2mo_configuration.py:9
-#: import_services/templates/import_services/os2mo_edit.html:6
+#: import_services/models/os2mo_configuration.py
+#: import_services/templates/import_services/os2mo_edit.html
 msgid "OS2mo configuration"
 msgstr "OS2mo-konfiguration"
 
-#: import_services/models/os2mo_configuration.py:10
+#: import_services/models/os2mo_configuration.py
 msgid "OS2mo configurations"
 msgstr "OS2mo-konfigurationer"
 
-#: import_services/models/realm.py:28
+#: import_services/models/realm.py
 msgid "realm id"
 msgstr "realm id"
 
-#: import_services/models/realm.py:38
+#: import_services/models/realm.py
 msgid "Keycloak realm"
 msgstr "Keycloak realm"
 
-#: import_services/models/realm.py:39
+#: import_services/models/realm.py
 msgid "Keycloak realms"
 msgstr "Keycloak realms"
 
-#: import_services/models/realm.py:198
+#: import_services/models/realm.py
 msgid "metadata url"
 msgstr "metadata url"
 
-#: import_services/models/realm.py:199
+#: import_services/models/realm.py
 msgid "should be a reachable url providing federation metadata in xml format "
 msgstr ""
 "skal være en offentlig url, der udstiller federation metadata i xml format"
 
-#: import_services/models/realm.py:202
+#: import_services/models/realm.py
 msgid "service provider entity id"
 msgstr "service provider entity id"
 
-#: import_services/models/realm.py:203
+#: import_services/models/realm.py
 msgid "entity id of the service provider"
 msgstr "service providerens entity id"
 
-#: import_services/models/realm.py:206
+#: import_services/models/realm.py
 msgid "identity provider entity id"
 msgstr "identity provider entity id"
 
-#: import_services/models/realm.py:207
+#: import_services/models/realm.py
 msgid "entity id of the identity provider"
 msgstr "identity providerens entity id"
 
-#: import_services/models/realm.py:211
+#: import_services/models/realm.py
 msgid "Single Sign-On service url"
 msgstr "Single Sign-On service url"
 
-#: import_services/models/realm.py:213
+#: import_services/models/realm.py
 msgid ""
 "The url that must be used to send authentication requests (SAML "
 "AuthnRequest)."
 msgstr ""
 "url der skal benyttes ved autentificerings-forespørgsler (SAML AuthnRequest)"
 
-#: import_services/models/realm.py:219
+#: import_services/models/realm.py
 msgid "Single logout service url"
 msgstr "Single logout service url"
 
-#: import_services/models/realm.py:220
+#: import_services/models/realm.py
 msgid "The url that must be used to send logout requests."
 msgstr "Url der skal benyttes til logud forespørgsler"
 
-#: import_services/models/realm.py:233
+#: import_services/models/realm.py
 msgid "nameid policy format"
 msgstr "nameid policy format"
 
-#: import_services/models/realm.py:234
+#: import_services/models/realm.py
 msgid "Specifies the URI reference corresponding to a name identifier format."
 msgstr "Specificerer URI referencen til et name identifier format."
 
-#: import_services/models/realm.py:245
+#: import_services/models/realm.py
 msgid "principal type"
 msgstr "principal type"
 
-#: import_services/models/realm.py:246
+#: import_services/models/realm.py
 msgid ""
 "Way to identify and track external users from the assertion. Default is "
 "using Subject NameID, alternatively you can set up identifying attribute."
@@ -3355,11 +3241,11 @@ msgstr ""
 "Subject NameID, men alternativt kan du definere en anden identificerende "
 "attribut."
 
-#: import_services/models/realm.py:254
+#: import_services/models/realm.py
 msgid "principal attribute"
 msgstr "principal attribut"
 
-#: import_services/models/realm.py:255
+#: import_services/models/realm.py
 msgid ""
 "Name or Friendly Name of the attribute used to identify external users. Only "
 "relevant if principal type is set to an 'Attribute' option. "
@@ -3367,11 +3253,11 @@ msgstr ""
 "Name eller Friendly Name på attributten der bruges som identifikator. Kun "
 "relevant, hvis principal type er sat til en af 'Attribut' indstillingerne. "
 
-#: import_services/models/realm.py:262
+#: import_services/models/realm.py
 msgid "HTTP-POST binding response"
 msgstr "HTTP-POST binding response"
 
-#: import_services/models/realm.py:263 import_services/models/realm.py:277
+#: import_services/models/realm.py
 msgid ""
 "Indicates whether to respond to requests using HTTP-POST binding. If off, "
 "HTTP-REDIRECT binding will be used."
@@ -3379,11 +3265,11 @@ msgstr ""
 "Indikerer hvorvidt forespørgsler skal besvares med HTTP-POST binding. Hvis "
 "fra, anvendes HTTP-REDIRECT"
 
-#: import_services/models/realm.py:269
+#: import_services/models/realm.py
 msgid "HTTP-POST binding for AuthnRequest"
 msgstr "HTTP-POST binding for AuthnRequest"
 
-#: import_services/models/realm.py:270
+#: import_services/models/realm.py
 msgid ""
 "Indicates whether the AuthnRequest must be sent using HTTP-POST binding. If "
 "off, HTTP-REDIRECT binding will be used."
@@ -3391,32 +3277,32 @@ msgstr ""
 "Indikerer hvorvidt AuthnRequest skal sendes med HTTP-POST binding. Hvis fra, "
 "benyttes HTTP-REDIRECT binding."
 
-#: import_services/models/realm.py:276
+#: import_services/models/realm.py
 msgid "HTTP-POST binding logout"
 msgstr "HTTP-POST binding logout"
 
-#: import_services/models/realm.py:284
+#: import_services/models/realm.py
 msgid "AuthnRequests signed"
 msgstr "AuthnRequests signerede"
 
-#: import_services/models/realm.py:285
+#: import_services/models/realm.py
 msgid "Indicates whether the identity provider expects a signed AuthnRequest."
 msgstr ""
 "Indikerer hvorvidt identity provideren forventer en signeret AuthnRequest"
 
-#: import_services/models/realm.py:289
+#: import_services/models/realm.py
 msgid "Assertions signed"
 msgstr "Signerede assertions"
 
-#: import_services/models/realm.py:290
+#: import_services/models/realm.py
 msgid "Indicates whether this service provider expects a signed Assertion."
 msgstr "Indikerer hvorvidt service provideren forventer signerede assertions."
 
-#: import_services/models/realm.py:297
+#: import_services/models/realm.py
 msgid "allowed clock skew"
 msgstr "tilladt tidsforskel"
 
-#: import_services/models/realm.py:298
+#: import_services/models/realm.py
 msgid ""
 "Clock skew in seconds that is tolerated when validating identity provider "
 "tokens. "
@@ -3424,89 +3310,79 @@ msgstr ""
 "Tidsforskel, i sekunder, som er tolereret ved validering af identity "
 "provider tokens."
 
-#: import_services/templates/import_services/ldap_edit.html:22
-#: organizations/templates/sso/sso_edit.html:17
+#: import_services/templates/import_services/ldap_edit.html
+#: organizations/templates/sso/sso_edit.html
 msgid "add"
 msgstr "tilføj"
 
-#: import_services/templates/import_services/ldap_edit.html:24
-#: organizations/templates/sso/sso_edit.html:19
+#: import_services/templates/import_services/ldap_edit.html
+#: organizations/templates/sso/sso_edit.html
 msgid "update"
 msgstr "opdatér"
 
-#: import_services/templates/import_services/ldap_edit.html:26
+#: import_services/templates/import_services/ldap_edit.html
 msgid "LDAP configuration for"
 msgstr "LDAP-konfiguration for"
 
-#: import_services/templates/import_services/ldap_edit.html:35
+#: import_services/templates/import_services/ldap_edit.html
 msgid "connect to LDAP"
 msgstr "opret forbindelse til LDAP"
 
-#: import_services/templates/import_services/ldap_edit.html:50
-#: import_services/templates/import_services/ldap_edit.html:51
-#: import_services/templates/import_services/ldap_edit.html:58
-#: import_services/templates/import_services/ldap_edit.html:91
-#: import_services/templates/import_services/ldap_edit.html:92
+#: import_services/templates/import_services/ldap_edit.html
 msgid "test connection"
 msgstr "test forbindelse"
 
-#: import_services/templates/import_services/ldap_edit.html:73
+#: import_services/templates/import_services/ldap_edit.html
 msgid "connection succeeded"
 msgstr "forbindelse oprettet "
 
-#: import_services/templates/import_services/ldap_edit.html:75
+#: import_services/templates/import_services/ldap_edit.html
 msgid "connection failed"
 msgstr "forbindelse fejlet"
 
-#: import_services/templates/import_services/ldap_edit.html:100
+#: import_services/templates/import_services/ldap_edit.html
 msgid "test authentication"
 msgstr "test adgang"
 
-#: import_services/templates/import_services/ldap_edit.html:115
+#: import_services/templates/import_services/ldap_edit.html
 msgid "authentication succeeded"
 msgstr "autentificeret"
 
-#: import_services/templates/import_services/ldap_edit.html:117
+#: import_services/templates/import_services/ldap_edit.html
 msgid "authentication failed"
 msgstr "autentificering mislykkedes"
 
-#: import_services/templates/import_services/ldap_edit.html:134
+#: import_services/templates/import_services/ldap_edit.html
 msgid "search specification"
 msgstr "søgespecifikation"
 
-#: import_services/templates/import_services/ldap_edit.html:147
-#: import_services/templates/import_services/ldap_edit.html:148
-#: import_services/templates/import_services/ldap_edit.html:157
+#: import_services/templates/import_services/ldap_edit.html
 msgid "user attributes"
 msgstr "bruger-attributter"
 
-#: import_services/templates/import_services/ldap_edit.html:150
+#: import_services/templates/import_services/ldap_edit.html
 msgid "add user attributes"
 msgstr "tilføj bruger-attributter"
 
-#: import_services/templates/import_services/ldap_edit.html:169
-#: import_services/templates/import_services/ldap_edit.html:170
-#: import_services/templates/import_services/ldap_edit.html:171
+#: import_services/templates/import_services/ldap_edit.html
 msgid "save LDAP configuration"
 msgstr "gem LDAP-konfiguration"
 
-#: import_services/templates/import_services/msgraph_edit.html:6
-#: import_services/templates/import_services/msgraph_oauth.html:6
+#: import_services/templates/import_services/msgraph_edit.html
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid "Microsoft Graph configuration"
 msgstr "Microsoft Graph konfiguration"
 
-#: import_services/templates/import_services/msgraph_edit.html:13
-#: import_services/templates/import_services/msgraph_oauth.html:13
+#: import_services/templates/import_services/msgraph_edit.html
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid "configure Microsoft Graph"
 msgstr "konfigurér Microsoft Graph"
 
-#: import_services/templates/import_services/msgraph_edit.html:38
-#: import_services/templates/import_services/msgraph_edit.html:39
-#: import_services/templates/import_services/msgraph_edit.html:40
+#: import_services/templates/import_services/msgraph_edit.html
 msgid "save Microsoft Graph configuration"
 msgstr "gem Microsoft Graph konfiguration"
 
-#: import_services/templates/import_services/msgraph_oauth.html:17
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid ""
 "The source of this organization is in the cloud and an external service must "
 "allow OSdatascanner to access it's content."
@@ -3514,24 +3390,23 @@ msgstr ""
 "Denne organisationsstruktur ligger i skyen, og en eksterne tjeneste skal "
 "tillade OSdatascanner adgang til dens indhold."
 
-#: import_services/templates/import_services/msgraph_oauth.html:22
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid "The service refused to grant OSdatascanner the necessary rights:"
 msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
 
-#: import_services/templates/import_services/msgraph_oauth.html:25
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid "Click the button below to try again."
 msgstr "Klik på knappen nedenfor for at prøve igen."
 
-#: import_services/templates/import_services/msgraph_oauth.html:27
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid "Click the button below to forward to this service."
 msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
 
-#: import_services/templates/import_services/msgraph_oauth.html:33
-#: import_services/templates/import_services/msgraph_oauth.html:34
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid "Continue to"
 msgstr "Fortsæt til"
 
-#: import_services/templates/import_services/msgraph_oauth.html:36
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid ""
 "You will be forwarded to the creation form after the service has issued the "
 "necessary rights."
@@ -3539,7 +3414,7 @@ msgstr ""
 "Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
 "de nødvendige rettigheder."
 
-#: import_services/templates/import_services/msgraph_oauth.html:38
+#: import_services/templates/import_services/msgraph_oauth.html
 msgid ""
 "The information pointing to the OSdatascanner system for this service is "
 "missing."
@@ -3547,51 +3422,48 @@ msgstr ""
 "De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
 "mangler."
 
-#: import_services/templates/import_services/os2mo_edit.html:15
+#: import_services/templates/import_services/os2mo_edit.html
 msgid "connect to OS2mo"
 msgstr "opret forbindelse til OS2mo"
 
-#: import_services/templates/import_services/os2mo_edit.html:16
+#: import_services/templates/import_services/os2mo_edit.html
 msgid "Add OS2mo configuration for organization:"
 msgstr "Tilføj OS2mo-konfiguration til organisationen:"
 
-#: import_services/templates/import_services/os2mo_edit.html:28
-#: import_services/templates/import_services/os2mo_edit.html:29
-#: import_services/templates/import_services/os2mo_edit.html:30
+#: import_services/templates/import_services/os2mo_edit.html
 msgid "save OS2mo configuration"
 msgstr "tilføj OS2mo-konfiguration"
 
-#: import_services/templates/import_services/os2mo_errorview.html:14
+#: import_services/templates/import_services/os2mo_errorview.html
 msgid "Configure OS2mo"
 msgstr "Konfigurér OS2mo"
 
-#: import_services/templates/import_services/os2mo_errorview.html:16
+#: import_services/templates/import_services/os2mo_errorview.html
 msgid "An error occurred while trying to connect to OS2mo"
 msgstr "Der skete en fejl ved forsøget på at forbinde til OS2mo"
 
-#: import_services/templates/import_services/os2mo_errorview.html:17
+#: import_services/templates/import_services/os2mo_errorview.html
 msgid "You need the right Client ID- and Secret to import from OS2mo"
 msgstr ""
 "Du har brug for den korrekte Client ID- og Secret for at importere fra OS2mo"
 
-#: import_services/templates/import_services/os2mo_errorview.html:20
+#: import_services/templates/import_services/os2mo_errorview.html
 msgid "return to organizations page"
 msgstr "vend tilbage til organisationer-siden"
 
-#: organizations/admin.py:41
+#: organizations/admin.py
 msgid "Tab access"
 msgstr "Menu-adgang"
 
-#: organizations/admin.py:47
-#: organizations/templates/organizations/org_update.html:105
+#: organizations/admin.py organizations/templates/organizations/org_update.html
 msgid "Support button settings"
 msgstr "Supportknap indstillinger"
 
-#: organizations/admin.py:55
+#: organizations/admin.py
 msgid "Retention policy"
 msgstr "Opbevaringspolitik"
 
-#: organizations/keycloak_actions.py:564
+#: organizations/keycloak_actions.py
 #, python-brace-format
 msgid ""
 "No remote users or organisational units available for organisation {org}; "
@@ -3600,135 +3472,127 @@ msgstr ""
 "Ingen brugere eller organisatoriske enheder tilgængelige for organisation "
 "{org}; Er du sikker på at dine LDAP indstillinger er korrekte?"
 
-#: organizations/models/account.py:48
+#: organizations/models/account.py
 #, python-brace-format
 msgid "Deleted scanner {pk}"
 msgstr "Slettet scanner {pk}"
 
-#: organizations/models/account.py:62
+#: organizations/models/account.py
 msgid ""
 "Can grant and take away permissions to and from users in the report module"
 msgstr ""
 
-#: organizations/models/organization.py:70
+#: organizations/models/organization.py
 msgid "slug"
 msgstr "slug"
 
-#: organizations/models/organization.py:75
+#: organizations/models/organization.py
 msgid "system rules"
 msgstr "systemregler"
 
-#: organizations/models/organization.py:79
+#: organizations/models/organization.py
 msgid "synchronization time"
 msgstr "synkroniseringstidspunkt"
 
-#: organizations/models/organizational_unit.py:45
+#: organizations/models/organizational_unit.py
 msgid "Can change visibility of organizational units"
 msgstr "Kan ændre synlighed på organisatoriske enheder"
 
-#: organizations/templates/components/modals/alias_create.html:15
+#: organizations/templates/components/modals/alias_create.html
 msgid "Create a new alias for"
 msgstr "Opret et nyt alias for"
 
-#: organizations/templates/components/modals/alias_create.html:19
+#: organizations/templates/components/modals/alias_create.html
 msgid "Alias type"
 msgstr "Aliastype"
 
-#: organizations/templates/components/modals/alias_create.html:25
+#: organizations/templates/components/modals/alias_create.html
 msgid "select"
 msgstr "vælg"
 
-#: organizations/templates/components/modals/alias_create.html:26
+#: organizations/templates/components/modals/alias_create.html
 msgid "email"
 msgstr "e-mail"
 
-#: organizations/templates/components/modals/alias_create.html:27
+#: organizations/templates/components/modals/alias_create.html
 msgid "generic"
 msgstr "generisk"
 
-#: organizations/templates/components/modals/alias_create.html:33
+#: organizations/templates/components/modals/alias_create.html
 msgid "Shared"
 msgstr "Fælles"
 
-#: organizations/templates/components/modals/alias_create.html:38
+#: organizations/templates/components/modals/alias_create.html
 msgid "Value"
 msgstr "Værdi"
 
-#: organizations/templates/components/modals/alias_create.html:50
-#: organizations/templates/components/modals/alias_create.html:51
+#: organizations/templates/components/modals/alias_create.html
 msgid "Close without saving"
 msgstr "Luk uden at gemme ændringer"
 
-#: organizations/templates/components/modals/alias_create.html:55
-#: organizations/templates/components/modals/alias_create.html:56
+#: organizations/templates/components/modals/alias_create.html
 msgid "Save and close"
 msgstr "Gem alias og luk"
 
-#: organizations/templates/components/uni_dpo_dropdown.html:10
+#: organizations/templates/components/uni_dpo_dropdown.html
 msgid "Add universal DPO"
 msgstr "Tilføj universel DPO"
 
-#: organizations/templates/organizations/account_detail.html:12
+#: organizations/templates/organizations/account_detail.html
 msgid "Account"
 msgstr "Konto"
 
-#: organizations/templates/organizations/account_detail.html:19
+#: organizations/templates/organizations/account_detail.html
 msgid "Account information"
 msgstr "Kontoinformation"
 
-#: organizations/templates/organizations/account_detail.html:42
+#: organizations/templates/organizations/account_detail.html
 msgid "Manager for"
 msgstr "Leder af"
 
-#: organizations/templates/organizations/account_detail.html:52
+#: organizations/templates/organizations/account_detail.html
 msgid "DPO for"
 msgstr "DPO af"
 
-#: organizations/templates/organizations/account_detail.html:63
+#: organizations/templates/organizations/account_detail.html
 msgid "User Rights"
 msgstr "Brugerrettigheder"
 
-#: organizations/templates/organizations/account_detail.html:79
+#: organizations/templates/organizations/account_detail.html
 msgid "Imported aliases"
 msgstr "Importerede aliasser"
 
-#: organizations/templates/organizations/account_detail.html:90
+#: organizations/templates/organizations/account_detail.html
 msgid "Other aliases"
 msgstr "Andre aliasser"
 
-#: organizations/templates/organizations/account_detail.html:92
+#: organizations/templates/organizations/account_detail.html
 msgid "Aliases"
 msgstr "Aliasser"
 
-#: organizations/templates/organizations/account_detail.html:99
-#: organizations/templates/organizations/account_detail.html:157
-#: organizations/templates/organizations/orgunit_list.html:39
-#: organizations/templates/organizations/orgunit_list.html:263
-#: organizations/templates/organizations/orgunit_list.html:294
+#: organizations/templates/organizations/account_detail.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Click to remove"
 msgstr "Klik for at fjerne"
 
-#: organizations/templates/organizations/account_detail.html:106
-#: organizations/templates/organizations/account_detail.html:166
-#: organizations/templates/organizations/orgunit_list.html:46
-#: organizations/templates/organizations/orgunit_list.html:270
-#: organizations/templates/organizations/orgunit_list.html:301
+#: organizations/templates/organizations/account_detail.html
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Are you sure you want to remove"
 msgstr "Er du sikker på, at du vil fjerne"
 
-#: organizations/templates/organizations/account_detail.html:113
+#: organizations/templates/organizations/account_detail.html
 msgid "Click here to add a new alias"
 msgstr "Klik her for at tilføje et nyt alias"
 
-#: organizations/templates/organizations/account_detail.html:114
+#: organizations/templates/organizations/account_detail.html
 msgid "Add alias"
 msgstr "Tilføj alias"
 
-#: organizations/templates/organizations/account_detail.html:131
+#: organizations/templates/organizations/account_detail.html
 msgid "Universal remediator"
 msgstr "Universel oprydder"
 
-#: organizations/templates/organizations/account_detail.html:146
+#: organizations/templates/organizations/account_detail.html
 msgid ""
 "By checking this box, the current user will be assigned as a remediator of "
 "all scannerjobs."
@@ -3736,51 +3600,51 @@ msgstr ""
 "Ved at markere dette felt vil brugeren blive tildelt rollen som oprydder for "
 "alle scannerjob."
 
-#: organizations/templates/organizations/account_detail.html:152
+#: organizations/templates/organizations/account_detail.html
 msgid "Remediator for"
 msgstr "Oprydder for"
 
-#: organizations/templates/organizations/account_detail.html:174
+#: organizations/templates/organizations/account_detail.html
 msgid "Click here to add a new remediator"
 msgstr "Klik her for at tilføje en ny oprydder"
 
-#: organizations/templates/organizations/account_detail.html:175
+#: organizations/templates/organizations/account_detail.html
 msgid "Add remediator"
 msgstr "Tilføj oprydder"
 
-#: organizations/templates/organizations/account_detail.html:199
+#: organizations/templates/organizations/account_detail.html
 msgid "Permissions"
 msgstr "Rettigheder"
 
-#: organizations/templates/organizations/account_detail.html:207
+#: organizations/templates/organizations/account_detail.html
 msgid "Login Information"
 msgstr "Kontooplysninger"
 
-#: organizations/templates/organizations/account_detail.html:211
+#: organizations/templates/organizations/account_detail.html
 msgid "User since"
 msgstr "Bruger siden"
 
-#: organizations/templates/organizations/account_list.html:19
+#: organizations/templates/organizations/account_list.html
 msgid "accounts for"
 msgstr "konti for"
 
-#: organizations/templates/organizations/account_list.html:38
+#: organizations/templates/organizations/account_list.html
 msgid "Search for account"
 msgstr "Søg efter konto"
 
-#: organizations/templates/organizations/account_list.html:74
+#: organizations/templates/organizations/account_list.html
 msgid "No accounts found!"
 msgstr "Ingen konti fundet"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:27
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "edit organizational unit visibility for"
 msgstr "redigér organisatorisk enheds synlighed for"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:36
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Choose organizational units"
 msgstr "Vælg organisatoriske enheder"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:39
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid ""
 "Select the organizational units that should be visible throughout the Admin "
 "and Report module from the list below. Any changes will be visible to all "
@@ -3790,98 +3654,93 @@ msgstr ""
 "Admin- og Rapportmodulet fra listen nedenfor. Ændringer bliver synlige for "
 "alle brugere med det samme."
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:59
-#: organizations/templates/organizations/edit_hidden_state_page.html:76
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "This button handles toggling of visibility for all organizational units"
 msgstr ""
 "Denne knap håndterer valg/fravalg af synlighed for alle organisatoriske "
 "enheder"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:60
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Make all organizational units visible"
 msgstr "Gør alle organisatoriske enhededer synlige"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:68
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Make all visible"
 msgstr "Markér alle som synlige"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:77
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Make all organizational units hidden"
 msgstr "Gør alle organisatoriske enheder skjulte"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:85
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Make all hidden"
 msgstr "Markér alle som skjulte"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:96
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Search for unit"
 msgstr "Søg efter enhed"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:155
-#: organizations/templates/organizations/edit_hidden_state_page.html:156
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "return to the organizational structure overview"
 msgstr "gå tilbage til siden for organisatorisk struktur"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:160
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "go back"
 msgstr "gå tilbage"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html:166
+#: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "you don't have the right credentials to access this page"
 msgstr "du har ikke de rigtige rettigheder til at tilgå denne side"
 
-#: organizations/templates/organizations/grants_list.html:26
+#: organizations/templates/organizations/grants_list.html
 msgid "grants for"
 msgstr "bevillinger for"
 
-#: organizations/templates/organizations/grants_list.html:30
-#: organizations/templates/organizations/grants_list.html:37
+#: organizations/templates/organizations/grants_list.html
 msgid "create new grant"
 msgstr "opret ny bevilling"
 
-#: organizations/templates/organizations/grants_list.html:40
+#: organizations/templates/organizations/grants_list.html
 msgid "EWS Grant"
 msgstr "EWS bevilling"
 
-#: organizations/templates/organizations/grants_list.html:41
+#: organizations/templates/organizations/grants_list.html
 msgid "MSGraph Grant"
 msgstr "MSGraph bevilling"
 
-#: organizations/templates/organizations/grants_list.html:42
+#: organizations/templates/organizations/grants_list.html
 msgid "SMB Grant"
 msgstr "SMB bevilling"
 
-#: organizations/templates/organizations/grants_list.html:43
+#: organizations/templates/organizations/grants_list.html
 msgid "Google API Grant"
 msgstr "Google API bevilling"
 
-#: organizations/templates/organizations/grants_list.html:57
+#: organizations/templates/organizations/grants_list.html
 msgid "type"
 msgstr "type"
 
-#: organizations/templates/organizations/grants_list.html:58
+#: organizations/templates/organizations/grants_list.html
 msgid "expiry date"
 msgstr "udløbsdato"
 
-#: organizations/templates/organizations/grants_list.html:92
+#: organizations/templates/organizations/grants_list.html
 msgid "edit grant"
 msgstr "redigér bevillinger"
 
-#: organizations/templates/organizations/grants_list.html:102
+#: organizations/templates/organizations/grants_list.html
 msgid "no grants found"
 msgstr "ingen bevillinger fundet"
 
-#: organizations/templates/organizations/org_add.html:52
-#: organizations/templates/organizations/org_add.html:53
-#: organizations/templates/organizations/org_add.html:54
+#: organizations/templates/organizations/org_add.html
 msgid "create new organization"
 msgstr "opret ny organisation"
 
-#: organizations/templates/organizations/org_delete_blocked.html:19
+#: organizations/templates/organizations/org_delete_blocked.html
 msgid "Deletion blocked"
 msgstr "Sletning ikke mulig"
 
-#: organizations/templates/organizations/org_delete_blocked.html:21
+#: organizations/templates/organizations/org_delete_blocked.html
 msgid ""
 "The organization could not be deleted because scannerjobs are still running. "
 "Delete running jobs before proceding. "
@@ -3889,84 +3748,63 @@ msgstr ""
 "Organisationen kan ikke slettes fordi der stadig kører mindst et scannerjob. "
 "Afbryd alle scannerjobs der kører for at fortsætte sletningen."
 
-#: organizations/templates/organizations/org_delete_blocked.html:27
-#: organizations/templates/organizations/org_delete_blocked.html:28
+#: organizations/templates/organizations/org_delete_blocked.html
 msgid "Go to scanner status"
 msgstr "Gå til scanner status"
 
-#: organizations/templates/organizations/org_table.html:14
+#: organizations/templates/organizations/org_table.html
 msgid "organizations for"
 msgstr "organisationer for"
 
-#: organizations/templates/organizations/org_table.html:18
-#: organizations/templates/organizations/org_table.html:19
-#: organizations/templates/organizations/org_table.html:24
+#: organizations/templates/organizations/org_table.html
 msgid "Add new organization"
 msgstr "Tilføj ny organisation"
 
-#: organizations/templates/organizations/org_table.html:40
+#: organizations/templates/organizations/org_table.html
 msgid "contact info"
 msgstr "kontaktinformation"
 
-#: organizations/templates/organizations/org_table.html:44
+#: organizations/templates/organizations/org_table.html
 msgid "import service (Microsoft Graph)"
 msgstr "Importservice (Microsoft Graph)"
 
-#: organizations/templates/organizations/org_table.html:46
+#: organizations/templates/organizations/org_table.html
 msgid "import service (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
-#: organizations/templates/organizations/org_table.html:89
-#: organizations/templates/organizations/org_table.html:90
-#: organizations/templates/organizations/org_table.html:97
-#: organizations/templates/organizations/org_table.html:98
+#: organizations/templates/organizations/org_table.html
 msgid "Edit LDAP configuration"
 msgstr "Redigér LDAP-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:103
-#: organizations/templates/organizations/org_table.html:104
-#: organizations/templates/organizations/org_table.html:110
-#: organizations/templates/organizations/org_table.html:135
-#: organizations/templates/organizations/org_table.html:136
-#: organizations/templates/organizations/org_table.html:142
-#: organizations/templates/organizations/org_table.html:184
-#: organizations/templates/organizations/org_table.html:185
-#: organizations/templates/organizations/org_table.html:191
+#: organizations/templates/organizations/org_table.html
 msgid "sync"
 msgstr "synkroniser"
 
-#: organizations/templates/organizations/org_table.html:128
-#: organizations/templates/organizations/org_table.html:129
+#: organizations/templates/organizations/org_table.html
 msgid "Add OS2mo configuration"
 msgstr "Tilføj OS2mo-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:161
-#: organizations/templates/organizations/org_table.html:162
-#: organizations/templates/organizations/org_table.html:169
-#: organizations/templates/organizations/org_table.html:170
+#: organizations/templates/organizations/org_table.html
 msgid "Add Microsoft Graph configuration"
 msgstr "Tilføj Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:178
-#: organizations/templates/organizations/org_table.html:179
+#: organizations/templates/organizations/org_table.html
 msgid "Edit Microsoft Graph configuration"
 msgstr "Redigér Microsoft Graph-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:207
-#: organizations/templates/organizations/org_table.html:208
+#: organizations/templates/organizations/org_table.html
 msgid "View organizational units."
 msgstr "Vis organisatoriske enheder"
 
-#: organizations/templates/organizations/org_table.html:214
-#: organizations/templates/organizations/org_table.html:215
+#: organizations/templates/organizations/org_table.html
 msgid "View accounts."
 msgstr "Se konti."
 
-#: organizations/templates/organizations/org_table.html:233
+#: organizations/templates/organizations/org_table.html
 msgid "Do you really want to delete this organization?"
 msgstr "Er du sikker på, at du vil slette denne organisation?"
 
-#: organizations/templates/organizations/org_table.html:233
+#: organizations/templates/organizations/org_table.html
 msgid ""
 "This will delete all associated import- and scannerjobs. The action cannot "
 "be reversed"
@@ -3974,33 +3812,31 @@ msgstr ""
 "Dette vil også slette import- og scannerjobs der tilhører organisationen. "
 "Handlingen kan ikke fortrydes."
 
-#: organizations/templates/organizations/org_table.html:244
-#: organizations/templates/organizations/org_table.html:245
+#: organizations/templates/organizations/org_table.html
 msgid "Edit Single SignOn configuration"
 msgstr "Redigér Single SignOn-konfiguration"
 
-#: organizations/templates/organizations/org_table.html:255
-#: organizations/templates/organizations/org_table.html:256
+#: organizations/templates/organizations/org_table.html
 msgid "Configure Single SignOn"
 msgstr "Konfigurér Single SignOn"
 
-#: organizations/templates/organizations/org_table.html:275
+#: organizations/templates/organizations/org_table.html
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
 
-#: organizations/templates/organizations/org_update.html:21
+#: organizations/templates/organizations/org_update.html
 msgid "General settings"
 msgstr "Generelle indstillinger"
 
-#: organizations/templates/organizations/org_update.html:43
+#: organizations/templates/organizations/org_update.html
 msgid "Tab settings"
 msgstr "Fane indstillinger"
 
-#: organizations/templates/organizations/org_update.html:59
+#: organizations/templates/organizations/org_update.html
 msgid "Retention policy settings"
 msgstr "Indstillinger for opbevaringspolitik"
 
-#: organizations/templates/organizations/org_update.html:61
+#: organizations/templates/organizations/org_update.html
 msgid ""
 "Allow results to be filtered out if they stem from sources less than a "
 "specific number of days of age. This affects the report tab and the leader "
@@ -4010,72 +3846,70 @@ msgstr ""
 "et angivet antal dage. Dette har indflydelse på rapportfanen og "
 "lederoverblikket i rapportmodulet."
 
-#: organizations/templates/organizations/org_update.html:68
+#: organizations/templates/organizations/org_update.html
 msgid "Filtering of results by age"
 msgstr "Filtrering af resultater efter alder"
 
-#: organizations/templates/organizations/org_update.html:82
+#: organizations/templates/organizations/org_update.html
 msgid "No filtering"
 msgstr "Ingen filtrering"
 
-#: organizations/templates/organizations/org_update.html:96
+#: organizations/templates/organizations/org_update.html
 msgid "Number of days:"
 msgstr "Antal dage:"
 
-#: organizations/templates/organizations/org_update.html:165
+#: organizations/templates/organizations/org_update.html
 msgid "Synchronization settings"
 msgstr "Synkroniseringsindstillinger"
 
-#: organizations/templates/organizations/org_update.html:175
+#: organizations/templates/organizations/org_update.html
 msgid "Microsoft Tenant Settings"
 msgstr "Microsoft Tenant Indstillinger"
 
-#: organizations/templates/organizations/org_update.html:202
+#: organizations/templates/organizations/org_update.html
 msgid "Allow deletion"
 msgstr "Tillad sletning"
 
-#: organizations/templates/organizations/orgunit_list.html:25
+#: organizations/templates/organizations/orgunit_list.html
 msgid "organizational hierarchy for"
 msgstr "organisatorisk struktur for"
 
-#: organizations/templates/organizations/orgunit_list.html:28
+#: organizations/templates/organizations/orgunit_list.html
 msgid "universal DPOs"
 msgstr "universelle DPO'er"
 
-#: organizations/templates/organizations/orgunit_list.html:31
+#: organizations/templates/organizations/orgunit_list.html
 msgid ""
 "A universal DPO has access to the DPO-module for all organizational units"
 msgstr ""
 "En universel DPO bliver givet adgang til DPO-modulet for alle "
 "organisatoriske enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:39
-#: organizations/templates/organizations/orgunit_list.html:46
+#: organizations/templates/organizations/orgunit_list.html
 msgid "as universal DPO of"
 msgstr "som universel DPO for"
 
-#: organizations/templates/organizations/orgunit_list.html:81
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Search for organizational unit"
 msgstr "Søg efter organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:107
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Show organizational units:"
 msgstr "Vis organisatoriske enheder:"
 
-#: organizations/templates/organizations/orgunit_list.html:119
+#: organizations/templates/organizations/orgunit_list.html
 msgid "with "
 msgstr "med"
 
-#: organizations/templates/organizations/orgunit_list.html:139
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Show hidden units"
 msgstr "Vis skjulte enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:154
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Show empty units"
 msgstr "Vis tomme enheder"
 
-#: organizations/templates/organizations/orgunit_list.html:173
-#: organizations/templates/organizations/orgunit_list.html:174
+#: organizations/templates/organizations/orgunit_list.html
 msgid ""
 "Change which organizational units should be visible throughout both Admin "
 "and Report"
@@ -4083,100 +3917,96 @@ msgstr ""
 "Lav ændringer i hvilke organisatoriske enheder, der skal være synlige på "
 "tværs af både Admin og Rapport"
 
-#: organizations/templates/organizations/orgunit_list.html:202
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Name of organizational unit"
 msgstr "Navn på organisatorisk enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:204
+#: organizations/templates/organizations/orgunit_list.html
 msgid "Affiliated accounts for this organizational unit"
 msgstr "Tilknyttede konti for denne organisatoriske enhed"
 
-#: organizations/templates/organizations/orgunit_list.html:207
+#: organizations/templates/organizations/orgunit_list.html
 msgid "visibility"
 msgstr "synlighed"
 
-#: organizations/templates/organizations/orgunit_list.html:208
+#: organizations/templates/organizations/orgunit_list.html
 msgid "managers"
 msgstr "ledere"
 
-#: organizations/templates/organizations/orgunit_list.html:209
+#: organizations/templates/organizations/orgunit_list.html
 msgid "DPOs"
 msgstr "DPOer"
 
-#: organizations/templates/organizations/orgunit_list.html:225
+#: organizations/templates/organizations/orgunit_list.html
 msgid "There are currently"
 msgstr "Der er i øjeblikket"
 
-#: organizations/templates/organizations/orgunit_list.html:225
+#: organizations/templates/organizations/orgunit_list.html
 msgid "accounts associated with"
 msgstr "konti tilknyttet til"
 
-#: organizations/templates/organizations/orgunit_list.html:225
+#: organizations/templates/organizations/orgunit_list.html
 msgid "There are currently none accounts associated with"
 msgstr "Der er i øjeblikket ingen konti tilknyttet til"
 
-#: organizations/templates/organizations/orgunit_list.html:231
+#: organizations/templates/organizations/orgunit_list.html
 msgid "associated"
 msgstr "tilknyttet"
 
-#: organizations/templates/organizations/orgunit_list.html:242
+#: organizations/templates/organizations/orgunit_list.html
 msgid "has been set to be hidden"
 msgstr "er indstillet til at være skjult"
 
-#: organizations/templates/organizations/orgunit_list.html:250
+#: organizations/templates/organizations/orgunit_list.html
 msgid "has been set to be visible"
 msgstr "er indstillet til at være synlig"
 
-#: organizations/templates/organizations/orgunit_list.html:263
-#: organizations/templates/organizations/orgunit_list.html:270
-#: organizations/templates/organizations/orgunit_list.html:294
+#: organizations/templates/organizations/orgunit_list.html
 msgid "as manager of"
 msgstr "som leder af"
 
-#: organizations/templates/organizations/orgunit_list.html:301
+#: organizations/templates/organizations/orgunit_list.html
 msgid "as DPO of"
 msgstr "som DPO af"
 
-#: organizations/templates/organizations/orgunit_list.html:328
+#: organizations/templates/organizations/orgunit_list.html
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
 
-#: organizations/templates/organizations/orgunit_list.html:338
+#: organizations/templates/organizations/orgunit_list.html
 msgid "No organizational units."
 msgstr "Ingen organisatoriske enheder"
 
-#: organizations/templates/sso/sso_edit.html:6
-#: organizations/templates/sso/sso_error.html:7
+#: organizations/templates/sso/sso_edit.html
+#: organizations/templates/sso/sso_error.html
 msgid "Single SignOn (SSO) configuration"
 msgstr "Single SignOn (SSO) konfiguration"
 
-#: organizations/templates/sso/sso_edit.html:21
+#: organizations/templates/sso/sso_edit.html
 msgid "Single SignOn (SSO) configuration for"
 msgstr "Single SignOn (SSO) konfiguration for"
 
-#: organizations/templates/sso/sso_edit.html:30
+#: organizations/templates/sso/sso_edit.html
 msgid "identity provider setup"
 msgstr "identify provider opsætning"
 
-#: organizations/templates/sso/sso_edit.html:57
+#: organizations/templates/sso/sso_edit.html
 msgid "Fetch metadata"
 msgstr "Hent metadata"
 
-#: organizations/templates/sso/sso_edit.html:109
+#: organizations/templates/sso/sso_edit.html
 msgid "claim setup"
 msgstr "claim opsætning"
 
-#: organizations/templates/sso/sso_edit.html:123
-#: organizations/templates/sso/sso_edit.html:124
-#: organizations/templates/sso/sso_edit.html:125
+#: organizations/templates/sso/sso_edit.html
 msgid "save SSO configuration"
 msgstr "gem SSO konfiguration"
 
-#: organizations/templates/sso/sso_error.html:11
+#: organizations/templates/sso/sso_error.html
 msgid "Oh! Might be too soon.."
 msgstr "Åh! Det var nok for tidligt.."
 
-#: organizations/templates/sso/sso_error.html:15
+#: organizations/templates/sso/sso_error.html
 msgid ""
 "It is unclear how to properly set up Single Sign-On with current "
 "configuration."
@@ -4184,7 +4014,7 @@ msgstr ""
 "Det er uklart hvordan Single Sign-On skal sættes op, med nuværende "
 "konfiguration."
 
-#: organizations/templates/sso/sso_error.html:18
+#: organizations/templates/sso/sso_error.html
 msgid ""
 "You might be missing configuration in regard to importing organizational "
 "structure, allowing SSO initiated user creation or Keycloak enabling."
@@ -4192,31 +4022,31 @@ msgstr ""
 "Du mangler muligvis konfigurationer relateret til organisatorisk struktur, "
 "tilladelse af SSO initieret brugeroprettelse eller at slå Keycloak til."
 
-#: organizations/utils.py:212
+#: organizations/utils.py
 msgid "Account not found."
 msgstr "Konto ikke fundet."
 
-#: organizations/views/account_views.py:227
+#: organizations/views/account_views.py
 msgid "Choose Account"
 msgstr "Vælg konto"
 
-#: organizations/views/account_views.py:256
+#: organizations/views/account_views.py
 msgid "Choose new manager"
 msgstr "Vælg ny leder"
 
-#: organizations/views/account_views.py:264
+#: organizations/views/account_views.py
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
 
-#: organizations/views/keycloak_sso_views.py:112
+#: organizations/views/keycloak_sso_views.py
 msgid "OSdatascanner user attribute"
 msgstr "OSdatascanner bruger attribut"
 
-#: organizations/views/keycloak_sso_views.py:116
+#: organizations/views/keycloak_sso_views.py
 msgid "Claim attribute"
 msgstr "Claim attribut"
 
-#: organizations/views/org_views.py:69 organizations/views/org_views.py:117
+#: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
 
