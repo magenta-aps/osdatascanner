@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-15 12:08+0200\n"
+"POT-Creation-Date: 2025-04-15 13:03+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -738,6 +738,10 @@ msgid "the Exchange server"
 msgstr "Exchangeserveren"
 
 #: reportapp/templates/components/reports/handle_match.html
+msgid "gmail"
+msgstr "gmail"
+
+#: reportapp/templates/components/reports/handle_match.html
 msgid "selected"
 msgstr "valgt"
 
@@ -747,14 +751,16 @@ msgid "Deletes checked %(source_type)s from %(source)s"
 msgstr "Sletter markerede %(source_type)s fra %(source)s"
 
 #: reportapp/templates/components/reports/mass_deletion_button.html
+#, python-format
 msgid ""
 "You are about to delete checked %(source_type)s from %(source)s. "
 "OSdatascanner cannot reverse this action. Are you sure?"
 msgstr ""
-"Du er ved at slette markerede %(source_type)s fra %(source)s. Denne handling kan "
-"ikke fortrydes i OSdatascanner. Er du sikker?"
+"Du er ved at slette markerede %(source_type)s fra %(source)s. Denne handling "
+"kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/mass_deletion_button.html
+#, python-format
 msgid "Delete marked %(source_type)s"
 msgstr "Slet markerede %(source_type)s"
 
@@ -821,6 +827,18 @@ msgid ""
 msgstr ""
 "Du er ved at slette valgte mail fra din Exchange server. Denne handling kan "
 "ikke fortrydes i OSdatascanner. Er du sikker?"
+
+#: reportapp/templates/components/reports/match.html
+msgid "Deletes mail from Gmail"
+msgstr "Sletter email fra Gmail"
+
+#: reportapp/templates/components/reports/match.html
+msgid ""
+"You are about to delete the selected mail. OSdatascanner cannot reverse this "
+"action. Are you sure?"
+msgstr ""
+"Du er ved at slette valgte email. Denne handling kan ikke "
+"fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html
 msgid "Opened for"

@@ -119,7 +119,23 @@
                       </button>
                     </span>
                   {% endif %}
-
+                  {% if show_gmail_delete_button and type == 'gmail' %}
+                    <span class="delete-gmail">
+                      <button class="button button--deletion-button"
+                              type="button"
+                              id="{{ document_report.pk }}"
+                              name='delete-gmail'
+                              title="{% trans 'Deletes mail from Gmail' %}"
+                              hx-post="{% url 'delete-gmail' document_report.pk %}"
+                              hx-push-url="false"
+                              hx-swap="none"
+                              hx-trigger="click"
+                              hx-indicator="closest tr"
+                              hx-confirm="{% blocktrans %}You are about to delete the selected mail. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}">
+                        {% trans "Delete" %}
+                      </button>
+                    </span>
+                  {% endif %}
                 </div>
 
                 {% if document_report.last_opened_time %}
