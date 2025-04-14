@@ -10,6 +10,8 @@
 
 - Gmail attachment scanning is now optional.
 
+- Google Drive results now also has a button that opens the associated file.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.

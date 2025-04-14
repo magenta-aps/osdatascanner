@@ -178,6 +178,10 @@ class GoogleDriveHandle(Handle):
         return self._location
 
     @property
+    def presentation_url(self):
+        return f"https://drive.google.com/file/d/{self.relative_path}/view"
+
+    @property
     def sort_key(self):
         """Returns a string to sort by formatted as:
         DOMAIN/ACCOUNT/PATH/FILE_NAME"""
