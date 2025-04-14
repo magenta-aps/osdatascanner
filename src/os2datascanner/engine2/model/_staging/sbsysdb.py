@@ -12,8 +12,9 @@ from os2datascanner.engine2.model.core import (
 from os2datascanner.engine2.model.derived import DerivedSource
 from os2datascanner.engine2.utilities.i18n import gettext as _
 
-from .sbsysdb_rule import SBSYSDBRule
-from .sbsysdb_utilities import convert_rule_to_select, exec_expr
+from .sbsysdb_rule import SBSYSDBRule  # noqa
+from .sbsysdb_utilities import (
+        exec_expr, convert_rule_to_select, resolve_complex_column_names)
 
 
 logger = structlog.get_logger("engine2")
@@ -59,10 +60,10 @@ class SBSYSDBSource(Source):
         engine, tables = sm.open(self)
         Sag = tables["Sag"]
 
-        column_labels = {
-            label: getattr(Sag.c, label)
-            for label in SBSYSDBSources.Case.required_columns
-        }
+        constraint, columns = resolve_complex_column_names(
+                Sag, tables, *SBSYSDBSources.Case.required_columns)
+        column_labels = dict(
+                zip(SBSYSDBSources.Case.required_columns, columns))
         expr = convert_rule_to_select(
                 rule,
                 Sag, tables,

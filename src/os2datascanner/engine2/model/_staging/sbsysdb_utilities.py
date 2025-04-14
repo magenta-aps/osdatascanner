@@ -70,6 +70,20 @@ def resolve_complex_column_name(
     return and_(*links), getattr(here.c, last)
 
 
+def resolve_complex_column_names(
+        start: Table, all_tables, *col_names: str):
+    """Resolves multiple complex column names at once as though by
+    resolve_complex_column_name, returning a single unified constraint object
+    and a list of the resolved columns."""
+    constraint = true()
+    columns = []
+    for name in col_names:
+        c, r = resolve_complex_column_name(start, name, all_tables)
+        constraint = and_(constraint, c)
+        columns.append(r)
+    return constraint, columns
+
+
 def convert_rule_to_select(
         rule: Rule,
         table: Table, all_tables,
