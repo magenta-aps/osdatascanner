@@ -8,7 +8,7 @@
 {% endblock content-header %}
 
 {% block content %}
-  {% comment %} {% include "components/reports/filters.html" %} {% endcomment %}
+  {% include "components/reports/filters.html" %}
  
   {% if page_obj.paginator.count == 0 %}
     <p class="no-results">{% trans "No results were found" %}</p>

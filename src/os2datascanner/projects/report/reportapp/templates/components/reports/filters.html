@@ -53,157 +53,160 @@
           </div>
         </div>
 
-        <div id="source_type_filter">
-          <div class="dropdown__wrapper">
-            <div class="dropdown__label">
-              <label for="source-types" class="match_filtering_label">{% trans "Source Type" %}</label>
-
-              <button type="button"
-                      class="match_filtering_clear_button"
-                      name="clear_source_type"
-                      hx-trigger="click"
-                      hx-get="{{ request.path }}"
-                      hx-swap="outerHTML"
-                      hx-target=".content"
-                      hx-select=".content"
-                      hx-include="[id='filter_form'], [id='dropdown_options']"
-                      hx-params="not source_type"
-                      hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
-            </div>
-
-            <div class="match_filtering dropdown">
-              <select name="source_type" id="source_type" autocomplete="off">
-                <option value="all"
-                        {% if chosen_source_type == "all" %}selected="selected"{% endif %}>
-                  {% trans "All source types" %}
-                </option>
-
-                {% for source_type in source_type_choices %}
-                  <option value="{{ source_type.source_type }}"
-                          {% if chosen_source_type == source_type.source_type %}selected="selected"{% endif %}>
-                    {% find_scan_type source_type.source_type %}
-                    ({{ source_type.total }})
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {% if "/archive" in request.path %}
-          <div>
+        {% if not "/sbsys" in request.path %}
+          {# Ideally this should all be handled in the view. #}
+          <div id="source_type_filter">
             <div class="dropdown__wrapper">
               <div class="dropdown__label">
-                <label for="resolution_status" class="match_filtering_label">{% trans "Resolution Status" %}</label>
+                <label for="source-types" class="match_filtering_label">{% trans "Source Type" %}</label>
 
                 <button type="button"
                         class="match_filtering_clear_button"
-                        name="clear_resolution_status"
+                        name="clear_source_type"
                         hx-trigger="click"
                         hx-get="{{ request.path }}"
                         hx-swap="outerHTML"
                         hx-target=".content"
                         hx-select=".content"
                         hx-include="[id='filter_form'], [id='dropdown_options']"
-                        hx-params="not resolution_status"
+                        hx-params="not source_type"
                         hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
               </div>
 
               <div class="match_filtering dropdown">
-                <select name="resolution_status" id="resolution_status" autocomplete="off">
+                <select name="source_type" id="source_type" autocomplete="off">
                   <option value="all"
-                          {% if chosen_resolution_status == "all" %}selected="selected"{% endif %}>
-                    {% trans "All resolution statuses" %}
+                          {% if chosen_source_type == "all" %}selected="selected"{% endif %}>
+                    {% trans "All source types" %}
                   </option>
 
-                  {% for method in resolution_status_choices %}
-                    <option value="{{ method.resolution_status|stringformat:'i' }}"
-                            {% if chosen_resolution_status == method.resolution_status|stringformat:"i" %}selected="selected"{% endif %}>
-                      {{ method.resolution_label }} ({{ method.total }})
+                  {% for source_type in source_type_choices %}
+                    <option value="{{ source_type.source_type }}"
+                            {% if chosen_source_type == source_type.source_type %}selected="selected"{% endif %}>
+                      {% find_scan_type source_type.source_type %}
+                      ({{ source_type.total }})
                     </option>
                   {% endfor %}
                 </select>
               </div>
             </div>
           </div>
-        {% endif %}
 
-        <div id="sensitivity_filter"
-             {% if request.GET.sensitivity_checkbox == on %}hidden{% endif %}>
-          <div class="dropdown__wrapper">
-            <div class="dropdown__label">
-              <label for="sensitivities" class="match_filtering_label">{% trans "Sensitivity" %}</label>
-
-              <button type="button"
-                      class="match_filtering_clear_button"
-                      name="clear_sensitivities"
-                      hx-trigger="click"
-                      hx-get="{{ request.path }}"
-                      hx-swap="outerHTML"
-                      hx-target=".content"
-                      hx-select=".content"
-                      hx-include="[id='filter_form'], [id='dropdown_options']"
-                      hx-params="not sensitivities"
-                      hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
+          {% if "/archive" in request.path %}
+            <div>
+              <div class="dropdown__wrapper">
+                <div class="dropdown__label">
+                  <label for="resolution_status" class="match_filtering_label">{% trans "Resolution Status" %}</label>
+ 
+                  <button type="button"
+                          class="match_filtering_clear_button"
+                          name="clear_resolution_status"
+                          hx-trigger="click"
+                          hx-get="{{ request.path }}"
+                          hx-swap="outerHTML"
+                          hx-target=".content"
+                          hx-select=".content"
+                          hx-include="[id='filter_form'], [id='dropdown_options']"
+                          hx-params="not resolution_status"
+                          hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
+                </div>
+ 
+                <div class="match_filtering dropdown">
+                  <select name="resolution_status" id="resolution_status" autocomplete="off">
+                    <option value="all"
+                            {% if chosen_resolution_status == "all" %}selected="selected"{% endif %}>
+                      {% trans "All resolution statuses" %}
+                    </option>
+ 
+                    {% for method in resolution_status_choices %}
+                      <option value="{{ method.resolution_status|stringformat:'i' }}"
+                              {% if chosen_resolution_status == method.resolution_status|stringformat:"i" %}selected="selected"{% endif %}>
+                        {{ method.resolution_label }} ({{ method.total }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
             </div>
-
-            <div class="match_filtering dropdown">
-              <select name="sensitivities" id="sensitivities" autocomplete="off">
-                <option value="all"
-                        {% if chosen_sensitivity == "all" %}selected="selected"{% endif %}>
-                  {% trans "All sensitivities" %}
-                </option>
-                {% for sensitivity in sensitivity_choices %}
-                  <option value="{{ sensitivity.0.value|stringformat:"i" }}"
-                          {% if chosen_sensitivity == sensitivity.0.value|stringformat:"i" %}selected="selected"{% endif %}>
-                    {{ sensitivity.0.presentation }}
-                    ({{ sensitivity.1 }})
+          {% endif %}
+ 
+          <div id="sensitivity_filter"
+               {% if request.GET.sensitivity_checkbox == on %}hidden{% endif %}>
+            <div class="dropdown__wrapper">
+              <div class="dropdown__label">
+                <label for="sensitivities" class="match_filtering_label">{% trans "Sensitivity" %}</label>
+ 
+                <button type="button"
+                        class="match_filtering_clear_button"
+                        name="clear_sensitivities"
+                        hx-trigger="click"
+                        hx-get="{{ request.path }}"
+                        hx-swap="outerHTML"
+                        hx-target=".content"
+                        hx-select=".content"
+                        hx-include="[id='filter_form'], [id='dropdown_options']"
+                        hx-params="not sensitivities"
+                        hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
+              </div>
+ 
+              <div class="match_filtering dropdown">
+                <select name="sensitivities" id="sensitivities" autocomplete="off">
+                  <option value="all"
+                          {% if chosen_sensitivity == "all" %}selected="selected"{% endif %}>
+                    {% trans "All sensitivities" %}
                   </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="report_filter_toggle_button">
-            <button class="filter-button filter-button--report expand"
-                    type="button"
-                    onclick="toggleOptionbox('report_filter_toggle_options')">
-              <svg class="icon">
-                <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
-              </svg>
-            </button>
-
-            {% comment %}
-            Can we avoid using inline styling here?
-            {% endcomment %}
-            <div id="report_filter_toggle_options"
-                 class="filter-container"
-                 style="display: none">
-              <div class="filter-container-options filter-container-options--report">
-                <ul class="report">
-                  <div class="filter_checkbox">
-                    <input name="sensitivity_checkbox"
-                           type="checkbox"
-                           id="sensitivity_checkbox"
-                           autocomplete="off"
-                           {% if request.GET.sensitivity_checkbox %}checked{% endif %}>
-                    <label for="sensitivity_checkbox">{% trans "sensitivity"|capfirst %}</label>
-                    <button class="checkbox_button"
-                            id="sensitivity_checkbox_button"
-                            onclick="toggleCheckbox(event, 'sensitivity_checkbox')"></button>
-                  </div>
-                </ul>
-
-                <ul class="report">
-                  <button class="button--cta button"
-                          onclick="hideOptions('report_filter_toggle_options')">Vis</button>
-                </ul>
+                  {% for sensitivity in sensitivity_choices %}
+                    <option value="{{ sensitivity.0.value|stringformat:"i" }}"
+                            {% if chosen_sensitivity == sensitivity.0.value|stringformat:"i" %}selected="selected"{% endif %}>
+                      {{ sensitivity.0.presentation }}
+                      ({{ sensitivity.1 }})
+                    </option>
+                  {% endfor %}
+                </select>
               </div>
             </div>
           </div>
-        </div>
+
+          <div>
+            <div class="report_filter_toggle_button">
+              <button class="filter-button filter-button--report expand"
+                      type="button"
+                      onclick="toggleOptionbox('report_filter_toggle_options')">
+                <svg class="icon">
+                  <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
+                </svg>
+              </button>
+ 
+              {% comment %}
+              Can we avoid using inline styling here?
+              {% endcomment %}
+              <div id="report_filter_toggle_options"
+                   class="filter-container"
+                   style="display: none">
+                <div class="filter-container-options filter-container-options--report">
+                  <ul class="report">
+                    <div class="filter_checkbox">
+                      <input name="sensitivity_checkbox"
+                             type="checkbox"
+                             id="sensitivity_checkbox"
+                             autocomplete="off"
+                             {% if request.GET.sensitivity_checkbox %}checked{% endif %}>
+                      <label for="sensitivity_checkbox">{% trans "sensitivity"|capfirst %}</label>
+                      <button class="checkbox_button"
+                              id="sensitivity_checkbox_button"
+                              onclick="toggleCheckbox(event, 'sensitivity_checkbox')"></button>
+                    </div>
+                  </ul>
+ 
+                  <ul class="report">
+                    <button class="button--cta button"
+                            onclick="hideOptions('report_filter_toggle_options')">Vis</button>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
       <div class="filtering-UI__footer">
