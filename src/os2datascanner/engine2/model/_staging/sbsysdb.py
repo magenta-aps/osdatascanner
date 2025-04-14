@@ -221,7 +221,9 @@ class SBSYSDBSources:
                     if col in row_hints
                     else db_row[col] for col in self.required_columns}
 
-        required_columns = ("Nummer", "Titel", "Kommentar",)
+        required_columns = (
+                "Nummer", "Titel", "Kommentar",
+                "Behandler.UserPrincipalName",)
 
         def _generate_state(self, sm: SourceManager):
             yield sm.open(self.handle.source)
