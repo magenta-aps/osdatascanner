@@ -1,10 +1,13 @@
 from contextlib import contextmanager
+from datetime import datetime, timezone
 from io import BytesIO
+from ..rules.rule import Rule
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.errors import HttpError
 from .core import Source, Handle, FileResource
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
 class GoogleDriveSource(Source):
@@ -15,7 +18,6 @@ class GoogleDriveSource(Source):
 
      Guidance to complete the above can be found at:
       https://support.google.com/a/answer/7378726?hl=en
-     List of users in organization downloadable by admin from: https://admin.google.com/ac/users
     """
 
     type_label = "googledrive"
@@ -35,11 +37,34 @@ class GoogleDriveSource(Source):
         service = build(serviceName='drive', version='v3', credentials=credentials)
         yield service
 
-    def handles(self, sm):
+        # The Google Drive V3 API query operators can be found at:
+        # https://developers.google.com/workspace/drive/api/guides/search-files
+    def _generate_query(
+            self,
+            cutoff: datetime | None = None):
+        # Don't get folders or trashed files
+        query = "mimeType != 'application/vnd.google-apps.folder' and trashed = false"
+
+        if cutoff:
+            ts = cutoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+            query += f" and modifiedTime > '{ts}'"
+
+        return query
+
+    def handles(self, sm, rule: Rule | None = None):
         service = sm.open(self)
         page_token = None
+
+        cutoff = None
+        for essential_rule in compute_mss(rule):
+            if essential_rule.type_label == "last-modified":
+                after = essential_rule.after
+                cutoff = (after if after is not None else datetime.min)
+
+        query = self._generate_query(cutoff)
+
         while True:
-            files = service.files().list(q="mimeType !='application/vnd.google-apps.folder'",
+            files = service.files().list(q=query,
                                          fields='nextPageToken, files(id, name, mimeType, parents)',
                                          pageToken=page_token).execute()
             for file in files.get('files', []):
