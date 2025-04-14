@@ -37,71 +37,11 @@
                      hx-trigger="click target:.btn-{{ document_report.pk|unlocalize }}"
                      hx-indicator="#report-page-indicator">
  
-                  {% if document_report.matches.handle|present_url %}
-                    <a href="{{ document_report.matches.handle|present_url }}"
-                       class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
-                       target="_blank"
-                       rel="noopener">{% trans "Open" %}</a>
-                  {% endif %}
- 
-                  {% if document_report.matches.handle|find_file_folder %}
-                    <a href="{{ document_report.matches.handle|find_file_folder }}"
-                       class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
-                       target="_blank"
-                       rel="noopener">{% trans "Open folder" %}</a>
-                  {% endif %}
- 
-                  {% if show_email_delete_button and type == 'msgraph-mail' %}
-                    <span class="delete-mail">
-                      <button class="button button--deletion-button"
-                              id="{{ document_report.pk }}"
-                              name='delete-mail'
-                              title="{% trans 'Deletes email from your mailbox' %}"
-                              hx-post="{% url 'delete-mail' document_report.pk|unlocalize %}"
-                              hx-push-url="false"
-                              hx-swap="none"
-                              hx-trigger="click"
-                              hx-indicator="closest tr"
-                              hx-confirm="{% blocktrans %}You are about to delete selected email from your mailbox. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}">
-                        {% trans "Delete" %}
-                      </button>
-                    </span>
-                  {% endif %}
- 
-                  {% if show_file_delete_button and type == 'msgraph-files' %}
-                    <span class="delete-file">
-                      <button class="button button--deletion-button"
-                              id="{{ document_report.pk }}"
-                              name='delete-file'
-                              title="{% trans 'Deletes file from your online drive' %}"
-                              hx-post="{% url 'delete-file' document_report.pk|unlocalize %}"
-                              hx-push-url="false"
-                              hx-swap="none"
-                              hx-trigger="click"
-                              hx-indicator="closest tr"
-                              hx-confirm="{% blocktrans %}You are about to delete selected file from your online drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}">
-                        {% trans "Delete" %}
-                      </button>
-                    </span>
-                  {% endif %}
- 
-                  {% if show_smb_delete_button and type == 'smbc' %}
-                    <span class="delete-smb-file">
-                      <button class="button button--deletion-button"
-                              type="button"
-                              id="{{ document_report.pk }}"
-                              name='delete-smb-file'
-                              title="{% trans 'Deletes file from the shared drive' %}"
-                              hx-post="{% url 'delete-smb-file' document_report.pk %}"
-                              hx-push-url="false"
-                              hx-swap="none"
-                              hx-trigger="click"
-                              hx-indicator="closest tr"
-                              hx-confirm="{% blocktrans %}You are about to delete the selected file from your shared drive. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}">
-                        {% trans "Delete" %}
-                      </button>
-                    </span>
-                  {% endif %}
+                  <a href="{{ document_report.matches.handle|present_url }}"
+                     class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
+                     target="_blank"
+                     title="This is not connected to the DB yet, so enjoy some meerkats instead."
+                     rel="noopener">{% trans "Open" %}</a>
                 </div>
  
                 {% if document_report.last_opened_time %}
@@ -177,7 +117,7 @@
  
       <td class="column--datasource_last_modified">
         {% if document_report.datasource_last_modified %}
-          {{ document_report.datasource_last_modified|naturalday:"j. f Y"|capfirst }}
+          {{ document_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}
         {% else %}
           {% comment %}
             Remove this dummy content and the surrounding `if else` 
