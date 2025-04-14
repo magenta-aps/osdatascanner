@@ -31,6 +31,8 @@
 
 - Google Drive results now show their file path, as it is in Google Drive, instead of showing their ID.
 
+- Deletion buttons in the report module are now all shown using the same underlying logic.
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.

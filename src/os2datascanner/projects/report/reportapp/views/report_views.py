@@ -128,13 +128,10 @@ class ReportView(LoginRequiredMixin, ListView):
         # Check permissions for deleting shared files
         context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
         context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
-            (self.request.GET.get("source_type") == "smbc" or
-                all(dr.source_type == "smbc" for dr in context["page_obj"].object_list))
+            self.all_reports_from_same_source("smb", context["page_obj"])
         context["show_ews_delete_button"] = settings.EWS_ALLOW_WRITE
         context["show_ews_mass_delete_button"] = settings.EWS_ALLOW_WRITE and \
-            (self.request.GET.get("source_type") == "ews" or
-             all(dr.source_type == "ews" for dr in
-             context["page_obj"].object_list))
+            self.all_reports_from_same_source("ews", context["page_obj"])
 
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
@@ -267,6 +264,23 @@ class ReportView(LoginRequiredMixin, ListView):
         # as url param paginate_by=xx
         return self.request.GET.get('paginate_by', self.paginate_by)
 
+    def all_reports_from_same_source(self, source_type: str, page_obj) -> bool:
+        """Checks if all reports on the page stem from the source type. The source_type-argument
+        is a string, and is checked against the source_type-field on DocumentReport."""
+        # Check if the filtering option specifies this source type. In that case, all reports must
+        # be from this type of source.
+        filtered = self.request.GET.get("source_type") == source_type
+
+        # Check if there is anything on the page.
+        page_exists = page_obj.object_list.exists()
+
+        # Check if all elements of the page stem from this source type
+        all_from_source = not DocumentReport.objects.filter(
+                pk__in=page_obj.object_list.values_list("pk")
+            ).exclude(source_type=source_type).exists()
+
+        return filtered or (page_exists and all_from_source)
+
 
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
@@ -279,8 +293,14 @@ class UserReportView(ReportView):
         # show_delete_button is overwritten in the archive view.
         context["show_email_delete_button"] = (
             self.request.user.account.organization.has_email_delete_permission())
+        context["show_email_mass_delete_button"] = (
+            self.request.user.account.organization.has_email_delete_permission() and
+            self.all_reports_from_same_source("msgraph-mail", context["page_obj"]))
         context["show_file_delete_button"] = (
             self.request.user.account.organization.has_file_delete_permission())
+        context["show_file_mass_delete_button"] = (
+            self.request.user.account.organization.has_file_delete_permission() and
+            self.all_reports_from_same_source("msgraph-files", context["page_obj"]))
         context["include_shared"] = self.request.GET.get('include-shared', 'true')
 
         return context

@@ -297,6 +297,7 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                        scanner_job_pk=1,
                        scanner_job_name="Local nginx",
                        sensitivity=1000,
+                       source_type="fake",
                        datasource_last_modified=timezone.now(),
                        resolution_status=None,
                        only_notify_superadmin=False,
@@ -313,15 +314,17 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
             problem_message = None
 
         dr = DocumentReport.objects.create(
-            name=f"Report-{i}{'-matched' if matched else ''}",
+            name=f"Report-{source_type}-{i}{'-matched' if matched else ''}",
             owner=alias._value,
             scanner_job_pk=scanner_job_pk,
             scanner_job_name=scanner_job_name,
             sensitivity=sensitivity,
             datasource_last_modified=datasource_last_modified,
+            source_type=source_type,
             path=(f"report-{i}-{scanner_job_pk}-{alias.account.username}"
                   f"-{'matched' if matched else 'unmatched'}-{alias._alias_type}"
                   f":{alias._value}-s{sensitivity}-dlm{datasource_last_modified}"
+                  f"-st{source_type}"
                   f"-ca{created_at if created_at else 'None'}"
                   f"-prob{problem if problem else 'None'}"
                   f"-rs{resolution_status if resolution_status is not None else 'None'}"),

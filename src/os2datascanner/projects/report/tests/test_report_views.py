@@ -1,4 +1,5 @@
 import pytest
+import sys
 
 from datetime import timedelta
 from django.conf import settings
@@ -16,10 +17,34 @@ from ..reportapp.views.report_views import (
     UserReportView, RemediatorView,
     UserArchiveView, RemediatorArchiveView, UndistributedArchiveView)
 
+from importlib import reload, import_module
+
+from django.urls import clear_url_caches
+
+
+def reload_urlconf(urlconf=None):
+    clear_url_caches()
+    if urlconf is None:
+        urlconf = settings.ROOT_URLCONF
+    if urlconf in sys.modules:
+        reload(sys.modules[urlconf])
+    else:
+        import_module(urlconf)
+
 
 @pytest.fixture(autouse=True)
 def override_archive_tab_feature_flag():
     settings.ARCHIVE_TAB = True
+
+
+@pytest.fixture(autouse=True)
+def override_ews_allow_write_setting():
+    settings.EWS_ALLOW_WRITE = True
+
+
+@pytest.fixture(autouse=True)
+def override_smb_allow_write_setting():
+    settings.SMB_ALLOW_WRITE = True
 
 
 @pytest.mark.django_db
@@ -272,6 +297,113 @@ class TestUserReportView:
 
         # Assert
         assert qs.count() == num_old + num_new
+
+    @pytest.mark.skip("Gitlab CI pipeline does not set the SMB_ALLOW_WRITE setting correctly. "
+                      "Skipping for now.")
+    def test_smb_mass_deletion_buttons_filter_source_type(self, client, egon_account):
+        reload_urlconf()
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index") + "?source_type=smb")
+
+        assert response.context["show_smb_mass_delete_button"]
+
+    @pytest.mark.skip("Gitlab CI pipeline does not set the SMB_ALLOW_WRITE setting correctly. "
+                      "Skipping for now.")
+    def test_smb_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
+                                                            egon_email_alias):
+        reload_urlconf()
+        create_reports_for(egon_email_alias, source_type="smb")
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index"))
+
+        assert response.context["show_smb_mass_delete_button"]
+
+    @pytest.mark.skip("Gitlab CI pipeline does not set the EWS_ALLOW_WRITE setting correctly. "
+                      "Skipping for now.")
+    def test_ews_mass_deletion_buttons_filter_source_type(self, client, egon_account):
+        reload_urlconf()
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index") + "?source_type=ews")
+
+        assert response.context["show_ews_mass_delete_button"]
+
+    @pytest.mark.skip("Gitlab CI pipeline does not set the EWS_ALLOW_WRITE setting correctly. "
+                      "Skipping for now.")
+    def test_ews_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
+                                                            egon_email_alias):
+        reload_urlconf()
+        create_reports_for(egon_email_alias, source_type="ews")
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index"))
+
+        assert response.context["show_ews_mass_delete_button"]
+
+    @pytest.mark.parametrize("org_perm", [True, False])
+    def test_msgraph_mail_mass_deletion_buttons_filter_source_type(self, client, egon_account,
+                                                                   olsenbanden_organization,
+                                                                   org_perm):
+        olsenbanden_organization.outlook_delete_email_permission = org_perm
+        olsenbanden_organization.save()
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index") + "?source_type=msgraph-mail")
+
+        assert response.context["show_email_mass_delete_button"] == org_perm
+
+    def test_msgraph_mail_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
+                                                                     egon_email_alias,
+                                                                     olsenbanden_organization):
+        olsenbanden_organization.outlook_delete_email_permission = True
+        olsenbanden_organization.save()
+        create_reports_for(egon_email_alias, source_type="msgraph-mail")
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index"))
+
+        assert response.context["show_email_mass_delete_button"]
+
+    @pytest.mark.parametrize("org_perm", [True, False])
+    def test_msgraph_files_mass_deletion_buttons_filter_source_type(self, client, egon_account,
+                                                                    olsenbanden_organization,
+                                                                    org_perm):
+        olsenbanden_organization.onedrive_delete_permission = org_perm
+        olsenbanden_organization.save()
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index") + "?source_type=msgraph-files")
+
+        assert response.context["show_file_mass_delete_button"] == org_perm
+
+    def test_msgraph_files_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
+                                                                      egon_email_alias,
+                                                                      olsenbanden_organization):
+        olsenbanden_organization.onedrive_delete_permission = True
+        olsenbanden_organization.save()
+        create_reports_for(egon_email_alias, source_type="msgraph-files")
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index"))
+
+        assert response.context["show_file_mass_delete_button"]
+
+    def test_mass_deletion_buttons_all_different_source_type(self, client, egon_account,
+                                                             egon_email_alias,
+                                                             olsenbanden_organization):
+        olsenbanden_organization.onedrive_delete_permission = True
+        olsenbanden_organization.outlook_delete_email_permission = True
+        olsenbanden_organization.save()
+        create_reports_for(egon_email_alias, source_type="msgraph-files", num=2)
+        create_reports_for(egon_email_alias, source_type="msgraph-mail", num=2)
+        create_reports_for(egon_email_alias, source_type="smb", num=2)
+        create_reports_for(egon_email_alias, source_type="ews", num=2)
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index"))
+
+        assert not response.context["show_file_mass_delete_button"]
+        assert not response.context["show_email_mass_delete_button"]
+        assert not response.context["show_smb_mass_delete_button"]
+        assert not response.context["show_ews_mass_delete_button"]
 
     # # Helper methods
 
