@@ -115,6 +115,13 @@ class ReportView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["renderable_rules"] = RENDERABLE_RULES
 
+        context["access_checks"] = {
+            # SBSYS access check:
+            "sbsystab": self.request.user.account.sbsystab_access,
+
+            # Other tab access checks should live here as well, but it's out of scope for now.
+        }
+
         # We do this at the request of a customer to change the structure of resolution choices.
         resolution_choices_order = [3, 2, 4, 1, 0]
         context["resolution_choices"] = [DocumentReport.ResolutionChoices.choices[i]
@@ -316,6 +323,16 @@ class SBSYSView(ReportView):
     type = "sbsys"
     template_name = "sbsys_content.html"
     report_type = Account.ReportType.PERSONAL_AND_SHARED
+
+    def dispatch(self, request, *args, **kwargs):
+        account = request.user.account
+
+        # Redirect if the user doesn't have access:
+        if not account.sbsystab_access:
+            return redirect(reverse_lazy("index"))
+
+        # If the access check is all good, then just load the page:
+        return super().dispatch(request, *args, **kwargs)
 
 
 class RemediatorView(ReportView):

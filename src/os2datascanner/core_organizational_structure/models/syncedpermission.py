@@ -1,5 +1,5 @@
 from django.db import models
-# from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class SyncedPermission(models.Model):
@@ -10,5 +10,6 @@ class SyncedPermission(models.Model):
     class Meta:
         abstract = True
         permissions = [
-            # None yet.
+            # SBSYS
+            ("view_sbsys_tab", _("Can view the SBSYS tab in Report"))
         ]

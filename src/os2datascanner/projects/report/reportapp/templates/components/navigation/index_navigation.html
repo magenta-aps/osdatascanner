@@ -2,26 +2,35 @@
 {% load handle_extras %}
 
 <div class="tabs">
+  {# Personal #}
   <a id="report"
      class="tabs__control{% if request.path == '/' or '/reports' in request.path %} active{% endif %}"
      href="{% if '/archive' in request.path %}{% url "reports-archive" %}{% else %}{% url "reports" %}{% endif %}">{% trans "Personal" %}</a>
- 
-  {% if settings.SBSYS_TAB %}
+
+  {# Personal - SBSYS #}
+  {% if access_checks.sbsystab %}
     <a id="sbsys"
        class="tabs__control{% if '/sbsys' in request.path %} active{% endif %}"
-       href="{% if '/archive' in request.path %}{% url "sbsys-archive" %}{% else %}{% url "sbsys" %}{% endif %}">{% trans "Personal - SBSYS" %}</a>
+       href="{% if '/archive' in request.path %}{% url "sbsys-archive" %}{% else %}{% url "sbsys" %}{% endif %}">
+      {% trans "Personal - SBSYS" %}
+    </a>
   {% endif %}
 
+  {# Remediator #}
   {% if user.account.is_remediator or user.is_superuser %}
     <a id="remediator"
        class="tabs__control{% if '/remediator' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "remediator-archive" %}{% else %}{% url "remediator" %}{% endif %}">{% trans "Remediator" %}</a>
   {% endif %}
+
+  {# Withheld #}
   {% if perms.os2datascanner_report.see_withheld_documentreport %}
     <a id="undistributed"
        class="tabs__control{% if '/undistributed' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "undistributed-archive" %}{% else %}{% url "undistributed" %}{% endif %}">{% trans "Undistributed" %}</a>
   {% endif %}
+
+  {# Scannerjob list #}
   {% if perms.os2datascanner_report.delete_documentreport and '/archive' not in request.path %}
     <a id="scannerjobs"
        class="tabs__control{% if '/scannerjobs' in request.path %} active{% endif %}"

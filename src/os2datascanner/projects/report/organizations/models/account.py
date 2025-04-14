@@ -33,7 +33,7 @@ from os2datascanner.core_organizational_structure.models import Account as Core_
 from os2datascanner.core_organizational_structure.models import \
     AccountSerializer as Core_AccountSerializer
 from os2datascanner.core_organizational_structure.models.organization import \
-    StatisticsPageConfigChoices, OutlookCategorizeChoices
+    StatisticsPageConfigChoices, SBSYSTabConfigChoices, OutlookCategorizeChoices
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from os2datascanner.utils.system_utilities import time_now
 
@@ -582,6 +582,31 @@ class Account(Core_Account):
             return True
         else:
             return False
+
+    @property
+    def sbsystab_access(self) -> bool:
+        """
+        Returns True if the SBSYS tab should be shown for this account,
+        based on the organization's configuration and user permissions.
+        """
+        setting = SBSYSTabConfigChoices(self.organization.sbsystab_access)
+
+        match setting:
+            # Visible for all:
+            case SBSYSTabConfigChoices.ALL:
+                return True
+
+            # Visible only with permission:
+            case SBSYSTabConfigChoices.WITH_PERMISSION:
+                return self.user.has_perm('organizations.view_sbsys_tab')
+
+            # Hidden for all:
+            case SBSYSTabConfigChoices.NONE:
+                return False
+
+            # Invalid or unexpected value:
+            case _:
+                return False
 
 
 @receiver(post_save, sender=Account)
