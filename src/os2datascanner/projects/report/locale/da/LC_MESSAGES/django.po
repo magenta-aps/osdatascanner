@@ -501,6 +501,10 @@ msgid "Personal"
 msgstr "Personlige"
 
 #: reportapp/templates/components/navigation/index_navigation.html
+msgid "Personal - SBSYS"
+msgstr "Personlige - SBSYS"
+
+#: reportapp/templates/components/navigation/index_navigation.html
 #: reportapp/views/user_views.py
 msgid "Remediator"
 msgstr "Oprydder"
@@ -690,6 +694,7 @@ msgstr "håndtér matches"
 
 #: reportapp/templates/components/reports/handle_match.html
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid ""
 "OSdatascanner will not delete results from the system that was scanned. "
 "Marking a result as handled will only remove the result from OSdatascanner."
@@ -703,6 +708,7 @@ msgstr "Markér som håndterede"
 
 #: reportapp/templates/components/reports/handle_match.html
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -714,6 +720,7 @@ msgstr ""
 
 #: reportapp/templates/components/reports/handle_match.html
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid "Revert"
 msgstr "Fortryd"
 
@@ -787,10 +794,12 @@ msgid "Delete marked %(source_type)s"
 msgstr "Slet markerede %(source_type)s"
 
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid "Select result"
 msgstr "Vælg resultat"
 
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid "Open"
 msgstr "Åbn"
 
@@ -875,6 +884,7 @@ msgstr ""
 "OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid "Opened for"
 msgstr "Åbnet for"
 
@@ -895,6 +905,7 @@ msgid "Copy link"
 msgstr "Kopiér link"
 
 #: reportapp/templates/components/reports/match.html
+#: reportapp/templates/components/reports/sbsys_match.html
 msgid "Handle"
 msgstr "Håndtér"
 
@@ -923,8 +934,10 @@ msgid "Probability"
 msgstr "Sandsynlighed"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 #: reportapp/templates/leader_statistics_template.html
 #: reportapp/templates/remediator_content.html
+#: reportapp/templates/sbsys_content.html
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 #: reportapp/templates/undistributed_content.html
 #: reportapp/templates/user_content.html
@@ -940,10 +953,12 @@ msgid "Show/hide all matches"
 msgstr "Vis/skjul alle matches"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 msgid "Select all results"
 msgstr "Vælg alle resultater"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 #: reportapp/templates/user.html
 msgid "Name"
@@ -955,10 +970,12 @@ msgid "Matches"
 msgstr "Matches"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 msgid "Sort table by"
 msgstr "Sortér tabel efter"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 msgid "Resource age"
 msgstr "Kildealder"
 
@@ -972,12 +989,14 @@ msgid "Path"
 msgstr "Sti"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 #: reportapp/templates/leader_statistics_template.html
 #: reportapp/templates/manual.html reportapp/views/statistics_views.py
 msgid "Status"
 msgstr "Status"
 
 #: reportapp/templates/components/reports/match_table.html
+#: reportapp/templates/components/reports/sbsys_match_table.html
 #: reportapp/templates/leader_statistics_template.html
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Actions"
@@ -985,9 +1004,18 @@ msgstr "Handlinger"
 
 #: reportapp/templates/components/reports/match_table.html
 #: reportapp/templates/remediator_content.html
+#: reportapp/templates/sbsys_content.html
 #: reportapp/templates/undistributed_content.html
 msgid "No results were found"
 msgstr "Der er ingen resultater"
+
+#: reportapp/templates/components/reports/sbsys_match_table.html
+msgid "Deviations"
+msgstr "Afvigelser"
+
+#: reportapp/templates/components/reports/sbsys_match_table.html
+msgid "KLE-no."
+msgstr "KLE-nr."
 
 #: reportapp/templates/components/reports/show_more_matches.html
 msgid "Show more matches"
@@ -1893,6 +1921,7 @@ msgstr ""
 "<a href=\"%(my-account)s\">profilside</a>."
 
 #: reportapp/templates/remediator_content.html
+#: reportapp/templates/sbsys_content.html
 #: reportapp/templates/undistributed_content.html
 #: reportapp/templates/user_content.html
 msgid "results"

@@ -38,8 +38,10 @@
               <div class="table-toolbar">
                 {% include "components/reports/handle_match.html" %}
 
-                {% comment %} TODO: Fjern dropdown mulighederne for sbsys resultater.
-                De har ikke andre muligheder end at "lukke" deres sager, så "håndtér" er rigeligt {% endcomment %}
+                {% comment %}
+                  TODO: Remove the dropdown options for SBSYS results. 
+                  Users can only "close" their SBSYS cases, so "handle" is the only option needed.
+                {% endcomment %}
  
                 <div class="table-toolbar__content-right">{% comment %} Empty {% endcomment %}</div>
               </div>

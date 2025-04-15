@@ -160,7 +160,7 @@
           {% else %}
             <button class="matches-handle button button--icon-text-button"
                     type="button"
-                    title="{% blocktrans %}OS2datascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OS2datascanner.{% endblocktrans %}"
+                    title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}"
                     hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
                     hx-swap="outerHTML swap:300ms"
                     hx-target="closest tr"
