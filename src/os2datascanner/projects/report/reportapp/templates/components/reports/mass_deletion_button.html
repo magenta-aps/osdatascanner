@@ -12,13 +12,13 @@
         class="button table-checkbox__action button--icon-text-button"
         data-status="match-handle"
         disabled
-        aria-label="{% blocktrans %}Deletes checked {{ source_type }} from your {{ source }}{% endblocktrans%}"
-        title="{% blocktrans %}Deletes checked {{ source_type }} from your {{ source }}{% endblocktrans%}"
+        aria-label="{% blocktrans %}Deletes checked {{ source_type }} from {{ source }}{% endblocktrans%}"
+        title="{% blocktrans %}Deletes checked {{ source_type }} from {{ source }}{% endblocktrans%}"
         hx-post="{% url url_name %}"
         hx-swap="none"
         hx-trigger="click"
         hx-push-url="false"
-        hx-confirm="{% blocktrans %}You are about to delete checked {{ source_type }} from your {{ source }}. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
+        hx-confirm="{% blocktrans %}You are about to delete checked {{ source_type }} from {{ source }}. OSdatascanner cannot reverse this action. Are you sure?{% endblocktrans %}"
         name="mass-delete">
   <i class="material-icons">delete_forever</i><span>{% blocktrans %}Delete marked {{ source_type }}{% endblocktrans %}</span>
 </button>
