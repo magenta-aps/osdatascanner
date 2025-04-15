@@ -78,6 +78,11 @@
     {% blocktranslate asvar source %}the Exchange server{% endblocktranslate %}
     {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-ews-mail" %}
   {% endif %}
+  {% if show_gmail_mass_delete_button %}
+    {% blocktranslate asvar source_type %}emails{% endblocktranslate %}
+    {% blocktranslate asvar source %}gmail{% endblocktranslate %}
+    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-gmail" %}
+  {% endif %}
 
   <span class="selected-cb">
     <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}

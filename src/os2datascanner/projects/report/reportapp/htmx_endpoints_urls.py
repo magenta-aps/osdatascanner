@@ -7,7 +7,8 @@ from .views.report_views import (
     DeleteMailView, MassDeleteMailView,
     DeleteFileView, MassDeleteFileView,
     DeleteSMBFileView, MassDeleteSMBFileView,
-    DeleteEWSMailView, MassDeleteEWSMailView)
+    DeleteEWSMailView, MassDeleteEWSMailView,
+    DeleteGmailView, MassDeleteGmailView)
 
 urlpatterns = [
     path('handle_match/<int:pk>/', HandleMatchView.as_view(), name='handle-match'),
@@ -32,4 +33,10 @@ if settings.EWS_ALLOW_WRITE:
     urlpatterns.extend([
         path('delete_ews_mail/<int:pk>', DeleteEWSMailView.as_view(), name="delete-ews-mail"),
         path('mass_delete_ews_mail/', MassDeleteEWSMailView.as_view(), name="mass-delete-ews-mail"),
+    ])
+
+if settings.GMAIL_ALLOW_WRITE:
+    urlpatterns.extend([
+        path('delete_gmail/<int:pk>', DeleteGmailView.as_view(), name="delete-gmail"),
+        path('mass_delete_gmail/', MassDeleteGmailView.as_view(), name="mass-delete-gmail"),
     ])
