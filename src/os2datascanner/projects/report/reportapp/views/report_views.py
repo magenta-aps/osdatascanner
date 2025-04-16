@@ -44,7 +44,7 @@ from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
 
 from .utilities.ews_utilities import try_ews_delete
-from .utilities.google_utilities import try_gmail_delete
+from .utilities.google_utilities import try_gmail_delete, try_gdrive_delete
 from .utilities.smb_utilities import try_smb_delete_1
 from .utilities.document_report_utilities import handle_report
 from .utilities.msgraph_utilities import delete_email, delete_file
@@ -136,6 +136,9 @@ class ReportView(LoginRequiredMixin, ListView):
         context["show_gmail_delete_button"] = settings.GMAIL_ALLOW_WRITE
         context["show_gmail_mass_delete_button"] = settings.GMAIL_ALLOW_WRITE and \
             self.all_reports_from_same_source("gmail", context["page_obj"])
+        context["show_gdrive_delete_button"] = settings.GDRIVE_ALLOW_WRITE
+        context["show_gdrive_mass_delete_button"] = settings.GDRIVE_ALLOW_WRITE and \
+            self.all_reports_from_same_source("googledrive", context["page_obj"])
 
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
@@ -371,6 +374,9 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         context["show_ews_delete_button"] = False
         context["show_ews_mass_delete_button"] = False
         context["show_gmail_delete_button"] = False
+        context["show_gmail_mass_delete_button"] = False
+        context["show_drive_delete_button"] = False
+        context["show_gdrive_mass_delete_button"] = False
         return context
 
 
@@ -394,6 +400,9 @@ class ArchiveMixin:
         context["show_ews_delete_button"] = False
         context["show_ews_mass_delete_button"] = False
         context["show_gmail_delete_button"] = False
+        context["show_gmail_mass_delete_button"] = False
+        context["show_drive_delete_button"] = False
+        context["show_gdrive_mass_delete_button"] = False
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -766,6 +775,49 @@ class MassDeleteGmailView(HTMXEndpointView, BaseMassView):
             self.request, document_reports.values_list(
                 "pk", flat=True))
 
+        if not deleted:
+            error_message = _("Failed to delete some reports: {e}").format(
+                e=problem)
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                error_message)
+
+
+class DeleteGoogleDriveView(HTMXEndpointView, DetailView):
+    """ View for sending a delete request for a Google Drive file."""
+    model = DocumentReport
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        report = self.get_object()
+
+        deleted, problem = try_gdrive_delete(request, [report.pk])
+        if not deleted:
+            error_message = _("Failed to delete {pn}: {e}").format(
+                pn=report.matches.handle.presentation_name, e=problem)
+            messages.add_message(
+                request,
+                messages.WARNING,
+                error_message)
+
+        return response
+
+
+class MassDeleteGoogleDriveView(HTMXEndpointView, BaseMassView):
+    """View for sending delete requests for multiple Google Drive files."""
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        reports = self.get_queryset()
+        self.delete_gdrive_files(reports)
+
+        return response
+
+    def delete_gdrive_files(self, document_reports):
+        deleted, problem = try_gdrive_delete(
+            self.request, document_reports.values_list(
+                "pk", flat=True))
         if not deleted:
             error_message = _("Failed to delete some reports: {e}").format(
                 e=problem)

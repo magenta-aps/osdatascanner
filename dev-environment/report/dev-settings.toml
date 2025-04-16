@@ -48,6 +48,8 @@ EWS_ALLOW_WRITE = true
 
 GMAIL_ALLOW_WRITE = true
 
+GDRIVE_ALLOW_WRITE = true
+
 # KEYCLOAK
 # These settings require a os2datascanner client, and a osdatascanner realm in Keycloak.
 # endpoints

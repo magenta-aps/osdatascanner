@@ -18,6 +18,8 @@
 
 - Google Drive scans now support SmartDelta for LastModified Rule.
 
+- It is now possible to delete Google Drive files from OSdatascanner. 
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-15 13:03+0200\n"
+"POT-Creation-Date: 2025-04-16 12:01+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -742,6 +742,10 @@ msgid "gmail"
 msgstr "gmail"
 
 #: reportapp/templates/components/reports/handle_match.html
+msgid "the Google drive"
+msgstr "Google drevet"
+
+#: reportapp/templates/components/reports/handle_match.html
 msgid "selected"
 msgstr "valgt"
 
@@ -837,8 +841,20 @@ msgid ""
 "You are about to delete the selected mail. OSdatascanner cannot reverse this "
 "action. Are you sure?"
 msgstr ""
-"Du er ved at slette valgte email. Denne handling kan ikke "
-"fortrydes i OSdatascanner. Er du sikker?"
+"Du er ved at slette valgte email. Denne handling kan ikke fortrydes i "
+"OSdatascanner. Er du sikker?"
+
+#: reportapp/templates/components/reports/match.html
+msgid "Deletes file from Google drive"
+msgstr "Sletter fil fra Google drev"
+
+#: reportapp/templates/components/reports/match.html
+msgid ""
+"You are about to delete the selected file. OSdatascanner cannot reverse this "
+"action. Are you sure?"
+msgstr ""
+"Du er ved at slette valgte fil. Denne handling kan ikke fortrydes i "
+"OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/reports/match.html
 msgid "Opened for"
