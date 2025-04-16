@@ -8,7 +8,8 @@ from .views.report_views import (
     DeleteFileView, MassDeleteFileView,
     DeleteSMBFileView, MassDeleteSMBFileView,
     DeleteEWSMailView, MassDeleteEWSMailView,
-    DeleteGmailView, MassDeleteGmailView)
+    DeleteGmailView, MassDeleteGmailView,
+    DeleteGoogleDriveView, MassDeleteGoogleDriveView)
 
 urlpatterns = [
     path('handle_match/<int:pk>/', HandleMatchView.as_view(), name='handle-match'),
@@ -39,4 +40,12 @@ if settings.GMAIL_ALLOW_WRITE:
     urlpatterns.extend([
         path('delete_gmail/<int:pk>', DeleteGmailView.as_view(), name="delete-gmail"),
         path('mass_delete_gmail/', MassDeleteGmailView.as_view(), name="mass-delete-gmail"),
+    ])
+
+if settings.GDRIVE_ALLOW_WRITE:
+    urlpatterns.extend([
+        path('delete_gdrive/<int:pk>',
+             DeleteGoogleDriveView.as_view(), name="delete-gdrive"),
+        path('mass_delete_gdrive/',
+             MassDeleteGoogleDriveView.as_view(), name="mass-delete-gdrive"),
     ])

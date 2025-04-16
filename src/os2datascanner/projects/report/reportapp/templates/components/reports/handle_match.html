@@ -83,6 +83,11 @@
     {% blocktranslate asvar source %}gmail{% endblocktranslate %}
     {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-gmail" %}
   {% endif %}
+  {% if show_gdrive_mass_delete_button %}
+    {% blocktranslate asvar source_type %}files{% endblocktranslate %}
+    {% blocktranslate asvar source %}the Google drive{% endblocktranslate %}
+    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-gdrive" %}
+  {% endif %}
 
   <span class="selected-cb">
     <span class="num-selected">0</span> {% trans "of" %} {{ document_reports|length }} {% trans "selected" %}
