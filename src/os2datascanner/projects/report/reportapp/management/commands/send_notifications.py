@@ -27,10 +27,7 @@ from django.template import loader
 from os2datascanner.utils.template_utilities import get_localised_template_names
 from os2datascanner.utils.system_utilities import time_now
 
-from ...views import statistics_views
-from ...models.documentreport import DocumentReport
 from ....organizations.models.account import Account
-from ....organizations.models.aliases import AliasType
 from ....organizations.models import Organization
 
 
@@ -110,19 +107,11 @@ class Command(BaseCommand):
                     "institution": settings.NOTIFICATION_INSTITUTION
                 }
 
-                # Do the initial filtering; grab unhandled matches for org.
-                results = DocumentReport.objects.only(
-                    "organization", "number_of_matches", "resolution_status"
-                ).filter(
-                    organization=org, number_of_matches__gte=1, resolution_status__isnull=True
-                )
-
                 if context_for_user or notify_user:
                     # Ensure provided user exists
                     try:
                         user = User.objects.get(pk=context_for_user or notify_user)
-                        if results_context := self.count_user_results(all_results, results, user,
-                                                                      org):
+                        if results_context := self.count_user_results(all_results, user, org):
                             if context_for_user:
                                 self.stdout.write(
                                     msg=f"Printing context for user: \n {results_context}",
@@ -144,8 +133,7 @@ class Command(BaseCommand):
                 # The "normal" behaviour. I.e. what happens when send-out occurs.
                 else:
                     for user in User.objects.filter(account__organization=org):
-                        if results_context := self.count_user_results(all_results, results, user,
-                                                                      org):
+                        if results_context := self.count_user_results(all_results, user, org):
                             email_message = self.create_email_message(image_name, image_content,
                                                                       results_context, user)
                             self.send_to_user(user, email_message, dry_run)
@@ -197,7 +185,7 @@ class Command(BaseCommand):
                 # Bingo, today we must send mails.
                 return True
 
-    def count_user_results(self, all_results, results, user, org):
+    def count_user_results(self, all_results, user, org):
         """
             Counts results for a user and populates context used in email templates.
             Returns populated context or an empty dict if no results.
@@ -206,7 +194,7 @@ class Command(BaseCommand):
         context = self.shared_context.copy()
         context["full_name"] = user.get_full_name() or user.username
 
-        user_results = statistics_views.filter_inapplicable_matches(user=user, matches=results)
+        user_results = user.account.get_report(Account.ReportType.RAW)
 
         if org.retention_policy and not all_results:
             # If all_results is not provided, and the organization has a retention policy, do not
@@ -224,30 +212,23 @@ class Command(BaseCommand):
         self.debug_message['estimated_amount_of_users'] += 1
 
         # Let the user know how many of these results are targeted for them.
-        user_alias_bound_results = 0
-        total_result_count = 0
-
-        for alias in user.aliases.exclude(_alias_type=AliasType.REMEDIATOR):
-            user_alias_bound_results += user_results.filter(
-                alias_relation=alias.pk,
-                only_notify_superadmin=False).count()
-        context["user_alias_bound_results"] = user_alias_bound_results
-        total_result_count += user_alias_bound_results
+        user_alias_bound_results = context["user_alias_bound_results"] = (
+                user.account.get_report(Account.ReportType.PERSONAL).count())
 
         # If the user falls under either "superadmin" or remediator,
         # let the user know how many of these results stem from that.
+        superadmin_bound_results = 0
         if user.is_superuser:
-            superadmin_bound_results = context["superadmin_bound_results"] = user_results.filter(
-                only_notify_superadmin=True).count()
-            total_result_count += superadmin_bound_results
+            superadmin_bound_results = context["superadmin_bound_results"] = (
+                    user.account.get_report(
+                            Account.ReportType.WITHHELD_AND_SHARED).count())
+        remediator_bound_results = context["remediator_bound_results"] = (
+                user.account.get_report(Account.ReportType.REMEDIATOR).count())
 
-        for remediator_alias in user.aliases.filter(_alias_type=AliasType.REMEDIATOR):
-            remediator_bound_results = context["remediator_bound_results"] = user_results.filter(
-                alias_relation=remediator_alias.pk).exclude(
-                only_notify_superadmin=True).count()
-            total_result_count += remediator_bound_results
-
-        context["total_result_count"] = total_result_count
+        context["total_result_count"] = (
+                user_alias_bound_results
+                + superadmin_bound_results
+                + remediator_bound_results)
 
         return context
 

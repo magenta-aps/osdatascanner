@@ -8,7 +8,6 @@ from django.core.management import call_command
 from django.template import loader
 from os2datascanner.projects.report.reportapp.management.commands.send_notifications import \
     Command
-from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.utils.system_utilities import time_now
 
 
@@ -101,8 +100,7 @@ class TestEmailNotification:
         create_reports_for(egon_remediator_alias, num=remediator_num)
 
         result_user1 = send_notifications_command.count_user_results(
-            all_results=True, results=DocumentReport.objects.filter(
-                number_of_matches__gte=1, resolution_status__isnull=True), user=egon_account.user,
+            all_results=True, user=egon_account.user,
             org=egon_account.organization)
 
         assert result_user1["user_alias_bound_results"] == personal_num

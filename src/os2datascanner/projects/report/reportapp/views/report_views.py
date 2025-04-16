@@ -50,7 +50,6 @@ from .utilities.document_report_utilities import handle_report
 from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
-from ...organizations.models.aliases import AliasType
 
 logger = structlog.get_logger("reportapp")
 
@@ -82,16 +81,22 @@ class ReportView(LoginRequiredMixin, ListView):
     scannerjob_filters = None
     paginate_by_options = [10, 20, 50, 100, 250]
 
-    document_reports = DocumentReport.objects.filter(
-            number_of_matches__gte=1,
-            resolution_status__isnull=True).order_by(
-            'sort_key',
-            'pk')
+    report_type: Account.ReportType = None
+    archive: bool = False
+
+    def get_queryset_base(self):
+        try:
+            acct = self.request.user.account
+            self.org = acct.organization
+            return acct.get_report(self.report_type, self.archive)
+        except Account.DoesNotExist:
+            logger.warning(
+                    "unexpected error in ReportView.get_queryset_base",
+                    exc_info=True)
+            return DocumentReport.objects.none()
 
     def get_queryset(self):
-        self.document_reports = self.base_match_filter(self.document_reports)
-        self.all_reports = self.document_reports
-
+        self.all_reports = self.document_reports = self.get_queryset_base()
         self.apply_filters()
         self.order_queryset_by_property()
 
@@ -145,22 +150,6 @@ class ReportView(LoginRequiredMixin, ListView):
         context["retention_days"] = self.org.retention_days
 
         return context
-
-    def base_match_filter(self, reports):
-        """Base filtering of document reports. Extended in children views."""
-        try:
-            if user_org := self.request.user.account.organization:
-                self.org = user_org
-                reports = reports.filter(organization=user_org)
-            else:
-                reports = DocumentReport.objects.none()
-        except Account.DoesNotExist as e:
-            logger.warning(f"While trying to apply base match filter for user "
-                           f"{self.request.user}, the following error occurred: {e}. "
-                           "Returning no document reports for user.")
-            reports = DocumentReport.objects.none()
-
-        return reports
 
     def apply_filters(self):
         if self.org.retention_policy and self.request.GET.get('retention') == 'false':
@@ -294,6 +283,13 @@ class UserReportView(ReportView):
     type = "personal"
     template_name = "user_content.html"
 
+    @property
+    def report_type(self):
+        if self.request.GET.get("include-shared", "true") == "true":
+            return Account.ReportType.PERSONAL_AND_SHARED
+        else:
+            return Account.ReportType.PERSONAL
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -312,35 +308,13 @@ class UserReportView(ReportView):
 
         return context
 
-    def base_match_filter(self, reports):
-        reports = super().base_match_filter(reports)
-        # Find everything alias related, not withheld and not remediator related.
-        reports = reports.filter(
-            alias_relation__in=self.request.user.aliases.exclude(_alias_type=AliasType.REMEDIATOR),
-            only_notify_superadmin=False)
-        return reports
-
-    def apply_filters(self):
-        if not (self.request.GET.get('include-shared', 'true') == 'true'):
-            self.document_reports = self.document_reports.exclude(
-                                        alias_relation__shared=True)
-
-        super().apply_filters()
-
 
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
 
     type = "remediator"
     template_name = "remediator_content.html"
-
-    def base_match_filter(self, reports):
-        reports = super().base_match_filter(reports)
-        # Find everything remediator related and not withheld
-        reports = reports.filter(
-            alias_relation__in=self.request.user.aliases.filter(_alias_type=AliasType.REMEDIATOR),
-            only_notify_superadmin=False)
-        return reports
+    report_type = Account.ReportType.REMEDIATOR
 
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
@@ -360,10 +334,21 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     permission_required = "os2datascanner_report.see_withheld_documentreport"
     template_name = "undistributed_content.html"
 
-    def base_match_filter(self, reports):
-        reports = super().base_match_filter(reports)
-        reports = reports.filter(only_notify_superadmin=True)
-        return reports
+    def get_queryset_base(self):
+        # This is the only ReportView subclass that doesn't use Aliases to get
+        # results, so it doesn't use the Account.get_report() mechanism
+        try:
+            acct = self.request.user.account
+            self.org = acct.organization
+            return DocumentReport.objects.filter(
+                    organization=self.org,
+                    only_notify_superadmin=True,
+                    resolution_status__isnull=not self.archive)
+        except Account.DoesNotExist:
+            logger.warning(
+                    "unexpected error in UndistributedView.get_queryset_base",
+                    exc_info=True)
+            return DocumentReport.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -385,11 +370,7 @@ class ArchiveMixin:
     class, most notably changing the queryset to query for handled results
     instead of unhandled results."""
 
-    document_reports = DocumentReport.objects.filter(
-            number_of_matches__gte=1,
-            resolution_status__isnull=False).order_by(
-            'sort_key',
-            'pk')
+    archive = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

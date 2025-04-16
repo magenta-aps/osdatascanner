@@ -13,6 +13,7 @@
 #
 import os
 import structlog
+from enum import auto, Enum
 from PIL import Image
 from datetime import timedelta
 from rest_framework import serializers
@@ -326,30 +327,75 @@ class Account(Core_Account):
     def status(self):
         return StatusChoices(self.match_status).label
 
-    def _get_reports(self):
-        from ...reportapp.models.documentreport import DocumentReport
-        aliases = self.aliases.exclude(_alias_type=AliasType.REMEDIATOR).exclude(shared=True)
-        reports = DocumentReport.objects.filter(alias_relation__in=aliases)
-        return reports
+    class ReportType(Enum):
+        RAW = auto()
+        """Select matches connected through any Alias."""
+
+        PERSONAL = auto()
+        """Select matches connected through any Alias that isn't shared and
+        that isn't a remediator role."""
+
+        PERSONAL_AND_SHARED = auto()
+        """Select matches connected through any Alias that isn't a remediator
+        role."""
+
+        REMEDIATOR = auto()
+        """Select matches connected through a remediator role Alias."""
+
+        WITHHELD = auto()
+        """Select matches held back for administrator review, connected through
+        any Alias that isn't shared and that isn't a remediator role."""
+
+        WITHHELD_AND_SHARED = auto()
+        """Select matches held back for administrator review, connected through
+        any Alias that isn't a remediator role."""
+
+    def get_report(self, type_: ReportType, archived: bool = False):
+        """Computes one of the standard report types for this Account. If you
+        need to retrieve a subset of DocumentReports connected to a person,
+        this method is almost invariably what you want."""
+        from os2datascanner.projects.report.reportapp.models.documentreport \
+            import DocumentReport
+
+        select_withheld = type_ in (
+                Account.ReportType.WITHHELD,
+                Account.ReportType.WITHHELD_AND_SHARED,)
+
+        qs = DocumentReport.objects.filter(
+                organization=self.organization,
+                number_of_matches__gte=1,
+                resolution_status__isnull=not archived,
+                only_notify_superadmin=select_withheld)
+
+        rt = Account.ReportType  # Just to make the cases a bit tidier
+        match type_:
+            case rt.RAW:
+                aliases = self.aliases.all()
+            case rt.PERSONAL | rt.WITHHELD:
+                # qs.exclude(cond_A, cond_B) excludes only those elements of qs
+                # for which /both/ cond_A and cond_B are true, but we want to
+                # exclude both independently here
+                aliases = self.aliases.exclude(
+                        _alias_type=AliasType.REMEDIATOR).exclude(shared=True)
+            case rt.PERSONAL_AND_SHARED | rt.WITHHELD_AND_SHARED:
+                aliases = self.aliases.exclude(
+                        _alias_type=AliasType.REMEDIATOR)
+            case rt.REMEDIATOR:
+                aliases = self.aliases.filter(_alias_type=AliasType.REMEDIATOR)
+            case _:
+                raise TypeError(type_)
+
+        return qs.filter(alias_relation__in=aliases).order_by(
+                "sort_key", "pk").distinct()
 
     @property
     def match_count(self) -> int:
         """Counts the number of unhandled matches associated with the account."""
-        reports = self._get_reports()
-        reports = reports.filter(
-            number_of_matches__gte=1,
-            resolution_status__isnull=True,
-            only_notify_superadmin=False)
-        return reports.count()
+        return self.get_report(Account.ReportType.PERSONAL).count()
 
     @property
     def withheld_matches(self) -> int:
-        reports = self._get_reports()
-        reports = reports.filter(
-            number_of_matches__gte=1,
-            resolution_status__isnull=True,
-            only_notify_superadmin=True)
-        return reports.count()
+        return self.get_report(Account.ReportType.WITHHELD).count()
 
     @property
     def old_matches(self) -> int:
@@ -358,22 +404,14 @@ class Account(Core_Account):
                              f"{self.organization} does not have a retention policy!")
         number_of_days_policy = self.organization.retention_days
         cutoff_date = time_now() - timedelta(days=number_of_days_policy)
-        reports = self._get_reports()
+        reports = self.get_report(Account.ReportType.PERSONAL)
         reports = reports.filter(
-            number_of_matches__gte=1,
-            resolution_status__isnull=True,
-            only_notify_superadmin=False,
             datasource_last_modified__lte=cutoff_date)
         return reports.count()
 
     @property
     def handled_matches(self) -> int:
-        reports = self._get_reports()
-        reports = reports.filter(
-            number_of_matches__gte=1,
-            resolution_status__isnull=False,
-            only_notify_superadmin=True)
-        return reports.count()
+        return self.get_report(Account.ReportType.PERSONAL, True).count()
 
     @property
     def match_status(self) -> StatusChoices:

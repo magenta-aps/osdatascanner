@@ -41,6 +41,10 @@
 
 - Deletion buttons in the report module are now all shown using the same underlying logic.
 
+- User principal names, the modern unique account identifiers used by many
+  Microsoft products, can now be imported from Active Directory and Microsoft
+  Entra.
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.

@@ -28,30 +28,49 @@ validate_regex_SID = RegexValidator(regex=r'^S-1-\d+(-\d+){0,15}$')
 
 
 def validate_aliastype_value(kind, value):
-    if kind == AliasType.SID:
-        validate_regex_SID(value)
-    if kind == AliasType.EMAIL:
-        # Do NOT check deliverability! This uses DNS lookups, and does not reflect
-        # a real world issue. We do not want to break the import when encountering
-        # deprecated email addresses.
-        try:
-            validate_email(value, check_deliverability=False)
-        except Exception as e:
-            raise ValidationError(e)
-    if kind == AliasType.REMEDIATOR:
-        if not isinstance(value, int):
-            raise ValidationError("Value must be an integer!")
-    if kind == AliasType.GENERIC:
-        # Generic/unspecified; always passes
-        pass
+    match kind:
+        case AliasType.SID:
+            validate_regex_SID(value)
+        case AliasType.EMAIL | AliasType.USER_PRINCIPAL_NAME:
+            # Don't check mail deliverability; we don't care about that
+            # (email addresses might be disabled, and UPNs aren't necessarily
+            # email addresses anyway)
+            try:
+                validate_email(value, check_deliverability=False)
+            except Exception as e:
+                raise ValidationError(e)
+        case AliasType.REMEDIATOR:
+            if not isinstance(value, int):
+                raise ValidationError("Value must be an integer!")
+        case _:
+            # Don't validate anything else
+            pass
 
 
 class AliasType(models.TextChoices):
     """Enumeration of Alias types and their respective validators."""
+    # A traditional Microsoft unique account ID
+    # for example, S-1-5-21-147742093-2662784958-47748248-1000
     SID = 'SID', _('SID')
+
+    # An email address
+    # for example, alec@website.example
     EMAIL = 'email', _('email')
+
+    # A scanner ID for which a user should be shown all unassociated results,
+    # or 0 to give this access to all scanners
+    # for example, 7
     REMEDIATOR = 'remediator', _('remediator')
-    # Generic is used for unspecified aliases
+
+    # A modern Microsoft unique account ID; looks like an email address, but
+    # cannot necessarily receive email
+    # for example, alec@example.onmicrosoft.com
+    #           or alec@website.example
+    USER_PRINCIPAL_NAME = 'upn', _('user principal name')
+
+    # A web domain for which a user should be shown all matches (with
+    # unfortunate naming)
+    # for example, magenta.dk
     GENERIC = 'generic', _('generic')
 
 
