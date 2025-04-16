@@ -1,11 +1,12 @@
 from contextlib import contextmanager
 from io import BytesIO
-
+from datetime import datetime
+from ..rules.rule import Rule
 from .core import Source, Handle, FileResource
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
-
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 import base64
 
 
@@ -42,9 +43,21 @@ class GmailSource(Source):
         service = build(serviceName='gmail', version='v1', credentials=credentials)
         yield service
 
-    def handles(self, sm):
-        service = sm.open(self)
+    def _generate_query(
+            self,
+            cutoff: datetime | None = None):
+        # The GMAIL V1 API query operators can be found at:
+        # https://support.google.com/mail/answer/7190 (which is just the Gmail search bar)
+        query = ""
+        if cutoff:
+            # gmail needs seconds since epoch to do datetime filtering.
+            ts = round(cutoff.timestamp())
+            query += f" after: {ts}"
 
+        return query
+
+    def handles(self, sm, rule: Rule | None = None):
+        service = sm.open(self)
         # Call the Gmail API to retrieve all labels
         labels = service.users().labels().list(
             userId=self._user_email_gmail).execute()
@@ -53,10 +66,19 @@ class GmailSource(Source):
         label_ids = [label['id'] for label in labels["labels"]
                      if label['id'] not in ('TRASH', 'DRAFT')]
 
+        cutoff = None
+        for essential_rule in compute_mss(rule):
+            if essential_rule.type_label == "last-modified":
+                cutoff = essential_rule.after
+
+        q = self._generate_query(cutoff)
+
         for label_id in label_ids:
             # Call the Gmail API to fetch INBOX
             results = service.users().messages().list(userId=self._user_email_gmail,
-                                                      labelIds=[label_id], maxResults=500).execute()
+                                                      labelIds=[label_id],
+                                                      maxResults=500,
+                                                      q=q).execute()
 
             messages = []
             if 'messages' in results:
@@ -65,7 +87,7 @@ class GmailSource(Source):
                     page_token = results['nextPageToken']
                     results = service.users().messages().list(userId=self._user_email_gmail,
                                                               labelIds=[label_id], maxResults=500,
-                                                              pageToken=page_token).execute()
+                                                              pageToken=page_token, q=q).execute()
                     messages.extend(results['messages'])
 
                 for message in messages:

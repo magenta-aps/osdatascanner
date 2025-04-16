@@ -14,6 +14,8 @@
 
 - It is now possible to delete Gmail emails from OSdatascanner. 
 
+- Gmail scans support SmartDelta for LastModified Rule.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.
