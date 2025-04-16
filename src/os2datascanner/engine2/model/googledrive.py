@@ -58,8 +58,7 @@ class GoogleDriveSource(Source):
         cutoff = None
         for essential_rule in compute_mss(rule):
             if essential_rule.type_label == "last-modified":
-                after = essential_rule.after
-                cutoff = (after if after is not None else datetime.min)
+                cutoff = essential_rule.after
 
         query = self._generate_query(cutoff)
 
