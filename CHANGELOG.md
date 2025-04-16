@@ -16,6 +16,8 @@
 
 - Gmail scans support SmartDelta for LastModified Rule.
 
+- Google Drive scans now support SmartDelta for LastModified Rule.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.
