@@ -41,7 +41,9 @@ class ScannerJobFilter(admin.SimpleListFilter):
 class DocumentReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         return [
-            path("import/", self.admin_site.admin_view(self.import_view))
+            path("import/",
+                 self.admin_site.admin_view(self.import_view),
+                 name="os2datascanner_report_documentreport_import"),
         ] + super().get_urls()
 
     def import_view(self, request):

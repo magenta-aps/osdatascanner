@@ -1,3 +1,4 @@
+import uuid
 import pytest
 
 from django.conf import settings
@@ -26,7 +27,8 @@ def time2():
 @pytest.fixture
 def org_frag():
     return messages.OrganisationFragment(
-        name="test_org", uuid="d92ff0c9-f066-40dc-a57e-541721b6c23e")
+            name="test_org",
+            uuid=uuid.UUID("d92ff0c9-f066-40dc-a57e-541721b6c23e"))
 
 
 @pytest.fixture
