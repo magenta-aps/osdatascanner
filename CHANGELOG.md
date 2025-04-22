@@ -45,6 +45,8 @@
   Microsoft products, can now be imported from Active Directory and Microsoft
   Entra.
 
+- The Scannerviews have been refactored, reducing duplicate code.
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.
@@ -58,6 +60,8 @@
   (with a new UUID), by deferring unique organization-account username constraint.
 
 - Downscaling large images before OCR scanning to avoid a lot of timeout errors.
+
+- Copied scanners won't be given names of removed scanners anymore.
 
 ## Version 3.27.1, 24th March 2025
 
