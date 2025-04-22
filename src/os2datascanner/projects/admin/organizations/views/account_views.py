@@ -16,7 +16,7 @@ from ..models import Account, Alias, OrganizationalUnit, SyncedPermission
 from ..models.aliases import AliasType
 from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
-from ...adminapp.views.scanner_views import EmptyPagePaginator
+from os2datascanner.projects.utils.pagination import EmptyPagePaginator
 from ..utils import ClientAdminMixin
 
 

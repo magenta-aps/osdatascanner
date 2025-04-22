@@ -39,11 +39,10 @@ from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete,
                                CustomRuleConnect)
 
-from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
-                                  StatusDelete, StatusCancel, StatusTimeline, UserErrorLogView,
-                                  UserErrorLogCSVView, RemovedScannersView, RecreateScannerView,
-                                  DeleteRemovedScannerView)
-
+from .views.scanner_views import RemovedScannersView, RecreateScannerView, DeleteRemovedScannerView
+from .views.user_error_log_views import UserErrorLogView, UserErrorLogCSVView
+from .views.status_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
+                                 StatusDelete, StatusCancel, StatusTimeline)
 
 from .views.miniscanner_views import MiniScanner, execute_mini_scan, CustomRuleCreateMiniscan
 
