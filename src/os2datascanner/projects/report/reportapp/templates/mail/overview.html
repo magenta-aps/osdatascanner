@@ -31,7 +31,7 @@
       the OSdatascanner system which are associated with you and require your attention.
     </p>
 
-    {% if superadmin_bound_results or remediator_bound_results %}
+    {% if superadmin_bound_results or remediator_bound_results or shared_bound_results %}
       <table>
         <tr>
           <td>Additional results are tied to you because of your roles within the system:</td>
@@ -53,6 +53,13 @@
           </tr>
         {% endif %}
 
+        {% if shared_bound_results %}
+          <tr>
+            <td>
+              Shared results: <strong>{{ shared_bound_results }}</strong>
+            </td>
+          </tr>
+        {% endif %}
       </table>
     {% endif %}
 

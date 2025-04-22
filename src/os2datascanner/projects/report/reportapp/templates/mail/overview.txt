@@ -4,13 +4,16 @@ Dear {{ full_name }},
 There are currently {{ user_alias_bound_results }} results in
 the OSdatascanner system which are associated with you and require your attention.
 
-{% if superadmin_bound_results or remediator_bound_results %}
+{% if superadmin_bound_results or remediator_bound_results or shared_bound_results %}
     Additional results are tied to you because of your roles within the system:
         {% if superadmin_bound_results %}
             Super-admin delegated results: {{ superadmin_bound_results }}
         {% endif %}
         {% if remediator_bound_results %}
             Remediator delegated results: {{ remediator_bound_results }}
+        {% endif %}
+        {% if shared_bound_results %}
+            Shared results: {{ shared_bound_results }}
         {% endif %}
 {% endif %}
 

@@ -104,7 +104,7 @@ class Alias(models.Model):
     shared = models.BooleanField(verbose_name=_('shared'), default=False, help_text=_(
         'The results related to the user through this alias is shared with other users. '
         'Matches associated through this alias will not be taken into account in '
-        'user statistics.'), )
+        'user statistics, except for in email notifications.'), )
 
     @property
     def alias_type(self):
