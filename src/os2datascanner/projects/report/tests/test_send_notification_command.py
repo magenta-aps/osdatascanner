@@ -76,13 +76,21 @@ class TestEmailNotification:
         assert msg.to == excpected_msg.to
         assert msg.attachments == excpected_msg.attachments
 
-    @pytest.mark.parametrize('remediator_num,personal_num', [
-        (1, 0),
-        (0, 1),
-        (1, 1),
-        (10, 0),
-        (0, 10),
-        (10, 10),
+    @pytest.mark.parametrize('remediator_num,personal_num,shared_num', [
+        (1, 0, 0),
+        (0, 1, 0),
+        (1, 1, 0),
+        (10, 0, 0),
+        (0, 10, 0),
+        (10, 10, 0),
+        (0, 0, 1),
+        (1, 0, 1),
+        (0, 1, 1),
+        (1, 1, 1),
+        (0, 0, 10),
+        (10, 0, 10),
+        (0, 10, 10),
+        (10, 10, 10),
     ])
     def test_count_user_results_remediator(
             self,
@@ -90,14 +98,17 @@ class TestEmailNotification:
             egon_account,
             remediator_num,
             personal_num,
+            shared_num,
             egon_email_alias,
-            egon_remediator_alias):
+            egon_remediator_alias,
+            egon_shared_email_alias):
         """ Asserts that the command counts the correct amount of matches
             for a remediator
         """
 
         create_reports_for(egon_email_alias, num=personal_num)
         create_reports_for(egon_remediator_alias, num=remediator_num)
+        create_reports_for(egon_shared_email_alias, num=shared_num)
 
         result_user1 = send_notifications_command.count_user_results(
             all_results=True, user=egon_account.user,
@@ -105,7 +116,8 @@ class TestEmailNotification:
 
         assert result_user1["user_alias_bound_results"] == personal_num
         assert result_user1["remediator_bound_results"] == remediator_num
-        assert result_user1["total_result_count"] == personal_num + remediator_num
+        assert result_user1["shared_bound_results"] == shared_num
+        assert result_user1["total_result_count"] == personal_num + remediator_num + shared_num
 
     def test_schedule_check(self, send_notifications_command, olsenbanden_organization):
         olsenbanden_organization.email_notification_schedule = "RRULE:FREQ=DAILY"
