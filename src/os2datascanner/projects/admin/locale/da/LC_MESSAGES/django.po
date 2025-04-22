@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 13:02+0200\n"
+"POT-Creation-Date: 2025-04-22 10:03+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -399,6 +399,10 @@ msgid "organizational unit"
 msgstr "organisatorisk enhed"
 
 #: adminapp/models/scannerjobs/scanner.py
+msgid "scan all accounts in organization"
+msgstr "scan alle konti i organisation"
+
+#: adminapp/models/scannerjobs/scanner.py
 msgid "planned execution"
 msgstr "planlagt afvikling"
 
@@ -551,7 +555,7 @@ msgid "has an email notification been sent"
 msgstr "er en email notifikation blevet sendt"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
-#: adminapp/views/scanner_views.py
+#: adminapp/views/status_views.py
 msgid "Start time"
 msgstr "Starttid"
 
@@ -726,11 +730,11 @@ msgid "Can mark error log as viewed"
 msgstr "Kan markere fejlbesked som set"
 
 #: adminapp/models/usererrorlog.py adminapp/templates/error_log.html
-#: adminapp/views/scanner_views.py
+#: adminapp/views/user_error_log_views.py
 msgid "Path"
 msgstr "Sti"
 
-#: adminapp/models/usererrorlog.py adminapp/views/scanner_views.py
+#: adminapp/models/usererrorlog.py adminapp/views/user_error_log_views.py
 msgid "Error message"
 msgstr "Fejlbesked"
 
@@ -1722,21 +1726,12 @@ msgstr "tilføj konti"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
-"Note that opting to \"scan all accounts in this organization\" will mean "
-"that this scannerjob will scan accounts from hidden organizational units as "
-"well."
+"Note that opting to \"Scan all accounts in organization\" will mean that "
+"this scannerjob will scan accounts from hidden organizational units as well."
 msgstr ""
-"Bemærk at hvis du vælger \"scan alle konti i denne organisation\" vil det "
+"Bemærk at hvis du vælger \"Scan alle konti i organisation\" vil det "
 "betyde at dette scannerjob også scanner konti fra skjulte organisatoriske "
 "enheder."
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "scan all accounts in this organization"
-msgstr "scan alle konti i denne organisation"
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "scan accounts from selected organizational units"
-msgstr "scan konti fra udvalgte organisatoriske enheder"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "scan accounts from"
@@ -2573,34 +2568,6 @@ msgid "This rule cannot be deleted, because it's associated with a scanner."
 msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 
 #: adminapp/views/scanner_views.py
-msgid "The page does not exist"
-msgstr "Siden findes ikke"
-
-#: adminapp/views/scanner_views.py
-msgid "Scanner name"
-msgstr "Scanner navn"
-
-#: adminapp/views/scanner_views.py
-msgid "Objects found"
-msgstr "Objekter fundet"
-
-#: adminapp/views/scanner_views.py
-msgid "Matches found"
-msgstr "Resultater fundet"
-
-#: adminapp/views/scanner_views.py
-msgid "Scanning time"
-msgstr "Scanningstid"
-
-#: adminapp/views/scanner_views.py
-msgid "Scan time"
-msgstr "Scan tidspunkt"
-
-#: adminapp/views/scanner_views.py
-msgid "Scanner job"
-msgstr "Scannerjob"
-
-#: adminapp/views/scanner_views.py
 msgid "User is not administrator for any client"
 msgstr "Brugeren er ikke administrator for en kunde"
 
@@ -2611,10 +2578,6 @@ msgid ""
 msgstr ""
 "Du skal enten vælge organisatoriske enheder at scanne, eller vælge at scanne "
 "hele organisationen."
-
-#: adminapp/views/scanner_views.py
-msgid "Password must be updated, when changing username or url."
-msgstr "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
 #: adminapp/views/scanner_views.py
 msgid "The scannerjob was removed."
@@ -2629,8 +2592,36 @@ msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
 
 #: adminapp/views/scanner_views.py
+msgid "Copy"
+msgstr ""
+
+#: adminapp/views/scanner_views.py
 msgid "The scannerjob was recreated."
 msgstr "Scannerjobbet blev gendannet."
+
+#: adminapp/views/status_views.py
+msgid "Scanner name"
+msgstr "Scanner navn"
+
+#: adminapp/views/status_views.py
+msgid "Objects found"
+msgstr "Objekter fundet"
+
+#: adminapp/views/status_views.py
+msgid "Matches found"
+msgstr "Resultater fundet"
+
+#: adminapp/views/status_views.py
+msgid "Scanning time"
+msgstr "Scanningstid"
+
+#: adminapp/views/user_error_log_views.py
+msgid "Scan time"
+msgstr "Scan tidspunkt"
+
+#: adminapp/views/user_error_log_views.py
+msgid "Scanner job"
+msgstr "Scannerjob"
 
 #: adminapp/views/validators.py
 #, python-format
@@ -4072,6 +4063,16 @@ msgstr "Claim attribut"
 #: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
+
+#~ msgid "scan accounts from selected organizational units"
+#~ msgstr "scan konti fra udvalgte organisatoriske enheder"
+
+#~ msgid "The page does not exist"
+#~ msgstr "Siden findes ikke"
+
+#~ msgid "Password must be updated, when changing username or url."
+#~ msgstr ""
+#~ "Adgangskode skal genindtastes, når der skiftes brugernavn eller url."
 
 #~ msgid "Click here to add a new permission"
 #~ msgstr "Klik her for at tilføje en ny rettighed"

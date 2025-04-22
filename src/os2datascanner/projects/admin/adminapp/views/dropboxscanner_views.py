@@ -12,10 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 from .scanner_views import (
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
+    ScannerBase,
     ScannerUpdate,
     ScannerCreate,
     ScannerList)
@@ -29,23 +26,16 @@ class DropboxScannerList(ScannerList):
     type = 'dropbox'
 
 
+dropbox_scanner_fields = [
+    'token',
+]
+
+
 class DropboxScannerCreate(ScannerCreate):
     """Create a file scanner view."""
 
     model = DropboxScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'token',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts'
-    ]
+    fields = ScannerBase.fields + dropbox_scanner_fields
 
     def get_form(self, form_class=None):
         """Adds special field password."""
@@ -65,19 +55,7 @@ class DropboxScannerUpdate(ScannerUpdate):
     """Update a scanner view."""
 
     model = DropboxScanner
-    fields = [
-        'name',
-        'schedule',
-        'exclusion_rule',
-        'token',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'rule',
-        'organization',
-        'contacts'
-    ]
+    fields = ScannerBase.fields + dropbox_scanner_fields
 
     def get_form(self, form_class=None):
         """Adds special field password and decrypts password."""
@@ -98,29 +76,3 @@ class DropboxScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/dropboxscanners/%s/saved/' % self.object.pk
-
-
-class DropboxScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = DropboxScanner
-    success_url = '/dropboxscanners/'
-
-
-class DropboxScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = DropboxScanner
-    fields = []
-    success_url = '/dropboxscanners/'
-
-
-class DropboxScannerAskRun(ScannerAskRun):
-    """Prompt for starting dropbox scan, validate first."""
-
-    model = DropboxScanner
-    run_url_name = 'dropboxscanner_run'
-
-
-class DropboxScannerRun(ScannerRun):
-    """View that handles starting of a file scanner run."""
-
-    model = DropboxScanner

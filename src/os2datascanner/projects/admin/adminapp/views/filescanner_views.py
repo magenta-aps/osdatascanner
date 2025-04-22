@@ -13,10 +13,7 @@ from django import forms
 
 from os2datascanner.projects.grants.views.smb_views import SMBGrantScannerForm
 from .scanner_views import (
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
+    ScannerBase,
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
@@ -33,28 +30,21 @@ class FileScannerList(ScannerList):
     type = 'file'
 
 
+file_scanner_fields = [
+    'unc',
+    'alias',
+    'skip_super_hidden',
+    'unc_is_home_root',
+    'smb_grant'
+]
+
+
 class FileScannerCreate(GrantMixin, ScannerCreate):
     """Create a file scanner view."""
 
     model = FileScanner
     type = 'file'
-    fields = [
-        'name',
-        'schedule',
-        'unc',
-        'exclusion_rule',
-        'alias',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'skip_super_hidden',
-        'unc_is_home_root',
-        'rule',
-        'organization',
-        'contacts',
-        'smb_grant'
-        ]
+    fields = ScannerBase.fields + file_scanner_fields
 
     def get_grant_form_classes(self):
         return {
@@ -76,23 +66,7 @@ class FileScannerUpdate(GrantMixin, ScannerUpdate):
 
     model = FileScanner
     type = 'file'
-    fields = [
-        'name',
-        'schedule',
-        'unc',
-        'exclusion_rule',
-        'alias',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'skip_super_hidden',
-        'unc_is_home_root',
-        'rule',
-        'organization',
-        'contacts',
-        'smb_grant'
-        ]
+    fields = ScannerBase.fields + file_scanner_fields
 
     def get_grant_form_classes(self):
         return {
@@ -116,40 +90,11 @@ class FileScannerUpdate(GrantMixin, ScannerUpdate):
             return '/filescanners/%s/saved/' % self.object.pk
 
 
-class FileScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = FileScanner
-    success_url = '/filescanners/'
-
-
-class FileScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = FileScanner
-    fields = []
-    success_url = '/filescanners/'
-
-
 class FileScannerCopy(GrantMixin, ScannerCopy):
     """Create a new copy of an existing FileScanner"""
     model = FileScanner
     type = 'file'
-    fields = [
-        'name',
-        'schedule',
-        'unc',
-        'exclusion_rule',
-        'alias',
-        'do_ocr',
-        'do_last_modified_check',
-        'keep_false_positives',
-        'only_notify_superadmin',
-        'skip_super_hidden',
-        'unc_is_home_root',
-        'rule',
-        'organization',
-        'contacts',
-        'smb_grant'
-        ]
+    fields = ScannerBase.fields + file_scanner_fields
 
     def get_grant_form_classes(self):
         return {
@@ -165,19 +110,6 @@ class FileScannerCopy(GrantMixin, ScannerCopy):
 
         form = super().get_form(form_class)
         return initialize_form(form)
-
-
-class FileScannerAskRun(ScannerAskRun):
-    """Prompt for starting file scan, validate first."""
-
-    model = FileScanner
-    run_url_name = "filescanner_run"
-
-
-class FileScannerRun(ScannerRun):
-    """View that handles starting of a file scanner run."""
-
-    model = FileScanner
 
 
 def initialize_form(form):

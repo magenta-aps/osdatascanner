@@ -15,10 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ..validate import get_validation_str
 from .scanner_views import (
-    ScannerDelete,
-    ScannerRemove,
-    ScannerAskRun,
-    ScannerRun,
+    ScannerBase,
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
@@ -37,16 +34,24 @@ class WebScannerList(ScannerList):
     type = 'web'
 
 
+web_scanner_fields = [
+    'url',
+    'download_sitemap',
+    'sitemap_url',
+    'sitemap',
+    'do_link_check',
+    'exclude_urls',
+    'reduce_communication',
+    'always_crawl',
+]
+
+
 class WebScannerCreate(ScannerCreate):
     """Web scanner create form."""
 
     model = WebScanner
     type = 'web'
-    fields = ['name', 'schedule', 'url', 'exclusion_rule',
-              'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
-              'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
-              'rule', 'organization', 'exclude_urls', 'reduce_communication',
-              'keep_false_positives', 'always_crawl', 'contacts']
+    fields = ScannerBase.fields + web_scanner_fields
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -77,11 +82,7 @@ class WebScannerCopy(ScannerCopy):
 
     model = WebScanner
     type = 'web'
-    fields = ['name', 'schedule', 'url', 'exclusion_rule',
-              'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
-              'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
-              'rule', 'organization', 'exclude_urls', 'reduce_communication',
-              'keep_false_positives', 'always_crawl', 'contacts']
+    fields = ScannerBase.fields + web_scanner_fields
 
 
 class WebScannerUpdate(ScannerUpdate):
@@ -89,11 +90,7 @@ class WebScannerUpdate(ScannerUpdate):
 
     model = WebScanner
     type = 'web'
-    fields = ['name', 'schedule', 'url', 'exclusion_rule',
-              'download_sitemap', 'sitemap_url', 'sitemap', 'do_ocr',
-              'do_link_check', 'only_notify_superadmin', 'do_last_modified_check',
-              'rule', 'organization', 'exclude_urls', 'reduce_communication',
-              'keep_false_positives', 'always_crawl', 'contacts']
+    fields = ScannerBase.fields + web_scanner_fields
 
     def form_valid(self, form):
         if url_contains_spaces(form):
@@ -119,29 +116,3 @@ class WebScannerUpdate(ScannerUpdate):
             return 'validate/'
         else:
             return '/webscanners/%s/saved/' % self.object.pk
-
-
-class WebScannerRemove(ScannerRemove):
-    """Remove a scanner view."""
-    model = WebScanner
-    success_url = '/webscanners/'
-
-
-class WebScannerDelete(ScannerDelete):
-    """Delete a scanner view."""
-    model = WebScanner
-    fields = []
-    success_url = '/webscanners/'
-
-
-class WebScannerAskRun(ScannerAskRun):
-    """Prompt for starting web scan, validate first."""
-
-    model = WebScanner
-    run_url_name = 'webscanner_run'
-
-
-class WebScannerRun(ScannerRun):
-    """View that handles starting of a web scanner run."""
-
-    model = WebScanner

@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 
 from ..adminapp.views.webscanner_views import WebScannerList
 from ..adminapp.views.rule_views import RuleList
-from ..adminapp.views.scanner_views import StatusOverview, UserErrorLogView
+from ..adminapp.views.status_views import StatusOverview
+from ..adminapp.views.user_error_log_views import UserErrorLogView
 from ..organizations.views import OrganizationListView
 
 

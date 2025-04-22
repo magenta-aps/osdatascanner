@@ -5,7 +5,7 @@ from ...adminapp.views.views import RestrictedListView
 from ..models import (OrganizationalUnit, Account, Position,
                       Organization, OrganizationalUnitSerializer)
 from ...core.models import Feature
-from ...adminapp.views.scanner_views import EmptyPagePaginator
+from os2datascanner.projects.utils.pagination import EmptyPagePaginator
 from ..utils import ClientAdminMixin
 from os2datascanner.core_organizational_structure.models.position import Role
 from django.shortcuts import get_object_or_404

@@ -39,11 +39,10 @@ from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete,
                                CustomRuleConnect)
 
-from .views.scanner_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
-                                  StatusDelete, StatusCancel, StatusTimeline, UserErrorLogView,
-                                  UserErrorLogCSVView, RemovedScannersView, RecreateScannerView,
-                                  DeleteRemovedScannerView)
-
+from .views.scanner_views import RemovedScannersView, RecreateScannerView, DeleteRemovedScannerView
+from .views.user_error_log_views import UserErrorLogView, UserErrorLogCSVView
+from .views.status_views import (StatusOverview, StatusCompletedView, StatusCompletedCSVView,
+                                 StatusDelete, StatusCancel, StatusTimeline)
 
 from .views.miniscanner_views import MiniScanner, execute_mini_scan, CustomRuleCreateMiniscan
 
@@ -51,6 +50,15 @@ from .views.scanner_views import (ScannerAskRun, ScannerCleanupStaleAccounts, Sc
                                   ScannerCreate, ScannerDelete, ScannerList, ScannerRemove,
                                   ScannerRun, ScannerUpdate)
 from .views.user_views import MyUserView, UserDetailView, UserUpdateView
+from .models.scannerjobs.filescanner import FileScanner
+from .models.scannerjobs.dropboxscanner import DropboxScanner
+from .models.scannerjobs.exchangescanner import ExchangeScanner
+from .models.scannerjobs.gmail import GmailScanner
+from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
+from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
+                                         MSGraphCalendarScanner, MSGraphTeamsFileScanner)
+from .models.scannerjobs.sbsysscanner import SbsysScanner
+from .models.scannerjobs.webscanner import WebScanner
 
 urlpatterns = [
     # App URLs
@@ -192,11 +200,7 @@ for module in [exchangescanner_views,
             ScannerList: "list",
             ScannerCreate: "add",
             ScannerUpdate: "update",
-            ScannerRemove: "remove",
-            ScannerDelete: "delete",
             ScannerCopy: "copy",
-            ScannerAskRun: "askrun",
-            ScannerRun: "run",
             ScannerCleanupStaleAccounts: "cleanup",
         }
 
@@ -223,3 +227,33 @@ for module in [exchangescanner_views,
             name = f"{stype}scanner_{action}"
 
         urlpatterns.append(path(pattern, data.as_view(), name=name))
+
+for model in [
+        FileScanner,
+        DropboxScanner,
+        ExchangeScanner,
+        GmailScanner,
+        GoogleDriveScanner,
+        MSGraphMailScanner,
+        MSGraphFileScanner,
+        MSGraphCalendarScanner,
+        MSGraphTeamsFileScanner,
+        SbsysScanner,
+        WebScanner]:
+    stype: str = model.get_type().lower()
+    urlpatterns.append(path(
+        f"{stype}scanners/<int:pk>/askrun/",
+        ScannerAskRun.as_view(model=model, run_url_name=f"{stype}scanner_run"),
+        name=f"{stype}scanner_askrun"))
+    urlpatterns.append(path(
+        f"{stype}scanners/<int:pk>/run/",
+        ScannerRun.as_view(model=model),
+        name=f"{stype}scanner_run"))
+    urlpatterns.append(path(
+        f"{stype}scanners/<int:pk>/delete/",
+        ScannerDelete.as_view(model=model, success_url=f"/{stype}scanners/"),
+        name=f"{stype}scanner_delete"))
+    urlpatterns.append(path(
+        f"{stype}scanners/<int:pk>/remove/",
+        ScannerRemove.as_view(model=model, success_url=f"/{stype}scanners/"),
+        name=f"{stype}scanner_remove"))
