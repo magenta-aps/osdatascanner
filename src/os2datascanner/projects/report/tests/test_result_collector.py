@@ -1,5 +1,9 @@
-import hashlib
+import json
 import pytest
+import random
+import hashlib
+
+from django.contrib.auth import get_user_model
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.file import (
@@ -10,6 +14,9 @@ from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 from os2datascanner.engine2.model.smb import SMBSource, SMBHandle
+
+from django.test import Client
+from django.urls import reverse
 
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.management.commands import result_collector
@@ -334,6 +341,12 @@ def smb_match_3(common_scan_spec, scan_tag2, common_rule, smb_handle_3):
     )
 
 
+@pytest.fixture
+def superuser_acc():
+    return get_user_model().objects.create_superuser(
+            username="TEST-SU-" + random.randbytes(8).hex())
+
+
 @pytest.mark.django_db
 class TestPipelineCollector:
 
@@ -361,6 +374,31 @@ class TestPipelineCollector:
         assert new.resolution_status == expected[1]
         assert new.scan_time == parse_datetime(request.getfixturevalue(expected[2]))
         assert new.source_type == expected[3]
+
+    def test_acceptance_import(
+            self, *,
+            org_frag,
+            superuser_acc,
+            positive_match):
+        """Successful match messages posted to the admin import endpoint should
+        be stored in the database."""
+        c = Client()
+        c.force_login(superuser_acc)
+
+        # Simulate the tagging performed by the pipeline's exporter stage
+        pmj = positive_match.to_json_object()
+        pmj["origin"] = "os2ds_matches"
+
+        response = c.post(
+                reverse("admin:os2datascanner_report_documentreport_import"),
+                {"json": json.dumps(pmj),
+                 "org": ""})
+        assert response.status_code == 302
+        assert response.headers["location"] == reverse(
+                "admin:os2datascanner_report_documentreport_changelist")
+
+        newest_dr = DocumentReport.objects.order_by("-pk").first()
+        assert positive_match == newest_dr.matches
 
     def test_edit(self, positive_match, negative_match):
         """Removing matches from a file should update the status of the

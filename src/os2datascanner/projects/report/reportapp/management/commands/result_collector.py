@@ -54,7 +54,9 @@ def result_message_received_raw(body):
     reference = body.get("handle") or body.get("source")
     tag, queue = _identify_message(body)
     if not reference or not tag or not queue:
-        return
+        logger.warning(
+                "result_collector got an unidentifiable message, ignoring",
+                reference=reference, tag=tag, queue=queue)
     tag = messages.ScanTagFragment.from_json_object(tag)
 
     # XXX: ideally we would only log once in this file. When all is done, log the

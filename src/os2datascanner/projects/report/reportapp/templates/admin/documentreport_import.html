@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+  <form method="post" action="">
+    {% csrf_token %}
+    <textarea name="json"
+              rows="30"
+              cols="100"
+              placeholder="{% translate 'One or more JSON objects (or lists of JSON objects)' %}"></textarea>
+    <br>
+    <label>
+      {% translate "Organization" %}
+      <select name="org">
+        <option value="" selected>--</option>
+        {% for org in orgs %}<option value="{{ org.pk }}">{{ org.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <br>
+    <input type="submit" value="{% translate 'Import' %}">
+  </form>
+{% endblock %}
