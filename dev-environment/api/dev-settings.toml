@@ -1,3 +1,4 @@
 [server]
+permitted_sources = ["data", "web", "sbsys-db"]
 token = "thisIsNotASecret"
 demo_token = "demoToken"
