@@ -1854,7 +1854,7 @@ msgid ""
 "Enabling this feature also adds a False positive category to Outlook. Mails "
 "marked with this category will no longer be seen as a match by OSdatascanner."
 msgstr ""
-"Aktivering af kategorisering tilføjer også kategorien \"OS2datascanner false "
+"Aktivering af kategorisering tilføjer også kategorien \"OSdatascanner false "
 "positive\" til Outlook. Sættes denne kategori på en mail, vil mailen "
 "fremover ikke optræde som et match i OSdatascanner."
 
