@@ -72,7 +72,7 @@ class EmptyPagePaginator(Paginator):
                 raise Http404(_('The page does not exist'))
 
 
-class ExcludeSbsysMixin:
+class ExcludeSBSYSMixin:
     def get_queryset(self):
         return super().get_queryset().exclude(source_type="sbsys-db")
 
@@ -291,7 +291,7 @@ class ReportView(LoginRequiredMixin, ListView):
         return filtered or (page_exists and all_from_source)
 
 
-class UserReportView(ExcludeSbsysMixin, ReportView):
+class UserReportView(ExcludeSBSYSMixin, ReportView):
     """Presents the user with their personal unhandled results."""
     type = "personal"
     template_name = "user_content.html"
@@ -322,7 +322,7 @@ class UserReportView(ExcludeSbsysMixin, ReportView):
         return context
 
 
-class RemediatorView(ExcludeSbsysMixin, ReportView):
+class RemediatorView(ExcludeSBSYSMixin, ReportView):
     """Presents a remediator with relevant unhandled results."""
 
     type = "remediator"
@@ -378,7 +378,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         return context
 
 
-class SbsysMixin:
+class SBSYSMixin:
     """
     - Narrows the ReportView queryset to only SBSYS results.
     - Attaches these onto each report in the page:
@@ -400,7 +400,7 @@ class SbsysMixin:
         return context
 
 
-class SBSYSPersonalView(SbsysMixin, ReportView):
+class SBSYSPersonalView(SBSYSMixin, ReportView):
     """Presents the user with their personal unhandled SBSYS results."""
 
     type = "sbsys"
@@ -418,7 +418,7 @@ class SBSYSPersonalView(SbsysMixin, ReportView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class SBSYSRemediatorView(SbsysMixin, ReportView):
+class SBSYSRemediatorView(SBSYSMixin, ReportView):
     """Presents a remediator with relevant unhandled SBSYS results."""
 
     type = "remediator"

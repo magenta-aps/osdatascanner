@@ -104,7 +104,7 @@
           {% if "/archive/" in request.path %}
             <button class="revert-handle button button--icon-text-button"
                     type="button"
-                    title="Here is a title."
+                    title="{% trans "Revert handle status and return this result to the result overview" %}"
                     hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
                     hx-swap="outerHTML swap:300ms"
                     hx-trigger="click"

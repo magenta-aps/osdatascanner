@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-22 12:57+0200\n"
+"POT-Creation-Date: 2025-04-25 17:03+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -510,6 +510,10 @@ msgid "Remediator"
 msgstr "Oprydder"
 
 #: reportapp/templates/components/navigation/index_navigation.html
+msgid "Remediator - SBSYS"
+msgstr "Oprydder - SBSYS"
+
+#: reportapp/templates/components/navigation/index_navigation.html
 msgid "Undistributed"
 msgstr "Tilbageholdte"
 
@@ -938,6 +942,7 @@ msgstr "Sandsynlighed"
 #: reportapp/templates/leader_statistics_template.html
 #: reportapp/templates/remediator_content.html
 #: reportapp/templates/sbsys_content.html
+#: reportapp/templates/sbsys_remediator_content.html
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 #: reportapp/templates/undistributed_content.html
 #: reportapp/templates/user_content.html
@@ -1005,9 +1010,22 @@ msgstr "Handlinger"
 #: reportapp/templates/components/reports/match_table.html
 #: reportapp/templates/remediator_content.html
 #: reportapp/templates/sbsys_content.html
+#: reportapp/templates/sbsys_remediator_content.html
 #: reportapp/templates/undistributed_content.html
 msgid "No results were found"
 msgstr "Der er ingen resultater"
+
+#: reportapp/templates/components/reports/sbsys_match.html
+msgid "Click here to open this case in SBSYS"
+msgstr "Klik her for at åbne den relaterede sag i SBSYS"
+
+#: reportapp/templates/components/reports/sbsys_match.html
+msgid "no deviations found"
+msgstr "ingen afvigelser fundet"
+
+#: reportapp/templates/components/reports/sbsys_match.html
+msgid "Revert handle status and return this result to the result overview"
+msgstr "Fortryd håndteringsstatus og returnér dette resultat til resultatoverblikket"
 
 #: reportapp/templates/components/reports/sbsys_match_table.html
 msgid "Deviations"
@@ -1922,6 +1940,7 @@ msgstr ""
 
 #: reportapp/templates/remediator_content.html
 #: reportapp/templates/sbsys_content.html
+#: reportapp/templates/sbsys_remediator_content.html
 #: reportapp/templates/undistributed_content.html
 #: reportapp/templates/user_content.html
 msgid "results"
@@ -2358,6 +2377,10 @@ msgid ""
 msgstr ""
 "Din organisation har konfigureret denne indstilling for dig. Ændring er ikke "
 "tilladt."
+
+#: reportapp/views/utilities/document_report_utilities.py
+msgid "contains"
+msgstr "indeholder"
 
 #: reportapp/views/utilities/msgraph_utilities.py
 msgid "System configuration is missing Azure-application credentials. "
