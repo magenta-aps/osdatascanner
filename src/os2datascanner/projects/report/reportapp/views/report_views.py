@@ -46,7 +46,7 @@ from os2datascanner.engine2.rules.passport import PassportRule
 from .utilities.ews_utilities import try_ews_delete
 from .utilities.google_utilities import try_gmail_delete, try_gdrive_delete
 from .utilities.smb_utilities import try_smb_delete_1
-from .utilities.document_report_utilities import handle_report
+from .utilities.document_report_utilities import handle_report, get_deviations
 from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
@@ -70,6 +70,11 @@ class EmptyPagePaginator(Paginator):
                 return self.num_pages
             else:
                 raise Http404(_('The page does not exist'))
+
+
+class ExcludeSbsysMixin:
+    def get_queryset(self):
+        return super().get_queryset().exclude(source_type="sbsys-db")
 
 
 class ReportView(LoginRequiredMixin, ListView):
@@ -286,7 +291,7 @@ class ReportView(LoginRequiredMixin, ListView):
         return filtered or (page_exists and all_from_source)
 
 
-class UserReportView(ReportView):
+class UserReportView(ExcludeSbsysMixin, ReportView):
     """Presents the user with their personal unhandled results."""
     type = "personal"
     template_name = "user_content.html"
@@ -317,25 +322,7 @@ class UserReportView(ReportView):
         return context
 
 
-class SBSYSView(ReportView):
-    """Presents the user with their personal unhandled SBSYS results."""
-
-    type = "sbsys"
-    template_name = "sbsys_content.html"
-    report_type = Account.ReportType.PERSONAL_AND_SHARED
-
-    def dispatch(self, request, *args, **kwargs):
-        account = request.user.account
-
-        # Redirect if the user doesn't have access:
-        if not account.sbsystab_access:
-            return redirect(reverse_lazy("index"))
-
-        # If the access check is all good, then just load the page:
-        return super().dispatch(request, *args, **kwargs)
-
-
-class RemediatorView(ReportView):
+class RemediatorView(ExcludeSbsysMixin, ReportView):
     """Presents a remediator with relevant unhandled results."""
 
     type = "remediator"
@@ -391,6 +378,68 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         return context
 
 
+class SbsysMixin:
+    """
+    - Narrows the ReportView queryset to only SBSYS results.
+    - Attaches these onto each report in the page:
+        - `deviations`
+        - `kle_number`
+    """
+
+    def get_queryset(self):
+        # apply all of ReportView’s filters, then only keep SBSYS rows
+        qs = super().get_queryset()
+        return qs.filter(source_type="sbsys-db")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for report in context["page_obj"].object_list:
+            report.deviations = get_deviations(report)
+
+            report.kle_number = report.matches.handle.source.handle.relative_path
+        return context
+
+
+class SBSYSPersonalView(SbsysMixin, ReportView):
+    """Presents the user with their personal unhandled SBSYS results."""
+
+    type = "sbsys"
+    template_name = "sbsys_content.html"
+    report_type = Account.ReportType.PERSONAL_AND_SHARED
+
+    def dispatch(self, request, *args, **kwargs):
+        account = request.user.account
+
+        # Redirect if the user doesn't have access:
+        if not account.sbsystab_access:
+            return redirect(reverse_lazy("index"))
+
+        # If the access check is all good, then just load the page:
+        return super().dispatch(request, *args, **kwargs)
+
+
+class SBSYSRemediatorView(SbsysMixin, ReportView):
+    """Presents a remediator with relevant unhandled SBSYS results."""
+
+    type = "remediator"
+    template_name = "sbsys_remediator_content.html"
+    report_type = Account.ReportType.REMEDIATOR
+
+    def dispatch(self, request, *args, **kwargs):
+        account = request.user.account
+
+        # Redirect if the user doesn't have access:
+        if not account.sbsystab_access:
+            return redirect(reverse_lazy("index"))
+
+        # Redirect if the user isn't a remediator (or a superuser):
+        if not (account.is_remediator or request.user.is_superuser):
+            return redirect(reverse_lazy("index"))
+
+        # If the access check is all good, then just load the page:
+        return super().dispatch(request, *args, **kwargs)
+
+
 class ArchiveMixin:
     """This mixin is able to overwrite some logic on children of the ReportView-
     class, most notably changing the queryset to query for handled results
@@ -423,16 +472,20 @@ class UserArchiveView(ArchiveMixin, UserReportView):
     """Presents the user with their personal handled results."""
 
 
-class SBSYSArchiveView(ArchiveMixin, SBSYSView):
-    """Presents the user with their personal handled SBSYS results."""
-
-
 class RemediatorArchiveView(ArchiveMixin, RemediatorView):
     """Presents the remediator with all relevant handled results."""
 
 
 class UndistributedArchiveView(ArchiveMixin, UndistributedView):
     """Presents a superuser with all undistributed handled results."""
+
+
+class SBSYSPersonalArchiveView(ArchiveMixin, SBSYSPersonalView):
+    """Presents the user with their personal handled SBSYS results."""
+
+
+class SBSYSRemediatorArchiveView(ArchiveMixin, SBSYSRemediatorView):
+    """Presents the remediator with all relevant handled SBSYS results."""
 
 
 class HTMXEndpointView(LoginRequiredMixin, View):

@@ -27,7 +27,7 @@
           </div>
  
           <div class="table-ui__container">
-            {% if document_report.last_opened_time or document_report.matches.handle|present_url or type == 'smbc' or type != 'ews' and type != 'msgraph-mail' and document_report.matches.handle|find_file_folder %}
+            {% if document_report.matches.handle|present_url %}
               <div class="hit-link">
                 <div class="button-group"
                      name='open-button'
@@ -40,7 +40,7 @@
                   <a href="{{ document_report.matches.handle|present_url }}"
                      class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
                      target="_blank"
-                     title="This is not connected to the DB yet, so enjoy some meerkats instead."
+                     title="{% trans "Click here to open this case in SBSYS" %}"
                      rel="noopener">{% trans "Open" %}</a>
                 </div>
  
@@ -58,40 +58,19 @@
 
       <td class="column--deviations">
         <div class="td__flex-container">
-          {% if document_report.deviation %}
-            {% for document_report.deviation in document_report.deviations %}
-              <div class="status">
-                <div class="status__wrapper"
-                     data-status="{{ document_report.deviations }}">
-                  <span class="status__label">{{ document_report.get_deviation }}</span>
-                </div>
-              </div>
-            {% endfor %}
- 
-          {% else %}
-            {% comment %}
-              Remove this dummy content and the surrounding `if else` 
-              when we have a finished backend for sbsys.
-            {% endcomment %}
- 
+          {% for deviation in document_report.deviations %}
             <div class="status">
-              <div class="status__wrapper">
-                <span class="status__label">Uændret sag</span>
+              <div class="status__wrapper"
+                   data-status="{{ document_report.deviations }}">
+                <span class="status__label">{{ deviation }}</span>
               </div>
             </div>
-
-            <div class="status">
-              <div class="status__wrapper">
-                <span class="status__label">CPR uden sikkerhed</span>
-              </div>
+          {% empty %}
+            {# In the unlikely scenario where there's no deviations attached to a documentreport: #}
+            <div class="status__wrapper">
+              <span class="status__label">{% trans "no deviations found" %}</span>
             </div>
-
-            <div class="status">
-              <div class="status__wrapper">
-                <span class="status__label">Åben sag: part afgået ved døden</span>
-              </div>
-            </div>
-          {% endif %}
+          {% endfor %}
         </div>
       </td>
 
@@ -99,33 +78,14 @@
       <td class="column--kle column--numeral">
         <div class="matches_container">
           <div class="matches">
-            <span class="datatable-numeral">
-              {% if document_report.kle_number %}
-                {{ document_report.get_kle_number }}
-              {% else %}
-                {% comment %}
-                  Remove this dummy content and the surrounding `if else` 
-                  when we have a finished backend for sbsys.
-                {% endcomment %}
-                11.11.11
-              {% endif %}
-            </span>
+            <span class="datatable-numeral">{{ document_report.kle_number }}</span>
           </div>
         </div>
       </td>
  
  
       <td class="column--datasource_last_modified">
-        {% if document_report.datasource_last_modified %}
-          {{ document_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}
-        {% else %}
-          {% comment %}
-            Remove this dummy content and the surrounding `if else` 
-            when we have a finished backend for sbsys.
-          {% endcomment %}
-
-          <span>24. dec 2024</span>
-        {% endif %}
+        {{ document_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}
       </td>
 
       {% if "/archive/" in request.path %}
