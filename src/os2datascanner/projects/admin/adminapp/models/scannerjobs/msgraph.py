@@ -208,6 +208,7 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
 
     linkable = True
 
+    # TODO: This is not visible in the UI, and is not referenced anywhere in the code. Remove?
     do_link_check = models.BooleanField(
         default=False,
         verbose_name=_("check dead links")
