@@ -43,6 +43,12 @@
 
       <div class="form__group">
         <button type="submit" class="login-btn">{% trans "Login" %}</button>
+        {% if keycloak_sso_enabled %}
+          <a class="button button--outline-button"
+             title="{% trans "Log in through your organization's identity provider" %}"
+             aria-label="{% trans "Log in through your organization's identity provider" %}"
+             href="{% url "oidc_authentication_init" %}">{% trans "Log in with SSO" %}</a>
+        {% endif %}
       </div>
 
       <div class="form__group">

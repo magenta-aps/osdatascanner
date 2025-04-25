@@ -6,7 +6,7 @@ MEDIA_ROOT = ["*"," src", "os2datascanner", "projects", "report"]
 # [mode]
 DEBUG = true
 SAML2_ENABLED = false
-KEYCLOAK_ENABLED = false
+KEYCLOAK_ENABLED = true
 
 # [logging]
 LOG_LEVEL = "INFO"
@@ -17,6 +17,7 @@ ALLOW_CONTACT_MAGENTA = true
 DPO_CSV_EXPORT = true
 LEADER_CSV_EXPORT = true
 ALLOW_SHOW_ERRORS = true
+HYBRID_LOGIN = true
 
 # [site]
 # The URL of this site, used in links in emails and in the redirect URL for
