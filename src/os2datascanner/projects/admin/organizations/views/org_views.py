@@ -15,6 +15,7 @@ from os2datascanner.projects.admin.core.models import Client, Feature, Administr
 from ..models.organization import Organization
 
 from django import forms
+from django.conf import settings
 
 import structlog
 
@@ -89,7 +90,7 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
     template_name = 'organizations/org_update.html'
     success_url = reverse_lazy('organization-list')
     fields = ['name', 'contact_email', 'contact_phone',
-              'leadertab_access', 'dpotab_access', 'show_support_button',
+              'leadertab_access', 'dpotab_access', 'sbsystab_access', 'show_support_button',
               'support_contact_method', 'support_name', 'support_value',
               'dpo_contact_method', 'dpo_name', 'dpo_value',
               'outlook_categorize_email_permission', 'outlook_delete_email_permission',
@@ -99,6 +100,11 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
 
+        # Conditionally remove the sbsystab_access field based on the setting
+        if not settings.ENABLE_SBSYSSCAN:
+            form.fields.pop('sbsystab_access', None)
+
+        # Customize the outlook field
         outlook_field = form.fields['outlook_categorize_email_permission']
         outlook_field.widget = forms.RadioSelect()
         outlook_field.choices = Organization._meta.get_field(

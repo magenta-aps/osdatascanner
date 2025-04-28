@@ -1983,7 +1983,7 @@ msgstr "igen"
 
 #: adminapp/templates/components/user/user.html
 msgid "Show User"
-msgstr ""
+msgstr "Vis bruger"
 
 #: adminapp/templates/components/user/user_detail.html
 msgid "Edit user"

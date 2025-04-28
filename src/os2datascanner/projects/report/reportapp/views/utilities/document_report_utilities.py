@@ -2,7 +2,8 @@ import structlog
 
 from os2datascanner.projects.report.organizations.models import Account
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
-
+from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
+from django.utils.translation import gettext_lazy as _
 
 logger = structlog.get_logger("reportapp")
 
@@ -29,3 +30,34 @@ def handle_report(account: Account,
     document_report.save()
     logger.info(f"Successfully handled DocumentReport {account} with "
                 f"resolution_status {action}.")
+
+
+def get_deviations(report: DocumentReport) -> list[str]:
+    """
+    Return a de-duplicated list of human-readable rule labels:
+      - For SBSYSDBRule: "<field> contains '<value>'" (both 'contains' and 'icontains' become
+        'contains')
+      - Else if rule.name or rule._name: that name
+      - Otherwise rule.type_label
+    """
+    seen = set()
+    out: list[str] = []
+
+    for frag in report.matches.matches:
+        rule = frag.rule
+
+        if isinstance(rule, SBSYSDBRule):
+            # normalize both contains and icontains to the same label
+            op_label = _("contains")
+            label = f'{rule._field} {op_label}: "{rule._value}"'
+
+        else:
+            # use any user-friendly name if present
+            name = getattr(rule, "name", None) or getattr(rule, "_name", None)
+            label = name or rule.type_label
+
+        if label not in seen:
+            seen.add(label)
+            out.append(label)
+
+    return out

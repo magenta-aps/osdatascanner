@@ -31,6 +31,12 @@ class StatisticsPageConfigChoices(models.TextChoices):
     NONE = "N", "None"
 
 
+class SBSYSTabConfigChoices(models.TextChoices):
+    NONE = "N", _("Hidden for all")
+    WITH_PERMISSION = "P", _("Visible with permission")
+    ALL = "A", _("Visible for all")
+
+
 class SupportContactChoices(models.TextChoices):
     NONE = "NO", _("None")
     WEBSITE = "WS", _("Website")
@@ -141,6 +147,12 @@ class Organization(models.Model):
         default=StatisticsPageConfigChoices.DPOS,
         verbose_name=_("Dpotab access")
     )
+    sbsystab_access = models.CharField(
+        max_length=1,
+        choices=SBSYSTabConfigChoices.choices,
+        default=SBSYSTabConfigChoices.NONE,
+        verbose_name=_("SBSYS tab access")
+    )
 
     # Support button settings
     show_support_button = models.BooleanField(
@@ -238,10 +250,26 @@ class OrganizationSerializer(BaseSerializer):
                                            represent_in_base64=True)
 
     class Meta:
-        fields = ['pk', 'name', 'contact_email', 'contact_phone',
-                  'email_notification_schedule', 'leadertab_access', 'dpotab_access',
-                  'show_support_button', 'support_contact_method', 'support_name',
-                  'support_value', 'dpo_contact_method', 'dpo_name', 'dpo_value',
-                  'outlook_delete_email_permission', 'outlook_categorize_email_permission',
-                  'onedrive_delete_permission', 'email_header_banner', 'dtstart',
-                  'retention_policy', 'retention_days']
+        fields = [
+            'pk',
+            'name',
+            'contact_email',
+            'contact_phone',
+            'email_notification_schedule',
+            'leadertab_access',
+            'dpotab_access',
+            'sbsystab_access',
+            'show_support_button',
+            'support_contact_method',
+            'support_name',
+            'support_value',
+            'dpo_contact_method',
+            'dpo_name',
+            'dpo_value',
+            'outlook_delete_email_permission',
+            'outlook_categorize_email_permission',
+            'onedrive_delete_permission',
+            'email_header_banner',
+            'dtstart',
+            'retention_policy',
+            'retention_days']

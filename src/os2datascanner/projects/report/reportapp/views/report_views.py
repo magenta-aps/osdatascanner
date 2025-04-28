@@ -46,7 +46,7 @@ from os2datascanner.engine2.rules.passport import PassportRule
 from .utilities.ews_utilities import try_ews_delete
 from .utilities.google_utilities import try_gmail_delete, try_gdrive_delete
 from .utilities.smb_utilities import try_smb_delete_1
-from .utilities.document_report_utilities import handle_report
+from .utilities.document_report_utilities import handle_report, get_deviations
 from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account
@@ -84,11 +84,22 @@ class ReportView(LoginRequiredMixin, ListView):
     report_type: Account.ReportType = None
     archive: bool = False
 
+    filter_types: list[str] = []
+    exclude_types: list[str] = ["sbsys-db"]
+
     def get_queryset_base(self):
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            return acct.get_report(self.report_type, self.archive)
+            report = acct.get_report(self.report_type, self.archive)
+
+            if self.filter_types:
+                report = report.filter(source_type__in=self.filter_types)
+            if self.exclude_types:
+                report = report.exclude(source_type__in=self.exclude_types)
+
+            return report
+
         except Account.DoesNotExist:
             logger.warning(
                     "unexpected error in ReportView.get_queryset_base",
@@ -366,6 +377,54 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         return context
 
 
+class SBSYSMixin:
+    """
+    - Opt into source_type='sbsys-db' via filter_types/exclude_types on ReportView.
+    - Attaches these onto each report in the page:
+        - `deviations`
+        - `kle_number`
+    """
+
+    filter_types = ["sbsys-db"]
+    exclude_types = []
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for report in context["page_obj"].object_list:
+            report.deviations = get_deviations(report)
+
+            report.kle_number = report.matches.handle.source.handle.relative_path
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        account = request.user.account
+
+        # Access check:
+        # 1) Org must have SBSYS enabled
+        if not account.sbsystab_access:
+            return redirect(reverse_lazy("index"))
+
+        # 2) For RemediatorView it will then go through RemediatorView.dispatch,
+        # which checks .is_remediator or superuser.
+        return super().dispatch(request, *args, **kwargs)
+
+
+class SBSYSPersonalView(SBSYSMixin, ReportView):
+    """Presents the user with their personal unhandled SBSYS results."""
+
+    type = "sbsys"
+    template_name = "sbsys_content.html"
+    report_type = Account.ReportType.PERSONAL_AND_SHARED
+
+
+class SBSYSRemediatorView(SBSYSMixin, RemediatorView):
+    """Presents a remediator with relevant unhandled SBSYS results."""
+
+    type = "remediator"
+    template_name = "sbsys_remediator_content.html"
+    report_type = Account.ReportType.REMEDIATOR
+
+
 class ArchiveMixin:
     """This mixin is able to overwrite some logic on children of the ReportView-
     class, most notably changing the queryset to query for handled results
@@ -404,6 +463,14 @@ class RemediatorArchiveView(ArchiveMixin, RemediatorView):
 
 class UndistributedArchiveView(ArchiveMixin, UndistributedView):
     """Presents a superuser with all undistributed handled results."""
+
+
+class SBSYSPersonalArchiveView(ArchiveMixin, SBSYSPersonalView):
+    """Presents the user with their personal handled SBSYS results."""
+
+
+class SBSYSRemediatorArchiveView(ArchiveMixin, SBSYSRemediatorView):
+    """Presents the remediator with all relevant handled SBSYS results."""
 
 
 class HTMXEndpointView(LoginRequiredMixin, View):

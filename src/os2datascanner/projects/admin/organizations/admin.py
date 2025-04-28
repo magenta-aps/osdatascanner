@@ -40,7 +40,7 @@ class OrganizationAdmin(admin.ModelAdmin):
         (
             _("Tab access"),
             {
-                "fields": ('leadertab_access', 'dpotab_access')
+                "fields": ('leadertab_access', 'dpotab_access', 'sbsystab_access')
             },
         ),
         (

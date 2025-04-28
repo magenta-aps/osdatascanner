@@ -47,7 +47,7 @@ class SBSYSDBSource(Source):
         return SBSYSDBSource(
                 self._server, self._port, self._db, None, None,
                 reflect_tables=self._reflect_tables,
-                base_weblink=self.base_weblink)
+                base_weblink=self._base_weblink)
 
     def _generate_state(self, sm: SourceManager):
         engine = create_engine(

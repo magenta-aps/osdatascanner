@@ -15,8 +15,11 @@ from .views.statistics_views import (
     LeaderStatisticsPageView, LeaderStatisticsCSVView, DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, EmployeeView)
 from .views.report_views import (
-    UserReportView, UserArchiveView, RemediatorView, RemediatorArchiveView,
-    UndistributedView, UndistributedArchiveView)
+    UserReportView, UserArchiveView,
+    RemediatorView, RemediatorArchiveView,
+    UndistributedView, UndistributedArchiveView,
+    SBSYSPersonalView, SBSYSPersonalArchiveView,
+    SBSYSRemediatorView, SBSYSRemediatorArchiveView)
 from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
 from .views.manual_views import ManualMainView
@@ -30,7 +33,13 @@ urlpatterns = [
     re_path(r'^archive/reports', UserArchiveView.as_view(), name="reports-archive"),
     re_path(r'^archive/remediator', RemediatorArchiveView.as_view(), name="remediator-archive"),
     re_path(r'^archive/undistributed', UndistributedArchiveView.as_view(),
-            name="undistributed-archive"),
+         name="undistributed-archive"),  # noqa
+    re_path(r'^sbsys/personal', SBSYSPersonalView.as_view(), name="sbsys-personal"),
+    re_path(r'^sbsys/remediator', SBSYSRemediatorView.as_view(), name="sbsys-remediator"),
+    re_path(r'^sbsys/archive/personal', SBSYSPersonalArchiveView.as_view(),
+         name="sbsys-archive-personal"),   # noqa
+    re_path(r'^sbsys/archive/remediator', SBSYSRemediatorArchiveView.as_view(),
+         name="sbsys-archive-remediator"),   # noqa
     re_path('api$',     JSONAPIView.as_view(),     name="json-api"),
     path('account/<uuid:pk>', AccountView.as_view(), name="account"),
     path('account/', AccountView.as_view(), name="account-me"),
