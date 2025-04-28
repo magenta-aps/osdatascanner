@@ -181,7 +181,11 @@
       <td class="column column--matchcount column--numeral">
         <div class="matches_container">
           <div class="matches">
-            <span class="datatable-numeral">{{ frag.matches|length }}</span>
+            <span class="datatable-numeral">
+              {% with document_report.number_of_matches as matches %}
+                {{ matches }}{% if matches >= settings.ENGINE_OBJ_LIMIT %}+{% endif %}
+              {% endwith %}
+            </span>
           </div>
         </div>
       </td>
