@@ -118,6 +118,9 @@
             </button>
 
           {% else %}
+            {% comment %}
+              SBSYS results can "handled" or "not handled", so there's no need for a dropdown in this case.
+            {% endcomment %}
             <button class="matches-handle button button--icon-text-button"
                     type="button"
                     title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}"
