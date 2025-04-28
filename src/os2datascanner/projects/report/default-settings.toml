@@ -28,6 +28,9 @@ DPO_CSV_EXPORT = false
 LEADER_CSV_EXPORT = false
 ALLOW_SHOW_ERRORS = false
 
+# Should be equal to engine's configuration and determines max number of matches pr. obj scanned.
+ENGINE_OBJ_LIMIT = 10
+
 # [msgraph]
 MSGRAPH_ALLOW_WRITE = false
 MSGRAPH_APP_ID = ""
@@ -154,7 +157,8 @@ SETTINGS_EXPORT = [
     'MSGRAPH_CLIENT_SECRET',
     'MSGRAPH_ALLOW_WRITE',
     'SMB_ALLOW_WRITE',
-    'EWS_ALLOW_WRITE'
+    'EWS_ALLOW_WRITE',
+    'ENGINE_OBJ_LIMIT'
 ]
 
 # [internationalization]

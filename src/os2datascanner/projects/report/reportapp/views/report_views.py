@@ -107,7 +107,8 @@ class ReportView(LoginRequiredMixin, ListView):
             "last_opened_time",
             "raw_matches",
             "datasource_last_modified",
-            "raw_problem"
+            "raw_problem",
+            "number_of_matches"
         )
 
     def get_context_data(self, **kwargs):

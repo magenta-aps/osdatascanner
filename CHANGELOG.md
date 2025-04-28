@@ -52,6 +52,8 @@
   `/admin/os2datascanner_report/documentreport/import/`, which can be used to
   load test data into the system.
 
+- Reports now present a "+" indication if 10 matches are found, as there may be more.
+
 ### Bugfixes
 
 - Correctly show scanner types in breadcrumbs in the admin module.
