@@ -513,8 +513,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-
-        if self.org_unit:
+        if self.request.GET.get("view_all", False):
+            self.descendant_units = self.user_units.get_descendants(include_self=True)
+            positions = Position.employees.filter(unit__in=self.descendant_units)
+            qs = qs.filter(positions__in=positions).distinct()
+        elif self.org_unit:
             self.descendant_units = self.org_unit.get_descendants(include_self=True)
             positions = Position.employees.filter(unit__in=self.descendant_units)
             qs = qs.filter(positions__in=positions).distinct()

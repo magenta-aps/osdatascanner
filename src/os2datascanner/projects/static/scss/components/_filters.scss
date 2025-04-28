@@ -57,10 +57,8 @@
         border-radius: var(--border-radius-small);
         padding: 0.625rem;
         margin-right: 0;
-
         line-height: 1;
         font-size: 1em;
-
         cursor: pointer;
 
         &.toggled__true,
@@ -111,6 +109,37 @@
   width: 20rem;
   margin-top: 2rem;
   font-size: 0.9rem;
+
+  .help-tooltip {
+    $icon-size: 1.25rem; // Local var setting a fixed size for this element.
+
+    vertical-align: middle;
+    width: $icon-size;
+    height: $icon-size;
+    bottom: 0.1rem;
+
+    .material-symbols#help,
+    .material-symbols-outlined#help {
+      color: var(--color-primary-dark);
+      opacity: 50%;
+      font-size: $icon-size;
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 20;
+    }
+  }
+
+  .ds-checkbox {
+    bottom: 1rem;
+    font-weight: bold;
+
+    input[type="checkbox"] {
+      opacity: 100;
+      position: relative;
+    }
+  }
 }
 
 .org_filtering_wrapper {

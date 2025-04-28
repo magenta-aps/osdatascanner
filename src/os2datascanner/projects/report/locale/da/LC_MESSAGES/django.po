@@ -1376,6 +1376,17 @@ msgid "Search for employee"
 msgstr "Søg efter medarbejder"
 
 #: reportapp/templates/leader_statistics_template.html
+msgid "show all employees"
+msgstr "vis alle medarbejdere"
+
+#: reportapp/templates/leader_statistics_template.html
+msgid ""
+"Display all users for whom you hold a leader position, ignoring unit "
+"selection."
+msgstr ""
+"Vis alle brugere, for hvem du har en ledertilnytning, og ignorér enhedsvalg."
+
+#: reportapp/templates/leader_statistics_template.html
 msgid "Employee"
 msgstr "Medarbejder"
 
