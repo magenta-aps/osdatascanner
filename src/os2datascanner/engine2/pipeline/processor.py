@@ -60,6 +60,7 @@ def message_received_raw(body, channel, source_manager, *, _check=True):  # noqa
             max_tries=settings.pipeline["op_tries"])
 
     try:
+        print(conversion.handle.__dict__)
         if _check and not tr.run(check, source_manager, conversion.handle):
             # The resource is missing (and we're in a context where we care).
             # Generate a special problem message and stop the generator

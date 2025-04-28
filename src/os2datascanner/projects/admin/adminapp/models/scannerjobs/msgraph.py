@@ -26,6 +26,7 @@ from os2datascanner.engine2.model.msgraph.calendar import (MSGraphCalendarSource
                                                            MSGraphCalendarAccountSource,
                                                            MSGraphCalendarAccountHandle)
 from os2datascanner.engine2.model.msgraph.teams import MSGraphTeamsFilesSource
+from os2datascanner.engine2.model.msgraph.lists import MSGraphListsSource
 
 from os2datascanner.projects.grants.models import GraphGrant
 from ....organizations.models.aliases import AliasType

@@ -241,6 +241,7 @@ class Handle(TypePropertyEquality, JSONSerialisable):
         def _stock_json_handler(cls):
             @Handle.json_handler(type_label)
             def _invoke_constructor(obj):
+                print(obj)
                 return cls(
                         msource.Source.from_json_object(obj["source"]),
                         obj["path"],
