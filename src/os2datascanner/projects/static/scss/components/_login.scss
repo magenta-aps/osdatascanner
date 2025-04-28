@@ -2,16 +2,19 @@ $bg: transparent linear-gradient(180deg, #5ca4cd 0%, #21759c 100%) 0% 0%
   no-repeat padding-box;
 
 .login-bg {
+  display: flex;
+  justify-content: center;
   width: 100%;
   height: auto;
   min-height: 100%;
+  padding: 2rem;
+
   @media (min-width: $break-xs) {
     background: $bg;
   }
 }
 
 .login-card {
-  margin: 7rem 0;
   hyphens: auto;
   padding: 4rem 3rem 6rem;
   align-self: center;
@@ -39,35 +42,27 @@ $bg: transparent linear-gradient(180deg, #5ca4cd 0%, #21759c 100%) 0% 0%
     line-height: 1.2;
   }
 
-  .login-btn {
+  .button.button--login-button {
     width: 100%;
-    margin-top: 2rem;
-    background-color: var(--color-primary);
-    color: var(--color-text-white);
-    font-size: 1.2rem;
-    line-height: 1;
-    border-radius: 0.25rem;
-    padding: 1.4rem;
-    border: none;
-    text-decoration: none;
-    cursor: pointer;
-    transition: var(--transition-default);
-  }
-
-  .login-btn:hover {
-    background-color: var(--color-primary-dark);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s ease-in-out;
+    padding: 1.4rem !important;
+    text-align: center;
   }
 
   .info {
-    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.75em;
     height: auto;
+  }
+
+  #sso-or {
+    text-align: center;
+    font-size: 16px;
   }
 
   .link {
     color: var(--color-primary-dark);
   }
+
   .link:hover {
     color: var(--color-text-main);
   }
