@@ -27,6 +27,7 @@ ARCHIVE_TAB = true
 DPO_CSV_EXPORT = false
 LEADER_CSV_EXPORT = false
 ALLOW_SHOW_ERRORS = false
+HYBRID_LOGIN = false
 
 # Should be equal to engine's configuration and determines max number of matches pr. obj scanned.
 ENGINE_OBJ_LIMIT = 10
@@ -158,7 +159,8 @@ SETTINGS_EXPORT = [
     'MSGRAPH_ALLOW_WRITE',
     'SMB_ALLOW_WRITE',
     'EWS_ALLOW_WRITE',
-    'ENGINE_OBJ_LIMIT'
+    'ENGINE_OBJ_LIMIT',
+    'HYBRID_LOGIN'
 ]
 
 # [internationalization]

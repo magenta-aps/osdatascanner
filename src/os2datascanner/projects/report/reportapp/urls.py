@@ -67,36 +67,16 @@ urlpatterns = [
     path('htmx_endpoints/', include('os2datascanner.projects.report.reportapp.htmx_endpoints_urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.SAML2_ENABLED:
-    urlpatterns.append(re_path(r"^saml2_auth/metadata.xml$", metadata, name="saml_metadata"))
-    urlpatterns.append(re_path(r"^saml2_auth/", include("django_saml2_auth.urls")))
-    urlpatterns.append(re_path(r"^accounts/login/$", django_saml2_auth.views.signin, name="login"))
-    urlpatterns.append(
-        re_path(
-            r'^accounts/logout/$',
-            django_saml2_auth.views.signout,
-            name="logout"))
 
-if settings.KEYCLOAK_ENABLED:
-    settings.LOGIN_URL = "oidc_authentication_init"
-    urlpatterns.append(path('oidc/', include('mozilla_django_oidc.urls'))),
-    urlpatterns.append(re_path(r'^accounts/logout/',
-                               auth_views.LogoutView.as_view(
-                                   template_name='components/user/logout.html',
-                                   extra_context={'body_class': 'login-bg'}
-                                   ),
-                               name='logout'))
-else:
+def setup_username_password_login_urls(**extra_context):
     urlpatterns.append(re_path(r'^accounts/login/',
                                auth_views.LoginView.as_view(
                                    template_name='components/user/login.html',
-                                   extra_context={'body_class': 'login-bg'}
-                                   ),
+                                   extra_context=extra_context),
                                name='login'))
     urlpatterns.append(re_path(r'^accounts/logout/',
                                auth_views.LogoutView.as_view(
-                                   template_name='components/user/logout.html',
-                                   extra_context={'body_class': 'login-bg'}
+                                   template_name='components/user/logout.html'
                                    ),
                                name='logout'))
     urlpatterns.append(re_path(r'^accounts/password_change/',
@@ -130,3 +110,42 @@ else:
                                    template_name='components/password/password_reset_complete.html',
                                    ),
                                name='password_reset_complete'))
+
+
+def setup_saml2_login_urls():
+    urlpatterns.append(re_path(r"^saml2_auth/metadata.xml$", metadata, name="saml_metadata"))
+    urlpatterns.append(re_path(r"^saml2_auth/", include("django_saml2_auth.urls")))
+    urlpatterns.append(re_path(r"^accounts/sso_login/$", django_saml2_auth.views.signin,
+                               name="login"))
+    urlpatterns.append(
+        re_path(
+            r'^accounts/sso_logout/$',
+            django_saml2_auth.views.signout,
+            name="logout"))
+
+
+def setup_keycloak_login_urls():
+    urlpatterns.append(path('oidc/', include('mozilla_django_oidc.urls'))),
+    urlpatterns.append(re_path(r'^accounts/sso_logout/',
+                               auth_views.LogoutView.as_view(
+                                    template_name='components/user/logout.html'
+                               ),
+                               name='logout'))
+
+
+if settings.HYBRID_LOGIN:
+    setup_username_password_login_urls(keycloak_sso_enabled=settings.KEYCLOAK_ENABLED)
+    settings.LOGIN_URL = "login"
+
+    if settings.KEYCLOAK_ENABLED:
+        setup_keycloak_login_urls()
+
+else:
+    if settings.SAML2_ENABLED:
+        setup_saml2_login_urls()
+
+    if settings.KEYCLOAK_ENABLED:
+        settings.LOGIN_URL = "oidc_authentication_init"
+        setup_keycloak_login_urls()
+    else:
+        setup_username_password_login_urls()

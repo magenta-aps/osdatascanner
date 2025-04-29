@@ -27,12 +27,15 @@
         <input type="password"
                name="{{ form.password.name }}"
                id="id_{{ form.password.name }}">
-        <label>
-          {% if form.password.errors %}{{ form.password.errors }}{% endif %}
-        </label>
+        {% if form.password.errors %}<label>{{ form.password.errors }}</label>{% endif %}
       </div>
 
       {% for error in form.non_field_errors %}<div class="form__error">{{ error }}</div>{% endfor %}
+
+      <p class="info">
+        {% trans "Did you forget your password?" %}
+        <a class="link" href="{% url 'password_reset' %}">{% trans "Click here" %}</a>
+      </p>
 
       <div class="form__group">
         <div class="ds-checkbox">
@@ -42,14 +45,15 @@
       </div>
 
       <div class="form__group">
-        <button type="submit" class="login-btn">{% trans "Login" %}</button>
-      </div>
-
-      <div class="form__group">
-        <label class="info">
-          {% trans "Did you forget your password?" %}
-          <a class="link" href="{% url 'password_reset' %}">{% trans "Click here" %}</a>
-        </label>
+        <button type="submit" class="button button--cta-button button--login-button">{% trans "Login" %}</button>
+        {% if keycloak_sso_enabled %}
+          <p id="sso-or">{% trans "or" %}</p>
+          {% comment %} TODO: Change this to a tertiary button when style is implemented. {% endcomment %}
+          <a class="button button--login-button"
+             title="{% trans "Log in through your organization's identity provider" %}"
+             aria-label="{% trans "Log in through your organization's identity provider" %}"
+             href="{% url "oidc_authentication_init" %}">{% trans "Use Single Sign-On (SSO)" %}</a>
+        {% endif %}
       </div>
 
       <div class="form__group logo">{% include "components/common/logo-o.html" %}</div>

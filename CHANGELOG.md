@@ -22,6 +22,9 @@
 
 - There's now an SBSYS-tab on Report. It's only visible for users with the right "sbsystab_access" setting/permission.
 
+- It is now possible to configure OSdatascanner to allow both SSO login and login with username and
+  password in the report module.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.

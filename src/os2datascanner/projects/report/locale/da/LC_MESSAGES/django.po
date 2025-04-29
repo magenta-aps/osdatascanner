@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-25 17:03+0200\n"
+"POT-Creation-Date: 2025-04-28 07:43+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1127,6 +1127,14 @@ msgid "Password"
 msgstr "Adgangskode"
 
 #: reportapp/templates/components/user/login.html
+msgid "Did you forget your password?"
+msgstr "Har du glemt din adgangskode?"
+
+#: reportapp/templates/components/user/login.html
+msgid "Click here"
+msgstr "Klik her"
+
+#: reportapp/templates/components/user/login.html
 msgid "Remember me"
 msgstr "Husk mig"
 
@@ -1135,12 +1143,16 @@ msgid "Login"
 msgstr "Log ind"
 
 #: reportapp/templates/components/user/login.html
-msgid "Did you forget your password?"
-msgstr "Har du glemt din adgangskode?"
+msgid "or"
+msgstr "eller"
 
 #: reportapp/templates/components/user/login.html
-msgid "Click here"
-msgstr "Klik her"
+msgid "Log in through your organization's identity provider"
+msgstr "Log ind gennem din organisations identity provider"
+
+#: reportapp/templates/components/user/login.html
+msgid "Use Single Sign-On (SSO)"
+msgstr "Brug Single Sign-On (SSO)"
 
 #: reportapp/templates/components/user/logout.html
 msgid "Thank you for using OSdatascanner."
