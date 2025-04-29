@@ -1,6 +1,11 @@
 .manual {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row-reverse;
+
   .table-of-content {
     display: none;
+    position: sticky;
     background-color: var(--color-widget-bg);
     color: var(--color-text);
     border-radius: var(--border-radius-widget);
@@ -12,13 +17,8 @@
 
     @media (min-width: $break-sm) {
       display: block;
-      position: fixed;
       top: 7rem;
       right: -1rem;
-    }
-
-    @media (min-width: $break-lg) {
-      right: 5%;
     }
 
     ul {
@@ -57,15 +57,14 @@
   }
 
   .content {
-    max-width: 100%;
     margin: 1rem;
+    padding: var(--padding-content) 0rem;
 
     @media (min-width: $break-sm) {
       max-width: 55%;
     }
 
     @media (min-width: $break-lg) {
-      left: 8rem;
       max-width: 60%;
     }
 

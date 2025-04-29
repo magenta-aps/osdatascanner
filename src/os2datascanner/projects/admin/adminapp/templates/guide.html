@@ -1,867 +1,1479 @@
 {% extends 'components/common/base.html' %}
+{% load static %}
 
 {% block body %}
   {% include "components/common/header.html" %}
   <main class="wrapper">
     {% include "components/common/main.html" with active_tab="guide" %}
-    <div class="content">
-      <div class="content-body">
-        <div class="prose">
-          <nav class="toc">
-            <h1>Håndbog for projektledere</h1>
-            <h2>OBS: Navnet OS2 vil stadig forekomme i systemets indhold, da det udfases løbende.</h2>
-            <h2>Indhold</h2>
-            <h3>
-              <a href="#Indledning">Indledning</a>
-            </h3>
-            <h3>
-              <a href="#OS2datascanner-helt-kort">OS2datascanner - helt kort</a>
-            </h3>
-            <h3>
-              <a href="#Implementering-og-forankring">Første del: Implementering og forankring</a>
-            </h3>
-            <h4>
-              <a href="#De-fire-faser">De fire faser</a>
-            </h4>
-            <h5>
-              <a href="#Foerste-fase">Første fase: Opstart - møde og opsætning</a>
-            </h5>
-            <h5>
-              <a href="#Anden-fase">Anden fase: Forberedelse - testscans og oplæring</a>
-            </h5>
-            <h5>
-              <a href="#Tredje-fase">Udrulning: Hovedrengøringer og overdragelse</a>
-            </h5>
-            <h5>
-              <a href="#Fjerde-fase">Fjerde fase: Forankring - løbende scans og nye vaner</a>
-            </h5>
-            <h4>
-              <a href="#Roller">Roller</a>
-            </h4>
-            <h5>
-              <a href="#Organisatorisk-projektleder">Organisatorisk projektleder</a>
-            </h5>
-            <h5>
-              <a href="#Teknisk-projektleder">Teknisk projektleder</a>
-            </h5>
-            <h5>
-              <a href="#Implementeringskonsulent">Implementeringskonsulent</a>
-            </h5>
-            <h5>
-              <a href="#Slutbruger-1">Slutbruger</a>
-            </h5>
-            <h5>
-              <a href="#Superbrugere">Superbrugere</a>
-            </h5>
-            <h5>
-              <a href="#Administrator">Administrator</a>
-            </h5>
-            <h5>
-              <a href="#Superadministrator">Superadministrator</a>
-            </h5>
-            <h4>
-              <a href="#Magentas-roller">Magentas roller</a>
-            </h4>
-            <h3>
-              <a href="#De-to-moduler">Anden del: De to moduler i OS2datascanner</a>
-            </h3>
-            <h4>
-              <a href="#Administrationsmodulet">Administrationsmodulet</a>
-            </h4>
-            <h5>
-              <a href="#Scannerjob-1">Scannerjob-fanen</a>
-            </h5>
-            <h6>
-              <a href="#Opret-scannerjob">Sådan opretter du et scannerjob</a>
-            </h6>
-            <h6>
-              <a href="#Filformater">Understøttede filformater</a>
-            </h6>
-            <h6>
-              <a href="#De-forskellige-scannere">Sådan bruger du de forskellige scannere</a>
-            </h6>
-            <h6>
-              <a href="#Webscanner">Webscanner</a>
-            </h6>
-            <h6>
-              <a href="#Filscanner">Filscanner</a>
-            </h6>
-            <h6>
-              <a href="#Exchange-scanner">Exchange-scanner</a>
-            </h6>
-            <h6>
-              <a href="#Office365-scanner">Office 365 mailscanner og Office 365 OneDrive filscanner</a>
-            </h6>
-            <h6>
-              <a href="#Validering-koersel">Validering og kørsel af scannerjobs</a>
-            </h6>
-            <h5>
-              <a href="#Status">Status-fanen</a>
-            </h5>
-            <h5>
-              <a href="#Regler-1">Regler-fanen</a>
-            </h5>
-            <h6>
-              <a href="#Regeltyper">Regeltyper</a>
-            </h6>
-            <h6>
-              <a href="#Systemregler-1">Systemregler</a>
-            </h6>
-            <h6>
-              <a href="#Brugerregler-1">Brugerregler</a>
-            </h6>
-            <h6>
-              <a href="#Foelsomhed-1">Følsomhed</a>
-            </h6>
-            <h6>
-              <a href="#Opret-regel">Opret regel</a>
-            </h6>
-            <h6>
-              <a href="#Soegekriterier">Søgekriterier</a>
-            </h6>
-            <h4>
-              <a href="#Rapportmodulet">Rapportmodulet</a>
-            </h4>
-            <h3>
-              <a href="#Ordliste">Tredje del: Ordliste</a>
-            </h3>
-            <h3>
-              <a href="#Teknisk-dokumentation">Fjerde del: Teknisk dokumentation</a>
-            </h3>
-            <h4>
-              <a href="#Server-opsaetning">Serveropsætning</a>
-            </h4>
-            <h4>
-              <a href="#Firewall-adgang">Sikker firewall-adgang</a>
-            </h4>
-            <h4>
-              <a href="#Tjekliste">Tjekliste til implementering af SSO med SAML</a>
-            </h4>
-            <h5>
-              <a href="#Konfigurationer-matches">Konfigurationer til åbning af matches</a>
-            </h5>
-            <h5>
-              <a href="#Aabne-i-stifinder">Åbning af filer i stifinder</a>
-            </h5>
-            <h5>
-              <a href="#Aabne-i-Outlook">Åbning af matchede mails i Outlook</a>
-            </h5>
-            <h4>
-              <a href="#Arkitekturtegninger">Arkitekturtegninger</a>
-            </h4>
-            <h3>
-              <a href="#Downloads">Downloads</a>
-            </h3>
-          </nav>
-
-
-
-
-          <h2 id="Indledning">Indledning</h2>
+    <div class="manual">
+      <aside class="table-of-content">
+        <a href="#intro">
+          <h3>1. Indledning</h3>
+        </a>
+        <a href="#about">
+          <h3>2. Om OSdatascanner</h3>
+        </a>
+        <ul>
+          <a href="#modules">
+            <li>OSdatascanners Moduler</li>
+          </a>
+          <a href="#roles">
+            <li>Brugertyper i OSdatascanner</li>
+          </a>
+          <a href="#configs">
+            <li>Konfigurerbare funktioner i OSdatascanner</li>
+          </a>
+        </ul>
+        <a href="#import">
+          <h3>3. Import af Organisatorisk Struktur</h3>
+        </a>
+        <ul>
+          <a href="#msgraph">
+            <li>Importering via MSGraph</li>
+          </a>
+          <a href="#ldap">
+            <li>Importering via LDAP</li>
+          </a>
+          <a href="#use-of-import">
+            <li>Benyttelse af Importeret Struktur</li>
+          </a>
+          <a href="#sync">
+            <li>Synkronisering af Struktur Mellem Moduler</li>
+          </a>
+        </ul>
+        <a href="#admin">
+          <h3>4. Administrationsmodulet</h3>
+        </a>
+        <ul>
+          <a href="#scannerjobs">
+            <li>Scannerjobs</li>
+          </a>
+          <a href="#rules">
+            <li>Regler</li>
+          </a>
+        </ul>
+        <a href="#report">
+          <h3>5. Rapportmodulet</h3>
+        </a>
+        <a href="#appendix">
+          <h3>6. Bilag</h3>
+        </a>
+      </aside>
+      <div class="content">
+        <div class="content-body">
+ 
+          <h1 id="intro">1. Indledning</h1>
           <p>
-            Denne håndbog er til dig, der er organisatorisk eller teknisk projektleder for implementeringen af OS2datascanner. Scanneren er et værktøj, der hjælper jeres organisation med at gennemsøge drev, emails og hjemmesider for at finde frem til dokumenter, hvor der ligger personoplysninger - alt lige fra de almindelige personoplysninger som navn, adresse og CPR-nummer til følsomme personoplysninger som eksempelvis helbred. Det kan være data, der er blevet samlet gennem mange år, og som I derfor måske ikke har det fulde overblik over. Scanneren er derfor et vigtigt redskab til at hjælpe jer med at overholde gældende lovgivning om behandling af personoplysninger.
+            Implementeringshåndbogen er et dynamisk dokument, der kontinuerligt opdateres af
+            Magenta på baggrund af feedback fra brugere og kunder samt løbende indsigt.
           </p>
 
           <p>
-            Mange bruger scanneren til først at lave en <b>“hovedrengøring”</b> og efterfølgende at lave <b>løbende scans</b> eksempelvis hver anden uge. Ved hovedrengøringen bliver alt scannet, så man efterfølgende kan rydde op i oplysningerne, og ved de løbende scans tjekker scanneren, om der er fundet nye oplysninger i systemet. I kan derfor også bruge scanneren til at få <b>indarbejdet gode vaner omkring behandling af personoplysninger. </b>
+            Formålet med implementeringshåndbogen er at guide brugere af OSdatascanner
+            igennem opstartsprocessen af systemet. Det er kunden, der har det overordnede
+            ansvar for den organisatoriske implementering af OSdatascanner, mens Magenta
+            påtager sig det tekniske ansvar.
           </p>
 
           <p>
-            Det betyder også, at <b>implementering og forankring i hele organisationen er helt afgørende for, at arbejdet med OS2datascanner bliver en succes - herunder, at opgaven med at rydde op i og holde styr på personoplysninger er solidt forankret på alle ledelsesniveauer.</b> Derfor kommer denne håndbog ikke blot ind på, hvordan I rent teknisk bruger scanneren, men lige så meget hvordan I kan arbejde med OS2datascanner på et organisatorisk plan.
+            <b>Implementeringshåndbogen er opdelt i seks dele:</b>
+          </p>
+          <ol>
+            <li>Første del er en kort indledning til Bruger og Administrator håndbogen.</li>
+            <li>
+              Anden del afdækker OSdatascanner og dets funktioner. Denne sektion
+              præsenterer løsningen i bred kontekst og introducerer systemets
+              fundamentale logik gennem forklaringer og skærmbilleder.
+            </li>
+            <li>
+              Tredje del afdækker import af en organisatorisk struktur. I denne del
+              gennemgås import via MSGraph og LDAP, samt hvordan den organisatoriske
+              struktur udnyttes i systemet.
+            </li>
+            <li>
+              Fjerde del er en gennemgang af administrationsmodulet og dets dele.
+              Afsnittet omhandler scannerjobs og oprettelsen af dem samt regler og deres
+              anvendelse.
+            </li>
+            <li>
+              Femte del omhandler rapportmodulet. Afsnittet indeholder en gennemgang af
+              brugerfladen, hvordan en bruger logger ind, fremgangsmåder til håndtering af
+              matches, og en gennemgang af de forskellige overblik modulet inkluderer
+              mm.
+            </li>
+            <li>
+              Sjette del indeholder bilag samt en guide til den tekniske implementering af
+              OSdatascanner.
+            </li>
+          </ol>
+
+          <h1 id="about">2. Om OSdatascanner</h1>
+          <p>
+            OSdatascanner er et scanningsværktøj designet til at sikre GDPR compliance på
+            tværs af IT-systemer.
+          </p>
+ 
+          <p>
+            OSdatascanner understøtter scanning af forskellige datakilder, som kan ses via
+            linket <a href="#sources">her</a>.
           </p>
 
           <p>
-            Scanneren er inddelt i to moduler: Et <b>administrationsmodul og et rapportmodul.</b> I førstnævnte opretter og godkender I scans, og som regel er det nogle få centralt placerede medarbejdere med særligt indblik i administrationsmodulet, der tager sig af denne del af arbejdet. For at få det fulde udbytte af scanneren kan det dog være en god idé, at en medarbejder, på eksempelvis socialområdet, arbejder sammen med en administrator om at identificere de rette søgekriterier. Denne del af processen bliver beskrevet i afsnittet om administrationsmodulet.
+            Konfigurationen af netværket definerer, hvad OSdatascanner skal scanne, og hvilke
+            forudsætninger der er nødvendige for, at systemet kan starte en scanning. Ønskes
+            der eksempelvis scanninger af netværksdrev, skal OSdatascanner installeres på en
+            server bag brugerens firewall. Omvendt kræver scanning af en hjemmeside ikke en
+            lokal installation.
+          </p>
+ 
+
+          <h2 id="modules">OSdatascanners Moduler</h2>
+          <p>
+            OSdatascanner er inddelt i to brugervendte moduler - et administrationsmodul og et
+            rapportmodul.
           </p>
 
           <p>
-            I rapportmodulet kan medarbejderne se listen over de fundne dokumenter, åbne dem direkte i ens mailprogram eller stifinder og så håndtere dem ved eksempelvis at slette eller arkivere dem på en bestemt måde. Arbejdet med at håndtere dokumenter ligger som regel ude i de enkelte afdelinger, hvor hver medarbejder eksempelvis håndterer sine egne mails. Til disse medarbejdere, <a href="#Slutbruger-1">slutbrugerne</a>, har vi lavet en <a href="../static/svg/OS2DS-Brugerhaandbog.pdf" download>brugerhåndbog</a>, der på nogle få sider forklarer, hvordan man rent teknisk bruger rapportmodulet. Til afdelingschefer og andre med personaleansvar har vi desuden lavet et <a href="../static/svg/OS2DS-Handout.pdf" download>handout</a>, der fortæller om fordelen ved at bruge datascanneren i afdelingen.
+            I <b>Administrationsmodulet</b> kan en bruger med administratorrettigheder
+            konfigurere systemet, herunder oprette og redigere scan. Dette modul er kun
+            tilgængeligt for administratorer.
+          </p>
+ 
+          <p>
+            <b>Rapportmodulet</b> giver brugerne en oversigt over de matches, der er identificeret
+            under et scan, som er tildelt dem. Modulet er tilgængeligt for alle i organisationen,
+            men præsenterer kun resultater, der er specifikke for den individuelle bruger.
           </p>
 
-          <p>
-            Opdelingen i to moduler er - sammen med reglen om, at én person <i>opretter</i> og en anden person <i>godkender</i> et scan - med til at sikre, at der ikke er én person, der både opretter og godkender et scan og bagefter kan se resultatet af scannerjobbet. Desuden gemmer OS2datascanner heller aldrig data på serveren, men kun i den midlertidige hukommelse. På den måde er sikkerhed tænkt ind som et helt grundlæggende element i OS2datascanner.
-          </p>
-
-          <p>
-            Har du brug for en hurtig genopfriskning af et bestemt begreb, kan du <a href="#Ordliste">slå det op i ordlisten</a>.
-          </p>
-
-          <h2 id="OS2datascanner-helt-kort">OS2datascanner - helt kort</h2>
-          <img src="../static/svg/os2ds-workflow-grafik.svg"
-               alt="OS2datascanners overordnede workflow" />
-
-          <h2 id="Implementering-og-forankring">Første del: Implementering og forankring</h2>
-          <h4>Sådan bliver OS2datascanner en integreret del af jeres GDPR-arbejde</h4>
-          <p>
-            Som nævnt er den organisatoriske implementering og forankring en afgørende forudsætning for, at I får det fulde udbytte af OS2datascanner. For eksempel kan I gøre jeres scanninger mere præcise ved at inddrage medarbejdere fra de enkelte afdelinger i udformningen af søgekriterierne, og senere kan en god proces for de løbende scans være med til at få skabt gode vaner for håndteringen af personoplysninger.
-          </p>
-          <p>
-            Hvordan I i sidste ende vælger at implementere og bruge scanneren, er selvfølgelig helt op til jer, men i dette kapitel vil vi komme med råd og vejledning til, hvordan I kan gøre - baseret på alle de erfaringer, vi allerede har gjort os med OS2datascanner i flere organisationer.
-          </p>
-          <h3 id="De-fire-faser">De fire faser</h3>
-          <p>
-            Vi lægger op til, at implementeringen har fire faser, der samlet strækker sig over omtrent syv uger.  I korte træk ser forløbet således ud:
-          </p>
-
+          <h2 id="roles">Brugertyper i OSdatascanner</h2>
           <div class="table-wrapper">
             <table class="table">
-              <thead>
-                <tr>
-                  <th>Fase</th>
-                  <th>Tidspunkt</th>
-                  <th>Jeres opgaver</th>
-                  <th>Magentas opgaver</th>
-                </tr>
-              </thead>
               <tbody>
                 <tr>
                   <td>
-                    <p>1: Opstart - møde og opsætning</p>
+                    <p>
+                      <b>Superbruger</b>
+                    </p>
                   </td>
                   <td>
-                    <p>Dag 0</p>
-                  </td>
-                  <td>
-                    <ul>
-                      <li>Før mødet: Nedsæt et team af medarbejdere</li>
-                      <li>Før mødet: Forbered spørgsmål</li>
-                      <li>Efter mødet: Kommunikér om OS2datascanner i jeres organisation</li>
-                      <li>Efter mødet: Giv Magenta adgang til jeres systemer</li>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul>
-                      <li>Før mødet: Indkald til mødet</li>
-                      <li>På mødet: Præsentér OS2datascanner</li>
-                      <li>Efter mødet: Opsæt systemet</li>
-                    </ul>
+                    <p>Har adgang til administrations- og rapportmodulet og kan godkende scannerjobs.</p>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <p>2: Forberedelse - testscans og oplæring</p>
+                    <p>
+                      <b>Administrator</b>
+                    </p>
                   </td>
                   <td>
-                    <p>Uge 1-2</p>
-                  </td>
-                  <td>
-                    <ul>
-                      <li>Teste systemet en uges tid ved scan af eksempelvis netværksdrev</li>
-                      <li>Oplære superbrugere</li>
-                      <li>Møde med Magenta: Evaluering af testscans</li>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul>
-                      <li>Overvåge testscans</li>
-                      <li>Løbende support</li>
-                      <li>Indkald til og afhold evaluering af testscans</li>
-                    </ul>
+                    <p>Har adgang til administrationsmodulet, men kan ikke godkende scannerjobs.</p>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <p>3: Udrulning - hovedrengøringer og overdragelse</p>
+                    <p>
+                      <b>Leder</b>
+                    </p>
                   </td>
                   <td>
-                    <p>Uge 3-6</p>
-                  </td>
-                  <td>
-                    <ul>
-                      <li>Introducere og implementere OS2datascanner i organisationen i flere faser</li>
-                      <li>Løbende kommunikation til jeres organisation: Hvorfor og hvordan bruger vi OS2datascanner??</li>
-                      <li>Support til slutbrugerne, evt. gennem jeres superbrugere</li>
-                      <li>Efter aftale med Magenta: Lade systemet overgå til normal drift</li>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul>
-                      <li>Løbende support</li>
-                      <li>Indkalde til møde om at lade systemet overgå til normal drift</li>
-                    </ul>
+                    <p>
+                      Har adgang til ledelsesinformation, herunder data relateret til afdelinger
+                      <br>
+                      og medarbejdere, som de er leder for.
+                    </p>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <p>4: Forankring - løbende scans og nye vaner</p>
+                    <p>
+                      <b>DPO</b>
+                    </p>
                   </td>
                   <td>
-                    <p>Uge 7 og frem</p>
+                    <p>
+                      Har adgang til statistikker, herunder information om mængden af håndterede
+                      <br>
+                      eller uhåndterede resultater i den specifikke afdeling, som de er ansvarlige for.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <p>
+                      <b>Medarbejder</b>
+                    </p>
                   </td>
                   <td>
-                    <ul>
-                      <li>
-                        Hjælpe medarbejderne med at forankre OS2datascanner som en naturlig del af deres IT-værktøjskasse, eksempelvis ved at lave løbende scans.
-                      </li>
-                      <li>Evaluere, om I får opfyldt jeres mål med at bruge systemet.</li>
-                    </ul>
+                    <p>Har adgang til at se og håndtere matches tildelt til dem på rapportmodulet.</p>
+                    <p>Når slutbrugere omtales, refereres der til denne brugertype.</p>
                   </td>
-                  <td></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h4 id="Foerste-fase">Første fase: Opstart - møde og opsætning</h4>
+          <h2 id="configs">Konfigurerbare funktioner i OSdatascanner</h2>
           <p>
-            Når aftalen mellem jer og Magenta er på plads, holder vi et opstartsmøde. Her vil det være godt, hvis både jeres projektleder og jeres tekniske ansvarlige er til stede, for det er vigtigt at inddrage de relevante medarbejdere fra starten. Det vil også typisk være her, vi sammen vælger en single point of contact (SPOC) for det organisatoriske samarbejde og en SPOC for den tekniske implementering, som efter vores erfaring er den bedste måde at organisere samarbejdet på
+            OSdatascanner udvikler kontinuerligt nye funktionaliteter, som kan til- eller fravælges
+            efter kundens behov. Dette afsnit vil gennemgå de konfigurerbare funktioner, som
+            OSdatascanner tilbyder.
           </p>
 
+          <h4>Sletning af Mails</h4>
           <p>
-            Efter mødet skal vi opsætte systemet. Hvis vi umiddelbart efter mødet får alle de adgange, vi skal bruge, kan vi gøre det på en uges tid.
+            Denne funktion muliggør sletning af mails fra rapportmodulet. Når der findes et match
+            i en mail, vil brugeren tilknyttet mailadressen blive tildelt matchet. Dette sikrer,
+            at kun brugere med eksplicit adgang til mailadressen kan håndtere de matches, der er
+            fundet i deres indbakker.
+            <br>
+            Hvis brugeren konkluderer, at et match er korrekt, og derfor skal slettes, kan de benytte
+            sletknappen, som befinder sig på resultatet. Mailen slettes, og resultatet bliver
+            automatisk håndteret i rapportmodulet.
           </p>
 
-          <p>
-            Når aftalen er på plads, og vi begynder at sætte systemet op, kan I desuden overveje at kommunikere den forestående implementering af OS2datascanner ud i jeres organisation - eller i det mindste til ledere, så opgaven i hvert fald bliver forankret hos alle med personaleansvar. Her behøver I endnu ikke komme ind på alt for mange detaljer, men kan måske nøjes med i grundlæggende træk at <i>forklare formålet</i> med at bruge OS2datascanner; at der er tale om et nyt værktøj til <i>løbende brug</i> i organisationen (og af langt de fleste medarbejdere); at en <i>grundig introduktion til systemet følger</i>, når systemet er sat op og testet; og endelig forklare at der i første omgang skal laves en “hovedrengøring” og derefter løbende scans.
-          </p>
-
-          <p>
-            For at undgå frustration blandt medarbejderne over at stå foran en stor opgave, kan det være en god idé at understrege, at det kun er “hovedrengøringen”, der er et omfattende stykke arbejde. Når denne er overstået, vil de løbende scans blive en integreret del af medarbejdernes hverdag og kræve meget lidt tid i det daglige.
-          </p>
-          <h4 id="Anden-fase">Anden fase: Forberedelse - testscans og oplæring</h4>
-          <p>
-            Nu er det tid til at teste systemet. Målet er, at I selv kan lave testscans af eksempelvis et netværksdrev, udvalgte mailbokse og jeres hjemmeside. Efter at I har afprøvet systemet en uges tid tager vi endnu et møde for at sikre, at alt er på plads til at rulle systemet ud i større skala. Her vil vi blandt andet evaluere jeres testscans.
-          </p>
-
-          <p>
-            I forbindelse med testscanningerne begynder også oplæringen af jeres implementeringskonsulent og eventuelle superbrugere. Vi foreslår, at uddannelsen lægger mere vægt på, hvordan I får integreret OS2datascanner i jeres organisation og arbejdsgange end på, hvordan man rent teknisk bruger scanneren. Se nærmere herom i afsnittet om roller.
-          </p>
-
-          <h4 id="Tredje-fase">Tredje fase: Udrulning - hovedrengøringer og overdragelse</h4>
-          <p>
-            I tredje fase ruller I systemet ud i jeres organisation. Her er det vigtigt, at alle medarbejdere, der på en eller anden måde får berøring med OS2datascanner - om det er som administrator, implementeringskonsulent, superbruger eller som for de allerflestes vedkommende som slutbruger - får en grundig introduktion til systemet.
-          </p>
-
-          <p>
-            I jeres kommunikation med alle disse brugere kan I derfor med fordel komme ind på følgende punkter: Hvorfor bruger vi systemet? Hvordan virker systemet, og hvordan bruger jeg det i min hverdag? Hvor kan jeg få hjælp til systemet?
-          </p>
-
-          <p>
-            Vi anbefaler at rulle OS2datascanner ud i faser, hvor I præsenterer scanneren for en enkelt afdeling eller to ad gangen. Det gælder ikke mindst i starten, hvor I efterfølgende kan tilpasse jeres kommunikation baseret på de erfaringer, I gør jer med den første afdeling.
-          </p>
-
-          <p>
-            Hvis I som mange andre vælger at lave en “hovedrengøring” først, er det vigtigt at huske, at der her kan blive tale om en større opgave. Måske har afdelingen haft filer liggende på drev og i mailbokse i mange år, og så kan oprydningsarbejdet tage tid og måske være en opgave, der skal tages sideløbende med afdelingens andre opgaver i et stykke tid. Det er også vigtigt at gøre det klart for medarbejderne, at der er meget mindre arbejde forbundet med de løbende scans end med “hovedrengøringen.”
-          </p>
-
-          <p>
-            For de fleste slutbrugere er det nok at få en kort introduktion til, hvordan systemet skal bruges. Til slutbrugerne er der lavet en brugerhåndbog, der på ganske få sider viser, hvordan man håndterer matches i rapportmodulet. Udover at udlevere håndbogen, når I introducerer systemet i den enkelte afdeling, kan I med fordel lægge brugerhåndbogen op på jeres intranet, så den er tilgængelig for alle.
-          </p>
-
-          <p>
-            Selvom systemet er intuitivt at bruge, tilbyder vi i denne fase stadig teknisk og brugerrettet support. Og så sørger vi for, at der er god tid til at ringe, skrive eller opsætte ekstra møder efter behov.
-          </p>
-
-          <p>
-            Når tredje fase er ved at nærme sig en afslutning, tager vi endnu et møde, hvor vi formelt bekræfter, at systemet nu er overgået til normal drift.
-          </p>
-          <h4 id="Fjerde-fase">Fjerde fase: Forankring - løbende scans og nye vaner</h4>
-          <p>
-            I den sidste fase handler det om at få OS2datascanner forankret som en naturlig del af slutbrugernes IT-værktøjskasse. Formålet er for det første at undgå, at personoplysninger igen bliver gemt uhensigtsmæssige steder, og for det andet at skabe nye gode vaner, når det kommer til håndteringen af personoplysninger.
-          </p>
-
-          <p>
-            Den bedste måde at sikre dette på er ved at lave løbende scans, altså at alle afdelinger og medarbejdere med et par ugers mellemrum får scannet drev og mailbokse for nye personoplysninger.
-          </p>
-
-          <p>
-            I denne fase er det også en god idé at tage et kig på, om I som organisation får opfyldt jeres mål med at bruge systemet, eller om der er behov for at ændre på nogle arbejdsgange.
-          </p>
-
-          <h3 id="Roller">Roller</h3>
-          <p>
-            Når I skal have rullet OS2datascanner ud i jeres organisation, er der en række opgaver, som skal fordeles ud på medarbejderne i jeres organisation. Vi har allerede været inde på nogle af dem i denne håndbog, og nu er det tid til at beskrive dem hver for sig. I praksis kan det være, at I vælger at slå nogle af rollerne sammen i én person, og det kan sagtens fungere.
-          </p>
-
-          <p>
-            Nogle få af rollerne er af mere teknisk karakter, mens de andre enten er en blanding eller har mere organisatorisk fokus, netop fordi den lokale forankring i hver afdeling er helt afgørende for, at arbejdet med OS2datascanner - og med personoplysninger i det hele taget - bliver en succes.
-          </p>
-
-          <p>
-            De tre sidste roller - oprydder, administrator og superadministrator - adskiller sig fra de andre ved at være de eneste, der direkte er systemroller i OS2datascanner-regi. Om I fordeler disse roller ud på personer, der i forvejen bestrider nogle af de andre nedennævnte roller, er helt op til jer. I bør dog tænke grundigt over, hvem I vil give adgang til hvilke dele af systemet og hvorfor.
-          </p>
-
-          <h4 id="Organisatorisk-projektleder">Organisatorisk projektleder</h4>
-          <p>
-            Har til opgave at være bindeled til Magentas projektleder. Vedkommende skal kunne planlægge og medfacilitere de møder, der er behov for i forbindelse med planlægning og projektopstart. Desuden er det afgørende, at den organisatoriske projektleder kan fungere som bindeled til organisationens ledelseslag og enheder, træffe overordnede beslutninger om ressourcer, økonomi og inddragelse af projektdeltagere samt at projektlederen kan følge op på de opgaver, organisationen er ansvarlig for.
-          </p>
-          <h4 id="Teknisk-projektleder">Teknisk projektleder</h4>
-          <p>
-            Den tekniske projektleder skal være en, der har et overblik over jeres organisations tekniske infrastruktur og kender jeres fagsystemer og integrationsflader. Vedkommende skal være bindeled til Magentas tekniske projektleder og være ansvarlig for opsætningen af de tekniske forudsætninger for installationen.
-          </p>
-          <h4 id="Implementeringskonsulent">Implementeringskonsulent</h4>
-          <p>
-            Er ansvarlig for at tilrettelægge implementeringen i jeres organisation. Desuden skal implementeringskonsulenten indgå i uddannelsen af superbrugerne og være overordnet ansvarlig for organisations first level support, som superbrugerne yder.
-          </p>
-          <h4 id="Slutbruger-1">Slutbruger</h4>
-          <p>
-            Er den brugertype, der udgør langt størstedelen af alle brugere i OS2datascanner-regi. I princippet kan samtlige medarbejdere i jeres organisation være slutbrugere, for en slutbruger er en medarbejder, der har til opgave at håndtere de matches, som scanneren har fundet - herunder de matches, som er blevet fundet i medarbejderens mailboks. Husk i den forbindelse på, at mange medarbejdertyper kan have personoplysninger liggende (måske har en medarbejder i Vej og Park en gammel og glemt praktikansøgning liggende i sin slettet post?), og det derfor kan være en god idé at scanne samtlige medarbejderes mailkonti.
-          </p>
-
-          <p>
-            Slutbrugerne har udelukkende adgang til <a href="#Rapportmodul">rapportmodulet</a>, og her har den enkelte slutbruger udelukkende adgang til de sager, vedkommende har fået ansvaret for at håndtere. Ud over ens egen mailboks kan det eksempelvis være et fællesdrev, som medarbejderen har fået til opgave at rydde op i.
-          </p>
-
-          <p>
-            Til slutbrugerne er der lavet en særlig håndbog, der på nogle få sider forklarer processen med at håndtere matches i rapportmodulet. <a href="../static/svg/OS2DS-Brugerhaandbog.pdf" download>Du kan downloade den her</a>.
-          </p>
-          <h4 id="Superbrugere">Superbrugere</h4>
-          <p>
-            Hvis I i forvejen har superbrugere i jeres organisation, kan I med fordel også give disse en mere grundig introduktion til OS2datascanner. Målet er i virkeligheden mere organisatorisk end teknisk. Systemet er nemt at bruge, så superbrugerne kan udover den tekniske support også hjælpe deres kolleger med at få etableret gode vaner, når det kommer til behandling af personoplysninger.
-          </p>
-
-          <p>
-            Udover undervisning i rapportmodulet kan I også forklare jeres superbrugere, hvordan admin-modulet fungerer (dog uden at oprette dem som admins), så de har en lidt dybere forståelse af, hvordan systemet fungerer. Superbrugere med indsigt i et særligt fagligt område kan desuden hjælpe med at opsætte <a href="#Regler">regler</a>.
-          </p>
-
-          <p>
-            Hvis I ikke bruger Single Sign-On (SSO) i jeres organisation, er det også vigtigt, at jeres superbrugere kan forklare slutbrugerne, hvilke brugeroplysninger de skal bruge for at logge på rapportmodulet.
-          </p>
-
-          <h4 id="Oprydder-1">Oprydder</h4>
-          <p>
-            Oprydderen står for at håndtere de matches, der ikke kan knyttes til en bestemt medarbejder, eksempelvis fordi vedkommende ikke længere er ansat. Da opryddere kan se matches på tværs af organisationen, bør denne rolle kun gives til meget få personer. Desuden bør rollen kun gives midlertidigt og under "hovedrengøringen".
-          </p>
-
-          <h4 id="Administrator">Administrator</h4>
-          <p>
-            En admin er en bruger, der kan oprette og køre scannerjobs, men ikke godkende dem. Vores erfaring er, at der i hver organisation ikke er mere end 2-3 medarbejdere, der er administratorer.
-          </p>
-          <p>
-            Som administrator kan man ikke se de matches, et scannerjob har fundet (medmindre man samtidigt har fået tildelt opgaven med at håndtere matches for netop dét scannerjob). Da et scannerjob samtidigt skal godkendes af en superadmin, kan rollen i princippet godt fordeles ud på flere medarbejdere, så der eksempelvis er en admin i hvert fagcenter, uden at I af den grund går på kompromis med sikkerheden.
-          </p>
-          <p>
-            Rollen kræver dog under alle omstændigheder en vis teknisk forståelse, da man skal kunne opsætte de enkelte scannertyper korrekt.
-          </p>
-
-          <h4 id="Superadministrator">Superadministrator</h4>
-          <p>
-            En superadministrator er den person med de mest vidtgående beføjelser i systemet. Vedkommende kan ligesom en admin oprette og køre scannerjob og derudover også godkende dem, hvilket skal gøres inden et job kan blive kørt. Superadministratoren fungerer altså som en gatekeeper i organisationen, så én person ikke uberettiget og i al hemmelighed kan søge efter oplysninger på en bestemt person. En person, der fungerer som admin, bør altså som udgangspunkt ikke samtidigt være superadmin.
-          </p>
-
-          <p>Derudover kan en superadmin også administrere brugere i både administrations- og rapportmodulet.</p>
-
-          <h3 id="Magentas-roller">Magentas roller</h3>
-          <p>
-            Ligesom i jeres organisation har vi også en organisatorisk og en teknisk projektleder knyttet til jeres organisation. Begge fungerer som SPOC for deres respektive pendant i jeres organisation.
-          </p>
-
-          <p>
-            Begge projektledere sørger for at få projektet godt fra start og står klar til at hjælpe jer med jeres spørgsmål. Særligt i de første par uger tager vi ansvar for, at I kommer godt i gang, herunder at alle deltagere i forløbet er klædt på til deres opgave.
-          </p>
-
-          <p>
-            Vi kan også lave aftaler om, at Magenta udarbejder det endelige uddannelsesmateriale tilpasset netop jeres organisation, og at vi står for oplæring af superbrugerne. Endelig kan vi i sidste fase hjælpe jer med at afdække, om I har nået jeres mål med at bruge OS2datascanner.
-          </p>
-
-          <h2 id="De-to-moduler">Anden del: De to moduler i OS2datascanner</h2>
-          <h4>Sådan bruger I OS2datascanner - helt lavpraktisk</h4>
-          <p>
-            OS2datascanner består som nævnt af to moduler, et adminmodul og et rapportmodul. Det er kun ganske få brugere, der bør have adgang til adminmodulet. Det er her, søgekriterier - de såkaldte <a href="#Regler">regler</a> - bliver sat op, og <a href="#Scannerjob">scannerjobs</a> bliver oprettet, godkendt og kørt.
-          </p>
-
-          <p>
-            I rapportmodulet kan den enkelte bruger, slutbrugeren, se matches for de scannerjobs, vedkommende har fået tildelt.
-          </p>
-
-          <p>
-            Brugere i de to moduler bliver i øvrigt administreret fra deres respektive moduler. Brugeradministration kan tilgås ved at sætte et "/admin" på URL’en.
-          </p>
-
-          <h3 id="Administrationsmodulet">Administrationsmodulet</h3>
-          <p>
-            Administrationsmodulet i OS2datascanner er til dem, der står for at igangsætte søgninger efter personoplysninger i jeres IT-struktur - eller et <a href="#Scannerjob">scannerjob</a>, som et scan efter en række bestemte kriterier kaldes i OS2datascanner.
-          </p>
-          <p>
-            Alt efter, hvilke rettigheder medarbejderen har fået tildelt, kan vedkommende således oprette scannerjobs med en række indbyggede og/eller individuelle søgekriterier, godkende scannerjobs og sætte dem i gang.
-          </p>
-          <p>
-            Scanneren er nemlig sådan indrettet, at en bruger med administratorrettigheder - en <a href="#admin">admin</a> - kan opsætte, slette og køre scannerjobs, men ikke godkende dem. Det kan kun en bruger med superadministratorrettigheder - en <a href="#superadmin">superadmin</a>.
-          </p>
-
-          <p>
-            Når et scan er færdigt, bliver der sendt en rapport til den eller de relevante brugere, som så kan se rapporten og håndtere dokumenterne i OS2datascanners <a href="#Rapportmodul">rapportmodul</a>.
-          </p>
-
-          <p>
-            Kapitlet om søgekriterier - de såkaldte <a href="#Regler">regler</a> - er særligt vigtigt at læse grundigt for at sikre, at I i fællesskab finder de rigtige kriterier.
-          </p>
-
-          <p>
-            Under et scan bliver filerne i øvrigt ikke gemt på OS2datascanners server, men udelukkende lagret i scannerens <a href="#Hukommelse">hukommelse</a>. I en løbende proces bliver filerne hentet over i scanneren, scannet og herefter overskrevet af de andre filer, der hentes over i scanneren. Det øger ikke bare sikkerheden, men giver også mulighed for at scanne store mængder data uden at overskride serverens kapacitet. Eneste undtagelse er filer, der scannes ved hjælp af <a href="#OCR">OCR-scanning</a>, hvor scannede eller fotokopierede bogstaver konverteres til tekst, der kan læses af en computer. Disse gemmes midlertidigt og slettes umiddelbart efter at være blevet scannet.
-          </p>
-          <h4 id="Scannerjob-1">Scannerjob-fanen</h4>
-          <p>
-            Under scannerjob-fanen kan du vælge mellem flere forskellige scannertyper, for eksempel Web- og Exchangescanner. Alt efter hvilke rettigheder du har, kan du under hver scannertype se de scannerjob, der allerede er blevet oprettet. Du kan også se en række egenskaber ved hvert scannerjob.
-          </p>
-
-          <h5 id="Opret-scannerjob">Sådan opretter du et scannerjob</h5>
-
-          <p>
-            Under hver type scanner kan du oprette et nyt scannerjob ved at klikke på “Tilføj scannerjob”. Alle scannertyper har det tilfælles, at du øverst vælger et navn. Du skal også vælge din <a href="#Organisation">organisation</a> og en <a href="#Valideringsstatus">valideringsstatus</a>. Sidstnævnte er som udgangspunkt sat til “ugyldig”, hvilket betyder, at scannerjobbet endnu ikke er blevet godkendt af en superadmin og altså ikke kan køres, før dette er sket.
-          </p>
-
-          <p>
-            <i>Navnet på scannerjobbet er vigtigt, fordi du her kan give en ordentlig beskrivelse af, hvad netop dette scannerjob skal bruges til. Er det til en hovedrengøring eller et løbende scan? Scanner det udelukkende efter CPR-numre eller efter nogle regler, I selv har opsat?</i>
-          </p>
-
-          <p>
-            Ved alle scannertyper kan du nederst under punktet “Tilføj scannerindstillinger” sætte flueben ved “Tjek dato for sidste ændring”. Så kigger scanneren kun på de de filer, der er kommet til eller har ændret sig siden seneste scan. Det gør, at scannerjobbet tager kortere tid. Her kan du også vælge “Scan billeder”, hvor eksempelvis indscannede eller fotokopierede dokumenter bliver taget med af scanneren ved hjælp af OCR-scanning.
-          </p>
-
-          <p>
-            Ved alle scannertyper skal du under punktet “Tilføj regler” også vælge den eller de regler, som allerede er oprettet i systemet (se afsnit nedenfor om oprettelse af regler), som scanneren skal arbejde efter. Hvis du tilføjer flere regler til et scannerjob, vil scannerjobbet tage alle de resultater med, der opfylder mindst én af reglerne. Endelig kan du under “Interval” vælge, hvor ofte dette scannerjob skal køre.
-          </p>
-
-          <h5 id="Filformater">Understøttede filformater</h5>
-          <p>
-            OS2datascanner kan søge i følgende filformater: Word (doc og docx), PowerPoint (ppt), HTML, txt, XML, JPG, pdf, Excel, CSV, Zip, PNG og Gif.
-          </p>
+          <div id="figure-23" class="figure-container">
+            <a href="{% static 'manualimages/figur23_da-dk' %}.png">
+              <img src="{% static 'manualimages/figur23_da-dk' %}.png" />
+            </a>
+            <p>Rapportmodul - Forside</p>
+          </div>
 
           <p>
-            OS2datascanner bruger <a href="#OCR">OCR</a> til at scanne billeder og PDF’er. Det betyder i praksis, at de forskellige scannertyper i OS2datascanner kan scanne alle former for dokumenter, hvad enten de er lavet i et af Officepakkens programmer eller er scannet ind. Dokumenter i komprimerede mapper (zipfiler) bliver pakket ud og scannet.
+            Når funktionen er konfigureret, kan superbrugere og administratorer aktivere eller
+            deaktivere den under organisationen via administrationsmodulet.
           </p>
 
-          <h5 id="De-forskellige-scannere">Sådan bruger du de forskellige scannere</h5>
-          <p>
-            Mens de ovennævnte punkter er ens for alle scannertyper, adskiller de forskellige typer sig også fra hinanden, alt efter om du vil scanne eksempelvis jeres hjemmeside eller et fællesdrev.
-          </p>
-          <h6 id="Webscanner">Webscanner</h6>
-          <p>
-            Webscanneren kan scanne alt indehold på en hjemmeside eller intranet, herunder dokumenter, der ligger på siden. Webscanneren kan også følge et sitemap og scanne data, som der ikke er linket til fra andre sider. Desuden kan den finde og advare om <a href="#Doedt-link">døde links</a>.
-          </p>
-
-          <p>
-            Efter at have valgt navn skriver du nu URL’en til den hjemmeside, du vil scanne. Nu kan du give scanneren et <a href="#Sitemap">sitemap</a> at navigere efter. Scanneren kan kun scanne hele hjemmesiden, hvis den har et sitemap, så du skal vælge enten at lade scanneren hente et sitemap fra serveren, selv indsætte en URL eller uploade en sitemap index-fil i Sitemap 0.9-format.
-          </p>
-
-          <p>
-            Punktet “Tilføj scannerindstillinger” giver dig en række muligheder. Udover førnævnte “Scan billeder” og “Tjek dato for sidste ændring” kan du vælge “Brug HTTP HEAD-forespørgsler.” Som udgangspunkt skal du slå fluebenet ved “Brug HTTP HEAD-forespørgsler” fra. Kontakt Magenta, hvis du vil slå det til. Ved at sætte flueben i “Tjek links” og “Eksterne links” tjekker OS2datascanner, om henholdsvis interne og eksterne links rent faktisk virker og ikke er <a href="#Doedt-link">døde</a>. Endelig har du ved at sætte flueben i “Saml cookies” mulighed for at få scanneren til at analysere visse cookies.
-          </p>
-          <h6 id="Filscanner">Filscanner</h6>
-          <p>
-            Filscanneren bruges til at scanne et eller flere lokale fildrev. For at bruge filscanneren skal OS2datascanner være installeret bag jeres firewall.
-            Efter navnet skal du under URL taste stien til det drev, der skal scannes. Under “drevbogstav” kan du til din egen orientering skrive et drevbogstav; selve scanneren har udelukkende brug for URL’en. Under brugeroplysninger skal du ligesom i Windows taste brugerdomæne, brugernavn og password for at få adgang til det drev, der skal analyseres.
-          </p>
-
-          <h6 id="Exchange-scanner">Exchangescanner</h6>
-          <p>
-            Exchangescanneren bruger I til at scanne jeres email-konti. Ligesom med filscanneren gemmer OS2datascanner ikke mails og mapper, men henter dem over i <a href="#Hukommelse">hukommelsen</a>, scanner dem og overskriver dem løbende.
-          </p>
-          <p>
-            Vær opmærksom på, at I <i>skal</i> skrive jeres service endpoint, hvis jeres Exchange-server ligger i skyen. Endpointet hedder altid "https://outlook.office365.com/EWS/Exchange.asmx". Undlader I at skrive service endpointet, kan slutbrugerne ikke åbne mails med de fundne matches direkte fra rapportmodulet. Har I en on premise-installation, behøver I ikke skrive noget service endpoint.
-          </p>
-
-          <p>
-            Under brugeroplysninger skal I skrive brugernavn og adgangskode på jeres servicekonto og uploade en liste over de mailkonti, der skal scannes.
-          </p>
-
-          <h6 id="Office365-scanner">Office 365 mailscanner og Office 365 OneDrive filscanner</h6>
-          <p>
-            Med indførelsen af Microsofts Office 365 cloud suite er det nu muligt at scanne mails fra Outlook og filer fra OneDrive i Office 365.
-          </p>
-          <p>
-            For at dette kan virke, så skal der registeres en "Azure Application" i Microsoft Azure's portal: <a href="https://portal.azure.com/#home">https://portal.azure.com/#home</a>. Der er blevet udarbejdet en guide til opsætning og afvikling af scannerjobs i OS2datascanner, som involverer datakilder fra Office 365, herunder mails og OneDrive filer. Denne guide kan findes her: <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">https://os2datascanner.readthedocs.io/azure/azure-setup-guide/</a>.
-          </p>
-
-          <p>
-            OS2datascanner laver på intet tidpunkt permanente kopier af data, som analyseres under kørsel af et scannerjob. Data hentes derimod over i <a href="#Hukommelse">hukommelsen</a>, som overskrives løbende.
-          </p>
-
-          <h5 id="Validering-koersel">Validering og kørsel af scannerjobs</h5>
-          <p>
-            Når en administrator har oprettet et scannerjob, skal en superadmin godkende det. Det sker ved at åbne selve scannerjobbet og sætte valideringsstatus til “gyldig.” Herefter kan både superadmins og admins sætte jobbet i gang. Når et scannerjob er sat i gang, bliver de fundne <a href="#Match">matches</a> løbende sendt videre til OS2datascanners rapportmodul, hvor slutbrugeren kan se dem.
-          </p>
-
-          <p>
-            Matches i emails bliver selvfølgelig altid sendt til den medarbejder, i hvis indbakke matchet er blevet fundet. Matches fundet i filer på eksempelvis netværksdrev bliver delt ud på samme måde: Den, der i sin tid har oprettet filen, får også tilsendt det pågældende match. Hvis medarbejderen ikke længere er ansat, vil matchet i stedet blive sendt til <a href="#Oprydder-2">oprydderne</a>.
-          </p>
-
-          <h4 id="Status">Status-fanen</h4>
-          <p>
-            I status-fanen kan den enkelte admin se status på de scannerjobs, vedkommende har adgang til, men ikke lave ændringer - det foregår ved at åbne scannerjobbet under den respektive scannertype.
-          </p>
-
-          <h4 id="Regler-1">Regler-fanen</h4>
-          <p>
-            Regler-fanen er en helt central i OS2datascanner. Det er her, I kan se de eksisterende og opsætte nye regler, som er de kriterier, det enkelte scannerjob skal bruge til at søge efter <a href="#Match">matches</a>. Der findes to typer regler: Systemregler og brugerregler. Desuden har hver regel en tilhørende <a href="#Foelsomhed">følsomhed</a>, der fortæller <a href="#Slutbrugeren">slutbrugeren</a>, hvor alvorligt et match er.
-          </p>
-
-          <h5 id="Regeltyper">Regeltyper</h5>
-          <h6 id="Systemregler-1">Systemregler</h6>
-          <p>
-            OS2datascanner kommer med en indbygget regel om scan efter CPR-numre. Reglen bygger på en række komplekse algoritmer, der blandt andet udregner sandsynligheden for, at et tal rent faktisk er et CPR-nummer, og reglen kan derfor ikke redigeres.
-          </p>
-          <h6 id="Brugerregler-1">Brugerregler</h6>
-          <p>
-            Som admin eller superadmin kan du selv opsætte regler, så systemet kan søge efter et hvilket som helst ord. Brugerreglerne er baseret på <a href="#Regulaere-udtryk">regulære udtryk</a>. Har du en vis teknisk forståelse, kan du relativt hurtigt sætte dig ind i, hvordan regulære udtryk skal udformes. <a href="https://www.computerworld.dk/uploads/eksperten-guider/1156-Regulaere-udtryk%2C-1.-del.pdf"
-    target="_blank">Du finder en dansksproget guide til regulære udtryk her</a> (kontakt gerne Magenta på info@magenta.dk, hvis du oplever, at linket ikke virker).
-          </p>
-          <h5 id="Foelsomhed-1">Følsomhed</h5>
-          <p>
-            Følsomheden bruges til at fortælle slutbrugeren, hvor alvorligt et match er. Der er fire forskellige kategorier - kritisk, problem, advarsel og notifikation, hvor kritisk er den mest alvorlige.
-          </p>
-          <h5 id="Opret-regel">Opret regel</h5>
-          <p>
-            Under “Tilføj ny” kan du oprette en ny regel. Ligesom når du opretter et scannerjob er det her vigtigt at vælge et navn, der fortæller ret præcist, hvad reglen handler om. Ved organisation vælger du jeres organisation, og nu kan du begynde at tilføje de egentlige søgekriterier.
-          </p>
-
-          <p>
-            Under “Regulært udtryk 1” skriver du det regulære udtryk, som scanneren skal kigge efter. Under “tilføj regel” kan du tilføje flere regulære udtryk. Hvis du bruger flere regulære udtryk i samme regel, skal alle disse regulære udtryk optræde i et dokument, før scanneren siger, at der er match for denne regel. Hvis du vil kombinere flere regulære udtryk på en måde, så et scannerjob giver matches hvis blot ét af de regulære udtryk optræder under en søgning, skal du oprette en separat regel for hvert regulært udtryk og så vælge disse regler, når du opretter scannerjobbet.
-          </p>
-
-          <p>
-            Under “beskrivelse” skal du beskrive reglen, gerne på en måde, der i et simpelt sprog fortæller, hvad formålet med denne regel er.
-          </p>
-
-          <h5 id="Soegekriterier">Søgekriterier</h5>
-          <p>
-            En ting er, om man er i stand til at udforme regulære udtryk til at lave søgekriterier - noget andet er, om man rent faktisk søger efter de rigtige begreber.  At søge efter navne, adresser eller CPR-numre er ret ligetil, men for nogle emner kan det være en fordel at være lidt kreativ, når det kommer til søgebegreber. Her kan en idéudvikling i et samarbejde mellem den IT-kyndige medarbejder og fagmedarbejderne i de enkelte centre eller afdelinger være en god idé, for fagmedarbejderne kender de begreber, der ofte optræder i mails og dokumenter med personoplysninger.
-          </p>
-
-          <p>
-            Hvis I eksempelvis vil finde alle de oplysninger, som jeres SSP-konsulenter har om nogle unge, er det måske ikke nok at søge på CPR-nummer, fordi nummeret ikke optræder i hvert dokument. Det samme gælder, hvis du søger efter oplysninger om helbred eller sociale problemer. Her optræder sagens emne ikke nødvendigvis i alle dokumenter, især hvis der er tale om en længere mailkorrespondance. For at finde sager om tvangsfjernelse kan det måske være, at der også skal søges lidt bredere på udtryk som “barnets bedste”, “mistanke” eller “overgreb”.
-          </p>
-
-          <h3 id="Rapportmodulet">Rapportmodulet</h3>
-          <p>
-            Rapportmodulet indeholder kun ganske få funktioner. Når et scannerjob kører, sender det løbende de fundne matches videre til rapportmodulet. Her kan den eller de brugere, som har fået opgaven med at håndtere matches for det enkelte scannerjob, så se en liste over de fundne matches og markere, hvordan det enkelte match er blevet håndteret, eksempelvis at filen er blevet slettet.
-          </p>
-
-          <p>
-            Til slutbrugerne er der en særlig håndbog, der på nogle få sider forklarer, hvordan man bruger rapportmodulet. I kan med fordel lægge den op på jeres intranet, hvor I i forvejen har vejledninger liggende. <a href="../static/svg/OS2DS-Brugerhaandbog.pdf" download>Du kan downloade håndbogen her</a>.
-          </p>
-          <h2 id="Ordliste">Tredje del: Ordliste</h2>
-          <p>
-            <b id="Admin">Admin:</b> En bruger, der kan oprette og køre <a href="#Scannerjobs">scannerjobs</a>, men ikke godkende dem. Det skal en <a href="#Superadmin">superadmin</a> gøre. <a href="#Administrator">Læs mere om superadministrator-rollen</a>.
-          </p>
-
-          <p>
-            <b id="Administrationsmodul">Administrationsmodul:</b> Det ene af OS2datascanners to moduler. Det er her, <a href="#Admin">admins</a> og <a href="#Superadmin">superadmins</a> opretter, godkender og kører <a href="#Scannerjob">scannerjobs</a>. Resultatet af de enkelte scannerjobs bliver så sendt til <a href="#Rapportmodul">rapportmodulet</a>, hvor <a href="#Slutbruger">slutbrugerne</a> håndterer <a href="#Match">matches</a>. <a href="#Administrationsmodulet">Læs mere om administrationsmodulet</a>.
-          </p>
-
-          <p>
-            <b id="Brugerregler-2">Brugerregler:</b> <a href="#Regler">Regler</a>, som brugeren selv har oprettet. Består af <a href="#Regulaere-udtryk">regulære udtryk</a>. <a href="#Brugerregler-1">Læs mere om brugerregler</a>.
-          </p>
-
-          <p>
-            <b id="Databeskyttelsesraadgiver">Databeskyttelsesrådgiver:</b> Eller DPO. EU’s persondataforordning (GDPR) stiller krav om, at alle offentlige myndigheder og mange virksomheder skal have en databeskyttelsesrådgiver. Denne skal blandt andet være med til at sikre, at persondataforordningen bliver overholdt.
-          </p>
-
-          <p>
-            <b id="Doedt-link">Dødt link:</b> Et link på en hjemmeside, der peger på en side, der ikke findes. Bliver ofte vist i forbindelse med tallet 404, som er fejlkoden for en side, der ikke blev fundet.
-          </p>
-
-          <p>
-            <b id="Foelsomhed-2">Følsomhed:</b> Når et <a href="#Scannerjob">scannerjob</a> bliver oprettet, vælger man en følsomhed for den enkelte <a href="#Regler">regel</a>. Det hjælper <a href="#Slutbruger">slutbrugeren</a> til at se, hvilke <a href="#Match">matches</a> der er vigtigst at håndtere. Følsomheden er inddelt i fire kategorier: Kritisk, advarsel, problem og notifikation, hvor kritisk er det mest og notifikation det mindst alvorlige. <a href="#Foelsomhed-1">Læs mere om følsomhed</a>.
-          </p>
-
-          <p>
-            <b id="Hukommelse">Hukommelse:</b> Også kendt som RAM. Det sted, hvor computeren lagrer oplysninger midlertidigt, det vil sige mens computeren er tændt. Når computeren bliver slukket, går oplysningerne tabt, medmindre de  forinden er blevet gemt - og netop dét gør OS2datascanner ikke. Det er med til at øge datasikkerheden.
-          </p>
-
-          <p>
-            <b id="Match">Match:</b> Et udtryk for, at OS2datascanner har fundet et dokument, hvor der optræder personoplysninger som opfylder de <a href="#Regler">regler</a>, scanneren har søgt efter. Det er op til <a href="#Slutbruger">slutbrugeren</a> at håndtere de matches, som scanneren har fundet. Håndteringen kan eksempelvis bestå i at slette dokumentet eller arkivere det på en bestemt måde.
-          </p>
-
-          <p>
-            <b id="Metadata">Metadata:</b> En række oplysninger om en fil, for eksempel oprettelses- og ændringstidpunktet eller emnet, hvis der er tale om en email.
-          </p>
-
-          <p>
-            <b id="Modulus-11">Modulus 11:</b> CPR-numrenes kontrolsystem, hvor man ved at sammenholde nummeret første ni cifre med det sidste ciffer - kaldet kontrolcifferet - kan regne ud, om nummeret kan være et CPR-nummer eller ej. Enkelte CPR-numre for en række bestemte fødselsdatoer har dog ikke et kontrolciffer. OS2datascanner tager højde for dette. Se den fulde forklaring på <a href="https://cpr.dk/cpr-systemet/opbygning-af-cpr-nummeret/"
-    target="_blank">CPR-registrets hjemmeside</a> .
-          </p>
-
-          <p>
-            <b id="Oprydder-2">Oprydder:</b> En medarbejder, der håndterer de <a href="#Match">matches</a>, der ikke kan knyttes til en bestemt person. <a href="#Oprydder-1">Læs mere om oprydder-rollen</a>.
-          </p>
-
-          <p>
-            <b id="OCR">OCR:</b> Står for Optical Character Recognition, optisk tegngenkendelse. Hvis et dokument er blevet scannet ind, er det ofte gemt som et billede og ikke som tekst. Her konverterer en OCR-scanner billedet til tekst ved at genkende de enkelte tegn.
-          </p>
+          <p>Fordele ved at tilvælge sletning af mails i rapportmodulet:</p>
 
-          <p>
-            <b id="Organisation">Organisation:</b> Navnet på den organisation, du er en del af, altså navnet på din kommune eller din virksomhed. Du kan kun vælge én organisation.
-          </p>
-
-          <p>
-            <b id="Personoplysninger">Personoplysninger:</b> Er enhver information, der kan bruges til at identificere en person. Læs mere på <a href="https://www.datatilsynet.dk/databeskyttelse/hvad-er-personoplysninger"
-    target="_blank">Datatilsynets hjemmeside</a>.
-          </p>
-
-          <p>
-            <b id="Rapportmodul">Rapportmodul:</b> Det ene af OS2datascanners to moduler. Det er her, <a href="#Slutbruger">slutbrugerne</a> håndterer de <a href="#Match">matches</a>, som et <a href="#Scannerjob">scannerjob</a> har fundet. <a href="#Rapportmodulet">Læs mere om rapportmodulet</a>.
-          </p>
-
-          <p>
-            <b id="Regler-2">Regler:</b> De søgekriterier, OS2datascanner foretager et <a href="#Scannerjob">scannerjob</a> med. OS2datascanner har en indbygget CPR-scanner, men du kan frit opsætte regler ved hjælp af <a href="#Regulaere-udtryk">regulære udtryk</a>. <a href="#Regler-1">Læs mere om scannerregler</a>.
-          </p>
-
-          <p>
-            <b id="Regulaere-udtryk">Regulære udtryk:</b> Også kendt som regex eller regexp. En meget anvendt metode til at søge efter bestemte ord eller sætninger. <a href="https://www.computerworld.dk/uploads/eksperten-guider/1156-Regulaere-udtryk%2C-1.-del.pdf"
-    target="_blank">Du finder en god guide til at komme i gang med med regulære udtryk her</a> (kontakt Magenta på info@magenta.dk, hvis linket ikke virker). <a href="#Opret-regel">Læs mere  om, hvordan du bruger regulære udtryk i OS2datascanner</a> og <a href="#Soegekriterier">hvordan du bruger søgekriterier</a>.
-          </p>
-
-          <p>
-            <b id="Scannerjob-2">Scannerjob:</b> Et scan efter personoplysninger ud fra en række bestemte kriterier, kaldet <a href="#Regler">regler</a>. <a href="#Scannerjob-1">Læs mere om scannerjobs</a>.
-          </p>
-
-          <p>
-            <b id="Sitemap">Sitemap:</b> En oversigt over en hjemmesides struktur. For at få det fulde udbytte af et scan er det vigtigt, at webscanneren har et sitemap for at sikre, at alle undersider bliver taget med.
-          </p>
-
-          <p>
-            <b id="Slutbruger-2">Slutbruger:</b> En medarbejder, der bruger OS2datascanners <a href="#Rapportmodul">rapportmodul</a> til at se og håndtere de <a href="#Match">matches</a>, som et <a href="#Scannerjob">scannerjob</a> har fundet. <a href="#Slutbruger-1">Læs mere om slutbrugere</a>.
-          </p>
-
-          <p>
-            <b id="Superadmin">Superadmin:</b> En bruger, der både kan oprette, godkende og køre et <a href="#Scannerjob">scannerjob</a>. Der vil som udgangspunkt kun være en eller to superadmins i din virksomhed eller kommune. <a href="#Superadministrator">Læs mere om superadministrator-rollen</a>.
-          </p>
-
-          <p>
-            <b id="Systemregler-2">Systemregler:</b> De <a href="#Regler">regler</a>, som er indbygget i OS2datascanner. En systemregel er bygget op af komplekse algoritmer, der eksempelvis scanner efter CPR-nummer, og en systemregel kan derfor i modsætning til <a href="#Brugerregler">brugerregler</a> ikke redigeres. <a href="#Systemregler-1">Læs mere om systemregler</a>.
-          </p>
-
-          <p>
-            <b id="Valideringsstatus">Valideringsstatus:</b> For at kunne køre et <a href="#Scannerjob">scannerjob</a> skal jobbet være godkendt af en <a href="#Superadmin">superadmin</a>. Det gør denne ved at sætte valideringsstatus til gyldig. På den måde sikres det, at der ikke er brugere, der selv opretter, godkender og kører en søgning efter personoplysninger, de ikke har lov at se. <a href="#Validering-koersel">Læs mere om valideringsstatus</a>.
-          </p>
-
-          <h2 id="Teknisk-dokumentation">Fjerde del: Teknisk dokumentation</h2>
-          <p>
-            Set fra et teknisk synspunkt kan OS2datascanner inddeles i tre moduler: Et administrationsmodul, et rapportmodul og en scannermotor:
-          </p>
           <ul>
             <li>
-              Administrationsmodulet administrerer de datakilder, der skal scannes. Systemet er en hjemmeside og er til de systemadministratorer og -ejere, der skal opsætte de regler og datakilder, der skal scannes. Brugerne i administrationsmodulet skal oprettes manuelt, og modulet deler ingen data med rapportmodulet. Al data om adgang til datakilder bliver AES-krypteret.
+              <b>Øget effektivitet:</b> Da brugeren har mulighed for at slette mails fra
+              rapportmodulet, fjernes behovet for at tilgå en email indbakke for at slette mails.
             </li>
             <li>
-              Rapportmodulet kan kun vise navnet på den fil, hvor et match er fundet, samt informationer om kontekst for filen. Modulet har ikke skriverettigheder til fx at slette filer. Den enkelte slutbruger logger sig ind i rapportmodulet med jeres SSO - se tjekliste nedenfor.
+              <b>Simplificeret workflow:</b> Håndtering af matches i mails gøres mere overskueligt
+              ved at fastholde hele arbejdsgangen på rapportmodulet.
             </li>
             <li>
-              Scannermotoren er en række af processer med hver deres ansvarsområde i bearbejdelsen af data fra de kilder, der skal scannes. Da disse processer udelukkende kommunikerer via beskedkøer, gør scannermotoren ikke brug af nogen form for database eller persistering af data. Med andre ord bliver der i scannermotoren udelukkende oprettet midlertidige filer, der udelukkende lever så længe dataen bliver bearbejdet.
+              <b>Automatisk håndtering:</b> Når funktionen anvendes, behandler OSdatascanner
+              automatisk matchet som slettet.
             </li>
           </ul>
-          <p>
-            Kommunikationen mellem modulerne foregår også via beskedkøer. Al kommunikation mellem modulerne foregår krypteret.
-          </p>
 
-          <p>
-            Vi anbefaler meget, at OS2datascanner bliver installeret på samme netværk som de datakilder, der skal scannes, således at data aldrig forlader organisationens netværk.
-          </p>
+          <p>Vær opmærksom på:</p>
 
-          <p>
-            Vi beder jer om at have to servicekonti klar til det første implementeringsmøde - én bruger med adgang til netværksdrev, så vi kan udføre filscan, og én Exchange servicekonto med ApplicationImpersonation-managementrollen.
-          </p>
-
-          <p>Til sidst i dette afsnit finder du arkitekturtegninger for OS2datascanner.</p>
-
-          <p>
-            For en fyldestgørende teknisk dokumentation og indblik i koden kan du besøge vores Github repository her: <a href="https://github.com/os2datascanner" target="_blank">https://github.com/os2datascanner</a>
-          </p>
-
-          <h3 id="Server-opsaetning">Opsætning af serverne</h3>
-          <p>
-            OS2datascanner kræver et setup med mindst to Ubuntu 18.04 LTS-servere med SSH-adgang og en bruger med administratorrettigheder.
-          </p>
-          <p>
-            Den første server, serveren til scannermotoren, bør mindst råde over 4 CPU’er, 32 GB RAM og 1 TB harddisk. Scanningernes hastighed vil dog blive øget væsentligt, hvis serveren skaleres op til 8 CPU’er og 64 GB RAM. Den anden server, webserveren, kan råde over 2 CPU’er, 6 GB RAM og 500 GB harddisk. OS2datascanner kan også skaleres ud på flere servere, alt efter størrelsen på datakilderne, og hvor hurtigt disse datakilder skal scannes.
-          </p>
-
-          <h3 id="Firewall-adgang">Sikker firewall-adgang</h3>
-          <p>
-            Vil vil gerne kunne etablere TCP-forbindelser fra sdos2scanweb01 og sdos2scandba01 mod port 4505+4506 på saltmaster-prod.os2ds.magentahosted.dk  - det vil sige udgående og indgående trafik fra jeres netværk.
-          </p>
-
-
-          <h3 id="Tjekliste">Tjekliste til implementering af SSO med SAML</h3>
-          <p>
-            For at hver slutbruger kan logge sig ind i rapportmodulet ved hjælp af jeres SSO, har rapportmodulet brug for følgende information:
-          </p>
-          <ul class="roman">
+          <ul>
             <li>
-              SAML 2.0 SSO - nødvendig info fra identity provider:
-              <ul class="square">
-                <li>Federation Metadata (URL eller fil)</li>
-                <li>Logout Response (URL)</li>
-                <li>NameID Format</li>
+              <b>Skriverettigheder:</b> For anvendelse af funktionen kræver OSdatascanner
+              skriverettigheder til organisationens Microsoft-applikationer.
+            </li>
+            <li>
+              <b>Overvejelse:</b> Selvom funktionen er tilgængelig og let at bruge, bør der
+              stadig tages stilling til, om et match er korrekt, og hvordan det skal håndteres.
+            </li>
+            <li>
+              <b>Sletning:</b> Slettede mails kan som udgangspunkt ikke gendannes.
+              Brugeren skal derfor være opmærksom på, hvad der slettes, inden funktionen anvendes.
+            </li>
+          </ul>
+
+          <h4>Sletning af filer</h4>
+          <p>
+            Denne funktion muliggør sletning af filer, både fra Onedrive, Sharepoint
+            og on-premise fil servere, direkte fra rapportmodulet.
+          </p>
+
+          <p>
+            Når der findes et match i en fil, vil brugeren, der oprettede filen, blive tildelt matchet.
+            Dette sikrer, at kun brugeren, der oprettede filen, får tildelt matches fundet under et scan.
+          </p>
+
+          <p>
+            Hvis brugeren konkluderer, at et match er korrekt, og derfor skal slettes, kan de
+            benytte sletknappen, som befinder sig på resultatet. Filen slettes, og resultatet
+            bliver automatisk håndteret i rapportmodulet.
+          </p>
+
+          <div id="file_delete" class="figure-container">
+            <a href="{% static 'manualimages/file_delete_da-dk' %}.png">
+              <img src="{% static 'manualimages/file_delete_da-dk' %}.png" />
+            </a>
+            <p>Rapportmodul - Forside</p>
+          </div>
+
+          <p>
+            Når funktionen er konfigureret, kan superbrugere og administratorer aktivere eller
+            deaktivere den under organisationen via administrationsmodulet.
+          </p>
+
+          <p>Fordele ved at tilvælge sletning af filer:</p>
+
+          <ul>
+            <li>
+              <b>Øget effektivitet:</b> Da brugeren har mulighed for at slette OneDrive filer
+              fra rapportmodulet, fjernes behovet for at tilgå filen i OneDrive for at slette den.
+            </li>
+            <li>
+              <b>Simplificeret workflow:</b> Håndtering af matches gøres mere overskueligt
+              ved at fastholde hele arbejdsgangen på rapportmodulet.
+            </li>
+            <li>
+              <b>Automatisk håndtering:</b> Når funktionen anvendes, behandler OSdatascanner
+              automatisk matchet som slettet.
+            </li>
+          </ul>
+
+          <p>Vær opmærksom på:</p>
+
+          <ul>
+            <li>
+              <b>Skriverettigheder:</b> For anvendelse af funktionen kræver OSdatascanner
+              skriverettigheder til organisationens Microsoft-applikationer eller filserver.
+            </li>
+            <li>
+              <b>Overvejelse:</b> Selvom funktionen er tilgængelig og let at bruge, bør der
+              stadig tages stilling til, om et match er korrekt, og hvordan det skal håndteres.
+            </li>
+            <li>
+              <b>Sletning:</b> Når en fil slettes gennem rapportmodulet, bliver det gjort
+              ved at placere filen i papirkurven. Dette gør, at filen stadig kan gendannes
+              i tilfælde af forkert sletning. Først når filen slettes fra papirkurven, vil
+              gendannelse ikke længere være mulig.
+              <ul>
+                <li>
+                  Vær opmærksom på, at filer i papirkurven ikke forbliver der på ubestemt tid.
+                  For en mere præcis tidshorisont kan brugeren tage fat i en projektleder eller IT-ansvarlig.
+                </li>
               </ul>
             </li>
           </ul>
 
-          <h3 id="Konfigurationer-matches">Konfigurationer til åbning af matches</h3>
+          <h4>Email Kategorisering</h4>
           <p>
-            Jeres system skal konfigureres for at kunne åbne filer eller mails i henholdsvis stifinder og Outlook direkte fra rapportmodulet. Når I har fulgt nedenstående vejledninger, anbefaler vi afprøve dem i rapportmodulet.
-          </p>
-
-          <h4 id="Aabne-i-stifinder">Åbning af filer i stifinder</h4>
-          <p>
-            For at kunne bruge “Åbn fil”-knappen skal domænet for rapportmodulet føjes til listen over  Trusted Sites i den enkelte browser.
-          </p>
-
-          <h4 id="Aabne-i-Outlook">Åbning af matchede mails i Outlook</h4>
-          <p>
-            OS2datascanner kan også åbne mails direkte fra rapportmodulet. Dette gøres ved hjælp af protokollen “Outlook://”, som indtil Outlook 2007 fungerer uden yderligere opsætning. I de efterfølgende versioner er man dog nødt til at føje protokollen til Windows Registry.
+            OSdatascanners indbyggede email-kategoriseringsfunktion muliggør en effektiv klassificering
+            af emails, der indeholder matches. Disse emails bliver påsat en “OSdatascanner Match”
+            -kategori i brugerens indbakke. Under kørslen af et scannerjob foretages løbende
+            kategorisering af emails, der indeholder matches.
           </p>
 
           <p>
-            For Outlook 2010, 2013 og 2016 er processen den samme. Den eneste forskel er, at stien til Outlook.exe er forskellige fra version til version. I Outlook 2016 kan stien eksempelvis være: ”C:\Program Files (x86)\Microsoft Office\root\Office16\outlook.exe”.
+            Brugerne har også mulighed for at markere en email med en “OSdatascanner Falsk Positiv”
+            -kategori, hvilket resulterer i, at OSdatascanner ikke længere identificerer
+            indholdet i emailen som et match, og det vil derfor ikke blive inkluderet i rapportmodulet.
           </p>
 
-          <p>Opsætningen gøres på følgende måde:</p>
-          <ol>
-            <li>Åbn Windows Registry Editor og vælg nøglen HKEY_CLASS_ROOT i roden af træet.</li>
-            <li>Højreklik på HKEY_CLASS_ROOT og tilføj en ny nøgle, som du kalder “outlook”.</li>
-            <li>Redigér (Default” strengværdien og tilføj URL:Outlook Folders.</li>
-            <li>Tilføj en ny strengværdi “URL Protocol” (ingen strengværdi påkrævet).</li>
-            <li>Tilføj undernøglen \shell\open\command.</li>
+          <p>
+            Organisationen skal selv træffe en beslutning om, hvorvidt denne funktion skal
+            aktiveres for alle medarbejdere, eller om det skal være op til den enkelte medarbejder
+            at aktivere den. Derudover er der også mulighed for at deaktivere funktionen
+            fuldstændigt, så ingen medarbejdere har adgang til den.
+            Denne indstilling kræver konfiguration af en superbruger eller administrator
+            under organisationen via administrationsmodulet.
+          </p>
+
+          <div id="mail_label_settings" class="figure-container">
+            <a href="{% static 'manualimages/mail_label_settings_da-dk' %}.png">
+              <img src="{% static 'manualimages/mail_label_settings_da-dk' %}.png" />
+            </a>
+            <p>Administrationsmodul - Organisation - Microsoft Tenant Indstillinger - Outlook kategori Indstillinger</p>
+          </div>
+
+          <p>
+            <b>Tillad brugere at kategorisere emails</b>
+          </p>
+
+          <p>
+            Ved at aktivere indstillingen "Tillad brugere at kategorisere emails" giver det
+            brugerne mulighed for selv at vælge, om de ønsker at benytte denne funktion. Brugeren
+            kan benytte denne funktion ved at klikke på deres bruger ikon i rapportmodulet.
+            Herefter skal de navigere til "Vis konto", hvor indstillingerne for email-kategorisering
+            vil blive præsenteret. Brugeren aktiverer funktionen ved at vælge “Kategorisér emails”
+            under Outlook indstillinger.
+          </p>
+
+          <div id="mail_label_customization" class="figure-container">
+            <a href="{% static 'manualimages/mail_label_customization_da-dk' %}.png">
+              <img src="{% static 'manualimages/mail_label_customization_da-dk' %}.png" />
+            </a>
+            <p>Rapportmodul - Vis konto</p>
+          </div>
+
+          <p>
+            <b>Slå automatisk kategorisering til for hele organisationen</b>
+          </p>
+
+          <p>
+            Ved at aktivere indstillingen "Slå automatisk kategorisering til for hele organisationen"
+            aktiveres funktionen for alle medarbejdere i organisationen. Brugeren kan se indstillingerne
+            til denne funktion ved at klikke på deres bruger ikon i rapportmodulet. Herefter skal de
+            navigere til "Vis konto", hvor indstillingerne vil blive præsenteret.
+          </p>
+
+          <p>Fordele ved at tilvælge email kategoriseringsfunktionen:</p>
+
+          <ul>
             <li>
-              Vælg DefaultIcon-nøglen og indtast stien C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE (eller den sti, hvor Outlook.exe-filen ligger. Dette vil være forskelligt fra system til system og er blandt andet afhængig af, om I har installeret en 32 eller 64 bit-udgave af Outlook).
+              <b>Struktur:</b> Email kategoriseringsfunktionen skaber en tydelig og overskuelig
+              struktur i brugernes indbakke ved at markere emails, hvor OSdatascanner har fundet et match.
             </li>
             <li>
-              Vælg nøglen “command” som ligger under shell\open og redigér (Default) strengværiden og tilføj værdien C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE
+              <b>Falske positiver:</b> Brugeren har mulighed for at anvende 'Falsk positiv'-kategorien
+              til at markere emails. Dette informerer OSdatascanner om, at ethvert match i den markerede
+              mail betragtes som falsk positiv, og den skal derfor ikke behandles som et match.
+            </li>
+            <li>
+              <b>Effektivitet:</b> Da kategorierne gør det let at identificere emails indeholdende matches,
+              kan brugerne håndtere dem direkte fra Outlook. Denne integrerede tilgang reducerer antallet
+              af klik, der normalt kræves ved at skifte mellem applikationer.
+            </li>
+            <li>
+              <b>Brugerdefinerbar:</b> Brugerne har mulighed for at ændre på farverne, som de forskellige
+              kategorier har. Dette giver et personligt præg, når funktionen anvendes.
+            </li>
+            <li>
+              <b>Individuelt:</b> Da ikke alle brugere ønsker ændringer i deres mail-struktur,
+              kan den enkelte bruger vælge funktionaliteten til eller fra efter behov.
+            </li>
+            <li>
+              <b>Feedback:</b> Ved næste scanning vil OSdatascanner automatisk markere resultater
+              som håndteret, hvis de er blevet slettet i Outlook.
+            </li>
+          </ul>
+
+          <p>Vær opmærksom på:</p>
+
+          <ul>
+            <li>
+              <b>Skriverettigheder:</b> For at kunne anvende email kategoriseringsfunktionen kræver
+              OSdatascanner skriverettigheder til organisationens Microsoft-applikationer.
+            </li>
+            <li>
+              <b>Håndtering:</b> Ikke alle håndteringsopgaver kan udføres fra brugerens indbakke.
+              Hvis en email hverken skal slettes eller betragtes som falsk positiv, kræves der stadig
+              håndtering i rapportmodulet. Eksempelvis arkivering.
+            </li>
+            <li>
+              <b>Feedback:</b> Ved sletning af en email, der indeholder et match fra brugerens indbakke,
+              vil matchet forblive synligt i rapportmodulet, indtil næste scanning er gennemført.
+              Benyttes labels funktionen, anbefaler Magenta derfor, at brugeren udelukkende rydder op i Outlook.
+            </li>
+          </ul>
+
+          <h4>Udvidet Håndteringsmuligheder</h4>
+          <p>
+            Udvidede håndteringsmuligheder giver brugeren adgang til en liste af håndteringsmuligheder,
+            der anvendes til at specificere, hvordan et match er blevet håndteret.
+          </p>
+
+          <div id="handle_dropdown" class="figure-container">
+            <a href="{% static 'manualimages/handle_dropdown_da-dk' %}.png">
+              <img src="{% static 'manualimages/handle_dropdown_da-dk' %}.png" />
+            </a>
+            <p>Rapportmodul - Forside</p>
+          </div>
+
+          <p>Fordele ved at tilvælge udvidet håndteringsmuligheder:</p>
+
+          <ul>
+            <li>
+              <b>Specificering:</b> Brugeren får mulighed for at præcisere, hvordan et match er
+              blevet håndteret, hvilket tilføjer en værdifuld dimension til den strukturerede
+              håndteringsproces. Muligheden for at vælge den specifikke håndtering, der er blevet
+              anvendt i forbindelse med hvert match, skaber klarhed og sporbarhed i håndteringsprocessen.
+            </li>
+          </ul>
+
+          <p>Vær opmærksom på:</p>
+
+          <ul>
+            <li>
+              <b>Ekstra klik:</b> Hvis funktionen anvendes, tilføjes et ekstra klik under håndteringsprocessen.
+            </li>
+          </ul>
+
+          <h4>Fejlbeskeder</h4>
+          <p>
+            På administrationsmodulet vil brugere have adgang til en specifik fane kaldet "Fejlbeskeder",
+            hvor eventuelle fejlmeddelelser, der opstår under en scanning, præsenteres. Denne fane er et
+            dedikeret område til at overvåge og identificere eventuelle fejl, der kan påvirke scanningens udførelse.
+          </p>
+
+          <p>Fordele ved at tilvælge fejlbeskeder:</p>
+
+          <ul>
+            <li>
+              <b>Oversigt:</b> Brugeren får adgang til en oversigt over potentielle fejl, der kan opstå under et scan.
+              Dette giver administratorer mulighed for at holde styr på alle potentielle udfordringer eller
+              uregelmæssigheder i processen.
+            </li>
+            <li>
+              <b>Fejlfinding:</b> Hvis et scannerjob ikke finder de forventede matches på grund af en fejl,
+              kan årsagen muligvis identificeres på fejlbeskeder-siden. Dette kan gøres ved at f.eks. kigge
+              på mængden af fejl, der er opstået under scannet.
+            </li>
+          </ul>
+
+          <p>Vær opmærksom på:</p>
+
+          <ul>
+            <li>
+              <b>Kritiske og ikke kritiske fejl:</b> Ikke alle fejlmeddelelser er kritiske og tillader stadig
+              en korrekt gennemførelse af scannerjobbet. Når der scannes mange objekter, vil nogle naturligvis
+              være utilgængelige. Dette kan skyldes, at de er åbne, eller af andre grunde ikke kan nås på det
+              givne tidspunkt. Der vil dog stadig genereres en fejlbesked af dette. Det er derfor vigtigt at
+              skelne mellem ikke-kritiske fejl, der ikke forhindrer korrekt scanning, og kritiske fejl, såsom
+              manglende adgang til objekter, der kan påvirke scanningens udførelse.
+            </li>
+          </ul>
+
+          <h4>Arkiv</h4>
+          <p>
+            På arkivsiden har brugerne adgang til tidligere håndterede matches. Her kan status for hvert resultat
+            også redigeres, eksempelvis i tilfælde af fejlagtigt håndterede matches. Når der foretages en fortrydelse
+            eller redigering af et resultat, påvirker det kun matchets position i rapportmodulet og ændrer ikke selve
+            filen eller dens indhold. Arkivsiden er tilgængelig som standard, men organisationen har mulighed for at
+            fravælge denne funktion, hvis den ikke ønskes.
+          </p>
+
+          <p>Fordele ved at tilvælge arkiv:</p>
+
+          <ul>
+            <li>
+              <b>Overblik:</b> Arkivsiden giver brugeren en klar oversigt over, hvilke matches der er blevet
+              håndteret. Dette skaber et overblik over tidligere udførte håndteringsaktiviteter.
+            </li>
+            <li>
+              <b>Filtrering:</b> Brugere kan benytte filtreringsmulighederne på arkivsiden til at søge og
+              sortere håndterede matches baseret på specifikke kriterier, såsom scannerjob, kildetype,
+              håndteringsstatus og følsomhed.
+            </li>
+            <li>
+              <b>Fortryd:</b> I tilfælde af fejlagtig håndtering af matches giver arkivsiden brugerne mulighed
+              for at fortryde handlingen. Dette flytter matchet fra arkivsiden til rapportmodulet.
+              <ul>
+                <li>
+                  Vær opmærksom på, at dette kun har en virkning i rapportmodulet og ændrer ikke, hvordan
+                  matchet faktisk er blevet håndteret.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Rediger:</b> Ved at kombinere arkivsiden med udvidede håndteringsmuligheder får brugerne
+              mulighed for at redigere håndteringsstatussen for et match - f.eks. ved at ændre fra "redigeret"
+              til "slettet".
+              <ul>
+                <li>
+                  Vær opmærksom på, at dette kun har en virkning i rapportmodulet og ændrer ikke, hvordan
+                  matchet faktisk er blevet håndteret.
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>Support Knap</h4>
+          <p>
+            Support-knappen giver slutbrugeren adgang til effektivt at adressere eventuelle spørgsmål vedrørende
+            rapportmodulet. Dette opnås ved at give brugeren direkte adgang til brugermanualen fra rapportmodulet,
+            hvor omfattende svar og information om essentielle funktioner og processer kan findes.
+          </p>
+
+          <p>Fordele ved at tilvælge support-knappen:</p>
+
+          <ul>
+            <li>
+              <b>Svartid:</b> Brugerne kan hurtigt finde svar på spørgsmål uden at skulle vente på support eller
+              assistance, hvilket reducerer svartiden, og øger brugerens produktivitet.
+            </li>
+          </ul>
+
+          <h4>Underret Slutbrugere</h4>
+          <p>
+            Det er muligt at konfigurere underretninger til slutbrugerne, såfremt de har matches i rapportmodulet,
+            som kræver håndtering. Dette interval kan opsættes i administrationsmodulet under organisationer.
+            Tryk på navnet på den pågældende organisation og gå til "Emailudsendelse interval". Emails vil automatisk
+            blive sendt til slutbrugerne med matches i rapportmodulet i det ønskede interval.
+          </p>
+
+          <p>
+            Som standard er emails indstillet til at blive sendt hver fredag. Bemærk, at hvis funktionen
+            "Underret kun superadmin" er aktiveret, vil der ikke blive sendt emails til slutbrugerne.
+          </p>
+
+          <h4>CSV Udtræk</h4>
+          <p>
+            OSdatascanner tilbyder to muligheder for CSV-udtræk: Et fra DPO-overblikket og et fra Leder-overblikket.
+            Disse udtræk kan aktiveres efter organisationens behov. Det er muligt at vælge begge udtræk samtidig,
+            dog hvis organisationen kun har behov for ét, kan de også aktiveres individuelt.
+          </p>
+
+          <p>Når CSV-udtræk aktiveres, bliver en knap med teksten "Eksportér CSV" synlig på den relevante side.</p>
+
+          <p>
+            En bruger kan udføre et dataudtræk på afdelinger, som brugeren er leder eller DPO for. Fra DPO-overblikket
+            kan der derudover udføres et CSV-udtræk på organisationsniveau.
+          </p>
+
+          <p>Indholdet af CSV-udtrækkene afhænger af, hvorfra de udføres.</p>
+
+          <ul>
+            <li>
+              <b>DPO-overblik:</b>
+              <br>
+              Et CSV-udtræk fra DPO-overblikket kan vise overordnede data fra hele organisationen, scannerjobs eller
+              afdelinger. Udtrækket indeholder blandt andet følgende oplysninger: Håndteringsstatus for resultater,
+              antal resultater fordelt på status (håndteret/uhåndteret), antal nye resultater fundet pr. måned og
+              lignende data om organisationens resultater. Nedenfor ses et eksempel på et sådant udtræk.
+              <div id="dpo-csv" class="figure-container">
+                <a href="{% static 'manualimages/dpo-csv_da-dk' %}.png">
+                  <img src="{% static 'manualimages/dpo-csv_da-dk' %}.png" />
+                </a>
+                <p>CSV-udtræk - DPO-overblik</p>
+              </div>
+            </li>
+            <li>
+              <b>Leder-overblik:</b>
+              <br>
+              På leder-overblikket har brugere muligheden for at lave et CSV-udtræk af brugerstatistik for den eller
+              de afdelinger, de er leder af. Udtrækket indeholder data om brugerne i den valgte afdeling. Derudover
+              inkluderer udtrækket oplysninger om: antallet af matches en bruger er tildelt, hvilken afdeling udtrækket
+              omhandler samt en status for brugerens oprydningsarbejde.
+              <div id="leader-csv" class="figure-container">
+                <a href="{% static 'manualimages/leader-csv_da-dk' %}.png">
+                  <img src="{% static 'manualimages/leader-csv_da-dk' %}.png" />
+                </a>
+                <p>CSV-udtræk - Lederoverblik</p>
+              </div>
+            </li>
+          </ul>
+
+          <h1 id="import">3. Import af Organisatorisk Struktur</h1>
+          <p>
+            Det er muligt at importere organisatoriske strukturer til OSdatascanner via enten MSGraph eller LDAP.
+            Denne handling udføres på "Organisation"-fanen i administrationsmodulet, hvor de importerede strukturer
+            også vises. For at udføre en import skal den korrekte metode vælges. Denne opgave udføres af Magenta.
+          </p>
+
+          <h2 id="msgraph">Importering via MSGraph</h2>
+          <p>
+            For at importere organisatorisk struktur via MSGraph skal OSdatascanner have de rette tilladelser til at tilgå
+            Azure applikationen. Dette gøres ved at sende “application (client) ID” og en tilknyttet “client secret” til
+            den tekniske projektleder ved Magenta, som så kan tilføje dette til OSdatascanner. Læs mere <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">her.</a>
+          </p>
+
+          <p>
+            Når dette er gjort, påbegyndes en synkronisering fra “Organisation”-fanen i OSdatascanner ved at trykke på
+            “Tilføj Microsoft Graph konfiguration”. Herefter bliver brugeren bedt om at logge ind på en Microsoft konto,
+            som har globale administratorrettigheder til organisationen. Når der er logget ind, kan der klikkes på “Synkronisér”,
+            og den organisatoriske struktur vil derefter indlæses i OSdatascanner. Bemærk, at organisatoriske strukturer
+            importeret via MSGraph er “flade”. De enkelte enheder ved altså ikke noget om deres under- eller over-enheder,
+            men kun hvilke brugere der er tilknyttet.
+          </p>
+
+          <h2 id="ldap">Importering via LDAP</h2>
+          <p>
+            For at importere struktur igennem LDAP skal brugeren opbevare sin organisation på en LDAP-server (vi tester
+            løbende med både Microsofts Active Directory og OpenLDAP). Både ukrypterede og krypterede LDAP-forbindelser
+            understøttes. LDAP-importprocessen kræver mere opsætning end Microsoft Graph, men der er hjælpetekster til
+            alle de felter, der skal udfyldes.
+          </p>
+
+          <p>Det anbefales at have følgende oplysninger klar:</p>
+
+          <ul>
+            <li>URL til LDAP-serveren</li>
+            <li>Brugernavn og adgangskode for LDAP-servicekonto</li>
+            <li>LDAP DN for den del af LDAP-hierarkiet brugere skal importeres fra</li>
+            <li>
+              Object Security Identifier (SID) - Navnet på den LDAP attribute, som indeholder SID
+              <ul>
+                <li>
+                  Ejerskab af en on-premise fil, bestemmes ud fra SID'et på brugeren, der oprettede filen.
+                  OSdatascanner bruger derfor denne værdi til at identificere ejeren af en fil, så den rette
+                  bruger får tildelt matches fra filerne, de har oprettet.
+                </li>
+                <li>
+                  Vær opmærksom på, hvis en bruger kopierer filer fra en mappe til en anden, vil de nu
+                  stå som ejer af alle filerne. Dette skyldes, at en fil, der er flyttet til en anden mappe,
+                  bliver oprettet på ny. Derfor vil ejeren blive identificeret som brugeren, der flyttede
+                  filen. Dette medfører, at brugeren, der flyttede filen, vil blive tildelt resultaterne for
+                  matches fundet i filerne.
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <h2 id="use-of-import">Benyttelse af Importeret Struktur</h2>
+          <p>
+            Efter en organisatorisk struktur er importeret, kan et scannerjob sættes op til kun at scanne
+            objekter associeret med brugere i en eller flere bestemte organisatoriske enheder. For eksempel
+            kan en organisatorisk enhed sættes op til at indeholde alle medarbejdere i en bestemt afdeling,
+            så kun den valgte afdelings brugere scannes ved kørsel af det pågældende scan.
+          </p>
+
+          <h2 id="sync">Synkronisering af Struktur Mellem Moduler</h2>
+          <p>
+            Efter en organisatorisk struktur er importeret, synkroniseres rapportmodulet automatisk med
+            administrationsmodulet, så denne struktur også eksisterer i rapportmodulet.
+          </p>
+
+          <h1 id="admin">4. Administrationsmodulet</h1>
+          <p>
+            Administrationsmodulet henvender sig til organisationens administratorer og superbrugere, der
+            har ansvaret for OSdatascanner. Modulet er opdelt i følgende hovedsektioner:
+          </p>
+          <ul>
+            <li>
+              <b>Scannerstatus:</b> Denne sektion giver et overblik over igangværende og afsluttede scannerjobs.
+            </li>
+            <li>
+              <b>Scannerjob:</b> Her kan brugeren administrere de scannerjobs, der er opsat i organisationen.
+              Det inkluderer også muligheden for at tilføje, slette og redigere scanninger.
+            </li>
+            <li>
+              <b>Regler:</b> Denne sektion fokuserer på konfigurationen af regler i organisationen.
+              Reglerne definerer, hvad der bliver identificeret som et match under et scan.
+            </li>
+            <li>
+              <b>Organisationer:</b> Brugeren kan administrere organisationsspecifikke indstillinger og
+              konfigurationer i denne sektion.
+            </li>
+            <li>
+              <b>Administration (kun superbrugere):</b> Superbrugere har adgang til en ekstra sektion, der
+              tillader mere avanceret indstillinger til administration af OSdatascanner.
+            </li>
+          </ul>
+
+          <h2 id="scannerjobs">Scannerjobs</h2>
+          <p>
+            Scannerjobs udgør kernen af OSdatascanner, og det er her, administratorer konfigurerer,
+            hvad systemet skal scanne og hvornår. For at oprette et scannerjob skal der først navigeres
+            til "Scannerjob" siden.
+          </p>
+
+          <h4>Opret Scannerjob</h4>
+          <p>
+            Hvis brugeren vælger webscanneren, vil de se et overblik over organisationens eksisterende
+            scannerjobs. For at oprette et nyt scannerjob klikkes der på “Tilføj scannerjob” knappen,
+            hvorefter formularen for oprettelse af scannerjobs åbnes.
+          </p>
+
+          <p>
+            <b>Generelt:</b>
+          </p>
+
+          <div id="scannerjob-general" class="figure-container">
+            <a href="{% static 'manualimages/scannerjob_general_da-dk' %}.png">
+              <img src="{% static 'manualimages/scannerjob_general_da-dk' %}.png" />
+            </a>
+            <p>Admin modulet - Opret scannerjob</p>
+          </div>
+
+          <p>
+            Alle administratorer kan oprette scannerjobs, men kun en superbruger kan godkende et scannerjob.
+            På den måde kan opgaven med at oprette scannerjobs uddelegeres til flere personer, mens
+            ansvaret for, hvad der faktisk kan køres, ligger hos en gatekeeper i organisationen.
+          </p>
+
+          <p>
+            Når en superbruger opretter et scannerjob, kan det godkendes ved at sætte valideringsstatus til
+            "Gyldig". Dette medfører, at scannet kan køres efter, at formularen er udfyldt. Når en administrator
+            opretter en scanning, skal en superbruger efterfølgende validere scannerjobbet ved at redigere det
+            og sætte valideringsstatus til "Gyldig". Herefter kan scanningen køres.
+          </p>
+
+          <p>
+            <b>Scannerindstillinger”</b>
+          </p>
+
+          <div id="scannerjob-settings" class="figure-container">
+            <a href="{% static 'manualimages/scannerjob_settings_da-dk' %}.png">
+              <img src="{% static 'manualimages/scannerjob_settings_da-dk' %}.png" />
+            </a>
+            <p>Admin modulet - Opret scannerjob</p>
+          </div>
+
+          <ul>
+            <li>
+              <b>Scan billeder:</b> bruger OCR (Optical Character Recognition) til at finde matches i billeder,
+              som scanneren skulle støde på under et scan.
+            </li>
+            <li>
+              <b>Tjek dato for sidste ændring:</b> gør det muligt at springe filer over, der ikke er ændret siden
+              sidste scanning. Dette øger hastigheden af scanningen og viser ikke tidligere håndterede matches igen.
+            </li>
+            <li>
+              <b>Underret kun superadmin:</b> tilbageholder matches fra brugerne og viser i stedet alle matches
+              til superbrugeren.
+              <ul>
+                <li>
+                  Dette er tiltænkt testscan eller førstegangsscan, så superbrugeren kan undersøge, hvilke typer
+                  matches der forekommer, og eventuelt om der skal ændres i reglerne på scannet, inden et “rigtigt”
+                  scan sættes i gang.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Behold falske positive:</b> beholder matches håndteret som falsk positiv, hvis et scan blev kørt,
+              hvor disse ville opstå igen.
+            </li>
+          </ul>
+
+          <p>
+            <b>Opryddere</b>
+          </p>
+
+          <div id="scannerjob-remediator" class="figure-container">
+            <a href="{% static 'manualimages/scannerjob_remediator_da-dk' %}.png">
+              <img src="{% static 'manualimages/scannerjob_remediator_da-dk' %}.png" />
+            </a>
+            <p>Admin modulet - Opret scannerjob</p>
+          </div>
+
+          <p>
+            I nogle tilfælde vil et match ikke blive tildelt en specifik bruger. Dette kan opstå, når ejeren af en
+            fil ikke længere opstår som en bruger i organisationen. Dette løses ved at tildele en oprydder på
+            scannerjobbet. Datascanneren vil automatisk tildele disse matches til den eller de valgte oprydder(e).
+          </p>
+
+          <p>
+            Det er også muligt for en bruger at være universel oprydder, hvilket sætter dem som oprydder på alle
+            scannerjobs, der bliver oprettet.
+          </p>
+
+          <p>
+            For at tildele en bruger rollen som universel oprydder kræver det adgang til organisationen via
+            administrationsmodulet. Efterfølgende skal brugeren navigere til “Vis konti”, hvorfra vedkommende vælger
+            den ønskede bruger fra listen. Enhver bruger præsenteres med et afsnit kaldet “Universel oprydder”,
+            hvor det er muligt at til- eller fravælge dem som universel oprydder.
+          </p>
+
+          <p>
+            <b>Tilføj Regel</b>
+          </p>
+
+          <div id="scannerjob-rule" class="figure-container">
+            <a href="{% static 'manualimages/scannerjob_rule_da-dk' %}.png">
+              <img src="{% static 'manualimages/scannerjob_rule_da-dk' %}.png" />
+            </a>
+            <p>Admin modulet - Opret scannerjob</p>
+          </div>
+
+          <p>
+            For at scannerjobbet kan afgøre, hvad det skal finde matches på, skal der tilføjes en regel.
+            Yderligere information om regler vil blive uddybet i afsnittet <a href="#rules">Regler</a>.
+          </p>
+
+          <p>
+            <b>Planlæg Scan</b>
+          </p>
+
+          <div id="scannerjob-schedule" class="figure-container">
+            <a href="{% static 'manualimages/scannerjob_schedule_da-dk' %}.png">
+              <img src="{% static 'manualimages/scannerjob_schedule_da-dk' %}.png" />
+            </a>
+            <p>Admin modulet - Opret scannerjob</p>
+          </div>
+
+          <p>
+            Efter at have udfyldt formularen kan brugeren planlægge, hvor ofte scanningen skal køre.
+            Her kan brugeren tilføje et interval, så scanningen enten udføres dagligt, ugentligt, månedligt
+            eller årligt. Alternativt kan brugeren planlægge scanningen til en bestemt dato. Ved at bruge
+            denne funktion vil scanningen automatisk starte på den givet dato eller interval.
+          </p>
+
+          <p>Vær opmærksom på, at formularen varierer afhængigt af, hvilken type scanner der skal oprettes.</p>
+
+          <h4>Scannerjob - Webscanning</h4>
+
+          <p>Med webscanneren kan brugeren scanne alle relevante typer af data på en hjemmeside, herunder:</p>
+          <ul>
+            <li>HTML-indhold på hjemmesider og intranet</li>
+            <li>Officepakken - dokumenter, regneark og præsentationer</li>
+            <li>Scannede dokumenter og fotokopier</li>
+            <li>Billeder og PDF (OCR-scanning)</li>
+          </ul>
+
+          <p>
+            Webscanneren er også i stand til at følge et sitemap og scanne data, der ikke er linket til
+            fra andre sider. Derudover kan modulet finde døde links og informere relevante personer om,
+            at linket skal opdateres.
+          </p>
+
+          <p>
+            Resultatet af scanningen er en løbende dannet rapport. Resultaterne sendes til den relevante
+            oprydder og bliver tilgængelige i OSdatascanners rapportmodul. For at oprette et webscan vælges
+            menuen “Scannerjob”, herefter “Webscanner” og til sidst trykkes på “Tilføj scannerjob” til
+            højre for “Scannerjob”.
+          </p>
+
+          <p>
+            <b>Særligt ved denne formular:</b>
+          </p>
+          <ul>
+            <li>Ved oprettelse af et webscan skal brugeren oplyse en URL til hjemmesiden, der skal scannes.</li>
+            <li>
+              Det er muligt at konfigurere datascanneren til automatisk at hente sitemap fra serveren.
+              Dette fungerer dog kun, hvis der er et tilgængeligt sitemap. Alternativt er det også muligt
+              at uploade en sitemap index fil i <a href="https://www.sitemaps.org/protocol.html">Sitemap 0.9-format</a>
+              direkte til scanneren.
+            </li>
+            <li>
+              Det er muligt for scanneren at kontrollere hjemmesiden for døde links ved at vælge
+              "Tjek døde links" under scannerindstillingerne.
+            </li>
+          </ul>
+
+          <h4>Scannerjob - Filscanning</h4>
+          <p>
+            Ejeren af en fil identificeres ud fra den bruger, der har oprettet den. Det er vigtigt at
+            bemærke, hvis en anden bruger flytter alle filerne fra én mappe til en anden, vil systemet nu
+            betragte denne bruger som ejer. Den pågældende bruger vil herefter blive tildelt eventuelle
+            matches fundet i filerne i stedet for den oprindelige ejer.
+          </p>
+
+          <p>
+            Når OSdatascanner skal scanne et eller flere lokale fildrev, skal løsningen placeres på en
+            intern server hos kunden.
+          </p>
+
+          <p>
+            Filscanneren scanner så vidt muligt filerne i OSdatascanners hukommelse, og derfor bliver
+            følsomme personoplysninger aldrig lagret i OSdatascanner. Når filerne hentes over på serveren,
+            scannes de i en løbende proces, hvor allerede scannede filer overskrives, efterhånden som de
+            bliver scannet. Dette muliggør scanning af store mængder data uden at overskride serverens kapacitet.
+          </p>
+
+          <p>
+            Scanneren kan, baseret på filernes metadata, verificere, om filerne tidligere er blevet scannet,
+            og derved undgå dobbelt scanning.
+          </p>
+
+          <p>
+            For at oprette et filscan vælger brugeren menuen “Scannerjob”, herefter “Filscannere” og til
+            sidst trykkes på “Tilføj scannerjob” til højre for “Scannerjob”.
+          </p>
+
+          <p>
+            <b>Særligt for denne formular:</b>
+          </p>
+          <ul>
+            <li>Oplys UNC sti</li>
+            <li>Oplys hvilket drev, der skal scannes</li>
+            <li>Indtast brugerdomæne, brugernavn og adgangskode.</li>
+          </ul>
+
+          <h4>Office 365 Filscan - OneDrive/Sharepoint (MSGraph)</h4>
+          <p>
+            For at oprette et scannerjob til scan af OneDrive eller Sharepoint via MSGraph navigerer brugeren
+            til menuen “Scannerjob”. Herefter vælges “Office 365 OneDrive filscanner”, hvor brugeren så
+            trykker på “Tilføj scannerjob” knappen.
+          </p>
+
+          <p>
+            Brugeren bliver nu bedt om at logge ind på en Microsoft-konto, som har adgang til det pågældende
+            OneDrive- eller SharePoint-drev. Når brugeren er logget ind, føres de automatisk videre til en
+            form for oprettelse af et scannerjob. Hvis brugeren tidligere har været logget ind, bliver
+            vedkommende ikke bedt om at logge ind igen.
+          </p>
+
+          <p>
+            <b>Særligt for denne formular:</b>
+          </p>
+          <ul>
+            <li>Brugeren skal angive, om de ønsker at scanne SharePoint-mapper, OneDrive-drev eller begge dele.</li>
+            <li>
+              Under "Tilføj brugere" kan brugeren specificere, om vedkommende ønsker at scanne alle brugere
+              tilknyttet organisationen. Hvis ikke, kan vedkommende vælge at scanne brugere fra bestemte
+              organisatoriske enheder.
+            </li>
+          </ul>
+
+          <h4>Office 365 Teams Filscan - Microsoft Teams (MSGraph)</h4>
+          <p>
+            For at oprette et scannerjob til scan af filer delt i Microsoft Teams via MSGraph navigerer
+            brugeren til menuen “Scannerjob”. Herefter vælges “Office 365 Teams filscanner”, hvor brugeren
+            så trykker på “Tilføj scannerjob” knappen.
+          </p>
+
+          <p>
+            Brugeren bliver nu bedt om at logge ind på en Microsoft-konto, som har adgang til de pågældende
+            Teams. Når brugeren er logget ind, føres de automatisk videre til en form for oprettelse af et
+            scannerjob. Hvis brugeren tidligere har været logget ind, bliver vedkommende ikke bedt om at
+            logge ind igen.
+          </p>
+
+          <p>
+            Vær opmærksom på, at et Teams-scan ikke scanner beskeder sendt mellem kolleger, men kun de filer,
+            der er blevet delt via Microsoft Teams.
+          </p>
+
+          <h4>Scannerjob - Mailscanning</h4>
+
+          <p>
+            Med en mailscanning hentes mails og mail-mapper over i scannings serverens hukommelse,
+            hvor de scannes. Ligesom filer lagres mails ikke på serveren.
+          </p>
+
+          <p>
+            Efter afsluttet mailscanning sendes en rapport til de dataansvarlige via rapportmodulet.
+            Rapporten vil indeholde information om, hvor de usikre mails med følsomme personoplysninger
+            er placeret.
+          </p>
+
+          <h4>Exchange (on-prem)</h4>
+          <p>
+            For at oprette et exchangescannerjob vælger brugeren menuen “Scannerjob”, herefter
+            “Exchangescannere” og til sidst trykkes der på “Tilføj scannerjob” knappen til højre
+            for “Scannerjob”.
+          </p>
+
+          <p>
+            <b>Særligt for denne formular:</b>
+          </p>
+          <ul>
+            <li>Oplys domænet, altså det der kommer efter @ i en email adresse.</li>
+            <li>Oplys Service Endpoint.</li>
+            <li>Indtast brugernavn og adgangskode.</li>
+            <li>Oplys manuelt hvilke mailadresser, der skal scannes eller vælg ud fra et udtræk fra AD.</li>
+          </ul>
+
+          <h4>Office 365 Mailscan (MSGraph)</h4>
+          <p>
+            For at oprette et scannerjob til scan af mails via MSGraph navigerer brugeren til menuen
+            “Scannerjob”. Herefter vælges “Office 365 mailscanner”, hvor brugeren trykker på “Tilføj
+            scannerjob” knappen.
+          </p>
+
+          <p>
+            Brugeren bliver nu bedt om at logge ind med en Microsoft-konto, der har global administrator
+            adgang til organisationen. Når brugeren er logget ind, føres de automatisk videre til en form
+            for oprettelse af et scannerjob. Hvis brugeren tidligere har været logget ind, bliver
+            vedkommende ikke bedt om at logge ind igen.
+          </p>
+
+          <p>
+            <b>Særligt for denne formular:</b>
+          </p>
+          <ul>
+            <li>
+              Under “tilføj brugere” kan brugeren specificere, om vedkommende vil scanne alle brugere
+              tilknyttet organisationen, eller kun brugere fra bestemte organisatoriske enheder, der er blevet
+              importeret (se <a href="#msgraph">Importering via MSGraph</a>).
+            </li>
+            <li>Oplys, om slettet post mappen skal scannes.</li>
+            <li>Oplys, om synkroniseringsproblemer mappen skal scannes.</li>
+          </ul>
+
+          <h4>Scannerjob - Kalenderscanning</h4>
+          <p>
+            Med kalenderscanneren scannes begivenheder i den valgte brugers kalender.
+            Efter afsluttet scanning sendes en rapport til brugeren, hvis kalender er blevet scannet, via
+            rapportmodulet. Rapporten vil indeholde information om, hvilke følsomme personoplysninger der
+            blev fundet, og hvor i kalenderen de er placeret.
+          </p>
+
+          <p>
+            For at oprette et scannerjob til scan af en kalender via MSGraph navigerer brugeren til menuen
+            “Scannerjob”. Herefter vælges “Office 365 kalenderscanner”, hvor brugeren trykker på “Tilføj
+            scannerjob” knappen.
+          </p>
+
+          <p>
+            Brugeren bliver nu bedt om at logge ind med en Microsoft-konto, der har global administrator
+            adgang til organisationen. Når brugeren er logget ind, føres de automatisk videre til en form
+            for oprettelse af et scannerjob. Hvis brugeren tidligere har været logget ind, bliver vedkommende
+            ikke bedt om at logge ind igen.
+          </p>
+
+          <h2 id="rules">Regler</h2>
+          <p>Regler konfigureres i menupunktet "Regler".</p>
+
+          <h4>Systemregler</h4>
+          <p>
+            OSdatascanner kommer med nogle indbyggede systemregler. Disse regler er mere komplekse algoritmer
+            og kan derfor ikke redigeres. Et eksempel på en indbygget regel er CPR regel. Denne regel scanner
+            for CPR-numre og beregner sandsynligheden for, om et match er et ægte CPR-nummer (og ikke eksempelvis et P-nummer).
+          </p>
+
+          <h4>Brugerregler</h4>
+          <p>
+            I OSdatascanner har administratorer mulighed for at tilføje egne regler, så systemet kan scanne
+            efter specifikke fraser. Brugerregler kan opbygges som regulære udtryk. Hvis brugeren har kendskab
+            til regulære udtryk, kan vedkommende frit oprette regler i systemet. For dem uden kendskab til
+            regulære udtryk, er der også mulighed for at oprette regler ved hjælp af regelbyggeren baseret på
+            allerede definerede regler. Hvis brugeren ønsker en dansk guide til regulære udtryk, har Computerworld
+            udarbejdet en introduktion, som brugeren kan starte med at læse
+            <a href="https://www.computerworld.dk/uploads/eksperten-guider/1156-Regulaere-udtryk%2C-1.-del.pdf">her</a>.
+          </p>
+
+          <h4>Opret Regel</h4>
+          <p>Ønsker brugeren at oprette en ny brugerregel, klikker vedkommende på “Tilføj regel” knappen til højre på siden.</p>
+
+          <p>
+            Herefter ledes brugeren til menuen for oprettelse af en ny regel, hvorefter reglen skal gives et
+            navn, der skal vælges den korrekte organisation og tilføjes alle udtryk, der skal optræde for, at
+            scanneren kan generere et match.
+          </p>
+
+          <div id="create-rule" class="figure-container">
+            <a href="{% static 'manualimages/create_rule_da-dk' %}.png">
+              <img src="{% static 'manualimages/create_rule_da-dk' %}.png" />
+            </a>
+            <p>Admin modulet - Tilføj Regel</p>
+          </div>
+
+          <p>
+            <b>Valgmuligheder i regelbyggeren</b>
+          </p>
+ 
+          <p>
+            En regel i datascanneren er opbygget af et eller flere regulære udtryk. Det er dog ikke nødvendigt
+            at kunne skrive et fuldt regulært udtryk fra bunden, da datascanneren giver brugeren mulighed for
+            at opbygge en regel med blokke af regulære udtryk.
+          </p>
+
+          <ul>
+            <li>
+              <b>Alle fra:</b> Alle fra skal bruge minimum to supplerende udtryk, såsom CPR-nr og adresse,
+              og vil først identificere et match, når begge udtrykkene opstår i det scannede objekt.
+            </li>
+            <li>
+              <b>Én fra:</b> Én fra skal også bruge minimum to supplerende udtryk, men i modsætning til alle
+              fra vil dette udtryk identificere et match, når bare en af udtrykkene opstår i det scannede objekt.
+            </li>
+            <li>
+              <b>Ikke:</b> Ekskluderer det valgte udtryk, så datascanneren ikke vil identificere dette som et match.
+            </li>
+            <li>
+              <b>CPR-nr:</b> CPR-nr er en systemregel, der sørger for, at datascanneren matcher på valide CPR-numre.
+            </li>
+            <li>
+              <b>Regulært udtryk:</b> Regulært udtryk gør det muligt for brugeren at bruge regulære udtryk til
+              selv at oprette en regel fra bunden.
+            </li>
+            <li>
+              <b>Personnavne:</b> Personnavne er en regel, der sørger for, at datascanneren matcher på danske
+              for- og efternavne.
+            </li>
+            <li>
+              <b>Adresse:</b> Adresse er en regel, der sørger for, at datascanneren matcher på danske adresser.
+            </li>
+            <li>
+              <b>Email header:</b> Email header får datascanneren til at kigge de øverste felter af en email
+              igennem. Når brugeren vælger email header, skal vedkommende angive hvilket felt, der skal søges
+              i. F.eks. ved at indsætte “subject” vil emnefeltet i emails blive scannet.
+            </li>
+          </ul>
+
+          <h4>Flere Regler på Ét Scan</h4>
+          <p>
+            Det er ikke muligt at tilføje flere regler til et scannerjob. For at få scanneren til at matche på
+            flere punkter skal der opbygges en regel, der gør dette muligt. Eksempelvis, hvis brugeren opbygger
+            en regel, der scanner efter både CPR-numre og adresser, vil scanneren oprette et match afhængig af
+            den givne betingelse. Med regelbyggerens “én fra” betingelse vil et match blive fundet, når enten
+            et CPR-nummer eller en adresse er fundet. Hvis regelbyggerens “alle fra” betingelse derimod anvendes,
+            vil et match først blive fundet, når både et CPR-nummer og en adresse er fundet.
+          </p>
+
+          <h1 id="report">5. Rapportmodulet</h1>
+          <p>
+            Mens Administrationsmodulet retter sig mod “Administratorer” og “Superbrugere”, er Rapportmodulet
+            tiltænkt til brugertypen “medarbejder”. Dette er stedet, hvor matches, der er fundet under et scan,
+            håndteres af den enkelte bruger. Systemet er konfigureret således, at matches uddelegeres til den
+            bruger, der er ansvarlig for datakilden, som matchet er fundet i.
+          </p>
+
+          <p>
+            For information om håndteringsflowet, samt en gennemgang af rapportmodulet på bruger niveau,
+            henvises til brugerhåndbogen, der findes under support-knappen på rapportmodulet.
+          </p>
+
+          <h1 id="appendix">6. Bilag</h1>
+ 
+          <h2>Teknisk Implementering og Opsætning af OSdatascanner</h2>
+          <p>Følgende guide skal implementeres, før Magenta kan påbegynde installationen af OSdatascanner</p>
+
+          <h4>Server Specs</h4>
+          <p>
+            OSdatascanner kræver to Ubuntu 24.04 LTS (GUI version ikke nødvendig) servere med ssh adgang
+            og en bruger med administratorrettigheder.
+          </p>
+
+          <p>
+            Den ene server skal køre scannermotoren, samt de beskedkøer, OSdatascanner bruger til interne
+            kommunikationer. Her er diskpladsen ikke afgørende, men det er CPU-antallet og RAM derimod.
+            En passende opsætning her kunne være
+          </p>
+          <ul>
+            <li>8+ CPU-kerner</li>
+            <li>32-64GB RAM</li>
+            <li>256GB diskplads</li>
+          </ul>
+
+          <p>
+            Jo flere kerner man stiller til rådighed på scannermotorserveren, jo flere filer kan man scanne
+            samtidigt.
+          </p>
+
+          <p>
+            Den anden server skal køre web- og databaseservere, så der skal tildeles mere diskplads til
+            opbevaring af organisatoriske informationer, resultater m.fl. Her kunne en passende opsætning
+            lyde på
+          </p>
+          <ul>
+            <li>4 CPU-kerner</li>
+            <li>8-16GB RAM</li>
+            <li>500+GB diskplads</li>
+          </ul>
+
+          <p>
+            <b>OBS:</b> OSdatascanner antager som udgangspunkt at den tildelte diskplads befinder sig på
+            “/” stien. Benyttes en anden disk opdeling er det vigtigt at Magenta informeres, således at
+            database m.m. konfigureres til at benytte ønskede sti. Det kan f.eks. være “/data” eller lign.
+          </p>
+ 
+          <p>
+            OSdatascanner kan skaleres ud på flere servere alt efter, hvor store datakilder der skal scannes,
+            og hvor hurtigt disse kilder skal scannes.
+          </p>
+ 
+          <h4>SSL-certifikater</h4>
+          <p>
+            Magenta sørger for, at OSdatascanners administrations- og rapportmodul bliver opsat på domæner
+            navngivet på følgende måde: <i>organisation</i>.os2datascanner.dk.
+          </p>
+
+          <p>
+            Domænerne er fortsat kun tilgængelige internt hos kunden, men det tillader Magenta at stå for
+            opsætning af SSL certifikater samt DNS.
+          </p>
+
+          <h4>Servicekonti til OSdatascanner</h4>
+          <p>
+            Alt efter hvilken datakilde der scannes, skal der opsættes korresponderende bruger(e) med de
+            rette privilegier.
+          </p>
+
+          <ul>
+            <li>
+              <b>Filscan:</b> Én bruger der har adgang til netværksdrev for, at filscan kan udføres.
+            </li>
+            <li>
+              <b>Exchange services:</b> Én Exchange service-konto med Application Impersonation
+              management rollen
+            </li>
+          </ul>
+
+          <p>Ønskes der sletterettigheder fra OSdatascanner, skal disse også have skriveadgang.</p>
+
+          <h4>SSO</h4>
+          <p>For at kunne opsætte SSO på OS2datascanner skal Magenta have følgende information fra kunden:</p>
+          <ul>
+            <li>Federation metadata URL eller fil</li>
+            <li>Eventuelt NameID Format</li>
+          </ul>
+
+          <p>
+            For en gennemførlig guide til opsætningen af SSO mellem OSdatascanner og brugerens IDP
+            henvises til den tekniske dokumentation for OSdatascanner
+            <a href="https://os2datascanner.readthedocs.io/single-sign-on/#">her</a>.
+          </p>
+
+          <h4>Åbning af Matches i Browser for Filscan</h4>
+          <p>
+            Af sikkerhedsmæssige årsager tillader de fleste moderne browsere ikke, at man åbner
+            filer via file:// protokollen.
+          </p>
+
+          <p>Ønsker man at benytte “Åbn fil/mappe”-funktionen til filer, er det derfor nødvendigt, at:</p>
+          <ul>
+            <li>Man benytter Microsoft Edge</li>
+            <li>
+              IntranetFileLinksEnabled policy’en er sat til i registry.
+              (<a href="https://docs.microsoft.com/en-us/deployedge/microsoft-edge-policies#intranetfilelinksenabled">Link til policy</a>)
+            </li>
+            <li>De aftalte domæner for OSdatascanner tilføjes til “Local Intranet” for browseren</li>
+          </ul>
+
+          <h4>Åbning af Matches i Browser for Mailscan</h4>
+          <p>
+            OSdatascanners rapportmodul gør brug af protokollen “Outlook://” til at åbne mails.
+            Dette har indtil Outlook 2007 fungeret uden yderligere opsætning. Men i nyere versioner
+            af Outlook er man nødt til manuelt at tilføje protokollen til Windows registry.
+            For Outlook 2010, 2013 og 2016 gøres det på samme måde, dog vil stien til Outlook.exe være
+            forskellig. For Outlook 2016 kan stien se således ud: “C:\Program Files (x86)\Microsoft Office\root\ Office16\outlook.exe”.
+          </p>
+
+          <p>Opsætningen foretages på følgende måde:</p>
+          <ol>
+            <li>
+              Åben Windows registry editor og vælg nøglen <b>HKEY_CLASS_ROOT</b> i roden af træet.
+            </li>
+            <li>
+              Tilføj en ny nøgle, som kaldes <b>outlook</b>
+              <ol type="a">
+                <li>
+                  Vælg nøglen og indsæt <b>URL:Outlook Folders</b> i dens “value data”-felt.
+                  <ol type="i">
+                    <li>Vælg outlook nøglen, klik redigér > ny > streng værdi</li>
+                    <li>
+                      Navngiv denne: <b>URL Protocol</b> og opret.
+                    </li>
+                  </ol>
+                </li>
+                <li>
+                  Vælg outlook nøglen og klik redigér > ny > nøgle
+                  <ol type="i">
+                    <li>
+                      Tilføj en undernøgle kaldet <b>DefaultIcon</b>
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+              Vælg DefaultIcon nøglen og indtast teksten: C:\Program Files\Microsoft Office\Office12\OUTLOOK.EXE
+              - Note: Denne sti vil sandsynligvis være forskellig. Undersøg hvor Outlook.exe-filen ligger på
+              kundens systemer, og hold øje med om kunden har installeret en 32-bit eller 64-bit udgave af Outlook.
+            </li>
+            <li>
+              Tilføj en undernøgle <b>\shell\open\command.</b>
+            </li>
+            <li>
+              Vælg nøglen command som ligger under shell\open og redigér (Default) streng værdien og tilføj værdien:
+              “C:\Program Files\Microsoft Office\Office12\ OUTLOOK.EXE" /select "%1”.
+            </li>
+          </ol>
+
+          <h4>Firewall Adgang</h4>
+          <p>
+            Magenta vil gerne kunne etablere TCP-forbindelser fra jeres to servere mod port 4505+4506 på
+            saltmaster.os2ds.magentahosted.dk. Det vil sige udgående trafik fra jeres netværk.
+          </p>
+
+          <p>
+            Serveren vil opsættes, så den kun modtager og sender trafik til en IP-adresse eller et domæne
+            samt de specificerede porte. Altså ikke en åbning i firewallen til hele internettet. Der er
+            altså tale om en indsnævring, der gør det sikkert at benytte OSdatascanner.
+          </p>
+
+          <p>
+            Internt skal organisationens brugere kunne åbne TLS-forbindelser på port <b>443</b> til administrations-
+            og rapportmodulerne for at kunne bruge systemet. Dette sikrer derfor, at organisationens firewall-
+            og VPN-indstillinger ikke blokerer for denne adgang.
+          </p>
+
+          <h4>Mailudsendelse/mailnotifikationer</h4>
+          <p>
+            OSdatascanner benytter altid en tredjepartstjeneste til udsendelse af mails, nemlig
+            <a href="https://www.mailgun.com/">Mailgun</a>. Læg mærke til, at denne tjeneste også
+            bruges for on premises installationer. Dette skyldes, at der ikke er mulighed for at
+            sende mails igennem en intern SMTP-server, da sådanne servere plejer at være mistænkelige
+            over, at OSdatascanners beskeder er spam.
+          </p>
+
+          <p>
+            Med hensyn til GDPR-compliance bør det nævnes, at Mailguns EU-infrastruktur benyttes, så der
+            ikke er risiko for, at mailindholdet og -metadata unødvendigt kommer udenfor EU. Derudover
+            indeholder disse mails aldrig personfølsomme informationer - de giver blot et overblik over,
+            hvor mange matches, der er blevet fundet (eller hvor meget data, der er blevet scannet).
+          </p>
+
+          <p>
+            OSdatascanners webserver har også ansvar for mailudsendelser og skal derfor kunne kommunikere
+            med serveren <b>smtp.eu.mailgun.org</b> på port <b>587</b> (standardporten for krypterede mails).
+          </p>
+
+          <h4>Teams-scan</h4>
+          <p>Følgende permissions skal opsættes i Azure app'en for at scanne teams:</p>
+          <ul>
+            <li>Directory.Read.All</li>
+            <li>Team.ReadBasic.All</li>
+          </ul>
+
+          <h4>Datascanners Arkitektur og Sikkerhed</h4>
+          <p>
+            OSdatascanner er et system designet til at hjælpe organisationer med at overholde EU's
+            Persondataforordning (GDPR). OSdatascanner er designet med fokus på at finde personhenførbare data
+            og kun gemme referencer til det fundne materiale. Systemarkitekturen bag OSdatascanner er designet
+            ud fra samme grundtanke.
+          </p>
+
+          <p>
+            OSdatascanner må ikke være medårsag til, at personhenførbare data bliver tilgængelige for andre end
+            dem, der har lov til at se dem.
+          </p>
+
+          <h4>System Arkitekturen</h4>
+          <p>
+            OSdatascanner er designet ud fra flere sikkerhedsprincipper, herunder er det vigtigste isolation.
+            OSdatascanner er opdelt i moduler, hvor hvert enkelt modul har sit eget ansvarsområde:
+          </p>
+
+          <p>OSdatascanner kan inddeles i tre hovedmoduler.</p>
+
+          <ol>
+            <li>
+              OSdatascanners administrationsmodul administrerer hvilke datakilder, der skal scannes. Systemet
+              er en webapplikation og er tiltænkt systemadministratorer og systemejere, der skal planlægge og
+              opsætte de regler og datakilder, der skal scannes i. Brugerne i administrationsmodulet skal
+              oprettes manuelt. Alle data vedrørende adgang til datakilder AES-krypteres.
+            </li>
+            <li>
+              OSdatascanners scannermotor er en række processer, der hver har deres ansvarsområde i bearbejdelsen
+              af data fra de datakilder, som skal scannes. Alle processerne kommunikerer udelukkende via beskedkøer
+              og gør derfor ikke brug af nogen form for database eller persistering af bearbejdet data. Processerne
+              har begrænset adgang til scannermotor-serveren og kan f.eks. kun oprette midlertidige filer. Data,
+              som skal bearbejdes, kan lægges midlertidigt på serveren, men overlever kun så længe, dataen bliver
+              bearbejdet.
+            </li>
+            <li>
+              OSdatascanners rapportmodul viser de resultater, scannermotoren har fundet til de relevante brugere.
+              På basis af metadata fra scannede objekter kan Magenta aflæse, hvem der har ansvar for dem og automatisk
+              tildele matches til rette vedkommende. Brugerne i rapportmodulet oprettes typisk automatisk gennem
+              organisatorisk import eller SSO. Alle data i rapportmodulet er blevet filtreret for at fjerne adgangskoder,
+              API-nøgler mv. så kunden sikkert kan give alle organisatoriske brugere adgang til dette modul.
             </li>
           </ol>
 
           <p>
-            Man kan også oprette en fil ved navn outlook.reg med følgende tekst (vær igen opmærksom på, at stien til Outlook.exe skal være korrekt):
+            Fælles for alle tre moduler er, at de kommunikerer via en beskedkø. De er derfor løst koblet og kan altså
+            leve på hver deres server. Al kommunikation mellem de tre moduler foregår krypteret.
           </p>
 
-          <pre>Windows Registry Editor Version 5.00
-
-[HKEY_CURRENT_USER\SOFTWARE\Classes\outlook]
-@="URL:Outlook Folders"
-"URL Protocol"=""
-[HKEY_CURRENT_USER\SOFTWARE\Classes\outlook\DefaultIcon]
-[HKEY_CURRENT_USER\SOFTWARE\Classes\outlook\shell]
-[HKEY_CURRENT_USER\SOFTWARE\Classes\outlook\shell\open]
-[HKEY_CURRENT_USER\SOFTWARE\Classes\outlook\shell\open\command]
-@="\"C:\\Program Files (x86)\\Microsoft Office\\Office15\\OUTLOOK.EXE\"
-/select \"%1\""</pre>
+          <h4>Anbefaling</h4>
+          <p>
+            Det anbefales kraftigt, at OSdatascanner installeres på det samme netværk, som de datakilder
+            OSdatascanner er tiltænkt at scanne, således at data aldrig forlader organisationens netværk.
+          </p>
 
           <p>
-            Hvis du fra Registry Editor importerer outlook.reg-filen vil de forskellige nøgler automatisk blive opdateret i registry.
-          </p>
-          <br>
-          <h4 id="Arkitekturtegninger">Arkitekturtegninger</h4>
-          <a href="../static/svg/os2ds-arkitektur.png" target="_blank">
-            <img src="../static/svg/os2ds-arkitektur.png"
-                 alt="Illustration af OS2datascanners arkitektur">
-          </a>
-
-
-          <h3 id="Downloads">Downloads</h3>
-
-          <p>
-            <strong><a href="../static/svg/OS2DS-Brugerhaandbog.pdf" download>Brugerhåndbog</a></strong>
-          </p>
-          <p>
-            <strong><a href="../static/svg/OS2DS-Handout.pdf" download>Handout til afdelingschefer mv.</a></strong>
+            For en fyldestgørende teknisk dokumentation og indblik i koden, kan kunden besøge vores github
+            repository her: <a href="https://github.com/magenta-aps/osdatascanner">https://github.com/magenta-aps/osdatascanner</a>.
           </p>
 
+          <h4>Understøttede Filformater</h4>
+          <div id="supported_file_formats" class="figure-container">
+            <a href="{% static 'manualimages/supported_file_formats_da-dk' %}.png">
+              <img src="{% static 'manualimages/supported_file_formats_da-dk' %}.png" />
+            </a>
+            <p>Understøttede Filformater</p>
+          </div>
 
+          <h4 id="sources">Understøttede Datakilder</h4>
+          <ul>
+            <li>Webkilder (hjemmesider)</li>
+            <li>On premises filer</li>
+            <li>On premises mails (MS Exchange)</li>
+            <li>Office 365 cloud kilder (Outlook, OneDrive, Calendar, Teams)</li>
+          </ul>
         </div>
       </div>
     </div>
   </main>
 {% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'js/manual/manualHighlighting.js' %} "></script>
+{% endblock scripts %}
