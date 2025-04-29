@@ -113,11 +113,14 @@ class SBSYSDBSource(Source):
     @Source.json_handler(type_label)
     @staticmethod
     def from_json_object(obj):
-        reflect_tables = tuple(obj.get("reflect_tables", []))
+        reflect_tables = (
+                tuple(rt)
+                if (rt := obj.get("reflect_tables"))
+                else None)
         return SBSYSDBSource(
                 obj["server"], obj["port"],
                 obj["db"], obj["user"], obj["password"],
-                reflect_tables=reflect_tables or None,
+                reflect_tables=reflect_tables,
                 base_weblink=obj.get("base_weblink"))
 
 
