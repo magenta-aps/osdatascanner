@@ -4,6 +4,10 @@
 
 ""
 
+### New in this release
+
+- Created new scanner type for sharepoint resources.
+
 ### General improvements
 
 - Access to creating and editing grants now requires a django permission in the admin module.

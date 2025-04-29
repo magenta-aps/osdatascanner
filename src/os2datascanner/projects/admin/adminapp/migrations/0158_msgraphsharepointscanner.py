@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('grants', '0013_add_last_updated'),
-        ('os2datascanner', '0156_scanner_scan_entire_org'),
+        ('os2datascanner', '0157_add_grant_permissions_to_groups'),
     ]
 
     operations = [
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('graph_grant', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='grants.graphgrant', verbose_name='Graph grant')),
             ],
             options={
-                'verbose_name': 'MSGraph Sharepoint filescanner',
+                'verbose_name': 'MSGraph SharePoint scanner',
                 'ordering': ['name'],
                 'abstract': False,
             },
