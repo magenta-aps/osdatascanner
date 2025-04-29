@@ -6,6 +6,7 @@
 
 ### New in this release
 
+- Removed obsolete translations
 
 ### General improvements
 
