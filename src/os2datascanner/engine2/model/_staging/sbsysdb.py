@@ -83,7 +83,7 @@ class SBSYSDBSource(Source):
                     # terms of the unit you request
                     "?Age?": sql_func.datediff(
                             sql_text("day"), Sag.c.LastChanged, sql_func.now())
-                })
+                }).where(constraint)  # Include the required_columns constraint
 
         for db_row in exec_expr(engine, expr, *column_labels.keys()):
             match (self._base_weblink, db_row):
@@ -113,11 +113,14 @@ class SBSYSDBSource(Source):
     @Source.json_handler(type_label)
     @staticmethod
     def from_json_object(obj):
-        reflect_tables = tuple(obj.get("reflect_tables", []))
+        reflect_tables = (
+                tuple(rt)
+                if (rt := obj.get("reflect_tables"))
+                else None)
         return SBSYSDBSource(
                 obj["server"], obj["port"],
                 obj["db"], obj["user"], obj["password"],
-                reflect_tables=reflect_tables or None,
+                reflect_tables=reflect_tables,
                 base_weblink=obj.get("base_weblink"))
 
 
