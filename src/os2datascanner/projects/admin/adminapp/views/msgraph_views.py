@@ -24,6 +24,7 @@ from ..models.scannerjobs.msgraph import MSGraphMailScanner
 from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
+from ..models.scannerjobs.msgraph import MSGraphSharepointScanner
 from .scanner_views import (
     ScannerBase,
     ScannerList,
@@ -352,3 +353,60 @@ class MSGraphTeamsFileScannerCopy(GrantMixin, ScannerCopy):
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
+
+
+class MSGraphSharepointList(ScannerList):
+    model = MSGraphSharepointScanner
+    type = 'msgraphsharepoint'
+
+
+msgraph_sharepoint_scanner_fields = [
+     "graph_grant",
+     "scan_drives",
+     "scan_lists",
+ ]
+
+
+class MSGraphSharepointScannerCreate(View):
+    def dispatch(self, request, *args, **kwargs):
+        user = UserWrapper(request.user)
+        if GraphGrant.objects.filter(user.make_org_Q()).exists():
+            handler = _MSGraphMailScannerCreate.as_view()
+        else:
+            handler = MSGraphGrantRequestView.as_view(
+                    redirect_token="msgraphsharepointscanner_add")
+        return handler(request, *args, **kwargs)
+
+
+class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
+    model = MSGraphSharepointScanner
+    type = 'msgraphsharepoint'
+    fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
+
+    def get_form(self, form_class=None):
+        return patch_form(self, super().get_form(form_class))
+
+
+class MSGraphSharepointCopy(GrantMixin, ScannerCopy):
+    """Creates a copy of an existing Microsoft Graph mail scanner job."""
+    model = MSGraphSharepointScanner
+    type = 'msgraphsharepoint'
+    fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
+
+
+class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
+    model = MSGraphSharepointScanner
+    type = 'msgraphsharepoint'
+    fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
+
+    def get_grant_form_classes(self):
+        return {"graph_grant": MSGraphGrantScannerForm}
+
+    def get_form(self, form_class=None):
+        return patch_form(self, super().get_form(form_class))

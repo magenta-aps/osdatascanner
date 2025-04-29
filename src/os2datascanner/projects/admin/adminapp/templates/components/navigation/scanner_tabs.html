@@ -37,6 +37,11 @@
              class="tabs__control"
              href="{% url "msgraphcalendarscanners" %}">{% trans "Office 365 kalenderscanner" %}</a>
         {% endif %}
+        {% if settings.ENABLE_MSGRAPH_SHAREPOINTSCAN %}
+          <a id="msgraph-sharepoint"
+             class="tabs__control"
+             href="{% url "msgraphsharepointscanners" %}">{% trans "Office 365 SharePoint scanner" %}</a>
+        {% endif %}
         {% if settings.ENABLE_GOOGLEDRIVESCAN %}
           <a id="googledrive"
              class="tabs__control"
@@ -91,6 +96,7 @@
     const msgraph_file = document.getElementById("msgraph-file")
     const msgraph_teams_file = document.getElementById("msgraph-teams-file")
     const msgraph_calendar = document.getElementById("msgraph-calendar")
+    const msgraph_sharepoint = document.getElementById("msgraph-sharepoint")
     const googledrive = document.getElementById("googledrive")
     const gmail = document.getElementById("gmail")
     const sbsys = document.getElementById("sbsys")
@@ -121,6 +127,9 @@
         } else if (msgraph_calendar) {
             window.location.href = "/msgraphcalendarscanners/"
             msgraph_calendar.classList.add('active')
+        } else if (msgraph_sharepoint){
+            window.location.href = "/msgraphsharepointscanners/"
+            msgraph_sharepoint.classList.add('active')
         } else if (googledrive) {
             window.location.href = "/googledrivescanners/"
             googledrive.classList.add('active')
@@ -158,6 +167,9 @@
     }
     if (location.pathname === '/msgraphcalendarscanners/') {
         msgraph_calendar.classList.add("active")
+    }
+    if (location.pathname === '/msgraphsharepointscanners/') {
+      msgraph_sharepoint.classList.add("active")
     }
     if (location.pathname === '/gmailscanners/') {
         gmail.classList.add("active")

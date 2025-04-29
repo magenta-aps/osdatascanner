@@ -56,7 +56,8 @@ from .models.scannerjobs.exchangescanner import ExchangeScanner
 from .models.scannerjobs.gmail import GmailScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
-                                         MSGraphCalendarScanner, MSGraphTeamsFileScanner)
+                                         MSGraphCalendarScanner, MSGraphTeamsFileScanner,
+                                         MSGraphSharepointScanner)
 from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .models.scannerjobs.webscanner import WebScanner
 
@@ -238,6 +239,7 @@ for model in [
         MSGraphFileScanner,
         MSGraphCalendarScanner,
         MSGraphTeamsFileScanner,
+        MSGraphSharepointScanner,
         SbsysScanner,
         WebScanner]:
     stype: str = model.get_type().lower()
