@@ -1,6 +1,6 @@
 '''Utilities for the demo application'''
 from base64 import b64encode
-from urllib.parse import quote, unquote, urlsplit, urlunsplit
+from urllib.parse import quote, unquote, parse_qs, urlsplit, urlunsplit
 
 from os2datascanner.engine2.model.core.errors import UnknownSchemeError
 from os2datascanner.engine2.model.smb import SMBSource, make_smb_url
@@ -69,8 +69,21 @@ class DemoSourceUtility:
             case ("http" | "https", _, _, _, _):
                 return WebSource(url, extended_hints=True)
 
-            case ("sbsys", server, database, _, _):
+            case ("sbsys", server, database, query, _):
                 from os2datascanner.engine2.model._staging import sbsysdb
+
+                query_dict = parse_qs(query)
+
+                match query_dict.get("reflect"):
+                    case [*tables]:
+                        rt = tuple(tables)
+                    case _:
+                        rt = None
+                match query_dict.get("baselink"):
+                    case [str() as link]:
+                        bw = link
+                    case _:
+                        bw = None
 
                 user = password = None
                 if "@" in server:
@@ -83,7 +96,8 @@ class DemoSourceUtility:
                     port = int(port)
 
                 return sbsysdb.SBSYSDBSource(
-                        server, port, database.lstrip("/"), user, password)
+                        server, port, database.lstrip("/"), user, password,
+                        reflect_tables=rt, base_weblink=bw)
 
             case _:
                 raise UnknownSchemeError
