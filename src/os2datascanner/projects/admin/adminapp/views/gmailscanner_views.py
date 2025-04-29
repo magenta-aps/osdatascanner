@@ -19,7 +19,9 @@ from .scanner_views import (
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
-    ScannerList)
+    ScannerList,
+    ScannerCleanupStaleAccounts
+    )
 
 
 class GmailScannerList(ScannerList):
@@ -81,3 +83,9 @@ class GmailScannerCopy(ScannerCopy):
     def get_initial(self):
         initial = super(GmailScannerCopy, self).get_initial()
         return initial
+
+
+class GmailScannerCleanup(ScannerCleanupStaleAccounts):
+    """Cleanup stale accounts for a GmailScanner"""
+    model = GmailScanner
+    type = "gmail"

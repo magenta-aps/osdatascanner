@@ -19,7 +19,9 @@ from .scanner_views import (
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
-    ScannerList)
+    ScannerList,
+    ScannerCleanupStaleAccounts,
+)
 
 
 class GoogleDriveScannerList(ScannerList):
@@ -79,3 +81,9 @@ class GoogleDriveScannerCopy(ScannerCopy):
         initial = super(GoogleDriveScannerCopy, self).get_initial()
         initial["user_emails"] = self.get_scanner_object().user_emails
         return initial
+
+
+class GoogleDriveScannerCleanup(ScannerCleanupStaleAccounts):
+    """Clean up stale accounts for a Google Drive Scanner"""
+    model = GoogleDriveScanner
+    type = "googledrive"
