@@ -679,3 +679,45 @@ class TestPipelineCollector:
 
         assert not before
         assert after
+
+    @pytest.mark.parametrize('metadata,owner', [
+        (
+            md := {
+                "web-domain": "vejstrand.dk",
+            },
+            "vejstrand.dk",
+        ),
+        (
+            md := md | {
+                "filesystem-owner-sid": "S-1-5-20-1437-6",
+            },
+            "S-1-5-20-1437-6",
+        ),
+        (
+            md := md | {
+                "msgraph-owner-account": "fbentsen@vejstrand.onmicrosoft.com",
+            },
+            "fbentsen@vejstrand.onmicrosoft.com",
+        ),
+        (
+            md := md | {
+                "email-account": "fbentsen@vejstrand.dk",
+            },
+            "fbentsen@vejstrand.dk",
+        ),
+        (
+            md | {
+                "user-principal-name": "frederik@vstkom.internal",
+            },
+            "frederik@vstkom.internal",
+        ),
+        ])
+    def test_owner_extraction(
+            self,
+            metadata, owner,
+            *,
+            scan_tag2, common_handle):
+        dummy_message = messages.MetadataMessage(
+                scan_tag=scan_tag2, handle=common_handle,
+                metadata=metadata)
+        assert result_collector.owner_from_metadata(dummy_message) == owner
