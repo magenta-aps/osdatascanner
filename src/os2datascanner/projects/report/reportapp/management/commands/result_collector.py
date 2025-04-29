@@ -83,16 +83,17 @@ def result_message_received_raw(body):
 
 
 def owner_from_metadata(message: messages.MetadataMessage) -> str:
-    owner = ""
-    if (email := message.metadata.get("email-account")
-            or message.metadata.get("msgraph-owner-account")):
-        owner = email
-    if adsid := message.metadata.get("filesystem-owner-sid"):
-        owner = adsid
-    if web_domain := message.metadata.get("web-domain"):
-        owner = web_domain
-
-    return owner
+    match message.metadata:
+        case {"user-principal-name": upn}:
+            return upn
+        case {"email-account": addr} | {"msgraph-owner-account": addr}:
+            return addr
+        case {"filesystem-owner-sid": adsid}:
+            return adsid
+        case {"web-domain": domain}:
+            return domain
+        case _:
+            return ""
 
 
 def outlook_categorize_enabled(owner: str) -> bool:
