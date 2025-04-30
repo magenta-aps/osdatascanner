@@ -4,8 +4,10 @@
 <nav class="navi">
   <ul>
     <li>
-      <a href="/"
-         class="{% if request.path in '/reports/undistributed/remediator/scannerjobs/' %}active{% endif %}">
+      {% comment %}
+       The following "if"/"elif" condition isn't the most elegant solution, and would highly benefit from a proper overhaul in the future.
+      {% endcomment %}
+      <a href="/" class="{% if "/archive/" in request.path %}{% elif request.path in '/reports/undistributed/remediator/scannerjobs/' or "/sbsys/personal" or "/sbsys/remediator" in request.path %}active{% endif %}">
         {% include "components/svg-icons/assignment.svg" %}
         <span class="width">{% trans "Report" %}</span>
       </a>
