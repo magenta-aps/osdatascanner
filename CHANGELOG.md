@@ -75,6 +75,9 @@
 
 - Copied scanners won't be given names of removed scanners anymore.
 
+- Remediators are now correctly assigned any matches where the scanner engine
+  was not able to extract any information about ownership.
+
 ## Version 3.27.1, 24th March 2025
 
 "Team Rocket is Blasting Off Again"
