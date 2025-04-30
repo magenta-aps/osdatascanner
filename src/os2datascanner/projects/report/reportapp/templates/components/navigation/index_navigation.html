@@ -10,8 +10,8 @@
   {# Personal - SBSYS #}
   {% if user.account.sbsystab_access %}
     <a id="sbsys-personal"
-       class="tabs__control{% if '/sbsys/personal' in request.path %} active{% endif %}"
-       href="{% if '/archive' in request.path %}{% url "sbsys-archive-personal" %}{% else %}{% url "sbsys-personal" %}{% endif %}">
+       class="tabs__control{% if '/sbsys/personal' in request.path or '/sbsys/archive/personal' in request.path %} active{% endif %}"
+       href="{% if '/archive' in request.path %}{% url 'sbsys-archive-personal' %}{% else %}{% url 'sbsys-personal' %}{% endif %}">
       {% trans "Personal - SBSYS" %}
     </a>
   {% endif %}
@@ -19,14 +19,14 @@
   {# Remediator #}
   {% if user.account.is_remediator or user.is_superuser %}
     <a id="remediator"
-       class="tabs__control{% if '/remediator' in request.path and not '/sbsys/remediator' in request.path %} active{% endif %}"
+       class="tabs__control{% if '/remediator' in request.path and not '/sbsys' in request.path %} active{% endif %}"
        href="{% if '/archive' in request.path %}{% url "remediator-archive" %}{% else %}{% url "remediator" %}{% endif %}">
     {% trans "Remediator" %}</a>
 
     {% if user.account.sbsystab_access %}
       {# Remediator - SBSYS #}
       <a id="sbsys-remediator"
-         class="tabs__control{% if '/sbsys/remediator' in request.path %} active{% endif %}"
+         class="tabs__control{% if '/sbsys/remediator' in request.path or '/sbsys/archive/remediator' in request.path %} active{% endif %}"
          href="{% if '/archive' in request.path %}{% url "sbsys-archive-remediator" %}{% else %}{% url "sbsys-remediator" %}{% endif %}">
       {% trans "Remediator - SBSYS" %}</a>
     {% endif %}
