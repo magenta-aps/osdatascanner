@@ -72,6 +72,23 @@ class TestLeaderStatisticsPageView:
 
         assert response.status_code == 403
 
+    def test_leader_statisticspage_view_all(self, rf, egon_account,
+                                            olsenbanden_ou,
+                                            egon_manager_position,
+                                            olsenbanden_ou_positions,
+                                            harrys_skur_positions_egon_lead_harry_employee):
+
+        # Specific OU selection, should contain 3 employees.
+        response = self.get_leader_statisticspage_response(rf, egon_account,
+                                                           params=f"?org_unit={olsenbanden_ou.pk}")
+        assert response.context_data.get("employee_count") == 3
+
+        # view all, should be 4 employees.
+        # olsenbanden OU + 1 employee in Harrys Skur.
+        response = self.get_leader_statisticspage_response(rf, egon_account,
+                                                           params="?view_all=on")
+        assert response.context_data.get("employee_count") == 4
+
     def test_leader_export_as_manager(self, rf, egon_account, egon_manager_position):
         """A user with a 'manager'-position to an organizational unit should
         be able to export leader data."""
