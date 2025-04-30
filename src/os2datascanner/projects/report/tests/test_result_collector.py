@@ -18,10 +18,12 @@ from os2datascanner.engine2.model.smb import SMBSource, SMBHandle
 from django.test import Client
 from django.urls import reverse
 
+from os2datascanner.projects.report.organizations.models import (
+        Alias, Account, Organization)
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.management.commands import result_collector
 
-from .generate_test_data import record_match, record_problem
+from .generate_test_data import record_match, record_problem, record_metadata
 
 
 @pytest.fixture
@@ -345,6 +347,39 @@ def smb_match_3(common_scan_spec, scan_tag2, common_rule, smb_handle_3):
 def superuser_acc():
     return get_user_model().objects.create_superuser(
             username="TEST-SU-" + random.randbytes(8).hex())
+
+
+@pytest.fixture
+def jens_org():
+    return Organization.objects.create(name="Jensernes Produktionsfabrik")
+
+
+@pytest.fixture
+def jens_account(jens_org):
+    return Account.objects.create(organization=jens_org, username="JENS.00")
+
+
+@pytest.fixture
+def jens_remediator_alias(jens_account):
+    return Alias.objects.create(
+            account=jens_account, user=jens_account.user,
+            _alias_type='remediator', _value='0')
+
+
+@pytest.fixture
+def smb_metadata_3a(scan_tag2, smb_handle_3):
+    return messages.MetadataMessage(
+            scan_tag=scan_tag2,
+            handle=smb_handle_3,
+            metadata={})
+
+
+@pytest.fixture
+def smb_metadata_3b(smb_metadata_3a):
+    return smb_metadata_3a._replace(
+            metadata={
+                "user-principal-name": "jens@example.invalid"
+            })
 
 
 @pytest.mark.django_db
@@ -721,3 +756,26 @@ class TestPipelineCollector:
                 scan_tag=scan_tag2, handle=common_handle,
                 metadata=metadata)
         assert result_collector.owner_from_metadata(dummy_message) == owner
+
+    def test_remediator_distrib_no_owner(
+            self,
+            *,
+            jens_remediator_alias,
+            smb_metadata_3a):
+        """Receiving a metadata object with no owner value will cause that
+        DocumentReport to be distributed to the remediator (if there is one)."""
+        assert jens_remediator_alias.match_relation.count() == 0
+        record_metadata(smb_metadata_3a)
+        assert jens_remediator_alias.match_relation.count() == 1
+
+    def test_remediator_distrib_with_owner(
+            self,
+            *,
+            jens_remediator_alias,
+            smb_metadata_3b):
+        """Receiving a metadata object with an owner value for which no alias
+        exists will cause that DocumentReport to be distributed to the
+        remediator (if there is one)."""
+        assert jens_remediator_alias.match_relation.count() == 0
+        record_metadata(smb_metadata_3b)
+        assert jens_remediator_alias.match_relation.count() == 1
