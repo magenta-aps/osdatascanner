@@ -187,17 +187,14 @@ def create_aliases(dr: DocumentReport):
         logger.error(f"failed to unpack metadata for {dr}", exc_info=True)
         return
 
-    # Return early scenarios: No metadata, no owner - nothing to do.
+    # Return early scenarios: No metadata yet, nothing to do.
     if not metadata:
         logger.warning(f"Create aliases invoked with a DocumentReport with no metadata: {dr}")
         return
-    if not owner:
-        logger.warning(f"Create aliases invoked with a DocumentReport with an empty owner field: "
-                       f"{dr}")
-        return
 
     # Look for relevant alias(es) and append relation(s) to new_objects.
-    aliases = Alias.objects.filter(_value__iexact=owner)
+    aliases = (Alias.objects.filter(_value__iexact=owner)
+               if owner else Alias.objects.none())
     # If there aren't any, we must look for remediators
     if not aliases:
         # Alias type must be remediator and value either 0 (all scannerjobs) or remediator
