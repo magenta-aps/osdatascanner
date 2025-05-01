@@ -33,7 +33,7 @@ from os2datascanner.engine2.model.msgraph.files import (
     MSGraphFilesSource,
 )
 from os2datascanner.engine2.model.sbsys import SbsysHandle, SbsysSource
-from os2datascanner.engine2.model.smb import SMBHandle, SMBSource
+from os2datascanner.engine2.model.smbc import SMBCHandle, SMBCSource
 from os2datascanner.projects.report.organizations.models import Organization
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 
@@ -85,7 +85,7 @@ class Command(BaseCommand):
             type=str,
             default=None,
             help="Run on a specific scan, choose between "
-            "filesystem, websource, dropbox, msgraph, googledrive, ews, smb, sbsys "
+            "filesystem, websource, dropbox, msgraph, googledrive, ews, smbc, sbsys "
             "OR all",
         )
         parser.add_argument(
@@ -164,7 +164,7 @@ class Command(BaseCommand):
             "msgraph": make_fake_msgraph_file_handle,
             "googledrive": make_fake_google_drive_handle,
             "ews": make_fake_ews_mail_handle,
-            "smb": make_fake_smb_handle,
+            "smbc": make_fake_smbc_handle,
             "sbsys": make_fake_sbsys_handle,
         }
         scan_iterator = iter(handle_types.items())
@@ -431,11 +431,11 @@ def make_fake_ews_mail_handle():
     return handle
 
 
-def make_fake_smb_handle():
+def make_fake_smbc_handle():
     unc = ["\\\\SERVER01", "\\\\COMPANY_SERVER", "\\\\SERVER"]
     path_name, file_name, mail, user = generate_fake_data(prefix=unc)
-    source = SMBSource(path_name)
-    handle = SMBHandle(source, file_name)
+    source = SMBCSource(path_name)
+    handle = SMBCHandle(source, file_name)
     return handle
 
 

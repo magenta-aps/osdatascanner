@@ -6,7 +6,6 @@ from django import template
 from django.conf import settings
 
 from os2datascanner.engine2.model.core import Handle
-from os2datascanner.engine2.model.smb import SMBHandle
 from os2datascanner.engine2.model.smbc import SMBCHandle
 
 from ..views.report_views import RENDERABLE_RULES
@@ -117,15 +116,16 @@ def find_file_folder(handle):
 @register.filter
 def present_folder(handle):
     """Removes the filename from the path and returns
-    the folderpath for copying
+    the folder path for copying
     """
-    if isinstance(handle, (SMBHandle, SMBCHandle)):
+    if isinstance(handle, SMBCHandle):
         if present(handle):
             file_path = present(handle)
             file_path = file_path[:file_path.rfind('\\')]
             return file_path
         else:
             return None
+    return None
 
 
 @register.filter

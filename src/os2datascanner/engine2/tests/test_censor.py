@@ -2,7 +2,6 @@ import pytest
 
 from os2datascanner.engine2.model.ews import (
         EWSMailHandle, EWSAccountSource)
-from os2datascanner.engine2.model.smb import SMBSource, SMBHandle
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.data import DataSource, DataHandle
 from os2datascanner.engine2.model.derived.zip import ZipSource, ZipHandle
@@ -12,8 +11,8 @@ from os2datascanner.engine2.model.derived.filtered import (
 
 class TestCensor:
     @pytest.mark.parametrize("handle", [
-        SMBHandle(
-                SMBSource(
+        SMBCHandle(
+                SMBCSource(
                         "//SERVER/Resource", "username"),
                 "~ocument.docx"),
         SMBCHandle(
@@ -22,7 +21,7 @@ class TestCensor:
                         "username", "topsecret", "WORKGROUP8"),
                 "~ocument.docx"),
     ])
-    def test_smb_censoring(self, handle):
+    def test_smbc_censoring(self, handle):
         handle = handle.censor()
 
         assert handle.source._domain is None
@@ -59,8 +58,8 @@ class TestCensor:
                 "doc/Personal Information.docx"),
         FilteredHandle(
                 GzipSource(
-                        SMBHandle(
-                                SMBSource(
+                        SMBCHandle(
+                                SMBCSource(
                                         "//SERVER/usr", "username"),
                                 "share/doc/coreutils"
                                 "/changelog.Debian.gz")),

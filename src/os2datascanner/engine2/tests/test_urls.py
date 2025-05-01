@@ -4,7 +4,6 @@ from os2datascanner.engine2.commands.utils import DemoSourceUtility as TestSourc
 from os2datascanner.engine2.model.data import DataSource
 from os2datascanner.engine2.model.file import FilesystemSource
 from os2datascanner.engine2.model.http import SecureWebSource, WebSource
-from os2datascanner.engine2.model.smb import SMBSource
 from os2datascanner.engine2.model.smbc import SMBCSource
 
 
@@ -12,39 +11,39 @@ class TestURL:
     @pytest.mark.parametrize("source,url", [
         (FilesystemSource("/usr"), "file:///usr"),
         (
-            SMBSource("//10.0.0.30/Share$/Documents"),
-            "smb://10.0.0.30/Share%24/Documents",
+            SMBCSource("//10.0.0.30/Share$/Documents"),
+            "smbc://10.0.0.30/Share%24/Documents",
         ),
         (
-            SMBSource("//10.0.0.30/Share$/Documents", "FaithfullA"),
-            "smb://FaithfullA@10.0.0.30/Share%24/Documents",
+            SMBCSource("//10.0.0.30/Share$/Documents", "FaithfullA"),
+            "smbc://FaithfullA@10.0.0.30/Share%24/Documents",
         ),
         (
-            SMBSource(
+            SMBCSource(
                 "//10.0.0.30/Share$/Documents",
                 "FaithfullA",
                 "secretpassword",
             ),
-            "smb://FaithfullA:secretpassword@10.0.0.30/Share%24/Documents",
+            "smbc://FaithfullA:secretpassword@10.0.0.30/Share%24/Documents",
         ),
         (
-            SMBSource(
+            SMBCSource(
                 "//10.0.0.30/Share$/Documents",
                 "FaithfullA",
                 "secretpassword",
                 "SYSGRP",
             ),
-            "smb://SYSGRP;FaithfullA:secretpassword@10.0.0.30/Share%24"
+            "smbc://SYSGRP;FaithfullA:secretpassword@10.0.0.30/Share%24"
             "/Documents",
         ),
         (
-            SMBSource(
+            SMBCSource(
                 "//10.0.0.30/Share$/Documents",
                 "FaithfullA",
                 None,
                 "SYSGRP",
             ),
-            "smb://SYSGRP;FaithfullA@10.0.0.30/Share%24/Documents",
+            "smbc://SYSGRP;FaithfullA@10.0.0.30/Share%24/Documents",
         ),
         (
             SMBCSource(
