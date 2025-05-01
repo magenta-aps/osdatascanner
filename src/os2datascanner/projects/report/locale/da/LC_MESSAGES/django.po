@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-28 07:43+0200\n"
+"POT-Creation-Date: 2025-05-01 15:19+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1025,7 +1025,8 @@ msgstr "ingen afvigelser fundet"
 
 #: reportapp/templates/components/reports/sbsys_match.html
 msgid "Revert handle status and return this result to the result overview"
-msgstr "Fortryd håndteringsstatus og returnér dette resultat til resultatoverblikket"
+msgstr ""
+"Fortryd håndteringsstatus og returnér dette resultat til resultatoverblikket"
 
 #: reportapp/templates/components/reports/sbsys_match_table.html
 msgid "Deviations"
