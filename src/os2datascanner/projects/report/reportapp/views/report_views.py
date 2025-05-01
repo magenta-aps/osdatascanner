@@ -360,6 +360,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
             return DocumentReport.objects.filter(
                     organization=self.org,
                     only_notify_superadmin=True,
+                    number_of_matches__gte=1,
                     resolution_status__isnull=not self.archive)
         except Account.DoesNotExist:
             logger.warning(
