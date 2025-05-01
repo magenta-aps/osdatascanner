@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 12:59+0200\n"
+"POT-Creation-Date: 2025-05-01 15:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,6 +127,18 @@ msgid "Alias ({type}) for {account_user}: {value}"
 msgstr "Alias ({type}) for {account_user}: {value}"
 
 #: models/organization.py
+msgid "Hidden for all"
+msgstr "Skjult for alle"
+
+#: models/organization.py
+msgid "Visible with permission"
+msgstr "Synlig for tilladte"
+
+#: models/organization.py
+msgid "Visible for all"
+msgstr "Synlig for alle"
+
+#: models/organization.py
 msgid "None"
 msgstr "Ingen"
 
@@ -217,6 +229,10 @@ msgid "Dpotab access"
 msgstr "DPOfane adgang"
 
 #: models/organization.py
+msgid "SBSYS tab access"
+msgstr "SBSYS-fane adgang"
+
+#: models/organization.py
 msgid "show support button"
 msgstr "vis supportknap"
 
@@ -297,14 +313,15 @@ msgstr "tilknytninger"
 msgid "{cls}: {account} ({role}) at {unit}"
 msgstr "{cls}: {account} ({role}) i {unit}"
 
+#: models/syncedpermission.py
+msgid "Can view the SBSYS tab in Report"
+msgstr "Kan se SBSYS-fanebladene i rapportmodulet"
+
 #~ msgid "Delete emails"
 #~ msgstr "Slet emails"
 
 #~ msgid "Permit all"
 #~ msgstr "Tillad alle"
-
-#~ msgid "MSGraph write permissions"
-#~ msgstr "MSGraph skriverettigheder"
 
 #~ msgid "Select permission(s) you wish to allow for your organization."
 #~ msgstr "Vælg tilladelse(r) du ønsker at tillade for din organisation."

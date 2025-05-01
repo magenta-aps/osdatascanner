@@ -40,7 +40,7 @@ END
     update_args="--add-location=file --sort-output"
     pot="$locale_path/$domain.pot"
     find "$source_path/" -iname '*.py' -print0 | \
-            xargs -0 -- xgettext $update_args --sort-output
+            xargs -0 -- xgettext $update_args --sort-output --output "$pot"
     for language in "$locale_path"/*/
     do
         po="$language/LC_MESSAGES/$domain.po"

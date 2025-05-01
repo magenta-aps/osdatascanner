@@ -1,8 +1,8 @@
 # Changelog
 
-## Version ???, ??th of ???? ????
+## Version 3.28.0, 1st May 2025
 
-""
+"Red Letter Day"
 
 ### New in this release
 
