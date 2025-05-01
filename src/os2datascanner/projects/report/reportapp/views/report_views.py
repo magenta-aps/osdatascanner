@@ -146,7 +146,7 @@ class ReportView(LoginRequiredMixin, ListView):
         # Check permissions for deleting shared files
         context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
         context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
-            self.all_reports_from_same_source("smb", context["page_obj"])
+            self.all_reports_from_same_source("smbc", context["page_obj"])
         context["show_ews_delete_button"] = settings.EWS_ALLOW_WRITE
         context["show_ews_mass_delete_button"] = settings.EWS_ALLOW_WRITE and \
             self.all_reports_from_same_source("ews", context["page_obj"])
