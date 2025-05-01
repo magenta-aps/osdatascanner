@@ -1,4 +1,5 @@
 import io
+import warnings
 from os import stat_result, O_RDONLY
 import enum
 import errno
@@ -414,6 +415,19 @@ class SMBCSource(Source):
                 skip_super_hidden=obj.get("skip_super_hidden", False),
                 unc_is_home_root=obj.get("unc_is_home_root", False))
 
+    @staticmethod
+    @Source.json_handler("smb")
+    def handle_smb_source(obj):
+        # This exists for backwards compatability, SMBSource is deleted.
+        warnings.warn(
+            "SMBSource is no longer supported, returning a"
+            " compatible SMBCSource object instead")
+        return SMBCSource(obj["unc"], obj["user"], obj["password"], obj["domain"],
+
+                          skip_super_hidden=obj.get("skip_super_hidden", False),
+                          unc_is_home_root=obj.get("unc_is_home_root", False)
+                          )
+
 
 class _SMBCFile(io.RawIOBase):
     def __init__(self, obj):
@@ -570,3 +584,8 @@ class SMBCHandle(Handle):
     @property
     def sort_key(self):
         return str(self).removesuffix("\\")
+
+
+# Exists for compatability reasons, SMBHandle doesn't exist anymore.
+# The json handler for SMBSource compatability will warn users.
+Handle.stock_json_handler("smb")(SMBCHandle)

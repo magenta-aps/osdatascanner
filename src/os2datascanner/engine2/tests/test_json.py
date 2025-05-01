@@ -183,3 +183,20 @@ class TestJSON:
             @Handle.json_handler("file")
             def handle_json(j):  # noqa
                 pass
+
+    def test_smb_backwards_compatibility(self):
+        """ Checks that a json-handle from legacy type SMB turns into an appropriate SMBC"""
+        assert (Handle.from_json_object({
+            "type": "smb",
+            "source": {
+                "type": "smb",
+                "unc": "//server/folder",
+                "domain": "my_domain",
+                "user": "dummy",
+                "password": "<PASSWORD>"
+            },
+            "path": "path/to/file.txt"
+            })) == (SMBCHandle(SMBCSource(unc="//server/folder",
+                                          domain="my_domain",
+                                          user="dummy",
+                                          password="<PASSWORD>"), "path/to/file.txt"))
