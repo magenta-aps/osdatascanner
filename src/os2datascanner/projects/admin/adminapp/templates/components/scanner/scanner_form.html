@@ -510,7 +510,6 @@
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.do_last_modified_check %}
                   </div>
-
                 {% endif %}
 
                 {% if form.keep_false_positives %}
@@ -545,7 +544,7 @@
                 {% endif %}
 
                 {% if form.scan_subject %}
-                  <div class="checkbox-group form__group">
+                  <div class="checkbox-group form__group{% if form.scan_subject.errors %} has-error{% endif %}">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_subject %}
                   </div>
                 {% endif %}
