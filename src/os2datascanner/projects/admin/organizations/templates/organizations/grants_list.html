@@ -2,10 +2,11 @@
 {% load static %}
 {% load i18n %}
 {% load tz %}
+{% load grant_tags %}
 
 {% block title %}
   {% trans "grants"|capfirst %}
-{% endblock %}
+{% endblock title %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -25,28 +26,33 @@
             <div class="aside">
               <h1 class="page-title">{% trans "grants for"|capfirst %} {{ organization.name }}</h1>
 
-
-              <div class="grant-dropdown">
-                <button title="{% trans 'create new grant'|capfirst %}"
-                        class="button expand button--cta-button button--icon-text-button">
-
-
-                  <svg class="icon button__plus-icon">
-                    <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-                  </svg>
-                  <span>{% trans "create new grant"|capfirst %}</span>
-                </button>
-                <div class="dropdown-container no-left-right">
-                  <a href="{% url 'ewsgrant-create' org=organization.pk %}">{% trans "EWS Grant"|capfirst %}</a>
-                  <a href="{% url 'msgraphgrant-create' org=organization.pk %}">{% trans "MSGraph Grant"|capfirst %}</a>
-                  <a href="{% url 'smbgrant-create' org=organization.pk %}">{% trans "SMB Grant"|capfirst %}</a>
-                  <a href="{% url 'googleapigrant-create' org=organization.pk %}">{% trans "Google API Grant"|capfirst %}</a>
+              {% if perms.grants.add_ewsgrant or perms.grants.add_graphgrant or perms.grants.add_smbgrant or perms.grants.add_googleapigrant %}
+                <div class="grant-dropdown">
+                  <button title="{% trans 'create new grant'|capfirst %}"
+                          class="button expand button--cta-button button--icon-text-button">
+                    <svg class="icon button__plus-icon">
+                      <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+                    </svg>
+                    <span>{% trans "create new grant"|capfirst %}</span>
+                  </button>
+                  <div class="dropdown-container no-left-right">
+                    {% if perms.grants.add_ewsgrant %}
+                      <a href="{% url 'ewsgrant-create' org=organization.pk %}">{% trans "EWS Grant"|capfirst %}</a>
+                    {% endif %}
+                    {% if perms.grants.add_graphgrant %}
+                      <a href="{% url 'msgraphgrant-create' org=organization.pk %}">{% trans "MSGraph Grant"|capfirst %}</a>
+                    {% endif %}
+                    {% if perms.grants.add_smbgrant %}
+                      <a href="{% url 'smbgrant-create' org=organization.pk %}">{% trans "SMB Grant"|capfirst %}</a>
+                    {% endif %}
+                    {% if perms.grants.add_googleapigrant %}
+                      <a href="{% url 'googleapigrant-create' org=organization.pk %}">{% trans "Google API Grant"|capfirst %}</a>
+                    {% endif %}
+                  </div>
                 </div>
-              </div>
-
+              {% endif %}
             </div>
           </div>
-
 
           <div class="datatable-wrapper card lg">
             <div class="datatablex__wrapper">
@@ -56,7 +62,7 @@
                     <th class="column column--name">{% trans "name"|capfirst %}</th>
                     <th class="column column--type">{% trans "type"|capfirst %}</th>
                     <th class="column column--extrainfo">{% trans "expiry date"|capfirst %}</th>
-                    {% if request.user.is_superuser %}
+                    {% if perms.grants.change_ewsgrant or perms.grants.change_graphgrant or perms.grants.change_smbgrant or perms.grants.change_googleapigrant %}
                       <th class="column column--actions">{% trans "Actions" %}</th>
                     {% endif %}
                   </tr>
@@ -66,7 +72,11 @@
                   {% for grant in organization.grants %}
                     <tr class="datatablex__row">
                       <td class="column column--name">
-                        <a href="{% url 'edit-grant' pk=grant.pk type=grant.class_name %}">{{ grant }}</a>
+                        {% if perms|can_edit:grant.class_name %}
+                          <a href="{% url 'edit-grant' pk=grant.pk type=grant.class_name %}">{{ grant }}</a>
+                        {% else %}
+                          {{ grant }}
+                        {% endif %}
                       </td>
 
                       <td class="column">
@@ -87,12 +97,14 @@
 
                       <td class="column column--actions">
                         <div class="action-wrapper button-group">
-                          <a href="{% url 'edit-grant' pk=grant.pk type=grant.class_name %}"
-                             class="button button--icon-button button--datatable-actions"
-                             title="{% trans 'edit grant'|capfirst %}">
+                          {% if perms|can_edit:grant.class_name %}
+                            <a href="{% url 'edit-grant' pk=grant.pk type=grant.class_name %}"
+                               class="button button--icon-button button--datatable-actions"
+                               title="{% trans 'edit grant'|capfirst %}">
 
-                            <i id="edit" class="material-symbols">edit</i>
-                          </a>
+                              <i id="edit" class="material-symbols">edit</i>
+                            </a>
+                          {% endif %}
                         </div>
                       </td>
                     </tr>
@@ -113,4 +125,4 @@
 
   </main>
 
-{% endblock %}
+{% endblock body %}

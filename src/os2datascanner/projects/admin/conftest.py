@@ -33,7 +33,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.gmail import Gmai
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.msgraph import (
     MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner)
 from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
-from os2datascanner.projects.grants.models import EWSGrant, GoogleApiGrant, GraphGrant
+from os2datascanner.projects.grants.models import EWSGrant, GoogleApiGrant, GraphGrant, SMBGrant
 
 
 # SETTINGS OVERRIDE
@@ -151,6 +151,15 @@ def exchange_grant(test_org):
     return EWSGrant.objects.create(
         username="keyChainGuy",
         password="password",
+        organization=test_org,
+    )
+
+
+@pytest.fixture
+def smb_grant(test_org):
+    return SMBGrant.objects.create(
+        username="MrMicrosoft",
+        password="secretPassword",
         organization=test_org,
     )
 

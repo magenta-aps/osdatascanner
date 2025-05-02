@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
 
@@ -22,9 +22,10 @@ class EWSGrantScannerForm(EWSGrantAdminForm):
         fields = ('__all__')
 
 
-class EWSGrantCreateView(LoginRequiredMixin, CreateView):
+class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = EWSGrant
     form_class = EWSGrantForm
+    permission_required = "grants.add_ewsgrant"
     template_name = "grants/ewsgrant_update.html"
     success_url = reverse_lazy("grant-list")
 
@@ -32,8 +33,9 @@ class EWSGrantCreateView(LoginRequiredMixin, CreateView):
         return {"organization": self.kwargs.get('org')}
 
 
-class EWSGrantUpdateView(LoginRequiredMixin, UpdateView):
+class EWSGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = EWSGrant
     form_class = EWSGrantForm
+    permission_required = "grants.change_ewsgrant"
     template_name = "grants/ewsgrant_update.html"
     success_url = reverse_lazy("grant-list")
