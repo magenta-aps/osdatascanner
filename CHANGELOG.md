@@ -8,6 +8,8 @@
 
 - Access to creating and editing grants now requires a django permission in the admin module.
 
+- Remediators are now allowed to delete Office 365 files.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"

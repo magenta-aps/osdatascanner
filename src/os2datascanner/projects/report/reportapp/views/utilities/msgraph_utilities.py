@@ -10,6 +10,7 @@ from os2datascanner.engine2.model.msgraph.utilities import make_token, MSGraphSo
 from os2datascanner.projects.report.organizations.models import Account
 
 from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
+from os2datascanner.core_organizational_structure.models.aliases import AliasType
 
 logger = structlog.get_logger("reportapp")
 
@@ -224,7 +225,8 @@ def delete_file(document_report, account: Account):
 
     owner = document_report.owner
 
-    if not is_owner(owner, account):
+    if (not is_owner(owner, account) and
+            not account.aliases.filter(_alias_type=AliasType.REMEDIATOR)):
         logger.warning(f"User {account} tried to delete a file belonging to {owner}!")
         not_owner_message = (_("Not allowed! You tried to delete a file belonging to {owner}!").
                              format(owner=owner))
