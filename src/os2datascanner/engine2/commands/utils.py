@@ -1,10 +1,10 @@
 '''Utilities for the demo application'''
 from base64 import b64encode
+from regex import compile
 from urllib.parse import quote, unquote, parse_qs, urlsplit, urlunsplit
 
 from os2datascanner.engine2.model.core.errors import UnknownSchemeError
-from os2datascanner.engine2.model.smb import SMBSource, make_smb_url
-from os2datascanner.engine2.model.smbc import SMBCSource
+from os2datascanner.engine2.model.smbc import SMBCSource, make_smb_url
 from os2datascanner.engine2.model.dropbox import DropboxSource
 from os2datascanner.engine2.model.data import DataSource, unpack_data_url
 from os2datascanner.engine2.model.file import FilesystemSource
@@ -28,8 +28,6 @@ class DemoSourceUtility:
         Supported Types:
         - SMBCSource
           smbc://[[domain;]user[:password]@]hostname/path/to/share
-        - SMBSource
-          as above
         - DropboxSource
           dropbox://api_token
         - DataSource
@@ -43,17 +41,20 @@ class DemoSourceUtility:
         '''
 
         match urlsplit(url):
-            case ("smb" | "smbc" as scheme, netloc, path, _, _):
-                mtc = SMBSource.netloc_regex.match(netloc)
+            case ("smbc" as scheme, netloc, path, _, _):
+                netloc_regex = compile(
+                    r"^(((?P<domain>\w+);)?(?P<username>\w+)"
+                    r"(:(?P<password>\w+))?@)?(?P<unc>[\w.-]+)$")
+
+                mtc = netloc_regex.match(netloc)
                 if mtc:
-                    if scheme == "smb":
-                        return SMBSource("//" + mtc.group("unc") + unquote(path),
-                                         mtc.group("username"), mtc.group("password"),
-                                         mtc.group("domain"))
                     if scheme == "smbc":
                         return SMBCSource("//" + mtc.group("unc") + unquote(path),
                                           mtc.group("username"), mtc.group("password"),
                                           mtc.group("domain"))
+                    return UnknownSchemeError
+                else:
+                    return UnknownSchemeError
 
             case ("dropbox", token, _, _, _):
                 return DropboxSource(token=token)
@@ -109,7 +110,6 @@ class DemoSourceUtility:
 
         Supported Types:
         - SMBCSource
-        - SMBSource
         - DropboxSource
         - DataSource
         - FilesystemSource
@@ -120,10 +120,6 @@ class DemoSourceUtility:
         if src_type is SMBCSource:
             return make_smb_url(
                 "smbc", src._unc, src._user, src._domain, src._password)
-
-        if src_type is SMBSource:
-            return make_smb_url(
-                "smb", src._unc, src._user, src._domain, src._password)
 
         if src_type is DropboxSource:
             return f"dropbox://{src._token}"

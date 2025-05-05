@@ -13,7 +13,7 @@ from os2datascanner.engine2.rules.logical import AndRule
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.utilities.datetime import parse_datetime
-from os2datascanner.engine2.model.smb import SMBSource, SMBHandle
+from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 
 from django.test import Client
 from django.urls import reverse
@@ -273,32 +273,32 @@ def late_negative_match(common_scan_spec, scan_tag2, late_rule, common_rule, com
 
 @pytest.fixture
 def smb_source_1():
-    return SMBSource('//some/path', user='egon_olsen', driveletter='Q')
+    return SMBCSource('//some/path', user='egon_olsen', driveletter='Q')
 
 
 @pytest.fixture
 def smb_source_2():
-    return SMBSource('//some/path', user='dynamit_harry', driveletter='Q')
+    return SMBCSource('//some/path', user='dynamit_harry', driveletter='Q')
 
 
 @pytest.fixture
 def smb_source_3():
-    return SMBSource('//some/path', user='egon_olsen', driveletter='W')
+    return SMBCSource('//some/path', user='egon_olsen', driveletter='W')
 
 
 @pytest.fixture
 def smb_handle_1(smb_source_1):
-    return SMBHandle(smb_source_1, 'filename.file')
+    return SMBCHandle(smb_source_1, 'filename.file')
 
 
 @pytest.fixture
 def smb_handle_2(smb_source_2):
-    return SMBHandle(smb_source_2, 'filename.file')
+    return SMBCHandle(smb_source_2, 'filename.file')
 
 
 @pytest.fixture
 def smb_handle_3(smb_source_3):
-    return SMBHandle(smb_source_3, 'filename.file')
+    return SMBCHandle(smb_source_3, 'filename.file')
 
 
 @pytest.fixture
@@ -566,13 +566,13 @@ class TestPipelineCollector:
         smb_crunched_3 = smb_handle_3.crunch(hash=True)
 
         assert smb_crunched_1 == hashlib.sha512(
-            "SMBHandle(_source=(SMBSource(_unc=//some/path;_user=egon_olsen));"
+            "SMBCHandle(_source=(SMBCSource(_unc=//some/path;_user=egon_olsen));"
             "_relpath=filename.file)".encode("unicode_escape")).hexdigest()
         assert smb_crunched_2 == hashlib.sha512(
-            "SMBHandle(_source=(SMBSource(_unc=//some/path;_user=dynamit_harry));"
+            "SMBCHandle(_source=(SMBCSource(_unc=//some/path;_user=dynamit_harry));"
             "_relpath=filename.file)".encode("unicode_escape")).hexdigest()
         assert smb_crunched_3 == hashlib.sha512(
-            "SMBHandle(_source=(SMBSource(_unc=//some/path;_user=egon_olsen));"
+            "SMBCHandle(_source=(SMBCSource(_unc=//some/path;_user=egon_olsen));"
             "_relpath=filename.file)".encode("unicode_escape")).hexdigest()
 
     def test_same_path_updates_document_report(self, smb_match_1, smb_match_2, smb_match_3):

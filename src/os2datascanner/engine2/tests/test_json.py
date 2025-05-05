@@ -8,7 +8,6 @@ from os2datascanner.engine2.model.ews import (
 from os2datascanner.engine2.model.file import (
         FilesystemSource, FilesystemHandle)
 from os2datascanner.engine2.model.http import WebSource, WebHandle
-from os2datascanner.engine2.model.smb import SMBSource, SMBHandle
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.msgraph.mail import (
         MSGraphMailSource, MSGraphMailAccountHandle,
@@ -44,8 +43,8 @@ example_handles = [
                             FilesystemSource("/usr/share/doc/coreutils"),
                             "changelog.Debian.gz")),
             "changelog.Debian"),
-    SMBHandle(
-            SMBSource(
+    SMBCHandle(
+            SMBCSource(
                     "//SERVER/Resource", "username"),
             "~ocument.docx"),
     SMBCHandle(
@@ -184,3 +183,20 @@ class TestJSON:
             @Handle.json_handler("file")
             def handle_json(j):  # noqa
                 pass
+
+    def test_smb_backwards_compatibility(self):
+        """ Checks that a json-handle from legacy type SMB turns into an appropriate SMBC"""
+        assert (Handle.from_json_object({
+            "type": "smb",
+            "source": {
+                "type": "smb",
+                "unc": "//server/folder",
+                "domain": "my_domain",
+                "user": "dummy",
+                "password": "<PASSWORD>"
+            },
+            "path": "path/to/file.txt"
+            })) == (SMBCHandle(SMBCSource(unc="//server/folder",
+                                          domain="my_domain",
+                                          user="dummy",
+                                          password="<PASSWORD>"), "path/to/file.txt"))

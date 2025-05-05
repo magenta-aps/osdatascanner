@@ -1,11 +1,12 @@
 import io
+import warnings
 from os import stat_result, O_RDONLY
 import enum
 import errno
 import structlog
 import smbc
 from typing import Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlunsplit
 from pathlib import PureWindowsPath
 from datetime import datetime
 from dateutil.tz import gettz
@@ -19,9 +20,6 @@ from ..utilities.backoff import DefaultRetrier
 from ..utilities.datetime import parse_datetime, unparse_datetime
 from ..conversions.types import OutputType
 from ..conversions.utilities.navigable import make_values_navigable
-from .smb import (
-    make_smb_url, compute_domain,
-    make_full_windows_path, make_presentation_url)
 from .core import Source, Handle, FileResource
 from .core.errors import UncontactableError
 from .file import stat_attributes
@@ -85,6 +83,84 @@ def _trivial_read(ctx: smbc.Context, url: str) -> bytes | None:
         # Normally this would be bad practice, but we only use this function
         # for testing
         return None
+
+
+def inlang(lang, s):
+    """Indicates whether or not every character in a given string @s can be
+    found in the string @lang."""
+    return all(c in lang for c in s)
+
+
+# Third form from https://www.iana.org/assignments/uri-schemes/prov/smb
+def make_smb_url(schema, unc, user, domain, password):
+    server, path = unc.replace("\\", "/").lstrip('/').split('/', maxsplit=1)
+    netloc = ""
+    if user:
+        if domain:
+            netloc += domain + ";"
+        netloc += user
+        if password:
+            netloc += ":" + password
+        netloc += "@"
+    netloc += server
+    return urlunsplit((schema, netloc, quote(path), None, None))
+
+
+def compute_domain(unc):
+    """Attempts to extract a domain name from a UNC path. Returns None when the
+    server name is a simple, unqualified name or an IP address."""
+    server, path = unc.replace("\\", "/").lstrip('/').split('/', maxsplit=1)
+    dot_count = server.count(".")
+    # Check if we can extract an authentication domain from a fully-qualified
+    # server name
+    if (server.startswith('[')  # IPv6 address
+            or dot_count == 0  # NetBIOS name
+            or (inlang("0123456789.", server)
+                and dot_count == 3)):  # IPv4 address
+        return None
+    else:
+        # The machine name is the first component, and the rest is the domain
+        # name
+        _, remainder = server.split(".", maxsplit=1)
+        return remainder
+
+
+def make_full_windows_path(self):
+    p = self.source.driveletter
+    if p:
+        # If you have a network drive //SERVER/DRIVE with the drive letter X,
+        # sometimes you want to set up a scan for a specific subfolder that
+        # nonetheless uses the drive letter X ("X:\Departments\Finance", for
+        # example). Checking to see if the "drive letter" already contains a
+        # colon makes this work properly
+        if ":" not in p:
+            p += ":"
+    else:
+        p = self.source.unc
+
+    if p[-1] != "/":
+        p += "/"
+    return (p + self.relative_path).replace("/", "\\")
+
+
+def make_presentation_url(self):
+    # Note that this implementation returns a Windows-friendly URL to the
+    # underlying file -- i.e., one that uses the file: scheme and not smb:
+    url = "file:"
+    # XXX: our testing seems to indicate that drive letter URLs don't work
+    # properly; we'll leave the disabled logic here for now...
+    if False and self.source.driveletter:
+        # Wikipedia indicates that local filesystem paths are represented
+        # with an empty hostname followed by an absolute path...
+        url += "///{0}:".format(self.source.driveletter)
+    else:
+        # ... and that remote ones are indicated with a hostname in the
+        # usual place. Luckily the UNC already starts with two forward
+        # slashes, so we can just paste it in here
+        url += self.source.unc
+    if url[-1] != "/":
+        url += "/"
+    return url + self.relative_path
 
 
 class SMBCSource(Source):
@@ -339,6 +415,19 @@ class SMBCSource(Source):
                 skip_super_hidden=obj.get("skip_super_hidden", False),
                 unc_is_home_root=obj.get("unc_is_home_root", False))
 
+    @staticmethod
+    @Source.json_handler("smb")
+    def handle_smb_source(obj):
+        # This exists for backwards compatability, SMBSource is deleted.
+        warnings.warn(
+            "SMBSource is no longer supported, returning a"
+            " compatible SMBCSource object instead")
+        return SMBCSource(obj["unc"], obj["user"], obj["password"], obj["domain"],
+
+                          skip_super_hidden=obj.get("skip_super_hidden", False),
+                          unc_is_home_root=obj.get("unc_is_home_root", False)
+                          )
+
 
 class _SMBCFile(io.RawIOBase):
     def __init__(self, obj):
@@ -495,3 +584,8 @@ class SMBCHandle(Handle):
     @property
     def sort_key(self):
         return str(self).removesuffix("\\")
+
+
+# Exists for compatability reasons, SMBHandle doesn't exist anymore.
+# The json handler for SMBSource compatability will warn users.
+Handle.stock_json_handler("smb")(SMBCHandle)

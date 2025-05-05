@@ -245,15 +245,11 @@ scanner jobs.
 
 ## SMB
 
-Using the `libsmbclient` and `pysmbc` packages, OS2datascanner can scan SMB
+Using the `libsmbclient` and `pysmbc` packages, OSdatascanner can scan SMB
 servers, better known as Windows network drives. These packages also give
-OS2datascanner the ability to perform ad hoc authentication using normal
+OSdatascanner the ability to perform ad hoc authentication using normal
 Windows login credentials, so there's no need to permanently enroll the scanner
 engine's server into the Windows domain.
-
-(OS2datascanner can also use the SMB support built into the operating system
-kernel, but this is deprecated, as it requires that certain scanner components
-be given higher privilege levels.)
 
 ### Try it out
 
