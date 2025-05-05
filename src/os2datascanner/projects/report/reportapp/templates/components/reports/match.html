@@ -44,7 +44,13 @@
                        rel="noopener">{% trans "Open" %}</a>
                   {% endif %}
 
-                  {% if document_report.matches.handle|find_file_folder %}
+                  {% comment %}
+                  For SMBC, there's only a subtle difference in "Open" vs "Open folder".
+                  Open folder: Opens folder in file explorer
+                  Open: Opens folder in file explorer and highlights chosen file.
+                  Hence, having both seem redundant and the behaviour of "Open" seems preferable.
+                  {% endcomment %}
+                  {% if document_report.matches.handle|find_file_folder and not type == 'smbc' %}
                     <a href="{{ document_report.matches.handle|find_file_folder }}"
                        class="button button--text-button btn-{{ document_report.pk|unlocalize }}"
                        target="_blank"
@@ -183,7 +189,10 @@
           <div class="matches">
             <span class="datatable-numeral">
               {% with document_report.number_of_matches as matches %}
+                {% comment %} djlint wants to split line, adding unwanted whitespace.{% endcomment %}
+                {# djlint:off #}
                 {{ matches }}{% if matches >= settings.ENGINE_OBJ_LIMIT %}+{% endif %}
+                {# djlint:on #}
               {% endwith %}
             </span>
           </div>

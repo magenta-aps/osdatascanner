@@ -10,6 +10,9 @@
 
 - Remediators are now allowed to delete Office 365 files.
 
+- Deemed "Open folder" button for Filescanner redundant and removed it, 
+  as "Open" behaves almost identically, with highlighting of the chosen file.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
