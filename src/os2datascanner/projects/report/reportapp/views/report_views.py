@@ -156,6 +156,11 @@ class ReportView(LoginRequiredMixin, ListView):
         context["show_gdrive_delete_button"] = settings.GDRIVE_ALLOW_WRITE
         context["show_gdrive_mass_delete_button"] = settings.GDRIVE_ALLOW_WRITE and \
             self.all_reports_from_same_source("googledrive", context["page_obj"])
+        context["show_file_delete_button"] = (
+            self.request.user.account.organization.has_file_delete_permission())
+        context["show_file_mass_delete_button"] = (
+            self.request.user.account.organization.has_file_delete_permission() and
+            self.all_reports_from_same_source("msgraph-files", context["page_obj"]))
 
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
@@ -436,6 +441,7 @@ class ArchiveMixin:
         context = super().get_context_data(**kwargs)
         context["show_email_delete_button"] = False
         context["show_file_delete_button"] = False
+        context["show_file_mass_delete_button"] = False
         context["show_smb_delete_button"] = False
         context["show_smb_mass_delete_button"] = False
         context["show_ews_delete_button"] = False
