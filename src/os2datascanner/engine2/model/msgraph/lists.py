@@ -12,15 +12,13 @@ from .utilities import MSGraphSource, warn_on_httperror
 class MSGraphListsSource(MSGraphSource):
     type_label = "msgraph-lists"
 
-    eq_properties = MSGraphSource.eq_properties + ("_sitelist",)
+    eq_properties = MSGraphSource.eq_properties
 
-    def __init__(self, client_id, tenant_id, client_secret, sitelist=None):
+    def __init__(self, client_id, tenant_id, client_secret):
         super().__init__(client_id, tenant_id, client_secret)
-        self._sitelist = sitelist
 
     def _make_handle(self, obj, site_id):
         owner_name = None
-        print(obj)
         if "lastModified" in obj:
             owner_name = obj["lastModifiedBy"]["user"]["displayName"]
         else:
@@ -31,47 +29,35 @@ class MSGraphListsSource(MSGraphSource):
         with warn_on_httperror("SharePoint lists check"):
             # sites = sm.open(self).paginated_get(
             #     "sites/getAllSites?$filter=isPersonalSite ne true")
-            sites = [{
-              "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites/$entity",
-              "createdDateTime": "2022-03-07T12:43:27.34Z",
-              "description": "This is a MS Graph API Test environment.",
-              "id": "magenta43dk.sharepoint.com,095ba61f-7f12-4894-b43a-7c40ee13dc9e,502681d3-5b32-48f3-926d-164a4f52b4eb",  # noqa
-              "lastModifiedDateTime": "2025-04-24T12:40:50Z",
-              "name": "GraphAPITest",
-              "webUrl": "https://magenta43dk.sharepoint.com/sites/GraphAPITest",
-              "displayName": "GraphAPITest",
-              "root": {},
-              "siteCollection": {
-                "hostname": "magenta43dk.sharepoint.com"
-              }
-            }]
 
-            # TODO: fix this whole ordeal
+            # for site in sites:
+            #     site_id = site.get("id").split(",")[1]
+            site_id = "095ba61f-7f12-4894-b43a-7c40ee13dc9e"
+            lists = sm.open(self).paginated_get(
+                f"sites/{site_id}/lists")
 
-            for site in sites:
-                site_id = site.get("id").split(",")[1]
-                lists = sm.open(self).paginated_get(
-                    f"sites/{site_id}/lists")
-                for list in lists:
-                    template = list.get("list").get("template")
-                    if template != "documentLibrary" and "_catalog" not in list.get("webUrl"):
-                        yield self._make_handle(list, site_id)
+            for sp_list in lists:
+                template = sp_list.get("list").get("template")
+                # Is there a better way to filter off documentLibraries and catalogs?
+                if template != "documentLibrary" and "_catalog" not in sp_list.get("webUrl"):
+                    print(sp_list.get("name"))
+                    yield self._make_handle(sp_list, site_id)
+
+    def censor(self):
+        return type(self)(None, self._tenant_id, None)
 
     def to_json_object(self):
         return dict(
-            **super().to_json_object(),
-            sitelist=list(self._sitelist) if self._sitelist is not None else None
+            **super().to_json_object()
         )
 
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        sitelist = obj.get("sitelist")
         return MSGraphListsSource(
                 client_id=obj["client_id"],
                 tenant_id=obj["tenant_id"],
-                client_secret=obj["client_secret"],
-                sitelist=frozenset(sitelist) if sitelist is not None else None)
+                client_secret=obj["client_secret"])
 
 
 DUMMY_MIME = "application/vnd.os2.datascanner.graphlist"
@@ -92,12 +78,11 @@ class MSGraphListResource(Resource):
 
 
 class MSGraphListHandle(Handle):
-    type_label = "msgraph-lists"
+    type_label = "msgraph-list"
     resource_type = MSGraphListResource
     eq_properties = Handle.eq_properties + ("_list_name",)
 
     def __init__(self, source, path, list_name, owner_name, site_id):
-        print(source)
         super().__init__(source, path)
         self._list_name = list_name
         self._owner_name = owner_name
@@ -116,6 +101,8 @@ class MSGraphListHandle(Handle):
 
     @property
     def presentation_place(self):
+        # Sharepoint is more telling but Office 365 is more consistent for our
+        # user space... PepoThink
         return "Sharepoint"
 
     def guess_type(self):
@@ -159,7 +146,7 @@ class MSGraphListSource(DerivedSource):
             yield MSGraphListItemHandle(
                 self.handle.source,
                 self.handle.relative_path,
-                self.handle._site_id, item["id"])
+                self.handle._site_id, item["id"], item["webUrl"])
 
 
 class MSGraphListItemResource(Resource):
@@ -184,8 +171,7 @@ class MSGraphListItemResource(Resource):
             raise
 
     def make_object_path(self):
-        drive_path: str = self.handle.source._drive_path
-        return f"{drive_path}/root:/{self.handle.relative_path}"
+        return f"{self.handle.source._list_path}/self.handle.relative_path"
 
     def get_metadata(self):
         if not self._metadata:
@@ -193,16 +179,17 @@ class MSGraphListItemResource(Resource):
         return self._metadata
 
     def get_last_modified(self):
-        timestamp = self.get_file_metadata().get("lastModifiedDateTime")
+        timestamp = self.get_metadata().get("lastModifiedDateTime")
         return isoparse(timestamp) if timestamp else None
 
     def get_size(self):
-        return self.get_file_metadata()["size"]
+        return 1
 
     @contextmanager
     def make_stream(self):
         response = self._get_cookie().get(
                 self.make_object_path() + ":/content")
+        print(f"response => {response.content}")
         with BytesIO(response.content) as fp:
             yield fp
 
@@ -211,10 +198,11 @@ class MSGraphListItemHandle(Handle):
     type_label = "msgraph-list-item"
     resource_type = MSGraphListItemResource
 
-    def __init__(self, source, path, site_id, weblink):
+    def __init__(self, source, path, site_id, item_id, webUrl):
         super().__init__(source, path)
         self._site_id = site_id
-        self._weblink = weblink
+        self._item_id = item_id
+        self._webUrl = webUrl
 
     @property
     def presentation_place(self):
@@ -226,7 +214,7 @@ class MSGraphListItemHandle(Handle):
 
     @property
     def presentation_url(self):
-        return self._weblink
+        return self._webUrl.split(f"/{self._item_id}")[0]  # find way to link to item??
 
     @property
     def sort_key(self):
@@ -243,7 +231,8 @@ class MSGraphListItemHandle(Handle):
         return dict(
             **super().to_json_object(),
             site_id=self._site_id,
-            weblink=self._weblink
+            item_id=self._item_id,
+            webUrl=self._webUrl
         )
 
     @staticmethod
@@ -253,5 +242,6 @@ class MSGraphListItemHandle(Handle):
             source=obj["source"],
             path=obj["path"],
             site_id=obj.get("site_id"),
-            weblink=obj.get("weblink")
+            item_id=obj.get("item_id"),
+            webUrl=obj.get("webUrl")
         )
