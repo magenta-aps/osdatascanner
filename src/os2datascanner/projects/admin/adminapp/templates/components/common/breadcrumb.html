@@ -33,6 +33,10 @@
     {% if '/msgraphteamsfilescanners/' in request.path %}
       <a href="{% url "msgraphteamsfilescanners" %}" class="link-color">{% trans "Office 365 Teams filescanner" %}</a>
     {% endif %}
+ 
+    {% if '/msgraphsharepointscanners/' in request.path %}
+      <a href="{% url "msgraphsharepointscanners" %}" class="link-color">{% trans "Office 365 SharePoint scanner" %}</a>
+    {% endif %}
 
     {% if '/googledrivescanners/' in request.path %}
       <a href="{% url "googledrivescanners" %}" class="link-color">{% trans "Google Drive scanner" %}</a>

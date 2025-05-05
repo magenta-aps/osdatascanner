@@ -231,3 +231,34 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
 
     class Meta(MSGraphScanner.Meta):
         verbose_name = _("MSGraph Teams filescanner")
+
+
+class MSGraphSharepointScanner(MSGraphScanner):
+    object_name = pgettext_lazy("unit of scan", "file")
+    object_name_plural = pgettext_lazy("unit of scan", "files")
+
+    scan_lists = models.BooleanField(
+        default=False,
+        verbose_name=_("scan lists")
+    )
+
+    scan_drives = models.BooleanField(
+        default=False,
+        verbose_name=_("scan drives")
+    )
+
+    @staticmethod
+    def get_type():
+        return 'msgraphsharepoint'
+
+    def generate_sources(self):
+        if self.scan_drives:
+            yield MSGraphFilesSource(
+                    client_id=str(self.graph_grant.app_id),
+                    tenant_id=str(self.graph_grant.tenant_id),
+                    client_secret=self.graph_grant.client_secret,
+                    site_drives=self.scan_drives,
+                    user_drives=False)
+
+    class Meta(MSGraphScanner.Meta):
+        verbose_name = _("MSGraph SharePoint scanner")

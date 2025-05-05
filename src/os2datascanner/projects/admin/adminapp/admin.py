@@ -28,7 +28,8 @@ from .models.scannerjobs.scanner import (ScanStatus,
 from .models.scannerjobs.msgraph import (MSGraphMailScanner,
                                          MSGraphFileScanner,
                                          MSGraphCalendarScanner,
-                                         MSGraphTeamsFileScanner)
+                                         MSGraphTeamsFileScanner,
+                                         MSGraphSharepointScanner)
 from .models.scannerjobs.webscanner import WebScanner
 from .models.scannerjobs.filescanner import FileScanner
 from .models.scannerjobs.exchangescanner import ExchangeScanner
@@ -98,6 +99,7 @@ class RuleCategoryAdmin(admin.ModelAdmin):
 @admin.register(MSGraphFileScanner)
 @admin.register(MSGraphCalendarScanner)
 @admin.register(MSGraphTeamsFileScanner)
+@admin.register(MSGraphSharepointScanner)
 @admin.register(GoogleDriveScanner)
 @admin.register(GmailScanner)
 class ScannerAdmin(admin.ModelAdmin):

@@ -572,6 +572,19 @@
                     {% include "components/scanner/scanner_form_input_field.html" with field=form.exclude_urls placeholder=form.exclude_urls.field.widget.attrs.placeholder %}
                   </div>
                 {% endif %}
+ 
+                {% if form.scan_drives %}
+                  <div class="checkbox-group form__group">
+                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_drives %}
+                  </div>
+                {% endif %}
+ 
+                {% if form.scan_lists %}
+                  <div class="checkbox-group form__group">
+                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_lists %}
+                  </div>
+                {% endif %}
+ 
               </div>
             </div>
           </fieldset>

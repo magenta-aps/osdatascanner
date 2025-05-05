@@ -362,6 +362,18 @@ msgstr "tjek døde links"
 msgid "MSGraph Teams filescanner"
 msgstr "MSGraph Teams filscanner"
 
+#: adminapp/models/scannerjobs/msgraph.py
+msgid "scan lists"
+msgstr "scan lister"
+
+#: adminapp/models/scannerjobs/msgraph.py
+msgid "scan drives"
+msgstr "scan SharePoint fildrev"
+
+#: adminapp/models/scannerjobs/msgraph.py
+msgid "MSGraph SharePoint scanner"
+msgstr "MSGraph SharePoint scanner"
+
 #: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
 msgid "case"
@@ -1017,6 +1029,11 @@ msgstr "Office 365 kalenderscanner"
 #: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 Teams filescanner"
 msgstr "Office 365 Teams filscanner"
+
+#: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/navigation/scanner_tabs.html
+msgid "Office 365 SharePoint scanner"
+msgstr "Office 365 SharePoint scanner"
 
 #: adminapp/templates/components/common/breadcrumb.html
 #: adminapp/templates/components/navigation/scanner_tabs.html
