@@ -35,6 +35,8 @@
 - It is now possible to configure OSdatascanner to allow both SSO login and login with username and
   password in the report module.
 
+- Added option to display all leader-position available users in the leader overview.
+
 ### General improvements
 
 - Adjusted responsive size of navigation buttons in the admin module.

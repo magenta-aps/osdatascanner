@@ -92,6 +92,16 @@ def børge_account(olsenbanden_organization):
 
 
 @pytest.fixture
+def dynamit_harry_account(olsenbanden_organization):
+    return Account.objects.create(
+        username="dynamit_harry",
+        first_name="Dynamit",
+        last_name="Harry",
+        organization=olsenbanden_organization
+    )
+
+
+@pytest.fixture
 def egon_email_alias(egon_account):
     return Alias.objects.create(
       account=egon_account,
@@ -203,6 +213,22 @@ def børges_værelse(olsenbanden_ou, kjelds_hus, olsenbanden_organization):
         parent=kjelds_hus,
         organization=olsenbanden_organization
     )
+
+
+@pytest.fixture
+def harrys_skur(olsenbanden_organization):
+    return OrganizationalUnit.objects.create(
+        name="Harrys Skur",
+        organization=olsenbanden_organization
+    )
+
+
+@pytest.fixture
+def harrys_skur_positions_egon_lead_harry_employee(harrys_skur, egon_account,
+                                                   dynamit_harry_account):
+    harry = Position.employees.create(account=dynamit_harry_account, unit=harrys_skur)
+    egon = Position.managers.create(account=egon_account, unit=harrys_skur)
+    return {"harry": harry, "egon": egon}
 
 
 @pytest.fixture
