@@ -14,14 +14,13 @@
 
 from uuid import uuid4
 
-from email_validator import validate_email
-
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..serializer import BaseSerializer
+from ..utils import validate_mail
 
 # Instance of regex validator, using regex to validate a SID
 validate_regex_SID = RegexValidator(regex=r'^S-1-\d+(-\d+){0,15}$')
@@ -32,13 +31,7 @@ def validate_aliastype_value(kind, value):
         case AliasType.SID:
             validate_regex_SID(value)
         case AliasType.EMAIL | AliasType.USER_PRINCIPAL_NAME:
-            # Don't check mail deliverability; we don't care about that
-            # (email addresses might be disabled, and UPNs aren't necessarily
-            # email addresses anyway)
-            try:
-                validate_email(value, check_deliverability=False)
-            except Exception as e:
-                raise ValidationError(e)
+            validate_mail(value)
         case AliasType.REMEDIATOR:
             if not isinstance(value, int):
                 raise ValidationError("Value must be an integer!")

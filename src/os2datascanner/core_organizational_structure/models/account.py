@@ -12,7 +12,6 @@
 # sector open source network <https://os2.eu/>.
 #
 from uuid import uuid4
-
 from django.db import models
 from django.contrib.auth.models import Permission
 from django.db.models import Deferrable
@@ -20,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from .position import Role
-
+from ..utils import validate_mail
 from functools import cached_property
 
 
@@ -59,8 +58,10 @@ class Account(models.Model):
         blank=True,
         null=True,
     )
-    email = models.EmailField(
+    email = models.CharField(
         verbose_name=_('contact email'),
+        validators=[validate_mail],
+        max_length=256,
         blank=True,
         null=True,
     )

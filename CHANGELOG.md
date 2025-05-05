@@ -17,6 +17,10 @@
 - Deemed "Open folder" button for Filescanner redundant and removed it, 
   as "Open" behaves almost identically, with highlighting of the chosen file.
 
+### Bugfixes
+
+- Account's email field now consistently allows internationalized (UTF-8) addresses.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
