@@ -18,18 +18,6 @@ cpr_regex = r"\b(\d{6})(?:[ \-/\.\t]|[ ]\-[ ])?(\d{4})\b"
 calculator = CprProbabilityCalculator()
 
 
-# if the sourronding context contains some of these, we get suspicious.
-# fmt: off
-# check if these delimiters are balanced
-_pre_delim = ("(", "[", "{", "<", )
-_post_delim = (")", "]", "}", ">", )
-# any of these symbols in the context result in probability=0
-_operators = ("+", "-", )
-_symbols = ("!", "#", "%", )
-_all_symbols = _operators + _symbols
-# fmt: on
-
-
 @dataclass
 class WordOrSymbol:
     """For future analysis, it is practical to know if a word or symbol was
@@ -45,10 +33,10 @@ class WordOrSymbol:
 @unique
 class Context(Enum):
     WHITELIST = 1
-    UNBALANCED = 2
+    # UNBALANCED = 2 is no longer treated as a problem
     WRONG_CASE = 3
     NUMBER = 4
-    SYMBOL = 5
+    # SYMBOL = 5 is no longer treated as a problem
     BLACKLIST = 6
     PROBABILITY_CALC = 7
 
@@ -188,7 +176,6 @@ class CPRRule(RegexRule):
         """Estimate a probality (0-1) based on the context of the match
 
         Returns 0.0 if any of the following conditions are found
-        - There are unmatched delimiters, like () or {}
         - The CPR-nr is surrounded by a number that doesn't resembles a CPR
         - The word before or after is not either: lower-, title- or upper-case.
         - A blacklisted surrounding_exception word is found around a CPR match
@@ -221,24 +208,6 @@ class CPRRule(RegexRule):
                 if cw in self._surrounding_exceptions:
                     ctype.append((Context.BLACKLIST, cw))
                     return 0.0, ctype
-
-        # test for balanced delimiters
-        # XXX: This only checks number of delimiters, not type, so. "[111111-1118}" is accepted
-        delimiters = 0
-        for w in chain.from_iterable(words_or_syms.values()):
-            if not w.symbol:
-                continue
-            w = w.symbol
-            if w in _pre_delim:
-                delimiters += 1
-            elif w in _post_delim:
-                delimiters -= 1
-            elif w in _all_symbols:
-                ctype.append((Context.SYMBOL, w))
-                probability = 0.0
-        if delimiters != 0:
-            ctype.append((Context.UNBALANCED, delimiters))
-            probability = 0.0
 
         # only do context checking on surrounding words
         for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:

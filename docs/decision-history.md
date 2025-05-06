@@ -111,23 +111,6 @@ If the abbreviation "cpr" (case insensitive) is present up to 3 words away
 from the matched number, the match is validated by context, no matter the 
 results of the the following checks.
 
-##### Delimiter balance
-
-If the immediate context, within 3 words, of the match contains an unbalanced 
-amount of delimiters, that is either `()`, `[]`, `{}`, `<>`, `<? ?>`, `<% %>`, 
-or `/* */`, the match will be invalidated.
-
-This check is implemented based on false positives identified by a specific
-client.
-
-##### Surrounding symbols
-
-If one of the symbols `+`, `-`, `!`, `#`, or `%` are within 3 words of the 
-matched number, the match will be invalidated.
-
-This check is implemented based on false positives identified by a specific
-client.
-
 ##### Surrounding numbers
 
 If the word immediately before or after the matched number is another number, 
@@ -165,6 +148,24 @@ numbers in the scanned source.
 This feature was implemented in response to a customer request to enable 
 the exclusion of matches based on their surrounding context.
 
+##### Historical notes
+
+Up to and including version 3.28.0, OSdatascanner enforced two additional
+constraints as part of the context check:
+
+* any delimiters (regular, square, curly and angle parentheses, as well as
+  various programming language comment markers) found within three words of a
+  CPR number had to be balanced; and
+
+* the presence of the symbols `+`, `-`, `!`, `#`, or `%` within three words of
+  a CPR number would cause it to be ignored.
+
+These were developed several years ago in response to customer feedback about
+reducing false positives, but several customers subsequently reported to us
+that these constraints were too rigid and were causing the scanner engine to
+overlook real (test) CPR numbers. We have accordingly removed them in newer
+releases.
+
 #### Exceptions
 
 When adding a new CPRRule to a CustomRule, it is possible to define a list of 
@@ -180,7 +181,6 @@ performance concerns.
 It is possible, in the future, that we would implement a call to the CPR 
 register to save a temporary dump when a scan is run, which we can then refer 
 to during scans.
-
 
 ### NameRule
 
