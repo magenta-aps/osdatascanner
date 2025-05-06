@@ -7,9 +7,11 @@ from utilities import UserWrapper
 
 def grant_permission_map(field_name: str) -> str:
     grant_permission_name_map = {
+        "GraphGrant": "graphgrant",
         "graph_grant": "graphgrant",
         "SMBGrant": "smbgrant",
         "smb_grant": "smbgrant",
+        "EWSGrant": "ewsgrant",
         "ews_grant": "ewsgrant",
         "GoogleApiGrant": "googleapigrant",
         "google_api_grant": "googleapigrant"
