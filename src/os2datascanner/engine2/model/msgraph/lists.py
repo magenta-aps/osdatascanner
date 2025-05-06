@@ -27,21 +27,19 @@ class MSGraphListsSource(MSGraphSource):
 
     def handles(self, sm):  # noqa
         with warn_on_httperror("SharePoint lists check"):
-            # sites = sm.open(self).paginated_get(
-            #     "sites/getAllSites?$filter=isPersonalSite ne true")
+            sites = sm.open(self).paginated_get(
+                "sites/getAllSites?$filter=isPersonalSite ne true")
 
-            # for site in sites:
-            #     site_id = site.get("id").split(",")[1]
-            site_id = "095ba61f-7f12-4894-b43a-7c40ee13dc9e"
-            lists = sm.open(self).paginated_get(
-                f"sites/{site_id}/lists")
+            for site in sites:
+                site_id = site.get("id").split(",")[1]
+                lists = sm.open(self).paginated_get(
+                    f"sites/{site_id}/lists")
 
-            for sp_list in lists:
-                template = sp_list.get("list").get("template")
-                # Is there a better way to filter off documentLibraries and catalogs?
-                if template != "documentLibrary" and "_catalog" not in sp_list.get("webUrl"):
-                    print(sp_list.get("name"))
-                    yield self._make_handle(sp_list, site_id)
+                for sp_list in lists:
+                    template = sp_list.get("list").get("template")
+                    # Is there a better way to filter off documentLibraries and catalogs?
+                    if template != "documentLibrary" and "_catalog" not in sp_list.get("webUrl"):
+                        yield self._make_handle(sp_list, site_id)
 
     def censor(self):
         return type(self)(None, self._tenant_id, None)
@@ -108,6 +106,10 @@ class MSGraphListHandle(Handle):
     def guess_type(self):
         return DUMMY_MIME
 
+    @property
+    def sort_key(self):
+        return f"{self._list_name}"
+
     def to_json_object(self):
         return super().to_json_object() | {
             "list_name": self._list_name,
@@ -131,20 +133,13 @@ class MSGraphListSource(DerivedSource):
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
 
-    @property
-    def _list_path(self):
-        if list_id := self.handle.relative_path:
-            return f"sites/{self.handle._site_id}/lists/{list_id}"
-        else:
-            raise ValueError("Object didn't contain any list_id or UPN!:"
-                             f" {self.to_json_object()}")
-
     def handles(self, sm):
         gc: MSGraphSource.GraphCaller = sm.open(self)
-        list_items = gc.get(f"{self._list_path}/items").json()["value"]
+        list_items = gc.get(
+            f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items").json()["value"]
         for item in list_items:
             yield MSGraphListItemHandle(
-                self.handle.source,
+                self,
                 self.handle.relative_path,
                 self.handle._site_id, item["id"], item["webUrl"])
 
@@ -163,19 +158,16 @@ class MSGraphListItemResource(Resource):
 
     def check(self) -> bool:
         try:
-            self._get_cookie().get(self.make_object_path())
+            self._get_cookie().get(self.make_path())
             return True
         except HTTPError as ex:
             if ex.response.status_code in (404, 410,):
                 return False
             raise
 
-    def make_object_path(self):
-        return f"{self.handle.source._list_path}/self.handle.relative_path"
-
     def get_metadata(self):
         if not self._metadata:
-            self._metadata = self._get_cookie().get(self.make_object_path()).json()
+            self._metadata = self._get_cookie().get(self.make_path()).json()
         return self._metadata
 
     def get_last_modified(self):
@@ -185,11 +177,18 @@ class MSGraphListItemResource(Resource):
     def get_size(self):
         return 1
 
+    def compute_type(self):
+        return "text/plain"
+
+    def make_path(self):
+        return (
+            f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items/"
+            f"{self.handle._item_id}"
+        )
+
     @contextmanager
     def make_stream(self):
-        response = self._get_cookie().get(
-                self.make_object_path() + ":/content")
-        print(f"response => {response.content}")
+        response = self._get_cookie().get(self.make_path())
         with BytesIO(response.content) as fp:
             yield fp
 
@@ -205,27 +204,24 @@ class MSGraphListItemHandle(Handle):
         self._webUrl = webUrl
 
     @property
-    def presentation_place(self):
-        return self._site_id
+    def presentation_name(self):
+        return self.source.handle._list_name
 
     @property
-    def presentation_name(self):
-        return "presentation_name"
+    def presentation_place(self):
+        return f"{self.relative_path}/{self.source.handle._list_name}"
 
     @property
     def presentation_url(self):
-        return self._webUrl.split(f"/{self._item_id}")[0]  # find way to link to item??
+        # This links to list, find way to link to item??
+        return self._webUrl.split(f"/{self._item_id}")[0]
 
     @property
     def sort_key(self):
-        return self.source.handle.sort_key + (f"{self._site_id}")
+        return self.source.handle.sort_key + (f"/{self._item_id}")
 
     def guess_type(self):
-        return DUMMY_MIME
-
-    @property
-    def scan_lists(self):
-        return True
+        return "text/plain"
 
     def to_json_object(self):
         return dict(
@@ -239,7 +235,7 @@ class MSGraphListItemHandle(Handle):
     @Handle.json_handler(type_label)
     def from_json_object(obj):
         return MSGraphListItemHandle(
-            source=obj["source"],
+            Source.from_json_object(obj["source"]),
             path=obj["path"],
             site_id=obj.get("site_id"),
             item_id=obj.get("item_id"),
