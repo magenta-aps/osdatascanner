@@ -339,6 +339,10 @@ class Account(Core_Account):
         """Select matches connected through any Alias that isn't a remediator
         role."""
 
+        SHARED = auto()
+        """Select matches connected through a shared Alias that isn't a
+        remediator role."""
+
         REMEDIATOR = auto()
         """Select matches connected through a remediator role Alias."""
 
@@ -380,6 +384,9 @@ class Account(Core_Account):
             case rt.PERSONAL_AND_SHARED | rt.WITHHELD_AND_SHARED:
                 aliases = self.aliases.exclude(
                         _alias_type=AliasType.REMEDIATOR)
+            case rt.SHARED:
+                aliases = self.aliases.exclude(
+                        _alias_type=AliasType.REMEDIATOR).filter(shared=True)
             case rt.REMEDIATOR:
                 aliases = self.aliases.filter(_alias_type=AliasType.REMEDIATOR)
             case _:

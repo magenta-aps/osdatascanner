@@ -31,7 +31,7 @@
       OSdatascanner-systemet med direkte tilknytning til dig, der kræver din opmærksomhed.
     </p>
 
-    {% if superadmin_bound_results or remediator_bound_results %}
+    {% if superadmin_bound_results or remediator_bound_results or shared_bound_results %}
       <table>
         <tr>
           <td>Yderligere resultater er tildelt til dig på baggrund af dine roller i systemet:</td>
@@ -49,6 +49,14 @@
           <tr>
             <td>
               Tildelt pga. oprydder rolle: <strong>{{ remediator_bound_results }}</strong>
+            </td>
+          </tr>
+        {% endif %}
+
+        {% if shared_bound_results %}
+          <tr>
+            <td>
+              Tildelt pga. delt alias: <strong>{{ shared_bound_results }}</strong>
             </td>
           </tr>
         {% endif %}

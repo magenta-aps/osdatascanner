@@ -5,13 +5,16 @@ Hej {{ full_name }},
 Der ligger i øjeblikket {{ user_alias_bound_results }} resultater i
     OSdatascanner-systemet med direkte tilknytning til dig, der kræver din opmærksomhed.
 
-{% if superadmin_bound_results or remediator_bound_results %}
+{% if superadmin_bound_results or remediator_bound_results or shared_bound_results %}
     Yderligere resultater er tildelt til dig på baggrund af dine roller i systemet:
         {% if superadmin_bound_results %}
             Tildelt pga. super-admin rolle: {{ superadmin_bound_results }}
         {% endif %}
         {% if remediator_bound_results %}
             Tildelt pga. oprydder rolle: {{ remediator_bound_results }}
+        {% endif %}
+        {% if shared_bound_results %}
+            Tildelt pga. delt alias: {{ shared_bound_results }}
         {% endif %}
 {% endif %}
 

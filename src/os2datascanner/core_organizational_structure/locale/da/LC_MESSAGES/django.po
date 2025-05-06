@@ -107,11 +107,11 @@ msgstr "delt"
 msgid ""
 "The results related to the user through this alias is shared with other "
 "users. Matches associated through this alias will not be taken into account "
-"in user statistics."
+"in user statistics, except for in email notifications."
 msgstr ""
 "Resultaterne relateret til brugeren via dette alias er delt med andre "
 "brugere. Matches forbundet via dette alias vill ikke blive taget i "
-"betragtning i brugerstatistikker."
+"betragtning i brugerstatistikker, undtagen for i email notifikationer."
 
 #: models/aliases.py
 msgid "alias"

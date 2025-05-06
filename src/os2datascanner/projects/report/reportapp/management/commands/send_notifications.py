@@ -224,11 +224,15 @@ class Command(BaseCommand):
                             Account.ReportType.WITHHELD_AND_SHARED).count())
         remediator_bound_results = context["remediator_bound_results"] = (
                 user.account.get_report(Account.ReportType.REMEDIATOR).count())
+        shared_bound_results = context["shared_bound_results"] = (
+                user.account.get_report(Account.ReportType.SHARED).count())
 
         context["total_result_count"] = (
                 user_alias_bound_results
                 + superadmin_bound_results
-                + remediator_bound_results)
+                + remediator_bound_results
+                + shared_bound_results
+        )
 
         return context
 
