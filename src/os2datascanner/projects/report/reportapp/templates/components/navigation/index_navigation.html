@@ -44,6 +44,6 @@
   {% if perms.os2datascanner_report.delete_documentreport and '/archive' not in request.path %}
     <a id="scannerjobs"
        class="tabs__control{% if '/scannerjobs' in request.path %} active{% endif %}"
-       href="{% url "scannerjobs" %}">{% trans "Scannerjobs" %}</a>
+       href="{% url "scannerjobs" %}">{% trans "Scannerjob" %}</a>
   {% endif %}
 </div>

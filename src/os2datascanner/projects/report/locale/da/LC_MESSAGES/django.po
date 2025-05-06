@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-01 15:19+0200\n"
+"POT-Creation-Date: 2025-05-06 10:26+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -498,11 +498,11 @@ msgstr "Hvorfor er mine emails ikke kategoriseret i Outlook?"
 
 #: reportapp/templates/components/navigation/index_navigation.html
 msgid "Personal"
-msgstr "Personlige"
+msgstr "Personlig"
 
 #: reportapp/templates/components/navigation/index_navigation.html
 msgid "Personal - SBSYS"
-msgstr "Personlige - SBSYS"
+msgstr "Personlig - SBSYS"
 
 #: reportapp/templates/components/navigation/index_navigation.html
 #: reportapp/views/user_views.py
@@ -515,11 +515,10 @@ msgstr "Oprydder - SBSYS"
 
 #: reportapp/templates/components/navigation/index_navigation.html
 msgid "Undistributed"
-msgstr "Tilbageholdte"
+msgstr "Tilbageholdt"
 
 #: reportapp/templates/components/navigation/index_navigation.html
-#: reportapp/templates/scannerjobs/scannerjob_list.html
-msgid "Scannerjobs"
+msgid "Scannerjob"
 msgstr "Scannerjob"
 
 #: reportapp/templates/components/navigation/navigation.html
@@ -1969,6 +1968,10 @@ msgstr ""
 #: reportapp/templates/user_content.html
 msgid "results"
 msgstr "resultater"
+
+#: reportapp/templates/scannerjobs/scannerjob_list.html
+msgid "Scannerjobs"
+msgstr "Scannerjob"
 
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Do you really want to delete all reports from this scanner?"

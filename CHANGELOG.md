@@ -19,6 +19,8 @@
 
 - Results connected to shared aliases are now included in email notifications.
 
+- Wording on Report sub-tab labels have been changed from plural to singular.
+
 ### Bugfixes
 
 - Account's email field now consistently allows internationalized (UTF-8) addresses.
