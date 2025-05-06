@@ -17,6 +17,8 @@
 - Deemed "Open folder" button for Filescanner redundant and removed it, 
   as "Open" behaves almost identically, with highlighting of the chosen file.
 
+- Results connected to shared aliases are now included in email notifications.
+
 ### Bugfixes
 
 - Account's email field now consistently allows internationalized (UTF-8) addresses.
