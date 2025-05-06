@@ -608,12 +608,6 @@ class TestDiagnosticsReportCommand:
         # msgraph
         ('MSGRAPH_ALLOW_WRITE', True),
         ('MSGRAPH_ALLOW_WRITE', False),
-        # smb
-        ('SMB_ALLOW_WRITE', True),
-        ('SMB_ALLOW_WRITE', False),
-        # ews
-        ('EWS_ALLOW_WRITE', True),
-        ('EWS_ALLOW_WRITE', False),
         # logging
         ('LOG_LEVEL', 'DEBUG'),
         ('LOG_LEVEL', 'INFO'),

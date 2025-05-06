@@ -116,7 +116,7 @@ class Organization(models.Model):
     # Outlook settings
     outlook_delete_email_permission = models.BooleanField(
         default=False,
-        verbose_name=_("allow deletion of emails directly"))
+        verbose_name=_("allow deletion of emails in Outlook directly"))
 
     outlook_categorize_email_permission = models.CharField(
         max_length=3,
@@ -132,6 +132,30 @@ class Organization(models.Model):
     onedrive_delete_permission = models.BooleanField(
         default=False,
         verbose_name=_("allow deletion of online drive files directly")
+    )
+
+    # smb settings
+    smb_delete_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of on-premise drive files directly")
+    )
+
+    # Exchange settings
+    exchange_delete_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of emails on Exchange server directly")
+    )
+
+    # Gmail settings
+    gmail_delete_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of emails in gmail directly")
+    )
+
+    # Google Drive settings
+    gdrive_delete_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of files in Google Drive directly")
     )
 
     # Access settings
@@ -272,9 +296,13 @@ class OrganizationSerializer(BaseSerializer):
             'dpo_contact_method',
             'dpo_name',
             'dpo_value',
-            'outlook_delete_email_permission',
             'outlook_categorize_email_permission',
+            'smb_delete_permission',
+            'exchange_delete_permission',
+            'outlook_delete_email_permission',
             'onedrive_delete_permission',
+            'gmail_delete_permission',
+            'gdrive_delete_permission',
             'email_header_banner',
             'dtstart',
             'retention_policy',

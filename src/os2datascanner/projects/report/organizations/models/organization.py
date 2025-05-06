@@ -62,11 +62,23 @@ class Organization(Core_Organization):
             (OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.INDIVIDUAL_LEVEL)
         )
 
-    def has_email_delete_permission(self) -> bool:
+    def has_smb_file_delete_permission(self) -> bool:
+        return self.smb_delete_permission
+
+    def has_exchange_email_delete_permission(self) -> bool:
+        return self.exchange_delete_permission
+
+    def has_msgraph_email_delete_permission(self) -> bool:
         return self.outlook_delete_email_permission
 
-    def has_file_delete_permission(self) -> bool:
+    def has_msgraph_file_delete_permission(self) -> bool:
         return self.onedrive_delete_permission
+
+    def has_gmail_email_delete_permission(self) -> bool:
+        return self.gmail_delete_permission
+
+    def has_gdrive_file_delete_permission(self) -> bool:
+        return self.gdrive_delete_permission
 
     @property
     def false_positive_rate(self) -> float:

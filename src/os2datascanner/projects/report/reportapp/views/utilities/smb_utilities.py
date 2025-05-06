@@ -2,8 +2,6 @@ import smbc
 import structlog
 from traceback import print_exc
 
-from django.conf import settings
-
 from os2datascanner.utils.system_utilities import time_now
 
 from os2datascanner.engine2.model.core import Handle
@@ -20,7 +18,7 @@ logger = structlog.get_logger("reportapp")
 def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
-    if not settings.SMB_ALLOW_WRITE:
+    if not user.account.organization.has_smb_file_delete_permission():
         logger.warning(
                 "SMB deletion request with function disabled!",
                 user=user)

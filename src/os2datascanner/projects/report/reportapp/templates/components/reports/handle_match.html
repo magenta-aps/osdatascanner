@@ -58,12 +58,12 @@
       </span>
     </button>
   {% endif %}
-  {% if show_email_mass_delete_button %}
+  {% if show_msgraph_email_mass_delete_button %}
     {% blocktranslate asvar source_type %}emails{% endblocktranslate %}
     {% blocktranslate asvar source %}the mailbox{% endblocktranslate %}
     {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-mail" %}
   {% endif %}
-  {% if show_file_mass_delete_button %}
+  {% if show_msgraph_file_mass_delete_button %}
     {% blocktranslate asvar source_type %}files{% endblocktranslate %}
     {% blocktranslate asvar source %}the online drive{% endblocktranslate %}
     {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-file" %}

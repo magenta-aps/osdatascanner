@@ -103,7 +103,7 @@ def delete_email(document_report, account: Account):
 
     # Return early scenarios
     graph_grant = check_msgraph_setting_and_grant(account.organization)
-    if not account.organization.has_email_delete_permission():
+    if not account.organization.has_msgraph_email_delete_permission():
         allow_deletion_message = _("System configuration does not allow mail deletion.")
         logger.warning(allow_deletion_message)
         raise PermissionDenied(allow_deletion_message)
@@ -196,7 +196,7 @@ def delete_file(document_report, account: Account):
     # Return early scenarios
     # TODO: consider moving it to a separate setting than the email deletion
     graph_grant = check_msgraph_setting_and_grant(account.organization)
-    if not account.organization.has_file_delete_permission():
+    if not account.organization.has_msgraph_file_delete_permission():
         allow_deletion_message = _("System configuration does not allow file deletion.")
         logger.warning(allow_deletion_message)
         raise PermissionDenied(allow_deletion_message)

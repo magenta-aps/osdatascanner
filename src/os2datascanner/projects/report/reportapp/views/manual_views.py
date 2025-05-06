@@ -10,5 +10,5 @@ class ManualMainView(LoginRequiredMixin, TemplateView):
         organization = self.request.user.account.organization
         context["organization"] = organization
         context["categorization"] = organization.has_categorize_permission()
-        context["file_delete"] = organization.has_file_delete_permission()
+        context["file_delete"] = organization.has_msgraph_file_delete_permission()
         return context

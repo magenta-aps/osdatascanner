@@ -1,5 +1,4 @@
 from django.urls import path
-from django.conf import settings
 
 from .views.report_views import (
     HandleMatchView, MassHandleView, OpenMatchView, ShowMoreMatchesView,
@@ -21,31 +20,14 @@ urlpatterns = [
     path('mass_delete_mail/', MassDeleteMailView.as_view(), name="mass-delete-mail"),
     path('delete_file/<int:pk>', DeleteFileView.as_view(), name="delete-file"),
     path('mass_delete_file/', MassDeleteFileView.as_view(), name="mass-delete-file"),
-]
-
-
-if settings.SMB_ALLOW_WRITE:
-    urlpatterns.extend([
-        path('delete_smb_file/<int:pk>', DeleteSMBFileView.as_view(), name="delete-smb-file"),
-        path('mass_delete_smb_file/', MassDeleteSMBFileView.as_view(), name="mass-delete-smb-file"),
-    ])
-
-if settings.EWS_ALLOW_WRITE:
-    urlpatterns.extend([
-        path('delete_ews_mail/<int:pk>', DeleteEWSMailView.as_view(), name="delete-ews-mail"),
-        path('mass_delete_ews_mail/', MassDeleteEWSMailView.as_view(), name="mass-delete-ews-mail"),
-    ])
-
-if settings.GMAIL_ALLOW_WRITE:
-    urlpatterns.extend([
-        path('delete_gmail/<int:pk>', DeleteGmailView.as_view(), name="delete-gmail"),
-        path('mass_delete_gmail/', MassDeleteGmailView.as_view(), name="mass-delete-gmail"),
-    ])
-
-if settings.GDRIVE_ALLOW_WRITE:
-    urlpatterns.extend([
-        path('delete_gdrive/<int:pk>',
-             DeleteGoogleDriveView.as_view(), name="delete-gdrive"),
-        path('mass_delete_gdrive/',
-             MassDeleteGoogleDriveView.as_view(), name="mass-delete-gdrive"),
-    ])
+    path('delete_smb_file/<int:pk>', DeleteSMBFileView.as_view(), name="delete-smb-file"),
+    path('mass_delete_smb_file/', MassDeleteSMBFileView.as_view(), name="mass-delete-smb-file"),
+    path('delete_ews_mail/<int:pk>', DeleteEWSMailView.as_view(), name="delete-ews-mail"),
+    path('mass_delete_ews_mail/', MassDeleteEWSMailView.as_view(), name="mass-delete-ews-mail"),
+    path('delete_gmail/<int:pk>', DeleteGmailView.as_view(), name="delete-gmail"),
+    path('mass_delete_gmail/', MassDeleteGmailView.as_view(), name="mass-delete-gmail"),
+    path('delete_gdrive/<int:pk>',
+         DeleteGoogleDriveView.as_view(), name="delete-gdrive"),
+    path('mass_delete_gdrive/',
+         MassDeleteGoogleDriveView.as_view(), name="mass-delete-gdrive"),
+    ]

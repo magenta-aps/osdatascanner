@@ -229,6 +229,16 @@
             <label>{% trans "Allow deletion" %}</label>
 
             <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.smb_delete_permission }}
+              <label for="{{ form.smb_delete_permission.id_for_label }}">{{ form.smb_delete_permission.label }}</label>
+            </div>
+
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.exchange_delete_permission }}
+              <label for="{{ form.exchange_delete_permission.id_for_label }}">{{ form.exchange_delete_permission.label }}</label>
+            </div>
+
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
               {{ form.outlook_delete_email_permission }}
               <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
                 {{ form.outlook_delete_email_permission.label }}
@@ -238,6 +248,16 @@
             <div class="form__row__item__checkboxcontainer ds-checkbox">
               {{ form.onedrive_delete_permission }}
               <label for="{{ form.onedrive_delete_permission.id_for_label }}">{{ form.onedrive_delete_permission.label }}</label>
+            </div>
+
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.gmail_delete_permission }}
+              <label for="{{ form.gmail_delete_permission.id_for_label }}">{{ form.gmail_delete_permission.label }}</label>
+            </div>
+
+            <div class="form__row__item__checkboxcontainer ds-checkbox">
+              {{ form.gdrive_delete_permission }}
+              <label for="{{ form.gdrive_delete_permission.id_for_label }}">{{ form.gdrive_delete_permission.label }}</label>
             </div>
 
           </div>

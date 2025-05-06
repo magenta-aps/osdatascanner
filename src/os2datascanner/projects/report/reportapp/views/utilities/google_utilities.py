@@ -3,7 +3,6 @@ from enum import Enum, auto
 
 import googleapiclient.errors
 import structlog
-from django.conf import settings
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
@@ -63,7 +62,7 @@ def get_google_api_grant(org) -> (bool, GoogleApiGrant):
 def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
-    if not settings.GMAIL_ALLOW_WRITE:
+    if not user.account.organization.has_gmail_email_delete_permission():
         logger.warning(
             "Gmail deletion request with function disabled!",
             user=user)
@@ -118,7 +117,7 @@ def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
                                  exc_info=True)
 
                 result = (False, f"unexpected http error during deletion of report {report.pk}: "
-                                 f"{http_error}")
+                          f"{http_error}")
         except Exception as ex:
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
@@ -137,7 +136,7 @@ def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
 def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
-    if not settings.GDRIVE_ALLOW_WRITE:
+    if not user.account.organization.has_gdrive_file_delete_permission():
         logger.warning(
             "Google Drive deletion request with function disabled!",
             user=user)
@@ -202,7 +201,7 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
                                  exc_info=True)
 
                 result = (False, f"unexpected http error during deletion of report {report.pk}: "
-                                 f"{http_error}")
+                          f"{http_error}")
         except Exception as ex:
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
