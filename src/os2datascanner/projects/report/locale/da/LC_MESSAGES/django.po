@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-06 10:26+0200\n"
+"POT-Creation-Date: 2025-05-06 15:49+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2410,8 +2410,16 @@ msgid "contains"
 msgstr "indeholder"
 
 #: reportapp/views/utilities/msgraph_utilities.py
-msgid "System configuration is missing Azure-application credentials. "
-msgstr "Systemindstillingerne mangler Azure-applikation oplysninger."
+msgid "System configuration is missing write permission!. "
+msgstr "Systemindstillingerne mangler skriverettigheder!"
+
+#: reportapp/views/utilities/msgraph_utilities.py
+msgid "System is missing a GraphGrant!"
+msgstr "Systemet mangler en Graph bevilling!"
+
+#: reportapp/views/utilities/msgraph_utilities.py
+msgid "System has too many GraphGrants!"
+msgstr "Systemet har for mange Graph bevillinger!"
 
 #: reportapp/views/utilities/msgraph_utilities.py
 msgid "Your organization does not allow this operation."
@@ -2432,10 +2440,6 @@ msgid "Couldn't delete email! Code: {status_code}"
 msgstr "Kunne ikke slette email! Fejlkode: {status_code}"
 
 #: reportapp/views/utilities/msgraph_utilities.py
-msgid "Could not find your Microsoft tenant!"
-msgstr "Kunne ikke finde din Microsoft tenant!"
-
-#: reportapp/views/utilities/msgraph_utilities.py
 msgid "You currently have no Outlook reports. Can't create categories!"
 msgstr ""
 "Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
@@ -2453,6 +2457,9 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#~ msgid "Could not find your Microsoft tenant!"
+#~ msgstr "Kunne ikke finde din Microsoft tenant!"
 
 #~ msgid "Deletes checked emails from your mailbox"
 #~ msgstr "Sletter markede emails fra din mailboks"

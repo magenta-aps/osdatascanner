@@ -1,10 +1,9 @@
 import pytest
-from django.core.exceptions import PermissionDenied
 
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 
 from ..reportapp.views.utilities.msgraph_utilities import \
-    get_handle_from_document_report, get_tenant_id_from_document_report
+    get_handle_from_document_report
 from ..reportapp.models.documentreport import DocumentReport
 
 scan_tag_origin_metadata = {
@@ -182,17 +181,3 @@ class TestMSGraphUtils:
         assert get_handle_from_document_report(
             not_msgraph_reports, MSGraphMailMessageHandle) is None, \
             "Didn't return None when no MSGraphMailMessageHandle found!"
-
-    def test_get_tenant_id_from_document_report(self, msgraph_mail_reports):
-        # Check that we get the str value of the tenant id, provided there is one.
-        for dr in msgraph_mail_reports:
-            assert get_tenant_id_from_document_report(dr) == "not_a_real_tenant", ("Didn't find "
-                                                                                   "tenant id in "
-                                                                                   "DocumentReport!"
-
-                                                                                   )
-
-    def test_get_tenant_id_from_document_report_no_tenant(self, not_msgraph_reports):
-        # Check that we raise PermissionDenied when no tenant id is found.
-        with pytest.raises(PermissionDenied):
-            get_tenant_id_from_document_report(not_msgraph_reports)

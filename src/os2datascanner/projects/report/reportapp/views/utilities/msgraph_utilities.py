@@ -6,9 +6,9 @@ from django.core.exceptions import PermissionDenied
 from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 from os2datascanner.engine2.model.msgraph.files import MSGraphFileHandle
-from os2datascanner.engine2.model.msgraph.utilities import make_token, MSGraphSource
+from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
+from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.report.organizations.models import Account
-
 from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 
@@ -28,14 +28,22 @@ def outlook_settings_from_owner(owner: str):
         return None
 
 
-def check_msgraph_settings():
-    if (not settings.MSGRAPH_APP_ID
-            or not settings.MSGRAPH_CLIENT_SECRET
-            or not settings.MSGRAPH_ALLOW_WRITE):
+def check_msgraph_setting_and_grant(org) -> GraphGrant | PermissionDenied:
+    if not settings.MSGRAPH_ALLOW_WRITE:
         msgraph_app_settings_message = _("System configuration is missing"
-                                         " Azure-application credentials. ")
+                                         " write permission!. ")
         logger.warning(msgraph_app_settings_message)
         raise PermissionDenied(msgraph_app_settings_message)
+    try:
+        return GraphGrant.objects.get(organization=org)
+    except GraphGrant.DoesNotExist:
+        no_grant_message = _("System is missing a GraphGrant!")
+        logger.warning(no_grant_message)
+        raise PermissionDenied(no_grant_message)
+    except GraphGrant.MultipleObjectsReturned:
+        too_many_grant_message = _("System has too many GraphGrants!")
+        logger.warning(too_many_grant_message)
+        raise PermissionDenied(too_many_grant_message)
 
 
 def categorize_email_from_report(document_report,
@@ -47,7 +55,7 @@ def categorize_email_from_report(document_report,
     """
 
     # Return early scenarios
-    check_msgraph_settings()
+    check_msgraph_setting_and_grant(document_report.organization)
     required_permissions = (OutlookCategorizeChoices.ORG_LEVEL,
                             OutlookCategorizeChoices.INDIVIDUAL_LEVEL)
     if document_report.organization.outlook_categorize_email_permission not in required_permissions:
@@ -93,14 +101,8 @@ def delete_email(document_report, account: Account):
     from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
         import is_owner, handle_report
 
-    def _make_token():
-        return make_token(
-            settings.MSGRAPH_APP_ID,
-            tenant_id,
-            settings.MSGRAPH_CLIENT_SECRET)
-
     # Return early scenarios
-    check_msgraph_settings()
+    graph_grant = check_msgraph_setting_and_grant(account.organization)
     if not account.organization.has_email_delete_permission():
         allow_deletion_message = _("System configuration does not allow mail deletion.")
         logger.warning(allow_deletion_message)
@@ -114,12 +116,10 @@ def delete_email(document_report, account: Account):
                              format(owner=owner))
         raise PermissionDenied(not_owner_message)
 
-    tenant_id = get_tenant_id_from_document_report(document_report)
-
     # Open a session and start doing stuff
     with requests.Session() as session:
         gc = GraphCaller(
-            _make_token,
+            graph_grant.make_token,
             session)
 
         message_handle = get_handle_from_document_report(document_report, MSGraphMailMessageHandle)
@@ -165,22 +165,6 @@ def get_handle_from_document_report(document_report, handle_type) -> Handle:
     return message_handle
 
 
-def get_tenant_id_from_document_report(document_report) -> str or PermissionDenied:
-    tenant_id = None
-    # tenant_id isn't censored in metadata, which means we can grab it from there.
-    for handle in document_report.metadata.handle.walk_up():
-        if isinstance(handle.source, MSGraphSource):
-            # we might want to add an accessor for this to avoid the private member
-            tenant_id = handle.source._tenant_id
-            return tenant_id
-    if not tenant_id:
-        logger.warning(f"Could not retrieve any tenant id from {document_report}")
-        no_tenant_message = _("Could not find your Microsoft tenant!")
-        # PermissionDenied is a bit misleading here, as it may not represent what went wrong.
-        # But sticking to this exception, makes handling it in the view easier.
-        raise PermissionDenied(no_tenant_message)
-
-
 def get_msgraph_mail_document_reports(account):
     from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
     # TODO: Should this return only unresolved reports?
@@ -209,15 +193,9 @@ def delete_file(document_report, account: Account):
     from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
         import is_owner, handle_report
 
-    def _make_token():
-        return make_token(
-            settings.MSGRAPH_APP_ID,
-            tenant_id,
-            settings.MSGRAPH_CLIENT_SECRET)
-
     # Return early scenarios
     # TODO: consider moving it to a separate setting than the email deletion
-    check_msgraph_settings()
+    graph_grant = check_msgraph_setting_and_grant(account.organization)
     if not account.organization.has_file_delete_permission():
         allow_deletion_message = _("System configuration does not allow file deletion.")
         logger.warning(allow_deletion_message)
@@ -232,10 +210,8 @@ def delete_file(document_report, account: Account):
                              format(owner=owner))
         raise PermissionDenied(not_owner_message)
 
-    tenant_id = get_tenant_id_from_document_report(document_report)
-
     with requests.Session() as session:
-        gc = GraphCaller(_make_token, session)
+        gc = GraphCaller(graph_grant.make_token, session)
 
         file_handle = get_handle_from_document_report(document_report, MSGraphFileHandle)
         item_path = file_handle.relative_path

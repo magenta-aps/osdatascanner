@@ -21,6 +21,8 @@
 
 - Wording on Report sub-tab labels have been changed from plural to singular.
 
+- MSGraph functionality of the report module is now using GraphGrant instead of setting values.
+
 ### Bugfixes
 
 - Account's email field now consistently allows internationalized (UTF-8) addresses.
