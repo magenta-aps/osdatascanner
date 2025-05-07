@@ -88,6 +88,11 @@ class TestCensorContextUnitTests:
 
         assert actual == "DetteErKontekst"
 
+    def test_censor_none(self, censor_3_to_6):
+        actual = censor_context(None, [censor_3_to_6])
+
+        assert actual is None
+
 
 class TestCensorContextRealRules:
     def test_regex_rule(self):
