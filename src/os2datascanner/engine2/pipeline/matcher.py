@@ -13,6 +13,10 @@ logger = structlog.get_logger("matcher")
 def censor_context(context, rules):
     """Given a text and an iterable of rules, will censor the text,
     using the get_censor_intervals method of each rule."""
+
+    if not context:
+        return context
+
     censor_intervals = []
     for r in rules:
         if hasattr(r, "get_censor_intervals"):
