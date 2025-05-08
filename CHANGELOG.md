@@ -31,6 +31,8 @@
 
 - censor_context doesn't fail when given None, fixing an error causing the matcher to crash.
 
+- Fixed "danglish" translations related to the sub-tabs for scannerjobs.
+
 - Corrected an issue where out of sync Outlook categories could crash the result collector.
 
 - The CPR rule no longer performs odd checks for punctuation and balanced

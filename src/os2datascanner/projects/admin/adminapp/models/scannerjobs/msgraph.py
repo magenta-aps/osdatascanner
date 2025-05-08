@@ -128,7 +128,7 @@ class MSGraphMailScanner(MSGraphScanner):
             return []
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph mailscanner")
+        verbose_name = _("MSGraph mail scanner")
 
 
 class MSGraphFileScanner(MSGraphScanner):
@@ -172,7 +172,7 @@ class MSGraphFileScanner(MSGraphScanner):
     object_name_plural = pgettext_lazy("unit of scan", "files")
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph filescanner")
+        verbose_name = _("MSGraph file scanner")
 
 
 class MSGraphCalendarScanner(MSGraphScanner):
@@ -201,7 +201,7 @@ class MSGraphCalendarScanner(MSGraphScanner):
     object_name_plural = pgettext_lazy("unit of scan", "appointments")
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph calendarscanner")
+        verbose_name = _("MSGraph calendar scanner")
 
 
 class MSGraphTeamsFileScanner(MSGraphScanner):
@@ -230,7 +230,7 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
     object_name_plural = pgettext_lazy("unit of scan", "files")
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph Teams filescanner")
+        verbose_name = _("MSGraph Teams file scanner")
 
 
 class MSGraphSharepointScanner(MSGraphScanner):

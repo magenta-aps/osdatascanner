@@ -172,7 +172,7 @@ class ExchangeScanner(Scanner):
     object_name_plural = pgettext_lazy("unit of scan", "email messages")
 
     class Meta:
-        verbose_name = _("Exchangescanner")
+        verbose_name = _("Exchange scanner")
 
         # TODO: Would a constraint like this be a good idea?
         # constraints = [
