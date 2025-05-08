@@ -110,7 +110,9 @@ def outlook_categorize_enabled(owner: str) -> bool:
 
     if aos_with_too_few_categories:
         logger.warning(f"{owner} has too few categories! Trying to create them..")
-        aos_with_too_few_categories.populate_setting()
+        # populate_setting uses distinct(), which doesn't mix with annotating, so we have to filter
+        # the original qs.
+        aos.filter(pk__in=aos_with_too_few_categories.values('pk')).populate_setting()
 
     return aos.annotate(num_categories=Count('outlook_categories')
                         ).filter(num_categories__gte=2).exists()
