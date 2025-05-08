@@ -27,6 +27,8 @@
 
 - Corrected scanner form not storing file uploads.
 
+- censor_context doesn't fail when given None, fixing an error causing the matcher to crash.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
