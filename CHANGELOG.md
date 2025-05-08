@@ -33,6 +33,9 @@
 
 - Corrected an issue where out of sync Outlook categories could crash the result collector.
 
+- The CPR rule no longer performs odd checks for punctuation and balanced
+  parentheses in the context around a possible match.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
