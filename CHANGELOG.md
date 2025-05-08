@@ -31,6 +31,8 @@
 
 - censor_context doesn't fail when given None, fixing an error causing the matcher to crash.
 
+- Corrected an issue where out of sync Outlook categories could crash the result collector.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
