@@ -18,7 +18,7 @@
 import structlog
 from django.db import transaction
 from django.core.management.base import BaseCommand
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from os2datascanner.utils import debug
 from os2datascanner.engine2.conversions.types import OutputType
@@ -98,9 +98,24 @@ def owner_from_metadata(message: messages.MetadataMessage) -> str:
 
 def outlook_categorize_enabled(owner: str) -> bool:
     """ Checks if categorize_email is enabled for an account with an alias corresponding to owner
-    value. Returns bool"""
-    return bool(AccountOutlookSetting.objects.filter(account__email=owner,
-                                                     categorize_email=True))
+    value and verifies categories are created (creates them if needed)
+     Returns bool"""
+    aos = AccountOutlookSetting.objects.filter(account__email=owner,
+                                               categorize_email=True)
+    if not aos:
+        return False
+
+    aos_with_too_few_categories = aos.annotate(
+        num_categories=Count('outlook_categories')).filter(num_categories__lt=2)
+
+    if aos_with_too_few_categories:
+        logger.warning(f"{owner} has too few categories! Trying to create them..")
+        # populate_setting uses distinct(), which doesn't mix with annotating, so we have to filter
+        # the original qs.
+        aos.filter(pk__in=aos_with_too_few_categories.values('pk')).populate_setting()
+
+    return aos.annotate(num_categories=Count('outlook_categories')
+                        ).filter(num_categories__gte=2).exists()
 
 
 def handle_metadata_message(scan_tag, result):
