@@ -1,5 +1,4 @@
 import structlog
-from django.conf import settings
 from os2datascanner.utils import debug
 from django.core.management import BaseCommand
 from os2datascanner.engine2.model.core import SourceManager
@@ -7,8 +6,8 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 
 from prometheus_client import Summary, start_http_server
-
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
+from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from ...models.documentreport import DocumentReport
 from ...views.utilities.msgraph_utilities import get_handle_from_document_report, \
     categorize_email_from_report
@@ -39,10 +38,18 @@ class EmailTaggerRunner(PikaPipelineThread):
                         MSGraphMailMessageHandle)
                     mail_source = mail_handle.source
 
+                    try:
+                        graph_grant = GraphGrant.objects.get(
+                            organization=document_report.organization)
+                    except GraphGrant.DoesNotExist:
+                        logger.warning("No GraphGrant found! Can't categorize mail!")
+                    except GraphGrant.MultipleObjectsReturned:
+                        logger.warning("Too many GraphGrants found! Can't categorize mail!")
+
                     # We censor these when going through our pipeline, hence we need to set them
                     # again from settings.
-                    mail_source.handle.source._client_id = settings.MSGRAPH_APP_ID
-                    mail_source.handle.source._client_secret = settings.MSGRAPH_CLIENT_SECRET
+                    mail_source.handle.source._client_id = graph_grant.app_id
+                    mail_source.handle.source._client_secret = graph_grant.client_secret
 
                     # Use Source's source manager to reuse connection.
                     gc = self.source_manager.open(mail_source)

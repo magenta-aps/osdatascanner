@@ -2,10 +2,9 @@ import requests
 import structlog
 from django.core.exceptions import PermissionDenied
 from django.db import models
-from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-
+from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
 from .account import Account
 from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities import (
@@ -21,19 +20,31 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
     from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
     GraphCaller = MSGraphSource.GraphCaller
 
-    # TODO: We should get tenant ID from a synchronized Grant.
-    def _make_token(self):
-        from os2datascanner.engine2.model.msgraph.utilities import make_token
-        return make_token(
-            settings.MSGRAPH_APP_ID,
-            settings.MSGRAPH_TENANT_ID,
-            settings.MSGRAPH_CLIENT_SECRET)
+    def find_graphgrant(self) -> GraphGrant | None:
+        distinct_orgs = self.order_by("account__organization").distinct("account__organization")
+        distinct_orgs_count = distinct_orgs.count()
+        if distinct_orgs_count > 1 or distinct_orgs_count == 0:
+            logger.warning(f"{distinct_orgs_count} organizations found! "
+                           "0 may be caused by AccountOutlookSetting objects aren't created yet. "
+                           "If more than one, please only call this function with ties to 1!")
+            return None
+        try:
+            return GraphGrant.objects.get(organization=distinct_orgs.first().account.organization)
+        except GraphGrant.DoesNotExist:
+            logger.warning("System is missing a GraphGrant!")
+            return None
+        except GraphGrant.MultipleObjectsReturned:
+            logger.warning("System has too many GraphGrants!")
+            return None
 
     def _initiate_graphcaller(self, session) -> GraphCaller | None:
         """ Returns a GraphCaller if queryset is populated, None if not."""
+
+        graph_grant = self.find_graphgrant()
+
         # We want to create the GraphCaller before iterating for reuse purposes,
-        # but we'll not want to create one, if we have an empty Queryset
-        return self.GraphCaller(self._make_token, session) if self else None
+        # but we'll not want to create one if we have an empty Queryset
+        return self.GraphCaller(graph_grant.make_token, session) if self else None
 
     def populate_setting(self) -> str:  # noqa: CCR001 Too complex
         def _create_category(owner, category_name, category_colour):
@@ -206,21 +217,27 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             deleted_category_count = 0
             for outl_setting in self:
                 try:
-                    delete_match_category_response = gc.delete_category(
-                        outl_setting.account.email,
-                        outl_setting.match_category.category_uuid)
-                    if delete_match_category_response.ok:
-                        logger.info(f"Successfully deleted Match "
-                                    f"Outlook Category for {outl_setting.account}! ")
-                        deleted_category_count += 1
+                    # Check and delete match category if it exists
+                    match_category = outl_setting.match_category
+                    if match_category and match_category.category_uuid:
+                        delete_match_category_response = gc.delete_category(
+                            outl_setting.account.email,
+                            outl_setting.match_category.category_uuid)
+                        if delete_match_category_response.ok:
+                            logger.info(f"Successfully deleted Match "
+                                        f"Outlook Category for {outl_setting.account}! ")
+                            deleted_category_count += 1
 
-                    delete_fp_response = gc.delete_category(
-                        outl_setting.account.email,
-                        outl_setting.false_positive_category.category_uuid)
-                    if delete_fp_response.ok:
-                        logger.info(f"Successfully deleted False Positive "
-                                    f"Outlook Category for {outl_setting.account}! ")
-                        deleted_category_count += 1
+                    # Check and delete false positive category if it exists
+                    false_positive_category = outl_setting.false_positive_category
+                    if false_positive_category and false_positive_category.category_uuid:
+                        delete_fp_response = gc.delete_category(
+                            outl_setting.account.email,
+                            outl_setting.false_positive_category.category_uuid)
+                        if delete_fp_response.ok:
+                            logger.info(f"Successfully deleted False Positive "
+                                        f"Outlook Category for {outl_setting.account}! ")
+                            deleted_category_count += 1
 
                 except requests.HTTPError as ex:
                     logger.warning(f"Couldn't delete category! Got response: {ex.response}")
