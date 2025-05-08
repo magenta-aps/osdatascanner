@@ -25,6 +25,8 @@
 
 - Account's email field now consistently allows internationalized (UTF-8) addresses.
 
+- Corrected scanner form not storing file uploads.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
