@@ -7,6 +7,7 @@ from os2datascanner.projects.report.organizations.models.organizational_unit imp
     OrganizationalUnit)
 from os2datascanner.projects.report.organizations.models.position import Position
 from os2datascanner.core_organizational_structure.models.position import Role
+from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 
 
 @pytest.fixture
@@ -303,6 +304,20 @@ def kjeld_manager_position(kjeld_account, kjelds_hus):
         unit=kjelds_hus,
         role=Role.MANAGER
     )
+
+
+@pytest.fixture
+def msgraph_grant(olsenbanden_organization):
+    grant = GraphGrant.objects.create(
+        organization=olsenbanden_organization,
+        app_id="12345678-1234-1234-1234-123456789012",
+        tenant_id="12345678-1234-1234-1234-123456789012",
+        _client_secret="placeholder"
+    )
+    grant.client_secret = "A very secret secret"
+    grant.save()
+    return grant
+
 
 # MARVEL
 

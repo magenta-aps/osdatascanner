@@ -224,41 +224,55 @@
               {% endfor %}
             </div>
           </div>
+        </div>
+
+        <div class="form__row--outlook">
+          <span class="form__row__title">{% trans "Deletion settings" %}</span>
 
           <div class="form__row__item">
-            <label>{% trans "Allow deletion" %}</label>
+            <label>{% trans "Allow direct deletion for" %}</label>
 
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.smb_delete_permission }}
-              <label for="{{ form.smb_delete_permission.id_for_label }}">{{ form.smb_delete_permission.label }}</label>
-            </div>
+            {% if form.smb_delete_permission %}
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.smb_delete_permission }}
+                <label for="{{ form.smb_delete_permission.id_for_label }}">{% trans "Files on local drive" %}</label>
+              </div>
+            {% endif %}
 
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.exchange_delete_permission }}
-              <label for="{{ form.exchange_delete_permission.id_for_label }}">{{ form.exchange_delete_permission.label }}</label>
-            </div>
+            {% if form.exchange_delete_permission %}
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.exchange_delete_permission }}
+                <label for="{{ form.exchange_delete_permission.id_for_label }}">{% trans "Mails on Exchange server" %}</label>
+              </div>
+            {% endif %}
 
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.outlook_delete_email_permission }}
-              <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
-                {{ form.outlook_delete_email_permission.label }}
-              </label>
-            </div>
+            {% if form.outlook_delete_email_permission %}
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.outlook_delete_email_permission }}
+                <label for="{{ form.outlook_delete_email_permission.id_for_label }}">{% trans "Mails on Microsoft Online" %}</label>
+              </div>
+            {% endif %}
 
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.onedrive_delete_permission }}
-              <label for="{{ form.onedrive_delete_permission.id_for_label }}">{{ form.onedrive_delete_permission.label }}</label>
-            </div>
+            {% if form.onedrive_delete_permission %}
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.onedrive_delete_permission }}
+                <label for="{{ form.onedrive_delete_permission.id_for_label }}">{% trans "Files on OneDrive/Sharepoint" %}</label>
+              </div>
+            {% endif %}
 
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.gmail_delete_permission }}
-              <label for="{{ form.gmail_delete_permission.id_for_label }}">{{ form.gmail_delete_permission.label }}</label>
-            </div>
+            {% if form.gmail_delete_permission %}
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.gmail_delete_permission }}
+                <label for="{{ form.gmail_delete_permission.id_for_label }}">{% trans "Mails on gmail" %}</label>
+              </div>
+            {% endif %}
 
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.gdrive_delete_permission }}
-              <label for="{{ form.gdrive_delete_permission.id_for_label }}">{{ form.gdrive_delete_permission.label }}</label>
-            </div>
+            {% if form.gdrive_delete_permission %}
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.gdrive_delete_permission }}
+                <label for="{{ form.gdrive_delete_permission.id_for_label }}">{% trans "Files on Google Drive" %}</label>
+              </div>
+            {% endif %}
 
           </div>
         </div>

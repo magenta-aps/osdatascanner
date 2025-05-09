@@ -135,6 +135,24 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
         if not settings.ENABLE_SBSYSSCAN:
             form.fields.pop('sbsystab_access', None)
 
+        if not settings.ENABLE_FILESCAN:
+            form.fields.pop('smb_delete_permission')
+
+        if not settings.ENABLE_EXCHANGESCAN:
+            form.fields.pop('exchange_delete_permission')
+
+        if not settings.ENABLE_MSGRAPH_MAILSCAN:
+            form.fields.pop('outlook_delete_email_permission')
+
+        if not settings.ENABLE_MSGRAPH_FILESCAN:
+            form.fields.pop('onedrive_delete_permission')
+
+        if not settings.ENABLE_GMAILSCAN:
+            form.fields.pop('gmail_delete_permission')
+
+        if not settings.ENABLE_GOOGLEDRIVESCAN:
+            form.fields.pop('gdrive_delete_permission')
+
         # Customize the outlook field
         outlook_field = form.fields['outlook_categorize_email_permission']
         outlook_field.widget = forms.RadioSelect()

@@ -3884,8 +3884,36 @@ msgid "Microsoft Tenant Settings"
 msgstr "Microsoft Tenant Indstillinger"
 
 #: organizations/templates/organizations/org_update.html
-msgid "Allow deletion"
-msgstr "Tillad sletning"
+msgid "Deletion settings"
+msgstr "Indstillinger for sletning"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Allow direct deletion for"
+msgstr "Tillad direkte sletning af"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Files on local drive"
+msgstr "Filer på lokalt drev"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Mails on Exchange server"
+msgstr "Mails på Exchangescanner"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Mails on Microsoft Online"
+msgstr "Mails på Microsoft Online"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Files on OneDrive/Sharepoint"
+msgstr "Filer på OneDrive/Sharepoint"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Mails on gmail"
+msgstr "Mails på gmail"
+
+#: organizations/templates/organizations/org_update.html
+msgid "Files on Google Drive"
+msgstr "Filer på Google Drive"
 
 #: organizations/templates/organizations/orgunit_list.html
 msgid "organizational hierarchy for"

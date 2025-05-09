@@ -1,7 +1,6 @@
 import requests
 import structlog
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
@@ -9,7 +8,6 @@ from os2datascanner.engine2.model.msgraph.files import MSGraphFileHandle
 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.report.organizations.models import Account
-from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 
 logger = structlog.get_logger("reportapp")
@@ -28,12 +26,7 @@ def outlook_settings_from_owner(owner: str):
         return None
 
 
-def check_msgraph_setting_and_grant(org) -> GraphGrant | PermissionDenied:
-    if not settings.MSGRAPH_ALLOW_WRITE:
-        msgraph_app_settings_message = _("System configuration is missing"
-                                         " write permission!. ")
-        logger.warning(msgraph_app_settings_message)
-        raise PermissionDenied(msgraph_app_settings_message)
+def check_msgraph_grant(org) -> GraphGrant | PermissionDenied:
     try:
         return GraphGrant.objects.get(organization=org)
     except GraphGrant.DoesNotExist:
@@ -55,10 +48,8 @@ def categorize_email_from_report(document_report,
     """
 
     # Return early scenarios
-    check_msgraph_setting_and_grant(document_report.organization)
-    required_permissions = (OutlookCategorizeChoices.ORG_LEVEL,
-                            OutlookCategorizeChoices.INDIVIDUAL_LEVEL)
-    if document_report.organization.outlook_categorize_email_permission not in required_permissions:
+    check_msgraph_grant(document_report.organization)
+    if not document_report.organization.has_categorize_permission():
         org_permission_message = _("Your organization does not allow this operation.")
         logger.warning(org_permission_message)
         raise PermissionDenied(org_permission_message)
@@ -102,7 +93,7 @@ def delete_email(document_report, account: Account):
         import is_owner, handle_report
 
     # Return early scenarios
-    graph_grant = check_msgraph_setting_and_grant(account.organization)
+    graph_grant = check_msgraph_grant(account.organization)
     if not account.organization.has_msgraph_email_delete_permission():
         allow_deletion_message = _("System configuration does not allow mail deletion.")
         logger.warning(allow_deletion_message)
@@ -194,8 +185,7 @@ def delete_file(document_report, account: Account):
         import is_owner, handle_report
 
     # Return early scenarios
-    # TODO: consider moving it to a separate setting than the email deletion
-    graph_grant = check_msgraph_setting_and_grant(account.organization)
+    graph_grant = check_msgraph_grant(account.organization)
     if not account.organization.has_msgraph_file_delete_permission():
         allow_deletion_message = _("System configuration does not allow file deletion.")
         logger.warning(allow_deletion_message)

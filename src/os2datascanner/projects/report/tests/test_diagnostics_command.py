@@ -1,12 +1,14 @@
 import pytest
 import re
+import mock
 
 from django.core.management import call_command
 from django.conf import settings
 
 from .test_utilities import create_reports_for
 from ..organizations.models.account import Account
-from ..organizations.models.account_outlook_setting import AccountOutlookSetting, OutlookCategory
+from ..organizations.models.account_outlook_setting import (AccountOutlookSetting, OutlookCategory,
+                                                            AccountOutlookSettingQuerySet)
 from ..reportapp.models.documentreport import DocumentReport
 
 from ....core_organizational_structure.models.organization import (
@@ -133,10 +135,18 @@ class TestDiagnosticsReportCommand:
         assert match.group(2) == "generic_username"
         assert match.group(3) == "2"
 
+    @mock.patch.object(AccountOutlookSettingQuerySet, 'populate_setting', new=lambda x: 1)
+    @mock.patch.object(AccountOutlookSettingQuerySet, 'categorize_existing', new=lambda x: 1)
     def test_count_accounts_missing_categories(
-            self, egon_account, benny_account, kjeld_account, capfd):
+            self, egon_account, benny_account, kjeld_account, capfd, olsenbanden_organization,
+            msgraph_grant):
 
-        settings.MSGRAPH_ALLOW_WRITE = True
+        olsenbanden_organization.outlook_categorize_email_permission = \
+            OutlookCategorizeChoices.ORG_LEVEL
+        olsenbanden_organization.save()
+
+        def new_populate_setting(self):
+            pass
 
         # The accounts already do not have any categories.
         # Make one for Benny and two for Egon.
@@ -605,9 +615,6 @@ class TestDiagnosticsReportCommand:
         ('LEADER_CSV_EXPORT', False),
         ('ALLOW_SHOW_ERRORS', True),
         ('ALLOW_SHOW_ERRORS', False),
-        # msgraph
-        ('MSGRAPH_ALLOW_WRITE', True),
-        ('MSGRAPH_ALLOW_WRITE', False),
         # logging
         ('LOG_LEVEL', 'DEBUG'),
         ('LOG_LEVEL', 'INFO'),

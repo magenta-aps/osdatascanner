@@ -81,14 +81,16 @@ class Command(BaseCommand):
                                   [f"{d['username_lower']} ({d['count']})"
                                    for d in username_counts]))
 
-        if settings.MSGRAPH_ALLOW_WRITE:
-            accounts_missing_categories = accounts.annotate(
-                categories=Count("outlook_settings__outlook_categories")).filter(
-                categories__lt=2).values("pk")
-            if accounts_missing_categories:
-                print(f"Found {len(accounts_missing_categories)} accounts missing "
-                      "one or more Outlook categories: " + (" ".join(
-                                      [str(d["pk"]) for d in accounts_missing_categories])))
+        for org in Organization.objects.iterator():
+            if org.has_categorize_permission():
+                accounts_missing_categories = accounts.filter(organization=org).annotate(
+                    categories=Count("outlook_settings__outlook_categories")).filter(
+                    categories__lt=2).values("username")
+                if accounts_missing_categories:
+                    print(f"Found {len(accounts_missing_categories)} accounts missing "
+                          f"one or more Outlook categories for the organization '{org}': "
+                          + (" ".join(
+                                        [str(d["username"]) for d in accounts_missing_categories])))
 
     def diagnose_aliases(self):
         print("\n\n>> Running diagnostics on aliases ...")
@@ -277,9 +279,6 @@ class Command(BaseCommand):
         print_settings("HANDLE_DROPDOWN", "ALLOW_CONTACT_MAGENTA",
                        "ARCHIVE_TAB", "DPO_CSV_EXPORT", "LEADER_CSV_EXPORT",
                        "ALLOW_SHOW_ERRORS")
-
-        print("\n# [msgraph]")
-        print_settings("MSGRAPH_ALLOW_WRITE")
 
         print("\n# [logging]")
         print_settings("LOG_LEVEL")
