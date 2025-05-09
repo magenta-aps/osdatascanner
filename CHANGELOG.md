@@ -21,6 +21,9 @@
 
 - Fixed a bug, where the undistributed page tried to show unmatched document reports.
 
+- The "report" tab in the top nav is again only highlighted when it's actually the active tab.
+
+
 ## Version 3.28.1, 8th May 2025
 
 "Suddenly Spick And Suspiciously Span"
