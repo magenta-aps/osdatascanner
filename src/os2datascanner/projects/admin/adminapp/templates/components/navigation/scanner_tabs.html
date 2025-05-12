@@ -4,38 +4,38 @@
     <div class="scrollbar-content">
       <div class="tabs">
         {% if settings.ENABLE_WEBSCAN %}
-          <a id="web" class="tabs__control" href="{% url "webscanners" %}">{% trans "Webscanner" %}</a>
+          <a id="web" class="tabs__control" href="{% url "webscanners" %}">{% trans "Web scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_FILESCAN %}
-          <a id="file" class="tabs__control" href="{% url "filescanners" %}">{% trans "Filescanner" %}</a>
+          <a id="file" class="tabs__control" href="{% url "filescanners" %}">{% trans "File scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_EXCHANGESCAN %}
           <a id="exchange"
              class="tabs__control"
-             href="{% url "exchangescanners" %}">{% trans "Exchangescanner" %}</a>
+             href="{% url "exchangescanners" %}">{% trans "Exchange scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_DROPBOXSCAN %}
-          <a id="dropbox" class="tabs__control" href="{% url "dropboxscanners" %}">{% trans "Dropboxscanner" %}</a>
+          <a id="dropbox" class="tabs__control" href="{% url "dropboxscanners" %}">{% trans "Dropbox scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_MAILSCAN %}
           <a id="msgraph-mail"
              class="tabs__control"
-             href="{% url "msgraphmailscanners" %}">{% trans "Office 365 mailscanner" %}</a>
+             href="{% url "msgraphmailscanners" %}">{% trans "Office 365 mail scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_FILESCAN %}
           <a id="msgraph-file"
              class="tabs__control"
-             href="{% url "msgraphfilescanners" %}">{% trans "Office 365 OneDrive filescanner" %}</a>
+             href="{% url "msgraphfilescanners" %}">{% trans "Office 365 OneDrive file scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_TEAMS_FILESCAN %}
           <a id="msgraph-teams-file"
              class="tabs__control"
-             href="{% url "msgraphteamsfilescanners" %}">{% trans "Office 365 Teams filescanner" %}</a>
+             href="{% url "msgraphteamsfilescanners" %}">{% trans "Office 365 Teams file scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_CALENDARSCAN %}
           <a id="msgraph-calendar"
              class="tabs__control"
-             href="{% url "msgraphcalendarscanners" %}">{% trans "Office 365 kalenderscanner" %}</a>
+             href="{% url "msgraphcalendarscanners" %}">{% trans "Office 365 Calendar scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_MSGRAPH_SHAREPOINTSCAN %}
           <a id="msgraph-sharepoint"
@@ -48,10 +48,10 @@
              href="{% url "googledrivescanners" %}">{% trans "Google Drive scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_GMAILSCAN %}
-          <a id="gmail" class="tabs__control" href="{% url "gmailscanners" %}">{% trans "Gmailscanner" %}</a>
+          <a id="gmail" class="tabs__control" href="{% url "gmailscanners" %}">{% trans "Gmail scanner" %}</a>
         {% endif %}
         {% if settings.ENABLE_SBSYSSCAN %}
-          <a id="sbsys" class="tabs__control" href="{% url "sbsysscanners" %}">{% trans "Sbsysscanner" %}</a>
+          <a id="sbsys" class="tabs__control" href="{% url "sbsysscanners" %}">{% trans "SBSYS scanner" %}</a>
         {% endif %}
         {% if perms.os2datascanner.view_hidden_scanner %}
           <a id="removed"

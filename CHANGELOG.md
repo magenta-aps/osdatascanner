@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 3.xx.x, xth xxx 2025
+
+""
+
+### New in this release
+
+
+### General improvements
+
+
+### Bugfixes
+
+- Fixed "danglish" translations related to the sub-tabs for scannerjobs.
+
 ## Version 3.28.1, 8th May 2025
 
 "Suddenly Spick And Suspiciously Span"

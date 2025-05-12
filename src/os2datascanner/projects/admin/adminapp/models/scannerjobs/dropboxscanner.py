@@ -52,4 +52,4 @@ class DropboxScanner(Scanner):
     object_name_plural = pgettext_lazy("unit of scan", "files")
 
     class Meta:
-        verbose_name = _("Dropboxscanner")
+        verbose_name = _("Dropbox scanner")
