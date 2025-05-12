@@ -13,6 +13,7 @@ from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 
 from ..reportapp.models.documentreport import DocumentReport
+from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
     UserArchiveView, RemediatorArchiveView, UndistributedArchiveView)
@@ -49,6 +50,32 @@ def override_smb_allow_write_setting():
 
 @pytest.mark.django_db
 class TestUserReportView:
+
+    def test_double_relation_report_filter(
+            self,
+            egon_account,
+            egon_email_alias,
+            egon_upn_alias,
+            rf):
+        # Arrange
+        create_reports_for(egon_email_alias, num=10)
+        create_alias_and_match_relations(egon_upn_alias)
+
+        # Act
+        response = self.get_userreport_response(rf,
+                                                egon_account,
+                                                params='&sensitivity_checkbox=on')
+
+        scanner_job_choice = response.context_data.get('scannerjob_choices')[0]
+        source_type_choice = response.context_data.get('source_type_choices')[0]
+        # This is a generator that returns tuples.
+        sensitivity_choice = next(response.context_data.get("sensitivity_choices"))
+
+        # Assert
+        assert scanner_job_choice.get("filtered_total") == 10
+        assert scanner_job_choice.get("total") == 10
+        assert source_type_choice.get("total") == 10
+        assert sensitivity_choice[1] == 10
 
     @pytest.mark.parametrize('num', [0, 1, 10])
     def test_userreportview_as_default_role_with_matches(
@@ -414,6 +441,11 @@ class TestUserReportView:
         view.setup(request)
         qs = view.get_queryset()
         return qs
+
+    def get_userreport_response(self, rf, account, params='', **kwargs):
+        request = rf.get('/' + params)
+        request.user = account.user
+        return UserReportView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db
@@ -810,6 +842,24 @@ class TestUserArchiveView:
         else:
             assert qs.count() == unshared_num
 
+    def test_double_relation_archive_resolution_filter(
+            self,
+            egon_account,
+            egon_email_alias,
+            egon_upn_alias,
+            rf):
+
+        # Arrange
+        create_reports_for(egon_email_alias, resolution_status=0, num=10)
+        create_alias_and_match_relations(egon_upn_alias)
+
+        # Act
+        response = self.get_archive_response(rf, egon_account)
+        resolution_status_choice = response.context_data.get('resolution_status_choices')[0]
+
+        # Assert
+        assert resolution_status_choice.get("total") == 10
+
     # Helper methods
 
     def userreport_get_queryset(self, rf, account, params=''):
@@ -819,6 +869,11 @@ class TestUserArchiveView:
         view.setup(request)
         qs = view.get_queryset()
         return qs
+
+    def get_archive_response(self, rf, account, params='', **kwargs):
+        request = rf.get('/' + params)
+        request.user = account.user
+        return UserArchiveView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db
