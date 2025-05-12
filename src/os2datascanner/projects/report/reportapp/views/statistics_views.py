@@ -100,7 +100,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                             'resolved_month',
                             'created_recently',
                             'handled_recently',
-                        ).annotate(count=Count('source_type')).order_by()
+                        ).annotate(count=Count('pk', distinct=True)).order_by()
 
     def _check_access(self, request):
         if self.request.user.account:
