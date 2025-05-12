@@ -4,7 +4,9 @@ site_url: https://os2datascanner.rtfd.io
 theme: readthedocs
 
 markdown_extensions:
+  - footnotes
   - sane_lists
+  - admonition
 
 nav:
   - Overview: index.md
@@ -18,6 +20,7 @@ nav:
     - The rule engine: rules.md
     - Pre-execution of rules (SmartDelta): smartdelta.md
     - Scanner settings: scanner-settings.md
+    - Direct database scan: ddb.md
   - Security Architecture: architecture/security.md
   - Scan API: api.md
   - Accessing the Microsoft Graph API with graphiti: graphiti.md
