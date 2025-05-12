@@ -715,7 +715,7 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
                 "scanner_job_pk",
                 "scanner_job_name"
             ).annotate(
-                total=Count("scanner_job_pk")
+                total=Count("pk", distinct=True),
             ).values(
                 "scanner_job_pk",
                 "scanner_job_name",
