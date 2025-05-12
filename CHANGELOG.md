@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 3.xx.x, xth xxx 2025
+
+""
+
+### New in this release
+
+
+### General improvements
+
+
+### Bugfixes
+
+- Fixed "danglish" translations related to the sub-tabs for scannerjobs.
+
 ## Version 3.28.1, 8th May 2025
 
 "Suddenly Spick And Suspiciously Span"
@@ -30,8 +44,6 @@
 - Corrected scanner form not storing file uploads.
 
 - censor_context doesn't fail when given None, fixing an error causing the matcher to crash.
-
-- Fixed "danglish" translations related to the sub-tabs for scannerjobs.
 
 - Corrected an issue where out of sync Outlook categories could crash the result collector.
 
