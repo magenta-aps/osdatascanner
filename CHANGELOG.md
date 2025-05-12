@@ -36,6 +36,9 @@
 - The CPR rule no longer performs odd checks for punctuation and balanced
   parentheses in the context around a possible match.
 
+- Corrected total- and by-week-counts counting double if related to the same user through
+  multiple aliases.
+
 ## Version 3.28.0, 1st May 2025
 
 "Red Letter Day"
