@@ -6,8 +6,6 @@ import warnings
 from time import sleep
 import structlog
 
-from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.template.response import TemplateResponse
@@ -96,48 +94,6 @@ def crunch(t: TypePropertyEquality) -> str:
             DeprecationWarning,
             stacklevel=2)
     return t.crunch()
-
-
-def get_or_create_user_aliases(user_data):  # noqa: D401
-    """Hook called after user is created, during SAML login, in DB and before login.
-    This method creates or updates the users aliases depending on if new user_data
-    has arrived or the old the user_data has been updated.
-
-    The django-saml plugin takes care of the basic user_data such as email, username etc.
-    So we do not need to worry about creating or updating the django user."""
-
-    saml_attr = settings.SAML2_AUTH.get('ATTRIBUTES_MAP')
-
-    username = get_user_data(saml_attr.get('username'), user_data, str)
-    email = get_user_data(saml_attr.get('email'), user_data, str)
-    sid = get_user_data(saml_attr.get('sid'), user_data, str)
-    user = User.objects.get(username=username)
-
-    # When the user signs in with SSO, create an account if one does not exist.
-    # This only works if there is only one organization in the database.
-    account = Account.objects.filter(user=user).first()
-    if not account:
-        if Organization.objects.count() == 1:
-            related_org = Organization.objects.first()
-        else:
-            raise RuntimeError("Was not able to determine correct Organization for the user!")
-        account = Account.objects.create(
-                organization=related_org,
-                username=user.username,
-                first_name=user.first_name,
-                last_name=user.last_name)
-
-    if email:
-        relate_matches_to_user(user, account, email, AliasType.EMAIL)
-
-    if sid:
-        relate_matches_to_user(user, account, sid, AliasType.SID)
-
-
-def user_is(roles, role_cls):
-    """Checks whether a list of roles contains a certain role type (role_cls)"""
-    return any(isinstance(role, role_cls)
-               for role in roles)
 
 
 class OIDCCallback(OIDCAuthenticationCallbackView):
@@ -261,35 +217,6 @@ class OIDCAuthenticationBackend(auth.OIDCAuthenticationBackend):
             relate_matches_to_user(user, account, sid, AliasType.SID)
 
         return user
-
-
-def get_user_data(key: str, user_data: dict, expected_type: type):
-    """Helper method for retrieving data for a given key."""
-    # For reasons of backwards compatibility / paranoia, this function supports
-    # both the original django-saml2-auth data format (where user_data is a
-    # dict of lists of values) and that of the grafana/django-saml2-auth fork
-    # (where user_data is a plain dict of values with the dict of lists stashed
-    # under the user_identity key)
-    match user_data.get(key):
-        case None:
-            logger.warning(
-                    "no value available for the given key",
-                    key=key, user_data=user_data, expected_type=expected_type)
-            return None
-        case v if isinstance(v, expected_type):  # grafana/django-saml2-auth
-            return v
-        case [v, *rest] if isinstance(v, expected_type):  # original behaviour
-            if rest:
-                logger.info(
-                        "multiple values available for the given key,"
-                        " using the first one",
-                        key=key, value=v)
-            return v
-        case v:
-            logger.warning(
-                    "value of the wrong type or shape",
-                    key=key, value=v, expected_type=expected_type)
-            return None
 
 
 def iterate_queryset_in_batches(batch_size, queryset):

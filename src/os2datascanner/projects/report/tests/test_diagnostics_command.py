@@ -593,8 +593,6 @@ class TestDiagnosticsReportCommand:
     @pytest.mark.parametrize('setting,value', [
         ('KEYCLOAK_ENABLED', True),
         ('KEYCLOAK_ENABLED', False),
-        ('SAML2_ENABLED', True),
-        ('SAML2_ENABLED', False),
         ('HANDLE_DROPDOWN', True),
         ('HANDLE_DROPDOWN', False),
         ('ALLOW_CONTACT_MAGENTA', True),
