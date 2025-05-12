@@ -220,9 +220,9 @@ class ReportView(LoginRequiredMixin, ListView):
             self.scannerjob_filters = self.all_reports.order_by(
                 'scanner_job_pk').values(
                 'scanner_job_pk').annotate(
-                filtered_total=Count('scanner_job_pk',
+                filtered_total=Count('pk', distinct=True,
                                      filter=sensitivity_filter & resolution_status_filter),
-                total=Count('scanner_job_pk')
+                total=Count('pk', distinct=True)  # Todo: I'm not sure we're using this 'total'?
                 ).values(
                     'scanner_job_name', 'total', 'filtered_total', 'scanner_job_pk'
                 ).order_by('scanner_job_name')
@@ -235,7 +235,8 @@ class ReportView(LoginRequiredMixin, ListView):
         sensitivities = self.all_reports.order_by(
                 '-sensitivity').values(
                 'sensitivity').annotate(
-                total=Count('sensitivity', filter=scannerjob_filter & resolution_status_filter)
+                total=Count('pk',
+                            distinct=True, filter=scannerjob_filter & resolution_status_filter)
             ).values(
                 'sensitivity', 'total'
             )
@@ -247,14 +248,15 @@ class ReportView(LoginRequiredMixin, ListView):
         context['source_type_choices'] = self.all_reports.order_by("source_type").values(
             "source_type"
         ).annotate(
-            total=Count("source_type", filter=sensitivity_filter & scannerjob_filter),
+            total=Count("pk", filter=sensitivity_filter & scannerjob_filter, distinct=True),
         ).values("source_type", "total")
         context['chosen_source_type'] = self.request.GET.get('source_type', 'all')
 
         resolution_status = self.all_reports.order_by(
                 'resolution_status').values(
                 'resolution_status').annotate(
-                total=Count('resolution_status', filter=sensitivity_filter & scannerjob_filter),
+                total=Count('pk', distinct=True,
+                            filter=sensitivity_filter & scannerjob_filter),
                 ).values('resolution_status', 'total',
                          )
 
