@@ -13,6 +13,7 @@ from os2datascanner.projects.report.organizations.models.organizational_unit imp
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 
 from ..reportapp.models.documentreport import DocumentReport
+from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.statistics_views import (
         UserStatisticsPageView, LeaderStatisticsPageView, LeaderStatisticsCSVView,
         DPOStatisticsPageView, DPOStatisticsCSVView)
@@ -37,6 +38,30 @@ class TestUserStatisticsPageView:
         user."""
         with pytest.raises(PermissionDenied):
             self.get_user_statisticspage_response(rf, egon_account, pk=benny_account.pk)
+
+    def test_double_relation_total_count(self, egon_account, egon_email_alias, egon_upn_alias, rf):
+        # Arrange
+        create_reports_for(egon_email_alias, num=10)
+        # Create UPN alias relations too
+        create_alias_and_match_relations(egon_upn_alias)
+        # Act
+        response = self.get_user_statisticspage_response(rf, egon_account)
+
+        # Assert
+        match_count = response.context_data.get("scannerjobs")[0].get("total")
+        assert match_count == 10
+
+    def test_double_relation_week_count(self, egon_account, egon_email_alias, egon_upn_alias, rf):
+        # Arrange
+        create_reports_for(egon_email_alias, num=10)
+        # Create UPN alias relations too
+        create_alias_and_match_relations(egon_upn_alias)
+        # Act
+        response = self.get_user_statisticspage_response(rf, egon_account)
+
+        # Assert
+        match_count = response.context_data.get("matches_by_week")[0].get("matches")
+        assert match_count == 10
 
     # Helper functions
 
