@@ -6,7 +6,7 @@
 
   <ul>
     {% if request.user.is_superuser and settings.ALLOW_CONTACT_MAGENTA %}
-      <a href="mailto:OS2datascannersupport@magenta.dk?subject=[{% now "y/m/d H:i:s" %}] {{ request.user.account.organization }}: {{ request.user.get_short_name }}&body={{ email_body }}">
+      <a href="mailto:osdatascanner-support@magenta-aps.dk?subject=[{% now "y/m/d H:i:s" %}] {{ request.user.account.organization }}: {{ request.user.get_short_name }}&body={{ email_body }}">
         <li title="{% trans "Are you experiencing issues with OSdatascanner, and have no luck resolving it by consulting the manual or FAQ? You can contact Magenta ApS by clicking this button." %}">
           {% trans "Contact Magenta" %}
         </li>

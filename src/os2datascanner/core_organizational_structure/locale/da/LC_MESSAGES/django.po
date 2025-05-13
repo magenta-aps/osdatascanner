@@ -316,12 +316,3 @@ msgstr "{cls}: {account} ({role}) i {unit}"
 #: models/syncedpermission.py
 msgid "Can view the SBSYS tab in Report"
 msgstr "Kan se SBSYS-fanebladene i rapportmodulet"
-
-#~ msgid "Delete emails"
-#~ msgstr "Slet emails"
-
-#~ msgid "Permit all"
-#~ msgstr "Tillad alle"
-
-#~ msgid "Select permission(s) you wish to allow for your organization."
-#~ msgstr "Vælg tilladelse(r) du ønsker at tillade for din organisation."
