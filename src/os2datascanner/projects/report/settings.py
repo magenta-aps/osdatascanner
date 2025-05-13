@@ -35,17 +35,6 @@ process_toml_conf_for_django(
 )
 
 
-# Our (third-party) SAML module expects only file or url to be configured. In
-# our current setting implementation we only allow changing already set values
-# to catch typos early and to not have deprecated settings in layer 2 and 3. To
-# circumvent these two incompatibilities, we set file or url as usual and the
-# other to empty string. This will unset the empty string:
-if not SAML2_AUTH['METADATA_AUTO_CONF_URL']:  # noqa: F821
-    del SAML2_AUTH['METADATA_AUTO_CONF_URL']  # noqa: F821
-if not SAML2_AUTH['METADATA_LOCAL_FILE_PATH']:  # noqa: F821
-    del SAML2_AUTH['METADATA_LOCAL_FILE_PATH']  # noqa: F821
-
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

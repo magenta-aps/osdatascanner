@@ -6,10 +6,14 @@
 
 ### New in this release
 
-- Removed obsolete translations
+- The django version has been bumped to 4.2.
+
+- The pysaml2 and django-saml2-auth libraries have been removed.
+  All Single Sign-on logic should now be configured through Keycloak.
 
 ### General improvements
 
+- Removed obsolete translations
 
 ### Bugfixes
 

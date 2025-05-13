@@ -59,10 +59,8 @@ pycodestyle
 # Report
 mozilla-django-oidc
 faker
-git+https://github.com/magenta-aps/django-saml2-auth.git@2.3.0
 psutil
 pytest-django
-pysaml2==5.3.0,<6.0.0
 python3-saml
 randomtimestamp
 termplotlib
@@ -73,7 +71,7 @@ unittest-xml-reporting
 
 # Django
 ipython
-Django==3.2.11
+Django==4.2.21
 django-model-utils
 django-mptt
 django-prometheus

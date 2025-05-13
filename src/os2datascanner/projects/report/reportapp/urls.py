@@ -1,4 +1,3 @@
-import django_saml2_auth.views
 import django.contrib.auth.views as auth_views
 from django.urls import re_path
 from django.http import HttpResponse
@@ -10,7 +9,6 @@ from django.views.i18n import JavaScriptCatalog
 from os2datascanner import __version__
 
 from .views.api import JSONAPIView
-from .views.saml import metadata
 from .views.statistics_views import (
     LeaderStatisticsPageView, LeaderStatisticsCSVView, DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, EmployeeView)
@@ -112,18 +110,6 @@ def setup_username_password_login_urls(**extra_context):
                                name='password_reset_complete'))
 
 
-def setup_saml2_login_urls():
-    urlpatterns.append(re_path(r"^saml2_auth/metadata.xml$", metadata, name="saml_metadata"))
-    urlpatterns.append(re_path(r"^saml2_auth/", include("django_saml2_auth.urls")))
-    urlpatterns.append(re_path(r"^accounts/sso_login/$", django_saml2_auth.views.signin,
-                               name="login"))
-    urlpatterns.append(
-        re_path(
-            r'^accounts/sso_logout/$',
-            django_saml2_auth.views.signout,
-            name="logout"))
-
-
 def setup_keycloak_login_urls():
     urlpatterns.append(path('oidc/', include('mozilla_django_oidc.urls'))),
     urlpatterns.append(re_path(r'^accounts/sso_logout/',
@@ -141,9 +127,6 @@ if settings.HYBRID_LOGIN:
         setup_keycloak_login_urls()
 
 else:
-    if settings.SAML2_ENABLED:
-        setup_saml2_login_urls()
-
     if settings.KEYCLOAK_ENABLED:
         settings.LOGIN_URL = "oidc_authentication_init"
         setup_keycloak_login_urls()

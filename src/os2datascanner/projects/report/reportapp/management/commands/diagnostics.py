@@ -271,7 +271,7 @@ class Command(BaseCommand):
         print("\n//INSTALLATION-WIDE SETTINGS//")
 
         print("\n# [mode]")
-        print_settings("KEYCLOAK_ENABLED", "SAML2_ENABLED")
+        print_settings("KEYCLOAK_ENABLED")
 
         print("\n# [functionality]")
         print_settings("HANDLE_DROPDOWN", "ALLOW_CONTACT_MAGENTA",

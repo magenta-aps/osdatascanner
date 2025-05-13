@@ -18,7 +18,6 @@ PROMETHEUS_EXPORT_MIGRATIONS = false
 # [mode]
 DEBUG = false
 KEYCLOAK_ENABLED = false
-SAML2_ENABLED = false
 
 # [functionality]
 HANDLE_DROPDOWN = false
@@ -209,49 +208,6 @@ SHELL_PLUS_IMPORTS = ["from os2datascanner._interactive import *"]
 max_overflow = 10
 pool_size = 5
 recycle = 300
-
-# The full documentation can be found here: https://github.com/fangli/django-saml2-auth
-[SAML2_AUTH]
-
-# Metadata is required, choose either remote url or local file path
-METADATA_AUTO_CONF_URL = ''
-METADATA_LOCAL_FILE_PATH = ''
-
-# Optional settings below
-DEFAULT_NEXT_URL = '/admin'  # Custom target redirect URL after the user get logged in. Default to /admin if not set. This setting will be overwritten if you have parameter ?next= specificed in the login URL.
-CREATE_USER = false # Create a new Django user when a new user logs in. Only set this to True, if you're not going to import organizational structure.
-ASSERTION_URL = 'https://mysite.com' # Custom URL to validate incoming SAML requests against
-ENTITY_ID = 'https://mysite.com/saml2_auth/acs/' # Populates the Issuer element in authn request
-NAME_ID_FORMAT = 'FormatString' # Sets the Format property of authn NameIDPolicy element
-ACCEPTED_TIME_DIFF = 0
-USE_JWT = false # Set this to True if you are running a Single Page Application (SPA) with Django Rest Framework (DRF), and are using JWT authentication to authorize client users
-FRONTEND_URL = 'https://myfrontendclient.com' # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
-# Samlt assertion signage
-CERT_FILE = ''
-KEY_FILE = ''
-
-AUTHN_REQUESTS_SIGNED = false
-WANT_ASSERTIONS_SIGNED = false
-WANT_RESPONSE_SIGNED = false
-TOKEN_REQUIRED = false
-
-    [SAML2_AUTH.NEW_USER_PROFILE]
-    USER_GROUPS = []  # The default group name when a new user logs in
-    ACTIVE_STATUS = true  # The default active status for new users
-    STAFF_STATUS = true  # The staff status for new users
-    SUPERUSER_STATUS = false  # The superuser status for new users
-
-    [SAML2_AUTH.ATTRIBUTES_MAP]
-    # Change Email/UserName/FirstName/LastName to corresponding SAML2 userprofile attributes.
-    email = 'email'
-    username = 'username'
-    first_name = 'first_name'
-    last_name = 'last_name'
-    sid = 'sid'
-
-    [SAML2_AUTH.TRIGGER]
-    CREATE_USER = 'path.to.your.new.user.hook.method'
-    BEFORE_LOGIN = 'path.to.your.login.hook.method'
 
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module

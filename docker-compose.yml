@@ -578,11 +578,6 @@ services:
   idp:
     image: magentaaps/simplesamlphp:master
     environment:
-    # TODO: Remove simple saml
-#      - SIMPLESAMLPHP_BASEURLPATH=http://localhost:8080/simplesaml/
-#      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8040/saml2_auth/acs/
-#      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8040/saml2_auth/acs/
-
       # Be aware these require an osdatascanner realm etc.
       - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8090/auth/realms/osdatascanner
       - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8090/auth/realms/osdatascanner/broker/SAML-SSO/endpoint
