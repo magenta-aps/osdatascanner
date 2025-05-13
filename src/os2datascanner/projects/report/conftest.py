@@ -112,6 +112,16 @@ def egon_email_alias(egon_account):
 
 
 @pytest.fixture
+def egon_upn_alias(egon_account):
+    return Alias.objects.create(
+      account=egon_account,
+      user=egon_account.user,
+      _alias_type=AliasType.USER_PRINCIPAL_NAME,
+      _value="egon@olsenbanden.dk"
+    )
+
+
+@pytest.fixture
 def egon_sid_alias(egon_account):
     return Alias.objects.create(
       account=egon_account,

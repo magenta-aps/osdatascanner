@@ -485,7 +485,7 @@ class Account(Core_Account):
             "created_timestamp",
             "resolution_time",
             "resolution_status",
-        )
+        ).distinct()
 
         next_monday = timezone.now() + timedelta(weeks=1) - timedelta(
                 days=timezone.now().weekday(),

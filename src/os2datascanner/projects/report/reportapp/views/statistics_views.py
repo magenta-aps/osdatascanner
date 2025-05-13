@@ -100,7 +100,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                             'resolved_month',
                             'created_recently',
                             'handled_recently',
-                        ).annotate(count=Count('source_type')).order_by()
+                        ).annotate(count=Count('pk', distinct=True)).order_by()
 
     def _check_access(self, request):
         if self.request.user.account:
@@ -715,7 +715,7 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
                 "scanner_job_pk",
                 "scanner_job_name"
             ).annotate(
-                total=Count("scanner_job_pk")
+                total=Count("pk", distinct=True),
             ).values(
                 "scanner_job_pk",
                 "scanner_job_name",
