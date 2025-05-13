@@ -15,6 +15,8 @@
 
 - Fixed "danglish" translations related to the sub-tabs for scannerjobs.
 
+- Fixed a bug, where the undistributed page tried to show unmatched document reports.
+
 ## Version 3.28.1, 8th May 2025
 
 "Suddenly Spick And Suspiciously Span"
