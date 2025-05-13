@@ -173,8 +173,7 @@ class TestCustomRuleCreate:
         if not isinstance(user, AnonymousUser):
             client.force_login(user)
         response = client.post(
-            reverse_lazy('customrule_add'), data, headers={
-                "Content-Type": "application/json"})
+            reverse_lazy('customrule_add'), data=data)
         return response
 
 
@@ -236,8 +235,7 @@ class TestCustomRuleUpdate:
         if not isinstance(user, AnonymousUser):
             client.force_login(user)
         response = client.post(
-            reverse_lazy('customrule_update', kwargs={'pk': pk}), data, headers={
-                "Content-Type": "application/json"})
+            reverse_lazy('customrule_update', kwargs={'pk': pk}), data=data)
         return response
 
 
