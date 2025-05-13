@@ -2,65 +2,67 @@
 {% load get_settings_tag %}
 
 <nav class="navi">
-  <ul>
-    <li>
-      <a href="{% url "reports:personal" %}"
-         class="{% if request.resolver_match.namespace == "reports" or request.resolver_match.url_name == "index" %}active{% endif %}">
-        {% include "components/svg-icons/assignment.svg" %}
-        <span class="width">{% trans "Report" %}</span>
-      </a>
-    </li>
-    {% if settings.ARCHIVE_TAB %}
+  {% with path=request.resolver_match.namespace name=request.resolver_match.url_name %}
+    <ul>
       <li>
-        <a href="{% url "archive:personal" %}"
-           class="{% if request.resolver_match.namespace == "archive" %}active{% endif %}">
-          {% include "components/svg-icons/icon-smbc.svg" %}
-          <span class="width">{% trans "Archive" %}</span>
+        <a href="{% url "reports:personal" %}"
+           class="{% if path == "reports" or name == "scannerjobs" %}active{% endif %}">
+          {% include "components/svg-icons/assignment.svg" %}
+          <span class="width">{% trans "Report" %}</span>
         </a>
       </li>
-    {% endif %}
-    {% if user.account.leadertab_access %}
-      <li>
-        <a href="{% url "statistics-leader" %}" class="{% if request.path == "/statistics/leader/" %}active{% endif %}">
-          {% include "components/svg-icons/bar_chart.svg" %}
-          <span class="width">{% trans "Leader overview" %}</span>
+      {% if settings.ARCHIVE_TAB %}
+        <li>
+          <a href="{% url "archive:personal" %}"
+             class="{% if path == "archive" %}active{% endif %}">
+            {% include "components/svg-icons/icon-smbc.svg" %}
+            <span class="width">{% trans "Archive" %}</span>
+          </a>
+        </li>
+      {% endif %}
+      {% if user.account.leadertab_access %}
+        <li>
+          <a href="{% url "statistics-leader" %}" class="{% if request.path == "/statistics/leader/" %}active{% endif %}">
+            {% include "components/svg-icons/bar_chart.svg" %}
+            <span class="width">{% trans "Leader overview" %}</span>
+          </a>
+        </li>
+      {% endif %}
+      {% if user.account.dpotab_access %}
+        <li>
+          <a href="{% url "statistics-dpo" %}" class="{% if request.path == "/statistics/dpo/" %}active{% endif %}">
+            {% include "components/svg-icons/bar_chart.svg" %}
+            <span class="width">{% trans "DPO Overview" %}</span>
+          </a>
+        </li>
+      {% endif %}
+      {% if request.user.account %}
+        {% comment %}
+        We can't display anything in the statistics overview without an Account,
+        so we shouldn't even mention it. (XXX: obviously this should go after
+        the User/Account merger!)
+        {% endcomment %}
+        <li class="user-overview">
+          <a href="{% url "statistics-user-me" %}" class="{% if "/statistics/user/" in request.path %}active{% endif %}">
+            {% include "components/svg-icons/bar_chart.svg" %}
+            <span class="width">{% trans "My Overview" %}</span>
+          </a>
+        </li>
+      {% endif %}
+      <li class="profile">
+        <a href="{% url "account-me" %}" class="{% if request.path == "/user/" %}active{% endif %}">
+          {% include "components/svg-icons/account_circle.svg" %}
+          <span class="width">{% trans "User profile" %}</span>
         </a>
       </li>
-    {% endif %}
-    {% if user.account.dpotab_access %}
-      <li>
-        <a href="{% url "statistics-dpo" %}" class="{% if request.path == "/statistics/dpo/" %}active{% endif %}">
-          {% include "components/svg-icons/bar_chart.svg" %}
-          <span class="width">{% trans "DPO Overview" %}</span>
-        </a>
-      </li>
-    {% endif %}
-    {% if request.user.account %}
-      {% comment %}
-      We can't display anything in the statistics overview without an Account,
-      so we shouldn't even mention it. (XXX: obviously this should go after
-      the User/Account merger!)
-      {% endcomment %}
-      <li class="user-overview">
-        <a href="{% url "statistics-user-me" %}" class="{% if "/statistics/user/" in request.path %}active{% endif %}">
-          {% include "components/svg-icons/bar_chart.svg" %}
-          <span class="width">{% trans "My Overview" %}</span>
-        </a>
-      </li>
-    {% endif %}
-    <li class="profile">
-      <a href="{% url "account-me" %}" class="{% if request.path == "/user/" %}active{% endif %}">
-        {% include "components/svg-icons/account_circle.svg" %}
-        <span class="width">{% trans "User profile" %}</span>
-      </a>
-    </li>
-    {% if request.user.is_authenticated %}
-      <li class="logout">
-        <a href="/accounts/logout">
-          {% include "components/svg-icons/logout.svg" %}
-          <span class="width">{% trans "Logout" %}</span>
-        </a>
-      </li>
-    {% endif %}
-  </ul>
+      {% if request.user.is_authenticated %}
+        <li class="logout">
+          <a href="/accounts/logout">
+            {% include "components/svg-icons/logout.svg" %}
+            <span class="width">{% trans "Logout" %}</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  {% endwith %}
 </nav>

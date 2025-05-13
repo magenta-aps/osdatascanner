@@ -1,36 +1,50 @@
 {% load i18n %}
 {% load handle_extras %}
 
+
 <div class="tabs">
-  {# Personal #}
-  <a id="report" class="tabs__control{% if request.path == "/" or "/personal" in request.path %} active{% endif %}" href="{% if "/archive" in request.path %}{% url "archive:personal" %}{% else %}{% url "reports:personal" %}{% endif %}">{% trans "Personal" %}</a>
+  {% with path=request.resolver_match.namespace name=request.resolver_match.url_name %}
 
-  {# Personal - SBSYS #}
-  {% if user.account.sbsystab_access %}
-    <a id="sbsys-personal" class="tabs__control{% if "/sbsys-personal" in request.path %} active{% endif %}" href="{% if "/archive" in request.path %}{% url "archive:sbsys-personal" %}{% else %}{% url "reports:sbsys-personal" %}{% endif %}">
-      {% trans "Personal - SBSYS" %}
-    </a>
-  {% endif %}
+    {# Personal #}
+    <a href="{% if path == "archive" %}{% url "archive:personal" %}{% else %}{% url "reports:personal" %}{% endif %}"
+       class="tabs__control{% if name == "personal" %} active{% endif %}"
+       id="report">{% trans "Personal" %}</a>
 
-  {# Remediator #}
-  {% if user.account.is_remediator or user.is_superuser %}
-    <a id="remediator" class="tabs__control{% if "/remediator" in request.path %} active{% endif %}" href="{% if "/archive" in request.path %}{% url "archive:remediator" %}{% else %}{% url "reports:remediator" %}{% endif %}">
-    {% trans "Remediator" %}</a>
-
+    {# Personal - SBSYS #}
     {% if user.account.sbsystab_access %}
-      {# Remediator - SBSYS #}
-      <a id="sbsys-remediator" class="tabs__control{% if "/sbsys-remediator" in request.path %} active{% endif %}" href="{% if "/archive" in request.path %}{% url "archive:sbsys-remediator" %}{% else %}{% url "reports:sbsys-remediator" %}{% endif %}">
-      {% trans "Remediator - SBSYS" %}</a>
+      <a href="{% if path == "archive" %}{% url "archive:sbsys-personal" %}{% else %}{% url "reports:sbsys-personal" %}{% endif %}"
+         class="tabs__control{% if name == "sbsys-personal" %} active{% endif %}"
+         id="sbsys-personal">{% trans "Personal - SBSYS" %}</a>
     {% endif %}
-  {% endif %}
 
-  {# Withheld #}
-  {% if perms.os2datascanner_report.see_withheld_documentreport %}
-    <a id="undistributed" class="tabs__control{% if "/undistributed" in request.path %} active{% endif %}" href="{% if "/archive" in request.path %}{% url "archive:undistributed" %}{% else %}{% url "reports:undistributed" %}{% endif %}">{% trans "Undistributed" %}</a>
-  {% endif %}
+    {# Remediator #}
+    {% if user.account.is_remediator or user.is_superuser %}
+      <a href="{% if path == "archive" %}{% url "archive:remediator" %}{% else %}{% url "reports:remediator" %}{% endif %}"
+         class="tabs__control{% if name == "remediator" %} active{% endif %}"
+         id="remediator">{% trans "Remediator" %}</a>
 
-  {# Scannerjob list #}
-  {% if perms.os2datascanner_report.delete_documentreport and "/archive" not in request.path %}
-    <a id="scannerjobs" class="tabs__control{% if "/scannerjobs" in request.path %} active{% endif %}" href="{% url "scannerjobs" %}">{% trans "Scannerjob" %}</a>
-  {% endif %}
+      {% if user.account.sbsystab_access %}
+        {# Remediator - SBSYS #}
+        <a href="{% if path == "archive" %}{% url "archive:sbsys-remediator" %}{% else %}{% url "reports:sbsys-remediator" %}{% endif %}"
+           class="tabs__control{% if name == "sbsys-remediator" %} active{% endif %}"
+           id="sbsys-remediator">{% trans "Remediator - SBSYS" %}</a>
+      {% endif %}
+
+    {% endif %}
+
+    {# Withheld #}
+    {% if perms.os2datascanner_report.see_withheld_documentreport %}
+      <a href="{% if path == "archive" %}{% url "archive:undistributed" %}{% else %}{% url "reports:undistributed" %}{% endif %}"
+         class="tabs__control{% if name == "undistributed" %} active{% endif %}"
+         id="undistributed">{% trans "Undistributed" %}</a>
+    {% endif %}
+
+    {# Scannerjob list #}
+    {% if perms.os2datascanner_report.delete_documentreport and "/archive" not in request.path %}
+      <a href="{% url "scannerjobs" %}"
+         class="tabs__control{% if name == "scannerjobs" %} active{% endif %}"
+         id="scannerjobs">{% trans "Scannerjob" %}</a>
+    {% endif %}
+
+  {% endwith %}
 </div>

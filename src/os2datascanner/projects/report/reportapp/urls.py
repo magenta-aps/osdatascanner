@@ -1,16 +1,17 @@
 import django.contrib.auth.views as auth_views
-from django.urls import re_path
+from django.urls import re_path, include, path
 from django.http import HttpResponse
-from django.urls import include
 from django.conf.urls.static import static
 from django.conf import settings
-from django.urls import path
 from django.views.i18n import JavaScriptCatalog
+from django.views.generic import RedirectView
+
 from os2datascanner import __version__
 
 from .views.api import JSONAPIView
 from .views.statistics_views import (
-    LeaderStatisticsPageView, LeaderStatisticsCSVView, DPOStatisticsPageView, DPOStatisticsCSVView,
+    LeaderStatisticsPageView, LeaderStatisticsCSVView,
+    DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, EmployeeView)
 from .views.report_views import (
     UserReportView, UserArchiveView,
@@ -42,7 +43,19 @@ archive_patterns = [
 ]
 
 urlpatterns = [
+    # Redirect from "index" to "/reports/personal":
+    path(
+        "",
+        RedirectView.as_view(
+            pattern_name="reports:personal",
+            permanent=False),
+        name="index-redirect"
+    ),
+
+    # Default/fallback for refs to "index":
     path("",            UserReportView.as_view(),               name="index"),
+
+    # Document Report views
     path("reports/",    include((reports_patterns, "reports"),  namespace="reports")),
     path("archive/",    include((archive_patterns, "archive"),  namespace="archive")),
 
