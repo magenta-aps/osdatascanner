@@ -14,7 +14,7 @@ from os2datascanner.projects.report.tests.test_utilities import create_reports_f
 
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.views.report_views import (
-    UserReportView, RemediatorView,
+    UserReportView, RemediatorView, UndistributedView,
     UserArchiveView, RemediatorArchiveView, UndistributedArchiveView)
 
 from importlib import reload, import_module
@@ -488,6 +488,68 @@ class TestRemediatorView:
         request = rf.get('/remediator/' + params)
         request.user = account.user
         view = RemediatorView()
+        view.setup(request)
+        qs = view.get_queryset()
+        return qs
+
+
+@pytest.mark.django_db
+class TestUndistributedView:
+
+    def test_undistributedview_without_permission(self, rf, egon_account):
+        """A user without the correct permission should not be allowed access."""
+        request = rf.get('/undistributed')
+        request.user = egon_account.user
+        with pytest.raises(PermissionDenied):
+            UndistributedView.as_view()(request)
+
+    def test_undistributedview_with_permission(self, rf, egon_account):
+        """A user with the correct permission should be allowed access."""
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="see_withheld_documentreport"))
+        request = rf.get('/undistributed')
+        request.user = egon_account.user
+        response = UndistributedView.as_view()(request)
+        assert response.status_code == 200
+
+    def test_undistributedview_as_superuser(self, rf, superuser_account):
+        """Superusers should be able to access the undistributed tab."""
+
+        request = rf.get('/undistributed')
+        request.user = superuser_account.user
+        response = UndistributedView.as_view()(request)
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize('num', [0, 1, 10])
+    def test_undistributedview_queryset(self, rf, superuser_account, egon_email_alias, num):
+
+        create_reports_for(egon_email_alias, num=num, only_notify_superadmin=True)
+
+        qs = self.remediator_get_queryset(rf, superuser_account)
+
+        assert qs.count() == num
+
+    @pytest.mark.parametrize('num', [0, 1, 10])
+    def test_undistributedview_with_problems(self, rf, superuser_account, egon_email_alias, num):
+
+        create_reports_for(egon_email_alias, num=num, only_notify_superadmin=True)
+        create_reports_for(
+            egon_email_alias,
+            problem=1,
+            sensitivity=None,
+            matched=False,
+            only_notify_superadmin=True)
+
+        qs = self.remediator_get_queryset(rf, superuser_account)
+
+        assert qs.count() == num
+
+#     # Helper functions
+
+    def remediator_get_queryset(self, rf, account, params=''):
+        request = rf.get('/undistributed' + params)
+        request.user = account.user
+        view = UndistributedView()
         view.setup(request)
         qs = view.get_queryset()
         return qs
