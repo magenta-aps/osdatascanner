@@ -91,7 +91,7 @@ def categorize_email_from_report(document_report,
     except requests.HTTPError as ex:
         # We don't want to raise anything here
         # The most likely scenario is just that the mail doesn't exist anymore.
-        logger.warning(f"Couldn't categorize email! Got response: {ex.response}")
+        logger.warning("Couldn't categorize email!", exc_info=ex)
 
 
 def delete_email(document_report, account: Account):
@@ -150,7 +150,7 @@ def delete_email(document_report, account: Account):
             else:
                 delete_failed_message = _("Couldn't delete email! Code: {status_code}").format(
                     status_code=ex.response.status_code)
-                logger.warning(f"Couldn't delete email! Got response: {ex.response}")
+                logger.warning("Couldn't delete email!", exc_info=ex)
                 # PermissionDenied is a bit misleading here, it may not represent what went wrong.
                 # But sticking to this exception, makes handling it in the view easier.
                 raise PermissionDenied(delete_failed_message)
