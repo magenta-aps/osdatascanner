@@ -101,7 +101,7 @@ class MSGraphSource(Source):
 
         def categorize_mail(self, owner: str, msg_id: str, categories: list):
             return self.patch(
-                    f"users/{owner}/outlook/messages/{msg_id}",
+                    f"users/{owner}/messages/{msg_id}",
                     json={
                         "categories": categories
                     })
