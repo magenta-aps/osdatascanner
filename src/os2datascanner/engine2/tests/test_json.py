@@ -14,6 +14,8 @@ from os2datascanner.engine2.model.msgraph.mail import (
         MSGraphMailAccountSource, MSGraphMailMessageHandle)
 from os2datascanner.engine2.model.msgraph.files import (
         MSGraphFilesSource, MSGraphDriveHandle, MSGraphDriveSource, MSGraphFileHandle)
+from os2datascanner.engine2.model.msgraph.lists import (MSGraphListItemHandle,
+        MSGraphListHandle, MSGraphListSource, MSGraphListsSource)
 
 from os2datascanner.engine2.model.derived.filtered import (
         GzipSource, FilteredHandle)
@@ -125,6 +127,26 @@ example_handles = [
                             "Shared Documents and Conspiracies",
                             "Guy Fawkes")),
             "PLOTS/1605-11/GUNPWDER.WP"),
+    MSGraphListItemHandle(
+            MSGraphListSource(
+                MSGraphListHandle(
+                    MSGraphListsSource(
+                        "Not a real client ID",
+                        "Not a real tentant",
+                        "not a real secret"
+                ),
+                "not a real path",
+                "not a real list name",
+                "not a real site"
+                )
+            ),
+            "Not a real path",
+            "Not a real site",
+            "Not a real id",
+            "Not a real url",
+            "Not a real item name"
+    )
+
 ]
 
 
