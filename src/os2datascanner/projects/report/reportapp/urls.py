@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
+from django.views.generic import RedirectView
 
 from os2datascanner import __version__
 
@@ -46,6 +47,28 @@ urlpatterns = [
     path("",            UserReportView.as_view(),               name="index"),
     path("reports/",    include((reports_patterns, "reports"),  namespace="reports")),
     path("archive/",    include((archive_patterns, "archive"),  namespace="archive")),
+
+    # LEGACY --> NEW MAPPINGS:
+    # “/reports/” --> /reports/personal/
+    re_path(
+        r'^reports/?$',
+        RedirectView.as_view(pattern_name='reports:personal', permanent=True)
+    ),
+    # “/remediator/” --> /reports/remediator/
+    re_path(
+        r'^remediator/?$',
+        RedirectView.as_view(pattern_name='reports:remediator', permanent=True)
+    ),
+    # “/undistributed/” --> /reports/undistributed/
+    re_path(
+        r'^undistributed/?$',
+        RedirectView.as_view(pattern_name='reports:undistributed', permanent=True)
+    ),
+    # "/archive/reports/" --> /archive/personal/
+    re_path(
+        r'^archive/reports/?$',
+        RedirectView.as_view(pattern_name='archive:personal', permanent=True)
+    ),
 
     # Scannerjob view
     path('scannerjobs/', ScannerjobListView.as_view(), name="scannerjobs"),

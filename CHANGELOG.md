@@ -15,6 +15,8 @@
 
 - Removed obsolete translations
 
+- We're now using namespace to map out report and archive related URLs. 
+
 ### Bugfixes
 
 - Fixed "danglish" translations related to the sub-tabs for scannerjobs.
