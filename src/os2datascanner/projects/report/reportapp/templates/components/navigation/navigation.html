@@ -6,7 +6,7 @@
     <ul>
       <li>
         <a href="{% url "reports:personal" %}"
-           class="{% if path == "reports" or name == "scannerjobs" %}active{% endif %}">
+           class="{% if path == "reports" or name == "index" or name == "scannerjobs" %}active{% endif %}">
           {% include "components/svg-icons/assignment.svg" %}
           <span class="width">{% trans "Report" %}</span>
         </a>

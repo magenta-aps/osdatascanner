@@ -7,7 +7,7 @@
 
     {# Personal #}
     <a href="{% if path == "archive" %}{% url "archive:personal" %}{% else %}{% url "reports:personal" %}{% endif %}"
-       class="tabs__control{% if name == "personal" %} active{% endif %}"
+       class="tabs__control{% if name == "personal" or name == "index" %} active{% endif %}"
        id="report">{% trans "Personal" %}</a>
 
     {# Personal - SBSYS #}
