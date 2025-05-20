@@ -15,11 +15,16 @@
 
 - Removed obsolete translations
 
+- We're now using namespace to map out report and archive related URLs. 
+
 ### Bugfixes
 
 - Fixed "danglish" translations related to the sub-tabs for scannerjobs.
 
 - Fixed a bug, where the undistributed page tried to show unmatched document reports.
+
+- The "report" tab in the top nav is again only highlighted when it's actually the active tab.
+
 
 ## Version 3.28.1, 8th May 2025
 

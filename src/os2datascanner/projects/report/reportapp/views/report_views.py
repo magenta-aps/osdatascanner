@@ -420,7 +420,7 @@ class SBSYSMixin:
 class SBSYSPersonalView(SBSYSMixin, ReportView):
     """Presents the user with their personal unhandled SBSYS results."""
 
-    type = "sbsys"
+    type = "sbsys-personal"
     template_name = "sbsys_content.html"
     report_type = Account.ReportType.PERSONAL_AND_SHARED
 
@@ -428,7 +428,7 @@ class SBSYSPersonalView(SBSYSMixin, ReportView):
 class SBSYSRemediatorView(SBSYSMixin, RemediatorView):
     """Presents a remediator with relevant unhandled SBSYS results."""
 
-    type = "remediator"
+    type = "sbsys-remediator"
     template_name = "sbsys_remediator_content.html"
     report_type = Account.ReportType.REMEDIATOR
 
