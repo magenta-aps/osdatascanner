@@ -7,7 +7,7 @@ class MockConnection:
         self.responses = responses
         self.call_count = 0
         self.calls = []
-
+    
     def paginated_get(self, url):
         self.calls.append(url)
         response = self.responses[self.call_count]
@@ -19,12 +19,18 @@ class MockSessionManager:
     def __init__(self, connection):
         self.connection = connection
         self.open_calls = []
-
+    
     def open(self, source):
         self.open_calls.append(source)
         return self.connection
 
 
+@contextmanager
+def mock_warn_on_httperror(message):
+    yield None
+
+
+# Fixture to set up the source instance
 @pytest.fixture
 def msgraph_lists_source():
     return MSGraphListsSource(
@@ -34,6 +40,7 @@ def msgraph_lists_source():
     )
 
 
+# Fixture to set up test data
 @pytest.fixture
 def test_data():
     # Sites data
@@ -41,7 +48,8 @@ def test_data():
         {"id": "domain,site1"},
         {"id": "domain,site2"}
     ]
-
+    
+    # Lists for site1
     site1_lists = [
         {
             "id": "list1",
@@ -50,7 +58,7 @@ def test_data():
             "webUrl": "https://example.com/sites/site1/lists/regular"
         },
         {
-            "id": "list2",
+            "id": "list2", 
             "name": "Document Library",
             "list": {"template": "documentLibrary"},
             "webUrl": "https://example.com/sites/site1/lists/docs"
@@ -62,7 +70,8 @@ def test_data():
             "webUrl": "https://example.com/sites/site1/lists/_catalog/content"
         }
     ]
-
+    
+    # Lists for site2
     site2_lists = [
         {
             "id": "list4",
@@ -77,13 +86,12 @@ def test_data():
             "webUrl": "https://example.com/sites/site2/lists/web_catalog"
         }
     ]
-
+    
     return {
         "sites": sites,
         "site1_lists": site1_lists,
         "site2_lists": site2_lists
     }
-
 
 @pytest.fixture
 def mock_sm(test_data):
@@ -97,14 +105,14 @@ def mock_sm(test_data):
 
 def test_handles_filter_logic(msgraph_lists_source, mock_sm):
     results = list(msgraph_lists_source.handles(mock_sm))
-
-    assert len(results) == 2
-
+    
+    assert len(results) == 2 
+    
     found_lists = [handle.relative_path for handle in results]
-
+    
     assert "list1" in found_lists
     assert "list4" in found_lists
-
+    
     assert "list2" not in found_lists
     assert "list3" not in found_lists
     assert "list5" not in found_lists
