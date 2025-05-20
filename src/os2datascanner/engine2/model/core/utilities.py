@@ -104,7 +104,6 @@ class SourceManager:
 
     def open(self, source):
         """Returns the cookie returned by opening the given Source."""
-        print(f"opening source {source}")
         self._opening.append(source)
         self._register_path(self._opening)
         try:

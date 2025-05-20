@@ -37,6 +37,8 @@
 - The pysaml2 and django-saml2-auth libraries have been removed.
   All Single Sign-on logic should now be configured through Keycloak.
 
+- SharePoint scanner supports scanning of SharePoint Lists.
+
 ### General improvements
 
 - Removed obsolete translations
