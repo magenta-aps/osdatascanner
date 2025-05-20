@@ -26,20 +26,20 @@ from .views.support_views import SupportButtonView
 
 reports_patterns = [
     # Pages related to unhandled reports:
-    path("personal",         UserReportView.as_view(),      name="personal"),
-    path("remediator",       RemediatorView.as_view(),      name="remediator"),
-    path("undistributed",    UndistributedView.as_view(),   name="undistributed"),
-    path("sbsys-personal",   SBSYSPersonalView.as_view(),   name="sbsys-personal"),
-    path("sbsys-remediator", SBSYSRemediatorView.as_view(), name="sbsys-remediator"),
+    path("personal/",         UserReportView.as_view(),      name="personal"),
+    path("remediator/",       RemediatorView.as_view(),      name="remediator"),
+    path("undistributed/",    UndistributedView.as_view(),   name="undistributed"),
+    path("sbsys-personal/",   SBSYSPersonalView.as_view(),   name="sbsys-personal"),
+    path("sbsys-remediator/", SBSYSRemediatorView.as_view(), name="sbsys-remediator"),
 ]
 
 archive_patterns = [
     # Pages related to archived reports:
-    path("personal",         UserArchiveView.as_view(),            name="personal"),
-    path("remediator",       RemediatorArchiveView.as_view(),      name="remediator"),
-    path("undistributed",    UndistributedArchiveView.as_view(),   name="undistributed"),
-    path("sbsys-personal",   SBSYSPersonalArchiveView.as_view(),   name="sbsys-personal"),
-    path("sbsys-remediator", SBSYSRemediatorArchiveView.as_view(), name="sbsys-remediator"),
+    path("personal/",         UserArchiveView.as_view(),            name="personal"),
+    path("remediator/",       RemediatorArchiveView.as_view(),      name="remediator"),
+    path("undistributed/",    UndistributedArchiveView.as_view(),   name="undistributed"),
+    path("sbsys-personal/",   SBSYSPersonalArchiveView.as_view(),   name="sbsys-personal"),
+    path("sbsys-remediator/", SBSYSRemediatorArchiveView.as_view(), name="sbsys-remediator"),
 ]
 
 urlpatterns = [
@@ -51,23 +51,39 @@ urlpatterns = [
     # LEGACY --> NEW MAPPINGS:
     # “/reports/” --> /reports/personal/
     re_path(
-        r'^reports/?$',
-        RedirectView.as_view(pattern_name='reports:personal', permanent=True)
+        r"^reports/?$",
+        RedirectView.as_view(
+            pattern_name="reports:personal",
+            permanent=True,
+            query_string=True
+        )
     ),
     # “/remediator/” --> /reports/remediator/
     re_path(
-        r'^remediator/?$',
-        RedirectView.as_view(pattern_name='reports:remediator', permanent=True)
+        r"^remediator/?$",
+        RedirectView.as_view(
+            pattern_name="reports:remediator",
+            permanent=True,
+            query_string=True
+        )
     ),
     # “/undistributed/” --> /reports/undistributed/
     re_path(
-        r'^undistributed/?$',
-        RedirectView.as_view(pattern_name='reports:undistributed', permanent=True)
+        r"^undistributed/?$",
+        RedirectView.as_view(
+            pattern_name="reports:undistributed",
+            permanent=True,
+            query_string=True
+        )
     ),
     # "/archive/reports/" --> /archive/personal/
     re_path(
-        r'^archive/reports/?$',
-        RedirectView.as_view(pattern_name='archive:personal', permanent=True)
+        r"^archive/reports/?$",
+        RedirectView.as_view(
+            pattern_name="archive:personal",
+            permanent=True,
+            query_string=True
+        )
     ),
 
     # Scannerjob view
