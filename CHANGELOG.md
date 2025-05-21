@@ -1,12 +1,12 @@
 # Changelog
 
-## Version 3.xx.x, xth xxx 2025
+## Version 3.29.0, 21st May 2025
 
-""
+"Swing 4.2"
 
 ### New in this release
 
-- The django version has been bumped to 4.2.
+- The Django version has been bumped to 4.2.
 
 - The pysaml2 and django-saml2-auth libraries have been removed.
   All Single Sign-on logic should now be configured through Keycloak.
