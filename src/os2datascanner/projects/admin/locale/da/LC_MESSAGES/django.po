@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-08 21:42+0200\n"
+"POT-Creation-Date: 2025-05-22 13:00+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -87,6 +87,44 @@ msgstr "Sæt fjernet-status til False"
 #, python-brace-format
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
+
+#: adminapp/forms/webscanner.py
+#: organizations/templates/organizations/org_update.html
+msgid "General settings"
+msgstr "Generelle indstillinger"
+
+#: adminapp/forms/webscanner.py
+# (jf. https://noid.dsn.dk/ordbog/webcrawler/)
+msgid "Web crawler settings"
+msgstr "Webcrawler-indstillinger"
+
+#: adminapp/forms/webscanner.py
+msgid "Advanced web crawler settings"
+msgstr "Avancerede webcrawler-indstillinger"
+
+#: adminapp/forms/webscanner.py
+msgid "Scan settings"
+msgstr "Scanindstillinger"
+
+#: adminapp/forms/webscanner.py
+msgid "Result settings"
+msgstr "Indstillinger for resultater"
+
+#: adminapp/forms/webscanner.py
+msgid "Scheduled execution settings"
+msgstr "Indstillinger for planlagte kørsler"
+
+#: adminapp/forms/webscanner.py
+msgid "Couldn't find a sitemap here"
+msgstr "Sitemap blev ikke fundet"
+
+#: adminapp/forms/webscanner.py
+msgid "This appears not to be a sitemap"
+msgstr "Sitemap er ikke gyldigt"
+
+#: adminapp/forms/webscanner.py
+msgid "Sitemap download requested, but no URL was given"
+msgstr "Sitemap-URL forventet men mangler"
 
 #: adminapp/management/commands/graphgrant_expiry_check.py
 msgid "Your GraphGrant needs updating!"
@@ -1040,11 +1078,13 @@ msgid "Office 365 SharePoint scanner"
 msgstr "Office 365 SharePoint scanner"
 
 #: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Edit scannerjob"
 msgstr "Rediger scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
 #: adminapp/templates/components/scanner/scanner_form.html
 #: adminapp/templates/components/scanner/scanner_no_client_credentials.html
 msgid "Create new scannerjob"
@@ -1130,6 +1170,19 @@ msgstr "opdatér OS2mo-konfiguration"
 #: organizations/templates/organizations/base.html
 msgid "OSdatascanner version"
 msgstr "OSdatascanner version"
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid ""
+"This scanner can take advantage of the built-in SmartDelta function for "
+"ultra-fast scans."
+msgstr ""
+"Dette scannerjob kan benytte den indbyggede SmartDelta-funktion for "
+"lynhurtige scans."
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+msgid "LET'S GOOOOOOO!!!!"
+msgstr "LAD OS DA I GAAAAAAAANG!!!"
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "No file or text uploaded."
@@ -1616,14 +1669,6 @@ msgstr "Slet resultaterne for følgende brugere:"
 #: adminapp/templates/components/scanner/scanner_cleanup_stale_accounts.html
 msgid "Clean"
 msgstr "Ryd op"
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid ""
-"This scanner can take advantage of the built-in SmartDelta function for "
-"ultra-fast scans."
-msgstr ""
-"Dette scannerjob kan benytte den indbyggede SmartDelta-funktion for "
-"lynhurtige scans."
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Sitemap"
@@ -3855,10 +3900,6 @@ msgstr "Konfigurér Single SignOn"
 #: organizations/templates/organizations/org_table.html
 msgid "no organization added"
 msgstr "der er ikke tilføjet nogen organisationer"
-
-#: organizations/templates/organizations/org_update.html
-msgid "General settings"
-msgstr "Generelle indstillinger"
 
 #: organizations/templates/organizations/org_update.html
 msgid "Tab settings"

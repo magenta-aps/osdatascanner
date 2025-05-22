@@ -12,6 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import CreateView
 
 from ..validate import get_validation_str
 from .scanner_views import (
@@ -20,6 +21,7 @@ from .scanner_views import (
     ScannerCopy,
     ScannerCreate,
     ScannerList)
+from ..forms.webscanner import WebScannerForm
 from ..models.scannerjobs.webscanner import WebScanner
 
 
@@ -44,6 +46,12 @@ web_scanner_fields = [
     'reduce_communication',
     'always_crawl',
 ]
+
+
+class WebScannerCreateDF(CreateView):
+    model = WebScanner
+    form_class = WebScannerForm
+    template_name = "components/forms/grouping_model_form_wrapper.html"
 
 
 class WebScannerCreate(ScannerCreate):

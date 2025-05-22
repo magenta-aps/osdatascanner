@@ -90,7 +90,6 @@ urlpatterns = [
     path("scanners/removed/<int:pk>/delete", DeleteRemovedScannerView.as_view(),
          name="delete_removed_scanner"),
 
-
     re_path(r'^(msgraphcalendarscanners|msgraphmailscanners|msgraphfilescanners|'
             r'msgraphteamsfilescanners)/(\d+)/(created|saved)/$',
             DialogSuccess.as_view()),
@@ -175,6 +174,10 @@ urlpatterns = [
         Tag:       {__tag__}<br/>
         Branch:    {__branch__}
         """)),
+
+    # Django Forms test views
+    path("_df/webscanners/add/",
+         webscanner_views.WebScannerCreateDF.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.ENABLE_MINISCAN:
