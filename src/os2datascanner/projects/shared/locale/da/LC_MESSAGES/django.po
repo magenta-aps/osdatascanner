@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 13:53+0200\n"
+"POT-Creation-Date: 2025-05-22 11:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,8 +28,12 @@ msgstr ""
 "nulstil-knappen for at nulstille zoom på grafen."
 
 #: templates/components/containers/cards/card__zoom-controls.html
-msgid "Reset"
-msgstr "Nulstil"
+msgid "Click here to reset the zoom level on the graph."
+msgstr "Klik her for at nulstille zoom-niveauet for grafen."
+
+#: templates/components/containers/cards/card__zoom-controls.html
+msgid "reset"
+msgstr "nulstil"
 
 #: templates/components/containers/permission_list.html
 msgid "Click to remove"
