@@ -1,0 +1,44 @@
+{% extends "components/common/base.html" %}
+
+{% load i18n static %}
+
+{% block extra_head_html %}
+  <script type="text/javascript" src="/jsi18n/"></script>
+  <!-- BEGIN Admin scripts and CSS to render filter_horizontal -->
+  <script type="text/javascript" src="/admin/jsi18n/"></script>
+  <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+  <script type="text/javascript"
+          src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+
+  {{ form.media }}
+{% endblock %}
+
+{% block body %}
+  {% include "components/common/header.html" %}
+  <div class="wrapper" id="container">
+    {% include "components/common/main.html" with active_tab="home" %}
+
+    <div class="content">
+      <div class="content-header">
+        {% include "components/common/breadcrumb.html" with page="scannerjob" %}
+        <h1 class="page-title">
+          {% if view.edit %}
+            {% trans "Edit scannerjob" %}
+          {% else %}
+            {% trans "Create new scannerjob" %}
+          {% endif %}
+
+          {% if supports_rule_preexec %}
+            <span class="smartdelta"
+                  title="{% trans "This scanner can take advantage of the built-in SmartDelta function for ultra-fast scans." %}"></span>
+          {% endif %}
+        </h1>
+      </div>
+      <form method="post" action="{{ request.path }}">
+        {% csrf_token %}
+        {{ form }}
+        <button class="button">{% trans "LET'S GOOOOOOO!!!!" %}</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
