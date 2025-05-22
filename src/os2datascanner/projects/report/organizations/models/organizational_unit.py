@@ -20,7 +20,7 @@ from os2datascanner.core_organizational_structure.models import \
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from ..seralizer import BaseBulkSerializer, SelfRelatingField
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 
 
 class OrganizationlUnitManager(TreeManager):
@@ -30,7 +30,9 @@ class OrganizationlUnitManager(TreeManager):
                 'positions__account__aliases__match_relation',
                 filter=Q(
                     positions__account__aliases__match_relation__number_of_matches__gte=1,
-                    positions__account__aliases__match_relation__only_notify_superadmin=False),
+                    positions__account__aliases__match_relation__only_notify_superadmin=False,
+                    positions__account__aliases__match_relation__organization=F('organization'),
+                ),
                 exclude=Q(positions__account__aliases__shared=True),
                 distinct=True),
             handled_ou_matches=Count(
@@ -38,7 +40,9 @@ class OrganizationlUnitManager(TreeManager):
                 filter=Q(
                     positions__account__aliases__match_relation__resolution_status__isnull=False,
                     positions__account__aliases__match_relation__number_of_matches__gte=1,
-                    positions__account__aliases__match_relation__only_notify_superadmin=False),
+                    positions__account__aliases__match_relation__only_notify_superadmin=False,
+                    positions__account__aliases__match_relation__organization=F('organization'),
+                ),
                 distinct=True))
 
 
