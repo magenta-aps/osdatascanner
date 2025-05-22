@@ -196,6 +196,34 @@ class TestAccount:
 
         assert egon_account.false_positive_rate == rate
 
+    def test_account_false_positive_rate_wrong_org(
+            self,
+            egon_email_alias,
+            egon_account,
+            olsenbanden_organization,
+            marvel_organization):
+
+        make_matched_document_reports_for(egon_email_alias, handled=10, amount=10)
+        drs = DocumentReport.objects.filter(alias_relation=egon_email_alias).order_by('pk')
+        for report in drs[:1]:
+            report.organization = marvel_organization
+            report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
+            report.save()
+        for report in drs[1:3]:
+            report.organization = marvel_organization
+            report.resolution_status = DocumentReport.ResolutionChoices.OTHER
+            report.save()
+        for report in drs[3:6]:
+            report.organization = olsenbanden_organization
+            report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
+            report.save()
+        for report in drs[6:]:
+            report.organization = olsenbanden_organization
+            report.resolution_status = DocumentReport.ResolutionChoices.OTHER
+            report.save()
+
+        assert egon_account.false_positive_rate == 3 / 7
+
     @pytest.mark.parametrize('egon_matches,benny_matches,egon_fp,benny_fp,alarm', [
         (0, 0, 0, 0, False),
         (10, 0, 10, 0, False),
@@ -316,6 +344,47 @@ class TestAccount:
             egon_sid_alias,
             handled=5,
             amount=8)
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_unhandled_matches()
+
+        # Assert
+        assert qs.first().unhandled_matches == egon_account.match_count
+
+    def test_account_with_unhandled_matches_no_org(
+            self, egon_email_alias, egon_account):
+        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
+        using the property match_count, both of which ignoring matches with no organization."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=6,
+            amount=10)
+        DocumentReport.objects.all().update(organization=None)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_unhandled_matches()
+
+        # Assert
+        assert qs.first().unhandled_matches == egon_account.match_count
+
+    def test_account_with_unhandled_matches_different_org(
+            self, egon_email_alias, egon_account, marvel_organization):
+        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
+        using the property match_count, both of which ignoring matches with from
+        other organizations."""
+        # Arrange
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=6,
+            amount=10)
+        DocumentReport.objects.all().update(organization=marvel_organization)
+
         qs = Account.objects.filter(pk=egon_account.pk)
         assert qs.count() == 1
 
