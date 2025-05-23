@@ -12,6 +12,7 @@ from os2datascanner.projects.report.organizations.models.organizational_unit imp
     OrganizationalUnit)
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 
+from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.statistics_views import (
@@ -569,6 +570,97 @@ class TestDPOStatisticsPageView:
         assert any(value == 5 for _, value in unhandled_by_month)
         # Same as above, but 10. (5 handled 5 unhandled, but still "new")
         assert any(value == 10 for _, value in new_matches_by_month)
+
+    def test_personal_and_shared_alias(self, rf, egon_account, egon_email_alias, egon_upn_alias,
+                                       egon_dpo_position, benny_account, olsenbanden_ou,
+                                       olsenbanden_ou_positions):
+        """ It can occur that somebody has a shared alias with a value of someone
+        else's non-shared alias. In that case, one report should still only count as one -
+         and of course, be counted as the personal one. """
+
+        # Arrange
+        # 5 handled, 5 unhandled
+        create_reports_for(egon_email_alias, num=5)
+        create_reports_for(egon_email_alias, num=5, resolution_status=0)
+
+        # Create a shared alias for benny, with the value of egon's.
+        benny_shared_alias = Alias.objects.create(account=benny_account,
+                                                  user=benny_account.user,
+                                                  _alias_type=AliasType.EMAIL,
+                                                  _value=egon_email_alias.value,
+                                                  shared=True)
+        # Create relations
+        create_alias_and_match_relations(egon_upn_alias)
+        create_alias_and_match_relations(benny_shared_alias)
+
+        # Act
+        response_ctx = self.get_dpo_statisticspage_response(
+            rf, egon_account, params=f'?orgunit={str(olsenbanden_ou.uuid)}').context_data
+
+        match_unhandled_count = response_ctx.get("match_data").get("unhandled").get("count")
+        match_handled_count = response_ctx.get("match_data").get("handled").get("count")
+        resolution_status_count = response_ctx.get("resolution_status").get(0).get("count")
+        unhandled_by_month = response_ctx.get("unhandled_matches_by_month")
+        new_matches_by_month = response_ctx.get("new_matches_by_month")
+        other_monthly_progress = response_ctx.get("other_monthly_progress")
+        unhandled_by_source_count = response_ctx.get("unhandled_by_source").get(
+            "other").get("count")
+        total_by_source_count = response_ctx.get("total_by_source").get("other").get("count")
+
+        assert match_unhandled_count == 5
+        assert match_handled_count == 5
+        assert resolution_status_count == 5
+        assert other_monthly_progress == 10
+        assert unhandled_by_source_count == 5
+        assert total_by_source_count == 10
+        # This one is dynamic / depends on month, there should just be 5 _somewhere_
+        assert any(value == 5 for _, value in unhandled_by_month)
+        # Same as above, but 10. (5 handled 5 unhandled, but still "new")
+        assert any(value == 10 for _, value in new_matches_by_month)
+
+    def test_only_shared_alias(self, rf, egon_account, egon_dpo_position,
+                               olsenbanden_ou, olsenbanden_ou_positions):
+        """ Shared results shouldn't count, if the account that has the 'non-shared'
+        one isn't included in the queryset. """
+
+        # Arrange
+
+        # Create a shared alias for egon, with the value of egon's.
+        egon_shared_alias = Alias.objects.create(account=egon_account,
+                                                 user=egon_account.user,
+                                                 _alias_type=AliasType.EMAIL,
+                                                 _value="sharedmail@vstkom.com",
+                                                 shared=True)
+
+        # 5 handled, 5 unhandled
+        create_reports_for(egon_shared_alias, num=5)
+        create_reports_for(egon_shared_alias, num=5, resolution_status=0)
+
+        # Create relations
+        create_alias_and_match_relations(egon_shared_alias)
+
+        # Act
+        response_ctx = self.get_dpo_statisticspage_response(
+            rf, egon_account, params=f'?orgunit={str(olsenbanden_ou.uuid)}').context_data
+
+        match_unhandled_count = response_ctx.get("match_data").get("unhandled").get("count")
+        match_handled_count = response_ctx.get("match_data").get("handled").get("count")
+        resolution_status_count = response_ctx.get("resolution_status").get(0).get("count")
+        unhandled_by_month = response_ctx.get("unhandled_matches_by_month")
+        new_matches_by_month = response_ctx.get("new_matches_by_month")
+        other_monthly_progress = response_ctx.get("other_monthly_progress")
+        unhandled_by_source_count = response_ctx.get("unhandled_by_source").get(
+            "other").get("count")
+        total_by_source_count = response_ctx.get("total_by_source").get("other").get("count")
+
+        assert match_unhandled_count == 0
+        assert match_handled_count == 0
+        assert resolution_status_count == 0
+        assert other_monthly_progress == 0
+        assert unhandled_by_source_count == 0
+        assert total_by_source_count == 0
+        assert all(value == 0 for _, value in unhandled_by_month)
+        assert all(value == 0 for _, value in new_matches_by_month)
 
     @pytest.mark.parametrize('egon_matches,benny_matches,kjeld_matches', [
         (0, 0, 0),
