@@ -1,5 +1,17 @@
 # Changelog
 
+## Version ??, ??th ?? 2025
+
+### New in this release
+
+### General improvements
+
+### Bugfixes
+
+- Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 
+  make results not count, and adjusted logic such that at least one non-shared alias 
+  is required, for it to count.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"
