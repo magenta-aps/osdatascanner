@@ -14,6 +14,15 @@ class WebScannerForm(GroupingModelForm):
     # "sitemap_url"), you can do that here
     field_order = ["download_sitemap", "sitemap_url", "sitemap"]
 
+    placeholders = {
+        "url": _("e.g. https://example.com/"),
+        "sitemap_url": _("e.g. https://example.com/sitemap.xml"),
+    }
+
+    patterns = {
+        "url": "(http|https)://.*"
+    }
+
     groups = (
         (
             _("General settings"),
