@@ -232,6 +232,9 @@ ENABLE_GOOGLEDRIVESCAN = false
 ENABLE_GMAILSCAN = false
 ENABLE_SBSYSSCAN = false
 
+# Enable experimental Django Forms scan configuration views?
+ENABLE_DF_SCAN_VIEWS = false
+
 # [logging]
 LOG_LEVEL = "INFO"
 

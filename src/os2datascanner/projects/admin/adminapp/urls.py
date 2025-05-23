@@ -174,10 +174,6 @@ urlpatterns = [
         Tag:       {__tag__}<br/>
         Branch:    {__branch__}
         """)),
-
-    # Django Forms test views
-    path("_df/webscanners/add/",
-         webscanner_views.WebScannerCreateDF.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.ENABLE_MINISCAN:
@@ -262,3 +258,8 @@ for model in [
         f"{stype}scanners/<int:pk>/remove/",
         ScannerRemove.as_view(model=model, success_url=f"/{stype}scanners/"),
         name=f"{stype}scanner_remove"))
+
+# Django Forms test views
+if settings.ENABLE_DF_SCAN_VIEWS:
+    urlpatterns.append(path("_df/webscanners/add/",
+                            webscanner_views.WebScannerCreateDF.as_view()))
