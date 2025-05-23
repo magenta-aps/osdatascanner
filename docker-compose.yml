@@ -169,6 +169,7 @@ services:
       "--reload-dir", "/code/src/os2datascanner",
       # reload when translations are compiled with `docker-compose exec admin django-admin compilemessages`
       "--reload-include", "*.mo",
+      "--reload-include", "*.html",
       "os2datascanner.projects.admin.asgi:application",
     ]
     tty: # If you like coloured log messages.
@@ -317,6 +318,7 @@ services:
       "--reload-dir", "/code/src/os2datascanner",
       # reload when translations are compiled with `docker-compose exec report django-admin compilemessages`
       "--reload-include", "*.mo",
+      "--reload-include", "*.html",
       "os2datascanner.projects.report.asgi:application",
     ]
     tty:
