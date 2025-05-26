@@ -1,0 +1,50 @@
+/***** settings/_radius.scss *****/
+// - Defines a global border-radius scale.
+// - Usage: border-radius(xl|l|m|s|xs|xxs) → returns a rem value.
+// - Computes CSS vars with this pattern: --border-radius-{key}: {value};
+
+$radius-base: 1rem;
+
+$border-radius-scale: (
+  xxl: 1.25,
+  xl: 1,
+  l: 0.75,
+  m: 0.5,
+  s: 0.25,
+  xs: 0.188,
+  xxs: 0.125,
+);
+
+@function border-radius($key) {
+  $value: map-get($border-radius-scale, $key);
+
+  @if $value == null {
+    @error "“#{$key}” is not a valid border-radius size. The available sizes are: #{map-keys($border-radius-scale)}";
+  }
+
+  @return $value * $radius-base;
+
+  /***** Calculated values: *****/
+  // xxl => 1rem * 1.25  =  1.25rem     |   (20px)
+  // xl  => 1rem * 1     =  1rem        |   (16px)
+  // l   => 1rem * 0.75  =  0.75rem     |   (12px)
+  // m   => 1rem * 0.5   =  0.5rem      |    (8px)
+  // s   => 1rem * 0.25  =  0.25rem     |    (4px)
+  // xs  => 1rem * 0.188 =  0.188rem    |    (3px)
+  // xxs => 1rem * 0.125 =  0.125rem    |    (2px)
+}
+
+:root {
+  @each $key, $mult in $border-radius-scale {
+    --border-radius-#{$key}: #{border-radius($key)};
+  }
+
+  /***** Computed css vars: *****/
+  // --border-radius-xxl: 1.25rem;
+  // --border-radius-xl: 1rem;
+  // --border-radius-l: 0.75rem;
+  // --border-radius-m: 0.5rem;
+  // --border-radius-s: 0.25rem;
+  // --border-radius-xs: 0.188rem;
+  // --border-radius-xxs: 0.125rem;
+}

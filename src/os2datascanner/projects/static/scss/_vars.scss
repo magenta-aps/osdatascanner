@@ -88,13 +88,10 @@
   --color-header-bg: #ffffff;
 
   //border-radius
-  --border-radius-button: 0.25rem;
-  --border-radius: 0.5rem;
-  --border-radius-default: 0.625rem;
-  --border-radius-small: 0.125rem;
-  --border-radius-widget: 1.25rem;
-  --border-radius-filter: 0.625rem;
-  --border-radius-sensitivity: 20px 0px 0px 20px;
+  --border-radius-widget: var(--border-radius-xxl);
+  --border-radius-default: var(--border-radius-m);
+  --border-radius-button: var(--border-radius-s);
+  --border-radius-small: var(--border-radius-xxs);
 
   //box-shadow
   --box-shadow: 10px 10px 30px #0000001a;

@@ -1,13 +1,19 @@
-/* Generic styling */
+/* Fonts & icons */
+@import "../fonts/inter/inter.css";
 @import "../fonts/materialsymbols/materialsymbols.css";
 @import "../fonts/materialicons/materialicons.css";
+
+/* Utils */
+@import "utils/mixins";
+
+/* Settings */
+@import "settings/radius";
+
+/* Generic styling */
 @import "vars";
 @import "base";
 @import "layout";
-@import "mixins";
-@import "../fonts/inter/inter.css";
 @import "typography";
-
 @import "ie-support";
 @import "bugfixes";
 
