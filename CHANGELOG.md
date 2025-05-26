@@ -1,16 +1,25 @@
 # Changelog
 
-## Version ??, ??th ?? 2025
+## Version 3.??.?, ??th ??? 2025
+
+""
 
 ### New in this release
 
+- 
+
 ### General improvements
+
+- 
 
 ### Bugfixes
 
 - Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 
   make results not count, and adjusted logic such that at least one non-shared alias 
   is required, for it to count.
+
+- Added missing translations on the bar and line charts on DPO.
+
 
 ## Version 3.29.0, 21st May 2025
 
