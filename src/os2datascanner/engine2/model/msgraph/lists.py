@@ -1,4 +1,5 @@
-from io import BytesIO
+import csv
+from io import BytesIO, StringIO
 from contextlib import contextmanager
 from dateutil.parser import isoparse
 from requests import HTTPError
@@ -27,20 +28,19 @@ class MSGraphListsSource(MSGraphSource):
                     f"sites/{site_id}/lists")
 
                 for sp_list in lists:
-                    template = sp_list.get("list").get("template")
-                    # lists with documentLibrary template are SharePoint Drives
-                    # so we're not interested in them here.
-                    # catalog lists take up a lot of space and seem to all be blank templates
-                    if template != "documentLibrary" and "_catalog" not in sp_list.get("webUrl"):
-                        yield MSGraphListHandle(self, sp_list["id"], sp_list["name"], site_id)
+                    match sp_list:
+                        case {"list": {"template": "documentLibrary"}}:
+                            # This is a SharePoint drive in disguise. Ignore it
+                            pass
+                        case {"webUrl": u} if "/_catalogs" in u:
+                            # Catalog lists take up a lot of space and contain
+                            # blank templates. Ignore them
+                            pass
+                        case {"id": id, "name": name}:
+                            yield MSGraphListHandle(self, id, name, site_id)
 
     def censor(self):
         return type(self)(None, self._tenant_id, None)
-
-    def to_json_object(self):
-        return dict(
-            **super().to_json_object()
-        )
 
     @staticmethod
     @Source.json_handler(type_label)
@@ -165,15 +165,53 @@ class MSGraphListItemResource(FileResource):
         return 1
 
     def compute_type(self):
-        return "text/plain"
+        return "application/csv"
 
     def make_path(self):
         return f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}"
 
+    def json_to_csv_bytes(self, jsonObj):
+
+        output = StringIO()
+
+        flattened = {}
+
+        for key, value in jsonObj.items():
+            if isinstance(value, dict):
+                for nested_key, nested_value in value.items():
+                    flattened[f"{key}.{nested_key}"] = nested_value
+            elif isinstance(value, list):
+                flattened[key] = '; '.join(str(item) for item in value)
+            elif isinstance(value, bool):
+                flattened[key] = str(value)
+            elif value is None:
+                flattened[key] = ''
+            else:
+                flattened[key] = value
+
+        fieldnames = list(flattened.keys())
+        writer = csv.DictWriter(
+            output,
+            fieldnames=fieldnames,
+            quoting=csv.QUOTE_MINIMAL,
+            lineterminator='\n',
+            delimiter=',',
+            quotechar='"'
+        )
+        writer.writeheader()
+        writer.writerow(flattened)
+
+        csv_bytes = output.getvalue().encode('utf-8')
+        output.close()
+        print(csv_bytes)
+        return csv_bytes
+
     @contextmanager
     def make_stream(self):
         response = self._get_cookie().get(self.make_path())
-        with BytesIO(response.content) as fp:
+        list_item = response.json()["fields"]
+        list_csv = self.json_to_csv_bytes(list_item)
+        with BytesIO(list_csv) as fp:
             yield fp
 
 
