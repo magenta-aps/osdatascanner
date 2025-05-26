@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Page with Script & Styles</title>
+</head>
+<body>
+  <h1>Welcome to the Test Page</h1>
+
+  <!-- Inline style block -->
+  <style>
+    .highlight {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+
+  <p class="highlight">I'm a red paragraph</p>
+
+  <!-- Inline script block -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('This script runs on load.');
+      document.querySelector('h1').textContent += ' (modified by script)';
+    });
+  </script>
+
+  <p>Another paragraph that remains</p>
+
+  <!-- External script reference -->
+  <script src="https://example.com/some-lib.js"></script>
+
+  <!-- Internal stylesheet reference -->
+  <link rel="stylesheet" href="styles.css">
+
+</body>
+</html>

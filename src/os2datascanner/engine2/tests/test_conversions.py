@@ -22,10 +22,14 @@ class TestEngine2Conversion:
         empty_handle = FilesystemHandle.make_handle(
             os.path.join(here_path, "data/empty_file")
         )
+        html_handle_w_style_and_scripts = FilesystemHandle.make_handle(
+            os.path.join(here_path, "data/html/script_and_style_in_body.html")
+        )
 
         cls._ir = image_handle.follow(sm)
         cls._hr = html_handle.follow(sm)
         cls._er = empty_handle.follow(sm)
+        cls._hr_w_style_and_scripts = html_handle_w_style_and_scripts.follow(sm)
 
     def test_last_modified_image_handle_not_none(self):
         # Arrange -> setup_method
@@ -92,3 +96,13 @@ class TestEngine2Conversion:
 
         # Assert
         assert converted is None
+
+    def test_html_with_script_and_styles_in_body(self):
+        converted = convert(self._hr_w_style_and_scripts, OutputType.Text,
+                            mime_override="text/html")
+
+        assert "Welcome to the Test Page" in converted
+        assert "I'm a red paragraph" in converted
+        assert "Another paragraph that remains" in converted
+        assert "script" not in converted
+        assert "style" not in converted
