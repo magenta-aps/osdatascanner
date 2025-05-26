@@ -101,8 +101,13 @@ class TestEngine2Conversion:
         converted = convert(self._hr_w_style_and_scripts, OutputType.Text,
                             mime_override="text/html")
 
+        # Should be there
         assert "Welcome to the Test Page" in converted
         assert "I'm a red paragraph" in converted
         assert "Another paragraph that remains" in converted
-        assert "script" not in converted
-        assert "style" not in converted
+
+        # Shouldn't be there
+        assert "script" not in converted  # script tag
+        assert ".highlight" not in converted  # style tag
+        assert "template tag" not in converted  # template tag
+        assert "JavaScript is disabled" not in converted  # noscript tag
