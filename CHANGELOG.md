@@ -21,6 +21,7 @@
 
 - Added missing translations on the bar and line charts on DPO.
 
+- Scanning HTML now properly excludes metadata elements.
 
 ## Version 3.29.0, 21st May 2025
 
