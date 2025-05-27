@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Page with Script & Styles</title>
+</head>
+<body>
+  <h1>Welcome to the Test Page</h1>
+
+  <!-- Inline style block -->
+  <style>
+    .highlight {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+
+  <p class="highlight">I'm a red paragraph</p>
+
+  <!-- Inline script block -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('This script runs on load.');
+      document.querySelector('h1').textContent += ' (modified by script)';
+    });
+  </script>
+
+  <p>Another paragraph that remains</p>
+
+  <!-- External script reference -->
+  <script src="https://example.com/some-lib.js"></script>
+
+  <!-- Internal stylesheet reference -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Base tag  -->
+  <base href="https://example.com/">
+
+  <!-- Additional meta tag in body (not typical, but valid) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Title tag in body  -->
+  <title> Title in Body</title>
+
+  <!-- Noscript block -->
+  <noscript>
+    <p style="color: orange;">JavaScript is disabled in your browser.</p>
+  </noscript>
+
+  <!-- Template block -->
+  <template id="greeting-template">
+    <div class="greeting">Hello, I'm in some template tag <span class="name"></span>!</div>
+  </template>
+
+</body>
+</html>

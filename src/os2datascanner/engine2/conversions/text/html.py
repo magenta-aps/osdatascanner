@@ -11,6 +11,13 @@ def html_processor(r, **kwargs):
         # extract and print all the text.
         try:
             html_body = html.parse(fp).xpath("//body")[0]
+
+            # Excluding metadata content:
+    # https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Content_categories#metadata_content
+            for blob in html_body.xpath('//base | //link | //meta | //noscript |'
+                                        '//script | //style | //template | //title'):
+                blob.getparent().remove(blob)
+
             for br in html_body.xpath("//br | //p | //div"):
                 # lxml represents loose text strings after inline elements by
                 # attaching them to the preceding element as a "tail":
