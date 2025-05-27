@@ -31,11 +31,11 @@ class MSGraphListsSource(MSGraphSource):
                     match sp_list:
                         case {"list": {"template": "documentLibrary"}}:
                             # This is a SharePoint drive in disguise. Ignore it
-                            pass
+                            continue
                         case {"webUrl": u} if "/_catalogs" in u:
                             # Catalog lists take up a lot of space and contain
                             # blank templates. Ignore them
-                            pass
+                            continue
                         case {"id": id, "name": name}:
                             yield MSGraphListHandle(self, id, name, site_id)
 
@@ -117,9 +117,9 @@ class MSGraphListSource(DerivedSource):
 
     def handles(self, sm):
         gc: MSGraphSource.GraphCaller = sm.open(self)
-        list_items = list_items = gc.get(
+        list_items = list_items = gc.paginated_get(
             f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items?$expand=fields"
-        ).json()["value"]
+        )
 
         for item in list_items:
             rel_path = f"{self.handle.relative_path}/items/{item['id']}"
@@ -165,17 +165,25 @@ class MSGraphListItemResource(FileResource):
         return 1
 
     def compute_type(self):
-        return "application/csv"
+        return "text/csv"
 
     def make_path(self):
         return f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}"
 
     def json_to_csv_bytes(self, jsonObj):
-
         output = StringIO()
 
-        flattened = {}
+        # Define columns to exclude (system/metadata columns)?
+        exclude_columns = {
+            '@odata.etag', 'id', 'ContentType', 'Modified', 'Created',
+            'AuthorLookupId', 'EditorLookupId', '_UIVersionString',
+            'Attachments', 'Edit', 'LinkTitleNoMenu', 'LinkTitle',
+            'ItemChildCount', 'FolderChildCount', '_ComplianceFlags',
+            '_ComplianceTag', '_ComplianceTagWrittenTime',
+            '_ComplianceTagUserId', 'AppEditorLookupId'
+        }
 
+        flattened = {}
         for key, value in jsonObj.items():
             if isinstance(value, dict):
                 for nested_key, nested_value in value.items():
@@ -189,21 +197,19 @@ class MSGraphListItemResource(FileResource):
             else:
                 flattened[key] = value
 
-        fieldnames = list(flattened.keys())
+        filtered_columns = [col for col in flattened.keys() if col not in exclude_columns]
+
         writer = csv.DictWriter(
             output,
-            fieldnames=fieldnames,
-            quoting=csv.QUOTE_MINIMAL,
-            lineterminator='\n',
-            delimiter=',',
-            quotechar='"'
+            fieldnames=filtered_columns,
+            extrasaction='ignore',
         )
+
         writer.writeheader()
         writer.writerow(flattened)
 
         csv_bytes = output.getvalue().encode('utf-8')
         output.close()
-        print(csv_bytes)
         return csv_bytes
 
     @contextmanager
@@ -244,10 +250,10 @@ class MSGraphListItemHandle(Handle):
 
     @property
     def sort_key(self):
-        return self.source.handle.sort_key
+        return self.source.handle.sort_key + self._item_id
 
     def guess_type(self):
-        return "text/plain"
+        return "text/csv"
 
     def to_json_object(self):
         return dict(
