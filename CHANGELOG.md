@@ -10,7 +10,8 @@
 
 ### General improvements
 
-- 
+- Added _radius.scss which includes a function that computes a map of border-radius CSS vars from 
+  defined base and scale values.
 
 ### Bugfixes
 
