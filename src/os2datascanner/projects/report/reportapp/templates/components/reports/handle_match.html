@@ -24,7 +24,7 @@
                 hx-push-url="false"
                 hx-vals='{"action":None}'>{% trans "Revert" %}</li>
           {% endif %}
-          {% for choice in resolution_choices %}
+          {% for choice in mass_resolution_choices %}
             <li class="handle-option button button--text-button"
                 hx-post="{% url 'mass-handle' %}"
                 hx-trigger="click"

@@ -13,6 +13,8 @@
 - Added _radius.scss which includes a function that computes a map of border-radius CSS vars from 
   defined base and scale values.
 
+- Handling results as False Positive now has its own button for ease of use.
+
 ### Bugfixes
 
 - Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 
