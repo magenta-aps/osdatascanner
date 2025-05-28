@@ -23,6 +23,9 @@
 
 - Scanning HTML now properly excludes metadata elements.
 
+- Both the weekly overview and the leader overview csv-export now only includes users matches that
+  are owned by their organization.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"

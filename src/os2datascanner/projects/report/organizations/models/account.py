@@ -84,7 +84,8 @@ class AccountQuerySet(models.QuerySet):
                             aliases__shared=False,
                             aliases__match_relation__number_of_matches__gte=1,
                             aliases__match_relation__resolution_status__isnull=True,
-                            aliases__match_relation__only_notify_superadmin=False
+                            aliases__match_relation__only_notify_superadmin=False,
+                            aliases__match_relation__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -104,7 +105,8 @@ class AccountQuerySet(models.QuerySet):
                             aliases__shared=False,
                             aliases__match_relation__number_of_matches__gte=1,
                             aliases__match_relation__resolution_status__isnull=True,
-                            aliases__match_relation__only_notify_superadmin=True
+                            aliases__match_relation__only_notify_superadmin=True,
+                            aliases__match_relation__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -130,7 +132,8 @@ class AccountQuerySet(models.QuerySet):
                             aliases__match_relation__number_of_matches__gte=1,
                             aliases__match_relation__resolution_status__isnull=True,
                             aliases__match_relation__only_notify_superadmin=False,
-                            aliases__match_relation__datasource_last_modified__lte=cutoff_date
+                            aliases__match_relation__datasource_last_modified__lte=cutoff_date,
+                            aliases__match_relation__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -155,7 +158,8 @@ class AccountQuerySet(models.QuerySet):
         valid_reports = (~Q(aliases___alias_type=AliasType.REMEDIATOR)
                          & Q(aliases__shared=False,
                              aliases__match_relation__number_of_matches__gte=1,
-                             aliases__match_relation__only_notify_superadmin=False
+                             aliases__match_relation__only_notify_superadmin=False,
+                             aliases__match_relation__organization=F('organization'),
                              )
                          )
         unhandled_filter = Q(aliases__match_relation__resolution_status__isnull=True)
@@ -440,8 +444,7 @@ class Account(Core_Account):
     @property
     def false_positive_rate(self) -> float:
         from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
-        all_matches = DocumentReport.objects.filter(
-            alias_relation__account=self, number_of_matches__gte=1, resolution_status__isnull=False)
+        all_matches = self.get_report(Account.ReportType.PERSONAL, True)
         fp_matches = all_matches.filter(
             resolution_status=DocumentReport.ResolutionChoices.FALSE_POSITIVE)
 
@@ -481,6 +484,7 @@ class Account(Core_Account):
             number_of_matches__gte=1,
             alias_relation__in=aliases,
             only_notify_superadmin=False,
+            organization=self.organization,
         ).values(
             "created_timestamp",
             "resolution_time",

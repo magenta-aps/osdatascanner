@@ -64,6 +64,28 @@ class TestUserStatisticsPageView:
         match_count = response.context_data.get("matches_by_week")[0].get("matches")
         assert match_count == 10
 
+    def test_reports_no_org(self, egon_account, egon_email_alias, rf):
+        # Arrange
+        create_reports_for(egon_email_alias, num=10)
+        DocumentReport.objects.update(organization=None)
+        # Act
+        response = self.get_user_statisticspage_response(rf, egon_account)
+
+        # Assert
+        match_count = response.context_data.get("matches_by_week")[0].get("matches")
+        assert match_count == 0
+
+    def test_reports_different_org(self, marvel_organization, egon_account, egon_email_alias, rf):
+        # Arrange
+        create_reports_for(egon_email_alias, num=10)
+        DocumentReport.objects.update(organization=marvel_organization)
+        # Act
+        response = self.get_user_statisticspage_response(rf, egon_account)
+
+        # Assert
+        match_count = response.context_data.get("matches_by_week")[0].get("matches")
+        assert match_count == 0
+
     # Helper functions
 
     def get_user_statisticspage_response(self, rf, account, params='', **kwargs):
