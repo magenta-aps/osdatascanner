@@ -1446,36 +1446,6 @@ msgstr "Indlæser medarbejder ..."
 msgid "No employees found."
 msgstr "Ingen medarbejdere fundet."
 
-#: reportapp/templates/mail/password_reset_email.html
-#, python-format
-msgid ""
-"\n"
-"  You're receiving this email because you requested a password reset for "
-"your user account at %(site_name)s.\n"
-"  "
-msgstr ""
-"\n"
-"  Du modtager denne e-mail, fordi du har anmodet om nulstilling af din "
-"adgangskode til din bruger på %(site_name)s.\n"
-"  "
-
-#: reportapp/templates/mail/password_reset_email.html
-msgid "Please go to the following page and choose a new password:"
-msgstr "Gå venligst til følgende side og vælg en ny adgangskode:"
-
-#: reportapp/templates/mail/password_reset_email.html
-msgid "Your username, in case you've forgotten:"
-msgstr "Dit brugernavn er følgende, hvis du har glemt det:"
-
-#: reportapp/templates/mail/password_reset_email.html
-msgid "Thanks for using our site!"
-msgstr "Tak, fordi du brugte vores side!"
-
-#: reportapp/templates/mail/password_reset_email.html
-#, python-format
-msgid "The %(site_name)s team"
-msgstr "%(site_name)s team"
-
 #: reportapp/templates/manual.html
 msgid "User Interface Walkthrough"
 msgstr "Gennemgang af brugergrænsefladen"

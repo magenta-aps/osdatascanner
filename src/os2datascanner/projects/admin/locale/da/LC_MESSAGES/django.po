@@ -2192,42 +2192,6 @@ msgstr "Markér som set"
 msgid "no errors found."
 msgstr "ingen fejl fundet."
 
-#: adminapp/templates/mail/password_reset_email.html
-#, python-format
-msgid ""
-"\n"
-"  You're receiving this email because you requested a password reset for "
-"your user account at %(site_name)s.\n"
-"  "
-msgstr ""
-"\n"
-"  Du modtager denne e-mail, fordi du har anmodet om nulstilling af din "
-"adgangskode til din bruger på %(site_name)s.\n"
-"  "
-
-#: adminapp/templates/mail/password_reset_email.html
-msgid "Please go to the following page and choose a new password:"
-msgstr "Gå venligst til følgende side og vælg en ny adgangskode:"
-
-#: adminapp/templates/mail/password_reset_email.html
-msgid "Your username, in case you've forgotten:"
-msgstr "Dit brugernavn er følgende, hvis du har glemt det:"
-
-#: adminapp/templates/mail/password_reset_email.html
-msgid "Thanks for using our site!"
-msgstr "Tak, fordi du brugte vores side!"
-
-#: adminapp/templates/mail/password_reset_email.html
-#, python-format
-msgid ""
-"\n"
-"  The %(site_name)s team\n"
-"  "
-msgstr ""
-"\n"
-"  %(site_name)s teamet\n"
-"  "
-
 #: adminapp/templates/miniscan.html
 msgid "OSdatascanner mini-scanner"
 msgstr "OSdatascanner miniscanner"

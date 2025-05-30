@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-22 11:11+0200\n"
+"POT-Creation-Date: 2025-05-30 14:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr "(Skjult felt %(name)s) %(error)s"
 
 #: templates/components/containers/cards/card__zoom-controls.html
 msgid ""
@@ -59,3 +64,36 @@ msgstr "Vælg rettighed"
 #, python-format
 msgid "%(tooltip)s"
 msgstr "%(tooltip)s"
+
+#: templates/components/feedback/password_reset_email.html
+msgid "Password reset"
+msgstr "Nulstil adgangskode"
+
+#: templates/components/feedback/password_reset_email.html
+#, python-format
+msgid ""
+"\n"
+"    You're receiving this email because you requested a password reset for "
+"your user account at %(site_name)s.\n"
+"    "
+msgstr ""
+"\n"
+"  Du modtager denne e-mail, fordi du har anmodet om nulstilling af din "
+"adgangskode til din bruger på %(site_name)s.\n"
+"  "
+
+#: templates/components/feedback/password_reset_email.html
+msgid "Please go to the following page and choose a new password:"
+msgstr "Gå venligst til følgende side og vælg en ny adgangskode:"
+
+#: templates/components/feedback/password_reset_email.html
+msgid "Your username, in case you've forgotten:"
+msgstr "Dit brugernavn er følgende, hvis du har glemt det:"
+
+#: templates/components/feedback/password_reset_email.html
+msgid "Thank you for using our site!"
+msgstr "Tak fordi du brugte vores side!"
+
+#: templates/components/feedback/password_reset_email.html
+msgid "Regards, the OSdatascanner team."
+msgstr "Mvh. OSdatascanner teamet."
