@@ -86,10 +86,13 @@
     {% endif %}
     {% if request.user.is_authenticated %}
       <li class="logout">
-        <a href="{% url "logout" %}">
-          {% include "components/svg-icons/account_circle.svg" %}
-          <span class="width">{% trans "Logout" %}</span>
-        </a>
+        <form method="post" action="{% url "logout" %}">
+          {% csrf_token %}
+          <button>
+            {% include "components/svg-icons/account_circle.svg" %}
+            <span class="width">{% trans "Logout" %}</span>
+          </button>
+        </form>
       </li>
     {% endif %}
   </ul>

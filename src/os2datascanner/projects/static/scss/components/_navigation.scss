@@ -165,7 +165,8 @@
   margin-top: 1rem;
   margin-bottom: 1rem;
 
-  a {
+  a,
+  button {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -176,6 +177,11 @@
     font-weight: 700;
     color: var(--color-text-white);
 
+    // Remove default button styling
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    font-size: 1rem;
+
     @media (min-width: $break-sm) {
       height: 3.9rem;
       padding-left: 1rem;
@@ -183,6 +189,7 @@
 
     &:hover {
       color: var(--color-primary-dark);
+      cursor: pointer;
 
       svg {
         fill: var(--color-primary-dark);

@@ -27,7 +27,12 @@
         </a>
         <a class="show-account" href="{% url "my-user" %}">{% trans "Show User" %}</a>
         <a class="password-change" href="{% url "password_change" %}">{% trans "Change password" %}</a>
-        <a class="logout" href="{% url "logout" %}">{% trans "Logout" %}</a>
+        <form class="logout" method="post" action="{% url "logout" %}">
+          {% csrf_token %}
+          <button>
+            <span class="width">{% trans "Logout" %}</span>
+          </button>
+        </form>
       </div>
     </div>
   </div>

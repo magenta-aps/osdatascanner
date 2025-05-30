@@ -26,7 +26,12 @@
         <span class="user__name--bold">{{ request.user }}</span>
       </a>
       <a class="show-account" href="{% url "account-me" %}">{% trans "Show Account" %}</a>
-      <a class="logout" href="{% url "logout" %}">{% trans "Logout" %}</a>
+      <form class="logout" method="post" action="{% url "logout" %}">
+        {% csrf_token %}
+        <button>
+          <span class="width">{% trans "Logout" %}</span>
+        </button>
+      </form>
     </div>
   </div>
 </div>
