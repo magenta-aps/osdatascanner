@@ -1,5 +1,6 @@
 import csv
 from io import BytesIO, StringIO
+from urllib.parse import unquote
 from contextlib import contextmanager
 from dateutil.parser import isoparse
 from requests import HTTPError
@@ -7,6 +8,7 @@ from requests import HTTPError
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
+from ...utilities.i18n import gettext as _
 
 
 class MSGraphListsSource(MSGraphSource):
@@ -240,8 +242,13 @@ class MSGraphListItemHandle(Handle):
             return self.source.handle._list_name
 
     @property
+    def site_name(self):
+        return unquote(self._webUrl.split("/")[4])
+
+    @property
     def presentation_place(self):
-        return f"{self.source.handle._list_name}/{self._item_name}"
+        return _('List "{list_name}" (on site {site_name})').format(
+            list_name=self.source.handle._list_name, site_name=self.site_name)
 
     @property
     def presentation_url(self):
@@ -250,7 +257,7 @@ class MSGraphListItemHandle(Handle):
 
     @property
     def sort_key(self):
-        return self.source.handle.sort_key + self._item_id
+        return f"{self.site_name}/{self.source.handle._list_name}/{self._item_id}"
 
     def guess_type(self):
         return "text/csv"
