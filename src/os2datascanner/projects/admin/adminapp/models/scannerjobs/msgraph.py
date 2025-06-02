@@ -26,6 +26,7 @@ from os2datascanner.engine2.model.msgraph.calendar import (MSGraphCalendarSource
                                                            MSGraphCalendarAccountSource,
                                                            MSGraphCalendarAccountHandle)
 from os2datascanner.engine2.model.msgraph.teams import MSGraphTeamsFilesSource
+from os2datascanner.engine2.model.msgraph.lists import MSGraphListsSource
 
 from os2datascanner.projects.grants.models import GraphGrant
 from ....organizations.models.aliases import AliasType
@@ -234,8 +235,6 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
 
 
 class MSGraphSharepointScanner(MSGraphScanner):
-    object_name = pgettext_lazy("unit of scan", "file")
-    object_name_plural = pgettext_lazy("unit of scan", "files")
 
     scan_lists = models.BooleanField(
         default=False,
@@ -247,11 +246,20 @@ class MSGraphSharepointScanner(MSGraphScanner):
         verbose_name=_("scan drives")
     )
 
+    object_name = pgettext_lazy("unit of scan", "object")
+    object_name_plural = pgettext_lazy("unit of scan", "objects")
+
     @staticmethod
     def get_type():
         return 'msgraphsharepoint'
 
     def generate_sources(self):
+        if self.scan_lists:
+            yield MSGraphListsSource(
+                client_id=str(self.graph_grant.app_id),
+                tenant_id=str(self.graph_grant.tenant_id),
+                client_secret=self.graph_grant.client_secret)
+
         if self.scan_drives:
             yield MSGraphFilesSource(
                     client_id=str(self.graph_grant.app_id),

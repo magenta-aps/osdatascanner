@@ -1,25 +1,5 @@
-import pytest
-from io import BytesIO
-from requests.models import Response
 from os2datascanner.engine2.model.msgraph.mail import MSGraphMailAccountSource
 from os2datascanner.engine2.model.core.utilities import SourceManager
-
-
-class MockGraphCaller:
-    def get(self, *args, **kwargs):
-        res = Response()
-        res.code = 200
-        res.raw = BytesIO(b'{ "id" : "a_very_real_folder_id" }')
-        return res
-
-
-@pytest.fixture
-def mock_graphcaller(monkeypatch):
-    def mock_open(*args, **kwargs):
-        return MockGraphCaller()
-
-    # Mock the 'open' method of the SourceManager object
-    monkeypatch.setattr(SourceManager, "open", mock_open)
 
 
 class TestMSGraphMailAccountSource:

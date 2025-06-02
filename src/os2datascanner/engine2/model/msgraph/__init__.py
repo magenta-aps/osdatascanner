@@ -5,3 +5,4 @@ from .mail import (MSGraphMailSource, MSGraphMailAccountHandle,  # noqa
 from . import files  # noqa
 from . import calendar  # noqa
 from . import teams  # noqa
+from . import lists  # noqa

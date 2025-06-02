@@ -6,7 +6,7 @@
 
 ### New in this release
 
-- 
+- SharePoint scanner supports scanning of SharePoint Lists.
 
 ### General improvements
 

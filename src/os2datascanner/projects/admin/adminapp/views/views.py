@@ -29,7 +29,11 @@ from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.gmail import GmailScanner
 from ..models.scannerjobs.sbsysscanner import SbsysScanner
 from ..models.scannerjobs.msgraph import (
-        MSGraphFileScanner, MSGraphMailScanner, MSGraphCalendarScanner, MSGraphTeamsFileScanner)
+    MSGraphFileScanner,
+    MSGraphMailScanner,
+    MSGraphCalendarScanner,
+    MSGraphTeamsFileScanner,
+    MSGraphSharepointScanner)
 from ..models.scannerjobs.webscanner import WebScanner
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 
@@ -186,6 +190,7 @@ class DialogSuccess(TemplateView):
         'msgraphmailscanners': MSGraphMailScanner,
         'msgraphcalendarscanners': MSGraphCalendarScanner,
         'msgraphteamsfilescanners': MSGraphTeamsFileScanner,
+        'msgraphsharepointscanners': MSGraphSharepointScanner,
         'googledrivescanners': GoogleDriveScanner,
         'gmailscanners': GmailScanner,
         'sbsysscanners': SbsysScanner,

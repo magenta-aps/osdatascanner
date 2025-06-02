@@ -14,6 +14,7 @@
 
 from django.forms import ModelChoiceField
 from django.views import View
+from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.grants.views import MSGraphGrantRequestView
@@ -371,7 +372,7 @@ class MSGraphSharepointScannerCreate(View):
     def dispatch(self, request, *args, **kwargs):
         user = UserWrapper(request.user)
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
-            handler = _MSGraphMailScannerCreate.as_view()
+            handler = _MSGraphSharepointScannerCreate.as_view()
         else:
             handler = MSGraphGrantRequestView.as_view(
                     redirect_token="msgraphsharepointscanner_add")
@@ -388,6 +389,15 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        if data.get("scan_lists") or data.get("scan_drives"):
+            pass
+        else:
+            form.add_error("scan_lists", _("You must choose to scan drives, lists or both!"))
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 class MSGraphSharepointCopy(GrantMixin, ScannerCopy):
@@ -410,3 +420,10 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        if not (data.get("scan_lists") or data.get("scan_drives")):
+            form.add_error("scan_lists", _("You must choose to scan drives, lists, or both!"))
+            return self.form_invalid(form)
+        return super().form_valid(form)
