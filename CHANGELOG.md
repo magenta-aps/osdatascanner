@@ -28,6 +28,8 @@
 - Both the weekly overview and the leader overview csv-export now only includes users matches that
   are owned by their organization.
 
+- Fixed a bug where the two 'Include'-checkboxes would get entangled after a refresh (Firefox).
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"

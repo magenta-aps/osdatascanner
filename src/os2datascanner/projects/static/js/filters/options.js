@@ -95,12 +95,6 @@ function setDistributeSelectEvent() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  setDropdownEvent();
-  setCheckEvents();
-  setDistributeSelectEvent();
-});
-
 htmx.onLoad(function () {
   // When content is loaded with HTMX, reinstantiate dropdown and checkbox code
   setDropdownEvent();
