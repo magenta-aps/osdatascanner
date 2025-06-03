@@ -1919,6 +1919,9 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       &.expand-row {
         /* Wider width if there's a caret to expand more content for the row. */
         width: 12.25rem; // 196px
+        &.false-positive {
+          width: 14.125rem; // 226px
+        }
       }
 
       width: 10rem; // 160px

@@ -127,9 +127,9 @@ class ReportView(LoginRequiredMixin, ListView):
         context["renderable_rules"] = RENDERABLE_RULES
 
         # We do this at the request of a customer to change the structure of resolution choices.
-        resolution_choices_order = [3, 2, 4, 1, 0]
-        context["resolution_choices"] = [DocumentReport.ResolutionChoices.choices[i]
-                                         for i in resolution_choices_order]
+        choices = DocumentReport.ResolutionChoices.choices
+        context["resolution_choices"] = [choices[i] for i in [3, 2, 1, 0]]  # No False Positive
+        context["mass_resolution_choices"] = [choices[i] for i in [3, 2, 4, 1, 0]]  # Has FP
 
         self.add_form_context(context)
 
