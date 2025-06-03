@@ -6,6 +6,8 @@
 
 ### New in this release
 
+- The Django version has been bumped to 5.2.
+
 - SharePoint scanner supports scanning of SharePoint Lists.
 
 ### General improvements
@@ -29,6 +31,8 @@
   are owned by their organization.
 
 - Fixed a bug where the two 'Include'-checkboxes would get entangled after a refresh (Firefox).
+
+- Users can now log out of the admin and report modules.
 
 ## Version 3.29.0, 21st May 2025
 
