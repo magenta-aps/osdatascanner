@@ -1,6 +1,7 @@
 import json
 
 from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
@@ -11,6 +12,10 @@ from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 
 
 class GmailScanner(Scanner):
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_GMAILSCAN
 
     def validate_filetype_json(upload_file):
         extension = upload_file.name.split('.')[-1]

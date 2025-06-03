@@ -259,7 +259,6 @@ msgid "files"
 msgstr "filer"
 
 #: adminapp/models/scannerjobs/dropboxscanner.py
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Dropbox scanner"
 msgstr "Dropboxscanner"
 
@@ -296,7 +295,6 @@ msgstr "mailbeskeder"
 
 #: adminapp/models/scannerjobs/exchangescanner.py
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Exchange scanner"
 msgstr "Exchangescanner"
 
@@ -339,7 +337,6 @@ msgstr "UNC skal følge UNC-format"
 
 #: adminapp/models/scannerjobs/filescanner.py
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "File scanner"
 msgstr "Filscanner"
 
@@ -353,13 +350,11 @@ msgstr "Scan vedhæftede filer"
 
 #: adminapp/models/scannerjobs/gmail.py
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Gmail scanner"
 msgstr "Gmailscanner"
 
 #: adminapp/models/scannerjobs/googledrivescanner.py
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Google Drive scanner"
 msgstr "Google Drive scanner"
 
@@ -380,12 +375,12 @@ msgid "Include emails in the syncissues folder"
 msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
 #: adminapp/models/scannerjobs/msgraph.py
-msgid "MSGraph mail scanner"
-msgstr "MSGraph mailscanner"
+msgid "Microsoft 365 mail scanner"
+msgstr "Microsoft 365 mailscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
-msgid "MSGraph file scanner"
-msgstr "MSGraph filscanner"
+msgid "Microsoft 365 file scanner"
+msgstr "Microsoft 365 filscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
@@ -398,8 +393,8 @@ msgid "appointments"
 msgstr "begivenheder"
 
 #: adminapp/models/scannerjobs/msgraph.py
-msgid "MSGraph calendar scanner"
-msgstr "MSGraph kalenderscanner"
+msgid "Microsoft 365 calendar scanner"
+msgstr "Microsoft 365 kalenderscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 #: adminapp/models/scannerjobs/webscanner.py
@@ -407,8 +402,8 @@ msgid "check dead links"
 msgstr "tjek døde links"
 
 #: adminapp/models/scannerjobs/msgraph.py
-msgid "MSGraph Teams file scanner"
-msgstr "MSGraph Teams filscanner"
+msgid "Microsoft 365 Teams file scanner"
+msgstr "Microsoft 365 Teams filscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "scan lists"
@@ -431,8 +426,8 @@ msgid "objects"
 msgstr "objekter"
 
 #: adminapp/models/scannerjobs/msgraph.py
-msgid "MSGraph SharePoint scanner"
-msgstr "MSGraph SharePoint scanner"
+msgid "Microsoft 365 SharePoint scanner"
+msgstr "Microsoft 365 SharePoint-scanner"
 
 #: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
@@ -446,7 +441,6 @@ msgstr "sager"
 
 #: adminapp/models/scannerjobs/sbsysscanner.py
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "SBSYS scanner"
 msgstr "SBSYS-scanner"
 
@@ -740,7 +734,6 @@ msgstr "sider"
 
 #: adminapp/models/scannerjobs/webscanner.py
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Web scanner"
 msgstr "Webscanner"
 
@@ -1064,12 +1057,10 @@ msgid "Scannerjob"
 msgstr "Scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 mail scanner"
 msgstr "Office 365 mailscanner"
 
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 OneDrive file scanner"
 msgstr "Office 365 OneDrive filscanner"
 
@@ -1078,12 +1069,10 @@ msgid "Office 365 calendar scanner"
 msgstr "Office 365 kalenderscanner"
 
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 Teams file scanner"
 msgstr "Office 365 Teams filscanner"
 
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Office 365 SharePoint scanner"
 msgstr "Office 365 SharePoint scanner"
 
@@ -1304,10 +1293,6 @@ msgstr "Håndbog"
 #: adminapp/templates/components/user/user.html
 msgid "Logout"
 msgstr "Log ud"
-
-#: adminapp/templates/components/navigation/scanner_tabs.html
-msgid "Office 365 Calendar scanner"
-msgstr "Office 365 Kalenderscanner"
 
 #: adminapp/templates/components/navigation/scanner_tabs.html
 msgid "Removed scanners"

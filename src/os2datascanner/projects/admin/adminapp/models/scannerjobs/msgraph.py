@@ -17,6 +17,7 @@ import structlog
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
+from django.conf import settings
 
 from os2datascanner.engine2.model.msgraph.mail import (MSGraphMailSource, MSGraphMailAccountSource,
                                                        MSGraphMailAccountHandle)
@@ -72,6 +73,11 @@ class MSGraphScanner(Scanner):
 
 
 class MSGraphMailScanner(MSGraphScanner):
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_MSGRAPH_MAILSCAN
+
     scan_deleted_items_folder = models.BooleanField(
         default=False,
         verbose_name=_('Scan deleted items folder'),
@@ -129,10 +135,15 @@ class MSGraphMailScanner(MSGraphScanner):
             return []
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph mail scanner")
+        verbose_name = _("Microsoft 365 mail scanner")
 
 
 class MSGraphFileScanner(MSGraphScanner):
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_MSGRAPH_FILESCAN
+
     scan_site_drives = models.BooleanField(
             default=True, verbose_name='Scan alle SharePoint-mapper')
     scan_user_drives = models.BooleanField(
@@ -173,11 +184,15 @@ class MSGraphFileScanner(MSGraphScanner):
     object_name_plural = pgettext_lazy("unit of scan", "files")
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph file scanner")
+        verbose_name = _("Microsoft 365 file scanner")
 
 
 class MSGraphCalendarScanner(MSGraphScanner):
     """Model for MSGraphCalendarSource."""
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_MSGRAPH_CALENDARSCAN
 
     @staticmethod
     def get_type():
@@ -202,10 +217,14 @@ class MSGraphCalendarScanner(MSGraphScanner):
     object_name_plural = pgettext_lazy("unit of scan", "appointments")
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph calendar scanner")
+        verbose_name = _("Microsoft 365 calendar scanner")
 
 
 class MSGraphTeamsFileScanner(MSGraphScanner):
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_MSGRAPH_TEAMS_FILESCAN
 
     linkable = True
 
@@ -231,10 +250,14 @@ class MSGraphTeamsFileScanner(MSGraphScanner):
     object_name_plural = pgettext_lazy("unit of scan", "files")
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph Teams file scanner")
+        verbose_name = _("Microsoft 365 Teams file scanner")
 
 
 class MSGraphSharepointScanner(MSGraphScanner):
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_MSGRAPH_SHAREPOINTSCAN
 
     scan_lists = models.BooleanField(
         default=False,
@@ -269,4 +292,4 @@ class MSGraphSharepointScanner(MSGraphScanner):
                     user_drives=False)
 
     class Meta(MSGraphScanner.Meta):
-        verbose_name = _("MSGraph SharePoint scanner")
+        verbose_name = _("Microsoft 365 SharePoint scanner")

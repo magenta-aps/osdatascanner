@@ -34,6 +34,10 @@ logger = structlog.get_logger("adminapp")
 class WebScanner(Scanner):
     """Web scanner for scanning websites."""
 
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_WEBSCAN
+
     url = models.CharField(max_length=2048, blank=False, verbose_name='URL')
 
     linkable = True
