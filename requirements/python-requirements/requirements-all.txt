@@ -55,7 +55,7 @@ defusedxml==0.7.1
     #   -r requirements-all.in
     #   exchangelib
     #   odfpy
-django==4.2.21
+django==5.2.1
     # via
     #   -r requirements-all.in
     #   django-debug-toolbar
@@ -69,7 +69,7 @@ django==4.2.21
     #   djangorestframework
     #   drf-extra-fields
     #   mozilla-django-oidc
-django-debug-toolbar==3.7.0
+django-debug-toolbar==5.2.0
     # via -r requirements-all.in
 django-extensions==3.2.1
     # via -r requirements-all.in
@@ -79,7 +79,7 @@ django-js-asset==2.0.0
     # via django-mptt
 django-model-utils==4.2.0
     # via -r requirements-all.in
-django-mptt==0.14.0
+django-mptt==0.17.0
     # via -r requirements-all.in
 django-prometheus==2.2.0
     # via -r requirements-all.in

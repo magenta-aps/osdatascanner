@@ -179,7 +179,7 @@ Build API:
       alias: datasynth
       variables:
         DATASYNTH_HOST: "datasynth"
-    - postgres:12
+    - postgres:16
     - rabbitmq:3.8-alpine
     - name: magentaaps/samba-test:master
       alias: samba
@@ -239,7 +239,7 @@ Integration Test Admin Application:
       variables:
        DATASYNTH_HOST: "datasynth"
     - rabbitmq:3.8-alpine
-    - postgres:12
+    - postgres:16
     - name: magentaaps/samba-test:master
       alias: samba
     - name: ${ENGINE_IMAGE}
@@ -337,7 +337,7 @@ Benchmark Test Engine:
   needs:
     - Build Engine
   services:
-    - postgres:12
+    - postgres:16
     - rabbitmq:3.8-alpine
   variables:
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
@@ -361,7 +361,7 @@ Performance Test:
       variables:
        DATASYNTH_HOST: "datasynth"
     - rabbitmq:3.8-alpine
-    - postgres:12
+    - postgres:16
     - name: magentaaps/samba-test:master
       alias: samba
     - name: ${ENGINE_IMAGE}
@@ -447,7 +447,7 @@ Integration Test Report Application:
       variables:
         DATASYNTH_HOST: "datasynth"
     - rabbitmq:3.8-alpine
-    - postgres:12
+    - postgres:16
     - name: ${API_IMAGE}
       alias: api_server
   variables:
