@@ -133,7 +133,7 @@ class MSGraphMailAccountHandle(Handle):
 
     @property
     def presentation_place(self):
-        return "Office 365"
+        return "Microsoft 365"
 
     @property
     def sort_key(self):

@@ -186,7 +186,20 @@ class TestRevalidationScannerViews:
 class TestScannerViewsMethods:
 
     @pytest.mark.parametrize('enabled_scanners', [
+        (False, False, False, False, False, False, False, False, False, False, False),
         (True, False, False, False, False, False, False, False, False, False, False),
+        (False, True, False, False, False, False, False, False, False, False, False),
+        (False, False, True, False, False, False, False, False, False, False, False),
+        (False, False, False, True, False, False, False, False, False, False, False),
+        (False, False, False, False, True, False, False, False, False, False, False),
+        (False, False, False, False, False, True, False, False, False, False, False),
+        (False, False, False, False, False, False, True, False, False, False, False),
+        (False, False, False, False, False, False, False, True, False, False, False),
+        (False, False, False, False, False, False, False, False, True, False, False),
+        (False, False, False, False, False, False, False, False, False, True, False),
+        (False, False, False, False, False, False, False, False, False, False, True),
+        (True, True, True, True, True, True, True, True, True, True, True),
+
     ])
     def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings):
         models = [

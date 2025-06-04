@@ -65,7 +65,7 @@ class ScannerList(RestrictedListView):
         context = super().get_context_data(**kwargs)
         context["add_scanner_url"] = self.model.get_create_url()
         context = self.add_scanner_tabs(context)
-        context["active_tab"] = self.type
+        context["active_tab"] = self.model.get_type()
         return context
 
     def add_scanner_tabs(self, context):

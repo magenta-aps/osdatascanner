@@ -84,7 +84,7 @@ class MSGraphCalendarAccountHandle(Handle):
 
     @property
     def presentation_place(self):
-        return "Office 365"
+        return "Microsoft 365"
 
     def guess_type(self):
         return DUMMY_MIME

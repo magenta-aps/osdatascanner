@@ -91,7 +91,7 @@ def find_scan_type(type_label):
         case "smbc" | "dropbox" | "googledrive":
             return _("File")
         case "msgraph-files":
-            return _("Office 365 File")
+            return _("Microsoft 365 File")
         case "msgraph-teams-files":
             return _("MS Teams file")
         case "ews":
@@ -99,11 +99,11 @@ def find_scan_type(type_label):
         case "gmail":
             return _("Gmail")
         case "msgraph-mail" | "msgraph-mail-account":
-            return _("Office 365 Mail")
+            return _("Microsoft 365 Mail")
         case "web":
             return _("Web")
         case "msgraph-calendar":
-            return _("Office 365 Calendar")
+            return _("Microsoft 365 Calendar")
         case "msgraph-lists":
             return _("MS SharePoint List")
         case _:
