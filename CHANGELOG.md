@@ -34,6 +34,9 @@
 
 - Users can now log out of the admin and report modules.
 
+- Password reset now uses email from Account objects in the report module (still User in admin), 
+  and emails sent now properly use custom template.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"

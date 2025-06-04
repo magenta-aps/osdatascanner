@@ -23,6 +23,7 @@ from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
 from .views.manual_views import ManualMainView
 from .views.support_views import SupportButtonView
+from os2datascanner.projects.shared.views import CustomPasswordResetView
 
 reports_patterns = [
     # Pages related to unhandled reports:
@@ -140,7 +141,7 @@ def setup_username_password_login_urls(**extra_context):
                                    ),
                                name='password_change_done'))
     urlpatterns.append(re_path(r'^accounts/password_reset/$',
-                               auth_views.PasswordResetView.as_view(
+                               CustomPasswordResetView.as_view(
                                    template_name='components/password/password_reset_form.html',
                                    ),
                                name='password_reset'))

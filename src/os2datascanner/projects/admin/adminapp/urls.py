@@ -22,6 +22,7 @@ from django.views.generic.base import TemplateView
 from os2datascanner import __version__, __commit__, __tag__, __branch__
 from os2datascanner.projects.admin.adminapp.views.analysis_views import (AnalysisPageView,
                                                                          AnalysisJobRunView)
+from os2datascanner.projects.shared.views import CustomPasswordResetView
 
 from os2datascanner.projects.admin import settings
 
@@ -125,7 +126,7 @@ urlpatterns = [
             ),
             name='password_change_done'),
     re_path(r'^accounts/password_reset/$',
-            django.contrib.auth.views.PasswordResetView.as_view(
+            CustomPasswordResetView.as_view(
                 template_name='components/password/password_reset_form.html',
             ),
             name='password_reset'),
