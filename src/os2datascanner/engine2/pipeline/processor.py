@@ -6,7 +6,7 @@ from ..utilities.backoff import TimeoutRetrier
 from ..conversions import convert
 from ..conversions.types import OutputType, encode_dict
 from . import messages
-
+from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 logger = structlog.get_logger("processor")
 
 
@@ -77,6 +77,20 @@ def message_received_raw(body, channel, source_manager, *, _check=True):  # noqa
             return
 
         resource = conversion.handle.follow(source_manager)
+
+        if isinstance(conversion.progress.rule.split()[0], EmailHeaderRule):
+            current_type = resource.compute_type()
+            if not current_type == "message/rfc822":
+                logger.warning(
+                    "Processor asked to convert non-email message for EmailHeaderRule!",
+                    current_type=current_type
+                )
+                for handle in resource.handle.walk_up():
+                    if handle.guess_type() == "message/rfc822":
+                        logger.info("Walked up hierarchy and reassigned resource!")
+                        resource = handle.follow(source_manager)
+                else:
+                    logger.warning("Found no message/rfc822 in hierarchy!")
 
         representation = None
         if (required in (OutputType.Text, OutputType.MRZ,)
