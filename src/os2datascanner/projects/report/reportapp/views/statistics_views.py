@@ -27,7 +27,7 @@ from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic import TemplateView, DetailView, ListView, RedirectView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
@@ -519,6 +519,17 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         return rows
 
 
+class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.user.account.is_unit_manager or self.request.user.is_superuser:
+            return reverse_lazy("statistics-leader-units")
+        elif self.request.user.account.is_account_manager:
+            return reverse_lazy("statistics-leader-accounts")
+        else:
+            raise PermissionDenied("You are not a manager!")
+
+
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     template_name = "leader_statistics_template.html"
     paginator_class = EmptyPagePaginator
@@ -528,17 +539,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if self.request.GET.get("view_all", False):
-            self.descendant_units = self.user_units.get_descendants(include_self=True)
-            positions = Position.employees.filter(unit__in=self.descendant_units)
-            qs = qs.filter(positions__in=positions).distinct()
-        elif self.org_unit:
-            self.descendant_units = self.org_unit.get_descendants(include_self=True)
-            positions = Position.employees.filter(unit__in=self.descendant_units)
-            qs = qs.filter(positions__in=positions).distinct()
-        else:
-            self.descendant_units = OrganizationalUnit.objects.none()
-            qs = Account.objects.none()
+
+        qs = self.get_base_queryset(qs)
 
         if search_field := self.request.GET.get('search_field', None):
             qs = qs.filter(
@@ -560,13 +562,14 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user_units'] = self.user_units.filter(hidden=False)
-        context["org_unit"] = self.org_unit
         context["employee_count"] = self.employee_count
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
         context['retention_days'] = self.org.retention_days
+        context['is_account_manager'] = self.request.user.account.is_account_manager
+        context['is_unit_manager'] = self.request.user.account.is_unit_manager or \
+            self.request.user.is_superuser
 
         # Determine number of columns from context
         num_cols = 4 + context['show_retention_column'] + self.request.user.has_perm(
@@ -595,6 +598,57 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         return qs
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if not request.user.is_superuser and not request.user.account.is_manager:
+                return HttpResponseForbidden(
+                    "Only managers and superusers have access to this page.")
+        self.org = request.user.account.organization
+        return super(LeaderStatisticsPageView, self).dispatch(
+            request, *args, **kwargs)
+
+
+class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
+
+    def get_base_queryset(self, qs):
+        managed_accounts = self.request.user.account.managed_accounts.values_list("pk")
+        qs = qs.filter(pk__in=managed_accounts)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["active_tab"] = "accounts"
+        context["view_url"] = reverse_lazy("statistics-leader-accounts")
+        context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
+        return context
+
+
+class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
+
+    def get_base_queryset(self, qs):
+        if self.request.GET.get("view_all", False):
+            self.descendant_units = self.user_units.get_descendants(include_self=True)
+            positions = Position.employees.filter(unit__in=self.descendant_units)
+            qs = qs.filter(positions__in=positions).distinct()
+        elif self.org_unit:
+            self.descendant_units = self.org_unit.get_descendants(include_self=True)
+            positions = Position.employees.filter(unit__in=self.descendant_units)
+            qs = qs.filter(positions__in=positions).distinct()
+        else:
+            self.descendant_units = OrganizationalUnit.objects.none()
+            qs = Account.objects.none()
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["active_tab"] = "units"
+        context['user_units'] = self.user_units.filter(hidden=False)
+        context["org_unit"] = self.org_unit
+        context["view_url"] = reverse_lazy("statistics-leader-units")
+        context["export_url"] = reverse_lazy("statistics-leader-units-export")
+        return context
+
     def set_user_units_and_org_unit(self, request):
         if self.request.user.is_superuser:
             self.user_units = OrganizationalUnit.objects.all().order_by("name")
@@ -612,17 +666,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         return response
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if not request.user.is_superuser and not request.user.account.is_manager:
-                return HttpResponseForbidden(
-                    "Only managers and superusers have access to this page.")
-        self.org = request.user.account.organization
-        return super(LeaderStatisticsPageView, self).dispatch(
-            request, *args, **kwargs)
 
-
-class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
+class LeaderStatisticsCSVMixin(CSVExportMixin):
     columns = [
         {
             'name': 'first_name',
@@ -650,11 +695,6 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
             'type': CSVExportMixin.ColumnType.FUNCTION,
             'function': lambda acc: StatusChoices(acc.handle_status).label,
         },
-        {
-            'name': 'unit_list',
-            'label': _("Organizational units"),
-            'type': CSVExportMixin.ColumnType.FIELD,
-        },
     ]
     exported_filename = 'os2datascanner_leaderpage_statistics'
 
@@ -663,25 +703,8 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
         # The user can always sort the data themselves in their own spreadsheet editor
         return qs
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.annotate(
-            unit_list=Coalesce(
-                StringAgg(
-                    'units__name',
-                    delimiter=', ',
-                    ordering='units__name',
-                    output_field=CharField(),
-                    filter=Q(units__in=self.descendant_units),
-                    distinct=True,
-                ),
-                Value('')
-            )
-        )
-        return qs
-
     def add_conditional_colums(self, request):
-        self.columns = LeaderStatisticsCSVView.columns
+        self.columns = LeaderStatisticsCSVMixin.columns
         if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
             self.columns = self.columns + [{
                 'name': 'withheld',
@@ -700,9 +723,45 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
     def get(self, request, *args, **kwargs):
         if not settings.LEADER_CSV_EXPORT:
             raise PermissionDenied
-        self.set_user_units_and_org_unit(request)
         response = super().get(request, *args, **kwargs)
         return response
+
+
+class LeaderAccountsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderAccountsStatisticsPageView):
+    pass
+
+
+class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisticsPageView):
+
+    def __init__(self, *args, **kwargs):
+        self.columns = self.columns + [
+            {
+                'name': 'unit_list',
+                'label': _("Organizational units"),
+                'type': CSVExportMixin.ColumnType.FIELD,
+            },
+        ]
+
+    def get(self, request, *args, **kwargs):
+        self.set_user_units_and_org_unit(request)
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.annotate(
+            unit_list=Coalesce(
+                StringAgg(
+                    'units__name',
+                    delimiter=', ',
+                    ordering='units__name',
+                    output_field=CharField(),
+                    filter=Q(units__in=self.descendant_units),
+                    distinct=True,
+                ),
+                Value('')
+            )
+        )
+        return qs
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):

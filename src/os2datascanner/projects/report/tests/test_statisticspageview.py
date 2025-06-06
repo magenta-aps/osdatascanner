@@ -441,12 +441,12 @@ class TestLeaderStatisticsPageView:
     # Helper functions
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
-        request = rf.get(reverse('statistics-leader') + params)
+        request = rf.get(reverse('statistics-leader-units') + params)
         request.user = account.user
         return LeaderStatisticsPageView.as_view()(request, **kwargs)
 
     def get_leader_statistics_csv_response(self, rf, account, params='', **kwargs):
-        request = rf.get(reverse('statistics-leader-export') + params)
+        request = rf.get(reverse('statistics-leader-units-export') + params)
         request.user = account.user
         return LeaderStatisticsCSVView.as_view()(request, **kwargs)
 
