@@ -12,7 +12,7 @@
   <h1 class="userprofile-text">{% trans "Account" %}</h1>
 
   <div class="userprofile-content-wrapper user-image">
-    <span class="user__avatar_verybig">{% include "components/account_image.html" with account=account %}</span>
+    <span class="user__avatar_verybig">{% include "components/decoration/account_image.html" with account=account %}</span>
   </div>
 
   <div class="userprofile-content-wrapper user-tables">
@@ -37,6 +37,12 @@
             {% if account.organization %}{{ account.organization }}{% endif %}
           </td>
         </tr>
+        {% if account.manager %}
+          <tr>
+            <td>{% trans "Manager" %}</td>
+            <td>{% include "components/containers/account_box.html" with account=account.manager link=True %}</td>
+          </tr>
+        {% endif %}
         {% if account.is_manager %}
           <tr>
             <td>{% trans "Manager for" %}</td>

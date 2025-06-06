@@ -1,0 +1,19 @@
+.link_box {
+  display: flex;
+  align-items: center;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-default);
+  padding: 0.3rem 0.7rem;
+  margin: 0;
+  cursor: default;
+
+  // Remove default <a>-styling
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+a.link_box:hover {
+  cursor: pointer;
+  background-color: var(--color-primary-lightest);
+}
