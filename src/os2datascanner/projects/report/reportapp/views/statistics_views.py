@@ -36,6 +36,7 @@ from ..models.documentreport import DocumentReport
 from ...organizations.models.account import Account, StatusChoices
 from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
+from .....core_organizational_structure.models.organization import LeaderTabConfigChoices
 from ....utils.view_mixins import CSVExportMixin
 from .report_views import EmptyPagePaginator
 
@@ -522,12 +523,13 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
 class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        if self.request.user.account.is_unit_manager or self.request.user.is_superuser:
+        org = self.request.user.account.organization
+        if org.leadertab_config in [LeaderTabConfigChoices.UNITS, LeaderTabConfigChoices.BOTH]:
             return reverse_lazy("statistics-leader-units")
-        elif self.request.user.account.is_account_manager:
+        elif org.leadertab_config == LeaderTabConfigChoices.ACCOUNTS:
             return reverse_lazy("statistics-leader-accounts")
         else:
-            raise PermissionDenied("You are not a manager!")
+            raise PermissionDenied(f"An incorrect setting was found on the organization {org}!")
 
 
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
@@ -567,9 +569,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
         context['retention_days'] = self.org.retention_days
-        context['is_account_manager'] = self.request.user.account.is_account_manager
-        context['is_unit_manager'] = self.request.user.account.is_unit_manager or \
-            self.request.user.is_superuser
+        context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
 
         # Determine number of columns from context
         num_cols = 4 + context['show_retention_column'] + self.request.user.has_perm(
@@ -622,6 +622,14 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
         return context
 
+    def get(self, request, *args, **kwargs):
+        org = request.user.account.organization
+        if org.leadertab_config not in [LeaderTabConfigChoices.ACCOUNTS,
+                                        LeaderTabConfigChoices.BOTH]:
+            return redirect(reverse_lazy("statistics-leader"))
+        else:
+            return super().get(request, *args, **kwargs)
+
 
 class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
 
@@ -661,10 +669,15 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
             self.org_unit = self.user_units.first() or None
 
     def get(self, request, *args, **kwargs):
-        self.set_user_units_and_org_unit(request)
-        response = super().get(request, *args, **kwargs)
+        org = request.user.account.organization
+        if org.leadertab_config not in [LeaderTabConfigChoices.UNITS,
+                                        LeaderTabConfigChoices.BOTH]:
+            return redirect(reverse_lazy("statistics-leader"))
+        else:
+            self.set_user_units_and_org_unit(request)
+            response = super().get(request, *args, **kwargs)
 
-        return response
+            return response
 
 
 class LeaderStatisticsCSVMixin(CSVExportMixin):

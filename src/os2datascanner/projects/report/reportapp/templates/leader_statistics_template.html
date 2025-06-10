@@ -6,7 +6,7 @@
 
 {% block body %}
   <div class="content content--maxwidth" hx-push-url="true">
-    {% if is_unit_manager and is_account_manager %}
+    {% if show_leader_tabs %}
       {% include "components/navigation/leader-statistics-tabs.html" with active_tab=active_tab %}
     {% endif %}
     <div class="content-header">

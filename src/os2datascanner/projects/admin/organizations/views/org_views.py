@@ -119,7 +119,8 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
         'email_notification_schedule',
         'synchronization_time',
         'retention_policy',
-        'retention_days']
+        'retention_days',
+        'leadertab_config']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
