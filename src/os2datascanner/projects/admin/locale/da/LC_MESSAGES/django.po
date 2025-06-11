@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-02 13:27+0200\n"
+"POT-Creation-Date: 2025-06-11 14:14+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1058,8 +1058,8 @@ msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 #: adminapp/templates/components/common/breadcrumb.html
 #: adminapp/templates/components/navigation/navigation.html
 #: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanner/scanner_list_base.html
 #: adminapp/templates/components/scanstatus/scan_status_table.html
-#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
 msgid "Scannerjob"
 msgstr "Scannerjob"
 
@@ -1237,8 +1237,9 @@ msgid "Name the rule and choose which organization the rule should belong to"
 msgstr "Navngiv reglen og vælg hvilken organisation reglen skal tilhøre"
 
 #: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
-#: adminapp/templates/removed_scanners.html adminapp/templates/rules.html
-#: adminapp/templates/scanners.html adminapp/templates/system_rules.html
+#: adminapp/templates/components/scanner/active_scanners_table.html
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+#: adminapp/templates/rules.html adminapp/templates/system_rules.html
 #: organizations/templates/organizations/account_detail.html
 #: organizations/templates/organizations/account_list.html
 msgid "Name"
@@ -1491,6 +1492,134 @@ msgstr ""
 "Bemærk, at regelændringer ikke vil påvirke tidligere scannede objekter "
 "medmindre der køres et fuldt scan."
 
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "URL"
+msgstr "URL"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Drive"
+msgstr "Drev"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Validation"
+msgstr "Validering"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Next scan"
+msgstr "Næste scan"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+#: adminapp/templates/rules.html
+msgid "Action"
+msgstr "Handling"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+#: adminapp/templates/rules.html
+msgid "Edit"
+msgstr "Redigér"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid ""
+"The following users are no longer covered by this scannerjob, but have been "
+"scanned previously:"
+msgstr ""
+"Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
+"blevet scannet:"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Stale accounts"
+msgstr "Frakoblede konti"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Validation status for this scanner job has been set to"
+msgstr "Valideringstatus for dette scannerjob er blevet indstillet til"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Valid"
+msgstr "Gyldig"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Invalid"
+msgstr "Ugyldig"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Next scan will run the"
+msgstr "Næste scan vil køre den"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "There are currently no scans scheduled for this scanner job"
+msgstr "Der er i øjeblikket ingen planlagte scan for dette scannerjob"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Not scheduled"
+msgstr "Ikke planlagt"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Run scanner job"
+msgstr "Kør scannerjob"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Edit scanner job"
+msgstr "Redigér scannerjob"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "Copy scanner job"
+msgstr "Kopiér scannerjob"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid ""
+"Remove scanner job. This does not delete the scanner's scanning history."
+msgstr "Fjern scannerjob. Dette sletter ikke scannerens scanningshistorik."
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+msgid "Do you really want to delete this scanner?"
+msgstr "Er du sikker på, at du vil slette denne scanner?"
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+#: adminapp/templates/rules.html
+msgid "The action cannot be reversed"
+msgstr "Handlingen kan ikke fortrydes."
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+msgid ""
+"Delete scanner job. The scannerjob and the related scanning history will be "
+"permanently deleted."
+msgstr ""
+"Slet scannerjobbet. Scannerjobbet og den relaterede scanningshistorik bliver "
+"permanent slettet."
+
+#: adminapp/templates/components/scanner/active_scanners_table.html
+msgid "No scannerjob added"
+msgstr "Der er ikke tilføjet nogen scannerjob"
+
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+msgid "Type"
+msgstr "Type"
+
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+msgid "Last scan"
+msgstr "Sidste scan"
+
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+#: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/error_log.html
+#: organizations/templates/organizations/grants_list.html
+#: organizations/templates/organizations/org_table.html
+msgid "Actions"
+msgstr "Handlinger"
+
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+msgid "Recreate scanner job."
+msgstr "Genskab scannerjob"
+
+#: adminapp/templates/components/scanner/removed_scanners_table.html
+msgid "No removed scanners found"
+msgstr "Ingen fjernede scannere fundet"
+
 #: adminapp/templates/components/scanner/scan_completed.html
 msgid "Delete all"
 msgstr "Slet alle"
@@ -1540,14 +1669,6 @@ msgstr ""
 "Status for givent job og en indikation på dets køretid. Vær opmærksom på at "
 "køretider ikke nødvendigvis er fuldstændigt akkurate. Der inkluderes ikke "
 "nødvendigvis tid brugt i udforskningsfasen. Køretider vises uden spildtid."
-
-#: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
-#: adminapp/templates/error_log.html adminapp/templates/removed_scanners.html
-#: organizations/templates/organizations/grants_list.html
-#: organizations/templates/organizations/org_table.html
-msgid "Actions"
-msgstr "Handlinger"
 
 #: adminapp/templates/components/scanner/scan_completed.html
 msgid "Select result"
@@ -1849,6 +1970,10 @@ msgstr ""
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "The scanner will start at the following time for the selected days:"
 msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
+
+#: adminapp/templates/components/scanner/scanner_list_base.html
+msgid "Search for scanner"
+msgstr "Søg efter scanner"
 
 #: adminapp/templates/components/scanner/scanner_no_client_credentials.html
 msgid ""
@@ -2280,43 +2405,6 @@ msgstr "Scanresultat"
 msgid "(none yet)"
 msgstr "(endnu ingen)"
 
-#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
-msgid "Search for scanner"
-msgstr "Søg efter scanner"
-
-#: adminapp/templates/removed_scanners.html
-msgid "Type"
-msgstr "Type"
-
-#: adminapp/templates/removed_scanners.html
-msgid "Last scan"
-msgstr "Sidste scan"
-
-#: adminapp/templates/removed_scanners.html
-msgid "Recreate scanner job."
-msgstr "Genskab scannerjob"
-
-#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
-msgid "Do you really want to delete this scanner?"
-msgstr "Er du sikker på, at du vil slette denne scanner?"
-
-#: adminapp/templates/removed_scanners.html adminapp/templates/rules.html
-#: adminapp/templates/scanners.html
-msgid "The action cannot be reversed"
-msgstr "Handlingen kan ikke fortrydes."
-
-#: adminapp/templates/removed_scanners.html adminapp/templates/scanners.html
-msgid ""
-"Delete scanner job. The scannerjob and the related scanning history will be "
-"permanently deleted."
-msgstr ""
-"Slet scannerjobbet. Scannerjobbet og den relaterede scanningshistorik bliver "
-"permanent slettet."
-
-#: adminapp/templates/removed_scanners.html
-msgid "No removed scanners found"
-msgstr "Ingen fjernede scannere fundet"
-
 #: adminapp/templates/rules.html
 msgid "Add rule"
 msgstr "Tilføj regel"
@@ -2333,14 +2421,6 @@ msgstr "Beskrivelse"
 #: adminapp/templates/rules.html adminapp/templates/system_rules.html
 msgid "Sensitivity"
 msgstr "Følsomhed"
-
-#: adminapp/templates/rules.html adminapp/templates/scanners.html
-msgid "Action"
-msgstr "Handling"
-
-#: adminapp/templates/rules.html adminapp/templates/scanners.html
-msgid "Edit"
-msgstr "Redigér"
 
 #: adminapp/templates/rules.html
 msgid "Do you really want to delete this rule?"
@@ -2374,79 +2454,6 @@ msgstr "Handlingen kan ikke fortrydes."
 #: adminapp/templates/scanners.html
 msgid "Add scannerjob"
 msgstr "Tilføj scannerjob"
-
-#: adminapp/templates/scanners.html
-msgid "URL"
-msgstr "URL"
-
-#: adminapp/templates/scanners.html
-msgid "Drive"
-msgstr "Drev"
-
-#: adminapp/templates/scanners.html
-msgid "Validation"
-msgstr "Validering"
-
-#: adminapp/templates/scanners.html
-msgid "Next scan"
-msgstr "Næste scan"
-
-#: adminapp/templates/scanners.html
-msgid ""
-"The following users are no longer covered by this scannerjob, but have been "
-"scanned previously:"
-msgstr ""
-"Følgende brugere er ikke længere tilknyttet scannerjobbet, men er tidligere "
-"blevet scannet:"
-
-#: adminapp/templates/scanners.html
-msgid "Stale accounts"
-msgstr "Frakoblede konti"
-
-#: adminapp/templates/scanners.html
-msgid "Validation status for this scanner job has been set to"
-msgstr "Valideringstatus for dette scannerjob er blevet indstillet til"
-
-#: adminapp/templates/scanners.html
-msgid "Valid"
-msgstr "Gyldig"
-
-#: adminapp/templates/scanners.html
-msgid "Invalid"
-msgstr "Ugyldig"
-
-#: adminapp/templates/scanners.html
-msgid "Next scan will run the"
-msgstr "Næste scan vil køre den"
-
-#: adminapp/templates/scanners.html
-msgid "There are currently no scans scheduled for this scanner job"
-msgstr "Der er i øjeblikket ingen planlagte scan for dette scannerjob"
-
-#: adminapp/templates/scanners.html
-msgid "Not scheduled"
-msgstr "Ikke planlagt"
-
-#: adminapp/templates/scanners.html
-msgid "Run scanner job"
-msgstr "Kør scannerjob"
-
-#: adminapp/templates/scanners.html
-msgid "Edit scanner job"
-msgstr "Redigér scannerjob"
-
-#: adminapp/templates/scanners.html
-msgid "Copy scanner job"
-msgstr "Kopiér scannerjob"
-
-#: adminapp/templates/scanners.html
-msgid ""
-"Remove scanner job. This does not delete the scanner's scanning history."
-msgstr "Fjern scannerjob. Dette sletter ikke scannerens scanningshistorik."
-
-#: adminapp/templates/scanners.html
-msgid "No scannerjob added"
-msgstr "Der er ikke tilføjet nogen scannerjob"
 
 #: adminapp/templates/system_rules.html organizations/admin.py
 msgid "System rules"

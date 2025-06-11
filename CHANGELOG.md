@@ -17,6 +17,8 @@
 
 - Handling results as False Positive now has its own button for ease of use.
 
+- Slightly refactored active and removed scannerjob templates.
+
 ### Bugfixes
 
 - Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 
