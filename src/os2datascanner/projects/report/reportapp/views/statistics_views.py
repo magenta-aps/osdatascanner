@@ -539,6 +539,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     model = Account
     context_object_name = "employees"
 
+    def get_base_queryset(self, qs):
+        """Override this in children classes"""
+        return qs
+
     def get_queryset(self):
         qs = super().get_queryset()
 
@@ -717,9 +721,9 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         return qs
 
     def add_conditional_colums(self, request):
-        self.columns = LeaderStatisticsCSVMixin.columns
+        columns = [c for c in self.columns]
         if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
-            self.columns = self.columns + [{
+            columns = columns + [{
                 'name': 'withheld',
                 'label': _("Withheld matches"),
                 'type': CSVExportMixin.ColumnType.FIELD,
@@ -727,11 +731,12 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
 
         if self.org.retention_policy:
             # Don't use '.append()' to avoid shallow copies
-            self.columns = self.columns + [{
+            columns = columns + [{
                     'name': 'old',
                     'label': _("Results older than %(days)s days") % {"days": self.org.retention_days},  # noqa
                     'type': CSVExportMixin.ColumnType.FIELD,
                 }]
+        self.columns = columns
 
     def get(self, request, *args, **kwargs):
         if not settings.LEADER_CSV_EXPORT:
@@ -745,6 +750,34 @@ class LeaderAccountsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderAccountsSt
 
 
 class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisticsPageView):
+    columns = [
+        {
+            'name': 'first_name',
+            'label': _("First name"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'last_name',
+            'label': _("Last name"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'username',
+            'label': _("Username"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'unhandled_matches',
+            'label': _("Matches"),
+            'type': CSVExportMixin.ColumnType.FIELD,
+        },
+        {
+            'name': 'handle_status',
+            'label': _("Status"),
+            'type': CSVExportMixin.ColumnType.FUNCTION,
+            'function': lambda acc: StatusChoices(acc.handle_status).label,
+        },
+    ]
 
     def __init__(self, *args, **kwargs):
         self.columns = self.columns + [
@@ -754,6 +787,7 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
                 'type': CSVExportMixin.ColumnType.FIELD,
             },
         ]
+        return super().__init__(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.set_user_units_and_org_unit(request)

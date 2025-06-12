@@ -17,8 +17,10 @@ from os2datascanner.projects.report.organizations.models.aliases import Alias, A
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.statistics_views import (
-        UserStatisticsPageView, LeaderStatisticsPageView, LeaderStatisticsCSVView,
-        DPOStatisticsPageView, DPOStatisticsCSVView)
+        UserStatisticsPageView, LeaderUnitsStatisticsPageView, LeaderUnitsStatisticsCSVView,
+        DPOStatisticsPageView, DPOStatisticsCSVView, LeaderAccountsStatisticsCSVView,
+        LeaderAccountsStatisticsPageView)
+from ....core_organizational_structure.models.organization import LeaderTabConfigChoices
 
 
 @pytest.fixture(autouse=True)
@@ -96,7 +98,214 @@ class TestUserStatisticsPageView:
 
 
 @pytest.mark.django_db
-class TestLeaderStatisticsPageView:
+class TestLeaderAccountsStatisticsPageView:
+
+    def test_leader_statisticspage_as_manager(self, rf, egon_account, benny_account):
+        """A user who is a manager for another user should
+        be able to access the leader overview page."""
+
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        egon_account.refresh_from_db()
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        assert response.status_code == 200
+
+    def test_leader_statisticspage_as_superuser(self, superuser_account, rf):
+        """A superuser should be able to access the leader overview page."""
+
+        response = self.get_leader_statisticspage_response(rf, superuser_account)
+
+        assert response.status_code == 200
+
+    def test_leader_statisticspage_with_no_privileges(self, egon_account, rf):
+        """A user with no privileges should not be able to access the leader
+        overview page."""
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        assert response.status_code == 403
+
+    def test_leader_export_as_manager(self, rf, egon_account, benny_account):
+        """A user who is a manager for another user should
+        be able to export leader data."""
+
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        egon_account.refresh_from_db()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+
+        assert response.status_code == 200
+
+    def test_leader_export_as_superuser(self, superuser_account, rf):
+        """A superuser should be able to export leader data."""
+
+        response = self.get_leader_statistics_csv_response(rf, superuser_account)
+
+        assert response.status_code == 200
+
+    def test_leader_export_with_no_privileges(self, egon_account, rf):
+        """A user with no privileges should not be able to export leader data."""
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+
+        assert response.status_code == 403
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_old_matches_column_enabled(
+            self,
+            egon_account,
+            benny_account,
+            kjeld_account,
+            olsenbanden_organization,
+            rf):
+        """When org.retention_policy is True, Old matches should appear as a column."""
+        benny_account.manager = egon_account
+        benny_account.save()
+        kjeld_account.manager = egon_account
+        kjeld_account.save()
+
+        egon_account.refresh_from_db()
+
+        olsenbanden_organization.retention_policy = True
+        olsenbanden_organization.save()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        retention_days = olsenbanden_organization.retention_days
+        assert f"Results older than {retention_days} days" in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_old_matches_column_disabled(
+            self,
+            egon_account,
+            benny_account,
+            kjeld_account,
+            olsenbanden_organization,
+            rf):
+        """When org.retention_policy is False, Old matches should not appear as a column."""
+        benny_account.manager = egon_account
+        benny_account.save()
+        kjeld_account.manager = egon_account
+        kjeld_account.save()
+
+        egon_account.refresh_from_db()
+
+        olsenbanden_organization.retention_policy = False
+        olsenbanden_organization.save()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        retention_days = olsenbanden_organization.retention_days
+        assert f"Results older than {retention_days} days" not in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_status_bad(
+            self,
+            egon_account,
+            kjeld_account,
+            kjeld_email_alias,
+            rf):
+        """A user with status BAD, should have the string 'Not accepted' in their status column."""
+        create_reports_for(kjeld_email_alias)
+        kjeld_account.manager = egon_account
+        kjeld_account.save()
+
+        egon_account.refresh_from_db()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert rows[0]['Status'] == "Not accepted"
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_status_completed(
+            self,
+            egon_account,
+            kjeld_account,
+            rf):
+        """A user with status GOOD, should have the string 'Completed' in their status column."""
+        kjeld_account.manager = egon_account
+        kjeld_account.save()
+
+        egon_account.refresh_from_db()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        rows = list(csv.DictReader(line.decode() for line in response.streaming_content))
+        # Ignore everyone, but Kjeld
+        rows = [row for row in rows if row['First name'] == "Kjeld"]
+
+        assert len(rows) == 1
+        assert rows[0]['Status'] == "Completed"
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_without_withheld_matches_permission(
+            self,
+            egon_account,
+            benny_account,
+            rf):
+        """When a user doesn't have the permission to see withheld results,
+        Withheld matches shouldn't appear as a column."""
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Withheld matches" not in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_with_withheld_matches_permission(
+            self,
+            egon_account,
+            benny_account,
+            rf):
+        """When a user does have the permission to see withheld results,
+        Withheld matches should appear as a column."""
+        benny_account.manager = egon_account
+        benny_account.save()
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="see_withheld_documentreport"))
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Withheld matches" in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_withheld_matches_superuser(
+            self,
+            superuser_account,
+            rf):
+        """When a superuser exports leader data, Withheld matches should appear as a column."""
+        response = self.get_leader_statistics_csv_response(rf, superuser_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Withheld matches" in reader.fieldnames
+
+    # Helper functions
+    def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
+        request = rf.get(reverse('statistics-leader-accounts') + params)
+        request.user = account.user
+        return LeaderAccountsStatisticsPageView.as_view()(request, **kwargs)
+
+    def get_leader_statistics_csv_response(self, rf, account, params='', **kwargs):
+        request = rf.get(reverse('statistics-leader-accounts-export') + params)
+        request.user = account.user
+        return LeaderAccountsStatisticsCSVView.as_view()(request, **kwargs)
+
+
+@pytest.mark.django_db
+class TestLeaderUnitsStatisticsPageView:
 
     def test_leader_statisticspage_as_manager(self, rf, egon_account, egon_manager_position):
         """A user with a 'manager'-position to an organizational unit should
@@ -438,17 +647,31 @@ class TestLeaderStatisticsPageView:
 
         assert "Withheld matches" in reader.fieldnames
 
+    def test_organization_tab_settings_units(self, client, superuser_account,
+                                             olsenbanden_organization):
+        """If only account-unit manager relations are enabled in the organization settings,
+        only the /units-URL should be accessible."""
+        olsenbanden_organization.leadertab_config = LeaderTabConfigChoices.UNITS
+        olsenbanden_organization.save()
+
+        client.force_login(superuser_account.user)
+        unit_response = client.get(reverse("statistics-leader-units"))
+        account_response = client.get(reverse("statistics-leader-accounts"))
+
+        assert unit_response.status_code == 200
+        assert account_response.status_code == 302
+
     # Helper functions
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-leader-units') + params)
         request.user = account.user
-        return LeaderStatisticsPageView.as_view()(request, **kwargs)
+        return LeaderUnitsStatisticsPageView.as_view()(request, **kwargs)
 
     def get_leader_statistics_csv_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-leader-units-export') + params)
         request.user = account.user
-        return LeaderStatisticsCSVView.as_view()(request, **kwargs)
+        return LeaderUnitsStatisticsCSVView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db

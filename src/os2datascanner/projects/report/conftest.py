@@ -8,6 +8,7 @@ from os2datascanner.projects.report.organizations.models.organizational_unit imp
 from os2datascanner.projects.report.organizations.models.position import Position
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
+from os2datascanner.core_organizational_structure.models.organization import LeaderTabConfigChoices
 
 
 @pytest.fixture
@@ -16,6 +17,7 @@ def olsenbanden_organization():
       name="Olsen-banden",
       dpo_name="Egon Olsen",
       dpo_value="egon@olsenbanden.dk",
+      leadertab_config=LeaderTabConfigChoices.BOTH,
       # For backwards compatibility
       retention_policy=True,
       retention_days=30

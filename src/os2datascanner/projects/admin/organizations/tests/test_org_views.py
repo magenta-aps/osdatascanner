@@ -6,7 +6,8 @@ from django.urls import reverse_lazy
 from ..models import Organization, Position, OrganizationalUnit
 
 from os2datascanner.core_organizational_structure.models.organization import (
-    StatisticsPageConfigChoices, DPOContactChoices, SupportContactChoices, OutlookCategorizeChoices)
+    StatisticsPageConfigChoices, DPOContactChoices, SupportContactChoices, OutlookCategorizeChoices,
+    LeaderTabConfigChoices, SBSYSTabConfigChoices)
 
 
 @pytest.mark.django_db
@@ -247,6 +248,8 @@ class TestUpdateOrganizationViews:
             'outlook_delete_email_permission': False,
             'onedrive_delete_permission': False,
             'synchronization_time': "17:00",
+            'leadertab_config': LeaderTabConfigChoices.BOTH,
+            'sbsystab_access': SBSYSTabConfigChoices.NONE
         })
 
         success_url = reverse_lazy('organization-list')
@@ -307,6 +310,8 @@ class TestUpdateOrganizationViews:
             'outlook_delete_email_permission': False,
             'onedrive_delete_permission': False,
             'synchronization_time': "17:00",
+            'leadertab_config': LeaderTabConfigChoices.BOTH,
+            'sbsystab_access': SBSYSTabConfigChoices.NONE
         })
 
         assert response.status_code == 403
@@ -333,6 +338,8 @@ class TestUpdateOrganizationViews:
             'outlook_delete_email_permission': False,
             'onedrive_delete_permission': False,
             'synchronization_time': "17:00",
+            'leadertab_config': LeaderTabConfigChoices.BOTH,
+            'sbsystab_access': SBSYSTabConfigChoices.NONE
         })
 
         success_url = reverse_lazy('organization-list')
