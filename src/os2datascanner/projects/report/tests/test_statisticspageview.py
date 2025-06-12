@@ -7,6 +7,7 @@ from django.test import override_settings
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
+from django.contrib.auth.models import Permission
 
 from os2datascanner.projects.report.organizations.models.organizational_unit import (
     OrganizationalUnit)
@@ -396,6 +397,46 @@ class TestLeaderStatisticsPageView:
 
         assert len(rows) == 1
         assert rows[0]['Status'] == "Completed"
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_without_withheld_matches_permission(
+            self,
+            egon_account,
+            egon_manager_position,
+            rf):
+        """When a user doesn't have the permission to see withheld results,
+        Withheld matches shouldn't appear as a column."""
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Withheld matches" not in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_with_withheld_matches_permission(
+            self,
+            egon_account,
+            egon_manager_position,
+            rf):
+        """When a user does have the permission to see withheld results,
+        Withheld matches should appear as a column."""
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="see_withheld_documentreport"))
+
+        response = self.get_leader_statistics_csv_response(rf, egon_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Withheld matches" in reader.fieldnames
+
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    def test_leader_csv_withheld_matches_superuser(
+            self,
+            superuser_account,
+            rf):
+        """When a superuser exports leader data, Withheld matches should appear as a column."""
+        response = self.get_leader_statistics_csv_response(rf, superuser_account)
+        reader = csv.DictReader(line.decode() for line in response.streaming_content)
+
+        assert "Withheld matches" in reader.fieldnames
 
     # Helper functions
 

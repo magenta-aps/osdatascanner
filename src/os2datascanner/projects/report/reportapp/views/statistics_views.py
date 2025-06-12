@@ -645,11 +645,6 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
             'type': CSVExportMixin.ColumnType.FIELD,
         },
         {
-            'name': 'withheld',
-            'label': _("Withheld matches"),
-            'type': CSVExportMixin.ColumnType.FIELD,
-        },
-        {
             'name': 'handle_status',
             'label': _("Status"),
             'type': CSVExportMixin.ColumnType.FUNCTION,
@@ -687,6 +682,13 @@ class LeaderStatisticsCSVView(CSVExportMixin, LeaderStatisticsPageView):
 
     def add_conditional_colums(self, request):
         self.columns = LeaderStatisticsCSVView.columns
+        if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
+            self.columns = self.columns + [{
+                'name': 'withheld',
+                'label': _("Withheld matches"),
+                'type': CSVExportMixin.ColumnType.FIELD,
+            }]
+
         if self.org.retention_policy:
             # Don't use '.append()' to avoid shallow copies
             self.columns = self.columns + [{
