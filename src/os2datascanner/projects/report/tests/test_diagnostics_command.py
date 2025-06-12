@@ -1,6 +1,6 @@
 import pytest
 import re
-import mock
+from unittest import mock
 
 from django.core.management import call_command
 from django.conf import settings
@@ -144,9 +144,6 @@ class TestDiagnosticsReportCommand:
         olsenbanden_organization.outlook_categorize_email_permission = \
             OutlookCategorizeChoices.ORG_LEVEL
         olsenbanden_organization.save()
-
-        def new_populate_setting(self):
-            pass
 
         # The accounts already do not have any categories.
         # Make one for Benny and two for Egon.

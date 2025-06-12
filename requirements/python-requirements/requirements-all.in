@@ -68,7 +68,6 @@ termplotlib
 # Test
 coverage
 unittest-xml-reporting
-mock
 
 # Django
 ipython
