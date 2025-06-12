@@ -1,0 +1,73 @@
+{% extends "components/common/base.html" %}
+{% load static %}
+{% load i18n %}
+
+
+
+{% block scripts %}
+  <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
+  <script src="{% static '3rdparty/htmx.min.js' %}"></script>
+  <script src="{% static 'js/index.js' %}"></script>
+  <script src="{% static 'js/scannerjob/cleanupAccounts.js' %}"></script>
+{% endblock scripts %}
+
+{% block body %}
+  {% include "components/common/header.html" %}
+  <main class="wrapper">
+    {% include "components/common/main.html" with active_tab="home" %}
+
+    <div class="content">
+      {% include "components/navigation/scanner_tabs.html" with page="scannerjob" %}
+
+      <div class="content-header">
+        <div class="aside">
+          <h1 class="page-title">{% trans "Scannerjob" %}</h1>
+
+          <div id="scanner_search_field" class="search_field_wrapper">
+            <input type="search"
+                   name="search_field"
+                   id="search_field"
+                   placeholder="{% trans "Search for scanner" %}"
+                   value="{{ request.GET.search_field }}"
+                   autocomplete="off"
+                   hx-get="{{ request.path }}"
+                   hx-target=".search-target"
+                   hx-select=".search-target"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-trigger="keyup delay:200ms, search"
+                   hx-include="#scanner_search_field" />
+          </div>
+          {% block aside_extra %}{% endblock %}
+        </div>
+      </div>
+
+      {% include "components/feedback/snackbarNew.html" %}
+
+      {% block scanner_table %}{# Overridden in extending templates #}{% endblock %}
+    </div>
+
+
+  </main>
+{% endblock %}
+
+{% block modal %}
+
+  <div class="modal"
+       id="run-scanner-modal"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="run-scanner-modal-title"
+       aria-hidden="true">
+    <iframe src="about:blank" frameborder="0"></iframe>
+  </div>
+
+  <div class="cleanup modal"
+       id="cleanup-accounts-modal"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="cleanup-accounts-modal-title"
+       aria-hidden="true">
+    <iframe src="about:blank" frameborder="0"></iframe>
+  </div>
+{% endblock modal %}

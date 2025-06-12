@@ -1,0 +1,103 @@
+{% load i18n %}
+{% load humanize %}
+
+<div class="datatablex__card-container search-target">
+  <div class="datatablex__wrapper">
+    <table class="datatablex scannerjob-table">
+      <thead>
+        <tr class="datatablex__row">
+          <th class="column column--name">{% trans "Name" %}</th>
+
+          <th class="column column--type">{% trans "Type" %}</th>
+
+          <th class="column column--automatic">{% trans "Last scan" %}</th>
+
+          <th class="column column--actions">{% trans "Actions" %}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% if scanner_list %}
+          {% for scanner in scanner_list %}
+            <tr class="datatablex__row" tabindex="0">
+              <td class="domain-url column column--name">
+                <div class="name__container">
+                  <span>{{ scanner.name }}</span>
+
+                  {% if perms.core.view_client %}
+                    <span class="scanner-organization name__org">({{ scanner.organization }})</span>
+                  {% endif %}
+                </div>
+              </td>
+
+              <td class="column column--type">
+                <div class="type__container">
+                  <span>{{ scanner.verbose_name }}</span>
+                </div>
+              </td>
+
+              <td class="scanner-runtime column column--automatic">
+                <div class="date__container">
+                  <span>{{ scanner.get_last_successful_run_at|naturaltime }}</span>
+                </div>
+              </td>
+
+              <td class="scanner-actions column column--actions">
+                <div class="action-wrapper button-group">
+
+                  {% if perms.os2datascanner.unhide_scanner %}
+                    {% comment %}
+                            We should use HTMX here I think, then we can just use
+                            _one_ button element.
+                    {% endcomment %}
+                    {% comment %}
+                            Can we avoid the inline styling on this element?
+                    {% endcomment %}
+                    <form action="{% url "recreate_scanner" scanner.pk %}"
+                          method="post"
+                          style="display: inline-block">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="button button--icon-button button--datatable-actions"
+                              aria-label="{% trans "Recreate scanner job." %}"
+                              title="{% trans "Recreate scanner job." %}">
+                        <span class="material-symbols-outlined">history</span>
+                      </button>
+                    </form>
+                  {% endif %}
+
+                  {% if perms.os2datascanner.delete_scanner and not scanner.scans %}
+                    {% comment %}
+                            We should use HTMX here I think, then we can just use
+                            _one_ button element.
+                    {% endcomment %}
+                    {% comment %}
+                            Can we avoid the inline styling on this element?
+                    {% endcomment %}
+                    <form action="{% url "delete_removed_scanner" scanner.pk %}"
+                          method="post"
+                          style="display: inline-block">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="button button--icon-button button--datatable-actions"
+                              onclick="return confirm(`{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "The action cannot be reversed" %}`)"
+                              aria-label="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}"
+                              title="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}">
+                        <i id="delete_forever" class="material-symbols">delete_forever</i>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr class="datatablex__row">
+            <td colspan="5" class="datatable__column--nodata">{% trans "No removed scanners found" %}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
