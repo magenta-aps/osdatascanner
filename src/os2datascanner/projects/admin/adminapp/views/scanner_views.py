@@ -178,6 +178,8 @@ class ScannerBase(object):
 
         selected_org = orgs.get(pk=self.request.GET.get('organization', orgs.only("pk").first().pk))
 
+        context["scanner_model"] = self.model
+
         if self.object:
             context["remediators"] = self.object.get_remediators()
         context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(

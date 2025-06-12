@@ -19,6 +19,9 @@
 
 - Slightly refactored active and removed scannerjob templates.
 
+- Names of scanners on tabs on scanner page in the admin module updated.
+  "Office 365" have become "Microsoft 365".
+
 ### Bugfixes
 
 - Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 
