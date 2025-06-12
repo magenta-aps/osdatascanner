@@ -19,12 +19,12 @@ logger = structlog.get_logger("reportapp")
 
 
 def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR001
-    # Try to get credentials, prefer GraphGrant if available (but prefer an
-    # EWSGrant /with/ a password over a GraphGrant /without/ a client secret)
+    # Try to get credentials, prefer EWSGrant if available (but prefer an
+    # GraphGrant /with/ a client secret over a EWSGrant /without/ a password)
     grant: GraphGrant | EWSGrant | None = None
 
-    for candidate in GraphGrant.objects.filter(organization=org):
-        if candidate.client_secret:
+    for candidate in EWSGrant.objects.filter(organization=org):
+        if candidate.password:
             if grant:
                 return (False, "too many credentials available")
             else:
@@ -35,8 +35,8 @@ def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR
                     candidate=candidate)
 
     if not grant:
-        for candidate in EWSGrant.objects.filter(organization=org):
-            if candidate.password:
+        for candidate in GraphGrant.objects.filter(organization=org):
+            if candidate.client_secret:
                 if grant:
                     return (False, "too many credentials available")
                 else:

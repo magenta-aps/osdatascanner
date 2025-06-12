@@ -123,9 +123,9 @@ class TestMatchDeletion:
             ews_grant_with_password,
             graph_grant_with_secret):
         """Given an EWSGrant with a password and a GraphGrant with a client
-        secret, we should pick the more modern GraphGrant."""
+        secret, we should pick the EWSGrant."""
         assert (find_exchange_grant(olsenbanden_organization) ==
-                (True, graph_grant_with_secret))
+                (True, ews_grant_with_password))
 
     def test_ews_grant_selection5(
             self, *,
@@ -142,7 +142,7 @@ class TestMatchDeletion:
             olsenbanden_organization,
             ews_grant_with_password,
             another_ews_grant_with_password):
-        """Given two EWSGrants with client secrets, we should give up in
+        """Given two EWSGrants with passwords, we should give up in
         paralysed indecision."""
         assert (find_exchange_grant(olsenbanden_organization) ==
                 (False, "too many credentials available"))
@@ -151,9 +151,9 @@ class TestMatchDeletion:
             self, *,
             olsenbanden_organization,
             ews_grant_with_password,
-            another_ews_grant_with_password,
-            graph_grant_with_secret):
-        """Given two EWSGrants with client secrets and a GraphGrant with a
-        client secret, we should pick the GraphGrant."""
+            graph_grant_with_secret,
+            another_graph_grant_with_secret):
+        """Given two GraphGrants with client secrets and a EWSGrant with a
+        password, we should pick the EWSGrant."""
         assert (find_exchange_grant(olsenbanden_organization) ==
-                (True, graph_grant_with_secret))
+                (True, ews_grant_with_password))
