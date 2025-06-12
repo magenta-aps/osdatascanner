@@ -696,6 +696,11 @@ class Scanner(models.Model):
     def get_delete_url(self):
         return reverse_lazy(f"{self.get_type()}scanner_delete", kwargs={"pk": self.pk})
 
+    @staticmethod
+    def enabled():
+        """Should be changed on children classes to the relevant installation setting."""
+        raise NotImplementedError("Scanner.enabled")
+
     @property
     def verbose_name(self):
         return self._meta.verbose_name

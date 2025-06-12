@@ -33,6 +33,15 @@ from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner
+from ..models.scannerjobs.filescanner import FileScanner
+from ..models.scannerjobs.webscanner import WebScanner
+from ..models.scannerjobs.exchangescanner import ExchangeScanner
+from ..models.scannerjobs.msgraph import (MSGraphFileScanner, MSGraphMailScanner,
+                                          MSGraphCalendarScanner, MSGraphTeamsFileScanner,
+                                          MSGraphSharepointScanner)
+from ..models.scannerjobs.sbsysscanner import SbsysScanner
+from ..models.scannerjobs.gmail import GmailScanner
+from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from ..models.scannerjobs.scanner_helpers import CoveredAccount
 from ..utils import CleanAccountMessage
 from ...organizations.models.aliases import AliasType
@@ -55,6 +64,19 @@ class ScannerList(RestrictedListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["add_scanner_url"] = self.model.get_create_url()
+        context = self.add_scanner_tabs(context)
+        context["active_tab"] = self.model.get_type()
+        return context
+
+    def add_scanner_tabs(self, context):
+        scanner_models = [
+            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            MSGraphTeamsFileScanner, MSGraphCalendarScanner, MSGraphSharepointScanner,
+            GoogleDriveScanner, GmailScanner, SbsysScanner
+        ]
+
+        context["scanner_tabs"] = [scanner for scanner in scanner_models if scanner.enabled()]
+
         return context
 
 
@@ -155,6 +177,8 @@ class ScannerBase(object):
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
 
         selected_org = orgs.get(pk=self.request.GET.get('organization', orgs.only("pk").first().pk))
+
+        context["scanner_model"] = self.model
 
         if self.object:
             context["remediators"] = self.object.get_remediators()
@@ -489,6 +513,8 @@ class RemovedScannersView(PermissionRequiredMixin, ScannerList):
         # scanner type. However, this view does not represent a scanner type, but rather points
         # to the base `Scanner` model. Trying to fetch the create url for `Scanner` does not work.
         context = super(ScannerList, self).get_context_data(**kwargs)
+        context = self.add_scanner_tabs(context)
+        context["active_tab"] = "removed"
         return context
 
 

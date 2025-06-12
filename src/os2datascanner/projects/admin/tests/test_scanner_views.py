@@ -6,6 +6,16 @@ from django.contrib.auth.models import Permission
 from ..adminapp.views.scanner_views import RemovedScannersView
 from ..adminapp.models.scannerjobs.scanner import Scanner
 
+from ..adminapp.models.scannerjobs.filescanner import FileScanner
+from ..adminapp.models.scannerjobs.webscanner import WebScanner
+from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
+from ..adminapp.models.scannerjobs.msgraph import (MSGraphCalendarScanner, MSGraphFileScanner,
+                                                   MSGraphMailScanner, MSGraphSharepointScanner,
+                                                   MSGraphTeamsFileScanner)
+from ..adminapp.models.scannerjobs.gmail import GmailScanner
+from ..adminapp.models.scannerjobs.googledrivescanner import GoogleDriveScanner
+from ..adminapp.models.scannerjobs.sbsysscanner import SbsysScanner
+
 
 @pytest.mark.django_db
 class TestRemovedScannerViews:
@@ -170,3 +180,43 @@ class TestRevalidationScannerViews:
         assert response.status_code == 302
 
         assert web_scanner.validation_status == 1
+
+
+@pytest.mark.django_db
+class TestScannerViewsMethods:
+
+    @pytest.mark.parametrize('enabled_scanners', [
+        (False, False, False, False, False, False, False, False, False, False, False),
+        (True, False, False, False, False, False, False, False, False, False, False),
+        (False, True, False, False, False, False, False, False, False, False, False),
+        (False, False, True, False, False, False, False, False, False, False, False),
+        (False, False, False, True, False, False, False, False, False, False, False),
+        (False, False, False, False, True, False, False, False, False, False, False),
+        (False, False, False, False, False, True, False, False, False, False, False),
+        (False, False, False, False, False, False, True, False, False, False, False),
+        (False, False, False, False, False, False, False, True, False, False, False),
+        (False, False, False, False, False, False, False, False, True, False, False),
+        (False, False, False, False, False, False, False, False, False, True, False),
+        (False, False, False, False, False, False, False, False, False, False, True),
+        (True, True, True, True, True, True, True, True, True, True, True),
+
+    ])
+    def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings):
+        models = [
+            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
+            GmailScanner, GoogleDriveScanner, SbsysScanner
+        ]
+
+        (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN, settings.ENABLE_EXCHANGESCAN,
+            settings.ENABLE_MSGRAPH_MAILSCAN, settings.ENABLE_MSGRAPH_FILESCAN,
+            settings.ENABLE_MSGRAPH_CALENDARSCAN, settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
+            settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
+            settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN) = enabled_scanners
+
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("index"))
+        scanner_tabs = response.context["scanner_tabs"]
+
+        for scanner_model, enabled in zip(models, enabled_scanners):
+            assert (scanner_model in scanner_tabs) == enabled

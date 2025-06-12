@@ -9,6 +9,10 @@ from os2datascanner.engine2.model.sbsys import SbsysSource
 class SbsysScanner(Scanner):
 
     @staticmethod
+    def enabled():
+        return settings.ENABLE_SBSYSSCAN
+
+    @staticmethod
     def get_type():
         return 'sbsys'
 

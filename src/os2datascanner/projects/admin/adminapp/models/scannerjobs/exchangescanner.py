@@ -55,6 +55,10 @@ def get_users_from_file(userlist):
 class ExchangeScanner(Scanner):
     """Scanner for Exchange Web Services accounts"""
 
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_EXCHANGESCAN
+
     mail_domain = models.CharField(max_length=2048, blank=False, verbose_name='Domain')
 
     userlist = models.FileField(

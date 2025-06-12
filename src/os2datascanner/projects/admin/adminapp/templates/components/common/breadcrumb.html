@@ -6,49 +6,7 @@
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 
-    {% if '/webscanners/' in request.path %}
-      <a href="{% url "webscanners" %}" class="link-color">{% trans "Web scanner" %}</a>
-    {% endif %}
-
-    {% if '/filescanners/' in request.path %}
-      <a href="{% url "filescanners" %}" class="link-color">{% trans "File scanner" %}</a>
-    {% endif %}
-
-    {% if '/exchangescanners/' in request.path %}
-      <a href="{% url "exchangescanners" %}" class="link-color">{% trans "Exchange scanner" %}</a>
-    {% endif %}
-
-    {% if '/msgraphmailscanners/' in request.path %}
-      <a href="{% url "msgraphmailscanners" %}" class="link-color">{% trans "Office 365 mail scanner" %}</a>
-    {% endif %}
-
-    {% if '/msgraphfilescanners/' in request.path %}
-      <a href="{% url "msgraphfilescanners" %}" class="link-color">{% trans "Office 365 OneDrive file scanner" %}</a>
-    {% endif %}
-
-    {% if '/msgraphcalendarscanners/' in request.path %}
-      <a href="{% url "msgraphcalendarscanners" %}" class="link-color">{% trans "Office 365 calendar scanner" %}</a>
-    {% endif %}
-
-    {% if '/msgraphteamsfilescanners/' in request.path %}
-      <a href="{% url "msgraphteamsfilescanners" %}" class="link-color">{% trans "Office 365 Teams file scanner" %}</a>
-    {% endif %}
- 
-    {% if '/msgraphsharepointscanners/' in request.path %}
-      <a href="{% url "msgraphsharepointscanners" %}" class="link-color">{% trans "Office 365 SharePoint scanner" %}</a>
-    {% endif %}
-
-    {% if '/googledrivescanners/' in request.path %}
-      <a href="{% url "googledrivescanners" %}" class="link-color">{% trans "Google Drive scanner" %}</a>
-    {% endif %}
-
-    {% if '/gmailscanners/' in request.path %}
-      <a href="{% url "gmailscanners" %}" class="link-color">{% trans "Gmail scanner" %}</a>
-    {% endif %}
-
-    {% if '/sbsysscanners/' in request.path %}
-      <a href="{% url "sbsysscanners" %}" class="link-color">{% trans "SBSYS scanner" %}</a>
-    {% endif %}
+    <a href="{{ scanner_model.get_absolute_url }}" class="link-color">{{ scanner_model.verbose_name }}</a>
 
     <i id="chevron_right" class="material-icons">chevron_right</i>
 

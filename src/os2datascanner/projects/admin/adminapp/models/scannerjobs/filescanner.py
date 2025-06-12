@@ -16,6 +16,7 @@
 
 import structlog
 from django.db import models
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.core.exceptions import ValidationError
 
@@ -30,6 +31,10 @@ logger = structlog.get_logger("adminapp")
 class FileScanner(Scanner):
     """File scanner for scanning network drives and folders"""
     supports_rule_preexec = True
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_FILESCAN
 
     unc = models.CharField(max_length=2048, blank=False, verbose_name='UNC')
     alias = models.CharField(

@@ -3,59 +3,15 @@
   {% if user.is_authenticated %}
     <div class="scrollbar-content">
       <div class="tabs">
-        {% if settings.ENABLE_WEBSCAN %}
-          <a id="web" class="tabs__control" href="{% url "webscanners" %}">{% trans "Web scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_FILESCAN %}
-          <a id="file" class="tabs__control" href="{% url "filescanners" %}">{% trans "File scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_EXCHANGESCAN %}
-          <a id="exchange"
-             class="tabs__control"
-             href="{% url "exchangescanners" %}">{% trans "Exchange scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_DROPBOXSCAN %}
-          <a id="dropbox" class="tabs__control" href="{% url "dropboxscanners" %}">{% trans "Dropbox scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_MSGRAPH_MAILSCAN %}
-          <a id="msgraph-mail"
-             class="tabs__control"
-             href="{% url "msgraphmailscanners" %}">{% trans "Office 365 mail scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_MSGRAPH_FILESCAN %}
-          <a id="msgraph-file"
-             class="tabs__control"
-             href="{% url "msgraphfilescanners" %}">{% trans "Office 365 OneDrive file scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_MSGRAPH_TEAMS_FILESCAN %}
-          <a id="msgraph-teams-file"
-             class="tabs__control"
-             href="{% url "msgraphteamsfilescanners" %}">{% trans "Office 365 Teams file scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_MSGRAPH_CALENDARSCAN %}
-          <a id="msgraph-calendar"
-             class="tabs__control"
-             href="{% url "msgraphcalendarscanners" %}">{% trans "Office 365 Calendar scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_MSGRAPH_SHAREPOINTSCAN %}
-          <a id="msgraph-sharepoint"
-             class="tabs__control"
-             href="{% url "msgraphsharepointscanners" %}">{% trans "Office 365 SharePoint scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_GOOGLEDRIVESCAN %}
-          <a id="googledrive"
-             class="tabs__control"
-             href="{% url "googledrivescanners" %}">{% trans "Google Drive scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_GMAILSCAN %}
-          <a id="gmail" class="tabs__control" href="{% url "gmailscanners" %}">{% trans "Gmail scanner" %}</a>
-        {% endif %}
-        {% if settings.ENABLE_SBSYSSCAN %}
-          <a id="sbsys" class="tabs__control" href="{% url "sbsysscanners" %}">{% trans "SBSYS scanner" %}</a>
-        {% endif %}
+        {% for scanner in scanner_tabs %}
+          {{ scanner.enabled_setting }}
+          <a id="{{ scanner.get_type }}"
+             class="tabs__control {% if scanner.get_type == active_tab %}active{% endif %}"
+             href="{{ scanner.get_absolute_url }}">{{ scanner.verbose_name }}</a>
+        {% endfor %}
         {% if perms.os2datascanner.view_hidden_scanner %}
           <a id="removed"
-             class="tabs__control"
+             class="tabs__control {% if active_tab == "removed" %}active{% endif %}"
              href="{% url "removed_scanners" %}">{% trans "Removed scanners" %}</a>
         {% endif %}
       </div>
@@ -87,103 +43,6 @@
 {% endif %}
 
 <script>
-    // Menu tabs
-    const web = document.getElementById("web")
-    const file = document.getElementById("file")
-    const exchange = document.getElementById("exchange")
-    const dropbox = document.getElementById("dropbox")
-    const msgraph_mail = document.getElementById("msgraph-mail")
-    const msgraph_file = document.getElementById("msgraph-file")
-    const msgraph_teams_file = document.getElementById("msgraph-teams-file")
-    const msgraph_calendar = document.getElementById("msgraph-calendar")
-    const msgraph_sharepoint = document.getElementById("msgraph-sharepoint")
-    const googledrive = document.getElementById("googledrive")
-    const gmail = document.getElementById("gmail")
-    const sbsys = document.getElementById("sbsys")
-    const removed = document.getElementById("removed")
-
-    if (location.pathname === '/') {
-        if (web) {
-            window.location.href = "/webscanners/"
-            web.classList.add('active')
-        } else if (file) {
-            window.location.href = "/filescanners/"
-            file.classList.add('active')
-        } else if (exchange) {
-            window.location.href = "/exchangescanners/"
-            exchange.classList.add('active')
-        } else if (dropbox) {
-            window.location.href = "/dropboxscanners/"
-            dropbox.classList.add('active')
-        } else if (msgraph_mail) {
-            window.location.href = "/msgraphmailscanners/"
-            msgraph_mail.classList.add('active')
-        } else if (msgraph_file) {
-            window.location.href = "/msgraphfilescanners/"
-            msgraph_file.classList.add('active')
-        } else if (msgraph_teams_file) {
-          window.location.href = "/msgraphteamsfilescanners/"
-          msgraph_teams_file.classList.add('active')
-        } else if (msgraph_calendar) {
-            window.location.href = "/msgraphcalendarscanners/"
-            msgraph_calendar.classList.add('active')
-        } else if (msgraph_sharepoint){
-            window.location.href = "/msgraphsharepointscanners/"
-            msgraph_sharepoint.classList.add('active')
-        } else if (googledrive) {
-            window.location.href = "/googledrivescanners/"
-            googledrive.classList.add('active')
-        } else if (gmail) {
-            window.location.href = "/gmailscanners/"
-            gmail.classList.add('active')
-        } else if (sbsys) {
-            window.location.href = "/sbsysscanners/"
-            sbsys.classList.add('active')
-        } else if (removed) {
-          window.location.href = "/scanners/removed/"
-          removed.classList.add('active')
-        }
-    }
-    if (location.pathname === '/webscanners/') {
-        web.classList.add('active')
-    }
-    if (location.pathname === '/filescanners/') {
-        file.classList.add("active")
-    }
-    if (location.pathname === '/exchangescanners/') {
-        exchange.classList.add("active")
-    }
-    if (location.pathname === '/dropboxscanners/') {
-        dropbox.classList.add("active")
-    }
-    if (location.pathname === '/msgraphmailscanners/') {
-        msgraph_mail.classList.add("active")
-    }
-    if (location.pathname === '/msgraphfilescanners/') {
-        msgraph_file.classList.add("active")
-    }
-    if (location.pathname === '/msgraphteamsfilescanners/') {
-      msgraph_teams_file.classList.add("active")
-    }
-    if (location.pathname === '/msgraphcalendarscanners/') {
-        msgraph_calendar.classList.add("active")
-    }
-    if (location.pathname === '/msgraphsharepointscanners/') {
-      msgraph_sharepoint.classList.add("active")
-    }
-    if (location.pathname === '/gmailscanners/') {
-        gmail.classList.add("active")
-    }
-    if (location.pathname === '/googledrivescanners/') {
-        googledrive.classList.add("active")
-    }
-    if (location.pathname === '/sbsysscanners/') {
-        sbsys.classList.add("active")
-    }
-    if (location.pathname === '/scanners/removed/') {
-      removed.classList.add("active")
-    }
-
 
     // Status tabs
     const scan_status = document.getElementById("scan-status")
