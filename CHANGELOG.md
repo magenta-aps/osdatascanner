@@ -37,6 +37,9 @@
 - Password reset now uses email from Account objects in the report module (still User in admin), 
   and emails sent now properly use custom template.
 
+- When exporting data from the Leader overview, users won't recieve the Withheld Matches column,
+  without the necessary permission.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"
