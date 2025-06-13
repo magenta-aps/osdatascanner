@@ -148,13 +148,15 @@ def merge_renderable_match_fragments(match_fragments: list):
                        if frag.rule.type_label in RENDERABLE_RULES
                        and frag.matches]
 
-    if len(match_fragments) >= 2:
-        merged_fragment = match_fragments[0]
-        merged_fragment.matches.extend(
-            match
-            for fragment in match_fragments[1:]
-            for match in fragment.matches
-        )
-        return merged_fragment
-    else:
-        return match_fragments[0]
+    match match_fragments:
+        case []:
+            return None
+        case [one]:
+            return one
+        case [first, *rest]:
+            merged_fragment = first
+            return merged_fragment.matches.extend(
+                match
+                for fragment in rest
+                for match in fragment.matches
+            )
