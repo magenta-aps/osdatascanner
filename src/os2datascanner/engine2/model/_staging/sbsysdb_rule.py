@@ -5,7 +5,7 @@ from functools import partial
 from sqlalchemy.sql.expression import func as sql_func
 from sqlalchemy.types import String
 
-from os2datascanner.engine2.rules.rule import Rule, SimpleRule
+from os2datascanner.engine2.rules.rule import Rule, SimpleRule, Sensitivity
 from os2datascanner.engine2.conversions.types import OutputType
 
 
@@ -115,4 +115,7 @@ class SBSYSDBRule(SimpleRule):
         return SBSYSDBRule(
                 obj["field"],
                 obj["operator"],
-                obj["value"])
+                obj["value"],
+
+                sensitivity=Sensitivity.make_from_dict(obj),
+                name=obj.get("name"))
