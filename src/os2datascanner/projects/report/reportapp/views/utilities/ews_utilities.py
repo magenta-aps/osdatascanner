@@ -24,19 +24,19 @@ def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR
     # unless GraphGrant is prioritized by the organization
     grant: GraphGrant | EWSGrant | None = None
 
-    def pick_grant(grant_type, credential_type):
+    def pick_grant(grant_type, credential_attr):
         for candidate in grant_type.objects.filter(organization=org):
 
             nonlocal grant
 
-            if getattr(candidate, credential_type):
+            if getattr(candidate, credential_attr):
                 if grant:
                     return (False, "too many credentials available")
                 else:
                     grant = candidate
             else:
                 logger.warning(
-                        f"skipping grant candidate with empty {credential_type}",
+                        f"skipping grant candidate with empty {credential_attr}",
                         candidate=candidate
                 )
         return True, None

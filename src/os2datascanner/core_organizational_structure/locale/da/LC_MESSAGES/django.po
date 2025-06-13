@@ -234,14 +234,14 @@ msgstr "SBSYS-fane adgang"
 
 #: models/organization.py
 msgid "Prioritize GraphGrant"
-msgstr "Prioriter GraphGrant"
+msgstr "Prioritér GraphGrant"
 
 #: models/organization.py
 msgid ""
 "prioritize a GraphGrant over an EWSGrant for exampel when using Exchange "
 "online rather than Exchange on-prem"
 msgstr ""
-"Prioritere et GraphGrant over et EWSgrant, eksempelvis ved brug af "
+"Prioritér et GraphGrant over et EWSgrant, eksempelvis ved brug af "
 "Exchange online frem for Exchange on-prem"
 
 #: models/organization.py
