@@ -44,6 +44,9 @@ def get_deviations(report: DocumentReport) -> list[str]:
     out: list[str] = []
 
     for frag in report.matches.matches:
+        if not frag.matches:
+            continue
+
         rule = frag.rule
 
         if isinstance(rule, SBSYSDBRule):
