@@ -49,7 +49,11 @@ def get_deviations(report: DocumentReport) -> list[str]:
 
         rule = frag.rule
 
-        if isinstance(rule, SBSYSDBRule):
+        if rule._name:
+            label = rule._name
+        elif isinstance(rule, SBSYSDBRule):
+            # XXX: move this and its translations to
+            # SBSYSDBRule.presentation_raw
             format_str = None
             # normalize both contains and icontains to the same label
             match rule._op:
@@ -83,9 +87,7 @@ def get_deviations(report: DocumentReport) -> list[str]:
 
             label = format_str.format(field=field_name, value=rule._value)
         else:
-            # use any user-friendly name if present
-            name = getattr(rule, "name", None) or getattr(rule, "_name", None)
-            label = name or rule.type_label
+            label = rule.presentation
 
         if label not in seen:
             seen.add(label)
