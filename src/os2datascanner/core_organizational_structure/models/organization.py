@@ -154,6 +154,14 @@ class Organization(models.Model):
         verbose_name=_("SBSYS tab access")
     )
 
+    # Grant prioritization configuration
+    prioritize_graphgrant = models.BooleanField(
+        default=False,
+        verbose_name=_("Prioritize GraphGrant"),
+        help_text=_("prioritize a GraphGrant over an EWSGrant for exampel when using"
+                    " Exchange online rather than Exchange on-prem")
+    )
+
     # Support button settings
     show_support_button = models.BooleanField(
         default=False, verbose_name=_("show support button"))

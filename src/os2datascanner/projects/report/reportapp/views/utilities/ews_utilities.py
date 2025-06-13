@@ -21,30 +21,39 @@ logger = structlog.get_logger("reportapp")
 def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR001
     # Try to get credentials, prefer EWSGrant if available (but prefer an
     # GraphGrant /with/ a client secret over a EWSGrant /without/ a password)
+    # unless GraphGrant is prioritized by the organization
     grant: GraphGrant | EWSGrant | None = None
 
-    for candidate in EWSGrant.objects.filter(organization=org):
-        if candidate.password:
-            if grant:
-                return (False, "too many credentials available")
-            else:
-                grant = candidate
-        else:
-            logger.warning(
-                    "skipping grant candidate with empty secret",
-                    candidate=candidate)
+    def pick_grant(grant_type, credential_type):
+        for candidate in grant_type.objects.filter(organization=org):
 
-    if not grant:
-        for candidate in GraphGrant.objects.filter(organization=org):
-            if candidate.client_secret:
+            nonlocal grant
+
+            if getattr(candidate, credential_type):
                 if grant:
                     return (False, "too many credentials available")
                 else:
                     grant = candidate
             else:
                 logger.warning(
-                        "skipping grant candidate with empty secret",
-                        candidate=candidate)
+                        f"skipping grant candidate with empty {credential_type}",
+                        candidate=candidate
+                )
+        return True, None
+
+    if org.prioritize_graphgrant:
+        valid, error = pick_grant(GraphGrant, "client_secret")
+        if not valid:
+            return False, error
+
+    else:
+        valid, error = pick_grant(EWSGrant, "password")
+        if not valid:
+            return False, error
+        if not grant:
+            valid, error = pick_grant(GraphGrant, "client_secret")
+            if not valid:
+                return False, error
 
     if grant:
         return (True, grant)

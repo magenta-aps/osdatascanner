@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-08 21:44+0200\n"
+"POT-Creation-Date: 2025-06-13 15:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -231,6 +231,18 @@ msgstr "DPOfane adgang"
 #: models/organization.py
 msgid "SBSYS tab access"
 msgstr "SBSYS-fane adgang"
+
+#: models/organization.py
+msgid "Prioritize GraphGrant"
+msgstr "Prioriter GraphGrant"
+
+#: models/organization.py
+msgid ""
+"prioritize a GraphGrant over an EWSGrant for exampel when using Exchange "
+"online rather than Exchange on-prem"
+msgstr ""
+"Prioritere et GraphGrant over et EWSgrant, eksempelvis ved brug af "
+"Exchange online frem for Exchange on-prem"
 
 #: models/organization.py
 msgid "show support button"

@@ -89,13 +89,29 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
     permission_required = 'organizations.change_organization'
     template_name = 'organizations/org_update.html'
     success_url = reverse_lazy('organization-list')
-    fields = ['name', 'contact_email', 'contact_phone',
-              'leadertab_access', 'dpotab_access', 'sbsystab_access', 'show_support_button',
-              'support_contact_method', 'support_name', 'support_value',
-              'dpo_contact_method', 'dpo_name', 'dpo_value',
-              'outlook_categorize_email_permission', 'outlook_delete_email_permission',
-              'onedrive_delete_permission', 'email_header_banner', 'email_notification_schedule',
-              'synchronization_time', 'retention_policy', 'retention_days']
+    fields = [
+        'name',
+        'contact_email',
+        'contact_phone',
+        'leadertab_access',
+        'dpotab_access',
+        'sbsystab_access',
+        'prioritize_graphgrant',
+        'show_support_button',
+        'support_contact_method',
+        'support_name',
+        'support_value',
+        'dpo_contact_method',
+        'dpo_name',
+        'dpo_value',
+        'outlook_categorize_email_permission',
+        'outlook_delete_email_permission',
+        'onedrive_delete_permission',
+        'email_header_banner',
+        'email_notification_schedule',
+        'synchronization_time',
+        'retention_policy',
+        'retention_days']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
