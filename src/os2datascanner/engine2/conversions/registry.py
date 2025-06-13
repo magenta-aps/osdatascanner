@@ -44,3 +44,12 @@ def convert(resource, output_type, mime_override=None):
     if value is not None and not hasattr(value, 'parent'):
         value = make_navigable(value)
     return value
+
+
+def conversion_exists(resource, output_type, mime_override=None) -> bool:
+    """Indicates whether or not the registry of registered conversion functions
+    has a function that might be able to convert a Resource to the specified
+   OutputType. (This is not a guarantee that that function will succeed.)"""
+    mime_type = resource.compute_type() if not mime_override else mime_override
+    return ((output_type, mime_type) in __converters
+            or (output_type, None) in __converters)

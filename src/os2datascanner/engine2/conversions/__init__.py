@@ -1,5 +1,5 @@
 from . import registry  # noqa
-from .registry import convert  # noqa
+from .registry import convert, conversion_exists  # noqa
 
 from . import text  # noqa
 from . import fallback  # noqa

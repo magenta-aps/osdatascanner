@@ -3,10 +3,9 @@ from urllib.error import HTTPError
 from .. import settings
 from ..model.core import Source
 from ..utilities.backoff import TimeoutRetrier
-from ..conversions import convert
+from ..conversions import convert, conversion_exists
 from ..conversions.types import OutputType, encode_dict
 from . import messages
-from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 logger = structlog.get_logger("processor")
 
 
@@ -48,125 +47,159 @@ def format_exception_message(ex: Exception, conversion: messages.ConversionMessa
     return exception_message
 
 
-def message_received_raw(body, channel, source_manager, *, _check=True):  # noqa: CCR001,E501,C901
-    conversion = messages.ConversionMessage.from_json_object(body)
-    configuration = conversion.scan_spec.configuration
-    head, _, _ = conversion.progress.rule.split()
-    required = head.operates_on
-    exception = None
+def message_received_raw(body, channel, source_manager, *, _check=True):
+    """ Reads from the python-internal conversions channel"""
 
+    conversion = messages.ConversionMessage.from_json_object(body)
     tr = TimeoutRetrier(
-            seconds=settings.pipeline["op_timeout"],
-            max_tries=settings.pipeline["op_tries"])
+        seconds=settings.pipeline["op_timeout"],
+        max_tries=settings.pipeline["op_tries"]
+    )
 
     try:
         if _check and not tr.run(check, source_manager, conversion.handle):
-            # The resource is missing (and we're in a context where we care).
-            # Generate a special problem message and stop the generator
-            # immediately
-            for problems_q in ("os2ds_problems", "os2ds_checkups",):
-                yield (problems_q, messages.ProblemMessage(
-                        scan_tag=conversion.scan_spec.scan_tag,
-                        source=None, handle=conversion.handle, missing=True,
-                        message="Resource check failed").to_json_object())
+            yield from generate_missing_resource_messages(conversion)
+            # stop the generator immediately
             return
 
         if conversion.handle not in conversion.scan_spec.source:
-            # handle point to a source outside the original scan_spec source, so
-            # do nothing
-            return
+            return  # handle points outside original scan_spec source, do nothing.
 
         resource = conversion.handle.follow(source_manager)
+        representation = do_conversion(resource, conversion, tr, source_manager)
 
-        if isinstance(conversion.progress.rule.split()[0], EmailHeaderRule):
-            current_type = resource.compute_type()
-            if not current_type == "message/rfc822":
-                logger.warning(
-                    "Processor asked to convert non-email message for EmailHeaderRule!",
-                    current_type=current_type
-                )
-                for handle in resource.handle.walk_up():
-                    if handle.guess_type() == "message/rfc822":
-                        logger.info("Walked up hierarchy and reassigned resource!")
-                        resource = handle.follow(source_manager)
-                else:
-                    logger.warning("Found no message/rfc822 in hierarchy!")
+        yield from emit_representation(conversion, representation)
 
-        representation = None
-        if (required in (OutputType.Text, OutputType.MRZ,)
-                and configuration.get("skip_mime_types")):
-            # The requested representation might represent an OCR task, and
-            # there are some OCR exceptions defined in the configuration
-            # object. Let's see if any of them are relevant
-            mime_type = resource.compute_type()
-            for mt in configuration["skip_mime_types"]:
-                if mt.endswith("*") and mime_type.startswith(mt[:-1]):
-                    # mt is a simple wildcard ("image/*") that matches the
-                    # computed MIME type of this file. Skip the conversion
-                    break
-                elif mime_type == mt:
-                    # mt matches the computed MIME type of this file exactly.
-                    # Skip the conversion
-                    break
-            else:
-                # We have no reason to skip the conversion, so try to do it
-                representation = tr.run(convert, resource, required)
-        else:
-            # This isn't an OCR task (or there are no OCR exceptions defined);
-            # just try to do the conversion
-            representation = tr.run(convert, resource, required)
-
-        if representation and getattr(representation, "parent", None):
-            # If the conversion also produced other values at the same
-            # time, then include all of those as well; they might also be
-            # useful for the rule engine
-            dv = {k.value: v for k, v in representation.parent.items()
-                  if isinstance(k, OutputType)}
-        else:
-            dv = {required.value: representation}
-
-        logger.info(f"Required representation for {conversion.handle} is {required}")
-        yield ("os2ds_representations",
-               messages.RepresentationMessage(
-                        conversion.scan_spec, conversion.handle,
-                        conversion.progress, encode_dict(dv)).to_json_object())
     except KeyError:
-        # If we have a conversion we don't support, then check if the current
-        # handle can be reinterpreted as a Source; if it can, then try again
-        # with that
-        try:
-            derived_source = Source.from_handle(conversion.handle, source_manager)
-            if derived_source:
-                # Copy almost all of the existing scan spec, but note the progress
-                # of rule execution and replace the source
-                new_scan_spec = conversion.scan_spec._replace(
-                        source=derived_source, progress=conversion.progress)
-                yield ("os2ds_scan_specs", new_scan_spec.to_json_object())
-            else:
-                # If we can't recurse any deeper, then produce an empty conversion
-                # so that the matcher stage has something to work with
-                # (XXX: is this always the right approach?)
-                yield ("os2ds_representations",
-                       messages.RepresentationMessage(
-                                conversion.scan_spec, conversion.handle,
-                                conversion.progress, {
-                                    required.value: None
-                                }).to_json_object())
-        except Exception as e:
-            exception = e
-
+        yield from handle_conversion_key_error(conversion, source_manager)
     except Exception as e:
-        exception = e
+        yield from handle_conversion_exception(conversion, e)
 
-    if exception:
-        exception_message = format_exception_message(exception, conversion)
-        logger.warning(exception_message, exc_info=exception)
 
-        for problems_q in ("os2ds_problems", "os2ds_checkups",):
-            yield (problems_q, messages.ProblemMessage(
-                    scan_tag=conversion.scan_spec.scan_tag,
-                    source=None, handle=conversion.handle,
-                    message=exception_message).to_json_object())
+def generate_missing_resource_messages(conversion):
+    # The resource is missing (and we're in a context where we care).
+    # Generate a problem message and a checkup.
+    for problems_q in ("os2ds_problems", "os2ds_checkups"):
+        yield (
+            problems_q,
+            messages.ProblemMessage(
+                scan_tag=conversion.scan_spec.scan_tag,
+                source=None,
+                handle=conversion.handle,
+                missing=True,
+                message="Resource check failed"
+            ).to_json_object()
+        )
+
+
+def do_conversion(resource, conversion, retrier, source_manager):
+    required = conversion.progress.rule.split()[0].operates_on
+    configuration = conversion.scan_spec.configuration
+    skip_mime_types = configuration.get("skip_mime_types", [])
+
+    mime_type = resource.compute_type()
+
+    # Check if we're supposed to handle images (OCR)
+    if required in (OutputType.Text, OutputType.MRZ):
+        for mt in skip_mime_types:
+            if (mt.endswith("*") and mime_type.startswith(mt[:-1])) or (mime_type == mt):
+                # mt is a simple wildcard ("image/*") that matches the
+                # computed MIME type of this file.
+                # If that, or mt matches the computed MIME type of this file exactly then ...
+                return None  # ... skip conversion
+
+    # If we have an appropriate conversion registered, go ahead.
+    if conversion_exists(resource, required):
+        return retrier.run(convert, resource, required)
+
+    else:
+        # Hm, we didn't have any appropriate conversion at hand.
+        # Maybe there's one in the parent hierarchy?
+        for handle in conversion.handle.walk_up():
+            if conversion_exists(resource := handle.follow(source_manager), required):
+                logger.info(
+                         "hierarchy rewound for conversion",
+                         original_handle=conversion.handle,
+                         rewound_handle=handle,
+                         output_type=required
+                )
+                return retrier.run(convert, resource, required)
+
+        # There wasn't any in the parent hierarchy. Let it run, raise a KeyError and be handled
+        # by the handle_conversion_key_error function. Likely we can reinterpret as a Source.
+        return retrier.run(convert, resource, required)
+
+
+def emit_representation(conversion, representation):
+    required = conversion.progress.rule.split()[0].operates_on
+
+    # If the conversion also produced other values at the same
+    # time, then include all of those as well; they might also be
+    # useful for the rule engine
+    if representation and getattr(representation, "parent", None):
+        dv = {
+            k.value: v
+            for k, v in representation.parent.items()
+            if isinstance(k, OutputType)
+        }
+    else:
+        dv = {required.value: representation}
+
+    logger.info(f"Required representation for {conversion.handle} is {required}")
+    yield (
+        "os2ds_representations",
+        messages.RepresentationMessage(
+            conversion.scan_spec,
+            conversion.handle,
+            conversion.progress,
+            encode_dict(dv)
+        ).to_json_object()
+    )
+
+
+def handle_conversion_key_error(conversion, source_manager):
+    try:
+        derived_source = Source.from_handle(conversion.handle, source_manager)
+        if derived_source:
+            new_scan_spec = conversion.scan_spec._replace(
+                source=derived_source,
+                progress=conversion.progress
+            )
+            yield (
+                "os2ds_scan_specs",
+                new_scan_spec.to_json_object()
+            )
+        else:
+            # If we can't recurse any deeper, then produce an empty conversion
+            # so that the matcher stage has something to work with
+            # (XXX: is this always the right approach?)
+            yield (
+                "os2ds_representations",
+                messages.RepresentationMessage(
+                    conversion.scan_spec,
+                    conversion.handle,
+                    conversion.progress,
+                    {conversion.progress.rule.split()[0].operates_on.value: None}
+                ).to_json_object()
+            )
+    except Exception as e:
+        yield from handle_conversion_exception(conversion, e)
+
+
+def handle_conversion_exception(conversion, exception):
+    exception_message = format_exception_message(exception, conversion)
+    logger.warning(exception_message, exc_info=exception)
+
+    for problems_q in ("os2ds_problems", "os2ds_checkups"):
+        yield (
+            problems_q,
+            messages.ProblemMessage(
+                scan_tag=conversion.scan_spec.scan_tag,
+                source=None,
+                handle=conversion.handle,
+                message=exception_message
+            ).to_json_object()
+        )
 
 
 if __name__ == "__main__":
