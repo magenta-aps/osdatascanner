@@ -50,10 +50,35 @@ def get_deviations(report: DocumentReport) -> list[str]:
         rule = frag.rule
 
         if isinstance(rule, SBSYSDBRule):
+            format_str = None
             # normalize both contains and icontains to the same label
-            op_label = _("contains")
-            label = f'{rule._field} {op_label}: "{rule._value}"'
+            match rule._op:
+                case rule.Op.EQ:
+                    format_str = _("{field} is {value!r}")
+                case rule.Op.NEQ:
+                    format_str = _("{field} is not {value!r}")
+                case rule.Op.LT:
+                    format_str = _("{field} is less than {value!r}")
+                case rule.Op.LTE:
+                    format_str = _(
+                            "{field} is less than or equal to {value!r}")
+                case rule.Op.GT:
+                    format_str = _("{field} is greater than {value!r}")
+                case rule.Op.GTE:
+                    format_str = _(
+                            "{field} is greater than"
+                            " or equal to {value!r}")
+                case rule.Op.CONTAINS | rule.Op.ICONTAINS:
+                    format_str = _(
+                            "{field} contains {value!r}")
+                case e:
+                    raise ValueError(e)
 
+            field_name = rule._field
+            if field_name == "?Age?":
+                field_name = _("number of days since last update")
+
+            label = format_str.format(field=field_name, value=rule._value)
         else:
             # use any user-friendly name if present
             name = getattr(rule, "name", None) or getattr(rule, "_name", None)
