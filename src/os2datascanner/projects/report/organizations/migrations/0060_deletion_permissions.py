@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0058_alter_alias_shared'),
+        ('organizations', '0059_grant_prioritization'),
     ]
 
     operations = [
