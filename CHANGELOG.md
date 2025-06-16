@@ -22,6 +22,8 @@
 - Names of scanners on tabs on scanner page in the admin module updated.
   "Office 365" have become "Microsoft 365".
 
+- Made prioritization between GraphGrant and EWSGrant configurable when both are present.
+
 ### Bugfixes
 
 - Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 
@@ -44,6 +46,9 @@
 
 - When exporting data from the Leader overview, users won't recieve the Withheld Matches column,
   without the necessary permission.
+
+- Default grant used to retrieve credentials for mail deletion via the report module is now 
+  EWSGrant (when present), instead of GraphGrant.
 
 ## Version 3.29.0, 21st May 2025
 

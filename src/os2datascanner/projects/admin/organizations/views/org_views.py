@@ -11,6 +11,8 @@ from os2datascanner.projects.admin.adminapp.views.views import (
     RestrictedUpdateView)
 from django.core.exceptions import PermissionDenied
 
+from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
+
 from os2datascanner.projects.admin.core.models import Client, Feature, Administrator
 from ..models.organization import Organization
 
@@ -89,16 +91,41 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
     permission_required = 'organizations.change_organization'
     template_name = 'organizations/org_update.html'
     success_url = reverse_lazy('organization-list')
-    fields = ['name', 'contact_email', 'contact_phone',
-              'leadertab_access', 'dpotab_access', 'sbsystab_access', 'show_support_button',
-              'support_contact_method', 'support_name', 'support_value',
-              'dpo_contact_method', 'dpo_name', 'dpo_value',
-              'outlook_categorize_email_permission', 'outlook_delete_email_permission',
-              'onedrive_delete_permission', 'email_header_banner', 'email_notification_schedule',
-              'synchronization_time', 'retention_policy', 'retention_days']
+    fields = [
+        'name',
+        'contact_email',
+        'contact_phone',
+        'leadertab_access',
+        'dpotab_access',
+        'sbsystab_access',
+        'prioritize_graphgrant',
+        'show_support_button',
+        'support_contact_method',
+        'support_name',
+        'support_value',
+        'dpo_contact_method',
+        'dpo_name',
+        'dpo_value',
+        'outlook_categorize_email_permission',
+        'outlook_delete_email_permission',
+        'onedrive_delete_permission',
+        'email_header_banner',
+        'email_notification_schedule',
+        'synchronization_time',
+        'retention_policy',
+        'retention_days']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+
+        organization = self.object
+
+        has_graphgrant = GraphGrant.objects.filter(organization=organization).exists()
+        has_ewsgrant = EWSGrant.objects.filter(organization=organization).exists()
+
+        # Only show prioritize_graphgrant field if both EWS- and Graph grants are present
+        if not (has_ewsgrant and has_graphgrant):
+            form.fields.pop('prioritize_graphgrant', None)
 
         # Conditionally remove the sbsystab_access field based on the setting
         if not settings.ENABLE_SBSYSSCAN:
