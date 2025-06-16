@@ -280,4 +280,5 @@ class OrganizationSerializer(BaseSerializer):
             'email_header_banner',
             'dtstart',
             'retention_policy',
-            'retention_days']
+            'retention_days',
+            'prioritize_graphgrant']
