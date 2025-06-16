@@ -20,6 +20,7 @@ SbSysNetDrift["SagsTilstandOpslag"] = [
     },
 ]
 
+
 SbSysNetDrift["SagsStatus"] = [
     {
         "ID": 1,
@@ -104,6 +105,7 @@ _HIERAKI_BASE = {
 # Misspelled in SBSYS
 SbSysNetDrift["Hieraki"] = [
     _HIERAKI_BASE | {
+        "ID": 1,
         "Navn": "Vejstrand Hierarki",
     }
 ]
@@ -118,6 +120,7 @@ _HIERAKI_MEDLEM_BASE = {
 
 SbSysNetDrift["HierakiMedlem"] = [
     _HIERAKI_MEDLEM_BASE | {
+        "ID": 1,
         "Navn": "Vejstrand Hieraki Medlem",
         "HierakiID": 1,
     }
@@ -145,11 +148,13 @@ _ADRESSE_BASE = {
 
 SbSysNetDrift["Adresse"] = [
     _ADRESSE_BASE | {
+        "ID": 1,
         "Adresse1": "Paradisæblevej",
         "PostNummer": 1000,
         "HusNummer": 13,
     },
     _ADRESSE_BASE | {
+        "ID": 2,
         "Adresse1": "Shaolin Temple",
         "Adresse2": "Dengfeng Boulevard",
         "Adresse3": "Zhengzhou",
@@ -158,6 +163,13 @@ SbSysNetDrift["Adresse"] = [
         "PostNummer": 471925,
         "HusNummer": 1,
     },
+    _ADRESSE_BASE | {
+        "ID": 25,
+        "Adresse1": "Buddingevej",
+        "Adresse2": "Vejstrand",
+        "PostNummer": "9999",
+        "HusNummer": "32",
+    }
 ]
 
 
@@ -204,6 +216,7 @@ _ANSAETTELSESSTED_BASE = {
 
 SbSysNetDrift["Ansaettelsessted"] = [
     _ANSAETTELSESSTED_BASE | {
+        "ID": 1,
         "Navn": "Vejstrand vej-afdeling",
         "PostAdresseID": 1,
         "FysiskAdresseID": 1,
@@ -219,6 +232,7 @@ _FAG_OMRAADE_BASE = {
 
 SbSysNetDrift["FagOmraade"] = [
     _FAG_OMRAADE_BASE | {
+        "ID": 1,
         "Navn": "Veje og strande",
         "FagomraadeIdentity": "B14BD0FE-C6E1-450E-942F-80CD8B6DCEE0",
     }
@@ -250,6 +264,7 @@ _BRUGER_BASE = {
 
 SbSysNetDrift["Bruger"] = [
     _BRUGER_BASE | {
+        "ID": 1,
         "LogonID": 1,
         "Navn": "Bruce Lee",
         "FagomraadeID": 1,
@@ -261,6 +276,7 @@ SbSysNetDrift["Bruger"] = [
         "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
     },
     _BRUGER_BASE | {
+        "ID": 2,
         "LogonID": 2,
         "Navn": "Jan Kowalski",
         "FagomraadeID": 1,
@@ -317,6 +333,7 @@ _SAG_BASE = {
 
 SbSysNetDrift["Sag"] = [
     _SAG_BASE | {
+        "ID": 0,
         "SagIdentity": "2B37AF33-BDFC-4C9B-B332-CAE56310E963",
         "Nummer": "06.13.01-K02-3-13",
         "Titel": "Opsætning af skilte: Skabet til Narnia",
@@ -337,6 +354,7 @@ SbSysNetDrift["Sag"] = [
         "ArkivAfklaringStatusID": 1,
     },
     _SAG_BASE | {
+        "ID": 1,
         "SagIdentity": "EE5BF8A0-D44F-4780-A76A-6E625EF312DA",
         "Nummer": "07.13.01-K02-3-13",
         "Titel": "Eiffel Tower",
@@ -354,13 +372,14 @@ SbSysNetDrift["Sag"] = [
         "ArkivAfklaringStatusID": 1,
     },
     _SAG_BASE | {
+        "ID": 2,
         "SagIdentity": "5A766711-7E0C-4085-8A8B-158ACE9EE087",
         "Nummer": "05.13.01-K02-3-13",
         "Titel": "Den Grimme Ælling",
         "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
-        "Kommentar": "En ikke-menneskelig borger har ansøgt om at få penge "
-                     "til plastikkirurgi fra kommunens pulje til borgernes "
+        "Kommentar": "En ikke-menneskelig borger har ansøgt om at få penge"
+                     " til plastikkirurgi fra kommunens pulje til borgernes"
                      " almene trivsel.",
         "SagsStatusID": 8,
         "CreatedByID": 1,
@@ -371,6 +390,7 @@ SbSysNetDrift["Sag"] = [
         "ArkivAfklaringStatusID": 1,
     },
     _SAG_BASE | {
+        "ID": 3,
         "SagIdentity": "6DB35330-CDC3-41E9-A498-67127B205BCF",
         "Nummer": "22.13.01-K02-3-13",
         "Titel": "Personfølsomme Informationer",
@@ -378,6 +398,7 @@ SbSysNetDrift["Sag"] = [
         "BehandlerID": 1,  # Reference to the "Bruger" table
         "Kommentar": "Borgeren Rebecca Testsen har bedt os om at opbevare sit"
                      " CPR-nummer (111111-1118) på sikker vis.",
+        "SagsPartID": 0,
         "SagsStatusID": 8,
         "CreatedByID": 1,
         "Created": datetime(2015, 4, 21),
@@ -386,6 +407,33 @@ SbSysNetDrift["Sag"] = [
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
     },
+]
+
+SbSysNetDrift["Person"] = [
+    {
+        "ID": 0,
+        "Initialer": "RT",
+        "CprNummer": "111111-1118",
+        "Navn": "Rebecca Testen",
+        # The production environment only has two values (0 and 1) for this
+        # tinyint field, and the docs consistently say "man or woman", so...
+        "Koen": 1,
+        "KontaktForm": 1,  # Reference to the "KontaktFormOpslag" table, but
+                           # must be less than 4(?),
+        "AdresseID": 25,
+    }
+]
+
+SbSysNetDrift["SagsPart"] = [
+    {
+        "ID": 0,
+        "SagID": 0,
+        "PartType": 1,  # Reference to the "PartTypeOpslag" table
+        "PartID": 0,  # Soft reference, here to the "Person" table
+        "SagsPartRolleID": None,
+        "OprindeligAdresseID": None,
+        "Oprettet": datetime(2020, 1, 1),
+    }
 ]
 
 # --
@@ -751,5 +799,95 @@ SbSysNetDrift["ProcessStatusOpslag"] = [
     {
         "ID": 6,
         "Navn": "Genprocesseres"
+    }
+]
+
+
+SbSysNetDrift["PartTypeOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 0,
+        "Navn": "Firma",
+    },
+    {
+        "ID": 1,
+        "Navn": "Person",
+    },
+]
+
+
+SbSysNetDrift["CivilstandOpslag"] = [
+    # Taken from the production environment (and confirmed against "Rapport om
+    # datakvaliteten i CPR", CPR-kontoret, June 2017)
+    {
+        "ID": 1,
+        "Kode": "G",
+        "Navn": "Gift",
+    },
+    {
+        "ID": 2,
+        "Kode": "P",
+        "Navn": "Registreret partnerskab"
+    },
+    {
+        "ID": 3,
+        "Kode": "F",
+        "Navn": "Fraskilt"
+    },
+    {
+        "ID": 4,
+        "Kode": "U",
+        "Navn": "Ugift"
+    },
+    {
+        "ID": 5,
+        "Kode": "D",
+        "Navn": "Død"
+    },
+    {
+        "ID": 6,
+        "Kode": "E",
+        "Navn": "Enke"
+    },
+    {
+        "ID": 7,
+        "Kode": "S",
+        "Navn": "Separeret"
+    },
+    {
+        "ID": 8,
+        "Kode": "L",
+        "Navn": "Længst levende"
+    },
+    {
+        "ID": 9,
+        "Kode": "O",
+        "Navn": "Ophævet partnerskab"
+    },
+    {
+        "ID": 10,
+        "Kode": "9",
+        "Navn": "Uoplyst civilstand"
+    }
+]
+
+
+SbSysNetDrift["KontaktFormOpslag"] = [
+    # Taken from the production environment
+    {
+        "ID": 1,
+        "Navn": "Email"
+    },
+    {
+        "ID": 2,
+        "Navn": "Brev"
+    },
+    {
+        "ID": 3,
+        "Navn": "Fax"
+    },
+    {
+        "ID": 7,
+        "Navn": "DigitalPost"
     }
 ]

@@ -397,11 +397,18 @@ class SBSYSMixin:
     exclude_types = []
 
     def get_context_data(self, **kwargs):
+        from os2datascanner.engine2.model._staging import sbsysdb  # noqa
+
         context = super().get_context_data(**kwargs)
         for report in context["page_obj"].object_list:
             report.deviations = get_deviations(report)
 
-            report.kle_number = report.matches.handle.source.handle.relative_path
+            for h in report.matches.handle.walk_up():
+                if isinstance(h, sbsysdb.SBSYSDBHandles.Case):
+                    report.kle_number = h.relative_path
+                    break
+            else:
+                report.kle_number = None
         return context
 
     def dispatch(self, request, *args, **kwargs):

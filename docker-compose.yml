@@ -32,6 +32,8 @@ services:
     depends_on:
       SBSYS_DB:
         condition: service_healthy
+    volumes:
+      - *source_code_vol
     profiles:
       - sbsys
 
