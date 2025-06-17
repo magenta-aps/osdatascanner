@@ -50,6 +50,10 @@
 - Default grant used to retrieve credentials for mail deletion via the report module is now 
   EWSGrant (when present), instead of GraphGrant.
 
+- The processor is now able to "walk up" its handles to find an appropriate candidate for
+ required conversion. As a result, it is again allowed to enable 
+ OCR and email subject scanning simultaneously.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"

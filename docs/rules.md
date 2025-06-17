@@ -377,6 +377,34 @@ impacted by this. If you reorder your rule to put cheap metadata tests at the
 start and expensive content tests at the end, that'll make sure that all of the
 metadata tests operate on the original file.
 
+#### ... unless there's no way down
+
+As of version 3.29.1, the scanner engine has a last resort mechanism that
+relaxes this constraint a bit: if it's no longer possible to recurse down, then
+the engine will check if anything higher up in the hierarchy can satisfy the
+conversion.
+
+To illustrate this, if you attempt to run the following rule against an email
+with a CPR number in one of its attachments and the subject
+`Personal information`, it will succeed:
+
+```
+AndRule.make(
+    CPRRule(),
+    MailHeaderRule("Subject", RegexRule("[Pp]ersonal")
+)
+```
+
+Even though the first `CPRRule` will cause the email to be broken down into
+plain text and attached files, losing the direct link to the email headers, the
+last resort mechanism will resolve this for you by recursing back up the
+hierarchy to inspect those headers.
+
+Where it's possible, of course, you should still write your rules to perform
+cheap metadata inspection before any of the content checks, but the scanner
+engine will now attempt to do _something_ to execute a rule that would
+otherwise be useless.
+
 ## Executing a `Rule`
 
 Let's take a real, complex rule, one that OS2datascanner might generate in a

@@ -216,12 +216,6 @@ class ScannerBase(object):
                                _("You should either choose organizational units to scan, "
                                  "or choose to scan the entire organization."))
                 return super().form_invalid(form)
-        if data.get("do_ocr", False) and data.get('scan_subject', False):
-            # XXX: We currently don't support both ocr and email header scanning.
-            form.add_error("scan_subject",
-                           _("Scanning subjects and images on the same scanner is unfortunately "
-                             "currently unavailable. Please turn off one of the options."))
-            return super().form_invalid(form)
         return super().form_valid(form)
 
 
