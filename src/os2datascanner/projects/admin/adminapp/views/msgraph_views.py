@@ -12,16 +12,19 @@
 # sector open source network <https://os2.eu/>.
 #
 
+import requests
 from django.forms import ModelChoiceField
 from django.views import View
+from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 
+from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource, make_token
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.grants.views import MSGraphGrantRequestView
 from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
-from ..models.scannerjobs.msgraph import MSGraphMailScanner
+from ..models.scannerjobs.msgraph import MSGraphMailScanner, MSGraphSharePointSite
 from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
@@ -365,6 +368,7 @@ msgraph_sharepoint_scanner_fields = [
      "graph_grant",
      "scan_drives",
      "scan_lists",
+     "sharepoint_sites"
  ]
 
 
@@ -427,3 +431,106 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
             form.add_error("scan_lists", _("You must choose to scan drives, lists, or both!"))
             return self.form_invalid(form)
         return super().form_valid(form)
+
+
+class SharePointListing(View):
+    def get(self, request):
+        grant_id = request.GET.get('grantId', None)
+        sync = request.GET.get('sync', False)
+        data = []
+
+        if grant_id and sync:
+            self._grant = GraphGrant.objects.filter(id=grant_id).first()
+
+            if self._grant:
+                data = self._sync_sites(sync)
+
+        data = MSGraphSharePointSite.objects.all().values()
+        return JsonResponse(list(data), safe=False)
+
+    def _sync_sites(self, sync):
+        with requests.Session() as session:
+            gc = MSGraphSource.GraphCaller(self._make_token, session)
+            sites = gc.paginated_get(
+                "sites/getAllSites?$select=id,name,isPersonalSite&$filter=isPersonalSite ne true")
+
+            if sync:
+                sites_list = []
+                for site in sites:
+                    site["id"] = site["id"].split(",")[1]
+                    # Sites in sharepoint don't always have a name.
+                    sites_list.append(
+                        MSGraphSharePointSite(
+                            uuid=site["id"],
+                            name=site.get(
+                                "name",
+                                _("Unnamed Site")),
+                            organization_id=self._grant.organization.uuid))
+
+                # Create newly created sites and update namechanges.
+                MSGraphSharePointSite.objects.bulk_create(
+                    sites_list,
+                    update_conflicts=True,
+                    unique_fields=["uuid"],
+                    update_fields=["name", "organization_id"]
+                )
+
+                # TODO Delete sites no longer in domain?
+
+                sites = sites_list
+
+        return sites
+
+    # def _get_all_lists(self, sync):
+    #     with requests.Session() as session:
+    #         gc = MSGraphSource.GraphCaller(self._make_token, session)
+    #         sites = gc.paginated_get("sites/getAllSites?$filter=isPersonalSite ne true")
+
+    #     # Process sites concurrently to improve performance on orgs with multiple sites.
+    #     all_data = []
+    #     # 8 workers seems okay for speed without hitting the rate limit
+    #     with ThreadPoolExecutor(max_workers=8) as executor:
+    #         futures = [executor.submit(self._process_site, site) for site in sites]
+
+    #         for future in concurrent.futures.as_completed(futures):
+    #             try:
+    #                 site_lists = future.result()
+    #                 all_data.extend(site_lists)
+    #             except Exception as e:
+    #                 print(f"Error processing site: {e}")
+
+    #     return all_data
+
+    # def _process_site(self, site):
+    #     """Process a single site and return its filtered lists"""
+    #     site_data = []
+
+    #     with requests.Session() as session:
+    #         gc = MSGraphSource.GraphCaller(self._make_token, session)
+    #         site_id = site.get("id").split(",")[1]
+    #         lists = gc.paginated_get(
+    #                       f"sites/{site_id}/lists?$select=id,name,list,createdBy,webUrl"
+    #                       )
+
+    #         for sp_list in lists:
+    #             match sp_list:
+    #                 case {"list": {"template": "documentLibrary"}}:
+    #                     # This is a SharePoint drive in disguise. Ignore it
+    #                     continue
+    #                 case {"webUrl": u} if "/_catalogs" in u or "/appcatalog" in u:
+    #                     # Catalog lists take up a lot of space and contain
+    #                     # blank templates. Ignore them
+    #                     continue
+    #                 case {"createdBy": {"user": {"displayName": "Systemkonto"}}}:
+    #                     # These aren't user created so users are unlikely
+    #                     # to want to scan these specifically
+    #                     continue
+    #                 case {"id": id, "name": name}:
+    #                     # We need the site_id later
+    #                     sp_list["site_id"] = site_id
+    #                     site_data.append(sp_list)
+
+    #     return site_data
+
+    def _make_token(self):
+        return make_token(self._grant.app_id, self._grant.tenant_id, self._grant.client_secret)

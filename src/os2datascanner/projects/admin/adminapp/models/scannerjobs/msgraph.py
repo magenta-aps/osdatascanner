@@ -283,7 +283,10 @@ class MSGraphSharepointScanner(MSGraphScanner):
             yield MSGraphListsSource(
                 client_id=str(self.graph_grant.app_id),
                 tenant_id=str(self.graph_grant.tenant_id),
-                client_secret=self.graph_grant.client_secret)
+                client_secret=self.graph_grant.client_secret,
+                sites=None
+                # lists=["095ba61f-7f12-4894-b43a-7c40ee13dc9e,e27f7f06-17c6-4b7a-ad77-ae6fb820b104"]
+                )
 
         if self.scan_drives:
             yield MSGraphFilesSource(
@@ -295,3 +298,24 @@ class MSGraphSharepointScanner(MSGraphScanner):
 
     class Meta(MSGraphScanner.Meta):
         verbose_name = _("Microsoft 365 SharePoint scanner")
+
+
+class MSGraphSharePointSite(models.Model):
+    uuid = models.UUIDField(
+        unique=True,
+        verbose_name=_("site id"),
+    )
+
+    name = models.TextField(
+        default="Unnamed Site",
+        verbose_name=_("site name")
+    )
+
+    organization = models.ForeignKey(
+        'organizations.Organization',
+        on_delete=models.CASCADE,
+        related_name='sharepoint_site',
+        verbose_name=_('organization'),
+        default=None,
+        null=True,
+    )

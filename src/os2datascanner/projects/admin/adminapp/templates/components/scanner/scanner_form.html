@@ -90,6 +90,12 @@
     <script src="{% static 'js/scannerjob/getOrgUnits.js' %}"></script>
   {% endif %}
 
+  {% if form.sharepoint_sites %}
+    <script src="{% static 'js/scannerjob/select2Sites.js' %}"></script>
+    <script src="{% static 'js/scannerjob/getSharePointLists.js' %}"></script>
+  {% endif %}
+
+
 {% endblock jquery_script %}
 
 {% block body %}
@@ -485,6 +491,34 @@
                         size="10"
                         url="{% url 'org-units-listing' %}"
                         {% if form.scan_entire_org.value %}disabled{% endif %}></select>
+                {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
+              </div>
+
+            </fieldset>
+          </section>
+        {% endif %}
+
+        {% if form.sharepoint_sites %}
+          <section class="data-form">
+            <fieldset class="form__fieldset">
+              <h3>{% trans "add SharePoint Lists"|capfirst %}</h3>
+              <p class="description">
+                {% blocktrans %}You can limit scans to selected SharePoint lists. Selecting nothing will scan all lists.{% endblocktrans %}
+              </p>
+
+              <p id="sharepoint-sync-btn">Sync</p>
+
+              <p class="information" id="list-selection-info">{% trans "select lists to scan"|capfirst %}</p>
+              <div class="form__group {% if form.sharepoint_sites.errors %}has-error{% endif %}"
+                   id="sharepoint-sites">
+                <label class="treeview-label {% if required %}required-form{% endif %}"
+                       for="{{ form.sharepoint_sites.name }}">{% trans "SharePoint lists"|capfirst %}</label>
+                <select class="treeview"
+                        id="sel_1"
+                        name="{{ form.sharepoint_sites.name }}"
+                        multiple
+                        size="10"
+                        url="{% url 'sharepoint-listing' %}"></select>
                 {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
               </div>
 

@@ -93,6 +93,7 @@ urlpatterns = [
     path("status/<int:pk>/cancel/", StatusCancel.as_view(), name="status-cancel"),
     re_path(r'^help/guide/$', GuideView.as_view(), name='guide'),
     re_path(r'^org-units-listing/', OrganizationalUnitListing.as_view(), name='org-units-listing'),
+    path("sharepoint-listing/", msgraph_views.SharePointListing.as_view(), name='sharepoint-listing'),
     path("scanners/removed/", RemovedScannersView.as_view(), name="removed_scanners"),
     path("scanners/removed/<int:pk>/recreate", RecreateScannerView.as_view(),
          name="recreate_scanner"),

@@ -14,14 +14,17 @@ from ...rules.rule import Rule
 
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
+
 
 class MSGraphListsSource(MSGraphSource):
     type_label = "msgraph-lists"
 
     eq_properties = MSGraphSource.eq_properties
 
-    def __init__(self, client_id, tenant_id, client_secret):
+    def __init__(self, client_id, tenant_id, client_secret, sites=None):
         super().__init__(client_id, tenant_id, client_secret)
+        self.sites = sites
 
     def handles(self, sm, *, rule: Rule | None = None):  # noqa
         cutoff = None
@@ -41,7 +44,6 @@ class MSGraphListsSource(MSGraphSource):
                 site_id = site.get("id").split(",")[1]
                 lists = sm.open(self).paginated_get(
                     f"sites/{site_id}/lists")
-
                 # Filtering off lists with no changes when doing standard scans.
                 # MSGraph does not allow for filtering on lastModifiedDateTime
                 # and filtering solely on the list item level is significantly slower.
@@ -61,10 +63,10 @@ class MSGraphListsSource(MSGraphSource):
                             # blank templates. Ignore them
                             continue
                         case {"id": id, "name": name}:
-                            yield MSGraphListHandle(self, id, name, site_id)
+                            yield MSGraphListHandle(self, id, name, site.id)
 
     def censor(self):
-        return type(self)(None, self._tenant_id, None)
+        return type(self)(None, self._tenant_id, None, self.sites)
 
     @staticmethod
     @Source.json_handler(type_label)
@@ -72,7 +74,14 @@ class MSGraphListsSource(MSGraphSource):
         return MSGraphListsSource(
                 client_id=obj["client_id"],
                 tenant_id=obj["tenant_id"],
-                client_secret=obj["client_secret"])
+                client_secret=obj["client_secret"],
+                sites=obj.get("sites"))
+
+    def to_json_object(self):
+        return dict(
+            **super().to_json_object(),
+            sites=self.sites
+        )
 
 
 DUMMY_MIME = "application/vnd.os2.datascanner.graphlist"
