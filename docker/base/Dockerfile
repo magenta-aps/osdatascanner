@@ -137,8 +137,19 @@ CMD ["gunicorn", \
      "--config", "/docker/settings/server-gunicorn.py", \
      "os2datascanner.server.wsgi"]
 
+FROM base AS web_base
+
+WORKDIR /code/src/os2datascanner/projects/grants
+RUN django-admin compilemessages
+
+WORKDIR /code/src/os2datascanner/projects/shared
+RUN django-admin compilemessages
+
+WORKDIR /code/src/os2datascanner/core_organizational_structure
+RUN django-admin compilemessages
+
 # hadolint ignore=DL3006
-FROM base AS admin
+FROM web_base AS admin
 
 LABEL org.opencontainers.image.title="OS2datascanner - Administration" \
       org.opencontainers.image.vendor="Magenta ApS" \
@@ -195,7 +206,7 @@ ENV COMMIT_TAG=${COMMIT_TAG} \
     CURRENT_BRANCH=${CURRENT_BRANCH}
 
 # hadolint ignore=DL3006
-FROM base AS report
+FROM web_base AS report
 
 LABEL org.opencontainers.image.title="OS2datascanner - Report" \
       org.opencontainers.image.vendor="Magenta ApS" \
