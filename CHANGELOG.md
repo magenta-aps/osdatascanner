@@ -3,6 +3,9 @@
 ## Next Realease, ?? ?? ?? 
 
 ""
+### New in this release
+
+- SharePoint list scanning supports SmartDelta for last-modified checks.
 
 ### General improvements
 
