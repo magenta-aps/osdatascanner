@@ -1,6 +1,6 @@
 let selectedValues = [];
 (function ($) {
-	$.fn.select2ToSites = function (options) {
+	$.fn.select2Sites = function (options) {
 		var opts = $.extend({}, options);
 
 		if (opts.siteData) {
@@ -33,7 +33,7 @@ let selectedValues = [];
 
 		opts.closeOnSelect = false;
 		opts.shouldFocusInput = false;
-		opts.placeholder = opts.placeholder || 'Select one or more sites';
+		opts.placeholder = opts.placeholder;
     	opts.allowClear = true;
 		opts.width = 'element';
 		var s2inst = this.select2(opts);
@@ -138,6 +138,15 @@ let selectedValues = [];
 			// Use id for value
 			$opt.val(site.id || "");
 			
+			// Check if site has selected property and mark option as selected
+			if (site.selected === "true" || site.selected === true) {
+				$opt.prop("selected", true);
+				// Add to selectedValues array for proper tracking
+				if (site.id && selectedValues.indexOf(site.id) === -1) {
+					selectedValues.push(site.id);
+				}
+			}
+
 			// Handle empty values
 			if ($opt.val() === "") {
 				$opt.prop("disabled", true);
@@ -157,22 +166,9 @@ let selectedValues = [];
 
 /* jshint -W098 */ //disable check is used ( called from other file )
 function createSiteView() {
-	/** disables file upload when sites are selected */
-	function siteSelectOptionValueToggle() {
-		if (document.getElementById("sel_1")) {
-			if (document.getElementById("sel_1").value) {
-				document.getElementById("id_userlist").disabled = true;
-				document.getElementById("upload-file").style.backgroundColor = "#dddddd";
-				document.getElementById("fileUpload").style.backgroundColor = "#dddddd";
-			} else {
-				document.getElementById("id_userlist").disabled = false;
-				document.getElementById("upload-file").style.backgroundColor = "#fff";
-			}
-		}
-	}
 	siteSelectOptionValueToggle();
-	if (document.getElementById("sel_1")) {
-		document.getElementById("sel_1").onchange = function () {
+	if (document.getElementById("sel_2")) {
+		document.getElementById("sel_2").onchange = function () {
 			siteSelectOptionValueToggle();
 		};
 	}

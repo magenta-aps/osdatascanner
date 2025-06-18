@@ -17,6 +17,7 @@ from django.forms import ModelChoiceField
 from django.views import View
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
+from django.db import transaction
 
 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource, make_token
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
@@ -396,6 +397,7 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
 
     def form_valid(self, form):
         data = form.cleaned_data
+        print(form.cleaned_data)
         if data.get("scan_lists") or data.get("scan_drives"):
             pass
         else:
@@ -443,14 +445,26 @@ class SharePointListing(View):
             self._grant = GraphGrant.objects.filter(id=grant_id).first()
 
             if self._grant:
-                data = self._sync_sites(sync)
+                self._sync_sites(sync)
 
-        data = MSGraphSharePointSite.objects.all().values()
-        return JsonResponse(list(data), safe=False)
+        sites = MSGraphSharePointSite.objects.prefetch_related('scanners').all()
+
+        data = []
+        for site in sites:
+            data.append({
+                'id': site.id,
+                'uuid': site.uuid,
+                'name': site.name,
+                'scanners': list(site.scanners.values_list('id', flat=True))
+            })
+
+        return JsonResponse(data, safe=False)
 
     def _sync_sites(self, sync):
         with requests.Session() as session:
             gc = MSGraphSource.GraphCaller(self._make_token, session)
+            # We only want their id and name, but we have to include isPersonalSite to
+            # filter on that value
             sites = gc.paginated_get(
                 "sites/getAllSites?$select=id,name,isPersonalSite&$filter=isPersonalSite ne true")
 
@@ -465,72 +479,21 @@ class SharePointListing(View):
                             name=site.get(
                                 "name",
                                 _("Unnamed Site")),
-                            organization_id=self._grant.organization.uuid))
+                            ))
 
-                # Create newly created sites and update namechanges.
-                MSGraphSharePointSite.objects.bulk_create(
-                    sites_list,
-                    update_conflicts=True,
-                    unique_fields=["uuid"],
-                    update_fields=["name", "organization_id"]
-                )
+                with transaction.atomic():
+                    MSGraphSharePointSite.objects.bulk_create(
+                        sites_list,
+                        update_conflicts=True,
+                        unique_fields=["uuid"],
+                        update_fields=["name"]
+                    )
 
-                # TODO Delete sites no longer in domain?
-
-                sites = sites_list
-
-        return sites
-
-    # def _get_all_lists(self, sync):
-    #     with requests.Session() as session:
-    #         gc = MSGraphSource.GraphCaller(self._make_token, session)
-    #         sites = gc.paginated_get("sites/getAllSites?$filter=isPersonalSite ne true")
-
-    #     # Process sites concurrently to improve performance on orgs with multiple sites.
-    #     all_data = []
-    #     # 8 workers seems okay for speed without hitting the rate limit
-    #     with ThreadPoolExecutor(max_workers=8) as executor:
-    #         futures = [executor.submit(self._process_site, site) for site in sites]
-
-    #         for future in concurrent.futures.as_completed(futures):
-    #             try:
-    #                 site_lists = future.result()
-    #                 all_data.extend(site_lists)
-    #             except Exception as e:
-    #                 print(f"Error processing site: {e}")
-
-    #     return all_data
-
-    # def _process_site(self, site):
-    #     """Process a single site and return its filtered lists"""
-    #     site_data = []
-
-    #     with requests.Session() as session:
-    #         gc = MSGraphSource.GraphCaller(self._make_token, session)
-    #         site_id = site.get("id").split(",")[1]
-    #         lists = gc.paginated_get(
-    #                       f"sites/{site_id}/lists?$select=id,name,list,createdBy,webUrl"
-    #                       )
-
-    #         for sp_list in lists:
-    #             match sp_list:
-    #                 case {"list": {"template": "documentLibrary"}}:
-    #                     # This is a SharePoint drive in disguise. Ignore it
-    #                     continue
-    #                 case {"webUrl": u} if "/_catalogs" in u or "/appcatalog" in u:
-    #                     # Catalog lists take up a lot of space and contain
-    #                     # blank templates. Ignore them
-    #                     continue
-    #                 case {"createdBy": {"user": {"displayName": "Systemkonto"}}}:
-    #                     # These aren't user created so users are unlikely
-    #                     # to want to scan these specifically
-    #                     continue
-    #                 case {"id": id, "name": name}:
-    #                     # We need the site_id later
-    #                     sp_list["site_id"] = site_id
-    #                     site_data.append(sp_list)
-
-    #     return site_data
+                    # Remove any sites no longer available
+                    current_sites = [site.uuid for site in sites_list]
+                    MSGraphSharePointSite.objects.exclude(uuid__in=current_sites).delete()
+                    # Maybe add a check here based on grant so we don't delete sites when
+                    # switching grants?
 
     def _make_token(self):
         return make_token(self._grant.app_id, self._grant.tenant_id, self._grant.client_secret)

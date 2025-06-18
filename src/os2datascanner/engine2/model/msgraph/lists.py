@@ -6,13 +6,12 @@ from dateutil.parser import isoparse
 from requests import HTTPError
 from datetime import datetime, timezone
 
+from os2datascanner.engine2.rules.rule import Rule
+
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
 from ...utilities.i18n import gettext as _
-from ...rules.rule import Rule
-
-from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
@@ -148,41 +147,12 @@ class MSGraphListSource(DerivedSource):
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
 
-    def _build_query(
-            self,
-            query: str,
-            cutoff: datetime | None = None):
-
-        filters = []
-
-        if cutoff:
-            # Microsoft Graph requires all timestamps to be in UTC and doesn't
-            # support any way of saying that other than "Z".
-            ts = cutoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-            fs = f"fields/Modified gt '{ts}'"
-            filters.append(fs)
-
-        if filters:
-            query += f"$filter={' and '.join(filters)}&$expand=fields"
-        else:
-            query += "$expand=fields"
-        return query
-
     def handles(self, sm, *, rule: Rule | None = None):
         gc: MSGraphSource.GraphCaller = sm.open(self)
 
-        query = f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items?"
-        cutoff = None
+        query = f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items"
 
-        for essential_rule in compute_mss(rule):
-            # (we can't do isinstance() here without making a circular
-            # dependency)
-            if essential_rule.type_label == "last-modified":
-                after = essential_rule.after
-                cutoff = (after if not cutoff else max(cutoff, after))
-
-        query = self._build_query(cutoff=cutoff, query=query)
-        list_items = list_items = gc.paginated_get(query)
+        list_items = list_items = gc.paginated_get(query+'?$expand=fields')
 
         for item in list_items:
             rel_path = f"{self.handle.relative_path}/items/{item['id']}"

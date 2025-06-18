@@ -270,6 +270,13 @@ class MSGraphSharepointScanner(MSGraphScanner):
     )
 
     supports_rule_preexec = True
+    
+    sharepoint_sites = models.ManyToManyField(
+        'MSGraphSharePointSite',
+        related_name="scanners",
+        blank=True,
+        verbose_name=_("SharePoint sites to scan")
+    )
 
     object_name = pgettext_lazy("unit of scan", "object")
     object_name_plural = pgettext_lazy("unit of scan", "objects")
@@ -279,13 +286,13 @@ class MSGraphSharepointScanner(MSGraphScanner):
         return 'msgraphsharepoint'
 
     def generate_sources(self):
+        print(list(self.sharepoint_sites.values()))
         if self.scan_lists:
             yield MSGraphListsSource(
                 client_id=str(self.graph_grant.app_id),
                 tenant_id=str(self.graph_grant.tenant_id),
                 client_secret=self.graph_grant.client_secret,
-                sites=None
-                # lists=["095ba61f-7f12-4894-b43a-7c40ee13dc9e,e27f7f06-17c6-4b7a-ad77-ae6fb820b104"]
+                sites=list(self.sharepoint_sites.values())
                 )
 
         if self.scan_drives:
@@ -301,7 +308,7 @@ class MSGraphSharepointScanner(MSGraphScanner):
 
 
 class MSGraphSharePointSite(models.Model):
-    uuid = models.UUIDField(
+    uuid = models.TextField(
         unique=True,
         verbose_name=_("site id"),
     )
@@ -309,13 +316,4 @@ class MSGraphSharePointSite(models.Model):
     name = models.TextField(
         default="Unnamed Site",
         verbose_name=_("site name")
-    )
-
-    organization = models.ForeignKey(
-        'organizations.Organization',
-        on_delete=models.CASCADE,
-        related_name='sharepoint_site',
-        verbose_name=_('organization'),
-        default=None,
-        null=True,
     )

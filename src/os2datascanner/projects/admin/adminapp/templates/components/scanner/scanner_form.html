@@ -501,20 +501,26 @@
         {% if form.sharepoint_sites %}
           <section class="data-form">
             <fieldset class="form__fieldset">
-              <h3>{% trans "add SharePoint Lists"|capfirst %}</h3>
+              <h3>{% trans "add SharePoint Sites"|capfirst %}</h3>
               <p class="description">
-                {% blocktrans %}You can limit scans to selected SharePoint lists. Selecting nothing will scan all lists.{% endblocktrans %}
+                {% blocktrans %}You can limit scans to selected SharePoint sites. Selecting no sites will scan all sites. {% endblocktrans %}
               </p>
+              <b class="description">
+                {% blocktrans %}* This feature is currently only supported on list scanning. {% endblocktrans %}
+              </b>
 
-              <p id="sharepoint-sync-btn">Sync</p>
+              <br>
+              <br>
+              <u id="sharepoint-sync-btn">{% trans "synchronize"|capfirst %}</u>
+              <br>
+              <br>
 
-              <p class="information" id="list-selection-info">{% trans "select lists to scan"|capfirst %}</p>
               <div class="form__group {% if form.sharepoint_sites.errors %}has-error{% endif %}"
                    id="sharepoint-sites">
                 <label class="treeview-label {% if required %}required-form{% endif %}"
-                       for="{{ form.sharepoint_sites.name }}">{% trans "SharePoint lists"|capfirst %}</label>
+                       for="{{ form.sharepoint_sites.name }}">{% trans "SharePoint sites to scan" %}</label>
                 <select class="treeview"
-                        id="sel_1"
+                        id="sel_2"
                         name="{{ form.sharepoint_sites.name }}"
                         multiple
                         size="10"
