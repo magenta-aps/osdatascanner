@@ -58,6 +58,12 @@ class OrganizationAdmin(admin.ModelAdmin):
             }
         ),
         (
+            _("Grant prioritization settings"),
+            {
+                "fields": ('prioritize_graphgrant',)
+            }
+        ),
+        (
             _("System rules"),
             {
                 "fields": ('system_rules',)

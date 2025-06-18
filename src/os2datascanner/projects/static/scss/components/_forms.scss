@@ -98,7 +98,8 @@
     &--dpo,
     &--outlook,
     &--ldap-provider-setup,
-    &--ldap-claim-setup {
+    &--ldap-claim-setup,
+    &--prioritize_graphgrant {
       margin: 3rem 0;
       display: flex;
       flex-direction: column;
