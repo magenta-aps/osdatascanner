@@ -25,6 +25,8 @@
 - Made prioritization between GraphGrant and EWSGrant configurable for Exchange scans when both 
   grants are present.
 
+- Consistent naming convention for scanners in Danish.
+
 ### Bugfixes
 
 - Corrected a DPO Overview bug where a combination of a shared and non-shared alias would 

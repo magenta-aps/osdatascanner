@@ -295,7 +295,7 @@ msgstr "mailbeskeder"
 
 #: adminapp/models/scannerjobs/exchangescanner.py
 msgid "Exchange scanner"
-msgstr "Exchangescanner"
+msgstr "Exchange-scanner"
 
 #: adminapp/models/scannerjobs/filescanner.py
 msgid "drive letter"
@@ -348,11 +348,11 @@ msgstr "Scan vedhæftede filer"
 
 #: adminapp/models/scannerjobs/gmail.py
 msgid "Gmail scanner"
-msgstr "Gmailscanner"
+msgstr "Gmail-scanner"
 
 #: adminapp/models/scannerjobs/googledrivescanner.py
 msgid "Google Drive scanner"
-msgstr "Google Drive scanner"
+msgstr "Google Drive-scanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Scan deleted items folder"
@@ -372,11 +372,11 @@ msgstr "Inkludér emails i synkroniseringsproblemer mappe"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Microsoft 365 mail scanner"
-msgstr "Microsoft 365 mailscanner"
+msgstr "Microsoft 365-mailscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Microsoft 365 file scanner"
-msgstr "Microsoft 365 filscanner"
+msgstr "Microsoft 365-filscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
@@ -390,7 +390,7 @@ msgstr "begivenheder"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Microsoft 365 calendar scanner"
-msgstr "Microsoft 365 kalenderscanner"
+msgstr "Microsoft 365-kalenderscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 #: adminapp/models/scannerjobs/webscanner.py
@@ -399,7 +399,7 @@ msgstr "tjek døde links"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Microsoft 365 Teams file scanner"
-msgstr "Microsoft 365 Teams filscanner"
+msgstr "Microsoft 365 Teams-filscanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "scan lists"
