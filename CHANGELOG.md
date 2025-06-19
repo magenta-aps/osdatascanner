@@ -55,6 +55,9 @@
  required conversion. As a result, it is again allowed to enable 
  OCR and email subject scanning simultaneously.
 
+- The button for cleaning up stale accounts in the scanner list in the admin module no longer does
+  nothing, but will actually clean up stale accounts on the scanner.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"

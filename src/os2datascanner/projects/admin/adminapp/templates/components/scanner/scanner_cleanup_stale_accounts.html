@@ -48,7 +48,7 @@
                   name="cleanup-button"
                   aria-label="{% trans 'Clean' %}"
                   title="{% trans 'Clean' %}"
-                  hx-post="/{{ view.type }}scanners/{{ scanner.pk }}/cleanup_stale_accounts/"
+                  hx-post="{{ object.get_cleanup_stale_accounts_url }}"
                   hx-trigger="click"
                   hx-include="#cleanup-accounts-form"
                   hx-swap="outerHTML"

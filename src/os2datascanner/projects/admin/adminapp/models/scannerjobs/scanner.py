@@ -681,7 +681,10 @@ class Scanner(models.Model):
     def get_update_url(self):
         return reverse_lazy(f"{self.get_type()}scanner_update", kwargs={"pk": self.pk})
 
-    def get_cleanup_url(self):
+    def get_cleanup_stale_accounts_url(self):
+        # Some scanner types do not scan based on accounts, and do not have a view for cleaning
+        # up stale accounts. As a result, this method will always throw an exception for those
+        # scanner types.
         return reverse_lazy(f"{self.get_type()}scanner_cleanup", kwargs={"pk": self.pk})
 
     def get_askrun_url(self):
