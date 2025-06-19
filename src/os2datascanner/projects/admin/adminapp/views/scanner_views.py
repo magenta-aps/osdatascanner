@@ -91,6 +91,7 @@ class ScannerBase(object):
         'keep_false_positives',
         'only_notify_superadmin',
         'rule',
+        'exclusion_rule',
         'organization',
         'contacts',
     ]

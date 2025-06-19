@@ -60,6 +60,8 @@
 - The button for cleaning up stale accounts in the scanner list in the admin module no longer does
   nothing, but will actually clean up stale accounts on the scanner.
 
+- Exclusion rules can now be added to scanners.
+
 ## Version 3.29.0, 21st May 2025
 
 "Swing 4.2"
