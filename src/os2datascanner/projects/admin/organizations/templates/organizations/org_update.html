@@ -112,20 +112,6 @@
           </div>
         </div>
 
-        {% if form.prioritize_graphgrant %}
-          <div class="form__row--prioritize_graphgrant">
-            <span class="form__row__title">{% trans "Grant prioritization settings" %}</span>
-            <div class="form__row__item">
-              <div class="form__row__item__checkboxcontainer ds-checkbox">
-                {{ form.prioritize_graphgrant }}
-                <label class="required-form"
-                       for="{{ form.prioritize_graphgrant.id_for_label }}">
-                  {{ form.prioritize_graphgrant.label }}
-                </label>
-              </div>
-            </div>
-          </div>
-        {% endif %}
         <div class="form__row--support-button">
           <span class="form__row__title">{% trans "Support button settings" %}</span>
           <div class="form__row__item">
@@ -185,6 +171,22 @@
             </div>
           </div>
         </div>
+
+        {% if form.prioritize_graphgrant %}
+          <div class="form__row--prioritize_graphgrant">
+            <span class="form__row__title">{% trans "Grant prioritization settings" %}</span>
+            <span class="secondary_text">{{ form.prioritize_graphgrant.help_text }}</span>
+            <div class="form__row__item">
+              <div class="form__row__item__checkboxcontainer ds-checkbox">
+                {{ form.prioritize_graphgrant }}
+                <label class="required-form"
+                       for="{{ form.prioritize_graphgrant.id_for_label }}">
+                  {{ form.prioritize_graphgrant.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+        {% endif %}
 
         <div class="form__row--sync">
           <span class="form__row__title">{% trans "Synchronization settings" %}</span>

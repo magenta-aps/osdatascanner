@@ -113,7 +113,12 @@ class ExchangeScanner(Scanner):
             "server": self.service_endpoint or None,
         }
 
-        if self.graph_grant:
+        if self.ews_grant and not self.organization.prioritize_graphgrant:
+            constructor_param_base |= {
+                "admin_user": self.ews_grant.username,
+                "admin_password": self.ews_grant.password,
+                }
+        elif self.graph_grant:
             constructor_param_base |= {
                 "admin_user": None,
                 "admin_password": None,
@@ -121,12 +126,7 @@ class ExchangeScanner(Scanner):
                 "client_id": str(self.graph_grant.app_id),
                 "tenant_id": str(self.graph_grant.tenant_id),
                 "client_secret": self.graph_grant.client_secret,
-            }
-        elif self.ews_grant:
-            constructor_param_base |= {
-                "admin_user": self.ews_grant.username,
-                "admin_password": self.ews_grant.password,
-            }
+                }
         else:
             raise ValueError("No authentication method available")
 

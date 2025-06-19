@@ -22,7 +22,8 @@
 - Names of scanners on tabs on scanner page in the admin module updated.
   "Office 365" have become "Microsoft 365".
 
-- Made prioritization between GraphGrant and EWSGrant configurable when both are present.
+- Made prioritization between GraphGrant and EWSGrant configurable for Exchange scans when both 
+  grants are present.
 
 ### Bugfixes
 
@@ -47,8 +48,8 @@
 - When exporting data from the Leader overview, users won't recieve the Withheld Matches column,
   without the necessary permission.
 
-- Default grant used to retrieve credentials for mail deletion via the report module is now 
-  EWSGrant (when present), instead of GraphGrant.
+- Default grant used for Exchange scans and mail deletion is now EWSGrant (when present) 
+  instead of GraphGrant.
 
 - The processor is now able to "walk up" its handles to find an appropriate candidate for
  required conversion. As a result, it is again allowed to enable 

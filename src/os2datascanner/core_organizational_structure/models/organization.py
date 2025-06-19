@@ -156,11 +156,9 @@ class Organization(models.Model):
 
     # Grant prioritization configuration
     prioritize_graphgrant = models.BooleanField(
-        default=False,
-        verbose_name=_("Prioritize GraphGrant"),
-        help_text=_("prioritize a GraphGrant over an EWSGrant for exampel when using"
-                    " Exchange online rather than Exchange on-prem")
-    )
+        default=False, verbose_name=_("Prioritize MSGraph grant"), help_text=_(
+            "prioritize a Microsoft Graph Grant over an EWS Service Account for example when using"
+            " Exchange online rather than Exchange on-premises"))
 
     # Support button settings
     show_support_button = models.BooleanField(
