@@ -45,6 +45,7 @@ class Command(BaseCommand):
             start_time = None
             scanned_objects = None
             scan_status = None
+            cancelled = None
             check_up_msgs = ScheduledCheckup.objects.filter(scanner=scannerjob.pk).count()
             msg = ""
 
