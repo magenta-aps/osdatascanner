@@ -1,5 +1,14 @@
 # Changelog
 
+## Next Realease, ?? ?? ?? 
+
+""
+
+### General improvements
+
+- Management command list_scannerjobs now also outputs scanner type.
+
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"

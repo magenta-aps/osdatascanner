@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
     def list_scannerjobs(self):
         scannerjobs = {}
-        for scannerjob in Scanner.objects.all():
+        for scannerjob in Scanner.objects.select_subclasses().all():
             pk = scannerjob.pk
             name = scannerjob.name
             start_time = None
@@ -61,6 +61,7 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.SUCCESS(
                 f'\nScanner PK: {pk} \nScanner Name: {name} \n'
+                f'Scan Type: {scannerjob.get_type()} \n'
                 f'Start Time: {start_time} \nScanned Objects: {scanned_objects} \n'
                 f'Scan Status Finished(T/F): {scan_status} \n'
                 f'Scan Status Cancelled(T/F): {cancelled} \n'
