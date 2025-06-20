@@ -8,6 +8,10 @@
 
 - Management command list_scannerjobs now also outputs scanner type.
 
+### Bugfixes
+
+- Management command list_scannerjobs no longer fails if trying to list scanners that have never
+  been run.
 
 ## Version 3.29.1, 19th June 2025
 
