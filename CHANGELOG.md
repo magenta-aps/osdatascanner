@@ -13,6 +13,8 @@
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
   been run.
 
+- The "Stale accounts" button again correctly opens modal.
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"

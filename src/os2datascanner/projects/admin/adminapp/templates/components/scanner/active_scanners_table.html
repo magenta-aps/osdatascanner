@@ -48,7 +48,7 @@
                     <a class="button button--icon-text-button stale-accounts"
                        href="#cleanup-accounts-modal"
                        data-modal="modal:open"
-                       data-src="{{ scanner.get_cleanup_url }}"
+                       data-src="{{ scanner.get_cleanup_stale_accounts_url }}"
                        title="{% trans "The following users are no longer covered by this scannerjob, but have been scanned previously:" %} {{ scanner.compute_stale_accounts|comma_separated_list }}">
                       <i id="person_off" class="material-symbols">person_off</i>
 
