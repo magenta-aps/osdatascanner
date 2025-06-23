@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Realease, ?? ?? ?? 
+## Next Release, ?? ?? ?? 
 
 ""
 ### New in this release
@@ -35,6 +35,9 @@
 
 - The result collector once more correctly skips messages whose type or
   reference cannot be recognised.
+
+- The number of matches are now correctly updated on DocumentReports if the number changes during
+  consecutive scans.
 
 ## Version 3.29.1, 19th June 2025
 

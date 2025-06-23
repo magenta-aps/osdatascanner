@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 14:23+0200\n"
+"POT-Creation-Date: 2025-06-27 14:56+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3480,6 +3480,10 @@ msgstr "Opbevaringspolitik"
 msgid "Grant prioritization settings"
 msgstr "Bevillingsprioritering"
 
+#: organizations/admin.py organizations/templates/organizations/org_update.html
+msgid "Deletion settings"
+msgstr "Indstillinger for sletning"
+
 #: organizations/keycloak_actions.py
 #, python-brace-format
 msgid ""
@@ -3894,10 +3898,6 @@ msgstr "Synkroniseringsindstillinger"
 #: organizations/templates/organizations/org_update.html
 msgid "Microsoft Tenant Settings"
 msgstr "Microsoft Tenant Indstillinger"
-
-#: organizations/templates/organizations/org_update.html
-msgid "Deletion settings"
-msgstr "Indstillinger for sletning"
 
 #: organizations/templates/organizations/org_update.html
 msgid "Allow direct deletion for"
