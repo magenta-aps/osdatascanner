@@ -269,6 +269,8 @@ class MSGraphSharepointScanner(MSGraphScanner):
         verbose_name=_("scan drives")
     )
 
+    supports_rule_preexec = True
+
     object_name = pgettext_lazy("unit of scan", "object")
     object_name_plural = pgettext_lazy("unit of scan", "objects")
 
