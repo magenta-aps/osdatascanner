@@ -1995,15 +1995,11 @@ msgstr "Vælg SharePoint sider"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
-"You can limit scans to selected SharePoint sites. Selecting no sites will "
-"scan all sites. "
+" Choose which sites to include in this scan. Selecting no sites will scan "
+"all sites. "
 msgstr ""
-"Vælg hvilke sites der skal inkluderes i dette scan. Vælges ingen sider "
-"vil alle sider scannes. "
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "* This feature is currently only supported for list scanning. *"
-msgstr "* Denne funktionalitet er kun understøttet for scanning af lister. *"
+"Vælg hvilke sider der skal inkluderes i dette scan. Vælges ingen sider vil "
+"alle sider scannes. "
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Scanner settings"

@@ -502,12 +502,8 @@
             <fieldset class="form__fieldset">
               <h3>{% trans "add SharePoint Sites"|capfirst %}</h3>
               <p class="description">
-                {% blocktrans %}You can limit scans to selected SharePoint sites. Selecting no sites will scan all sites. {% endblocktrans %}
+                {% blocktrans %} Choose which sites to include in this scan. Selecting no sites will scan all sites. {% endblocktrans %}
               </p>
- 
-              <b class="description">
-                {% blocktrans %}* This feature is currently only supported for list scanning. *{% endblocktrans %}
-              </b>
  
               <div class="form__group {% if form.sharepoint_sites.errors %}has-error{% endif %}"
                    id="sharepoint-sites">
@@ -519,7 +515,7 @@
                         multiple
                         size="10"
                         url="{% url 'sharepoint-listing' %}"></select>
-                {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
+                {% if form.sharepoint_sites.errors %}{{ form.sharepoint_sites.errors }}{% endif %}
               </div>
               <button class="button button--icon-button"
                       type="button"

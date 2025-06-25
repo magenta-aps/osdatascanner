@@ -15,11 +15,12 @@ class MSGraphFilesSource(MSGraphSource):
     eq_properties = MSGraphSource.eq_properties + ("_userlist",)
 
     def __init__(self, client_id, tenant_id, client_secret,
-                 site_drives=True, user_drives=True, userlist=None):
+                 site_drives=True, user_drives=True, userlist=None, sites=None):
         super().__init__(client_id, tenant_id, client_secret)
         self._site_drives = site_drives
         self._user_drives = user_drives
         self._userlist = userlist
+        self._sites = sites
 
     def _make_drive_handle(self, obj):
         owner_name = None
@@ -35,20 +36,28 @@ class MSGraphFilesSource(MSGraphSource):
             with warn_on_httperror("SharePoint drive check"):
                 # Get all sites possible, but exclude personal ones, as they usually
                 # will lead us to users 'personal' OneDrive.
-                sites = sm.open(self).paginated_get(
-                    "sites/getAllSites?$filter=isPersonalSite ne true")
+                if self._sites:
+                    for site in self._sites:
+                        site_id = site['uuid']
+                        drives = sm.open(self).paginated_get(
+                            f"sites/{site_id}/drives")
+                        for drive in drives:
+                            yield self._make_drive_handle(drive)
+                else:
+                    sites = sm.open(self).paginated_get(
+                        "sites/getAllSites?$filter=isPersonalSite ne true")
 
-                for site in sites:
-                    # For some reason, this returns id key as 3 comma seperated values ...
-                    # tenant, site id, some other id.
-                    site_id = site.get("id").split(",")[1]
+                    for site in sites:
+                        # For some reason, this returns id key as 3 comma seperated values ...
+                        # tenant, site id, some other id.
+                        site_id = site.get("id").split(",")[1]
 
-                    # It's possible for a SharePoint site to have multiple "Document Libraries"
-                    # each of these have their own OneDrive
-                    drives = sm.open(self).paginated_get(
-                        f"sites/{site_id}/drives")
-                    for drive in drives:
-                        yield self._make_drive_handle(drive)
+                        # It's possible for a SharePoint site to have multiple "Document Libraries"
+                        # each of these have their own OneDrive
+                        drives = sm.open(self).paginated_get(
+                            f"sites/{site_id}/drives")
+                        for drive in drives:
+                            yield self._make_drive_handle(drive)
 
         if self._user_drives:
             if self._userlist is None:
@@ -69,7 +78,8 @@ class MSGraphFilesSource(MSGraphSource):
             **super().to_json_object(),
             site_drives=self._site_drives,
             user_drives=self._user_drives,
-            userlist=list(self._userlist) if self._userlist is not None else None
+            userlist=list(self._userlist) if self._userlist is not None else None,
+            sites=self._sites
         )
 
     @staticmethod
@@ -82,7 +92,8 @@ class MSGraphFilesSource(MSGraphSource):
                 client_secret=obj["client_secret"],
                 site_drives=obj["site_drives"],
                 user_drives=obj["user_drives"],
-                userlist=frozenset(userlist) if userlist is not None else None)
+                userlist=frozenset(userlist) if userlist is not None else None,
+                sites=obj['sites'])
 
 
 DUMMY_MIME = "application/vnd.os2.datascanner.graphdrive"

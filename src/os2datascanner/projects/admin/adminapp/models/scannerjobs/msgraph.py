@@ -300,7 +300,8 @@ class MSGraphSharepointScanner(MSGraphScanner):
                     tenant_id=str(self.graph_grant.tenant_id),
                     client_secret=self.graph_grant.client_secret,
                     site_drives=self.scan_drives,
-                    user_drives=False)
+                    user_drives=False,
+                    sites=list(self.sharepoint_sites.values()))
 
     class Meta(MSGraphScanner.Meta):
         verbose_name = _("Microsoft 365 SharePoint scanner")
