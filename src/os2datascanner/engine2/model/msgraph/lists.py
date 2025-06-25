@@ -7,13 +7,12 @@ from requests import HTTPError
 from datetime import datetime, timezone
 
 from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
 from ...utilities.i18n import gettext as _
-
-from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
 class MSGraphListsSource(MSGraphSource):
@@ -35,34 +34,43 @@ class MSGraphListsSource(MSGraphSource):
                 after = essential_rule.after
                 cutoff = (after if not cutoff else max(cutoff, after))
 
-        with warn_on_httperror("SharePoint lists check"):
-            sites = sm.open(self).paginated_get(
-                "sites/getAllSites?$filter=isPersonalSite ne true")
+        if self.sites:
+            with warn_on_httperror("SharePoint selected lists check"):
+                for site in self.sites:
+                    site_id = site['uuid']
+                    yield from self._process_site(sm, site_id, cutoff)
+        else:
+            with warn_on_httperror("SharePoint all lists check"):
+                sites = sm.open(self).paginated_get(
+                    "sites/getAllSites?$filter=isPersonalSite ne true")
+                for site in sites:
+                    site_id = site.get("id").split(",")[1]
+                    yield from self._process_site(sm, site_id, cutoff)
 
-            for site in sites:
-                site_id = site.get("id").split(",")[1]
-                lists = sm.open(self).paginated_get(
-                    f"sites/{site_id}/lists")
-                # Filtering off lists with no changes when doing standard scans.
-                # MSGraph does not allow for filtering on lastModifiedDateTime
-                # and filtering solely on the list item level is significantly slower.
-                if cutoff:
-                    ts = cutoff.astimezone(timezone.utc)
-                    lists = filter(lambda x: datetime.strptime(
-                        x['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%SZ").
-                            replace(tzinfo=timezone.utc) > ts, lists)
+    def _process_site(self, sm, site_id, cutoff):
+        query = f"sites/{site_id}/lists"
+        lists = sm.open(self).paginated_get(query)
 
-                for sp_list in lists:
-                    match sp_list:
-                        case {"list": {"template": "documentLibrary"}}:
-                            # This is a SharePoint drive in disguise. Ignore it
-                            continue
-                        case {"webUrl": u} if "/_catalogs" in u:
-                            # Catalog lists take up a lot of space and contain
-                            # blank templates. Ignore them
-                            continue
-                        case {"id": id, "name": name}:
-                            yield MSGraphListHandle(self, id, name, site.id)
+        # Filtering off lists with no changes when doing standard scans.
+        # MSGraph does not allow for filtering on lastModifiedDateTime
+        # and filtering solely on the list item level is significantly slower.
+        if cutoff:
+            ts = cutoff.astimezone(timezone.utc)
+            lists = filter(lambda x: datetime.strptime(
+                x['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%SZ").
+                    replace(tzinfo=timezone.utc) > ts, lists)
+
+        for sp_list in lists:
+            match sp_list:
+                case {"list": {"template": "documentLibrary"}}:
+                    # This is a SharePoint drive in disguise. Ignore it
+                    continue
+                case {"webUrl": u} if "/_catalogs" in u:
+                    # Catalog lists take up a lot of space and contain
+                    # blank templates. Ignore them
+                    continue
+                case {"id": id, "name": name}:
+                    yield MSGraphListHandle(self, id, name, site_id)
 
     def censor(self):
         return type(self)(None, self._tenant_id, None, self.sites)
@@ -147,12 +155,41 @@ class MSGraphListSource(DerivedSource):
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
 
+    def _build_query(
+            self,
+            query: str,
+            cutoff: datetime | None = None):
+
+        filters = []
+
+        if cutoff:
+            # Microsoft Graph requires all timestamps to be in UTC and doesn't
+            # support any way of saying that other than "Z".
+            ts = cutoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            fs = f"fields/Modified gt '{ts}'"
+            filters.append(fs)
+
+        if filters:
+            query += f"$filter={' and '.join(filters)}&$expand=fields"
+        else:
+            query += "$expand=fields"
+        return query
+
     def handles(self, sm, *, rule: Rule | None = None):
         gc: MSGraphSource.GraphCaller = sm.open(self)
 
-        query = f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items"
+        query = f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items?"
+        cutoff = None
 
-        list_items = list_items = gc.paginated_get(query+'?$expand=fields')
+        for essential_rule in compute_mss(rule):
+            # (we can't do isinstance() here without making a circular
+            # dependency)
+            if essential_rule.type_label == "last-modified":
+                after = essential_rule.after
+                cutoff = (after if not cutoff else max(cutoff, after))
+
+        query = self._build_query(cutoff=cutoff, query=query)
+        list_items = list_items = gc.paginated_get(query)
 
         for item in list_items:
             rel_path = f"{self.handle.relative_path}/items/{item['id']}"

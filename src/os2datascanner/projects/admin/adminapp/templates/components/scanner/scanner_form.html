@@ -91,10 +91,9 @@
   {% endif %}
 
   {% if form.sharepoint_sites %}
-    <script src="{% static 'js/scannerjob/select2Sites.js' %}"></script>
-    <script src="{% static 'js/scannerjob/getSharePointLists.js' %}"></script>
+    <script src="{% static 'js/scannerjob/dropdown2.js' %}"></script>
+    <script src="{% static 'js/scannerjob/getSharePointSites.js' %}"></script>
   {% endif %}
-
 
 {% endblock jquery_script %}
 
@@ -505,16 +504,11 @@
               <p class="description">
                 {% blocktrans %}You can limit scans to selected SharePoint sites. Selecting no sites will scan all sites. {% endblocktrans %}
               </p>
+ 
               <b class="description">
-                {% blocktrans %}* This feature is currently only supported on list scanning. {% endblocktrans %}
+                {% blocktrans %}* This feature is currently only supported for list scanning. *{% endblocktrans %}
               </b>
-
-              <br>
-              <br>
-              <u id="sharepoint-sync-btn">{% trans "synchronize"|capfirst %}</u>
-              <br>
-              <br>
-
+ 
               <div class="form__group {% if form.sharepoint_sites.errors %}has-error{% endif %}"
                    id="sharepoint-sites">
                 <label class="treeview-label {% if required %}required-form{% endif %}"
@@ -527,7 +521,14 @@
                         url="{% url 'sharepoint-listing' %}"></select>
                 {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
               </div>
-
+              <button class="button button--icon-button"
+                      type="button"
+                      id="sharepoint-sync-btn">
+                <svg class="icon button__reload-icon">
+                  <use xlink:href="/static/svg/symbol-defs.svg#icon-reload"></use>
+                </svg>
+              </button>
+ 
             </fieldset>
           </section>
         {% endif %}

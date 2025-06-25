@@ -25,11 +25,12 @@ from os2datascanner.projects.grants.views import MSGraphGrantRequestView
 from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
-from ..models.scannerjobs.msgraph import MSGraphMailScanner, MSGraphSharePointSite
+from ..models.scannerjobs.msgraph import MSGraphMailScanner
 from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
 from ..models.scannerjobs.msgraph import MSGraphSharepointScanner
+from ..models.MSGraphSharePointSite import MSGraphSharePointSite
 from .scanner_views import (
     ScannerBase,
     ScannerList,
@@ -397,7 +398,6 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
 
     def form_valid(self, form):
         data = form.cleaned_data
-        print(form.cleaned_data)
         if data.get("scan_lists") or data.get("scan_drives"):
             pass
         else:

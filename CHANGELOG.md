@@ -7,6 +7,8 @@
 
 - SharePoint list scanning supports SmartDelta for last-modified checks.
 
+- Added option to select which sites to scan in sharepoint scans.
+
 - Account to account manager relations are now presented in the UI in the following ways:
 
   - In the account detail page in the admin module and the report module, the account's manager, as

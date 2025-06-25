@@ -192,6 +192,14 @@ msgstr "udskriv metadata af det berørte checkup"
 msgid "no scheduled checkup exists with id {id}"
 msgstr "intet planlagt checkup findes med id {id}"
 
+#: adminapp/models/MSGraphSharePointSite.py
+msgid "site id"
+msgstr "side id"
+
+#: adminapp/models/MSGraphSharePointSite.py
+msgid "site name"
+msgstr "side navn"
+
 #: adminapp/models/apikey.py adminapp/models/rules.py
 #: adminapp/models/scannerjobs/scanner.py adminapp/models/usererrorlog.py
 #: import_services/models/msgraph_import_job.py
@@ -424,6 +432,11 @@ msgstr "scan lister"
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "scan drives"
 msgstr "scan SharePoint fildrev"
+
+#: adminapp/models/scannerjobs/msgraph.py
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "SharePoint sites to scan"
+msgstr "SharePoint sider til scanning"
 
 #: adminapp/models/scannerjobs/msgraph.py
 #: adminapp/models/scannerjobs/scanner.py
@@ -1977,6 +1990,22 @@ msgid "scan accounts from"
 msgstr "scan konti fra"
 
 #: adminapp/templates/components/scanner/scanner_form.html
+msgid "add SharePoint Sites"
+msgstr "Vælg SharePoint sider"
+
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid ""
+"You can limit scans to selected SharePoint sites. Selecting no sites will "
+"scan all sites. "
+msgstr ""
+"Vælg hvilke sites der skal inkluderes i dette scan. Vælges ingen sider "
+"vil alle sider scannes. "
+
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "* This feature is currently only supported for list scanning. *"
+msgstr "* Denne funktionalitet er kun understøttet for scanning af lister. *"
+
+#: adminapp/templates/components/scanner/scanner_form.html
 msgid "Scanner settings"
 msgstr "Scannerindstillinger"
 
@@ -2663,6 +2692,10 @@ msgstr "Du skal vælge at scanne drev, lister eller begge!"
 #: adminapp/views/msgraph_views.py
 msgid "You must choose to scan drives, lists, or both!"
 msgstr "Du skal vælge at scanne drev, lister eller begge!"
+
+#: adminapp/views/msgraph_views.py
+msgid "Unnamed Site"
+msgstr "Unavngivet side"
 
 #: adminapp/views/rule_views.py
 msgid "Formatting error"

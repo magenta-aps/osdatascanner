@@ -1,4 +1,5 @@
 var parameters = {};
+var preservedSelections = []; // Store selections during sync
 
 $(function () {
     parameters.grantId = document.querySelector('#id_graph_grant').value;
@@ -10,7 +11,12 @@ $(function () {
         if (parameters.grantId !== grantId) {
             parameters.grantId = grantId;
             
+            // Clear selectedValues and destroy existing select2
             selectedValues = [];
+            var $select = $('#sel_2');
+            if ($select.hasClass('select2-hidden-accessible')) {
+                $select.select2('destroy');
+            }
 
             getSharePointSites();
         }
@@ -21,6 +27,9 @@ $(function () {
         e.preventDefault();
         
         var $select = $('#sel_2');
+        
+        // Preserve current selections before sync
+        preservedSelections = selectedValues.slice(); // Create a copy
         
         // Destroy existing Select2 to prevent resizing issue
         if ($select.hasClass('select2-hidden-accessible')) {
@@ -76,7 +85,37 @@ function isSiteSelected(sites) {
 
 function insertData(result) {
     isSiteSelected(result);
-    $("#sel_2").empty();
     
-    $("#sel_2").select2Sites({ siteData: result, placeholder: gettext('Select one or more sites') });
+    // If we have preserved selections from sync, restore them
+    if (parameters.sync && preservedSelections.length > 0) {
+        restorePreservedSelections(result, preservedSelections);
+
+        preservedSelections = [];
+        parameters.sync = false;
+    }
+    
+    // Destroy existing select2 instance and clear selectedValues
+    var $select = $("#sel_2");
+    if ($select.hasClass('select2-hidden-accessible')) {
+        $select.select2('destroy');
+    }
+    selectedValues = [];
+    
+    $select.empty();
+    
+    // Populate dropdown2
+    $select.dropdown2({ 
+        data: result, 
+        placeholder: gettext('Select one or more sites') ,
+        icon: 'site-icon'
+    });
+    
+}
+
+function restorePreservedSelections(sites, preservedIds) {
+    for (var i = 0; i < sites.length; i++) {
+        if (preservedIds.includes(String(sites[i].id))) {
+            sites[i].selected = "true";            
+        }
+    }
 }

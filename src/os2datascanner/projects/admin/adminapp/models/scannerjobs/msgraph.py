@@ -270,7 +270,7 @@ class MSGraphSharepointScanner(MSGraphScanner):
     )
 
     supports_rule_preexec = True
-    
+
     sharepoint_sites = models.ManyToManyField(
         'MSGraphSharePointSite',
         related_name="scanners",
@@ -286,7 +286,6 @@ class MSGraphSharepointScanner(MSGraphScanner):
         return 'msgraphsharepoint'
 
     def generate_sources(self):
-        print(list(self.sharepoint_sites.values()))
         if self.scan_lists:
             yield MSGraphListsSource(
                 client_id=str(self.graph_grant.app_id),
@@ -305,15 +304,3 @@ class MSGraphSharepointScanner(MSGraphScanner):
 
     class Meta(MSGraphScanner.Meta):
         verbose_name = _("Microsoft 365 SharePoint scanner")
-
-
-class MSGraphSharePointSite(models.Model):
-    uuid = models.TextField(
-        unique=True,
-        verbose_name=_("site id"),
-    )
-
-    name = models.TextField(
-        default="Unnamed Site",
-        verbose_name=_("site name")
-    )

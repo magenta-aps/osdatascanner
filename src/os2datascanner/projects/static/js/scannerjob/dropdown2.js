@@ -1,10 +1,10 @@
 let selectedValues = [];
 (function ($) {
-	$.fn.select2Sites = function (options) {
+	$.fn.dropdown2 = function (options) {
 		var opts = $.extend({}, options);
 
-		if (opts.siteData) {
-			buildSelect(opts.siteData, this);
+		if (opts.data) {
+			buildSelect(opts.data, this);
 		}
 
 		opts._templateResult = opts.templateResult;
@@ -22,8 +22,8 @@ let selectedValues = [];
                     container.className += " " + ele.className;
                 }
 				if(selectedValues.indexOf(ele.value)!==-1) {
-					$($item.children()[0]).removeClass('site-icon');
-					$($item.children()[0]).addClass('site-icon-selected');
+					$($item.children()[0]).removeClass(opts.icon);
+					$($item.children()[0]).addClass(opts.icon + '-selected');
 					container.setAttribute('aria-selected', true);
 					ele.selected="selected";
 				}
@@ -38,10 +38,16 @@ let selectedValues = [];
 		opts.width = 'element';
 		var s2inst = this.select2(opts);
 		
-		// when building the select, add all already selected values and mark them
-		s2inst.val().forEach( function(value) {
-			selectNodes(value);
-		} );
+		// when building the select, sync selectedValues with what's actually selected
+		// This ensures selectedValues reflects the current state after pre-selection
+		var currentlySelected = [];
+		this.find('option:selected').each(function() {
+			var val = $(this).val();
+			if (val && val !== '') {
+				currentlySelected.push(val);
+			}
+		});
+		selectedValues = currentlySelected.slice(); 
 
 		s2inst.on("select2:open", function () {
 			var s2data = s2inst.data("select2");
@@ -83,20 +89,25 @@ let selectedValues = [];
 		// add selected site
 		s2inst.on('select2:selecting', function (evt) {
 			let selectedId = evt.params.args.data.id;
-			selectNodes(selectedId);
+			
+			// Add to selectedValues if not already there
+			if (selectedValues.indexOf(selectedId) === -1) {
+				selectedValues.push(selectedId);
+			}
+			
+			// Update the select2 value and trigger change
+			var newValues = selectedValues.slice(); // Create copy
+			$(s2inst).val(newValues);
+			$(s2inst).trigger('change');
+			
 			$('.select2-search__field').val("");
 			evt.preventDefault();
 		});
 
-		function selectNodes(selectedId) {
-			selectedValues.push(selectedId);
-			changeSelectedValuesInDropdown();
-		}
-
 		// changes the selected values, and triggers change on select
 		function changeSelectedValuesInDropdown() {
-			uniqueValues = [];
-			//remove duplicates
+			// Remove duplicates
+			var uniqueValues = [];
 			selectedValues.forEach(function (value) {
 				if (uniqueValues.indexOf(value) === -1) {
                     uniqueValues.push(value);
@@ -128,9 +139,12 @@ let selectedValues = [];
 	};
 
 	/* Build the Select Option elements from simple JSON objects */
-	function buildSelect(siteData, $el) {
-		for (var i = 0; i < siteData.length; i += 1) {
-			var site = siteData[i] || {};
+	function buildSelect(data, $el) {
+		// Clear selectedValues when rebuilding to avoid conflicts
+		selectedValues = [];
+		
+		for (var i = 0; i < data.length; i += 1) {
+			var site = data[i] || {};
 			var $opt = $("<option></option>");
 			
 			// Use name for display text
@@ -146,7 +160,7 @@ let selectedValues = [];
 					selectedValues.push(site.id);
 				}
 			}
-
+			
 			// Handle empty values
 			if ($opt.val() === "") {
 				$opt.prop("disabled", true);
