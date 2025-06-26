@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-19 10:18+0200\n"
+"POT-Creation-Date: 2025-06-27 09:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,6 +170,20 @@ msgstr "Tillad brugere at kategorisere emails"
 msgid "No categorization"
 msgstr "Ingen kategorisering"
 
+#: models/organization.py
+msgid "Only allow managers to see units they manage in the leader overview"
+msgstr "Tillad kun ledere at se enheder i lederoverblikket"
+
+#: models/organization.py
+msgid "Only allow managers to see accounts they manage in the leader overview"
+msgstr "Tillad kun ledere at se konti i lederoverblikket"
+
+#: models/organization.py
+msgid ""
+"Allow managers to see both units and accounts they manage in the leader "
+"overview"
+msgstr "Tillad ledere at se både enheder og konti i lederoverblikket"
+
 #: models/organization.py models/organizational_unit.py
 msgid "name"
 msgstr "navn"
@@ -247,6 +261,10 @@ msgstr "DPOfane adgang"
 #: models/organization.py
 msgid "SBSYS tab access"
 msgstr "SBSYS-fane adgang"
+
+#: models/organization.py
+msgid "Leader tab configuration"
+msgstr "Leaderfane konfiguration"
 
 #: models/organization.py
 msgid "Prioritize MSGraph grant"

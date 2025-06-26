@@ -44,18 +44,14 @@
 
           {# Leader tab #}
           <div class="form__row__item {% if form.leadertab_access.errors %}has-error{% endif %}">
-            <label class="required-form" for="{{ form.leadertab_access.id_for_label }}">
-              {{ form.leadertab_access.label }}
-            </label>
+            <label class="required-form" for="{{ form.leadertab_access.id_for_label }}">{{ form.leadertab_access.label }}</label>
             {{ form.leadertab_access }}
             {% if form.leadertab_access.errors %}{{ form.leadertab_access.errors }}{% endif %}
           </div>
 
           {# DPO tab #}
           <div class="form__row__item {% if form.dpotab_access.errors %}has-error{% endif %}">
-            <label class="required-form" for="{{ form.dpotab_access.id_for_label }}">
-              {{ form.dpotab_access.label }}
-            </label>
+            <label class="required-form" for="{{ form.dpotab_access.id_for_label }}">{{ form.dpotab_access.label }}</label>
             {{ form.dpotab_access }}
             {% if form.dpotab_access.errors %}{{ form.dpotab_access.errors }}{% endif %}
           </div>
@@ -63,9 +59,7 @@
           {# SBSYS tab #}
           {% if settings.ENABLE_SBSYSSCAN %}
             <div class="form__row__item {% if form.sbsystab_access.errors %}has-error{% endif %}">
-              <label class="required-form" for="{{ form.sbsystab_access.id_for_label }}">
-                {{ form.sbsystab_access.label }}
-              </label>
+              <label class="required-form" for="{{ form.sbsystab_access.id_for_label }}">{{ form.sbsystab_access.label }}</label>
               {{ form.sbsystab_access }}
               {% if form.sbsystab_access.errors %}{{ form.sbsystab_access.errors }}{% endif %}
             </div>
@@ -125,9 +119,7 @@
               {{ form.show_support_button }}
 
               <label class="required-form"
-                     for="{{ form.show_support_button.id_for_label }}">
-                {{ form.show_support_button.label }}
-              </label>
+                     for="{{ form.show_support_button.id_for_label }}">{{ form.show_support_button.label }}</label>
 
             </div>
           </div>
@@ -142,9 +134,7 @@
 
             <div class="form__row__item">
               <div class="{% if form.support_name.errors %} has-error {% endif %}">
-                <label class="required-form" for="{{ form.support_name.id_for_label }}">
-                  {{ form.support_name.label }}
-                </label>
+                <label class="required-form" for="{{ form.support_name.id_for_label }}">{{ form.support_name.label }}</label>
                 {{ form.support_name }}
                 {{ form.support_name.errors }}
               </div>
@@ -152,9 +142,7 @@
 
             <div class="form__row__item">
               <div class="{% if form.support_value.errors %} has-error {% endif %}">
-                <label class="required-form" for="{{ form.support_value.id_for_label }}">
-                  {{ form.support_value.label }}
-                </label>
+                <label class="required-form" for="{{ form.support_value.id_for_label }}">{{ form.support_value.label }}</label>
                 {{ form.support_value }}
                 {{ form.support_value.errors }}
               </div>
@@ -162,17 +150,13 @@
 
             <div class="form__row__item">
               <label class="required-form"
-                     for="{{ form.dpo_contact_method.id_for_label }}">
-                {{ form.dpo_contact_method.label }}
-              </label>
+                     for="{{ form.dpo_contact_method.id_for_label }}">{{ form.dpo_contact_method.label }}</label>
               {{ form.dpo_contact_method }}
             </div>
 
             <div class="form__row__item">
               <div class="{% if form.dpo_name.errors %} has-error {% endif %}">
-                <label class="required-form" for="{{ form.dpo_name.id_for_label }}">
-                  {{ form.dpo_name.label }}
-                </label>
+                <label class="required-form" for="{{ form.dpo_name.id_for_label }}">{{ form.dpo_name.label }}</label>
                 {{ form.dpo_name }}
                 {{ form.dpo_name.errors }}
               </div>
@@ -180,9 +164,7 @@
 
             <div class="form__row__item">
               <div class="{% if form.dpo_value.errors %} has-error {% endif %}">
-                <label class="required-form" for="{{ form.dpo_value.id_for_label }}">
-                  {{ form.dpo_value.label }}
-                </label>
+                <label class="required-form" for="{{ form.dpo_value.id_for_label }}">{{ form.dpo_value.label }}</label>
                 {{ form.dpo_value }}
                 {{ form.dpo_value.errors }}
               </div>
@@ -220,9 +202,7 @@
           <span class="form__row__title">{% trans "Synchronization settings" %}</span>
 
           <div class="form__row__item {% if form.synchronization_time.errors %}has-error{% endif %}">
-            <label for="{{ form.synchronization_time.id_for_label }}">
-              {{ form.synchronization_time.label }}
-            </label>
+            <label for="{{ form.synchronization_time.id_for_label }}">{{ form.synchronization_time.label }}</label>
             {{ form.synchronization_time }}
             {% if form.synchronization_time.errors %}{{ form.synchronization_time.errors }}{% endif %}
           </div>
@@ -255,24 +235,6 @@
             </div>
           </div>
 
-          <div class="form__row__item">
-            <label>{% trans "Allow deletion" %}</label>
-
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.outlook_delete_email_permission }}
-              <label for="{{ form.outlook_delete_email_permission.id_for_label }}">
-                {{ form.outlook_delete_email_permission.label }}
-              </label>
-            </div>
-
-            <div class="form__row__item__checkboxcontainer ds-checkbox">
-              {{ form.onedrive_delete_permission }}
-              <label for="{{ form.onedrive_delete_permission.id_for_label }}">
-                {{ form.onedrive_delete_permission.label }}
-              </label>
-            </div>
-
-          </div>
         </div>
 
         {% if show_delete_fields %}
@@ -329,9 +291,7 @@
         {% endif %}
 
         <div class="form__row__item {% if form.email_header_banner.errors %}has-error{% endif %}">
-          <label for="{{ form.email_header_banner.id_for_label }}">
-            {{ form.email_header_banner.label }}
-          </label>
+          <label for="{{ form.email_header_banner.id_for_label }}">{{ form.email_header_banner.label }}</label>
           {{ form.email_header_banner }}
           {% if form.email_header_banner.errors %}{{ form.email_header_banner.errors }}{% endif %}
         </div>
@@ -342,9 +302,7 @@
             {{ form.email_notification_schedule.label }}
           </label>
           {{ form.email_notification_schedule }}
-          {% if form.email_notification_schedule.errors %}
-            {{ form.email_notification_schedule.errors }}
-          {% endif %}
+          {% if form.email_notification_schedule.errors %}{{ form.email_notification_schedule.errors }}{% endif %}
         </div>
 
       </fieldset>

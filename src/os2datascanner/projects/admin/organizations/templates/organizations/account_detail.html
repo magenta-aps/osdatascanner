@@ -43,9 +43,21 @@
             <td>{% include "components/containers/account_box.html" with account=account.manager link=True %}</td>
           </tr>
         {% endif %}
-        {% if account.is_manager %}
+        {% if account.is_account_manager %}
           <tr>
-            <td>{% trans "Manager for" %}</td>
+            <td>{% trans "Manager for employees" %}</td>
+            <td>
+              <ul>
+                {% for employee in account.managed_accounts.all %}
+                  {% include "components/containers/account_box.html" with account=employee link=True %}
+                {% endfor %}
+              </ul>
+            </td>
+          </tr>
+        {% endif %}
+        {% if account.is_unit_manager %}
+          <tr>
+            <td>{% trans "Manager for units" %}</td>
             <td>
               <ul>
                 {% for unit in account.get_managed_units %}<li>{{ unit.name }}</li>{% endfor %}

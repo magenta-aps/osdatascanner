@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-24 10:46+0200\n"
+"POT-Creation-Date: 2025-06-27 09:11+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -528,7 +528,7 @@ msgid "Organizational units"
 msgstr "Organisatoriske enheder"
 
 #: reportapp/templates/components/navigation/leader-statistics-tabs.html
-msgid "Colleagues"
+msgid "Employees"
 msgstr "Medarbejdere"
 
 #: reportapp/templates/components/navigation/navigation.html
@@ -2012,8 +2012,12 @@ msgid "Manager"
 msgstr "Leder"
 
 #: reportapp/templates/user.html
-msgid "Manager for"
-msgstr "Leder for"
+msgid "Manager for employees"
+msgstr "Leder for medarbejdere"
+
+#: reportapp/templates/user.html
+msgid "Manager for units"
+msgstr "Leder for enheder"
 
 #: reportapp/templates/user.html
 msgid "DPO for"

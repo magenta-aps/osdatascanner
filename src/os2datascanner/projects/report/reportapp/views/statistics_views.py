@@ -721,7 +721,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         return qs
 
     def add_conditional_colums(self, request):
-        columns = [c for c in self.columns]
+        columns = self.columns.copy()
         if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
             columns = columns + [{
                 'name': 'withheld',
