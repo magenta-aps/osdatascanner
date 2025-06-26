@@ -39,6 +39,8 @@
 
 - SBSYS access errors are now shown in the UI with snackbar messages.
 
+- SharePoint List results now censor results that appear in titles.
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
