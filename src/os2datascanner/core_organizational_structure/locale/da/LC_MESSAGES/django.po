@@ -199,8 +199,8 @@ msgid "retention days"
 msgstr ""
 
 #: models/organization.py
-msgid "allow deletion of emails directly"
-msgstr "tillad direkte sletning af emails"
+msgid "allow deletion of emails in Outlook directly"
+msgstr "tillad direkte sletning af emails i Outlook"
 
 #: models/organization.py
 msgid "Outlook category settings"
@@ -219,6 +219,22 @@ msgstr ""
 #: models/organization.py
 msgid "allow deletion of online drive files directly"
 msgstr "tillad direkte sletning af filer på online drev"
+
+#: models/organization.py
+msgid "allow deletion of on-premise drive files directly"
+msgstr "tillad direkte sletning af filer på lokalt drev"
+
+#: models/organization.py
+msgid "allow deletion of emails on Exchange server directly"
+msgstr "tillad direkte sletning af emails på Exchangeserver"
+
+#: models/organization.py
+msgid "allow deletion of emails in gmail directly"
+msgstr "tillad direkte sletning af emails i gmail"
+
+#: models/organization.py
+msgid "allow deletion of files in Google Drive directly"
+msgstr "tillad direkte sletning af filer i Google drev"
 
 #: models/organization.py
 msgid "Leadertab access"

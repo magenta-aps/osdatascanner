@@ -33,7 +33,6 @@ class OrganizationAdmin(admin.ModelAdmin):
                 "fields": ('name', 'slug', 'client', 'contact_email',
                            'contact_phone', 'email_notification_schedule',
                            'dtstart', 'outlook_categorize_email_permission',
-                           'outlook_delete_email_permission', 'onedrive_delete_permission',
                            'email_header_banner')
             },
         ),
@@ -67,6 +66,17 @@ class OrganizationAdmin(admin.ModelAdmin):
             _("System rules"),
             {
                 "fields": ('system_rules',)
+            }
+        ),
+        (
+            _("Deletion settings"),
+            {
+                "fields": ('outlook_delete_email_permission',
+                           'onedrive_delete_permission',
+                           'smb_delete_permission',
+                           'exchange_delete_permission',
+                           'gmail_delete_permission',
+                           'gdrive_delete_permission')
             }
         )
     ]

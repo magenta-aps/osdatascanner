@@ -12,6 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 from django.db import models
+from django.conf import settings
 from rest_framework import serializers
 from os2datascanner.core_organizational_structure.models import Organization as Core_Organization
 from os2datascanner.core_organizational_structure.models import \
@@ -62,11 +63,41 @@ class Organization(Core_Organization):
             (OutlookCategorizeChoices.ORG_LEVEL, OutlookCategorizeChoices.INDIVIDUAL_LEVEL)
         )
 
-    def has_email_delete_permission(self) -> bool:
-        return self.outlook_delete_email_permission
+    def has_smb_file_delete_permission(self) -> bool:
+        if self.smb_delete_permission is not None:
+            return self.smb_delete_permission
+        else:
+            return settings.SMB_ALLOW_WRITE
 
-    def has_file_delete_permission(self) -> bool:
-        return self.onedrive_delete_permission
+    def has_exchange_email_delete_permission(self) -> bool:
+        if self.exchange_delete_permission is not None:
+            return self.exchange_delete_permission
+        else:
+            return settings.EWS_ALLOW_WRITE
+
+    def has_msgraph_email_delete_permission(self) -> bool:
+        if self.outlook_delete_email_permission is not None:
+            return self.outlook_delete_email_permission
+        else:
+            return settings.MSGRAPH_ALLOW_WRITE
+
+    def has_msgraph_file_delete_permission(self) -> bool:
+        if self.onedrive_delete_permission is not None:
+            return self.onedrive_delete_permission
+        else:
+            return settings.MSGRAPH_ALLOW_WRITE
+
+    def has_gmail_email_delete_permission(self) -> bool:
+        if self.gmail_delete_permission is not None:
+            return self.gmail_delete_permission
+        else:
+            return settings.GMAIL_ALLOW_WRITE
+
+    def has_gdrive_file_delete_permission(self) -> bool:
+        if self.gdrive_delete_permission is not None:
+            return self.gdrive_delete_permission
+        else:
+            return settings.GDRIVE_ALLOW_WRITE
 
     @property
     def false_positive_rate(self) -> float:

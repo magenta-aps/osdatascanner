@@ -15,7 +15,6 @@
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
 import structlog
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
@@ -183,7 +182,7 @@ class AccountView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if settings.MSGRAPH_ALLOW_WRITE and self.object.organization.has_categorize_permission():
+        if self.object.organization.has_categorize_permission():
             # Make sure Account has an AccountOutlookSetting object.
             AccountOutlookSetting.objects.get_or_create(account=self.object)
             # Include form in context etc.

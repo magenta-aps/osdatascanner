@@ -144,22 +144,35 @@ class ReportView(LoginRequiredMixin, ListView):
         }
 
         # Check permissions for deleting shared files
-        context["show_smb_delete_button"] = settings.SMB_ALLOW_WRITE
-        context["show_smb_mass_delete_button"] = settings.SMB_ALLOW_WRITE and \
-            self.all_reports_from_same_source("smbc", context["page_obj"])
-        context["show_ews_delete_button"] = settings.EWS_ALLOW_WRITE
-        context["show_ews_mass_delete_button"] = settings.EWS_ALLOW_WRITE and \
-            self.all_reports_from_same_source("ews", context["page_obj"])
-        context["show_gmail_delete_button"] = settings.GMAIL_ALLOW_WRITE
-        context["show_gmail_mass_delete_button"] = settings.GMAIL_ALLOW_WRITE and \
-            self.all_reports_from_same_source("gmail", context["page_obj"])
-        context["show_gdrive_delete_button"] = settings.GDRIVE_ALLOW_WRITE
-        context["show_gdrive_mass_delete_button"] = settings.GDRIVE_ALLOW_WRITE and \
-            self.all_reports_from_same_source("googledrive", context["page_obj"])
-        context["show_file_delete_button"] = (
-            self.request.user.account.organization.has_file_delete_permission())
-        context["show_file_mass_delete_button"] = (
-            self.request.user.account.organization.has_file_delete_permission() and
+        context["show_smb_delete_button"] = (
+            self.request.user.account.organization.has_smb_file_delete_permission())
+        context["show_smb_mass_delete_button"] = (
+            self.request.user.account.organization.has_smb_file_delete_permission() and
+            self.all_reports_from_same_source("smbc", context["page_obj"]))
+        context["show_ews_delete_button"] = (
+            self.request.user.account.organization.has_exchange_email_delete_permission())
+        context["show_ews_mass_delete_button"] = (
+            self.request.user.account.organization.has_exchange_email_delete_permission() and
+            self.all_reports_from_same_source("ews", context["page_obj"]))
+        context["show_gmail_delete_button"] = (
+            self.request.user.account.organization.has_gmail_email_delete_permission())
+        context["show_gmail_mass_delete_button"] = (
+            self.request.user.account.organization.has_gmail_email_delete_permission() and
+            self.all_reports_from_same_source("gmail", context["page_obj"]))
+        context["show_gdrive_delete_button"] = (
+            self.request.user.account.organization.has_gdrive_file_delete_permission())
+        context["show_gdrive_mass_delete_button"] = (
+            self.request.user.account.organization.has_gdrive_file_delete_permission() and
+            self.all_reports_from_same_source("googledrive", context["page_obj"]))
+        context["show_msgraph_email_delete_button"] = (
+            self.request.user.account.organization.has_msgraph_email_delete_permission())
+        context["show_msgraph_email_mass_delete_button"] = (
+            self.request.user.account.organization.has_msgraph_email_delete_permission() and
+            self.all_reports_from_same_source("msgraph-mail", context["page_obj"]))
+        context["show_msgraph_file_delete_button"] = (
+            self.request.user.account.organization.has_msgraph_file_delete_permission())
+        context["show_msgraph_file_mass_delete_button"] = (
+            self.request.user.account.organization.has_msgraph_file_delete_permission() and
             self.all_reports_from_same_source("msgraph-files", context["page_obj"]))
 
         # Retention policy details
@@ -312,17 +325,6 @@ class UserReportView(ReportView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # show_delete_button is overwritten in the archive view.
-        context["show_email_delete_button"] = (
-            self.request.user.account.organization.has_email_delete_permission())
-        context["show_email_mass_delete_button"] = (
-            self.request.user.account.organization.has_email_delete_permission() and
-            self.all_reports_from_same_source("msgraph-mail", context["page_obj"]))
-        context["show_file_delete_button"] = (
-            self.request.user.account.organization.has_file_delete_permission())
-        context["show_file_mass_delete_button"] = (
-            self.request.user.account.organization.has_file_delete_permission() and
-            self.all_reports_from_same_source("msgraph-files", context["page_obj"]))
         context["include_shared"] = self.request.GET.get('include-shared', 'true')
 
         return context
@@ -449,9 +451,10 @@ class ArchiveMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["show_email_delete_button"] = False
-        context["show_file_delete_button"] = False
-        context["show_file_mass_delete_button"] = False
+        context["show_msgraph_email_delete_button"] = False
+        context["show_msgraph_email_mass_delete_button"] = False
+        context["show_msgraph_file_delete_button"] = False
+        context["show_msgraph_file_mass_delete_button"] = False
         context["show_smb_delete_button"] = False
         context["show_smb_mass_delete_button"] = False
         context["show_ews_delete_button"] = False

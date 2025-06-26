@@ -1,5 +1,4 @@
 import structlog
-from django.conf import settings
 from exchangelib import Message
 from exchangelib.errors import ErrorItemNotFound
 
@@ -64,7 +63,7 @@ def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR
 def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR001 too complex
     user = request.user
 
-    if not settings.EWS_ALLOW_WRITE:
+    if not user.account.organization.has_exchange_email_delete_permission():
         logger.warning(
                 "EWS deletion request with function disabled!",
                 user=user)

@@ -7,6 +7,12 @@
 
 - SharePoint list scanning supports SmartDelta for last-modified checks.
 
+### New in this release
+
+- Report module write permissions are now controlled by the Organization object. If the settings
+  are not set on the Organization, OSdatascanner defaults to the installation settings.
+  In the next release, the installation settings will be removed completely.
+
 ### General improvements
 
 - Management command list_scannerjobs now also outputs scanner type.
