@@ -1,9 +1,7 @@
+import pytest
 from copy import deepcopy
-from django.test import TestCase
-from ...core.models.client import Client
-from ..models import Account, Organization, OrganizationalUnit, Alias, Position
+from ..models import Account, OrganizationalUnit, Alias, Position
 from .. import keycloak_actions
-
 
 TEST_CORP = [
     {
@@ -110,90 +108,65 @@ TEST_CORP_TWO = [
 ]
 
 
-class DeprecatedKeycloakImportTest(TestCase):
+@pytest.mark.django_db
+class TestDeprecatedKeycloakImportTest:
     """As of #60117 we don't import memberOf attributes, but instead give
     users an attribute 'group_dn'. However, until clients update their LDAP configuration,
-    they will still use the old memberOf based logic. Therefore these tests have been preserved,
+    they will still use the old memberOf based logic. Therefore, these tests have been preserved,
     to ensure the deprecated logic still works."""
-    dummy_client = None
 
-    @classmethod
-    def setUpClass(cls):
-        cls.dummy_client = Client.objects.create(
-                name="OS2datascanner test dummy_client")
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.dummy_client.delete()
-
-    def setUp(self):
-        self.org = Organization.objects.create(
-                name="Test Corp.",
-                client=self.dummy_client)
-
-    def tearDown(self):
-        self.org.delete()
-
-    def test_ou_import(self):
-        """It should be possible to import users into a LDAP OU-based hierarchy
+    def test_ou_import(self, test_org):
+        """It should be possible to import users into an LDAP OU-based hierarchy
         from Keycloak's JSON output."""
         keycloak_actions.perform_import_raw(
-                self.org, TEST_CORP,
-                keycloak_actions.keycloak_dn_selector)
+            test_org, TEST_CORP,
+            keycloak_actions.keycloak_dn_selector
+        )
 
         for tester in TEST_CORP:
             if "id" not in tester:
                 continue
             account = Account.objects.get(uuid=tester["id"])
-            self.assertEqual(
-                    tester["username"],
-                    account.username,
-                    "user import failure")
+            assert tester["username"] == account.username, "user import failure"
 
-    def test_group_import(self):
+    def test_group_import(self, test_org):
         """It should be possible to import users into a group-based hierarchy
         from Keycloak's JSON output."""
         keycloak_actions.perform_import_raw(
-                self.org, TEST_CORP,
-                keycloak_actions.keycloak_group_dn_selector)
+            test_org, TEST_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
         for tester in TEST_CORP:
             if "id" not in tester:
                 continue
             account = Account.objects.get(uuid=tester["id"])
-            self.assertEqual(
-                    tester["username"],
-                    account.username,
-                    "username incorrectly imported")
+            assert tester["username"] == account.username
 
             for group in tester.get("attributes", {}).get("memberOf", []):
-                self.assertTrue(
-                        account.units.filter(imported_id=group).exists(),
-                        "user not in group")
+                assert account.units.filter(imported_id=group).exists()
 
-    def test_removal(self):
+    def test_removal(self, test_org):
         """Removing a user from Keycloak's JSON output should also remove that
         user from the database."""
-        self.test_ou_import()
+        self.test_ou_import(test_org)
 
         thads = list(Account.objects.filter(first_name="Thad"))
 
         keycloak_actions.perform_import_raw(
-                self.org, [
-                        tester
-                        for tester in TEST_CORP
-                        if tester.get("firstName") != "Thad"],
-                keycloak_actions.keycloak_dn_selector)
+            test_org,
+            [t for t in TEST_CORP if t.get("firstName") != "Thad"],
+            keycloak_actions.keycloak_dn_selector
+        )
 
         for thad in thads:
-            with self.assertRaises(Account.DoesNotExist,
-                                   msg="user still present after deletion"):
+            with pytest.raises(Account.DoesNotExist):
                 thad.refresh_from_db()
 
-    def test_group_change_ou(self):
+    def test_group_change_ou(self, test_org):
         """Changing the LDAP DN of a user in a group-based hierarchy should
         change their properties without affecting their positions."""
-        self.test_group_import()
+        self.test_group_import(test_org)
 
         todds = list(Account.objects.filter(first_name="Todd"))
 
@@ -201,97 +174,88 @@ class DeprecatedKeycloakImportTest(TestCase):
         for tester in NEW_CORP:
             if tester.get("firstName") == "Todd":
                 tester["attributes"]["LDAP_ENTRY_DN"] = [
-                        f"CN=Todd {tester['lastName']},"
-                        "OU=Experimenters,O=Test Corp."]
+                    f"CN=Todd {tester['lastName']},OU=Experimenters,O=Test Corp."
+                ]
 
         keycloak_actions.perform_import_raw(
-                self.org, NEW_CORP,
-                keycloak_actions.keycloak_group_dn_selector)
+            test_org, NEW_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
         for todd in todds:
             todd.refresh_from_db()
-            self.assertIn(
-                    "OU=Experimenters",
-                    todd.imported_id,
-                    "DN did not change")
+            assert "OU=Experimenters" in todd.imported_id
 
-    def test_change_group(self):
+    def test_change_group(self, test_org):
         """It should be possible to move a user from one group to another."""
-        self.test_group_import()
+        self.test_group_import(test_org)
 
         teds = list(Account.objects.filter(first_name="Ted"))
 
         for ted in teds:
             ted.units.get(imported_id="CN=Group 2,O=Test Corp.")
-            with self.assertRaises(OrganizationalUnit.DoesNotExist,
-                                   msg="user in new group before move"):
+            with pytest.raises(OrganizationalUnit.DoesNotExist):
                 ted.units.get(imported_id="CN=Group 1,O=Test Corp.")
 
         NEW_CORP = deepcopy(TEST_CORP)
         for tester in NEW_CORP:
             if tester.get("firstName") == "Ted":
-                tester["attributes"]["memberOf"] = [
-                    "CN=Group 1,O=Test Corp."
-                ]
+                tester["attributes"]["memberOf"] = ["CN=Group 1,O=Test Corp."]
 
         keycloak_actions.perform_import_raw(
-                self.org, NEW_CORP,
-                keycloak_actions.keycloak_group_dn_selector)
+            test_org, NEW_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
         for ted in teds:
             ted.refresh_from_db()
             ted.units.get(imported_id="CN=Group 1,O=Test Corp.")
-            with self.assertRaises(OrganizationalUnit.DoesNotExist,
-                                   msg="user in old group after move"):
+            with pytest.raises(OrganizationalUnit.DoesNotExist):
                 ted.units.get(imported_id="CN=Group 2,O=Test Corp.")
 
-    def test_remove_ou(self):
+    def test_remove_ou(self, test_org):
         """Removing every user from a group or organisational unit should
         remove its representation in the database."""
-        self.test_group_import()
+        self.test_group_import(test_org)
 
         OrganizationalUnit.objects.get(imported_id="CN=Group 2,O=Test Corp.")
 
         NEW_CORP = deepcopy(TEST_CORP)
         for tester in NEW_CORP:
             try:
-                tester["attributes"]["memberOf"].remove(
-                        "CN=Group 2,O=Test Corp.")
+                tester["attributes"]["memberOf"].remove("CN=Group 2,O=Test Corp.")
             except ValueError:
                 pass
 
         keycloak_actions.perform_import_raw(
-                self.org, NEW_CORP,
-                keycloak_actions.keycloak_group_dn_selector)
+            test_org, NEW_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
-        with self.assertRaises(OrganizationalUnit.DoesNotExist,
-                               msg="defunct OU not removed"):
-            OrganizationalUnit.objects.get(
-                    imported_id="CN=Group 2,O=Test Corp.")
+        with pytest.raises(OrganizationalUnit.DoesNotExist):
+            OrganizationalUnit.objects.get(imported_id="CN=Group 2,O=Test Corp.")
 
-    def test_import_user_in_multiple_groups_should_only_get_one_email_alias(self):
+    def test_import_user_in_multiple_groups_should_only_get_one_email_alias(self, test_org):
         """ A user can be a memberOf multiple groups, but it is still only one
         user, and should result in only one email-alias (given that the user
         has an email attribute)"""
         keycloak_actions.perform_import_raw(
-            self.org, TEST_CORP_TWO,
-            keycloak_actions.keycloak_group_dn_selector)
+            test_org, TEST_CORP_TWO,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
         ursula_aliases = Alias.objects.filter(_value="ursulas@brevdue.dk")
+        assert ursula_aliases.count() == 1
 
-        self.assertEqual(ursula_aliases.count(), 1,
-                         msg="Either duplicate or no email aliases for user created")
-
-    def test_delete_user_relation_to_group(self):
+    def test_delete_user_relation_to_group(self, test_org):
         keycloak_actions.perform_import_raw(
-            self.org, TEST_CORP_TWO,
-            keycloak_actions.keycloak_group_dn_selector)
+            test_org, TEST_CORP_TWO,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
         ursula = TEST_CORP_TWO[0]
         account = Account.objects.get(uuid=ursula["id"])
-
-        self.assertEqual(Position.objects.filter(account=account).count(), 2,
-                         msg="Position not correctly created")
+        assert Position.objects.filter(account=account).count() == 2
 
         NEW_CORP = deepcopy(TEST_CORP_TWO)
         # Now only member of one group instead of two.
@@ -299,61 +263,49 @@ class DeprecatedKeycloakImportTest(TestCase):
 
         # Import again
         keycloak_actions.perform_import_raw(
-            self.org, NEW_CORP,
-            keycloak_actions.keycloak_group_dn_selector)
+            test_org, NEW_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
-        self.assertEqual(Position.objects.filter(account=account).count(), 1,
-                         msg="Position not updated correctly")
-
+        assert Position.objects.filter(account=account).count() == 1
         # The OU should still exist though, as there is still a user with a
         # connection to it.
-        self.assertTrue(
-                OrganizationalUnit.objects.filter(
-                        imported_id="CN=Group 1,O=Test Corp.").exists(),
-                msg="OU doesn't exist but should")
+        assert OrganizationalUnit.objects.filter(
+            imported_id="CN=Group 1,O=Test Corp.").exists()
 
         # Delete Ulrich from the TEST_CORP_TWO
         del NEW_CORP[1]
 
         # Import again
         keycloak_actions.perform_import_raw(
-            self.org, NEW_CORP,
-            keycloak_actions.keycloak_group_dn_selector)
+            test_org, NEW_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
         # The OU should now not exist as there is no user with a connection to
         # it.
-        self.assertFalse(
-                OrganizationalUnit.objects.filter(
-                        imported_id="CN=Group 1,O=Test Corp.").exists(),
-                msg="OU is not deleted")
+        assert not OrganizationalUnit.objects.filter(
+            imported_id="CN=Group 1,O=Test Corp.").exists()
 
-    def test_property_update(self):
+    def test_property_update(self, test_org):
         """Changing a user's name should update the corresponding properties in
         the database."""
-        self.test_ou_import()
+        self.test_ou_import(test_org)
 
-        for user in Account.objects.filter(organization=self.org):
-            self.assertNotEqual(
-                    user.first_name,
-                    "Tadeusz",
-                    "premature or invalid property update(?)")
+        for acc in Account.objects.filter(organization=test_org):
+            assert acc.first_name != "Tadeusz"
 
         NEW_CORP = deepcopy(TEST_CORP)
         for tester in NEW_CORP:
-            try:
-                # The hero of the Polish epic poem Pan Tadeusz, since you ask
-                # (the first line of which is "O Lithuania, my homeland!")
-                tester["firstName"] = "Tadeusz"
-                tester["lastName"] = "Soplica"
-            except ValueError:
-                pass
+            # The hero of the Polish epic poem Pan Tadeusz, since you ask
+            # (the first line of which is "O Lithuania, my homeland!")
+            tester["firstName"] = "Tadeusz"
+            tester["lastName"] = "Soplica"
 
         keycloak_actions.perform_import_raw(
-                self.org, NEW_CORP,
-                keycloak_actions.keycloak_group_dn_selector)
+            test_org, NEW_CORP,
+            keycloak_actions.keycloak_group_dn_selector
+        )
 
-        for user in Account.objects.filter(organization=self.org):
-            self.assertEqual(
-                    (user.first_name, user.last_name),
-                    ("Tadeusz", "Soplica"),
-                    "property update failed")
+        for acc in Account.objects.filter(organization=test_org):
+            assert (acc.first_name, acc.last_name) == ("Tadeusz", "Soplica")
