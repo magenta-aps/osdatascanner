@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+from django.utils import translation
 
 from os2datascanner.engine2.model.file import (
     FilesystemHandle, FilesystemSource)
@@ -812,3 +813,15 @@ def other_client():
 @pytest.fixture
 def other_org(other_client):
     return Organization.objects.create(name='other_org', client=other_client)
+
+# Translation
+
+
+@pytest.fixture
+def danish_translation():
+    translation.activate("da")
+
+
+@pytest.fixture
+def english_translation():
+    translation.activate("en")

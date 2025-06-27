@@ -46,7 +46,7 @@ def build_request(rule, file, text):
     return request
 
 
-def test_text_cpr_rule_fixed():
+def test_text_cpr_rule_fixed(danish_translation):
     file = None
     text = "hello"
 
@@ -55,7 +55,7 @@ def test_text_cpr_rule_fixed():
     assert "Ingen resultater fundet" in res
 
 
-def test_text_cpr_rule_random():
+def test_text_cpr_rule_random(danish_translation):
     file = None
     text = generate_dummy_content()
 
@@ -66,7 +66,7 @@ def test_text_cpr_rule_random():
     assert "Ingen resultater fundet" in res
 
 
-def test_text_cpr_rule_real():
+def test_text_cpr_rule_real(danish_translation):
     file = None
     text = "1111111118"
 
@@ -75,7 +75,7 @@ def test_text_cpr_rule_real():
     assert "Ingen resultater fundet" not in res
 
 
-def test_text_regex_rule_negative():
+def test_text_regex_rule_negative(danish_translation):
     file = None
     text = "This should produce false / nothing found"
 
@@ -84,7 +84,7 @@ def test_text_regex_rule_negative():
     assert "Ingen resultater fundet" in res
 
 
-def test_text_regex_rule_positive():
+def test_text_regex_rule_positive(danish_translation):
     file = None
     text = "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM"
 
@@ -93,7 +93,7 @@ def test_text_regex_rule_positive():
     assert "Ingen resultater fundet" not in res
 
 
-def test_file_cpr_rulefixed():
+def test_file_cpr_rulefixed(danish_translation):
     file = dj_file.SimpleUploadedFile("file", "hello".encode())
     text = None
 
@@ -102,7 +102,7 @@ def test_file_cpr_rulefixed():
     assert "Ingen resultater fundet" in res
 
 
-def test_file_cpr_rule_random():
+def test_file_cpr_rule_random(danish_translation):
     file = dj_file.SimpleUploadedFile("file", generate_dummy_content().encode())
     text = None
 
@@ -113,7 +113,7 @@ def test_file_cpr_rule_random():
     assert "Ingen resultater fundet" in res
 
 
-def test_file__cpr_rule_real():
+def test_file__cpr_rule_real(danish_translation):
     file = dj_file.SimpleUploadedFile("file", "1111111118".encode())
     text = None
 
@@ -122,7 +122,7 @@ def test_file__cpr_rule_real():
     assert "Ingen resultater fundet" not in res
 
 
-def test_file__regex_rule_negative():
+def test_file__regex_rule_negative(danish_translation):
     file = dj_file.SimpleUploadedFile("file", "This should produce false".encode())
     text = None
 
@@ -131,7 +131,7 @@ def test_file__regex_rule_negative():
     assert "Ingen resultater fundet" in res
 
 
-def test_file__regex_rule_positive():
+def test_file__regex_rule_positive(danish_translation):
     file = dj_file.SimpleUploadedFile(
             "file",
             "SEDRTCTVYCBUYNIOM__doesthiswordexist__FSDBNIGOFDFDÆM".encode())

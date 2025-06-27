@@ -1,27 +1,20 @@
 import pytest
 
-from django.test import TestCase
-from django.utils import translation
-
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
     OrganizationalUnit, Position)
 
 
-class RoleTest(TestCase):
+class TestRole:
 
-    def setUp(self) -> None:
-        translation.activate('en')
-
-    # Generalized version found in core application
-    def test_choices(self):
+    def test_choices(self, english_translation):
         """The choices method returns the expected format."""
         expected = [
             ('employee', 'employee'),
             ('manager', 'manager'),
             ('dpo', 'data protection officer')
         ]
-        self.assertEqual(expected, Role.choices)
+        assert Role.choices == expected
 
 
 @pytest.fixture
