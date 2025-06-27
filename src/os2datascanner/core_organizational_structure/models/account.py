@@ -77,7 +77,7 @@ class Account(models.Model):
     )
     manager = models.ForeignKey(
         'account',
-        models.SET_NULL,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="managed_accounts",
@@ -148,8 +148,16 @@ class Account(models.Model):
         return colors[int(self.pk) % 10]
 
     @cached_property
-    def is_manager(self):
+    def is_unit_manager(self):
         return self.get_managed_units().exists()
+
+    @cached_property
+    def is_account_manager(self):
+        return self.managed_accounts.exists()
+
+    @cached_property
+    def is_manager(self):
+        return self.is_unit_manager or self.is_account_manager
 
     @cached_property
     def is_dpo(self):

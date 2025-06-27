@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 
 from ..models.account import StatusChoices, Account
+from ..models.position import Position
 from ...reportapp.models.documentreport import DocumentReport
 from .utilities import make_matched_document_reports_for
 
@@ -474,6 +475,92 @@ class TestAccount:
 
         # Assert
         assert qs.first().handle_status == egon_account.match_status
+
+    def test_account_is_account_manager_true_two_accounts(self, egon_account, benny_account,
+                                                          kjeld_account):
+        """The 'is_account_manager'-method should return True if the account is the manager of one
+        or more accounts through the 'managed_accounts'-field."""
+        # Egon manages Benny and Kjeld
+        benny_account.manager = egon_account
+        benny_account.save()
+        kjeld_account.manager = egon_account
+        kjeld_account.save()
+
+        assert egon_account.is_account_manager
+
+    def test_account_is_account_manager_true_one_account(self, egon_account, benny_account):
+        """The 'is_account_manager'-method should return True if the account is the manager of one
+        or more accounts through the 'managed_accounts'-field."""
+        # Egon manages Benny
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        assert egon_account.is_account_manager
+
+    def test_account_is_account_manager_false(self, kjeld_account):
+        """The 'is_account_manager'-method should return False if the account is not the manager of
+        one or more accounts through the 'managed_accounts'-field."""
+        # Kjeld does not manage anyone.
+        kjeld_account.managed_accounts.clear()
+
+        assert not kjeld_account.is_account_manager
+
+    def test_account_is_unit_manager_true(self, egon_account, olsenbanden_ou):
+        """The 'is_unit_manager'-method should return True if the account has a manager-role
+        position in one or more organizational units."""
+        # Egon is a manager for Olsen-banden.
+        Position.managers.get_or_create(account=egon_account, unit=olsenbanden_ou)
+
+        assert egon_account.is_unit_manager
+
+    def test_account_is_unit_manager_false(self, egon_account, olsenbanden_ou):
+        """The 'is_unit_manager'-method should return False if the account has no manager-role
+        position in one or more organizational units."""
+        # Egon is an employee for Olsen-banden.
+        Position.employees.get_or_create(account=egon_account, unit=olsenbanden_ou)
+
+        assert not egon_account.is_unit_manager
+
+    def test_account_is_manager_true_account(self, egon_account, benny_account):
+        """The 'is_manager'-method should return True if the account is the direct manager of
+        another account."""
+        # Egon manages Benny
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        assert egon_account.is_manager
+
+    def test_account_is_manager_true_unit(self, egon_account, olsenbanden_ou):
+        """The 'is_manager'-method should return True if the account has a manager-role Position
+        related to an OU."""
+        # Egon is a manager for Olsen-banden.
+        Position.managers.get_or_create(account=egon_account, unit=olsenbanden_ou)
+
+        assert egon_account.is_manager
+
+    def test_account_is_manager_true_unit_and_account(self, egon_account, olsenbanden_ou,
+                                                      benny_account):
+        """The 'is_manager'-method should return True if the account has a manager-role Position
+        related to an OU and is a direct manager for another account."""
+        # Egon is a manager for Olsen-banden.
+        Position.managers.get_or_create(account=egon_account, unit=olsenbanden_ou)
+
+        # Egon manages Benny
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        assert egon_account.is_manager
+
+    def test_account_is_manager_false(self, kjeld_account, olsenbanden_ou, benny_account):
+        """The 'is_manager'-method should return False if the account is neither a direct manager
+        for another account or has a manager-role position in an OU."""
+        # Egon is an employee for Olsen-banden.
+        Position.employees.get_or_create(account=kjeld_account, unit=olsenbanden_ou)
+
+        # Kjeld does not manage anyone.
+        kjeld_account.managed_accounts.clear()
+
+        assert not kjeld_account.is_manager
 
 
 @pytest.mark.django_db

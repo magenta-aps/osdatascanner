@@ -6,238 +6,245 @@
 
 {% block body %}
   <div class="content content--maxwidth" hx-push-url="true">
-
-    {% if user_units %}
-      <div class="content-header">
-        <h1 class="page-title">
+    {% if show_leader_tabs %}
+      {% include "components/navigation/leader-statistics-tabs.html" with active_tab=active_tab %}
+    {% endif %}
+    <div class="content-header">
+      <h1 class="page-title">
+        {% if org_unit %}
           {% trans "Leader overview for:" %} <span class="org-unit-text">{{ org_unit }}</span>
-        </h1>
+        {% else %}
+          {% trans "Leader overview" %}
+        {% endif %}
+      </h1>
 
-        <svg class="page-indicator"
-             id="report-page-indicator"
-             viewbox="0 0 100 100">
-          <circle id="circle" cx="50" cy="50" r="45"></circle>
-        </svg>
+      <svg class="page-indicator"
+           id="report-page-indicator"
+           viewbox="0 0 100 100">
+        <circle id="circle" cx="50" cy="50" r="45"></circle>
+      </svg>
 
-        <p class="employee-count-text">
-          {% if employees %}
-            {{ employee_count }}
-          {% else %}
-            0
-          {% endif %}
-          {% trans "employees" %}
-        </p>
+      <p class="employee-count-text">
+        {% if employees %}
+          {{ employee_count }}
+        {% else %}
+          0
+        {% endif %}
+        {% trans "employees" %}
+      </p>
 
-        <form name="leader_overview_form"
-              hx-get="{% url "statistics-leader" %}"
-              hx-target=".content"
-              hx-select=".content"
-              hx-swap="outerHTML"
-              hx-trigger="change, click from:.order-by delay:100ms"
-              hx-indicator="#report-page-indicator">
-          <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}" />
-          <input type="hidden" name="order" id="order" value="{{ order }}" />
-          <div class="org_filtering_wrapper">
-            <div class="stat_form">
-              <div>
+      <form name="leader_overview_form"
+            hx-get="{{ view_url }}"
+            hx-target=".content"
+            hx-select=".content"
+            hx-swap="outerHTML"
+            hx-trigger="change, click from:.order-by delay:100ms"
+            hx-indicator="#report-page-indicator">
+        <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}" />
+        <input type="hidden" name="order" id="order" value="{{ order }}" />
+        <div class="org_filtering_wrapper">
+          <div class="stat_form">
+            <div>
+              {% if user_units %}
                 <div>
                   <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
                 </div>
                 <div class="org_filtering dropdown">
-                  <select name="org_unit" id="org_units" autocomplete="off"
-                  {% if request.GET.view_all %}disabled{% endif %}>
+                  <select name="org_unit"
+                          id="org_units"
+                          autocomplete="off"
+                          {% if request.GET.view_all %}disabled{% endif %}>
                     {% for unit in user_units %}
                       <option value="{{ unit.uuid }}"
                               {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
                     {% endfor %}
                   </select>
                 </div>
-              </div>
-
-              {% if settings.LEADER_CSV_EXPORT %}
-                <div class="form__buttons">
-                  <div class="button-group">
-                    <a href="{% url "statistics-leader-export" %}?{{ request.GET.urlencode }}"
-                       class="button button--transparent-button"
-                       aria-label="{% trans "Export leader data as a csv-file" %}"
-                       title="{% trans "Click here to export leader data as a csv-file" %}">
-                      {% trans "Export CSV" %}
-                    </a>
-                  </div>
-                </div>
               {% endif %}
             </div>
 
-            <div class="search_field_wrapper right">
-              <input class="form-control"
-                     type="search"
-                     name="search_field"
-                     id="search_field"
-                     placeholder="{% trans "Search for employee" %}"
-                     value="{{ request.GET.search_field }}" />
-            </div>
+            {% if settings.LEADER_CSV_EXPORT %}
+              <div class="form__buttons">
+                <div class="button-group">
+                  <a href="{{ export_url }}?{{ request.GET.urlencode }}"
+                     class="button button--transparent-button"
+                     aria-label="{% trans "Export leader data as a csv-file" %}"
+                     title="{% trans "Click here to export leader data as a csv-file" %}">{% trans "Export CSV" %}</a>
+                </div>
+              </div>
+            {% endif %}
           </div>
 
-            <div class="org_filtering">
-                <div class="ds-checkbox">
-                <label>
-                    {% trans "show all employees"|capfirst %}
-                  <input type="checkbox"  name="view_all"
-                    {% if request.GET.view_all %}checked{% endif %}>
+          <div class="search_field_wrapper right">
+            <input class="form-control"
+                   type="search"
+                   name="search_field"
+                   id="search_field"
+                   placeholder="{% trans "Search for employee" %}"
+                   value="{{ request.GET.search_field }}" />
+          </div>
+        </div>
 
-                     <span class="help-tooltip"
-                          title="{% blocktrans trimmed %} Display all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
-                          <i id="help" class="material-symbols">help</i>
-                    </span>
+        {% if user_units %}
+          <div class="org_filtering">
+            <div class="ds-checkbox">
+              <label>
+                {% trans "show all employees"|capfirst %}
+                <input type="checkbox"
+                       name="view_all"
+                       {% if request.GET.view_all %}checked{% endif %}>
 
-                 </label>
-                </div>
+                <span class="help-tooltip"
+                      title="{% blocktrans trimmed %} Display all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
+                  <i id="help" class="material-symbols">help</i>
+                </span>
+
+              </label>
             </div>
-        </form>
+          </div>
+        {% endif %}
+      </form>
 
-      </div>
+    </div>
 
-      <div class="datatablex__card-container no-side-scroll">
-        <div class="datatablex__wrapper no-side-scroll">
-          <table class="datatablex leaderoverview-table no-side-scroll">
-            <thead>
-              <tr class="datatablex__row table-topbar topbar-stick sticky">
+    <div class="datatablex__card-container no-side-scroll">
+      <div class="datatablex__wrapper no-side-scroll">
+        <table class="datatablex leaderoverview-table no-side-scroll">
+          <thead>
+            <tr class="datatablex__row table-topbar topbar-stick sticky">
 
-                <th class="column column--employee">
+              <th class="column column--employee">
+                <div class="th__flex-container">
+                  <label class="th-label" for="name-caret">{% trans "Employee" %}</label>
+
+                  <button type="button"
+                          class="order-by button button--caret-button {% if order_by == 'first_name' and order == 'ascending' %}up{% endif %}"
+                          id="name-caret"
+                          name="first_name"
+                          value="{% if order_by == 'first_name' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                    <i id="expand_more"
+                       class="material-symbols {% if order_by == 'first_name' %}active{% endif %}"
+                       aria-hidden="true">expand_more</i>
+                  </button>
+                </div>
+              </th>
+
+              <th class="column column--matches-all column--numeral">
+                <div class="th__flex-container">
+                  <label class="th-label" for="matches-caret">
+                    <span>{% trans "Results" %}</span>
+                  </label>
+
+                  <button type="button"
+                          class="order-by button button--caret-button {% if order_by == 'unhandled_matches' and order == 'ascending' %}up{% endif %}"
+                          id="matches-caret"
+                          name="unhandled_matches"
+                          value="{% if order_by == 'unhandled_matches' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                    <i id="expand_more"
+                       class="material-symbols {% if order_by == 'unhandled_matches' %}active{% endif %}"
+                       aria-hidden="true">expand_more</i>
+                  </button>
+                </div>
+              </th>
+
+              {% if show_retention_column %}
+                <th class="column column--matches-old column--numeral">
                   <div class="th__flex-container">
-                    <label class="th-label" for="name-caret">{% trans "Employee" %}</label>
+                    <label class="th-label" for="old-matches-caret">
+                      <span>{% blocktrans %}Over {{ retention_days }} days{% endblocktrans %}</span>
 
-                    <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'first_name' and order == 'ascending' %}up{% endif %}"
-                            id="name-caret"
-                            name="first_name"
-                            value="{% if order_by == 'first_name' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more"
-                         class="material-symbols {% if order_by == 'first_name' %}active{% endif %}"
-                         aria-hidden="true">expand_more</i>
-                    </button>
-                  </div>
-                </th>
-
-                <th class="column column--matches-all column--numeral">
-                  <div class="th__flex-container">
-                    <label class="th-label" for="matches-caret">
-                      <span>{% trans "Results" %}</span>
-                    </label>
-
-                    <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'unhandled_matches' and order == 'ascending' %}up{% endif %}"
-                            id="matches-caret"
-                            name="unhandled_matches"
-                            value="{% if order_by == 'unhandled_matches' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                      <i id="expand_more"
-                         class="material-symbols {% if order_by == 'unhandled_matches' %}active{% endif %}"
-                         aria-hidden="true">expand_more</i>
-                    </button>
-                  </div>
-                </th>
-
-                {% if show_retention_column %}
-                  <th class="column column--matches-old column--numeral">
-                    <div class="th__flex-container">
-                      <label class="th-label" for="old-matches-caret">
-                        <span>{% blocktrans %}Over {{ retention_days }} days{% endblocktrans %}</span>
-
-                        <span class="help-tooltip"
-                              title="{% blocktrans trimmed %} The number of results stemming from a source, which is older than {{ retention_days }} days. Your organization has defined, that results may be stored for a maximum of {{ retention_days }} days. Results older than this should be handled as soon as possible. {% endblocktrans %}">
-                          <i id="help" class="material-symbols">help</i>
-                        </span>
-                      </label>
-
-                      <button type="button"
-                              class="order-by button button--caret-button {% if order_by == 'old' and order == 'ascending' %}up{% endif %}"
-                              id="old-matches-caret"
-                              name="old"
-                              value="{% if order_by == 'old' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                        <i id="expand_more"
-                           class="material-symbols {% if order_by == 'old' %}active{% endif %}"
-                           aria-hidden="true">expand_more</i>
-                      </button>
-                    </div>
-                  </th>
-                {% endif %}
-
-                {% if perms.os2datascanner_report.see_withheld_documentreport %}
-                  <th class="column column--matches-withheld column--numeral">
-                    <div class="th__flex-container">
-                      <label class="th-label" for="withheld-matches-caret">
-                        <span>{% trans "Withheld" %}</span>
-                        <span class="help-tooltip"
-                              title="{% blocktrans trimmed %} Withheld results are results that aren't yet visible to the user, but can be delegated by a superuser. These results won't count in the development overview. {% endblocktrans %}">
-                          <i id="help" class="material-symbols">help</i>
-                        </span>
-                      </label>
-
-                      <button type="button"
-                              class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'ascending' %}up{% endif %}"
-                              id="withheld-matches-caret"
-                              name="withheld"
-                              value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                        <i id="expand_more"
-                           class="material-symbols {% if order_by == 'withheld' %}active{% endif %}"
-                           aria-hidden="true">expand_more</i>
-                      </button>
-                    </div>
-                  </th>
-                {% endif %}
-
-                <th class="column column--attribute column--status">
-                  <div class="th__flex-container">
-                    <label class="th-label" for="status-caret">
-                      {% trans "Status" %}
                       <span class="help-tooltip"
-                            title="{% trans "The status of each user is determined by how many matches that user has, and how often they have handled their matches recently. A user with a “Completed” status has no matches. A user with a “Accepted” status has handled at least 75% of their recent matches." %}">
+                            title="{% blocktrans trimmed %} The number of results stemming from a source, which is older than {{ retention_days }} days. Your organization has defined, that results may be stored for a maximum of {{ retention_days }} days. Results older than this should be handled as soon as possible. {% endblocktrans %}">
                         <i id="help" class="material-symbols">help</i>
                       </span>
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'handle_status' and order == 'ascending' %}up{% endif %}"
-                            id="status-caret"
-                            name="handle_status"
-                            value="{% if order_by == 'handle_status' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                            class="order-by button button--caret-button {% if order_by == 'old' and order == 'ascending' %}up{% endif %}"
+                            id="old-matches-caret"
+                            name="old"
+                            value="{% if order_by == 'old' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                       <i id="expand_more"
-                         class="material-symbols {% if order_by == 'handle_status' %}active{% endif %}"
+                         class="material-symbols {% if order_by == 'old' %}active{% endif %}"
                          aria-hidden="true">expand_more</i>
                     </button>
                   </div>
                 </th>
-
-                <th class="column column--actions">
-                  <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {% if employees %}
-                {% for employee in employees %}
-                  <tr class="soft-load datatablex__row"
-                      hx-get="{% url 'employee' employee.uuid %}"
-                      hx-swap="outerHTML swap:200ms"
-                      hx-target="this"
-                      hx-trigger="revealed"
-                      hx-push-url="false">
-                    <td class="column column--loading" colspan="{{ num_cols }}">{% trans "Loading employee ..." %}</td>
-                  </tr>
-                {% endfor %}
-              {% else %}
-                <tr class="datatablex__row">
-                  <td class="column column--nodata" colspan="{{ num_cols }}">{% trans "No employees found." %}</td>
-                </tr>
               {% endif %}
-            </tbody>
-          </table>
-        </div>
+
+              {% if perms.os2datascanner_report.see_withheld_documentreport %}
+                <th class="column column--matches-withheld column--numeral">
+                  <div class="th__flex-container">
+                    <label class="th-label" for="withheld-matches-caret">
+                      <span>{% trans "Withheld" %}</span>
+                      <span class="help-tooltip"
+                            title="{% blocktrans trimmed %} Withheld results are results that aren't yet visible to the user, but can be delegated by a superuser. These results won't count in the development overview. {% endblocktrans %}">
+                        <i id="help" class="material-symbols">help</i>
+                      </span>
+                    </label>
+
+                    <button type="button"
+                            class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'ascending' %}up{% endif %}"
+                            id="withheld-matches-caret"
+                            name="withheld"
+                            value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                      <i id="expand_more"
+                         class="material-symbols {% if order_by == 'withheld' %}active{% endif %}"
+                         aria-hidden="true">expand_more</i>
+                    </button>
+                  </div>
+                </th>
+              {% endif %}
+
+              <th class="column column--attribute column--status">
+                <div class="th__flex-container">
+                  <label class="th-label" for="status-caret">
+                    {% trans "Status" %}
+                    <span class="help-tooltip"
+                          title="{% trans "The status of each user is determined by how many matches that user has, and how often they have handled their matches recently. A user with a “Completed” status has no matches. A user with a “Accepted” status has handled at least 75% of their recent matches." %}">
+                      <i id="help" class="material-symbols">help</i>
+                    </span>
+                  </label>
+
+                  <button type="button"
+                          class="order-by button button--caret-button {% if order_by == 'handle_status' and order == 'ascending' %}up{% endif %}"
+                          id="status-caret"
+                          name="handle_status"
+                          value="{% if order_by == 'handle_status' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                    <i id="expand_more"
+                       class="material-symbols {% if order_by == 'handle_status' %}active{% endif %}"
+                       aria-hidden="true">expand_more</i>
+                  </button>
+                </div>
+              </th>
+
+              <th class="column column--actions">
+                <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% if employees %}
+              {% for employee in employees %}
+                <tr class="soft-load datatablex__row"
+                    hx-get="{% url 'employee' employee.uuid %}"
+                    hx-swap="outerHTML swap:200ms"
+                    hx-target="this"
+                    hx-trigger="revealed"
+                    hx-push-url="false">
+                  <td class="column column--loading" colspan="{{ num_cols }}">{% trans "Loading employee ..." %}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr class="datatablex__row">
+                <td class="column column--nodata" colspan="{{ num_cols }}">{% trans "No employees found." %}</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
       </div>
-    {% else %}
-      {% include "error_pages/no-units-error.html" %}
-    {% endif %}
+    </div>
   </div>
 {% endblock body %}
 

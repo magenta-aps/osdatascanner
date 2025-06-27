@@ -55,6 +55,13 @@ class OutlookCategorizeChoices(models.TextChoices):
     NONE = "NON", _("No categorization")
 
 
+class LeaderTabConfigChoices(models.TextChoices):
+    UNITS = "UNI", _("Only allow managers to see units they manage in the leader overview")
+    ACCOUNTS = "ACC", _("Only allow managers to see accounts they manage in the leader overview")
+    BOTH = "BOT", _("Allow managers to see both units and accounts they manage in the leader "
+                    "overview")
+
+
 class Organization(models.Model):
     """Stores data for a specific organization.
 
@@ -176,6 +183,12 @@ class Organization(models.Model):
         choices=SBSYSTabConfigChoices.choices,
         default=SBSYSTabConfigChoices.NONE,
         verbose_name=_("SBSYS tab access")
+    )
+    leadertab_config = models.CharField(
+        max_length=3,
+        choices=LeaderTabConfigChoices.choices,
+        default=LeaderTabConfigChoices.UNITS,
+        verbose_name=_("Leader tab configuration")
     )
 
     # Grant prioritization configuration
@@ -307,4 +320,5 @@ class OrganizationSerializer(BaseSerializer):
             'dtstart',
             'retention_policy',
             'retention_days',
-            'prioritize_graphgrant']
+            'prioritize_graphgrant',
+            'leadertab_config']

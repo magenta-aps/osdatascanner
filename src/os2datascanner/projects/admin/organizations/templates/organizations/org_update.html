@@ -172,6 +172,16 @@
           </div>
         </div>
 
+        <div class="form__row--leadertab">
+          <span class="form__row__title">{% trans "Leader overview settings" %}</span>
+
+          <div class="form__row__item {% if form.leadertab_config.errors %}has-error{% endif %}">
+            <label for="{{ form.leadertab_config.if_for_label }}">{{ form.leadertab_config.label }}</label>
+            {{ form.leadertab_config }}
+            {% if form.leadertab_config.errors %}{{ form.leadertab_config.errors }}{% endif %}
+          </div>
+        </div>
+
         {% if form.prioritize_graphgrant %}
           <div class="form__row--prioritize_graphgrant">
             <span class="form__row__title">{% trans "Grant prioritization settings" %}</span>
@@ -224,6 +234,7 @@
               {% endfor %}
             </div>
           </div>
+
         </div>
 
         {% if show_delete_fields %}

@@ -7,6 +7,15 @@
 
 - SharePoint list scanning supports SmartDelta for last-modified checks.
 
+- Account to account manager relations are now presented in the UI in the following ways:
+
+  - In the account detail page in the admin module and the report module, the account's manager, as
+    well as the accounts which the account manage are displayed.
+
+  - In the leader overview, the managed accounts for the logged in user's account can be displayed.
+    Access to this overview is configured on the organization page through the "leader tab 
+    configuration" setting.
+
 - Report module write permissions are now controlled by the Organization object. If the settings
   are not set on the Organization, OSdatascanner defaults to the installation settings.
   In the next release, the installation settings will be removed completely.

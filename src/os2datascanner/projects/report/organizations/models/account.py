@@ -569,8 +569,9 @@ class Account(Core_Account):
         return matches_by_week
 
     def managed_by(self, account):
+        """Returns True if this account is managed by the account passed as an argument."""
         units = self.units.all() & account.get_managed_units()
-        return units.exists()
+        return units.exists() or self.manager == account
 
     @property
     def leadertab_access(self) -> bool:

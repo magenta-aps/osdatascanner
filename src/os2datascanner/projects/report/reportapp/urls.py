@@ -10,9 +10,10 @@ from os2datascanner import __version__
 
 from .views.api import JSONAPIView
 from .views.statistics_views import (
-    LeaderStatisticsPageView, LeaderStatisticsCSVView,
+    LeaderUnitsStatisticsPageView, LeaderStatisticsRedirectView,
     DPOStatisticsPageView, DPOStatisticsCSVView,
-    UserStatisticsPageView, EmployeeView)
+    UserStatisticsPageView, EmployeeView, LeaderAccountsStatisticsPageView,
+    LeaderAccountsStatisticsCSVView, LeaderUnitsStatisticsCSVView)
 from .views.report_views import (
     UserReportView, UserArchiveView,
     RemediatorView, RemediatorArchiveView,
@@ -92,8 +93,15 @@ urlpatterns = [
     path('scannerjobs/<int:pk>/delete', ScannerjobDeleteView.as_view(), name="delete_scannerjob"),
 
     # Statistics views
-    re_path(r'^statistics/leader/$', LeaderStatisticsPageView.as_view(), name='statistics-leader'),
-    re_path(r'^statistics/leader/csv/$', LeaderStatisticsCSVView.as_view(), name='statistics-leader-export'),  # noqa
+    path('statistics/leader', LeaderStatisticsRedirectView.as_view(), name='statistics-leader'),
+    path('statistics/leader/units', LeaderUnitsStatisticsPageView.as_view(),
+         name='statistics-leader-units'),
+    path("statistics/leader/accounts", LeaderAccountsStatisticsPageView.as_view(),
+         name='statistics-leader-accounts'),
+    path('statistics/leader/accounts/csv', LeaderAccountsStatisticsCSVView.as_view(),
+         name='statistics-leader-accounts-export'),
+    path('statistics/leader/units/csv', LeaderUnitsStatisticsCSVView.as_view(),
+         name='statistics-leader-units-export'),
     re_path(r'^statistics/dpo/$', DPOStatisticsPageView.as_view(), name='statistics-dpo'),
     re_path(r'^statistics/dpo/csv/$', DPOStatisticsCSVView.as_view(), name='statistics-dpo-export'),
     path('statistics/user/', UserStatisticsPageView.as_view(), name='statistics-user-me'),

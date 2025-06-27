@@ -1,0 +1,12 @@
+{% if link %}
+  <a href="{% url "account" account.organization.slug account.uuid %}"
+     class="link_box">
+    <span class="user__avatar">{% include "components/decoration/account_image.html" with account=account %}</span>
+    <span>{{ account.get_full_name }}</span>
+  </a>
+{% else %}
+  <div class="link_box">
+    <span class="user__avatar">{% include "components/decoration/account_image.html" with account=account %}</span>
+    <span>{{ account.get_full_name }}</span>
+  </div>
+{% endif %}
