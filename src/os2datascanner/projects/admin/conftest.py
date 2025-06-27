@@ -814,7 +814,12 @@ def other_client():
 def other_org(other_client):
     return Organization.objects.create(name='other_org', client=other_client)
 
-# Translation settings
+# Translation
+
+
+@pytest.fixture
+def danish_translation():
+    translation.activate("da")
 
 
 @pytest.fixture
