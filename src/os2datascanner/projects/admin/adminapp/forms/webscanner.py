@@ -4,6 +4,7 @@ from os2datascanner.engine2.model.utilities import sitemap
 from os2datascanner.projects.shared.forms import GroupingModelForm
 
 from ..models.scannerjobs.webscanner import WebScanner
+from .shared import Groups
 
 
 class WebScannerForm(GroupingModelForm):
@@ -24,10 +25,7 @@ class WebScannerForm(GroupingModelForm):
     }
 
     groups = (
-        (
-            _("General settings"),
-            ["name", "organization", "validation_status", "contacts"]
-        ),
+        Groups.GENERAL_SETTINGS,
         (
             _("Web crawler settings"),
             ["url", "download_sitemap", "sitemap_url", "sitemap",
@@ -41,14 +39,8 @@ class WebScannerForm(GroupingModelForm):
             _("Scan settings"),
             ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule"]
         ),
-        (
-            _("Result settings"),
-            ["contacts", "only_notify_superadmin", "keep_false_positives"]
-        ),
-        (
-            _("Scheduled execution settings"),
-            ["schedule"],
-        ),
+        Groups.RESULT_SETTINGS,
+        Groups.SCHEDULED_EXECUTION_SETTINGS,
     )
 
     def clean_sitemap_url(self):
