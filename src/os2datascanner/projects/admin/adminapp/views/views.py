@@ -37,6 +37,7 @@ from ..models.scannerjobs.msgraph import (
     MSGraphSharepointScanner)
 from ..models.scannerjobs.webscanner import WebScanner
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
+from ..models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScanner
 
 import structlog
 
@@ -193,6 +194,7 @@ class DialogSuccess(TemplateView):
         'msgraphteamsfilescanners': MSGraphTeamsFileScanner,
         'msgraphsharepointscanners': MSGraphSharepointScanner,
         'googledrivescanners': GoogleDriveScanner,
+        'googleshareddrivescanners': GoogleSharedDriveScanner,
         'gmailscanners': GmailScanner,
         'sbsysscanners': SbsysScanner,
     }

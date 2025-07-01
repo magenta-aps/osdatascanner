@@ -88,7 +88,7 @@ def find_svg_icon(type_label):
 @register.simple_tag
 def find_scan_type(type_label):
     match type_label:
-        case "smbc" | "dropbox" | "googledrive":
+        case "smbc" | "dropbox" | "googledrive" | "googleshareddrive":
             return _("File")
         case "msgraph-files":
             return _("Microsoft 365 File")
