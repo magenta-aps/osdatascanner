@@ -32,7 +32,7 @@ from .views.views import GuideView, DialogSuccess
 import inspect
 from .views import (exchangescanner_views, filescanner_views, dropboxscanner_views,
                     googledrivescanner_views, gmailscanner_views, sbsysscanner_views,
-                    webscanner_views, msgraph_views)
+                    webscanner_views, msgraph_views, sbsysdb as sbsysdb_views)
 from .views.exchangescanner_views import OrganizationalUnitListing
 from .views.webscanner_views import WebScannerList
 
@@ -62,6 +62,8 @@ from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
                                          MSGraphSharepointScanner)
 from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .models.scannerjobs.webscanner import WebScanner
+from .models.scannerjobs.sbsysdb import SBSYSDBScanner
+
 from structlog import get_logger
 
 
@@ -199,7 +201,8 @@ for module in [exchangescanner_views,
                gmailscanner_views,
                sbsysscanner_views,
                webscanner_views,
-               msgraph_views]:
+               msgraph_views,
+               sbsysdb_views]:
     mname = module.__name__
 
     imported = inspect.getmembers(module)
@@ -254,7 +257,8 @@ for model in [
         MSGraphTeamsFileScanner,
         MSGraphSharepointScanner,
         SbsysScanner,
-        WebScanner]:
+        WebScanner,
+        SBSYSDBScanner]:
     stype: str = model.get_type().lower()
     urlpatterns.append(path(
         f"{stype}scanners/<int:pk>/askrun/",
