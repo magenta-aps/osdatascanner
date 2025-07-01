@@ -88,6 +88,39 @@ msgstr "Sæt fjernet-status til False"
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
+#: adminapp/forms/sbsysdb.py
+msgid "e.g. https://sbsip.vstkom.internal/a-sag/"
+msgstr "fx https://sbsip.vstkom.internal/a-sag/"
+
+#: adminapp/forms/sbsysdb.py
+msgid "e.g. sbsys.vstkom.internal"
+msgstr "fx sbsys.vstkom.internal"
+
+#: adminapp/forms/sbsysdb.py
+msgid "SBSYS database connection settings"
+msgstr "Indstillinger for SBSYS-databaseforbindelsen"
+
+#: adminapp/forms/sbsysdb.py
+msgid "Advanced SBSYS scan settings"
+msgstr "Avancerede SBSYS-indstillinger"
+
+#: adminapp/forms/sbsysdb.py adminapp/forms/webscanner.py
+msgid "Scan settings"
+msgstr "Scanindstillinger"
+
+#: adminapp/forms/shared.py
+#: organizations/templates/organizations/org_update.html
+msgid "General settings"
+msgstr "Generelle indstillinger"
+
+#: adminapp/forms/shared.py
+msgid "Result settings"
+msgstr "Indstillinger for resultater"
+
+#: adminapp/forms/shared.py
+msgid "Scheduled execution settings"
+msgstr "Indstillinger for planlagte kørsler"
+
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"
 msgstr "f.eks. https://example.com/"
@@ -95,11 +128,6 @@ msgstr "f.eks. https://example.com/"
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/sitemap.xml"
 msgstr "f.eks. https://example.com/sitemap.xml"
-
-#: adminapp/forms/webscanner.py
-#: organizations/templates/organizations/org_update.html
-msgid "General settings"
-msgstr "Generelle indstillinger"
 
 # (jf. https://noid.dsn.dk/ordbog/webcrawler/)
 #: adminapp/forms/webscanner.py
@@ -109,18 +137,6 @@ msgstr "Webcrawler-indstillinger"
 #: adminapp/forms/webscanner.py
 msgid "Advanced web crawler settings"
 msgstr "Avancerede webcrawler-indstillinger"
-
-#: adminapp/forms/webscanner.py
-msgid "Scan settings"
-msgstr "Scanindstillinger"
-
-#: adminapp/forms/webscanner.py
-msgid "Result settings"
-msgstr "Indstillinger for resultater"
-
-#: adminapp/forms/webscanner.py
-msgid "Scheduled execution settings"
-msgstr "Indstillinger for planlagte kørsler"
 
 #: adminapp/forms/webscanner.py
 msgid "Couldn't find a sitemap here"
@@ -424,6 +440,60 @@ msgstr "objekter"
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Microsoft 365 SharePoint scanner"
 msgstr "Microsoft 365 SharePoint-scanner"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "SBSYS database server"
+msgstr "SBSYS-databaseserver"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid ""
+"The network name of the SQL Server instance used by your SBSYS installation."
+msgstr "Netværksnavnet af din SBSYS-installations SQL Server-database."
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "SBSYS database service port"
+msgstr "SBSYS-databaseport"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "The port on which to connect to the SQL Server instance."
+msgstr "Forbindelsesporten for SQL Server-instansen."
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "SBSYS database name"
+msgstr "SBSYS-databasenavn"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "The name of the SBSYS database."
+msgstr "SBSYS-databasens navn."
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "SBSYS A-sag link"
+msgstr "SBSYS A-sag link"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid ""
+"The base URL of the SBSYS A-sag instance for your SBSYS installation, used "
+"to build web links to SBSYS cases."
+msgstr ""
+"URL'et til din SBSYS-installations A-sag-instans, som systemet bruger til at "
+"lave links til SBSYS-sager."
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Service account"
+msgstr "Servicekonto"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "A service account with access to the SQL Server instance."
+msgstr "En servicekonto med adgang til SQL Server-instansen."
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "SBSYS database scanner"
+msgstr "SBSYS-databasescanner"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "SBSYS database scanners"
+msgstr "SBSYS-databasescannere"
 
 #: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
@@ -1811,10 +1881,6 @@ msgstr "Upload servicekonto"
 msgid "Click here to upload service account credentials (JSON FORMAT)"
 msgstr ""
 "Klik her for at uploade servicekonto legitimationsoplysninger (JSON FORMAT)"
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "Service account"
-msgstr "Servicekonto"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Current file:"

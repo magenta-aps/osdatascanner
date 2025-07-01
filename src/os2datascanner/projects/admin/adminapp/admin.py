@@ -36,6 +36,7 @@ from .models.scannerjobs.exchangescanner import ExchangeScanner
 from .models.scannerjobs.dropboxscanner import DropboxScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.gmail import GmailScanner
+from .models.scannerjobs.sbsysdb import SBSYSDBScanner
 
 
 class RuleAdmin(admin.ModelAdmin):
@@ -102,6 +103,7 @@ class RuleCategoryAdmin(admin.ModelAdmin):
 @admin.register(MSGraphSharepointScanner)
 @admin.register(GoogleDriveScanner)
 @admin.register(GmailScanner)
+@admin.register(SBSYSDBScanner)
 class ScannerAdmin(admin.ModelAdmin):
     list_display = ('name', 'validation_status')
 
