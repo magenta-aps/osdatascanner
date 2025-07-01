@@ -20,7 +20,8 @@ from .scanner_views import (
     ScannerUpdate,
     ScannerCopy,
     ScannerCreate,
-    ScannerList)
+    ScannerList,
+    ScannerViewType)
 from ..forms.webscanner import WebScannerForm
 from ..models.scannerjobs.webscanner import WebScanner
 
@@ -49,6 +50,8 @@ web_scanner_fields = [
 
 
 class WebScannerCreateDF(CreateView):
+    scanner_view_type = ScannerViewType.CREATE
+
     model = WebScanner
     form_class = WebScannerForm
     template_name = "components/forms/grouping_model_form_wrapper.html"

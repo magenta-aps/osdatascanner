@@ -12,6 +12,7 @@
 # sector open source network <https://os2.eu/>.
 
 import structlog
+from enum import Enum
 from json import dumps
 
 from pika.exceptions import AMQPError
@@ -49,8 +50,18 @@ from ...organizations.models.aliases import AliasType
 logger = structlog.get_logger("adminapp")
 
 
+class ScannerViewType(Enum):
+    LIST = "list"
+    CREATE = "add"
+    UPDATE = "update"
+    COPY = "copy"
+    CLEANUP = "cleanup"
+
+
 class ScannerList(RestrictedListView):
     """Displays list of scanners."""
+
+    scanner_view_type = ScannerViewType.LIST
 
     template_name = 'scanners.html'
     context_object_name = 'scanner_list'
@@ -222,6 +233,8 @@ class ScannerBase(object):
 
 class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
     """View for creating a new scannerjob."""
+    scanner_view_type = ScannerViewType.CREATE
+
     permission_required = "os2datascanner.add_scanner"
 
     def post(self, request, *args, **kwargs):
@@ -232,6 +245,8 @@ class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
 
 class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
     """View for editing an existing scannerjob."""
+    scanner_view_type = ScannerViewType.UPDATE
+
     permission_required = "os2datascanner.change_scanner"
     old_url = ''
     old_rule = None
@@ -341,6 +356,8 @@ class ScannerDelete(PermissionRequiredMixin, RestrictedDeleteView):
 
 class ScannerCopy(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
     """Creates a copy of an existing scanner. """
+    scanner_view_type = ScannerViewType.COPY
+
     permission_required = "os2datascanner.add_scanner"
 
     def get(self, request, *args, **kwargs):
@@ -437,6 +454,8 @@ class ScannerRun(RestrictedDetailView):
 class ScannerCleanupStaleAccounts(RestrictedDetailView):
     """Base class for view that handles cleaning up stale accounts
     associated with a scanner."""
+
+    scanner_view_type = ScannerViewType.CLEANUP
 
     fields = []
     template_name = 'components/scanner/scanner_cleanup_stale_accounts.html'
