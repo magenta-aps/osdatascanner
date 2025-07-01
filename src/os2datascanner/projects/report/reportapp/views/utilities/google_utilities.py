@@ -12,6 +12,7 @@ from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities 
     get_handle_from_document_report)
 from os2datascanner.engine2.model.gmail import GmailHandle
 from os2datascanner.engine2.model.googledrive import GoogleDriveHandle
+from os2datascanner.engine2.model.googleshareddrive import GoogleSharedDriveHandle
 
 logger = structlog.get_logger("reportapp")
 
@@ -178,7 +179,12 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     result: tuple | None = None
     for report in reports:
         try:
-            file_handle = get_handle_from_document_report(report, GoogleDriveHandle)
+            file_handle = None
+            match report.source_type:
+                case "googledrive":
+                    file_handle = get_handle_from_document_report(report, GoogleDriveHandle)
+                case "googleshareddrive":
+                    file_handle = get_handle_from_document_report(report, GoogleSharedDriveHandle)
             file_id = file_handle.relative_path if file_handle else None
 
             srvc_acc.files().update(
