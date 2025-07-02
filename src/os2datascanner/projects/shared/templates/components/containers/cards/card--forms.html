@@ -1,0 +1,28 @@
+{# card--forms.html #}
+
+{# Use this for form cards #}
+
+{% extends "components/containers/cards/card.html" %}
+
+{% load i18n l10n static %}
+
+{% block card_body %}
+  {% include "components/forms/form__fieldset.html" with title=group.title items=group.items nested=False %}
+
+  {% for field, errors in fields %}
+
+    <div class="form-widget{% if errors %} error{% endif %}">
+
+ 
+      <label for="{{ field.id_for_label }}" class="form-widget__label">
+        {{ field.label }}
+        {% if field.field.required %}<span aria-hidden="true">*</span>{% endif %}
+      </label>
+      {{ field }}
+ 
+      {% if errors %}<div class="form-widget__error">{{ errors }}</div>{% endif %}
+ 
+      {% if field.help_text %}<span class="form-widget__help-text">{{ field.help_text }}</span>{% endif %}
+    </div>
+  {% endfor %}
+{% endblock %}

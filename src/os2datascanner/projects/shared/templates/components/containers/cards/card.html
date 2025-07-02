@@ -3,23 +3,12 @@
 {% load i18n l10n static %}
 
 <div class="card">
-  <div class="card__header">
-    <div class="card__label">
-      <h3 class="title">
-        {% block card_title %}{% endblock %}
-      </h3>
+  {% block card_header %}{% endblock %}
 
-      <p class="subtitle">
-        {% block card_subtitle %}{% endblock %}
-      </p>
-    </div>
-
-    <div class="card__header-ui">
-      {% block card_header_ui %}{% endblock %}
-    </div>
-  </div>
-
-  <div class="card__body" data-chartid="{{ data_chartid }}">
+  <div class="card__body"
+       {% if data_chartid %}data-chartid="{{ data_chartid }}"{% endif %}>
     {% block card_body %}{% endblock %}
   </div>
+
+  {% block card_footer %}{% endblock %}
 </div>

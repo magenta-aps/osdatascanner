@@ -1,0 +1,75 @@
+// ***** CARDS *****
+// - The new-ish card component
+// - Temporarily nested inside of the classes of the parents where it's used, until we've eradicated all other ".card" elements.
+
+// Card related mixins:
+@mixin card-label {
+  @include layout-vertical(0.125rem) {
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+@mixin card-layout {
+  @include layout-vertical(2rem);
+}
+
+/* NOTE: Remove the parent class nesting, when we've been through all other ".card" elements. */
+.statistics--dpo,
+.form--new {
+  .card {
+    @include spacing-reset;
+
+    container-type: inline-size;
+    container-name: card-component;
+    /* NOTE: this makes it possible to add container dependent sizes to the children. */
+
+    @include card-layout;
+
+    // Box Model
+    padding: 1.75rem 2rem;
+    border-radius: var(--border-radius-widget);
+
+    // Visual
+    background-color: #fff;
+    color: var(--color-text-main);
+    box-shadow: var(--box-shadow-widget);
+
+    &__header {
+      @include layout-horizontal(1rem) {
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+    }
+
+    &__label {
+      @include card-label;
+    }
+
+    &__header-ui {
+      @include layout-horizontal(1rem);
+
+      .info-icon-wrapper {
+        color: var(--color-text-secondary);
+        cursor: help;
+        height: 1.5rem;
+      }
+    }
+
+    &__body {
+      @include layout-vertical;
+    }
+
+    &__footer {
+      // Unused for now
+    }
+  }
+}
