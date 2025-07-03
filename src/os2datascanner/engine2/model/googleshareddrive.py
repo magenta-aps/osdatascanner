@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from io import BytesIO
+
 from ..rules.rule import Rule
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -27,9 +28,10 @@ class GoogleSharedDrivesSource(Source):
     def __init__(self, google_api_grant, google_admin_account):
         self.google_api_grant = google_api_grant
         self._google_admin_account = google_admin_account
+        self.parent_cache = {}
 
     def _generate_state(self, source_manager):
-        SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+        SCOPES = ['https://www.googleapis.com/auth/drive']
         credentials = service_account.Credentials.from_service_account_info(
             self.google_api_grant,
             scopes=SCOPES).with_subject(self._google_admin_account)
@@ -37,8 +39,8 @@ class GoogleSharedDrivesSource(Source):
         service = build(serviceName='drive', version='v3', credentials=credentials)
         yield service
 
-        # The Google Drive V3 API query operators can be found at:
-        # https://developers.google.com/workspace/drive/api/guides/search-files
+    # The Google Drive V3 API query operators can be found at:
+    # https://developers.google.com/workspace/drive/api/guides/search-files
     def _generate_query(
             self,
             cutoff: datetime | None = None):
@@ -75,58 +77,114 @@ class GoogleSharedDrivesSource(Source):
                 break
 
     def process_drive(self, drive, service, query):
-        page_token = None
-        while True:
-            files = service.files().list(
-                q=query,
-                fields='nextPageToken, files(id, name, mimeType, parents)',
-                driveId=drive.get('id'),
-                # supportsAllDrives and includeItemsFromAllDrives are needed despite the
-                # api documentation claiming it was deprecated in June of 2020 :shrug:
-                supportsAllDrives=True,
-                includeItemsFromAllDrives=True,
-                corpora='drive',
-                pageToken=page_token
-            ).execute()
-            for file in files.get('files'):
-                location = self.get_location(
-                    file.get('parents')[0], service, drive.get('name'))
-                yield GoogleSharedDriveHandle(
-                    self,
-                    file.get('id'),
-                    name=file.get('name'),
-                    location=location
-                )
-            page_token = files.get('nextPageToken', None)
-            if page_token is None:
+        # Retry a few times in case the permission change takes a moment to update
+        max_retries = 3
+        retry_count = 0
+
+        while retry_count < max_retries:
+            try:
+                page_token = None  # Reset pagination for each retry
+                while True:
+                    files = service.files().list(
+                        q=query,
+                        fields='nextPageToken, files(id, name, mimeType, parents)',
+                        driveId=drive.get('id'),
+                        supportsAllDrives=True,
+                        includeItemsFromAllDrives=True,
+                        corpora='drive',
+                        pageToken=page_token
+                    ).execute()
+
+                    for file in files.get('files'):
+                        location = self.get_location(file.get('parents')[0], service, drive)
+                        yield GoogleSharedDriveHandle(
+                            self,
+                            file.get('id'),
+                            name=file.get('name'),
+                            location=location
+                        )
+
+                    page_token = files.get('nextPageToken', None)
+                    if page_token is None:
+                        break
+
+                # If we get here, processing completed successfully
+                return
+
+            except Exception as e:
+                # Handle cases where provided admin account doesn't
+                # have permission to read files in shared drive
+                if "teamDriveMembershipRequired" in str(e):
+                    print("Insufficient permissions to access this drive "
+                          f"(, attempting to gain permission...{retry_count + 1}/{max_retries})")
+                    self.grant_read_permissions(drive, service)
+                    retry_count += 1
+                else:
+                    raise
+
+    def grant_read_permissions(self, drive, service):
+        """Attempts to grant admin permission to read a drive's files"""
+        new_permission = {
+            'role': 'reader',
+            'type': 'user',
+            'emailAddress': self._google_admin_account
+        }
+        service.permissions().create(
+            fileId=drive.get('id'),
+            body=new_permission,
+            supportsAllDrives=True,
+            useDomainAdminAccess=True
+        ).execute()
+
+    def get_location(self, parent_id, service, drive):
+        """
+        Finds the path for a google drive file with caching to reduce API calls.
+        """
+        path_parts = []
+        current_id = parent_id
+        # Track visited IDs to prevent a bug that leads to an infinite loop
+        visited_ids = set()
+
+        while current_id:
+            # Check for circular references
+            if current_id in visited_ids:
                 break
+
+            visited_ids.add(current_id)
+
+            # Check cache first
+            if current_id in self.parent_cache:
+                parent_info = self.parent_cache[current_id]
+            else:
+                parent_info = service.files().get(
+                    fileId=current_id,
+                    fields='id, name, parents',
+                    supportsAllDrives=True
+                ).execute()
+                self.parent_cache[current_id] = parent_info
+
+            parent_name = parent_info.get('name')
+            if not parent_name:
+                break
+
+            # Check if we've reached the root and replace with correct name
+            parent_parents = parent_info.get('parents')
+            if not parent_parents:
+                if parent_name in ['Drive']:
+                    parent_name = drive.get('name', 'Drive')
+                path_parts.append(parent_name)
+                break
+
+            path_parts.append(parent_name)
+            current_id = parent_parents[0]
+
+        # Reverse to get correct order and join
+        path_parts.reverse()
+        return '/'.join(path_parts) if path_parts else drive.get('name', 'Drive')
 
     # Censoring service account file info and user email.
     def censor(self):
         return GoogleSharedDrivesSource(None, self._google_admin_account)
-
-    def get_location(self, parent_id, service, drive_name):
-        """
-        Finds the path for a google drive file by traversing the parents.
-        """
-        path = ""
-        # Files _can_ technically (rarely) have multiple parent folders but for the purpose of
-        # building a path to the file exploring the first parent will do.
-        parent = service.files().get(fileId=parent_id, fields='id, name, parents',
-                                     supportsAllDrives=True).execute()
-        path = parent.get('name') + '/' + path
-        while parent.get('parents'):
-            parent_id = parent.get('parents')[0]
-            parent = service.files().get(fileId=parent_id, fields='id, name, parents',
-                                         supportsAllDrives=True).execute()
-            parent_name = parent.get('name')
-            # The api has trouble returning the correct name for shared drives
-            # So we check to see if it uses the default name and replace it
-            if parent_name == 'Drive':
-                path = drive_name + '/' + path
-            else:
-                path = parent_name + '/' + path
-        return path
 
     def to_json_object(self):
         return dict(
@@ -241,9 +299,10 @@ class GoogleSharedDriveHandle(Handle):
 
     @property
     def sort_key(self):
-        """Returns a string to sort by formatted as:
-        DOMAIN/ACCOUNT/PATH/FILE_NAME"""
-        return self._location + self._name
+        if self._location:
+            return self._location + '/' + self._name
+        else:
+            return self._name
 
     def to_json_object(self):
         return dict(**super().to_json_object(), name=self._name, location=self._location)

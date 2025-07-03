@@ -308,6 +308,7 @@ msgstr "Filformat"
 #: adminapp/models/scannerjobs/dropboxscanner.py
 #: adminapp/models/scannerjobs/filescanner.py
 #: adminapp/models/scannerjobs/googledrivescanner.py
+#: adminapp/models/scannerjobs/googleshareddrivescannner.py
 #: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "file"
@@ -316,6 +317,7 @@ msgstr "fil"
 #: adminapp/models/scannerjobs/dropboxscanner.py
 #: adminapp/models/scannerjobs/filescanner.py
 #: adminapp/models/scannerjobs/googledrivescanner.py
+#: adminapp/models/scannerjobs/googleshareddrivescannner.py
 #: adminapp/models/scannerjobs/msgraph.py
 msgctxt "unit of scan"
 msgid "files"
@@ -416,6 +418,22 @@ msgstr "Gmail-scanner"
 #: adminapp/models/scannerjobs/googledrivescanner.py
 msgid "Google Drive scanner"
 msgstr "Google Drive-scanner"
+
+#: adminapp/models/scannerjobs/googleshareddrivescannner.py
+msgid "Google Workspace Admin Email"
+msgstr "Google Workspace Admin Email"
+
+#: adminapp/models/scannerjobs/googleshareddrivescannner.py
+msgid ""
+"In order to scan shared drives an admin account for the scanned workspace is "
+"required."
+msgstr ""
+"For at kunne scanne alle delte drev kræver det email adressen til en admin konto"
+" fra det google miljø der skal scannes"
+
+#: adminapp/models/scannerjobs/googleshareddrivescannner.py
+msgid "Google Shared Drive scanner"
+msgstr "Google Delte Drev-scanner"
 
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Scan deleted items folder"

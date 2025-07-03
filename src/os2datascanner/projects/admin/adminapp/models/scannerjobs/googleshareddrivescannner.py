@@ -24,7 +24,7 @@ class GoogleSharedDriveScanner(Scanner):
         verbose_name=_("Google Workspace Admin Email"),
         help_text=_(
             "In order to scan shared drives an admin"
-            "account for the scanned workspace is required."
+            " account for the scanned workspace is required."
             )
     )
 
