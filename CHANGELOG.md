@@ -33,6 +33,9 @@
 
 - The "Stale accounts" button again correctly opens modal.
 
+- The result collector once more correctly skips messages whose type or
+  reference cannot be recognised.
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"
