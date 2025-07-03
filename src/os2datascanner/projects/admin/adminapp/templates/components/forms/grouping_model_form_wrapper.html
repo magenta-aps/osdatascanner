@@ -6,11 +6,16 @@
   <script type="text/javascript" src="/jsi18n/"></script>
   <!-- BEGIN Admin scripts and CSS to render filter_horizontal -->
   <script type="text/javascript" src="/admin/jsi18n/"></script>
-  <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
-  <script type="text/javascript"
-          src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
-
+  <script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+  <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.min.js" %}"></script>
+ 
   {{ form.media }}
+
+  {# Recurrence widget: #}
+  <link href="{% static "recurrence/css/recurrence.css" %}" rel="stylesheet" />
+  <script src="{% static "js/recurrence_widget/recurrence.js" %}"></script>
+  <script src="{% static "js/recurrence_widget/recurrence-widget.js" %}"></script>
+  <script type="text/javascript" src="{% static "recurrence/js/recurrence-widget.init.js" %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -22,10 +27,11 @@
       <div class="content-header">
         {% include "components/common/breadcrumb.html" with page="scannerjob" %}
         <h1 class="page-title">
+
           {% if view.edit %}
-            {% trans "Edit scannerjob" %}
+            {% trans "edit scannerjob"|capfirst %}
           {% else %}
-            {% trans "Create new scannerjob" %}
+            {% trans "create new scannerjob"|capfirst %}
           {% endif %}
 
           {% if supports_rule_preexec %}
@@ -34,10 +40,33 @@
           {% endif %}
         </h1>
       </div>
-      <form method="post" action="{{ request.path }}">
+
+      <form class="form form--new" method="post" action="{{ request.path }}">
         {% csrf_token %}
+
+        {# The form itself: #}
         {{ form }}
-        <button class="button">{% trans "LET'S GOOOOOOO!!!!" %}</button>
+
+        {# Button below the form: #}
+        {% if view.edit %}
+          {% translate "save changes"|capfirst as label %}
+          {% blocktranslate asvar tooltip trimmed %}
+            Click here to save your changes and return to the scannerjob overview.
+          {% endblocktranslate %}
+        {% else %}
+          {% translate "create scannerjob"|capfirst as label %}
+          {% blocktranslate asvar tooltip trimmed %}
+            Click here to create this scannerjob and return to the scannerjob overview.
+          {% endblocktranslate %}
+        {% endif %}
+
+        <div class="form__footer">
+          {% with label=label tooltip=tooltip %}
+            <button class="button button--cta-button"
+                    aria-label="{{ tooltip }}"
+                    title="{{ tooltip }}">{{ label }}</button>
+          {% endwith %}
+        </div>
       </form>
     </div>
   </div>

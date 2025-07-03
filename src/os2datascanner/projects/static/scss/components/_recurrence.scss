@@ -4,7 +4,7 @@
 .add-date {
   background-color: transparent;
   color: var(--color-text-main) !important;
-  padding: 0.5rem;
+  padding: 0.5rem !important;
   border: 1px solid #ddd;
   cursor: pointer;
   display: inline-block;
@@ -13,17 +13,23 @@
   transition: var(--transition-default);
   border-radius: var(--border-radius-button);
 
+  width: fit-content;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
 }
 
+.add-date {
+  margin-left: 0 !important;
+}
+
 .add-rule-icon {
   display: block;
-  float: left;
+  // float: left;
   width: 1rem;
   height: 1rem;
-  margin-right: 0.5rem;
+  // margin-right: 0.5rem;
   fill: var(--color-primary-dark) !important;
   background-size: 100% 100%;
   background-image: url("../svg/calendar.svg");
@@ -95,6 +101,7 @@
 
   .recurrence-label {
     text-decoration: none !important;
+    margin-left: 0.25rem !important;
   }
 
   .limit,
@@ -112,7 +119,7 @@
   }
 
   .date-field {
-    width: 20rem;
+    width: 20rem !important;
     margin-left: 0.75rem !important;
   }
 
@@ -131,9 +138,15 @@
     display: flex !important;
     align-items: center;
     flex-basis: 6rem !important;
-    // margin-top: 1.5rem;
-    // margin-bottom: .5rem;
     margin: 0 !important;
+
+    &__input {
+      display: block;
+
+      .radio-inline {
+        display: none;
+      }
+    }
   }
 
   .form {
@@ -149,6 +162,7 @@
   }
   .until-count {
     margin: 0 !important;
+    padding-left: 1.75rem !important;
   }
   .count-field {
     width: 4rem !important;
