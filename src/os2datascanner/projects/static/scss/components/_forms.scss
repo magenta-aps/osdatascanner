@@ -11,7 +11,7 @@
     gap: 1.5rem;
 
     &__header {
-      /* There's nothing specific for this class yet, but there will be eventually. */
+      // Empty
     }
 
     &__body {
@@ -67,10 +67,6 @@
     h3 {
       margin: 0 0 2em;
     }
-  }
-
-  &__fieldset {
-    // max-width: 65rem;
   }
 
   &__row {
@@ -270,7 +266,7 @@
   input[type="email"] {
     background-color: #fff;
     border: none;
-    border-radius: var(--border-radius-small);
+    border-radius: var(--border-radius-xxs);
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     line-height: 1;
@@ -306,8 +302,8 @@
     appearance: none;
     background-color: var(--color-widget-bg);
     /* note: bg image below uses 2 urls. The first is an svg data uri for the arrow icon, and the second is the gradient. 
-    For the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also 
-    swap in a different svg icon or an external image reference */
+      For the icon, if you want to change the color, be sure to use `%23` instead of `#`, since it's a url. You can also 
+      swap in a different svg icon or an external image reference */
     background-image: url("../svg/chevron-down.svg"),
       linear-gradient(
         to bottom,
@@ -346,7 +342,7 @@
   .date-field {
     background-color: #fff;
     border: none;
-    border-radius: var(--border-radius-small);
+    border-radius: var(--border-radius-xxs);
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     line-height: 1;
@@ -364,7 +360,7 @@
   textarea {
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: var(--border-radius-small);
+    border-radius: var(--border-radius-xxs);
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     min-height: 10rem;
     width: 100%;
@@ -588,7 +584,7 @@
 
   input + label {
     cursor: pointer;
-    padding-left: 1.75em;
+    padding-left: 1.75em !important;
     margin-top: 0;
   }
 
@@ -863,4 +859,237 @@ input[type="file"]::file-selector-button {
 input[type="file"]::file-selector-button:hover {
   border: var(--btn-border-default) var(--color-primary-dark);
   background-color: var(--color-primary-dark);
+}
+
+/***************************************************/
+/***************************************************/
+/***** NEW DJANGO FORMS STYLING ANNO JULY 2025 *****/
+/***************************************************/
+/***************************************************/
+
+// NOTE: This will continue to change as we integrate Django Forms into all forms in the project.
+
+.form--new {
+  @include layout-vertical(2rem);
+
+  .form {
+    &__body {
+      @include layout-vertical(2rem);
+    }
+
+    &__footer {
+      // Empty
+    }
+  }
+
+  .fieldset {
+    @include card-layout;
+
+    border: none;
+
+    &__legend {
+      @include card-label;
+
+      padding-bottom: 1.5rem;
+
+      .title {
+        font-weight: 600;
+
+        &:is(h3) {
+          font-size: 1rem;
+        }
+        &:is(h4) {
+          /* Smaller font for titles of nested sub-groups: */
+          font-size: 0.875rem; // 14px
+        }
+      }
+    }
+
+    &.fieldset--nested {
+      .fieldset__legend {
+        padding-bottom: 1rem;
+      }
+    }
+
+    &__body {
+      @include layout-vertical(1.5rem);
+    }
+  }
+
+  .form-widget {
+    @include layout-vertical(0.25rem);
+
+    &__label {
+      @include layout-horizontal(0.125rem);
+
+      color: var(--color-text-main);
+      font-size: 0.75em;
+      user-select: none;
+    }
+
+    @mixin universal-ui-size--experimental {
+      $ui-padding--vertical: 0.75rem;
+      padding-top: $ui-padding--vertical;
+      padding-bottom: $ui-padding--vertical;
+
+      height: var(
+        --ui-control-height--default
+      ); // Force the box to be a fixed height (40px)
+      box-sizing: border-box; // Include padding/border in the height.
+      line-height: normal;
+    }
+
+    input:not([type="checkbox"], [type="radio"]),
+    select {
+      @include universal-ui-size--experimental;
+
+      // Box model
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+      border: none !important;
+      border-radius: var(--border-radius-s);
+      box-shadow: var(--box-shadow--form-widget);
+
+      // Visual
+      color: var(--color-text-main);
+      background-color: var(--color-widget-bg);
+
+      // Typography
+      font-size: 0.875; //14px
+
+      transition: var(
+        --transition-default
+      ); // Unsure what it does in this context but it was included in the old forms.
+
+      &:disabled {
+        background-color: var(--color-disabled-widget-bg);
+        background: var(--color-disabled-widget-bg);
+        cursor: not-allowed;
+      }
+
+      &:focus {
+        box-shadow: inset 0 0 0 4px #5ca4cd40;
+      }
+    }
+
+    input {
+      width: 100%; // Take up full available width per default.
+      outline: none; // Removing the default focus outline.
+
+      &[type="checkbox"],
+      &[type="radio"] {
+        accent-color: var(--color-primary-dark);
+
+        $checkbox_size: 16px;
+        height: $checkbox_size;
+        width: $checkbox_size;
+      }
+    }
+
+    @mixin custom-dropdown-icon {
+      // Hide the default dropdown chevron/arrow:
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+
+      // Custom icon:
+      background-image: url("../svg/chevron-down.svg");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem top 50%;
+      background-size: 0.75rem auto;
+
+      // FUTURE-NOTE: It'd be nice if this rotated on toggle.
+    }
+
+    select {
+      @include custom-dropdown-icon;
+
+      padding-right: 2.25rem;
+      box-sizing: border-box;
+      font-family: inherit; // Force the `<select>` to listen to the parental typography.
+      cursor: pointer;
+
+      &[multiple] {
+        // This is a kinda hacked and temporary solution for multi selects. But it works.
+        background-image: none;
+        padding-right: 0.75rem;
+        height: fit-content;
+
+        option {
+          padding: 0.25rem 0.75rem;
+          margin-bottom: 0.5rem;
+          border: none;
+          border-radius: var(--border-radius-s);
+          width: fit-content;
+          background-color: var(--color-btn-neutral);
+        }
+
+        option:hover {
+          background-color: var(--color-btn-neutral-hover);
+        }
+
+        option:checked {
+          color: var(--color-primary);
+          background-color: var(--color-primary-lightest);
+          font-weight: 500;
+        }
+      }
+    }
+
+    &__radio-group {
+      @include layout-vertical(0.5rem);
+
+      padding: 0.75rem 0;
+
+      label {
+        @include layout-horizontal(0.25rem);
+        font-size: 0.75rem;
+      }
+    }
+
+    &__input-wrapper {
+      @include layout-horizontal(0.5rem) {
+        justify-content: space-between;
+      }
+
+      .checkbox-wrapper {
+        @include layout-horizontal(0.25rem);
+      }
+
+      &:has(> .recurrence-widget) textarea#id_schedule {
+        display: none !important;
+        // This hides the textarea whenever it's sibling is a `.recurrence-widget`.
+        // It will only be triggered in the scheduling section on scannerjob forms.
+      }
+    }
+
+    &__help-icon {
+      color: var(--color-primary);
+      opacity: 50%;
+    }
+
+    &__error {
+      padding-left: 3rem;
+      list-style-type: "⚠️";
+    }
+
+    .custom-field {
+      &--number {
+        // Removing the classic "arrow up/down" part of type=number input fields.
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+      }
+
+      &--select {
+        // Empty
+      }
+
+      &--multi-select {
+        // Empty
+
+        // NOTE: Might not be necessary after all?
+      }
+    }
+  }
 }

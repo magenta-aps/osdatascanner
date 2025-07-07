@@ -1121,13 +1121,11 @@ msgid "Scannerjob"
 msgstr "Scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Edit scannerjob"
 msgstr "Rediger scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html
-#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
 #: adminapp/templates/components/scanner/scanner_form.html
 #: adminapp/templates/components/scanner/scanner_no_client_credentials.html
 msgid "Create new scannerjob"
@@ -1215,6 +1213,14 @@ msgid "OSdatascanner version"
 msgstr "OSdatascanner version"
 
 #: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+msgid "edit scannerjob"
+msgstr "rediger scannerjob"
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+msgid "create new scannerjob"
+msgstr "opret nyt scannerjob"
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "This scanner can take advantage of the built-in SmartDelta function for "
@@ -1224,8 +1230,24 @@ msgstr ""
 "lynhurtige scans."
 
 #: adminapp/templates/components/forms/grouping_model_form_wrapper.html
-msgid "LET'S GOOOOOOO!!!!"
-msgstr "LAD OS DA I GAAAAAAAANG!!!"
+msgid "save changes"
+msgstr "gem ændringer"
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+msgid "Click here to save your changes and return to the scannerjob overview."
+msgstr ""
+"Klik her for at gemme dine ændringer og returnere til scannerjoboversigten."
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+msgid "create scannerjob"
+msgstr "opret scannerjob"
+
+#: adminapp/templates/components/forms/grouping_model_form_wrapper.html
+msgid ""
+"Click here to create this scannerjob and return to the scannerjob overview."
+msgstr ""
+"Klik her for at oprette dette scannerjob og returnere til "
+"scannerjoboversigten."
 
 #: adminapp/templates/components/miniscanner/miniscan_results.html
 msgid "No file or text uploaded."

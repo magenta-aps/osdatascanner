@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 class Groups:
     GENERAL_SETTINGS = (
         _("General settings"),
-        ["name", "organization", "validation_status", "contacts"],
+        ["name", "organization", "validation_status"],
     )
 
     RESULT_SETTINGS = (

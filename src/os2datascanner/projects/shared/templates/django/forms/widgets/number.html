@@ -1,4 +1,10 @@
 {# djlint:off #}
-{% include "django/forms/widgets/input.html" %}
-<!-- custom widget -->
+
+{# Custom widget for number fields #}
+<input class="custom-field custom-field--number"
+       type="number" 
+       name="{{ widget.name }}"
+       min="0"
+       {% if widget.value != None %}value="{{ widget.value|stringformat:'s' }}"{% endif %}
+       {% include "django/forms/widgets/attrs.html" %}>
 {# djlint:on #}
