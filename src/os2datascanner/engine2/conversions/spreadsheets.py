@@ -12,7 +12,11 @@ def pandas_dataframe_processor(r: Resource, **kwargs):
     Converts Sheets from Excel-like files to text using efficient pandas.Dataframes.
     """
     sheet_name = r.handle.relative_path
-    df = r._sm.open(r.handle.source).parse(sheet_name=sheet_name)
+    # By default, pandas tries to be clever and will make sure all values in a
+    # column have the same type. This is good for data analysis but bad for our
+    # purposes, where we care about the visual representation, so we switch
+    # that behaviour off by specifying "dtype=object"
+    df = r._sm.open(r.handle.source).parse(sheet_name=sheet_name, dtype=object)
     text = df.columns.astype('string').str.cat(sep='\t') + '\n'
     return text + "\n".join(
         row.astype('string').str.cat(sep='\t') for _, row in df.iterrows())
