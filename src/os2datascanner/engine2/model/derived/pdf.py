@@ -88,7 +88,7 @@ class PDFPageHandle(Handle):
     @property
     def sort_key(self):
         "Return the file path of the document"
-        return self.base_handle.sort_key
+        return self.source.handle.sort_key
 
     def guess_type(self):
         return PAGE_TYPE

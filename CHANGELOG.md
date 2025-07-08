@@ -28,6 +28,9 @@
 
 - Added new stage for failed scans.
 
+- Several long-deprecated functions have finally been removed from the scanner
+  engine's core.
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
