@@ -155,3 +155,17 @@ class TestEngine2CompoundSource:
                     libreoffice.LibreOfficeSource(spreadsheet_file),
                     sm,
                     offset=8)
+
+    def test_non_uniform_columns(self):
+        """Missing values in a column don't break our spreadsheet handling."""
+        nuc_ss_handle = FilesystemHandle.make_handle(
+                os.path.join(
+                        test_data_path, "libreoffice/non-uniform-column.ods"))
+        with SourceManager() as sm:
+            source = Source.from_handle(nuc_ss_handle, sm)
+            assert source is not None
+
+            results = list(try_apply(sm, source, CPRRule()))
+            assert [r["match"] for r in results] == [
+                "0103XXXXXX", "0203XXXXXX", "0303XXXXXX", "0403XXXXXX"
+            ]
