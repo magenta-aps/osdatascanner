@@ -779,3 +779,21 @@ class TestPipelineCollector:
         assert jens_remediator_alias.match_relation.count() == 0
         record_metadata(smb_metadata_3b)
         assert jens_remediator_alias.match_relation.count() == 1
+
+    def test_message_discarding(
+            self,
+            *,
+            scan_tag2):
+        """Messages without a recognisable reference are discarded correctly by
+        the pipeline."""
+
+        dr = DocumentReport.objects.count()
+        message = messages.ProblemMessage(
+                scan_tag=scan_tag2,
+                source=None, handle=None,
+                message="unrecognised Source type 'htcpcp'")
+
+        list(result_collector.result_message_received_raw(
+                message.to_json_object()))
+
+        assert DocumentReport.objects.count() == dr
