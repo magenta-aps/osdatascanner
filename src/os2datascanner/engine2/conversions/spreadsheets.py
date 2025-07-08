@@ -17,6 +17,4 @@ def pandas_dataframe_processor(r: Resource, **kwargs):
     # purposes, where we care about the visual representation, so we switch
     # that behaviour off by specifying "dtype=object"
     df = r._sm.open(r.handle.source).parse(sheet_name=sheet_name, dtype=object)
-    text = df.columns.astype('string').str.cat(sep='\t') + '\n'
-    return text + "\n".join(
-        row.astype('string').str.cat(sep='\t') for _, row in df.iterrows())
+    return df.to_csv(sep="\t", index=False)
