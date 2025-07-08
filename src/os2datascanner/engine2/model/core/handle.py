@@ -175,17 +175,6 @@ class Handle(TypePropertyEquality, JSONSerialisable):
             yield from self.source.handle.walk_up()
 
     @property
-    def base_referrer(self) -> "Handle":
-        """Returns this Handle's base referrer or self, if there is no referrer"""
-        h = self
-        while h:
-            if h.referrer:
-                h = h.referrer
-            else:
-                break
-        return h
-
-    @property
     def base_handle(self) -> "Handle":
         """Returns this Handle's top-most handle, which does not yield
         independent sources."""
