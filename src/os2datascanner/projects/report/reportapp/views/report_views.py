@@ -31,34 +31,17 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import View, ListView, DetailView
 
 from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.engine2.rules.cpr import CPRRule
-from os2datascanner.engine2.rules.experimental.cpr import TurboCPRRule
-from os2datascanner.engine2.rules.experimental.health_rule import TurboHealthRule
-from os2datascanner.engine2.rules.regex import RegexRule
-from os2datascanner.engine2.rules.name import NameRule
-from os2datascanner.engine2.rules.address import AddressRule
-from os2datascanner.engine2.rules.links_follow import LinksFollowRule
 from os2datascanner.engine2.rules.rule import Sensitivity
-from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
-from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
-from os2datascanner.engine2.rules.passport import PassportRule
 
 from .utilities.ews_utilities import try_ews_delete
 from .utilities.google_utilities import try_gmail_delete, try_gdrive_delete
 from .utilities.smb_utilities import try_smb_delete_1
 from .utilities.document_report_utilities import handle_report, get_deviations
 from .utilities.msgraph_utilities import delete_email, delete_file
-from ..models.documentreport import DocumentReport
+from ..models.documentreport import DocumentReport, RENDERABLE_RULES
 from ...organizations.models.account import Account
 
 logger = structlog.get_logger("reportapp")
-
-RENDERABLE_RULES = (
-    CPRRule.type_label, RegexRule.type_label, LinksFollowRule.type_label,
-    OrderedWordlistRule.type_label, NameRule.type_label, AddressRule.type_label,
-    TurboCPRRule.type_label, EmailHeaderRule.type_label, TurboHealthRule.type_label,
-    PassportRule.type_label,
-)
 
 
 class EmptyPagePaginator(Paginator):
