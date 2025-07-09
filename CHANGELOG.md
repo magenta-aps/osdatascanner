@@ -51,6 +51,8 @@
 - Spreadsheet columns will no longer be reinterpreted using a guessed data type
   simply because a value is missing.
 
+- Only rules that can be shown to users will be counted in number_of_matches for a DocumentReport.
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"
