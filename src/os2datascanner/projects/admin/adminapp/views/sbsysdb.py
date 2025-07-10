@@ -33,6 +33,7 @@ class SBSYSDBScannerCreateDF(_Form_Mixin, CreateView):
 
 class SBSYSDBScannerUpdateDF(_Form_Mixin, UpdateView):
     scanner_view_type = ScannerViewType.UPDATE
+    edit = True
 
     def get_initial(self):
         return self.initial | {

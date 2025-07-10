@@ -24,9 +24,7 @@
 
     {% if view.edit %}
       <span class="text-grey">{% trans "Edit rule" %}</span>
-    {% endif %}
-
-    {% if not view.edit %}
+    {% else %}
       <span class="text-grey">{% trans "Create new rule" %}</span>
     {% endif %}
   {% endif %}
