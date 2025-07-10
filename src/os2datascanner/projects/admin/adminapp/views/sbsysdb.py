@@ -21,9 +21,10 @@ class _Form_Mixin:
     form_class = SBSYSDBScannerForm
     template_name = "components/forms/grouping_model_form_wrapper.html"
 
-
-class SBSYSDBScannerCreateDF(_Form_Mixin, CreateView):
-    scanner_view_type = ScannerViewType.CREATE
+    def get_context_data(self):
+        d = super().get_context_data()
+        d["scanner_model"] = self.model  # compat
+        return d
 
     def form_valid(self, form):
         rv = super().form_valid(form)
@@ -31,9 +32,13 @@ class SBSYSDBScannerCreateDF(_Form_Mixin, CreateView):
         return rv
 
 
+class SBSYSDBScannerCreateDF(_Form_Mixin, CreateView):
+    scanner_view_type = ScannerViewType.CREATE
+
+
 class SBSYSDBScannerUpdateDF(_Form_Mixin, UpdateView):
     scanner_view_type = ScannerViewType.UPDATE
-    edit = True
+    edit = True  # compat
 
     def get_initial(self):
         return self.initial | {
@@ -41,11 +46,6 @@ class SBSYSDBScannerUpdateDF(_Form_Mixin, UpdateView):
                     aliases___alias_type=AliasType.REMEDIATOR.value,
                     aliases___value=str(self.object.pk))
         }
-
-    def form_valid(self, form):
-        rv = super().form_valid(form)
-        reconcile_remediators(form.cleaned_data["remediators"], self.object)
-        return rv
 
 
 class SBSYSDBScannerCopyDF(_Form_Mixin, CreateView):
@@ -70,8 +70,3 @@ class SBSYSDBScannerCopyDF(_Form_Mixin, CreateView):
             "validation_status": Scanner.INVALID,
             "name": new_name
         }
-
-    def form_valid(self, form):
-        rv = super().form_valid(form)
-        reconcile_remediators(form.cleaned_data["remediators"], self.object)
-        return rv
