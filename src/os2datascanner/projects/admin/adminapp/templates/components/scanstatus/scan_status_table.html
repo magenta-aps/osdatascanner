@@ -59,6 +59,9 @@
 
                 {% elif status.stage.value == 3 %}
                   {% trans "No objects to scan" %}
+
+                {% elif status.stage.value == 4 %}
+                  {% trans "Scan failed" %}
                 {% endif %}
               </td>
               <td class="datatable__column--info"
@@ -86,6 +89,9 @@
 
                 {% elif status.stage.value == 3 %}
                   {% trans "The sources do not contain any scannable objects" %}
+
+                {% elif status.stage.value == 4 %}
+                  {% trans "An error occured during this scan" %}
                 {% endif %}
 
                 {# don't show number of bytes scanned as it's not very useful #}

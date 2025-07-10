@@ -26,6 +26,8 @@
 
 - Updated the admin module's user manual. 
 
+- Added new stage for failed scans.
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never

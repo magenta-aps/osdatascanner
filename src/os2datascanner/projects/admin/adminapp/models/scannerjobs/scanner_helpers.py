@@ -65,6 +65,7 @@ class ScanStage(Enum):
     INDEXING_SCANNING = 1
     SCANNING = 2
     EMPTY = 3
+    FAILED = 4
 
 
 class AbstractScanStatus(models.Model):
@@ -124,6 +125,9 @@ class AbstractScanStatus(models.Model):
 
     @property
     def stage(self) -> int:
+        # Something has gone wrong
+        if self.status_is_error:
+            return ScanStage.FAILED
         # Workers have not begun scanning any objects yet
         if self.fraction_scanned is None:
             if self.explored_sources >= 0 and self.fraction_explored < 1.0:
