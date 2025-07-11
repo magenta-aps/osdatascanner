@@ -9,6 +9,14 @@
   <script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
   <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.min.js" %}"></script>
  
+  {# Ideally we'd just have our own Select2-powered widget that included these
+     as media declarations. Some day... #}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/css/select2.min.css"
+        rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/js/select2.min.js"></script>
+
+  <script type="text/javascript" src="{% static "js/forms/select2.js" %}"></script>
+
   {{ form.media }}
 
   {# Recurrence widget: #}

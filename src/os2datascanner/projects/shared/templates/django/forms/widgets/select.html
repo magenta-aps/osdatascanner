@@ -1,7 +1,7 @@
 {# djlint:off #}
 
 {# Custom widget for select fields #}
-<select class="custom-field custom-field--{% if widget.attrs.multiple %}multi-select{% else %}select{% endif %}"
+<select class="custom-field custom-field--{% if widget.attrs.multiple %}multi-select select2{% else %}select{% endif %}"
         name="{{ widget.name }}"
         {% include "django/forms/widgets/attrs.html" %}>
   {% for group_name, group_choices, group_index in widget.optgroups %}
