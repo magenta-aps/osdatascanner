@@ -872,6 +872,8 @@ input[type="file"]::file-selector-button:hover {
 .form--new {
   @include layout-vertical(2rem);
 
+  max-width: 75rem; // 1200px
+
   .form {
     &__body {
       @include layout-vertical(2rem);
@@ -932,15 +934,11 @@ input[type="file"]::file-selector-button:hover {
       padding-top: $ui-padding--vertical;
       padding-bottom: $ui-padding--vertical;
 
-      height: var(
-        --ui-control-height--default
-      ); // Force the box to be a fixed height (40px)
       box-sizing: border-box; // Include padding/border in the height.
       line-height: normal;
     }
 
-    input:not([type="checkbox"], [type="radio"]),
-    select {
+    @mixin form-input-box-styles {
       @include universal-ui-size--experimental;
 
       // Box model
@@ -955,7 +953,7 @@ input[type="file"]::file-selector-button:hover {
       background-color: var(--color-widget-bg);
 
       // Typography
-      font-size: 0.875; //14px
+      font-size: 0.875rem; //14px
 
       transition: var(
         --transition-default
@@ -970,6 +968,14 @@ input[type="file"]::file-selector-button:hover {
       &:focus {
         box-shadow: inset 0 0 0 4px #5ca4cd40;
       }
+    }
+
+    input:not([type="checkbox"], [type="radio"], [type="search"]),
+    select {
+      @include form-input-box-styles;
+
+      // Force the box to be a fixed height (40px)
+      height: var(--ui-control-height--default);
     }
 
     input {
@@ -1008,30 +1014,93 @@ input[type="file"]::file-selector-button:hover {
       box-sizing: border-box;
       font-family: inherit; // Force the `<select>` to listen to the parental typography.
       cursor: pointer;
+    }
 
-      &[multiple] {
-        // This is a kinda hacked and temporary solution for multi selects. But it works.
-        background-image: none;
-        padding-right: 0.75rem;
-        height: fit-content;
+    .select2 {
+      /* NOTE: This is to wrangle Select2 styles - which ideally should be the same everywhere - but to avoid wrecking thing in other forms, it's nested here for now. */
 
-        option {
-          padding: 0.25rem 0.75rem;
-          margin-bottom: 0.5rem;
-          border: none;
-          border-radius: var(--border-radius-s);
-          width: fit-content;
-          background-color: var(--color-btn-neutral);
-        }
+      width: 100% !important;
+      min-height: var(--ui-control-height--default);
 
-        option:hover {
-          background-color: var(--color-btn-neutral-hover);
-        }
+      .selection {
+        display: inline-block;
+        width: inherit;
 
-        option:checked {
-          color: var(--color-primary);
-          background-color: var(--color-primary-lightest);
-          font-weight: 500;
+        .select2-selection {
+          $horizontal_spacing: 0.5rem; // 8px
+          $vertical_spacing: 0.375rem; // 6px
+
+          &--multiple {
+            @include form-input-box-styles;
+          }
+
+          &__rendered {
+            display: inline-flex !important;
+            flex-wrap: wrap;
+
+            gap: $vertical_spacing;
+            padding: $vertical_spacing $horizontal_spacing !important;
+            min-height: var(--ui-control-height--default);
+
+            .select2-search {
+              &--inline {
+                flex-grow: 2;
+                height: calc(
+                  var(--ui-control-height--default) - (#{$vertical_spacing} * 2)
+                ) !important;
+              }
+
+              &__field {
+                width: calc(100% - 2rem) !important;
+                height: 100% !important;
+                background: var(--color-disabled-widget-bg);
+                padding: 0 $horizontal_spacing !important;
+                border-radius: var(--border-radius-xs);
+
+                &::placeholder {
+                  font-style: italic;
+                }
+              }
+            }
+          }
+
+          &__choice {
+            // Layout
+            display: flex;
+            align-items: center;
+
+            // Box Model
+            width: fit-content;
+            height: 1.75rem !important; // 28px
+            padding: 0 $horizontal_spacing !important;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: var(--border-radius-xs);
+
+            // Visual
+            $font-color: var(--color-primary-dark);
+            color: $font-color;
+            background-color: var(--color-primary-lightest) !important;
+
+            // Typography
+            font-size: 0.875rem; // 14px
+            line-height: normal;
+
+            &__remove {
+              color: $font-color;
+
+              &:hover {
+                color: var(--color-alert-error-accent);
+              }
+            }
+
+            // Change the style of the parent depending on whether the "remove selection"-button is hovered:
+            &:has(.select2-selection__choice__remove:hover) {
+              color: var(--color-alert-error-accent);
+              background-color: var(--color-alert-error) !important;
+              font-weight: 600;
+            }
+          }
         }
       }
     }

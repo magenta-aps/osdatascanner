@@ -2666,6 +2666,10 @@ msgstr "Formateringsfejl"
 msgid "This rule cannot be deleted, because it's associated with a scanner."
 msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 
+#: adminapp/views/sbsysdb.py adminapp/views/scanner_views.py
+msgid "Copy"
+msgstr "Kopi"
+
 #: adminapp/views/scanner_views.py
 msgid "User is not administrator for any client"
 msgstr "Brugeren er ikke administrator for en kunde"
@@ -2689,10 +2693,6 @@ msgstr "Scannerjobbet blev slettet."
 #: adminapp/views/scanner_views.py
 msgid "The scannerjob was not removed!"
 msgstr "Scannerjobbet blev ikke fjernet!"
-
-#: adminapp/views/scanner_views.py
-msgid "Copy"
-msgstr "Kopi"
 
 #: adminapp/views/scanner_views.py
 msgid "The scannerjob was recreated."

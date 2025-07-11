@@ -109,7 +109,7 @@
   // Size vars
   --width-sidemenu: 15rem;
   --padding-content: 5rem;
-  --ui-control-height--default: 2.5rem; // 40px
+  --ui-control-height--default: 2.5rem !important; // 40px
 
   // Status tags/pill labels
   --color-tag-green-background: #bdecdc;
