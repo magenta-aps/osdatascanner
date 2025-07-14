@@ -2035,6 +2035,10 @@ msgid "No objects to scan"
 msgstr "Ingen objekter at scanne"
 
 #: adminapp/templates/components/scanstatus/scan_status_table.html
+msgid "Scan failed"
+msgstr "Scan fejlet"
+
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Building index"
 msgstr "Opbygger indeks"
 
@@ -2050,6 +2054,10 @@ msgstr "Forventes afsluttet"
 #: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "The sources do not contain any scannable objects"
 msgstr "Datakilden indeholder ikke nogle objekter"
+
+#: adminapp/templates/components/scanstatus/scan_status_table.html
+msgid "An error occured during this scan"
+msgstr "Der skete en fejl under dette scan"
 
 #: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "cancel running scanner job"
