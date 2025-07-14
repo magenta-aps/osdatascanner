@@ -35,6 +35,8 @@
   longer covered by the scope of a scanner job (for example, when a user with
   associated matches leaves a department).
 
+- SBSYS access errors are now shown in the UI with snackbar messages.
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
