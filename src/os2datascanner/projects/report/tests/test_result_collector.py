@@ -234,6 +234,16 @@ def deletion(scan_tag1, common_handle):
 
 
 @pytest.fixture
+def irrelevance(scan_tag1, common_handle):
+    return messages.ProblemMessage(
+        scan_tag=scan_tag1,
+        source=None,
+        handle=common_handle,
+        message="Nå ja, Jens, han arbejder her ikke længere, hva'",
+        irrelevant=True)
+
+
+@pytest.fixture
 def transient_handle_error(scan_tag1, common_handle):
     return messages.ProblemMessage(
         scan_tag=scan_tag1,
@@ -459,11 +469,33 @@ class TestPipelineCollector:
         assert saved_match.resolution_status == DocumentReport.ResolutionChoices.REMOVED.value
         assert saved_match.resolution_time >= start
 
+    def test_irrelevance(self, positive_match, irrelevance):
+        """Removing a file from the scope of a scan should update the status of
+        the previous match message, and should set the resolution time."""
+        start = time_now()
+
+        saved_match = record_match(positive_match)
+        record_problem(irrelevance)
+        saved_match.refresh_from_db()
+
+        assert saved_match.resolution_status == DocumentReport.ResolutionChoices.IRRELEVANT.value
+        assert saved_match.resolution_time >= start
+
     def test_removal_problem(self, transient_handle_error, deletion):
         """Deleting a file, which was previously the source of a problem but
         not a match, should delete the previously created DocumentReport."""
         problem_report = record_problem(transient_handle_error)
         record_problem(deletion)
+
+        with pytest.raises(DocumentReport.DoesNotExist):
+            problem_report.refresh_from_db()
+
+    def test_removal_irrelevance(self, transient_handle_error, irrelevance):
+        """Removing a file from the scope of a scan, which was previously the
+        source of a problem but not a match, should delete the previously
+        created DocumentReport."""
+        problem_report = record_problem(transient_handle_error)
+        record_problem(irrelevance)
 
         with pytest.raises(DocumentReport.DoesNotExist):
             problem_report.refresh_from_db()

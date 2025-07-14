@@ -425,12 +425,34 @@ def handle_problem_message(scan_tag, result):
                 logger.debug(
                         "Resource already resolved."
                         " Problem message of no relevance. ")
-
         case (DocumentReport() as prev,
               messages.ProblemMessage(missing=True)) if prev.resolution_status:
             # A resource for which we have some reports has been deleted, but
             # it's also been resolved. Nothing to do
             pass
+
+        # (simple recap of the previous four cases for irrelevant=True)
+        case (None, messages.ProblemMessage(irrelevant=True)):
+            pass
+        case (DocumentReport() as prev, messages.ProblemMessage(irrelevant=True)) \
+                if prev.number_of_matches == 0:
+            logger.debug(
+                    "deleting as irrelevant contentless report",
+                    report=prev, handle=presentation, msgtype="problem")
+            prev.delete()
+        case (DocumentReport() as prev, messages.ProblemMessage(irrelevant=True)) \
+                if not prev.resolution_status:
+            logger.debug(
+                    "resource no longer relevant, status is IRRELEVANT",
+                    report=prev, handle=presentation, msgtype="problem")
+            DocumentReport.objects.filter(pk=prev.pk).update(
+                    resolution_status=ResolutionChoices.IRRELEVANT.value,
+                    resolution_time=time_now(),
+                    raw_problem=None)
+        case (DocumentReport() as prev, messages.ProblemMessage(irrelevant=True)) \
+                if prev.resolution_status is not None:
+            pass
+
         case (None, messages.ProblemMessage()):
             # A resource not previously known to us has a problem. Store it
             source = (
