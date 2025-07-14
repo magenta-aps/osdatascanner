@@ -144,6 +144,7 @@ class DocumentReport(models.Model):
         MOVED = 2, _("Journalized and deleted")
         REMOVED = 3, _("Deleted")
         FALSE_POSITIVE = 4, _("False positive")
+        IRRELEVANT = 5, _("No longer relevant")
 
     number_of_matches = models.IntegerField(default=0,
                                             verbose_name=_("number of matches"),
