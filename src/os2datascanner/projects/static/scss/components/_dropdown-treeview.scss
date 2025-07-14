@@ -200,7 +200,7 @@
 
 .select2-selection__rendered {
   padding: 0.175rem !important;
-  min-width: 95% !important;
+  width: 90% !important;
   min-height: 2.5rem !important;
 }
 
@@ -293,6 +293,18 @@
 
 .select2-selection input {
   font-family: "Inter var", system-ui, sans-serif;
+}
+
+.select2-clear-btn {
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--color-primary-dark);
+  padding: 2px 4px;
+  display: none;
+  z-index: 10;
 }
 
 // For IE support

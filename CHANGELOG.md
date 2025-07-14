@@ -22,6 +22,8 @@
   are not set on the Organization, OSdatascanner defaults to the installation settings.
   In the next release, the installation settings will be removed completely.
 
+- Added button to clear all selected org units in scanner forms.
+
 ### General improvements
 
 - Management command list_scannerjobs now also outputs scanner type.
