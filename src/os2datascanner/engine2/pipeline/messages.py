@@ -420,7 +420,11 @@ class ProblemMessage(NamedTuple):
     source: Optional[Source]
     handle: Optional[Handle]
     message: str
+    # Has the pipeline concluded that an object no longer exists?
     missing: bool = False
+    # Has the administration system concluded that an object is no longer
+    # relevant?
+    irrelevant: bool = False
 
     def to_json_object(self):
         return {
@@ -428,7 +432,8 @@ class ProblemMessage(NamedTuple):
             "source": self.source.to_json_object() if self.source else None,
             "handle": self.handle.to_json_object() if self.handle else None,
             "message": self.message,
-            "missing": self.missing
+            "missing": self.missing,
+            "irrelevant": self.irrelevant
         }
 
     @staticmethod
@@ -440,7 +445,8 @@ class ProblemMessage(NamedTuple):
                 source=Source.from_json_object(source) if source else None,
                 handle=Handle.from_json_object(handle) if handle else None,
                 message=obj["message"],
-                missing=obj.get("missing", False))
+                missing=obj.get("missing", False),
+                irrelevant=obj.get("irrelevant", False))
 
     _deep_replace = _deep_replace
 
