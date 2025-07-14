@@ -178,14 +178,12 @@ class DocumentReport(models.Model):
         self.__resolution_status = self.resolution_status
 
     def save(self, *args, **kwargs):
-        # Count and save number of matches
-        self.number_of_matches = 0
-        # Exclude rules meant for image conversion
-        excluded_rules = ["dimensions", "conversion"]
-        if self.matches:
-            for rule_dict in self.matches.matches:
-                if rule_dict.matches and rule_dict.rule.type_label not in excluded_rules:
-                    self.number_of_matches += len(rule_dict.matches)
+        # Update the number of matches from the matches JSONfield.
+        new_count = count_matches(self.matches)
+        if new_count != self.number_of_matches:
+            self.number_of_matches = new_count
+            if "update_fields" in kwargs:
+                kwargs["update_fields"].add("number_of_matches")
 
         # If Resolution status goes from not handled to handled - change resolution_time to now
         if self.__resolution_status is None and (
@@ -241,3 +239,17 @@ class DocumentReport(models.Model):
             ("distribute_withheld_documentreport",
              _("Can distribute withheld DocumentReports to users"))
         ]
+
+
+def count_matches(matches: MatchesMessage) -> int:
+    """Counts the number of real matches contained in a MatchesMessage."""
+    number_of_matches = 0
+
+    # Exclude rules meant for image conversion
+    excluded_rules = ["dimensions", "conversion"]
+    if matches:
+        for rule_dict in matches.matches:
+            if rule_dict.matches and rule_dict.rule.type_label not in excluded_rules:
+                number_of_matches += len(rule_dict.matches)
+
+    return number_of_matches
