@@ -41,6 +41,9 @@
 - The number of matches are now correctly updated on DocumentReports if the number changes during
   consecutive scans.
 
+- Spreadsheet columns will no longer be reinterpreted using a guessed data type
+  simply because a value is missing.
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"
