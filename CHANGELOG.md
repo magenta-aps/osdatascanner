@@ -31,6 +31,10 @@
 - Several long-deprecated functions have finally been removed from the scanner
   engine's core.
 
+- The report module can now automatically resolve matches when they're no
+  longer covered by the scope of a scanner job (for example, when a user with
+  associated matches leaves a department).
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
