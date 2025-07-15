@@ -11,7 +11,7 @@ from .core import Source, Handle, FileResource
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
-class GoogleSharedDrivesSource(Source):
+class GoogleSharedDriveSource(Source):
     """Implements Google Drive API using a service account.
     The organization must create a project, a service account, enable G Suite Domain-wide Delegation
      for the service account, download the credentials in .json format
