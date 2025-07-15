@@ -6,7 +6,7 @@ from django.utils.translation import pgettext_lazy
 
 from django.utils.translation import gettext_lazy as _
 from .scanner import Scanner
-from os2datascanner.engine2.model.googleshareddrive import GoogleSharedDrivesSource
+from os2datascanner.engine2.model.googleshareddrive import GoogleSharedDriveSource
 
 
 class GoogleSharedDriveScanner(Scanner):
@@ -34,7 +34,7 @@ class GoogleSharedDriveScanner(Scanner):
 
     def generate_sources(self):
         google_api_grant = json.loads(self.google_api_grant.service_account)
-        yield GoogleSharedDrivesSource(
+        yield GoogleSharedDriveSource(
             google_api_grant=google_api_grant,
             google_admin_account=self.google_admin_account
         )

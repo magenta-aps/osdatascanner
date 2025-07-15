@@ -1,3 +1,4 @@
+import structlog
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from io import BytesIO
@@ -9,9 +10,12 @@ from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.errors import HttpError
 from .core import Source, Handle, FileResource
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
+from os2datascanner.engine2.model.utilities.utilities import GoogleSource
+
+logger = structlog.get_logger("engine2")
 
 
-class GoogleSharedDriveSource(Source):
+class GoogleSharedDriveSource(GoogleSource):
     """Implements Google Drive API using a service account.
     The organization must create a project, a service account, enable G Suite Domain-wide Delegation
      for the service account, download the credentials in .json format
@@ -26,7 +30,7 @@ class GoogleSharedDriveSource(Source):
     eq_properties = ("_google_admin_account",)
 
     def __init__(self, google_api_grant, google_admin_account):
-        self.google_api_grant = google_api_grant
+        super().__init__(google_api_grant)
         self._google_admin_account = google_admin_account
         self.parent_cache = {}
 
@@ -55,7 +59,6 @@ class GoogleSharedDriveSource(Source):
 
     def handles(self, sm, rule: Rule | None = None):
         service = sm.open(self)
-        page_token = None
 
         cutoff = None
         for essential_rule in compute_mss(rule):
@@ -64,61 +67,57 @@ class GoogleSharedDriveSource(Source):
 
         query = self._generate_query(cutoff)
 
-        while True:
-            drives = service.drives().list(
-                                         fields='nextPageToken, drives(id, name)',
-                                         useDomainAdminAccess=True,
-                                         pageToken=page_token).execute()
-            for drive in drives.get('drives', []):
-                yield from self.process_drive(drive, service, query)
+        drives = self.paginated_get(
+            service=service.drives(),
+            collection_name='drives',
+            fields='drives(id,name)',
+            useDomainAdminAccess=True)
 
-            page_token = drives.get('nextPageToken', None)
-            if page_token is None:
-                break
+        for drive in drives:
+            yield from self.process_drive(drive, service, query)
 
     def process_drive(self, drive, service, query):
-        # Retry a few times in case the permission change takes a moment to update
+        # Retry a few times in case the permission change from grant_read_permissions
+        # takes a moment to update
         max_retries = 3
         retry_count = 0
 
         while retry_count < max_retries:
             try:
-                page_token = None  # Reset pagination for each retry
-                while True:
-                    files = service.files().list(
-                        q=query,
-                        fields='nextPageToken, files(id, name, mimeType, parents)',
-                        driveId=drive.get('id'),
-                        supportsAllDrives=True,
-                        includeItemsFromAllDrives=True,
-                        corpora='drive',
-                        pageToken=page_token
-                    ).execute()
+                files = self.paginated_get(
+                                    service=service.files(),
+                                    collection_name='files',
+                                    q=query,
+                                    fields='nextPageToken, files(id, name, mimeType, parents)',
+                                    driveId=drive.get('id'),
+                                    supportsAllDrives=True,
+                                    includeItemsFromAllDrives=True,
+                                    corpora='drive'
+                )
 
-                    for file in files.get('files'):
-                        location = self.get_location(file.get('parents')[0], service, drive)
-                        yield GoogleSharedDriveHandle(
-                            self,
-                            file.get('id'),
-                            name=file.get('name'),
-                            location=location
-                        )
-
-                    page_token = files.get('nextPageToken', None)
-                    if page_token is None:
-                        break
-
-                # If we get here, processing completed successfully
-                return
+                for file in files:
+                    location = self.get_location(file.get('parents')[0], service, drive)
+                    yield GoogleSharedDriveHandle(
+                        self,
+                        file.get('id'),
+                        name=file.get('name'),
+                        location=location
+                    )
+                # Time to stop
+                break
 
             except Exception as e:
                 # Handle cases where provided admin account doesn't
                 # have permission to read files in shared drive
                 if "teamDriveMembershipRequired" in str(e):
-                    print("Insufficient permissions to access this drive "
-                          f"(, attempting to gain permission...{retry_count + 1}/{max_retries})")
+                    logger.info("Insufficient permissions to access this drive "
+                                "(, attempting to gain permission"
+                                f"...{retry_count + 1}/{max_retries})")
                     self.grant_read_permissions(drive, service)
                     retry_count += 1
+                if retry_count >= max_retries:
+                    logger.error("Max retries reached, unable to scan this drive.")
+                    break
                 else:
                     raise
 
@@ -184,7 +183,7 @@ class GoogleSharedDriveSource(Source):
 
     # Censoring service account file info and user email.
     def censor(self):
-        return GoogleSharedDrivesSource(None, self._google_admin_account)
+        return GoogleSharedDriveSource(None, self._google_admin_account)
 
     def to_json_object(self):
         return dict(
@@ -196,7 +195,7 @@ class GoogleSharedDriveSource(Source):
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GoogleSharedDrivesSource(obj["google_api_grant"], obj["google_admin_account"])
+        return GoogleSharedDriveSource(obj["google_api_grant"], obj["google_admin_account"])
 
 
 class GoogleSharedDriveResource(FileResource):
