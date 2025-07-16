@@ -113,4 +113,4 @@ class FilteredHandle(Handle):
 
     @property
     def sort_key(self):
-        return self.base_handle.sort_key
+        return self.source.handle.sort_key

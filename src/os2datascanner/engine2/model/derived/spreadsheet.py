@@ -83,7 +83,7 @@ class SpreadsheetSheetHandle(Handle):
 
     @property
     def sort_key(self) -> str:
-        return self.base_handle.sort_key
+        return self.source.handle.sort_key
 
     def guess_type(self):
         return SHEET_TYPE

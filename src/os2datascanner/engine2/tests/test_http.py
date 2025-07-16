@@ -1049,11 +1049,6 @@ class Engine2HTTPTest(Engine2HTTPSetup, unittest.TestCase):
                 first_thing,
                 "{0}: followed link doesn't have base url as referrer".format(
                     second_thing))
-            self.assertEqual(
-                second_thing.base_referrer,
-                first_thing,
-                "{0}: followed link doesn't have base url as base_referrer".format(
-                    second_thing))
 
     def test_old_fashioned_referrers(self):
         """Assert that a WebHandle only have one referrer. The old WebHandle-specific

@@ -174,35 +174,6 @@ class Handle(TypePropertyEquality, JSONSerialisable):
         if self.source.handle:
             yield from self.source.handle.walk_up()
 
-    @property
-    def base_referrer(self) -> "Handle":
-        """Returns this Handle's base referrer or self, if there is no referrer"""
-        h = self
-        while h:
-            if h.referrer:
-                h = h.referrer
-            else:
-                break
-        return h
-
-    @property
-    def base_handle(self) -> "Handle":
-        """Returns this Handle's top-most handle, which does not yield
-        independent sources."""
-        warnings.warn(
-                "Handle.base_handle is deprecated;"
-                " rewrite this code to use Handle.walk_up instead",
-                DeprecationWarning, stacklevel=2)
-        h = self
-        while h:
-            if (parent_handle := h.source.handle):
-                # Check to make sure that we aren't going too far up the hierarchy
-                if not parent_handle.source.yields_independent_sources:
-                    h = parent_handle
-                    continue
-            break
-        return h
-
     def censor(self):
         """Returns a Handle identical to this one but whose Source does not
         carry sensitive information like passwords or API keys. See the
