@@ -23,9 +23,7 @@
               onchange="validateAliasType()"
               required>
         <option value="">--{% trans "select" %}--</option>
-        <option value="email">{% trans "email" %}</option>
-        <option value="upn">{% trans "user principal name" %}</option>
-        <option value="generic">{% trans "generic" %}</option>
+        {% for type in AliasType %}<option value="{{ type }}">{{ type.label }}</option>{% endfor %}
       </select>
     </div>
   </div>

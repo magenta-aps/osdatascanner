@@ -181,6 +181,11 @@ class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context["organization"] = self.kwargs['org']
         context["account"] = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
+
+        context["AliasType"] = (ac := list(AliasType))
+        # Remediator associations are created through scanner jobs, not here
+        ac.remove(AliasType.REMEDIATOR)
+
         return context
 
     def form_valid(self, form: ModelForm):

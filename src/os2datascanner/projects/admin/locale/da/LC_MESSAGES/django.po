@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 14:56+0200\n"
+"POT-Creation-Date: 2025-07-16 16:47+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3538,18 +3538,6 @@ msgstr "Aliastype"
 #: organizations/templates/components/modals/alias_create.html
 msgid "select"
 msgstr "vælg"
-
-#: organizations/templates/components/modals/alias_create.html
-msgid "email"
-msgstr "e-mail"
-
-#: organizations/templates/components/modals/alias_create.html
-msgid "user principal name"
-msgstr "brugerens hovednavn (UPN)"
-
-#: organizations/templates/components/modals/alias_create.html
-msgid "generic"
-msgstr "generisk"
 
 #: organizations/templates/components/modals/alias_create.html
 msgid "Shared"
