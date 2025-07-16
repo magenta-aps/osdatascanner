@@ -492,7 +492,15 @@ class Scanner(models.Model):
             if not remapped:
                 # This checkup refers to a Source that we no longer care about
                 # (for example, an account that's been removed from the scan).
-                # Delete it
+                # Let the report module know about it...
+                outbox.append(("os2ds_problems",
+                               messages.ProblemMessage(
+                                   scan_tag=spec_template.scan_tag,
+                                   handle=rh,
+                                   irrelevant=True,
+                                   message="No longer relevant"
+                               )))
+                # ... and then delete the checkup
                 reminder.delete()
                 continue
 
