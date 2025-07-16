@@ -43,6 +43,9 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('os2datascanner', '0147_add_permission_to_admins_superadmin_group'),
+        # This migration is pre Grant multitable inheritance, below is last migration before
+        # change process starts.
+        ('grants', '0014_alter_ewsgrant_organization_and_more'),
     ]
 
     operations = [

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from .grant import UsernamePasswordGrant
@@ -37,10 +38,17 @@ class SMBGrant(UsernamePasswordGrant):
     def verbose_name(self):
         return self._meta.verbose_name
 
+    def clean(self):
+        # We explicitly don't call the super class here, as that enforces a stricter clean method
+        # than what we want here: Same username in different Windows domains are allowed.
+        # Since we're using multi table inheritance, it is not possible to use database level
+        # constraints on f.e. domain+username+organization (they reside in different tables).
+        if self.domain and self.username:
+            if self.objects.filter(domain=self.domain,
+                                   username=self.username,
+                                   organization=self.organization,
+                                   ).exclude(pk=self.pk).exists():
+                raise ValidationError(_("A grant using this username and domain already exists."))
+
     class Meta:
         verbose_name = "SMB Service Account"
-        constraints = [
-            models.UniqueConstraint(
-                    fields=["organization", "domain", "username"],
-                    name="%(app_label)s_%(class)s_unique")
-        ]

@@ -1,4 +1,6 @@
 from uuid import uuid4
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.engine2.model.msgraph.utilities import make_token
@@ -48,10 +50,15 @@ class GraphGrant(Grant):
     def __str__(self):
         return f"Microsoft Graph access to tenant {self.tenant_id}"
 
+    def clean(self):
+        super().clean()
+        # Since we're using multi table inheritance, it is not possible to use database level
+        # constraints on f.e. tenant_id+organization (they reside in different tables).
+        if self.tenant_id:
+            if self.objects.filter(tenant_id=self.tenant_id,
+                                   organization=self.organization,
+                                   ).exclude(pk=self.pk).exists():
+                raise ValidationError(_("A grant for this tenant already exists."))
+
     class Meta:
         verbose_name = "Microsoft Graph"
-        constraints = [
-            models.UniqueConstraint(
-                    fields=["organization", "tenant_id"],
-                    name="avoid_multiple_overlapping_grants")
-        ]

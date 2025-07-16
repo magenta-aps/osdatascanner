@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +14,13 @@ class Grant(models.Model):
     Grants exist to allow a separation between the roles of the organisational
     administrator, who can delegate functions to OS2datascanner, and the
     OS2datascanner administrator, who does not necessarily have that power."""
+
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid4,
+        editable=False,
+        verbose_name=_('UUID'),
+    )
 
     organization = models.ForeignKey(
             'organizations.Organization',
@@ -43,7 +53,7 @@ class Grant(models.Model):
         return _("Not known")
 
     class Meta:
-        abstract = True
+        abstract = False
 
 
 def wrap_encrypted_field(field_name: str):
@@ -72,13 +82,15 @@ class UsernamePasswordGrant(Grant):
     _password = models.JSONField(verbose_name=_("password (encrypted)"))
     password = wrap_encrypted_field("_password")
 
+    def clean(self):
+        super().clean()
+        # Since we're using multi table inheritance, it is not possible to use database level
+        # constraints on f.e. username+organization (they reside in different tables).
+        if self.username:
+            if self.objects.filter(username=self.username,
+                                   organization=self.organization,
+                                   ).exclude(pk=self.pk).exists():
+                raise ValidationError(_("A grant using this username already exists."))
+
     class Meta:
         abstract = True
-
-        constraints = [
-            # It'll never make sense for one organization to define two Grants
-            # with the same model type and username but different passwords!
-            models.UniqueConstraint(
-                    fields=["organization", "username"],
-                    name="%(app_label)s_%(class)s_unique")
-        ]
