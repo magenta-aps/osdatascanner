@@ -230,8 +230,7 @@ let selectedValues = [];
 		const $container = s2inst.data("select2").$container;
 		const $selection = $container.find(".select2-selection--multiple");
 
-		//TODO: Find a way to translate here??
-		const $clearBtn = $('<span class="select2-clear-btn" title="Clear all selections">Ryd valgte</span>');
+		const $clearBtn = $(`<button class="button button--transparent-button select2-clear-btn" title="${gettext("Clear all selected units")}" disabled="true">${gettext("Clear selected")}</button>`);
 	
 		// Add click handler for clear button
 		$clearBtn.on('click', function(e) {
@@ -254,8 +253,8 @@ let selectedValues = [];
 				option.setAttribute('aria-selected', false);
 			});
 			
-			// Hide the clear button
-			$clearBtn.hide();
+			// Disable button 
+			$clearBtn.prop('disabled', true);
 			
 			// Trigger custom event
 			s2inst.trigger('clear-btn:click');
@@ -273,9 +272,9 @@ let selectedValues = [];
 		const clearBtn = s2inst.data('clearBtn');
 		if (clearBtn) {
 			if (selectedValues.length > 0) {
-				clearBtn.show();
+				clearBtn.prop('disabled', false);
 			} else {
-				clearBtn.hide();
+				clearBtn.prop('disabled', true);
 			}
 		}
 	}

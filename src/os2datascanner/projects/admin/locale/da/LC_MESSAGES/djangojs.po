@@ -492,3 +492,15 @@ msgstr "om morgenen"
 #: recurrence.js
 msgid "PM"
 msgstr "om eftermiddagen"
+
+#: dropdowntree.js
+msgid "Select one or more organizational units"
+msgstr "Vælg en eller flere organisatoriske enheder"
+
+#: dropdowntree.js
+msgid "Clear all selected units"
+msgstr "Ryd valgte enheder"
+
+#: dropdowntree.js
+msgid "Clear selected"
+msgstr "Ryd valgte"
