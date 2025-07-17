@@ -112,6 +112,7 @@
   @media (min-width: $break-lg) {
     width: 18.9rem;
   }
+
   @media (max-width: $break-lg) {
     left: 7rem;
   }
@@ -261,6 +262,7 @@
   &.large {
     height: 54rem;
     width: 100%;
+
     @media (max-width: $break-lg) {
       border-radius: 0;
       margin: 0;
@@ -276,15 +278,19 @@
   &.pie_chart {
     height: 22rem;
   }
+
   &.donut_chart {
     height: 22rem;
   }
+
   &.bar_chart_vertical {
     height: 45rem;
   }
+
   &.bar_chart_horizontal {
     height: 40rem;
   }
+
   &.line_chart {
     height: 45rem;
 
@@ -477,6 +483,7 @@
     }
   }
 }
+
 .chart_container {
   width: 100%;
 }
@@ -676,6 +683,7 @@ table .overview_wrapper {
       }
     }
   }
+
   // ***** Grid Layout END *****
 
   &__label {
@@ -833,7 +841,6 @@ table .overview_wrapper {
           &__content {
             gap: 0.125rem;
             align-items: stretch;
-            flex-direction: column;
           }
 
           &__total {
@@ -857,6 +864,7 @@ table .overview_wrapper {
         }
       }
     }
+
     .mini-table {
       // Layout
       display: flex;
@@ -991,6 +999,7 @@ table .overview_wrapper {
               &--timeline {
                 grid-column: span 8;
               }
+
               &--scan-summary {
                 grid-column: span 4;
               }
@@ -1007,10 +1016,12 @@ table .overview_wrapper {
               &--timeline {
                 grid-column: span 8;
               }
+
               &--scan-summary {
                 grid-column: span 4;
               }
             }
+
             /* Grid layout - end */
 
             &--scan-summary {
@@ -1028,6 +1039,7 @@ table .overview_wrapper {
 
             &__content {
               height: fit-content;
+
               ul,
               li,
               p {
