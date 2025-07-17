@@ -94,7 +94,11 @@ class SBSYSDBRule(SimpleRule):
         return ":D"
 
     def match(self, db_row):
-        if self._op(db_row[self._field], self._value):
+        rhs = (
+                self._value
+                if not self._value.startswith("&")
+                else db_row[self._value[1:]])
+        if self._op(db_row[self._field], rhs):
             yield {
                 "match": db_row[self._field]
             }

@@ -138,6 +138,8 @@ reference to a `CivilRegistryStatus`, and so on.
                 for_update=False)),
  Column('CaseworkerID', INTEGER(), ForeignKey('User.ID'), table=<Case>,
         nullable=False),
+ Column('MunicipalityID', INTEGER(), ForeignKey('Municipality.ID'),
+        table=<Case>, nullable=False),
  Column('LastChanged', DATETIME(), table=<Case>,
         server_default=DefaultClause(
                 <sqlalchemy.sql.elements.TextClause object at 0x74b356e04ed0>,
@@ -337,6 +339,27 @@ that the key value will be meaningful, but that's not difficult:
     something more robust -- for example, two new `PersonID` and `CompanyID`
     fields and a database constraint that requires that precisely one of these
     be set -- this `Rule` would break.
+
+### Right-hand references
+
+The SQL translation layer also understands field references when they appear on
+the right-hand side of the `SBSYSDBRule` expression, provided that they're
+prefixed with an ampersand. For example, we could use the following rule to
+efficiently detect cases associated with people who are no longer resident in
+the municipality:
+
+```python
+>>> rule = AndRule(
+...         SBSYSDBRule("CaseParty.PartyType.Name", "eq", "Person"),
+...         SBSYSDBRule(
+...                 "CaseParty.Party as Person.MunicipalityID",
+...                  "neq", "&MunicipalityID"))
+```
+
+Of course, the right-hand side of the expression also supports dot-separated
+expressions, so we could also have written
+`SBSYSDBRule("MunicipalityID", "neq", "&CaseParty.Party as Person.MunicipalityID")`
+to get the same effect but with the two sides of the expression flipped.
 
 ## Further uses for rules
 

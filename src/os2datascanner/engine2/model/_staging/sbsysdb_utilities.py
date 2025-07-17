@@ -84,6 +84,39 @@ def resolve_complex_column_names(
     return constraint, columns
 
 
+def _rule_lhs_to_cv(
+        lhs,
+        table, all_tables,
+        virtual_columns):
+    # The left-hand side of a SBSYSDBRule expression can be one of two
+    # things: either a virtual column or a (perhaps complex) column name. Work
+    # out which it is
+    lhs_constraints = true()
+    if virtual_columns and lhs in virtual_columns:
+        lhs_val = virtual_columns.get(lhs)
+    else:
+        lhs_constraints, lhs_val = resolve_complex_column_name(
+                table, lhs, all_tables)
+
+    return lhs, lhs_constraints, lhs_val
+
+
+def _rule_rhs_to_cv(
+        rhs,
+        table, all_tables):
+    # The right-hand side of a SBSYSDBRule expression is either a normal value
+    # or (if it's a string starting with "&") a reference to another column
+    rhs_constraints = true()
+    if isinstance(rhs, str) and rhs.startswith("&"):
+        rhs = rhs[1:]
+        rhs_constraints, rhs_val = resolve_complex_column_name(
+                table, rhs, all_tables)
+    else:
+        rhs_val = rhs if not rhs.startswith("\\") else rhs[1:]
+
+    return rhs, rhs_constraints, rhs_val
+
+
 def convert_rule_to_select(
         rule: Rule,
         table: Table, all_tables,
@@ -119,19 +152,21 @@ def convert_rule_to_select(
             case logical.NotRule():
                 return not_(rule_to_constraints(r._rule))
 
-            case SBSYSDBRule(field_name, op, value) \
-                    if virtual_columns and field_name in virtual_columns:
-                virtual_column = virtual_columns.get(field_name)
-                if field_name not in column_labels:
-                    column_labels[field_name] = virtual_column
-                return op.func_db(virtual_column, value)
+            case SBSYSDBRule(lhs, op, rhs):
+                lhs_cn, lhs_constraints, lhs_val = _rule_lhs_to_cv(
+                        lhs, table, all_tables, virtual_columns)
+                rhs_cn, rhs_constraints, rhs_val = _rule_rhs_to_cv(
+                        rhs, table, all_tables)
 
-            case SBSYSDBRule(field_name, op, value):
-                extra_constraints, column = resolve_complex_column_name(
-                        table, field_name, all_tables)
-                if field_name not in column_labels:
-                    column_labels[field_name] = column
-                return and_(extra_constraints, op.func_db(column, value))
+                if lhs_cn not in column_labels:
+                    column_labels[lhs_cn] = lhs_val
+                if isinstance(rhs_val, Column) and rhs_cn not in column_labels:
+                    column_labels[rhs_cn] = rhs_val
+
+                return and_(
+                        lhs_constraints,
+                        rhs_constraints,
+                        op.func_db(lhs_val, rhs_val))
 
             case _:
                 # For now, we assume that any other OSdatascanner rule plays no

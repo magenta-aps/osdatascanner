@@ -169,7 +169,14 @@ SbSysNetDrift["Adresse"] = [
         "Adresse2": "Vejstrand",
         "PostNummer": "9999",
         "HusNummer": "32",
-    }
+    },
+    _ADRESSE_BASE | {
+        "ID": 26,
+        "Adresse1": "Majonæsegade",
+        "Adresse2": "Sydstrand",
+        "PostNummer": "9998",
+        "HusNummer": "10",
+    },
 ]
 
 
@@ -289,6 +296,29 @@ SbSysNetDrift["Bruger"] = [
     }
 ]
 
+SbSysNetDrift["KommuneOpslag"] = [
+    {
+        "ID": 1,
+        "Nummer": 999,
+        "Navn": "Vejstrand Kommune",
+        "RegionNummer": 9,
+    },
+    {
+        "ID": 2,
+        "Nummer": 998,
+        "Navn": "Sydstrands Kommune",
+        "RegionNummer": 9,
+    },
+]
+
+SbSysNetDrift["RegionOpslag"] = [
+    {
+        "ID": 1,
+        "Nummer": 9,
+        "Navn": "Region Nordstrand",
+    }
+]
+
 _SAG_BASE = {
     "SagIdentity": None,
     "Nummer": None,
@@ -296,7 +326,7 @@ _SAG_BASE = {
     "ErBeskyttet": None,
     "Kommentar": None,
     "BevaringID": None,
-    "KommuneID": None,
+    "KommuneID": 1,
     "BehandlerID": None,
     "SagsStatusID": None,
     "CreatedByID": None,
@@ -420,7 +450,8 @@ SbSysNetDrift["Person"] = [
         "Koen": 1,
         "KontaktForm": 1,  # Reference to the "KontaktFormOpslag" table, but
                            # must be less than 4(?),
-        "AdresseID": 25,
+        "AdresseID": 26,
+        "KommuneID": 2,
     }
 ]
 
