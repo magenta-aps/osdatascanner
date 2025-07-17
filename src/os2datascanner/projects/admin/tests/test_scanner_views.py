@@ -220,3 +220,66 @@ class TestScannerViewsMethods:
 
         for scanner_model, enabled in zip(models, enabled_scanners):
             assert (scanner_model in scanner_tabs) == enabled
+
+
+@pytest.mark.django_db
+class TestScannerViewsPossibleContacts:
+
+    def test_only_related_users_as_contacts_create(self, test_org, other_org, client, user_admin,
+                                                   alt_admin, superuser, user):
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("webscanner_add"))
+        possible_contacts = response.context_data["possible_contacts"]
+        for contact in possible_contacts:
+            assert contact.is_superuser or \
+                contact.has_perm("view_client") or \
+                contact.administrator_for.client == user_admin.administrator_for.client
+
+    def test_only_related_users_as_contacts_create2(self, test_org, other_org, client, user_admin,
+                                                    alt_admin, superuser, user):
+        alt_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(alt_admin)
+        response = client.get(reverse_lazy("webscanner_add"))
+        possible_contacts = response.context_data["possible_contacts"]
+        for contact in possible_contacts:
+            assert contact.is_superuser or \
+                contact.has_perm("view_client") or \
+                contact.administrator_for.client == alt_admin.administrator_for.client
+
+    def test_only_related_users_as_contacts_update(self, test_org, other_org, client, user_admin,
+                                                   alt_admin, superuser, user, web_scanner):
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
+        possible_contacts = response.context_data["possible_contacts"]
+        for contact in possible_contacts:
+            assert contact.is_superuser or \
+                contact.has_perm("view_client") or \
+                contact.administrator_for.client == user_admin.administrator_for.client
+
+    def test_only_related_users_as_contacts_update2(self, test_org, other_org, client, user_admin,
+                                                    alt_admin, superuser, user,
+                                                    other_web_scanner):
+        alt_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        client.force_login(alt_admin)
+        response = client.get(reverse_lazy("webscanner_update",
+                                           kwargs={"pk": other_web_scanner.pk}))
+        possible_contacts = response.context_data["possible_contacts"]
+        for contact in possible_contacts:
+            assert contact.is_superuser or \
+                contact.has_perm("view_client") or \
+                contact.administrator_for.client == alt_admin.administrator_for.client
+
+    def test_only_related_users_as_contacts_update_superuser(
+            self, test_org, other_org, client, user_admin, alt_admin, superuser, user,
+            other_web_scanner):
+        client.force_login(superuser)
+        response = client.get(reverse_lazy("webscanner_update",
+                                           kwargs={"pk": other_web_scanner.pk}))
+        possible_contacts = response.context_data["possible_contacts"]
+        org = response.context_data["object"].organization
+        for contact in possible_contacts:
+            assert contact.is_superuser or \
+                contact.has_perm("view_client") or \
+                contact.administrator_for.client == org.client
