@@ -261,6 +261,10 @@ function makeRule(elem) {
         "dataset": "da_20211018_laegehaandbog_stikord"
       };
 
+    case "RawRule":
+      content = elem.querySelectorAll("textarea");
+      return JSON.parse(content[0].value);
+
     /* Glue template fragments to consume */
     case "rule_selector":  /* fall through */
     case "and_fragment":  /* fall through */
