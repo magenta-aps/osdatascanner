@@ -55,9 +55,9 @@ class GraphGrant(Grant):
         # Since we're using multi table inheritance, it is not possible to use database level
         # constraints on f.e. tenant_id+organization (they reside in different tables).
         if self.tenant_id:
-            if self.objects.filter(tenant_id=self.tenant_id,
-                                   organization=self.organization,
-                                   ).exclude(pk=self.pk).exists():
+            if GraphGrant.objects.filter(tenant_id=self.tenant_id,
+                                         organization=self.organization,
+                                         ).exclude(pk=self.pk).exists():
                 raise ValidationError(_("A grant for this tenant already exists."))
 
     class Meta:

@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from model_utils.managers import InheritanceManager
 from os2datascanner.projects.utils import aes
 
 
@@ -14,6 +15,8 @@ class Grant(models.Model):
     Grants exist to allow a separation between the roles of the organisational
     administrator, who can delegate functions to OS2datascanner, and the
     OS2datascanner administrator, who does not necessarily have that power."""
+
+    objects = InheritanceManager()
 
     uuid = models.UUIDField(
         primary_key=True,
@@ -87,9 +90,10 @@ class UsernamePasswordGrant(Grant):
         # Since we're using multi table inheritance, it is not possible to use database level
         # constraints on f.e. username+organization (they reside in different tables).
         if self.username:
-            if self.objects.filter(username=self.username,
-                                   organization=self.organization,
-                                   ).exclude(pk=self.pk).exists():
+            # We're in an abstract class and want the manager of whatever inheriting class.
+            if type(self).objects.filter(username=self.username,
+                                         organization=self.organization,
+                                         ).exclude(pk=self.pk).exists():
                 raise ValidationError(_("A grant using this username already exists."))
 
     class Meta:

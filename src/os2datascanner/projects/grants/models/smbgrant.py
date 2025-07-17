@@ -44,10 +44,10 @@ class SMBGrant(UsernamePasswordGrant):
         # Since we're using multi table inheritance, it is not possible to use database level
         # constraints on f.e. domain+username+organization (they reside in different tables).
         if self.domain and self.username:
-            if self.objects.filter(domain=self.domain,
-                                   username=self.username,
-                                   organization=self.organization,
-                                   ).exclude(pk=self.pk).exists():
+            if SMBGrant.objects.filter(domain=self.domain,
+                                       username=self.username,
+                                       organization=self.organization,
+                                       ).exclude(pk=self.pk).exists():
                 raise ValidationError(_("A grant using this username and domain already exists."))
 
     class Meta:
