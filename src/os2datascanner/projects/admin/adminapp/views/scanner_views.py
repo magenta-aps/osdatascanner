@@ -123,7 +123,7 @@ class ScannerBase(object):
         form.fields['organization'].queryset = org_qs
         form.fields['organization'].empty_label = None
 
-        selected_org = self.request.GET.get('organization') or org_qs.first()
+        selected_org = self.get_selected_org(org_qs)
 
         form.fields['organization'].initial = selected_org
 
@@ -142,6 +142,11 @@ class ScannerBase(object):
         )
 
         return form
+
+    def get_selected_org(self, org_qs):
+        return self.get_object().organization or \
+            org_qs.filter(pk=self.request.GET.get("organization")).first() or \
+            org_qs.first()
 
     def get_form_fields(self):
         """Get the list of form fields.
@@ -188,7 +193,7 @@ class ScannerBase(object):
         user = UserWrapper(self.request.user)
         orgs = Organization.objects.filter(user.make_org_Q("uuid"))
 
-        selected_org = orgs.get(pk=self.request.GET.get('organization', orgs.only("pk").first().pk))
+        selected_org = self.get_selected_org(orgs)
 
         context["scanner_model"] = self.model
 
@@ -241,6 +246,9 @@ class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
         response = super().post(request, *args, **kwargs)
         self.create_remediator_aliases(request)
         return response
+
+    def get_selected_org(self, org_qs):
+        return org_qs.filter(pk=self.request.GET.get("organization")).first() or org_qs.first()
 
 
 class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
