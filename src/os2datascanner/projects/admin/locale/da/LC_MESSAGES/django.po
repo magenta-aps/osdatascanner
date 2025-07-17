@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-17 15:23+0200\n"
+"POT-Creation-Date: 2025-07-17 15:33+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -488,22 +488,24 @@ msgid "A service account with access to the SQL Server instance."
 msgstr "En servicekonto med adgang til SQL Server-instansen."
 
 #: adminapp/models/scannerjobs/sbsysdb.py
+#: adminapp/models/scannerjobs/sbsysscanner.py
+msgctxt "unit of scan"
+msgid "case"
+msgstr "sag"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+#: adminapp/models/scannerjobs/sbsysscanner.py
+msgctxt "unit of scan"
+msgid "cases"
+msgstr "sager"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
 msgid "SBSYS database scanner"
 msgstr "SBSYS-databasescanner"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
 msgid "SBSYS database scanners"
 msgstr "SBSYS-databasescannere"
-
-#: adminapp/models/scannerjobs/sbsysscanner.py
-msgctxt "unit of scan"
-msgid "case"
-msgstr "sag"
-
-#: adminapp/models/scannerjobs/sbsysscanner.py
-msgctxt "unit of scan"
-msgid "cases"
-msgstr "sager"
 
 #: adminapp/models/scannerjobs/sbsysscanner.py
 msgid "SBSYS scanner"

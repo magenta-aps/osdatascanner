@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 
 from os2datascanner.engine2.model._staging import sbsysdb
 from os2datascanner.projects.grants.models import SMBGrant
@@ -58,8 +58,8 @@ class SBSYSDBScanner(Scanner):
                 reflect_tables=None,  # trust the defaults
                 base_weblink=self.weblink or None)
 
-    def get_absolute_url(self):
-        return "/"
+    object_name = pgettext_lazy("unit of scan", "case")
+    object_name_plural = pgettext_lazy("unit of scan", "cases")
 
     class Meta:
         verbose_name = _("SBSYS database scanner")
