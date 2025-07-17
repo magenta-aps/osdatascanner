@@ -13,3 +13,6 @@ AMQP_PWD = "os2ds"
 # timeout for requests (in seconds)
 timeout = 20
 ttl = 25
+
+[pipeline]
+extra_modules = [".model._staging.sbsysdb"]
