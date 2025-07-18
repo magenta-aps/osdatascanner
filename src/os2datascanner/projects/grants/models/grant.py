@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 from os2datascanner.projects.utils import aes
+from rest_framework import serializers
 
 
 class Grant(models.Model):
@@ -98,3 +99,11 @@ class UsernamePasswordGrant(Grant):
 
     class Meta:
         abstract = True
+
+
+class LazyOrganizationRelatedField(serializers.PrimaryKeyRelatedField):
+    # For grant serializers, we need a way to grab organization project-independent, such that
+    # the primary key (UUID) can be converted to something serializable.
+    def get_queryset(self):
+        from django.apps import apps
+        return apps.get_model('organizations', 'Organization').objects.all()

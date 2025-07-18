@@ -37,8 +37,8 @@ from os2datascanner.core_organizational_structure.models.organization import \
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from os2datascanner.utils.system_utilities import time_now
 
-
-from ..seralizer import BaseBulkSerializer, SelfRelatingField
+from os2datascanner.core_organizational_structure.serializer import (BaseBulkSerializer,
+                                                                     SelfRelatingField)
 
 logger = structlog.get_logger("report_organizations")
 

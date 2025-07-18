@@ -4,7 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.engine2.model.msgraph.utilities import make_token
-from .grant import Grant, wrap_encrypted_field
+from rest_framework.fields import UUIDField
+
+from .grant import Grant, wrap_encrypted_field, LazyOrganizationRelatedField
+from os2datascanner.core_organizational_structure.serializer import BaseSerializer
 
 
 class GraphGrant(Grant):
@@ -62,3 +65,18 @@ class GraphGrant(Grant):
 
     class Meta:
         verbose_name = "Microsoft Graph"
+
+
+class GraphGrantSerializer(BaseSerializer):
+    organization = LazyOrganizationRelatedField(
+        required=True,
+        allow_null=False,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+
+    class Meta:
+        model = GraphGrant
+        fields = ["pk", "organization", "app_id", "tenant_id", "expiry_date", "client_secret"]
+
+
+GraphGrant.serializer_class = GraphGrantSerializer

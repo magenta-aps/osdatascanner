@@ -44,7 +44,6 @@ def post_save_broadcast(sender, instance, created, **kwargs):
     serializer = get_serializer(sender)
     serialized_data = serializer(instance).data
     broadcastable_dict = {sender.__name__: [serialized_data]}
-
     if created:
         event = BulkCreateEvent(broadcastable_dict)
     else:

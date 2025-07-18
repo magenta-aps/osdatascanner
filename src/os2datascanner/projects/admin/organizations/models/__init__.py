@@ -5,3 +5,4 @@ from .organizational_unit import OrganizationalUnit, OrganizationalUnitSerialize
 from .organization import Organization, OrganizationSerializer  # noqa
 from .position import Position, PositionSerializer  # noqa
 from .syncedpermission import SyncedPermission  # noqa
+from .grant_extra import GrantExtra  # noqa

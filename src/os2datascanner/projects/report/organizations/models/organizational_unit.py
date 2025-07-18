@@ -19,7 +19,8 @@ from os2datascanner.core_organizational_structure.models import \
 
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
-from ..seralizer import BaseBulkSerializer, SelfRelatingField
+from os2datascanner.core_organizational_structure.serializer import (BaseBulkSerializer,
+                                                                     SelfRelatingField)
 from django.db.models import Count, Q, F
 
 

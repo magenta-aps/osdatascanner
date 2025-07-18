@@ -2,7 +2,9 @@ import json
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-from .grant import Grant, wrap_encrypted_field
+from .grant import Grant, wrap_encrypted_field, LazyOrganizationRelatedField
+from os2datascanner.core_organizational_structure.serializer import BaseSerializer
+from rest_framework.fields import UUIDField
 
 
 class GoogleApiGrant(Grant):
@@ -61,3 +63,18 @@ class GoogleApiGrant(Grant):
         ]:
             if key not in service_account:
                 raise ValidationError(_("Invalid service account"))
+
+
+class GoogleApiGrantSerializer(BaseSerializer):
+    organization = LazyOrganizationRelatedField(
+        required=True,
+        allow_null=False,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+
+    class Meta:
+        model = GoogleApiGrant
+        fields = ["pk", "organization", "service_account"]
+
+
+GoogleApiGrant.serializer_class = GoogleApiGrantSerializer

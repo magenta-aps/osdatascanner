@@ -1,4 +1,6 @@
-from .grant import UsernamePasswordGrant
+from .grant import UsernamePasswordGrant, LazyOrganizationRelatedField
+from os2datascanner.core_organizational_structure.serializer import BaseSerializer
+from rest_framework.fields import UUIDField
 
 
 class EWSGrant(UsernamePasswordGrant):
@@ -17,3 +19,18 @@ class EWSGrant(UsernamePasswordGrant):
 
     class Meta(UsernamePasswordGrant.Meta):
         verbose_name = "EWS Service Account"
+
+
+class EWSGrantSerializer(BaseSerializer):
+    organization = LazyOrganizationRelatedField(
+        required=True,
+        allow_null=False,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+
+    class Meta:
+        model = EWSGrant
+        fields = ["pk", "organization", "username", "password"]
+
+
+EWSGrant.serializer_class = EWSGrantSerializer

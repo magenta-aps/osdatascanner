@@ -1,7 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from .grant import UsernamePasswordGrant
+
+from os2datascanner.core_organizational_structure.serializer import BaseSerializer
+from rest_framework.fields import UUIDField
+
+
+from .grant import UsernamePasswordGrant, LazyOrganizationRelatedField
 
 
 class SMBGrant(UsernamePasswordGrant):
@@ -52,3 +57,18 @@ class SMBGrant(UsernamePasswordGrant):
 
     class Meta:
         verbose_name = "SMB Service Account"
+
+
+class SMBGrantSerializer(BaseSerializer):
+    organization = LazyOrganizationRelatedField(
+        required=True,
+        allow_null=False,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+
+    class Meta:
+        model = SMBGrant
+        fields = ["pk", "organization", "username", "domain", "password"]
+
+
+SMBGrant.serializer_class = SMBGrantSerializer
