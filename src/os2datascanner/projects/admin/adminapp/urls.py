@@ -32,7 +32,7 @@ from .views.views import GuideView, DialogSuccess
 import inspect
 from .views import (exchangescanner_views, filescanner_views, dropboxscanner_views,
                     googledrivescanner_views, gmailscanner_views, sbsysscanner_views,
-                    webscanner_views, msgraph_views)
+                    webscanner_views, msgraph_views, sbsysdb as sbsysdb_views)
 from .views.exchangescanner_views import OrganizationalUnitListing
 from .views.webscanner_views import WebScannerList
 
@@ -47,10 +47,11 @@ from .views.status_views import (StatusOverview, StatusCompletedView, StatusComp
 
 from .views.miniscanner_views import MiniScanner, execute_mini_scan, CustomRuleCreateMiniscan
 
-from .views.scanner_views import (ScannerAskRun, ScannerCleanupStaleAccounts, ScannerCopy,
-                                  ScannerCreate, ScannerDelete, ScannerList, ScannerRemove,
-                                  ScannerRun, ScannerUpdate)
+from .views.scanner_views import (ScannerAskRun,
+                                  ScannerDelete, ScannerRemove,
+                                  ScannerRun)
 from .views.user_views import MyUserView, UserDetailView, UserUpdateView
+
 from .models.scannerjobs.filescanner import FileScanner
 from .models.scannerjobs.dropboxscanner import DropboxScanner
 from .models.scannerjobs.exchangescanner import ExchangeScanner
@@ -61,6 +62,13 @@ from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
                                          MSGraphSharepointScanner)
 from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .models.scannerjobs.webscanner import WebScanner
+from .models.scannerjobs.sbsysdb import SBSYSDBScanner
+
+from structlog import get_logger
+
+
+logger = get_logger(__name__)
+
 
 urlpatterns = [
     # App URLs
@@ -193,28 +201,32 @@ for module in [exchangescanner_views,
                gmailscanner_views,
                sbsysscanner_views,
                webscanner_views,
-               msgraph_views]:
+               msgraph_views,
+               sbsysdb_views]:
+    mname = module.__name__
+
     imported = inspect.getmembers(module)
     for _, data in imported:
-
-        type_to_action = {
-            ScannerList: "list",
-            ScannerCreate: "add",
-            ScannerUpdate: "update",
-            ScannerCopy: "copy",
-            ScannerCleanupStaleAccounts: "cleanup",
-        }
-
-        action: str = None
-        for superclass, act_label in type_to_action.items():
-            if inspect.isclass(data) and issubclass(data, superclass) and data is not superclass:
-                action = act_label
-                break
-        else:
-            # No special treatment for this type
+        if not inspect.isclass(data) or inspect.isabstract(data):
             continue
+        cls = data
+        qname = cls.__qualname__
 
-        stype: str = data.model.get_type().lower()
+        if not hasattr(cls, "scanner_view_type"):
+            continue
+        action = cls.scanner_view_type.value
+
+        if not hasattr(cls, "model"):
+            continue
+        model = cls.model
+
+        if not model:
+            continue
+        mqname = model.__qualname__
+
+        if not hasattr(model, "get_type"):
+            continue
+        stype: str = model.get_type().lower()
 
         # There are some special case patterns
         if action == "list":
@@ -227,7 +239,11 @@ for module in [exchangescanner_views,
             pattern = f"{stype}scanners/<int:pk>/{action}/"
             name = f"{stype}scanner_{action}"
 
-        urlpatterns.append(path(pattern, data.as_view(), name=name))
+        logger.info(
+                "auto-registering URL pattern",
+                mname=mname, qname=qname, mqname=mqname,
+                stype=stype, pattern=pattern, name=name)
+        urlpatterns.append(path(pattern, cls.as_view(), name=name))
 
 for model in [
         FileScanner,
@@ -241,7 +257,8 @@ for model in [
         MSGraphTeamsFileScanner,
         MSGraphSharepointScanner,
         SbsysScanner,
-        WebScanner]:
+        WebScanner,
+        SBSYSDBScanner]:
     stype: str = model.get_type().lower()
     urlpatterns.append(path(
         f"{stype}scanners/<int:pk>/askrun/",

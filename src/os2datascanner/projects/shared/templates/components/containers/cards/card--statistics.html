@@ -1,0 +1,25 @@
+{# card--statistics.html #}
+
+{# Use this for statistics cards #}
+
+{% extends "components/containers/cards/card.html" %}
+
+{% load i18n l10n static %}
+
+{% block card_header %}
+  <div class="card__header">
+    <div class="card__label">
+      <h3 class="title">
+        {% block card_title %}{% endblock %}
+      </h3>
+
+      <p class="subtitle">
+        {% block card_subtitle %}{% endblock %}
+      </p>
+    </div>
+
+    <div class="card__header-ui">
+      {% block card_header_ui %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}

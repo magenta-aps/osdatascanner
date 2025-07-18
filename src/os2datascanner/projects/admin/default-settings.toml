@@ -9,6 +9,8 @@
 SECRET_KEY = ""
 DECRYPTION_HEX = ""
 
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
 # django-prometheus will try to connect to postgresql during collectstatic
 # without this setting: https://github.com/korfuri/django-prometheus/issues/34.
 # It only collects a count of un-run migrations, which we don't really care
@@ -116,7 +118,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_prometheus',
     'rest_framework',
-    'django_structlog'
+    'django_structlog',
+    'django.forms'
 ]
 OS2DATASCANNER_APPS = [
     'os2datascanner.projects.admin.adminapp',

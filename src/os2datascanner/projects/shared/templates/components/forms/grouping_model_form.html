@@ -1,28 +1,14 @@
-<div class="form">
+<div class="form__body">
   {% if errors %}
     {{ errors }}
-    <div style="padding-top: 1em; clear: both" /></div>
-{% endif %}
-{% for title, fields in groups %}
-  <fieldset style="border: 2px solid black; padding: 2em; margin-bottom: 1em">
-    <legend style="padding-left: 10px; padding-right: 10px">{{ title }}</legend>
-    {% for field, errors in fields %}
-      <div class="form-widget {% if errors %}error{% endif %}">
-        <div style="width: 10%; float: left">{{ field.label }}</div>
-        <div style="float: left" {% if errors %}class="error"{% endif %}>{{ field }}</div>
-        {% if errors %}<div style="padding-left: 3em; list-style-type: '⚠️'; float: right">{{ errors }}</div>{% endif %}
-        {% if field.help_text %}
-          <span style="font-size: 0.8em;
-                       font-style: italic;
-                       width: 90%;
-                       float: right">{{ field.help_text }}</span>
-        {% endif %}
-        {% if not forloop.last %}<div style="padding-top: 1em; clear: both" /></div>{% endif %}
-    </div>
+    <div style="padding-top: 1em; clear: both"></div>
+  {% endif %}
+
+  {% for group in groups %}
+    {% include "components/containers/cards/card--forms.html" with group=group only %}
   {% endfor %}
-</fieldset>
-{% endfor %}
-<!-- hidden -->
-{% for field in hidden_fields %}{{ field }}{% endfor %}
-<!-- end hidden -->
+
+  {# hidden #}
+  {% for field in hidden_fields %}{{ field }}{% endfor %}
+  {# end hidden #}
 </div>

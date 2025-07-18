@@ -1,0 +1,81 @@
+{% load i18n l10n static %}
+
+{# form__fieldset.html #}
+
+{% comment %}
+  Required params:
+    • title     – the legend text
+    • items     – a list of { type:"group" or "field", title, items… } or { type:"field", bf, errors }
+    • nested?   – boolean; if true, adds the `fieldset--nested` modifier
+{% endcomment %}
+
+<fieldset class="fieldset {% if nested %}fieldset--nested{% endif %}">
+  <legend class="fieldset__legend">
+ 
+    {% if nested %}
+      <h4 class="title">{{ title }}</h4>
+    {% else %}
+      <h3 class="title">{{ title }}</h3>
+    {% endif %}
+
+  </legend>
+
+  <div class="fieldset__body">
+    {% for item in items %}
+      {% if item.type == "group" %}
+
+        {# recursive include for sub-groups #}
+        {% include "components/forms/form__fieldset.html" with title=item.title items=item.items nested=True only %}
+ 
+      {% else %}
+
+        {# single field #}
+        {% with bf=item.bf errors=item.errors %}
+          <div class="form-widget{% if errors %} form-widget--error{% endif %}">
+            {% if bf.field.widget.input_type == "checkbox" %}
+
+              <div class="form-widget__input-wrapper">
+                <div class="checkbox-wrapper">
+                  {{ bf }}
+ 
+                  <label for="{{ bf.id_for_label }}" class="form-widget__checkbox-label">
+                    {{ bf.label }}
+                    {% if bf.field.required %}<span>*</span>{% endif %}
+                  </label>
+                </div>
+ 
+                {# Only render the icon if help_text isn't empty. #}
+                {% if bf.help_text %}
+                  <span class="form-widget__help-icon material-symbols"
+                        title="{{ bf.help_text }}"
+                        aria-hidden="true">info</span>
+                {% endif %}
+              </div>
+
+            {% else %}
+
+              <label for="{{ bf.id_for_label }}" class="form-widget__label">
+                {{ bf.label }}
+                {% if bf.field.required %}<span>*</span>{% endif %}
+              </label>
+ 
+              <div class="form-widget__input-wrapper">
+                {{ bf }}
+
+                {# Only render the icon if help_text isn't empty. #}
+                {% if bf.help_text %}
+                  <span class="form-widget__help-icon material-symbols"
+                        title="{{ bf.help_text }}"
+                        aria-hidden="true">info</span>
+                {% endif %}
+              </div>
+
+            {% endif %}
+ 
+            {% if errors %}<div class="form-widget__error">{{ errors }}</div>{% endif %}
+          </div>
+        {% endwith %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</fieldset>

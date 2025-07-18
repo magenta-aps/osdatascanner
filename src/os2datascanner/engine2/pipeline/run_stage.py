@@ -3,6 +3,7 @@ import sys
 import click
 import pstats
 import random
+import importlib
 import structlog
 from collections import deque
 
@@ -10,6 +11,7 @@ from prometheus_client import Info, Summary, start_http_server, CollectorRegistr
 
 from os2datascanner.utils import debug, profiling
 from ... import __version__
+from .. import settings
 from ..model.core import SourceManager
 from . import explorer, exporter, matcher, messages, processor, tagger, worker
 from .utilities.pika import (ANON_QUEUE,
@@ -244,6 +246,15 @@ restarting = False
 def main(enable_profiling, enable_rusage, enable_metrics,
          prometheus_port, width, single_cpu, restart_after, stage,
          queue_priority):
+
+    for module_name in settings.pipeline.get("extra_modules") or []:
+        logger.info(
+                "loading additional pipeline module",
+                module_name=module_name)
+        importlib.import_module(
+                module_name,
+                package="os2datascanner.engine2")
+
     debug.register_debug_signal()
     module = _module_mapping[stage]
     logger.info("starting pipeline", stage=stage)

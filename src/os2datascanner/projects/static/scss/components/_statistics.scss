@@ -1154,65 +1154,6 @@ table .overview_wrapper {
       }
     }
 
-    .card {
-      /* TODO: Move all card styles out of this and into it's own _cards.scss file, when the old datatables are done "hogging" the .card class. */
-
-      container-type: inline-size;
-      container-name: card-component;
-      /* NOTE: this makes it possible to add container dependent sizes to the children. */
-
-      @include layout-vertical(2rem);
-
-      // Box Model
-      padding: 1.75rem 2rem;
-      border-radius: var(--border-radius-widget);
-
-      // Visual
-      background-color: #fff;
-      color: var(--color-text-main);
-      box-shadow: var(--box-shadow-widget);
-
-      &__header {
-        @include layout-horizontal(1rem) {
-          justify-content: space-between;
-          align-items: flex-start;
-        }
-      }
-
-      &__label {
-        @include layout-vertical(0.125rem) {
-          align-items: flex-start;
-        }
-
-        .title {
-          font-size: 1.25rem;
-        }
-
-        .subtitle {
-          font-size: 0.875rem;
-          color: var(--color-text-secondary);
-        }
-      }
-
-      &__header-ui {
-        @include layout-horizontal(1rem);
-
-        .info-icon-wrapper {
-          color: var(--color-text-secondary);
-          cursor: help;
-          height: 1.5rem;
-        }
-      }
-
-      &__body {
-        @include layout-vertical;
-      }
-
-      &__footer {
-        // Unused for now
-      }
-    }
-
     .statistics__section {
       .circle-charts {
         // The pie and doughnut charts in DPO.

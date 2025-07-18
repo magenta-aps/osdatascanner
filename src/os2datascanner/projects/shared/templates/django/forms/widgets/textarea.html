@@ -1,0 +1,5 @@
+{# djlint:off #}
+<textarea name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+{% if widget.value %}{{ widget.value }}{% endif %}</textarea>
+<!-- custom widget -->
+{# djlint:on #}

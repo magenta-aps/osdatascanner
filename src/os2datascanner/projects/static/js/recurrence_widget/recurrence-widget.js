@@ -521,7 +521,9 @@ recurrence.widget.Widget.prototype = {
         var widget = this;
 
         var panels = recurrence.widget.e('div', {'class': 'panels'});
-        var control = recurrence.widget.e('div', {'class': 'control'});
+        var control = recurrence.widget.e("div", {
+          class: "control button-group",
+        });
         var root = recurrence.widget.e(
             'div', {'class': this.textarea.className}, [control, panels]);
 
@@ -646,21 +648,26 @@ recurrence.widget.AddButton.prototype = {
     init_dom: function() {
         var addbutton = this;
 
-        var plus = recurrence.widget.e(
-            'span', {'class': 'add-rule-icon'}, '');
-        var space = recurrence.widget.e(
-            'span', {},  '&nbsp;');
+        var plus = recurrence.widget.e("span", { class: "add-rule-icon" }, "");
         var label = recurrence.widget.e(
-            'span', {'class': 'recurrence-label'}, this.label);
+          "span",
+          { class: "recurrence-label" },
+          this.label
+        );
         var root = recurrence.widget.e(
-            'a', {'class': 'btn btn-success add-button button button--small', 'href': 'javascript:void(0)'},
-            [label, space, plus]);
+          "a",
+          {
+            class: "add-button button button--icon-text-button",
+            href: "javascript:void(0)",
+          },
+          [plus, label]
+        );
 
-        root.onclick = function() {
-            addbutton.options.onclick();
+        root.onclick = function () {
+          addbutton.options.onclick();
         };
 
-        this.elements = {'root': root, 'plus': plus, 'label': label};
+        this.elements = { root: root, plus: plus, label: label };
     }
 };
 
