@@ -39,6 +39,7 @@
           $("#{{ form.sitemap_url.auto_id }}_container").hide();
         }
       });
+      $('.sharepoint_sites_select2').select2();
       $('.remediator_select2').select2();
       $('.contacts_select2').select2();
     })
@@ -501,29 +502,38 @@
           <section class="data-form">
             <fieldset class="form__fieldset">
               <h3>{% trans "add SharePoint Sites"|capfirst %}</h3>
-              <p class="description">
-                {% blocktrans %} Choose which sites to include in this scan. Selecting no sites will scan all sites. {% endblocktrans %}
-              </p>
+              <div id="scanner_sharepoint_sites_container"
+                   class="dropdown-group form__group">
+                <label for="sharepoint_sites">{% trans "SharePoint Sites" %}</label>
+                <div class="select_sharepoint_site_container">
+                  <select multiple
+                          name="sharepoint_sites"
+                          id="sharepoint_sites"
+                          class="sharepoint_sites_select2">
+                    {% for site in sharepoint_sites %}
+                      <option value="{{ site.id }}"
+                              {% if site.id in form.sharepoint_sites.value %}selected{% endif %}>
+                        {{ site.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
  
-              <div class="form__group {% if form.sharepoint_sites.errors %}has-error{% endif %}"
-                   id="sharepoint-sites">
-                <label class="treeview-label {% if required %}required-form{% endif %}"
-                       for="{{ form.sharepoint_sites.name }}">{% trans "SharePoint sites to scan" %}</label>
-                <select class="treeview"
-                        id="sel_2"
-                        name="{{ form.sharepoint_sites.name }}"
-                        multiple
-                        size="10"
-                        url="{% url 'sharepoint-listing' %}"></select>
-                {% if form.sharepoint_sites.errors %}{{ form.sharepoint_sites.errors }}{% endif %}
+                  <button type="button"
+                          id="sharepoint-sync-btn"
+                          class="button button__icon-button button__sync-button"
+                          aria-label="{% trans 'Refresh SharePoint sites list' %}"
+                          title="{% trans 'Refresh SharePoint sites list' %}">
+                    <svg class="icon" aria-hidden="true">
+                      <use xlink:href="/static/svg/symbol-defs.svg#icon-reload"></use>
+                    </svg>
+                  </button>
+                </div>
+ 
+                <div class="form__help-text">
+                  {% trans "Choose which sites to include in this scan. Selecting no sites will scan all sites." %}
+                </div>
               </div>
-              <button class="button button--icon-button"
-                      type="button"
-                      id="sharepoint-sync-btn">
-                <svg class="icon button__reload-icon">
-                  <use xlink:href="/static/svg/symbol-defs.svg#icon-reload"></use>
-                </svg>
-              </button>
+              {% if form.sharepoint_sites.errors %}{{ form.sharepoint_sites.errors }}{% endif %}
  
             </fieldset>
           </section>

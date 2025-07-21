@@ -281,37 +281,6 @@
   background-image: url("../svg/done.svg") !important;
 }
 
-.s2-to-tree .site-icon {
-  display: block;
-  width: 20px;
-  height: 20px;
-  background-size: 100% 100%;
-  background-image: url("../svg/site.svg");
-  position: absolute;
-  transition-delay: 0.1s;
-  top: 0.1em;
-  left: -0.35em;
-  margin-left: 0.5em;
-}
-
-.s2-to-tree .site-icon-selected {
-  background-color: #12496e;
-  border-radius: 3px;
-  display: block;
-  width: 18px;
-  height: 18px;
-  background-size: 80% auto;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: absolute;
-  top: 0.3em;
-  transition-delay: 0.2s;
-  transition: var(--transition-default);
-  left: -0.35em;
-  margin-left: 0.5em;
-  background-image: url("../svg/done.svg") !important;
-}
-
 .s2-to-tree .item-label {
   margin-left: 0.8em !important;
   padding-left: 2em !important;

@@ -12,3 +12,7 @@ class MSGraphSharePointSite(models.Model):
         default="Unnamed Site",
         verbose_name=_("site name")
     )
+
+    class Meta:
+        verbose_name = _('SharePoint site')
+        verbose_name_plural = _('SharePoint sites')

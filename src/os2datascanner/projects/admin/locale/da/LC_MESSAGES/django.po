@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-17 15:33+0200\n"
+"POT-Creation-Date: 2025-07-22 10:20+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -434,7 +434,6 @@ msgid "scan drives"
 msgstr "scan SharePoint fildrev"
 
 #: adminapp/models/scannerjobs/msgraph.py
-#: adminapp/templates/components/scanner/scanner_form.html
 msgid "SharePoint sites to scan"
 msgstr "SharePoint sider til scanning"
 
@@ -1994,9 +1993,11 @@ msgid "add SharePoint Sites"
 msgstr "Vælg SharePoint sider"
 
 #: adminapp/templates/components/scanner/scanner_form.html
-msgid ""
-" Choose which sites to include in this scan. Selecting no sites will scan "
-"all sites. "
+msgid "Refresh SharePoint sites list"
+msgstr "Opdater listen af SharePoint sider"
+
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Choose which sites to include in this scan. Selecting no sites will scan all sites."
 msgstr ""
 "Vælg hvilke sider der skal inkluderes i dette scan. Vælges ingen sider vil "
 "alle sider scannes. "

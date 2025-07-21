@@ -1,3 +1,4 @@
+from .models.MSGraphSharePointSite import MSGraphSharePointSite
 from rest_framework import serializers
 from ..organizations.models import OrganizationalUnit
 
@@ -13,3 +14,11 @@ class OrganizationalUnitSerializer(serializers.ModelSerializer):
             'parent',
             'organization',
             'scanners')
+
+
+class SharePointSiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MSGraphSharePointSite
+        fields = (
+                'uuid',
+                'name')
