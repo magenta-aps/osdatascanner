@@ -35,6 +35,7 @@ nav:
     - Microsoft Azure: azure/azure-setup-guide.md
   - Operations:
     - Role, Special roles and Alias: roles.md
+    - Statistics: statistics.md
   - Frontend:
     - Frontend Architecture: architecture/frontend.md
     - Buttons: frontend/buttons/buttons.md
