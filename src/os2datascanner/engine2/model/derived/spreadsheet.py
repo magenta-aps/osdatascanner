@@ -79,7 +79,7 @@ class SpreadsheetSheetHandle(Handle):
 
     @property
     def presentation_place(self) -> str:
-        return str(self.source.handle)
+        return self.source.handle.presentation_place
 
     @property
     def sort_key(self) -> str:
