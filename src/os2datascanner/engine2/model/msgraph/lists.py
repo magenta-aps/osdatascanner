@@ -6,13 +6,13 @@ from dateutil.parser import isoparse
 from requests import HTTPError
 from datetime import datetime, timezone
 
+from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
+
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
 from ...utilities.i18n import gettext as _
-from ...rules.rule import Rule
-
-from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
 class MSGraphListsSource(MSGraphSource):
@@ -20,8 +20,9 @@ class MSGraphListsSource(MSGraphSource):
 
     eq_properties = MSGraphSource.eq_properties
 
-    def __init__(self, client_id, tenant_id, client_secret):
+    def __init__(self, client_id, tenant_id, client_secret, sites=None):
         super().__init__(client_id, tenant_id, client_secret)
+        self.sites = sites
 
     def handles(self, sm, *, rule: Rule | None = None):  # noqa
         cutoff = None
@@ -33,38 +34,46 @@ class MSGraphListsSource(MSGraphSource):
                 after = essential_rule.after
                 cutoff = (after if not cutoff else max(cutoff, after))
 
-        with warn_on_httperror("SharePoint lists check"):
-            sites = sm.open(self).paginated_get(
-                "sites/getAllSites?$filter=isPersonalSite ne true")
+        if self.sites:
+            with warn_on_httperror("SharePoint selected lists check"):
+                for site in self.sites:
+                    site_id = site['uuid']
+                    yield from self._process_site(sm, site_id, cutoff)
+        else:
+            with warn_on_httperror("SharePoint all lists check"):
+                sites = sm.open(self).paginated_get(
+                    "sites/getAllSites?$filter=isPersonalSite ne true")
+                for site in sites:
+                    site_id = site.get("id").split(",")[1]
+                    yield from self._process_site(sm, site_id, cutoff)
 
-            for site in sites:
-                site_id = site.get("id").split(",")[1]
-                lists = sm.open(self).paginated_get(
-                    f"sites/{site_id}/lists")
+    def _process_site(self, sm, site_id, cutoff):
+        query = f"sites/{site_id}/lists"
+        lists = sm.open(self).paginated_get(query)
 
-                # Filtering off lists with no changes when doing standard scans.
-                # MSGraph does not allow for filtering on lastModifiedDateTime
-                # and filtering solely on the list item level is significantly slower.
-                if cutoff:
-                    ts = cutoff.astimezone(timezone.utc)
-                    lists = filter(lambda x: datetime.strptime(
-                        x['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%SZ").
-                            replace(tzinfo=timezone.utc) > ts, lists)
+        # Filtering off lists with no changes when doing standard scans.
+        # MSGraph does not allow for filtering on lastModifiedDateTime
+        # and filtering solely on the list item level is significantly slower.
+        if cutoff:
+            ts = cutoff.astimezone(timezone.utc)
+            lists = filter(lambda x: datetime.strptime(
+                x['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%SZ").
+                    replace(tzinfo=timezone.utc) > ts, lists)
 
-                for sp_list in lists:
-                    match sp_list:
-                        case {"list": {"template": "documentLibrary"}}:
-                            # This is a SharePoint drive in disguise. Ignore it
-                            continue
-                        case {"webUrl": u} if "/_catalogs" in u:
-                            # Catalog lists take up a lot of space and contain
-                            # blank templates. Ignore them
-                            continue
-                        case {"id": id, "name": name}:
-                            yield MSGraphListHandle(self, id, name, site_id)
+        for sp_list in lists:
+            match sp_list:
+                case {"list": {"template": "documentLibrary"}}:
+                    # This is a SharePoint drive in disguise. Ignore it
+                    continue
+                case {"webUrl": u} if "/_catalogs" in u:
+                    # Catalog lists take up a lot of space and contain
+                    # blank templates. Ignore them
+                    continue
+                case {"id": id, "name": name}:
+                    yield MSGraphListHandle(self, id, name, site_id)
 
     def censor(self):
-        return type(self)(None, self._tenant_id, None)
+        return type(self)(None, self._tenant_id, None, self.sites)
 
     @staticmethod
     @Source.json_handler(type_label)
@@ -72,7 +81,14 @@ class MSGraphListsSource(MSGraphSource):
         return MSGraphListsSource(
                 client_id=obj["client_id"],
                 tenant_id=obj["tenant_id"],
-                client_secret=obj["client_secret"])
+                client_secret=obj["client_secret"],
+                sites=obj.get("sites"))
+
+    def to_json_object(self):
+        return dict(
+            **super().to_json_object(),
+            sites=self.sites
+        )
 
 
 DUMMY_MIME = "application/vnd.os2.datascanner.graphlist"

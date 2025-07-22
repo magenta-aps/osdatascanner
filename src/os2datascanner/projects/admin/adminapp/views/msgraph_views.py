@@ -12,10 +12,14 @@
 # sector open source network <https://os2.eu/>.
 #
 
+import requests
 from django.forms import ModelChoiceField
 from django.views import View
 from django.utils.translation import gettext_lazy as _
+from django.db import transaction
+from rest_framework.generics import ListAPIView
 
+from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource, make_token
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.grants.views import MSGraphGrantRequestView
 from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
@@ -26,6 +30,8 @@ from ..models.scannerjobs.msgraph import MSGraphFileScanner
 from ..models.scannerjobs.msgraph import MSGraphCalendarScanner
 from ..models.scannerjobs.msgraph import MSGraphTeamsFileScanner
 from ..models.scannerjobs.msgraph import MSGraphSharepointScanner
+from ..models.MSGraphSharePointSite import MSGraphSharePointSite
+from ..serializers import SharePointSiteSerializer
 from .scanner_views import (
     ScannerBase,
     ScannerList,
@@ -365,10 +371,17 @@ msgraph_sharepoint_scanner_fields = [
      "graph_grant",
      "scan_drives",
      "scan_lists",
+     "sharepoint_sites"
  ]
 
 
 class MSGraphSharepointScannerCreate(View):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
+
+        return context
+
     def dispatch(self, request, *args, **kwargs):
         user = UserWrapper(request.user)
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
@@ -406,6 +419,12 @@ class MSGraphSharepointCopy(GrantMixin, ScannerCopy):
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
+
+        return context
+
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
 
@@ -414,6 +433,12 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
     model = MSGraphSharepointScanner
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
+
+        return context
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
@@ -427,3 +452,51 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
             form.add_error("scan_lists", _("You must choose to scan drives, lists, or both!"))
             return self.form_invalid(form)
         return super().form_valid(form)
+
+
+class SharePointListing(ListAPIView):
+    serializer_class = SharePointSiteSerializer
+
+    def get_queryset(self):
+        if grant_id := self.request.query_params.get('grantId', None):
+            self._grant = GraphGrant.objects.filter(id=grant_id).first()
+            self._sync_sites()
+
+        return MSGraphSharePointSite.objects.all()
+
+    def _sync_sites(self):
+        with requests.Session() as session:
+            gc = MSGraphSource.GraphCaller(self._make_token, session)
+            # We only want their id and name, but we have to include isPersonalSite to
+            # filter on that value
+            sites = gc.paginated_get(
+                "sites/getAllSites?$select=id,name,isPersonalSite&$filter=isPersonalSite ne true")
+
+            sites_list = []
+            for site in sites:
+                site["id"] = site["id"].split(",")[1]
+                # Sites in sharepoint don't always have a name.
+                sites_list.append(
+                    MSGraphSharePointSite(
+                        uuid=site["id"],
+                        name=site.get(
+                            "name",
+                            _("Unnamed Site")),
+                        ))
+
+            with transaction.atomic():
+                MSGraphSharePointSite.objects.bulk_create(
+                    sites_list,
+                    update_conflicts=True,
+                    unique_fields=["uuid"],
+                    update_fields=["name"]
+                )
+
+                # Remove any sites no longer available
+                current_sites = [site.uuid for site in sites_list]
+                MSGraphSharePointSite.objects.exclude(uuid__in=current_sites).delete()
+                # Maybe add a check here based on grant so we don't delete sites when
+                # switching grants?
+
+    def _make_token(self):
+        return make_token(self._grant.app_id, self._grant.tenant_id, self._grant.client_secret)

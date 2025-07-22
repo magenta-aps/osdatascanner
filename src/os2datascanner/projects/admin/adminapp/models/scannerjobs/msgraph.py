@@ -271,6 +271,13 @@ class MSGraphSharepointScanner(MSGraphScanner):
 
     supports_rule_preexec = True
 
+    sharepoint_sites = models.ManyToManyField(
+        'MSGraphSharePointSite',
+        related_name="scanners",
+        blank=True,
+        verbose_name=_("SharePoint sites to scan")
+    )
+
     object_name = pgettext_lazy("unit of scan", "object")
     object_name_plural = pgettext_lazy("unit of scan", "objects")
 
@@ -283,7 +290,9 @@ class MSGraphSharepointScanner(MSGraphScanner):
             yield MSGraphListsSource(
                 client_id=str(self.graph_grant.app_id),
                 tenant_id=str(self.graph_grant.tenant_id),
-                client_secret=self.graph_grant.client_secret)
+                client_secret=self.graph_grant.client_secret,
+                sites=list(self.sharepoint_sites.values())
+                )
 
         if self.scan_drives:
             yield MSGraphFilesSource(
@@ -291,7 +300,8 @@ class MSGraphSharepointScanner(MSGraphScanner):
                     tenant_id=str(self.graph_grant.tenant_id),
                     client_secret=self.graph_grant.client_secret,
                     site_drives=self.scan_drives,
-                    user_drives=False)
+                    user_drives=False,
+                    sites=list(self.sharepoint_sites.values()))
 
     class Meta(MSGraphScanner.Meta):
         verbose_name = _("Microsoft 365 SharePoint scanner")
