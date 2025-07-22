@@ -41,6 +41,8 @@ from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport, RENDERABLE_RULES
 from ...organizations.models.account import Account
 
+from os2datascanner.core_organizational_structure.models.organization import SBSYSTabConfigChoices
+
 logger = structlog.get_logger("reportapp")
 
 
@@ -402,6 +404,31 @@ class SBSYSMixin:
         # Access check:
         # 1) Org must have SBSYS enabled
         if not account.sbsystab_access:
+            access_setting = SBSYSTabConfigChoices(account.organization.sbsystab_access)
+
+            # If user doesn't have access, then redirect and show a message:
+            match access_setting:
+                # Visible only with permission:
+                case SBSYSTabConfigChoices.WITH_PERMISSION:
+                    message_text = _(
+                        "The SBSYS tab is enabled for your organization, "
+                        "but you do not have the required permission to view it."
+                    )
+                    message_theme = messages.WARNING
+
+                # Hidden for all:
+                case SBSYSTabConfigChoices.NONE:
+                    message_text = _("The SBSYS tab is not enabled for your organization.")
+                    message_theme = messages.WARNING
+
+                # Invalid or unexpected value:
+                case _:
+                    message_text = _(
+                        "Unexpected error: The system is unable to verify your SBSYS tab access "
+                        "at this time.")
+                    message_theme = messages.ERROR
+
+            messages.add_message(request, message_theme, message_text, extra_tags="manual_close")
             return redirect(reverse_lazy("index"))
 
         # 2) For RemediatorView it will then go through RemediatorView.dispatch,
