@@ -270,6 +270,8 @@ def count_matches(matches: MatchesMessage) -> int:
 
     if matches:
         for rule_dict in matches.matches:
+            # Make sure we only consider the rules that we display in the UI here
+            # so we don't confuse users with inconsistent match counts
             if rule_dict.matches and rule_dict.rule.type_label in RENDERABLE_RULES:
                 number_of_matches += len(rule_dict.matches)
 
