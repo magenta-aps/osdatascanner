@@ -126,6 +126,13 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
             censored_handle._mail_subject = censor_context(censored_handle._mail_subject, rules)
             message._replace(handle=censored_handle)
 
+        # Censor item name in handle for sharepoint lists
+        if hasattr(message.handle, "_item_name"):
+            censored_handle = message.handle
+            rules = message.scan_spec.rule.flatten()
+            censored_handle._item_name = censor_context(censored_handle._item_name, rules)
+            message._replace(handle=censored_handle)
+
         for matches_q in ("os2ds_matches", "os2ds_checkups",):
             yield (matches_q,
                    messages.MatchesMessage(
