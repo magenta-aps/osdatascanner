@@ -458,9 +458,7 @@ class SharePointListing(ListAPIView):
     serializer_class = SharePointSiteSerializer
 
     def get_queryset(self):
-        grant_id = self.request.query_params.get('grantId', None)
-
-        if grant_id:
+        if grant_id := self.request.query_params.get('grantId', None)
             self._grant = GraphGrant.objects.filter(id=grant_id).first()
             self._sync_sites()
 
