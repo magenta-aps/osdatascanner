@@ -7,16 +7,38 @@ from django.db.models import JSONField
 from django.db.models.functions import Upper
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.projects.report.organizations.models import Organization
+from os2datascanner.projects.report.organizations.models import Organization, Alias
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.pipeline.messages import (
     MatchesMessage, ProblemMessage, MetadataMessage, ScanTagFragment
 )
 import structlog
 
-from os2datascanner.projects.report.organizations.models import Alias
+from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.rules.experimental.cpr import TurboCPRRule
+from os2datascanner.engine2.rules.experimental.health_rule import TurboHealthRule
+from os2datascanner.engine2.rules.regex import RegexRule
+from os2datascanner.engine2.rules.name import NameRule
+from os2datascanner.engine2.rules.address import AddressRule
+from os2datascanner.engine2.rules.links_follow import LinksFollowRule
+from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
+from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
+from os2datascanner.engine2.rules.passport import PassportRule
 
 logger = structlog.get_logger("reportapp")
+
+RENDERABLE_RULES = (
+    CPRRule.type_label,
+    RegexRule.type_label,
+    LinksFollowRule.type_label,
+    OrderedWordlistRule.type_label,
+    NameRule.type_label,
+    AddressRule.type_label,
+    TurboCPRRule.type_label,
+    EmailHeaderRule.type_label,
+    TurboHealthRule.type_label,
+    PassportRule.type_label,
+)
 
 
 class DocumentReport(models.Model):
@@ -246,11 +268,11 @@ def count_matches(matches: MatchesMessage) -> int:
     """Counts the number of real matches contained in a MatchesMessage."""
     number_of_matches = 0
 
-    # Exclude rules meant for image conversion
-    excluded_rules = ["dimensions", "conversion"]
     if matches:
         for rule_dict in matches.matches:
-            if rule_dict.matches and rule_dict.rule.type_label not in excluded_rules:
+            # Make sure we only consider the rules that we display in the UI here
+            # so we don't confuse users with inconsistent match counts
+            if rule_dict.matches and rule_dict.rule.type_label in RENDERABLE_RULES:
                 number_of_matches += len(rule_dict.matches)
 
     return number_of_matches
