@@ -63,6 +63,10 @@ let selectedValues = [];
     	opts.allowClear = true;
 		opts.width = 'element';
 		var s2inst = this.select2(opts);
+		
+		// Initialize clear button
+		addClearButton(s2inst);
+		
 		// when building the tree, add all already selected values and mark them
 		s2inst.val().forEach( function(value) {
 			selectNodes(value, false);
@@ -117,6 +121,7 @@ let selectedValues = [];
 				selectedValues = selectedValues.filter(function (value) { return value !== element; });
 			});
 			changeSelectedValuesInDropdown();
+			updateClearButtonVisibility(s2inst);
 		});
 
 		// add all child nodes and the selected node
@@ -164,6 +169,7 @@ let selectedValues = [];
 			selectedValues = uniqueValues;
 			$(s2inst).val(selectedValues);
 			$(s2inst).trigger('change');
+			updateClearButtonVisibility(s2inst);
 		}
 
 		s2inst.on('change', function () {
@@ -181,6 +187,7 @@ let selectedValues = [];
 					}
 				});
 			}
+			updateClearButtonVisibility(s2inst);
 		});
 
 		/** finds all descendents of a node, if recursively === false, only go one lvl down */
@@ -217,6 +224,60 @@ let selectedValues = [];
 		}
 		return s2inst;
 	};
+
+	// Function to add clear button
+	function addClearButton(s2inst) {
+		const $container = s2inst.data("select2").$container;
+		const $selection = $container.find(".select2-selection--multiple");
+
+		const $clearBtn = $(`<button class="button button--transparent-button select2-clear-btn" title="${gettext("Clear all selected units")}" disabled="true">${gettext("Clear selected")}</button>`);
+	
+		// Add click handler for clear button
+		$clearBtn.on('click', function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			
+			// Clear all selected values
+			selectedValues = [];
+			s2inst.val([]);
+			s2inst.trigger('change');
+			
+			// Clear dropdown visuals if open
+			const options = Array.prototype.slice.call(document.querySelectorAll("li.select2-results__option"));
+			options.forEach(function(option) {
+				const iconElement = option.querySelector(".item-label .org-icon-selected");
+				if (iconElement) {
+					$(iconElement).removeClass('org-icon-selected');
+					$(iconElement).addClass('org-icon');
+				}
+				option.setAttribute('aria-selected', false);
+			});
+			
+			// Disable button 
+			$clearBtn.prop('disabled', true);
+			
+			// Trigger custom event
+			s2inst.trigger('clear-btn:click');
+		});
+
+		$selection.append($clearBtn);
+		
+		// Store reference to clear button
+		s2inst.data('clearBtn', $clearBtn);
+		
+		updateClearButtonVisibility(s2inst);
+	}
+
+	function updateClearButtonVisibility(s2inst) {
+		const clearBtn = s2inst.data('clearBtn');
+		if (clearBtn) {
+			if (selectedValues.length > 0) {
+				clearBtn.prop('disabled', false);
+			} else {
+				clearBtn.prop('disabled', true);
+			}
+		}
+	}
 
 	/* Build the Select Option elements */
 	function buildSelect(treeData, $el) {
