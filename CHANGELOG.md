@@ -43,6 +43,8 @@
 
 - SharePoint List results now censor results that appear in titles.
 
+- Added documentation about statistics pages.
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
