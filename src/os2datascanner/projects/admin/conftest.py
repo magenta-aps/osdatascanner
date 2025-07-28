@@ -832,6 +832,26 @@ def alt_admin(other_client):
     )
     Administrator.objects.create(user=user, client=other_client)
     return user
+
+
+@pytest.fixture
+def frodo(other_org):
+    return Account.objects.create(
+        username="frodo",
+        first_name="Frodo",
+        last_name="Baggins",
+        organization=other_org
+    )
+
+
+@pytest.fixture
+def sam(other_org):
+    return Account.objects.create(
+        username="sam",
+        first_name="Samwise",
+        last_name="Gamgee",
+        organization=other_org
+    )
 # Translation
 
 
