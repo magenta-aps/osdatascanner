@@ -63,6 +63,10 @@
 
 - Only rules that can be shown to users will be counted in number_of_matches for a DocumentReport.
 
+- Fixed positive and negative change value positions in the three week overview boxes in the user 
+  overview in the report module. They are now positioned next to the current value instead of below
+  it.
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"
