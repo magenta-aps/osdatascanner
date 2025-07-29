@@ -199,9 +199,9 @@ class ScannerBase(object):
 
         if self.object:
             context["remediators"] = self.object.get_remediators()
-        context["possible_remediators"] = Account.objects.filter(organization__in=orgs).exclude(
+        context["possible_remediators"] = Account.objects.filter(organization=selected_org).exclude(
             Q(aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
-        context["universal_remediators"] = Account.objects.filter(Q(organization__in=orgs) & Q(
+        context["universal_remediators"] = Account.objects.filter(Q(organization=selected_org) & Q(
             aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
 
         context["possible_contacts"] = get_user_model().objects.filter(
