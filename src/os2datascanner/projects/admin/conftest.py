@@ -814,6 +814,44 @@ def other_client():
 def other_org(other_client):
     return Organization.objects.create(name='other_org', client=other_client)
 
+
+@pytest.fixture
+def other_web_scanner(other_org, basic_rule):
+    return WebScanner.objects.create(
+        name=f"SomeWebScanner-{other_org.name}",
+        organization=other_org,
+        url="http://www.example.com/",
+        rule=basic_rule
+    )
+
+
+@pytest.fixture
+def alt_admin(other_client):
+    user = get_user_model().objects.create(
+        username='mr_otheradmin2', password='hunter3'
+    )
+    Administrator.objects.create(user=user, client=other_client)
+    return user
+
+
+@pytest.fixture
+def frodo(other_org):
+    return Account.objects.create(
+        username="frodo",
+        first_name="Frodo",
+        last_name="Baggins",
+        organization=other_org
+    )
+
+
+@pytest.fixture
+def sam(other_org):
+    return Account.objects.create(
+        username="sam",
+        first_name="Samwise",
+        last_name="Gamgee",
+        organization=other_org
+    )
 # Translation
 
 

@@ -67,6 +67,9 @@
   overview in the report module. They are now positioned next to the current value instead of below
   it.
 
+- Only contacts and remediators related to the chosen organization are now displayed in the scanner
+  form.
+
 ## Version 3.29.1, 19th June 2025
 
 "Patchwork Quilt"
