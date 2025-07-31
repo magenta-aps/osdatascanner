@@ -428,7 +428,12 @@ class SBSYSMixin:
                         "at this time.")
                     message_theme = messages.ERROR
 
-            messages.add_message(request, message_theme, message_text, extra_tags="manual_close")
+            messages.add_message(
+                request,
+                message_theme,
+                message_text,
+                extra_tags="manual_close"
+            )
             return redirect(reverse_lazy("index"))
 
         # 2) For RemediatorView it will then go through RemediatorView.dispatch,
@@ -655,7 +660,9 @@ class DeleteMailView(HTMXEndpointView, DetailView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
         return response
 
 
@@ -680,7 +687,9 @@ class MassDeleteMailView(HTMXEndpointView, BaseMassView):
                 messages.add_message(
                     self.request,
                     messages.WARNING,
-                    error_message)
+                    error_message,
+                    extra_tags="manual_close"
+                )
 
 
 class DeleteFileView(HTMXEndpointView, DetailView):
@@ -700,7 +709,9 @@ class DeleteFileView(HTMXEndpointView, DetailView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
         return response
 
 
@@ -725,7 +736,9 @@ class MassDeleteFileView(HTMXEndpointView, BaseMassView):
                 messages.add_message(
                     self.request,
                     messages.WARNING,
-                    error_message)
+                    error_message,
+                    extra_tags="manual_close"
+                )
 
 
 class DeleteSMBFileView(HTMXEndpointView, DetailView):
@@ -744,7 +757,9 @@ class DeleteSMBFileView(HTMXEndpointView, DetailView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
         return response
 
@@ -771,7 +786,9 @@ class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
             messages.add_message(
                 self.request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
 
 class DeleteEWSMailView(HTMXEndpointView, DetailView):
@@ -789,7 +806,9 @@ class DeleteEWSMailView(HTMXEndpointView, DetailView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
         return response
 
@@ -815,7 +834,9 @@ class MassDeleteEWSMailView(HTMXEndpointView, BaseMassView):
             messages.add_message(
                 self.request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
 
 class DeleteGmailView(HTMXEndpointView, DetailView):
@@ -833,7 +854,9 @@ class DeleteGmailView(HTMXEndpointView, DetailView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
         return response
 
@@ -859,7 +882,9 @@ class MassDeleteGmailView(HTMXEndpointView, BaseMassView):
             messages.add_message(
                 self.request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
 
 class DeleteGoogleDriveView(HTMXEndpointView, DetailView):
@@ -877,7 +902,9 @@ class DeleteGoogleDriveView(HTMXEndpointView, DetailView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )
 
         return response
 
@@ -902,4 +929,6 @@ class MassDeleteGoogleDriveView(HTMXEndpointView, BaseMassView):
             messages.add_message(
                 self.request,
                 messages.WARNING,
-                error_message)
+                error_message,
+                extra_tags="manual_close"
+            )

@@ -1,6 +1,6 @@
 import requests
 import structlog
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from django.core.exceptions import PermissionDenied
 from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.msgraph import MSGraphMailMessageHandle
@@ -30,13 +30,17 @@ def check_msgraph_grant(org) -> GraphGrant | PermissionDenied:
     try:
         return GraphGrant.objects.get(organization=org)
     except GraphGrant.DoesNotExist:
-        no_grant_message = _("System is missing a GraphGrant!")
-        logger.warning(no_grant_message)
-        raise PermissionDenied(no_grant_message)
+        message = _(
+            "Your organization is missing a valid MSGraph grant."
+        )
+        logger.warning(message)
+        raise PermissionDenied(message)
     except GraphGrant.MultipleObjectsReturned:
-        too_many_grant_message = _("System has too many GraphGrants!")
-        logger.warning(too_many_grant_message)
-        raise PermissionDenied(too_many_grant_message)
+        message = _(
+            "Unexpected error: More than one MSGraph grant was found for your organization."
+        )
+        logger.warning(message)
+        raise PermissionDenied(message)
 
 
 def categorize_email_from_report(document_report,

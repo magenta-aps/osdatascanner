@@ -45,6 +45,8 @@
 
 - Added documentation about statistics pages.
 
+- Messages on Report, that previously used the old snackbar, now use the new snackbar instead.
+
 ### Bugfixes
 
 - Management command list_scannerjobs no longer fails if trying to list scanners that have never
