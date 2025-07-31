@@ -1,8 +1,9 @@
 # Changelog
 
-## Next Release, ?? ?? ?? 
+## Version 3.29.2, 31st July 2025
 
-""
+"Sunscreened"
+
 ### New in this release
 
 - SharePoint list scanning supports SmartDelta for last-modified checks.
