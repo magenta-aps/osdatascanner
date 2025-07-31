@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-31 10:54+0200\n"
+"POT-Creation-Date: 2025-07-31 11:48+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2458,7 +2458,7 @@ msgid "number of days since last update"
 msgstr "antal dage siden sidst opdatering"
 
 #: reportapp/views/utilities/msgraph_utilities.py
-msgid "Your organisation is missing a valid MSGraph grant."
+msgid "Your organization is missing a valid MSGraph grant."
 msgstr "Din organisation mangler en gyldig MSGraph bevilling."
 
 #: reportapp/views/utilities/msgraph_utilities.py

@@ -31,7 +31,7 @@ def check_msgraph_grant(org) -> GraphGrant | PermissionDenied:
         return GraphGrant.objects.get(organization=org)
     except GraphGrant.DoesNotExist:
         message = _(
-            "Your organisation is missing a valid MSGraph grant."
+            "Your organization is missing a valid MSGraph grant."
         )
         logger.warning(message)
         raise PermissionDenied(message)
