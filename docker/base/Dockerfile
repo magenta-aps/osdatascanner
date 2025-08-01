@@ -44,8 +44,8 @@ ARG SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 RUN set -ex \
   # We need LibreOffice 7.2 or higher, but this is not easily available through Debian \
   # Use a backport repo to achieve this.
-  && echo "deb https://deb.debian.org/debian bullseye-backports main contrib non-free \
-  deb-src https://deb.debian.org/debian bullseye-backports main contrib non-free" >> /etc/apt/sources.list \
+  && echo "deb https://archive.debian.org/debian bullseye-backports main contrib non-free \
+  deb-src https://archive.debian.org/debian bullseye-backports main contrib non-free" >> /etc/apt/sources.list \
   # Install system dependencies from file.
   && apt-get -y update \
   && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements*.txt) \
