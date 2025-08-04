@@ -180,9 +180,12 @@
 }
 
 .rule_filtering_wrapper {
-  float: left;
   max-width: 600px;
-  margin-bottom: 2rem;
+  @include layout-vertical(1rem);
+
+  label {
+    font-weight: bold;
+  }
 
   .rule-filter-form {
     display: flex;
