@@ -1,17 +1,10 @@
-from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.projects.admin.organizations.models import Account
-from os2datascanner.projects.shared.forms import GroupingModelForm
-
 from ..models.scannerjobs.sbsysdb import SBSYSDBScanner
-from .shared import Groups
+from .shared import Groups, ScannerForm
 
 
-class SBSYSDBScannerForm(GroupingModelForm):
-    remediators = forms.ModelMultipleChoiceField(
-            queryset=Account.objects.all(),
-            required=False)
+class SBSYSDBScannerForm(ScannerForm):
 
     placeholders = {
         "weblink": _("e.g. https://sbsip.vstkom.internal/a-sag/"),

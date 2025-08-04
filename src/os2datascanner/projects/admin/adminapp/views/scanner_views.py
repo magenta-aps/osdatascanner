@@ -31,7 +31,8 @@ from os2datascanner.projects.admin.organizations.models import Organization, Acc
 from os2datascanner.projects.admin.utilities import UserWrapper
 
 from .views import RestrictedListView, RestrictedCreateView, \
-    RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView
+    RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
+    RestrictedCreateViewDf
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
@@ -45,6 +46,7 @@ from ..models.scannerjobs.gmail import GmailScanner
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from ..models.scannerjobs.scanner_helpers import CoveredAccount
 from ..utils import CleanAccountMessage
+from .utils.remediators import reconcile_remediators
 from ...organizations.models.aliases import AliasType
 
 logger = structlog.get_logger("adminapp")
@@ -89,6 +91,36 @@ class ScannerList(RestrictedListView):
         context["scanner_tabs"] = [scanner for scanner in scanner_models if scanner.enabled()]
 
         return context
+
+
+class _FormMixin:
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+
+    def get_context_data(self):
+        d = super().get_context_data()
+        d["scanner_model"] = self.model  # compat
+        return d
+
+    def form_valid(self, form):
+        rv = super().form_valid(form)
+        reconcile_remediators(form.cleaned_data["remediators"], self.object)
+        return rv
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        org = Organization.objects.filter(uuid=self.request.GET.get(
+            "organization",
+        )).first() or \
+            Organization.objects.filter(UserWrapper(self.request.user).make_org_Q("uuid")
+                                        ).order_by("name").first()
+        kwargs.update({"user": self.request.user, "org": org})
+        return kwargs
+
+
+class ScannerCreateDf(PermissionRequiredMixin, _FormMixin, RestrictedCreateViewDf):
+    scanner_view_type = ScannerViewType.CREATE
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+    permission_required = "os2datascanner.add_scanner"
 
 
 class ScannerBase(object):

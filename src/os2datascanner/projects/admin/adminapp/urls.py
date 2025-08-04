@@ -277,8 +277,3 @@ for model in [
         f"{stype}scanners/<int:pk>/remove/",
         ScannerRemove.as_view(model=model, success_url=f"/{stype}scanners/"),
         name=f"{stype}scanner_remove"))
-
-# Django Forms test views
-if settings.ENABLE_DF_SCAN_VIEWS:
-    urlpatterns.append(path("_df/webscanners/add/",
-                            webscanner_views.WebScannerCreateDF.as_view()))

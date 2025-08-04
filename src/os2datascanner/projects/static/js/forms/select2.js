@@ -1,5 +1,5 @@
 (($) => {
-  $(document).ready(() => {
+  htmx.onLoad(() => {
     // Initiate Select2 on all selects:
     const $selects = $("select.select2").select2();
 

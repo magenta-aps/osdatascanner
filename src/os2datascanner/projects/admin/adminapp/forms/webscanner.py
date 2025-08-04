@@ -1,13 +1,12 @@
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.model.utilities import sitemap
-from os2datascanner.projects.shared.forms import GroupingModelForm
 
 from ..models.scannerjobs.webscanner import WebScanner
-from .shared import Groups
+from .shared import Groups, ScannerForm
 
 
-class WebScannerForm(GroupingModelForm):
+class WebScannerForm(ScannerForm):
     # By default django.forms validates fields in the order in which they're
     # defined in the model class. If you want to force some fields to be
     # evaluated in a particular order (here, for example, our validation logic
@@ -39,7 +38,7 @@ class WebScannerForm(GroupingModelForm):
             _("Scan settings"),
             ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule"]
         ),
-        Groups.RESULT_SETTINGS,
+        Groups.ADVANCED_RESULT_SETTINGS,
         Groups.SCHEDULED_EXECUTION_SETTINGS,
     )
 
