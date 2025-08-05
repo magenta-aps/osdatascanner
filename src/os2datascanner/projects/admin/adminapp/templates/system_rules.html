@@ -5,53 +5,68 @@
     <h2 class="section__label">{% trans "system rules"|capfirst %}</h2>
 
     <div class="rule_filtering_wrapper">
-      <form class="rule-filter-form"
+
+
+      <form class="form form--new"
             hx-get="{% url "rules" %}"
             hx-swap="outerHTML"
             hx-select="#system-rules-card"
             hx-target="#system-rules-card"
             hx-trigger="click from:#rule-filter-button"
             hx-push-url="true">
-        <div class="selection__wrapper">
-          <label for="categories_select2">{% trans "Filter for categories" %}</label>
-
-          <select id="categories_select2" name="categories" multiple>
-            {% for category in categories %}
-              <option value="{{ category.pk|unlocalize }}"
-                      {% if category in selected_categories %}selected{% endif %}>
-                {{ category.get_name_display|capfirst }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
+        <fieldset class="fieldset">
+          <div class="fieldset__body">
+            <div class="form-widget form-widget--filtering">
+              <label class="form-widget__label" for="selected_org">
+                <span>{% trans "select organization"|capfirst %}</span>
  
-        <button type="button"
-                class="button"
-                id="rule-filter-button"
-                aria-label="{% trans "Filter system rules by the chosen categories." %}"
-                title="{% trans "Filter system rules by the chosen categories." %}">
-          <span>{% trans "filter"|capfirst %}</span>
-        </button>
+                <span class="help-tooltip"
+                      title="{% trans "Select the organization you want to configure system rules for." %}">
+                  <i id="help" class="material-symbols">help</i>
+                </span>
+              </label>
+ 
+              <div class="form-widget__input-wrapper">
+                <select id="selected_org"
+                        name="selected_org"
+                        hx-get="{% url "rules" %}"
+                        hx-swap="outerHTML"
+                        hx-target="#system-rules-card"
+                        hx-select="#system-rules-card"
+                        hx-trigger="change"
+                        hx-push-url="true">
+                  {% for organization in organizations %}
+                    <option value="{{ organization.uuid }}">{{ organization.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+ 
+            <div class="form-widget form-widget--filtering">
+              <label class="form-widget__label" for="categories_select2">{% trans "select rule categories"|capfirst %}</label>
+ 
+              <div class="form-widget__input-wrapper">
+                <select id="categories_select2" name="categories" multiple>
+                  {% for category in categories %}
+                    <option value="{{ category.pk|unlocalize }}"
+                            {% if category in selected_categories %}selected{% endif %}>
+                      {{ category.get_name_display|capfirst }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+ 
+            <button type="button"
+                    class="button button--text-button"
+                    id="rule-filter-button"
+                    aria-label="{% trans "Filter system rules by the chosen categories." %}"
+                    title="{% trans "Filter system rules by the chosen categories." %}">
+              <span>{% trans "filter"|capfirst %}</span>
+            </button>
+          </div>
+        </fieldset>
       </form>
- 
-      <div class="selection__wrapper">
-        <label for="selected_org">{% trans "Choose system rules for organization" %}</label>
- 
-        <div class="dropdown">
-          <select id="selected_org"
-                  name="selected_org"
-                  hx-get="{% url "rules" %}"
-                  hx-swap="outerHTML"
-                  hx-target="#system-rules-card"
-                  hx-select="#system-rules-card"
-                  hx-trigger="change"
-                  hx-push-url="true">
-            {% for organization in organizations %}
-              <option value="{{ organization.uuid }}">{{ organization.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
     </div>
   </div>
 

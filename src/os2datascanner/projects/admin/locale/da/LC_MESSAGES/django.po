@@ -2591,21 +2591,27 @@ msgid "system rules"
 msgstr "systemregler"
 
 #: adminapp/templates/system_rules.html
-msgid "Filter for categories"
-msgstr "Filtrér efter kategorier"
+msgid "select organization"
+msgstr "vælg organisation"
+
+#: adminapp/templates/system_rules.html
+msgid ""
+"Select the organization you want to configure system rules for."
+msgstr ""
+"Vælg den organisation, som du vil konfigurere systemregler for."
+
+#: adminapp/templates/system_rules.html
+msgid "select rule categories"
+msgstr "vælg regelkategorier"
 
 #: adminapp/templates/system_rules.html
 msgid "Filter system rules by the chosen categories."
-msgstr "Filtrér systemreglerne efter de valgte kategorier"
+msgstr "Filtrér systemreglerne ud fra de valgte kategorier."
 
 #: adminapp/templates/system_rules.html
 #: organizations/templates/organizations/orgunit_list.html
 msgid "filter"
 msgstr "filtrér"
-
-#: adminapp/templates/system_rules.html
-msgid "Choose system rules for organization"
-msgstr "Vælg systemregler for organizationen"
 
 #: adminapp/templates/system_rules.html
 msgid "enable rule"

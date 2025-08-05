@@ -1478,8 +1478,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // ***** RULES TABLES *****
 // ************************
 
-// Redmine ticket: [#60287]
-
 .rules-table {
   // Both:
   .column {
@@ -1490,7 +1488,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     &--sensitivity {
       .status {
         &__wrapper {
-          @include layout-horizontal(0.25rem); //4px
+          @include layout-horizontal(0.25rem);
           // Notification:
           &[data-status="0"] > .status__icon {
             color: var(--color-notification);
@@ -1513,7 +1511,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         }
 
         &__icon {
-          height: 1.5rem; //24px
+          height: 1.5rem;
         }
 
         :has(.status__icon) {

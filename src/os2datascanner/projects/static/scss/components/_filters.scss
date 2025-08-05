@@ -183,28 +183,8 @@
   max-width: 600px;
   @include layout-vertical(1rem);
 
-  label {
-    font-weight: bold;
-  }
-
-  .rule-filter-form {
-    display: flex;
-    flex-direction: column;
-
-    .button {
-      max-width: fit-content;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-  }
-
   #categories_select2 {
-    min-width: 30rem;
-  }
-
-  .select2-selection__rendered {
-    height: fit-content !important;
-    overflow-y: scroll !important;
+    min-width: 100%;
   }
 }
 

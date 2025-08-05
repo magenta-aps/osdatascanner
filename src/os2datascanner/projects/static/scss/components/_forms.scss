@@ -1064,9 +1064,9 @@ input[type="file"]::file-selector-button:hover {
               }
 
               &__field {
-                width: calc(100% - 2rem) !important;
+                width: min(100%, 280px) !important;
                 height: 100% !important;
-                background: var(--color-disabled-widget-bg);
+                background: var(--color-hover);
                 padding: 0 $horizontal_spacing !important;
                 border-radius: var(--border-radius-xs);
 
@@ -1265,6 +1265,51 @@ input[type="file"]::file-selector-button:hover {
             color: var(--color-text-secondary);
             font-style: italic;
           }
+        }
+      }
+    }
+
+    &--filtering {
+      // This will be the default styling for form-widgets used for filtering:
+      // - Page content
+      // - Datatable content
+      //
+      // Basically anything that's NOT inside a card element like the more "traditional" forms.
+
+      gap: 0.5rem;
+
+      .form-widget__label {
+        font-size: 1rem;
+
+        @include layout-horizontal(0.25rem);
+        align-items: center;
+      }
+
+      & + .button {
+        width: fit-content;
+      }
+
+      select {
+        width: 20rem;
+      }
+
+      .help-tooltip {
+        $icon-size: 1.25rem; // Local var setting a fixed size for this element.
+
+        vertical-align: middle;
+        width: $icon-size;
+        height: $icon-size;
+
+        .material-symbols#help,
+        .material-symbols-outlined#help {
+          color: var(--color-primary-dark);
+          opacity: 50%;
+          font-size: $icon-size;
+          font-variation-settings:
+            "FILL" 1,
+            "wght" 400,
+            "GRAD" 0,
+            "opsz" 20;
         }
       }
     }
