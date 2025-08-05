@@ -15,6 +15,8 @@ from abc import ABC
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from os2datascanner.utils.test_helpers import in_test_environment
+
+from os2datascanner.projects.grants.models import Grant
 from ..broadcast_bulk_events import BulkCreateEvent, BulkUpdateEvent, BulkDeleteEvent
 from ..publish import publish_events
 
@@ -41,6 +43,7 @@ def post_save_broadcast(sender, instance, created, **kwargs):
             or type(instance).__module__ == "__fake__"
             or suppress_django_signals):
         return
+
     serializer = get_serializer(sender)
     serialized_data = serializer(instance).data
     broadcastable_dict = {sender.__name__: [serialized_data]}

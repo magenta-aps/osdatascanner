@@ -14,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from requests import HTTPError
 
@@ -185,7 +186,7 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
 
 
 class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
-                             MSGraphClientSecretExpiryMixin, CreateView):
+                             MSGraphClientSecretExpiryMixin, GrantExtraMixin,  CreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     permission_required = "grants.add_graphgrant"
@@ -249,7 +250,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
 
 
 class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
-                             MSGraphClientSecretExpiryMixin, UpdateView):
+                             MSGraphClientSecretExpiryMixin, GrantExtraMixin, UpdateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     permission_required = "grants.change_graphgrant"

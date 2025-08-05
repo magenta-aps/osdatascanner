@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
 from os2datascanner.projects.grants.admin import SMBGrantAdminForm
 from os2datascanner.projects.grants.models.smbgrant import SMBGrant
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
 
 
 class SMBGrantForm(SMBGrantAdminForm):
@@ -14,7 +15,7 @@ class SMBGrantForm(SMBGrantAdminForm):
         self.fields["organization"].disabled = True
 
 
-class SMBGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+class SMBGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, CreateView):
     model = SMBGrant
     form_class = SMBGrantForm
     permission_required = "grants.add_smbgrant"
@@ -32,7 +33,7 @@ class SMBGrantScannerForm(SMBGrantAdminForm):
         fields = ('__all__')
 
 
-class SMBGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+class SMBGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, UpdateView):
     model = SMBGrant
     form_class = SMBGrantForm
     permission_required = "grants.change_smbgrant"

@@ -1,10 +1,11 @@
+from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.projects.admin.organizations.models.broadcasted_mixin import Broadcasted
-from os2datascanner.projects.grants.models import SMBGrant, EWSGrant, GraphGrant
 
 
+@Broadcasted.register
 class GrantExtra(models.Model):
     grant = models.OneToOneField(
             'grants.Grant',
@@ -16,6 +17,7 @@ class GrantExtra(models.Model):
                                            verbose_name=_("Should Broadcast"))
 
 
-Broadcasted.register(SMBGrant)
-Broadcasted.register(EWSGrant)
-Broadcasted.register(GraphGrant)
+class GrantExtraForm(forms.ModelForm):
+    class Meta:
+        model = GrantExtra
+        fields = ("should_broadcast",)
