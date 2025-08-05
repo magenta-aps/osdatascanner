@@ -32,7 +32,7 @@ from os2datascanner.projects.admin.utilities import UserWrapper
 
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
-    RestrictedCreateViewDf
+    RestrictedCreateViewDf, RestrictedUpdateViewDf
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
@@ -121,6 +121,12 @@ class ScannerCreateDf(PermissionRequiredMixin, _FormMixin, RestrictedCreateViewD
     scanner_view_type = ScannerViewType.CREATE
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.add_scanner"
+
+
+class ScannerUpdateDf(PermissionRequiredMixin, _FormMixin, RestrictedUpdateViewDf):
+    scanner_view_type = ScannerViewType.UPDATE
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+    permission_required = "os2datascanner.change_scanner"
 
 
 class ScannerBase(object):

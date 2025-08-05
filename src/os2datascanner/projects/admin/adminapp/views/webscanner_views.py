@@ -11,21 +11,14 @@
 # OS2datascanner is developed by Magenta in collaboration with the OS2 public
 # sector open source network <https://os2.eu/>.
 #
-from django.utils.translation import gettext_lazy as _
-
-from ..validate import get_validation_str
 from .scanner_views import (
     ScannerBase,
-    ScannerUpdate,
     ScannerCopy,
     ScannerList,
-    ScannerCreateDf)
+    ScannerCreateDf,
+    ScannerUpdateDf)
 from ..forms.webscanner import WebScannerForm
 from ..models.scannerjobs.webscanner import WebScanner
-
-
-def url_contains_spaces(form):
-    return form['url'].value() and ' ' in form['url'].value()
 
 
 class WebScannerList(ScannerList):
@@ -60,34 +53,6 @@ class WebScannerCopy(ScannerCopy):
     fields = ScannerBase.fields + web_scanner_fields
 
 
-class WebScannerUpdate(ScannerUpdate):
-    """Update a scanner view."""
-
+class WebScannerUpdate(ScannerUpdateDf):
     model = WebScanner
-    type = 'web'
-    fields = ScannerBase.fields + web_scanner_fields
-
-    def form_valid(self, form):
-        if url_contains_spaces(form):
-            form.add_error('url', _(u'Space is not allowed in the web-domain name.'))
-            return self.form_invalid(form)
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        """Get the context used when rendering the template."""
-        context = super().get_context_data(**kwargs)
-        for value, _desc in WebScanner.validation_method_choices:
-            key = 'valid_txt_' + str(value)
-            context[key] = get_validation_str(self.object, value)
-        return context
-
-    def get_success_url(self):
-        """The URL to redirect to after successful updating.
-
-        Will redirect the user to the validate view if the form was submitted
-        with the 'save_and_validate' button.
-        """
-        if 'save_and_validate' in self.request.POST:
-            return 'validate/'
-        else:
-            return '/webscanners/%s/saved/' % self.object.pk
+    form_class = WebScannerForm

@@ -142,6 +142,19 @@ class OrgRestrictedFormMixin(OrgRestrictedMixin, ModelFormMixin):
         return fields
 
 
+class RestrictedUpdateViewDf(OrgRestrictedFormMixin, UpdateView):
+    """Base class for updateviews restricted by organiztion."""
+
+    def post(self, request, *args, **kwargs):
+        logger.info(
+            f"Update issued to {self.__class__.__name__}",
+            request_data=_hide_csrf_token_and_password(dict(request.POST)),
+            user=str(request.user),
+            **kwargs,
+        )
+        return super().post(request, *args, **kwargs)
+
+
 class RestrictedUpdateView(OrgRestrictedFormMixin, UpdateView):
     """Base class for updateviews restricted by organiztion."""
 
