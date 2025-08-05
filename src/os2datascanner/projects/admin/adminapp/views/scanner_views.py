@@ -96,8 +96,8 @@ class ScannerList(RestrictedListView):
 class _FormMixin:
     template_name = "components/forms/grouping_model_form_wrapper.html"
 
-    def get_context_data(self):
-        d = super().get_context_data()
+    def get_context_data(self, *args, **kwargs):
+        d = super().get_context_data(*args, **kwargs)
         d["scanner_model"] = self.model  # compat
         return d
 
@@ -108,6 +108,7 @@ class _FormMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        print(kwargs)
         org = Organization.objects.filter(uuid=self.request.GET.get(
             "organization",
         )).first() or \
@@ -127,6 +128,24 @@ class ScannerUpdateDf(PermissionRequiredMixin, _FormMixin, RestrictedUpdateViewD
     scanner_view_type = ScannerViewType.UPDATE
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.change_scanner"
+
+
+class ScannerCopyDf(PermissionRequiredMixin, _FormMixin, RestrictedCreateViewDf):
+    scanner_view_type = ScannerViewType.COPY
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+    permission_required = "os2datascanner.add_scanner"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["validation_status"] = Scanner.INVALID
+        initial["name"] = self.object.name + " " + _("(Copy)")
+
+        return initial
 
 
 class ScannerBase(object):

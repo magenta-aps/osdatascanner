@@ -12,11 +12,10 @@
 # sector open source network <https://os2.eu/>.
 #
 from .scanner_views import (
-    ScannerBase,
-    ScannerCopy,
     ScannerList,
     ScannerCreateDf,
-    ScannerUpdateDf)
+    ScannerUpdateDf,
+    ScannerCopyDf)
 from ..forms.webscanner import WebScannerForm
 from ..models.scannerjobs.webscanner import WebScanner
 
@@ -45,12 +44,10 @@ class WebScannerCreate(ScannerCreateDf):
     form_class = WebScannerForm
 
 
-class WebScannerCopy(ScannerCopy):
+class WebScannerCopy(ScannerCopyDf):
     """Create a new copy of an existing WebScanner"""
-
     model = WebScanner
-    type = 'web'
-    fields = ScannerBase.fields + web_scanner_fields
+    form_class = WebScannerForm
 
 
 class WebScannerUpdate(ScannerUpdateDf):
