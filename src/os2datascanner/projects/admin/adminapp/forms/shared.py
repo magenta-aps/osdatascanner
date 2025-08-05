@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.db.models import Q
 
 from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
@@ -62,17 +63,27 @@ class ScannerForm(GroupingModelForm):
         self.this_url = kwargs.pop("this_url")
         super().__init__(*args, **kwargs)
 
+        # Make sure changes to the organization field calls the correct view
+        self.fields["organization"].widget.attrs["hx-get"] = self.this_url
+
+        # Only allow the user to choose between organizations they have access to.
         user = UserWrapper(self.user)
         self.fields["organization"].queryset = self.fields["organization"].queryset.filter(
             user.make_org_Q("uuid")
         ).order_by("name")
         self.fields["organization"].initial = self.org.uuid
 
+        # Only allow the user to choose between remediators related to the organization
         self.fields["remediators"].queryset = self.fields["remediators"].queryset.filter(
-            organization=self.org
-        )
+            organization=self.org)
 
-        self.fields["organization"].widget.attrs["hx-get"] = self.this_url
+        # Only allow the user to choose between contacts who are admins for the organization client
+        # or superusers
+        self.fields["contacts"].queryset = self.fields["contacts"].queryset.filter(
+            Q(administrator_for__client=self.org.client) |
+            Q(user_permissions=Permission.objects.get(codename="view_client")) |
+            Q(groups__permissions=Permission.objects.get(codename="view_client"))
+        )
 
         if not self.user.has_perm("os2datascanner.can_validate"):
             self.fields.pop("validation_status")

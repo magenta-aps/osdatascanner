@@ -24,15 +24,17 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelMultipleChoiceField, ModelChoiceField
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import CreateView, UpdateView
 
 from os2datascanner.projects.admin.organizations.models import Organization, Account, Alias
 from os2datascanner.projects.admin.utilities import UserWrapper
 
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
-    RestrictedCreateViewDf, RestrictedUpdateViewDf
+    OrgRestrictedMixin
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
@@ -108,7 +110,6 @@ class _FormMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        print(kwargs)
         org = Organization.objects.filter(uuid=self.request.GET.get(
             "organization",
         )).first() or \
@@ -118,19 +119,32 @@ class _FormMixin:
         return kwargs
 
 
-class ScannerCreateDf(PermissionRequiredMixin, _FormMixin, RestrictedCreateViewDf):
+class _AdminOnlyMixin:
+
+    def dispatch(self, request, *args, **kwargs):
+        # The user is only allowed in if they have access to at least one organization
+        if hasattr(request.user, "administrator_for") or request.user.has_perm("core.view_client"):
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(_("User is not administrator for any client"))
+
+
+class ScannerCreateDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
+                      CreateView):
     scanner_view_type = ScannerViewType.CREATE
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.add_scanner"
 
 
-class ScannerUpdateDf(PermissionRequiredMixin, _FormMixin, RestrictedUpdateViewDf):
+class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMixin, _FormMixin,
+                      UpdateView):
     scanner_view_type = ScannerViewType.UPDATE
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.change_scanner"
 
 
-class ScannerCopyDf(PermissionRequiredMixin, _FormMixin, RestrictedCreateViewDf):
+class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
+                    CreateView):
     scanner_view_type = ScannerViewType.COPY
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.add_scanner"

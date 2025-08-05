@@ -230,10 +230,10 @@ class TestScannerViewsPossibleContacts:
         user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
         client.force_login(user_admin)
         response = client.get(reverse_lazy("webscanner_add"))
-        possible_contacts = response.context_data["possible_contacts"]
+        possible_contacts = response.context_data["form"].fields["contacts"].queryset
         assert possible_contacts
         for contact in possible_contacts:
-            assert contact.is_superuser or \
+            assert \
                 contact.has_perm("view_client") or \
                 contact.administrator_for.client == user_admin.administrator_for.client
 
@@ -242,10 +242,10 @@ class TestScannerViewsPossibleContacts:
         alt_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
         client.force_login(alt_admin)
         response = client.get(reverse_lazy("webscanner_add"))
-        possible_contacts = response.context_data["possible_contacts"]
+        possible_contacts = response.context_data["form"].fields["contacts"].queryset
         assert possible_contacts
         for contact in possible_contacts:
-            assert contact.is_superuser or \
+            assert \
                 contact.has_perm("view_client") or \
                 contact.administrator_for.client == alt_admin.administrator_for.client
 
@@ -254,10 +254,10 @@ class TestScannerViewsPossibleContacts:
         user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
         client.force_login(user_admin)
         response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
-        possible_contacts = response.context_data["possible_contacts"]
+        possible_contacts = response.context_data["form"].fields["contacts"].queryset
         assert possible_contacts
         for contact in possible_contacts:
-            assert contact.is_superuser or \
+            assert \
                 contact.has_perm("view_client") or \
                 contact.administrator_for.client == user_admin.administrator_for.client
 
@@ -268,10 +268,10 @@ class TestScannerViewsPossibleContacts:
         client.force_login(alt_admin)
         response = client.get(reverse_lazy("webscanner_update",
                                            kwargs={"pk": other_web_scanner.pk}))
-        possible_contacts = response.context_data["possible_contacts"]
+        possible_contacts = response.context_data["form"].fields["contacts"].queryset
         assert possible_contacts
         for contact in possible_contacts:
-            assert contact.is_superuser or \
+            assert \
                 contact.has_perm("view_client") or \
                 contact.administrator_for.client == alt_admin.administrator_for.client
 
@@ -281,11 +281,11 @@ class TestScannerViewsPossibleContacts:
         client.force_login(superuser)
         response = client.get(reverse_lazy("webscanner_update",
                                            kwargs={"pk": other_web_scanner.pk}))
-        possible_contacts = response.context_data["possible_contacts"]
+        possible_contacts = response.context_data["form"].fields["contacts"].queryset
         org = response.context_data["object"].organization
         assert possible_contacts
         for contact in possible_contacts:
-            assert contact.is_superuser or \
+            assert \
                 contact.has_perm("view_client") or \
                 contact.administrator_for.client == org.client
 
@@ -298,7 +298,7 @@ class TestScannerViewsPossibleRemediators:
         user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
         client.force_login(user_admin)
         response = client.get(reverse_lazy("webscanner_add"))
-        possible_rems = response.context_data["possible_remediators"]
+        possible_rems = response.context_data["form"].fields["remediators"].queryset
         assert possible_rems
         for rem in possible_rems:
             assert rem.organization in user_admin.administrator_for.client.organizations.all()
@@ -308,7 +308,7 @@ class TestScannerViewsPossibleRemediators:
         alt_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
         client.force_login(alt_admin)
         response = client.get(reverse_lazy("webscanner_add"))
-        possible_rems = response.context_data["possible_remediators"]
+        possible_rems = response.context_data["form"].fields["remediators"].queryset
         assert possible_rems
         for rem in possible_rems:
             assert rem.organization in alt_admin.administrator_for.client.organizations.all()
@@ -318,7 +318,7 @@ class TestScannerViewsPossibleRemediators:
         user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
         client.force_login(user_admin)
         response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
-        possible_rems = response.context_data["possible_remediators"]
+        possible_rems = response.context_data["form"].fields["remediators"].queryset
         assert possible_rems
         for rem in possible_rems:
             assert rem.organization in user_admin.administrator_for.client.organizations.all()
@@ -330,7 +330,7 @@ class TestScannerViewsPossibleRemediators:
         client.force_login(alt_admin)
         response = client.get(reverse_lazy("webscanner_update",
                                            kwargs={"pk": other_web_scanner.pk}))
-        possible_rems = response.context_data["possible_remediators"]
+        possible_rems = response.context_data["form"].fields["remediators"].queryset
         assert possible_rems
         for rem in possible_rems:
             assert rem.organization in alt_admin.administrator_for.client.organizations.all()
@@ -342,7 +342,7 @@ class TestScannerViewsPossibleRemediators:
         client.force_login(superuser)
         response = client.get(reverse_lazy("webscanner_update",
                                            kwargs={"pk": other_web_scanner.pk}))
-        possible_rems = response.context_data["possible_remediators"]
+        possible_rems = response.context_data["form"].fields["remediators"].queryset
         org = response.context_data["object"].organization
         assert possible_rems
         for rem in possible_rems:

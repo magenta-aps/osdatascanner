@@ -8,7 +8,7 @@
   <script type="text/javascript" src="/admin/jsi18n/"></script>
   <script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
   <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.min.js" %}"></script>
- 
+
   {# Ideally we'd just have our own Select2-powered widget that #}
   {# included these as media declarations. Some day... #}
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/css/select2.min.css"
@@ -22,7 +22,7 @@
   {# Recurrence widget: #}
   <script src="{% static "js/recurrence_widget/recurrence.js" %}"></script>
   <script src="{% static "js/recurrence_widget/recurrence-widget.js" %}"></script>
-{% endblock %}
+{% endblock extra_head_html %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -76,4 +76,4 @@
       </form>
     </div>
   </div>
-{% endblock %}
+{% endblock body %}
