@@ -17,7 +17,7 @@ from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from requests import HTTPError
 
-from ..models.graphgrant import GraphGrant
+from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 
 
 def make_consent_url(state):

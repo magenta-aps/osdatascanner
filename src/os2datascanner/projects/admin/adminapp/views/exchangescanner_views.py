@@ -14,8 +14,8 @@ from django.views import View
 from rest_framework.generics import ListAPIView
 import re
 
-from os2datascanner.projects.grants.views.ews_views import EWSGrantScannerForm
-from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
+from os2datascanner.projects.admin.organizations.views import EWSGrantScannerForm
+from os2datascanner.projects.admin.organizations.views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
 

@@ -2,8 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
 
-from ..admin import EWSGrantAdminForm
-from ..models.ewsgrant import EWSGrant
+from os2datascanner.projects.grants.admin import EWSGrantAdminForm
+from os2datascanner.projects.grants.models.ewsgrant import EWSGrant
 
 
 class EWSGrantForm(EWSGrantAdminForm):

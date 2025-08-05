@@ -11,7 +11,7 @@
 
 from django import forms
 
-from os2datascanner.projects.grants.views.smb_views import SMBGrantScannerForm
+from os2datascanner.projects.admin.organizations.views import SMBGrantScannerForm
 from .scanner_views import (
     ScannerBase,
     ScannerUpdate,

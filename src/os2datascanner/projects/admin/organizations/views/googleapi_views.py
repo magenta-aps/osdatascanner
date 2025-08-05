@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView, CreateView
 from django import forms
-from ..models.googleapigrant import GoogleApiGrant
-from ..admin import AutoEncryptedFileField
+from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
+from os2datascanner.projects.grants.admin import AutoEncryptedFileField
 
 
 class GoogleApiGrantForm(forms.ModelForm):

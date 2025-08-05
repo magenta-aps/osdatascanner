@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
-from ..admin import SMBGrantAdminForm
-from ..models.smbgrant import SMBGrant
+from os2datascanner.projects.grants.admin import SMBGrantAdminForm
+from os2datascanner.projects.grants.models.smbgrant import SMBGrant
 
 
 class SMBGrantForm(SMBGrantAdminForm):
