@@ -113,7 +113,7 @@ class _FormMixin:
         )).first() or \
             Organization.objects.filter(UserWrapper(self.request.user).make_org_Q("uuid")
                                         ).order_by("name").first()
-        kwargs.update({"user": self.request.user, "org": org})
+        kwargs.update({"user": self.request.user, "org": org, "this_url": self.request.path})
         return kwargs
 
 

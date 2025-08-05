@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
 
 from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
@@ -33,24 +34,32 @@ class ScannerForm(GroupingModelForm):
 
     remediators = forms.ModelMultipleChoiceField(
                     queryset=Account.objects.all(),  # Take org into consideration
-                    required=False)
+                    required=False,
+                    widget=forms.SelectMultiple(attrs={
+                        "hx-swap-oob": "true"
+                    }))
+
+    contacts = forms.ModelMultipleChoiceField(
+                    queryset=User.objects.all(),  # Should only be admins for the org or superusers
+                    required=False,
+                    widget=forms.SelectMultiple(attrs={
+                        "hx-swap-oob": "true"
+                    }))
 
     organization = forms.ModelChoiceField(
                     queryset=Organization.objects.all(),
                     empty_label=None,
                     widget=forms.Select(attrs={
-                        "hx-get": "",
-                        "hx-swap": "outerHTML",
-                        "hx-target": ".content",
-                        "hx-select": ".content",
+                        "hx-swap": "none",  # Let the oob manage switching fields!
                         "hx-trigger": "change",
-                    })
-                    )
+                        "hx-push-url": "true",
+                    }))
     # Change validation_status to a RadioSelect
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
         self.org = kwargs.pop("org")
+        self.this_url = kwargs.pop("this_url")
         super().__init__(*args, **kwargs)
 
         user = UserWrapper(self.user)
@@ -62,6 +71,8 @@ class ScannerForm(GroupingModelForm):
         self.fields["remediators"].queryset = self.fields["remediators"].queryset.filter(
             organization=self.org
         )
+
+        self.fields["organization"].widget.attrs["hx-get"] = self.this_url
 
         if not self.user.has_perm("os2datascanner.can_validate"):
             self.fields.pop("validation_status")
