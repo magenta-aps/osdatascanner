@@ -90,3 +90,8 @@ class ScannerForm(GroupingModelForm):
             general_settings = self.groups[0][1]
             if "validation_status" in general_settings:
                 general_settings.remove("validation_status")
+
+    def save(self, *args, **kwargs):
+        print(self.changed_data)
+        print(self.instance.schedule)
+        return super().save(*args, **kwargs)

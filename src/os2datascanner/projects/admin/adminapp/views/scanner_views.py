@@ -142,6 +142,24 @@ class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMix
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.change_scanner"
 
+    def form_valid(self, form):
+        """If the user does not have permission to validate a scan, changes made by that user
+        must invalidate the scan."""
+
+        # Save the object instance without committing to the db
+        self.object = form.save(commit=False)
+
+        # TODO: Only do this if changes have been made.
+        # Currently, callind "has_changed" on the Form always returns true because of something
+        # weird going on with the RecurrenceField.
+
+        # If the user is not allowed to validate scans ...
+        if not self.request.user.has_perm("os2datascanner.can_validate"):
+            # ... invalidate the scanner
+            self.object.validation_status = Scanner.INVALID
+
+        return super().form_valid(form)
+
 
 class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
                     CreateView):
