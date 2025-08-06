@@ -49,6 +49,7 @@ python-magic
 pytz
 regex
 requests
+requests-mock
 sqlalchemy
 xattr
 xlrd

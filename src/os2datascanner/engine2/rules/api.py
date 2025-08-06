@@ -5,11 +5,12 @@ from typing import Iterator, Optional
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
 from .wordlists import OrderedWordlistRule
+from .utilities.properties import RulePrecedence, RuleProperties
 
 logger = structlog.get_logger("engine2")
 
 
-def get_prediction(sentence, endpoint) -> [int, int]:
+def get_prediction(sentence, endpoint) -> [int, float]:
     try:
         params = {
             'sentence': sentence,
@@ -28,7 +29,7 @@ def get_prediction(sentence, endpoint) -> [int, int]:
 
 
 def split_sentences(content):
-    delimiters = {'.'}
+    delimiters = {'.', '!', '?'}
     max_sentence_length = 100
     current_sentence = ""
     for char in content:
@@ -42,7 +43,7 @@ def split_sentences(content):
 
 class APIRegexRule(RegexRule):
     type_label = "api-regex"
-    confidence_cutoff = 60
+    confidence_cutoff = 0.60
 
     def __init__(self, expression: str, endpoint: str, censor_token: str, **super_kwargs):
         self.endpoint = endpoint
@@ -70,13 +71,10 @@ class APIRegexRule(RegexRule):
             if answer and confidence >= self.confidence_cutoff:
                 yield {
                     "match": self.censor_token,
-                    "sensitivity": (
-                        self.sensitivity.value
-                        if self.sensitivity else None
-                    ),
+                    "sensitivity": self.sensitivity.value if self.sensitivity else None,
                     "context": censored_sentence,
+                    "confidence": confidence,
                 }
-                return
 
     def to_json_object(self) -> dict:
         return dict(
@@ -99,7 +97,12 @@ class APIRegexRule(RegexRule):
 
 class APIWordlistRule(OrderedWordlistRule):
     type_label = "api-wordlist"
-    confidence_cutoff = 60
+    confidence_cutoff = 0.60
+
+    properties = RuleProperties(
+        precedence=RulePrecedence.RIGHT,
+        standalone=True,
+    )
 
     def __init__(self, dataset: str, endpoint: str, censor_token: str, **super_kwargs):
         self.endpoint = endpoint
@@ -129,13 +132,10 @@ class APIWordlistRule(OrderedWordlistRule):
             if answer and confidence >= self.confidence_cutoff:
                 yield {
                     "match": self.censor_token,
-                    "sensitivity": (
-                        self.sensitivity.value
-                        if self.sensitivity else None
-                    ),
+                    "sensitivity": self.sensitivity.value if self.sensitivity else None,
                     "context": censored_sentence,
+                    "confidence": confidence,
                 }
-                return
 
     def to_json_object(self) -> dict:
         return dict(

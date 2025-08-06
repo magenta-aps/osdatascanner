@@ -357,8 +357,11 @@ requests==2.31.0
     #   google-api-core
     #   google-cloud-storage
     #   mozilla-django-oidc
+    #   requests-mock
     #   requests-ntlm
     #   requests-oauthlib
+requests-mock==1.12.1
+    # via -r requirements-all.in
 requests-ntlm==1.1.0
     # via exchangelib
 requests-oauthlib==1.3.1
