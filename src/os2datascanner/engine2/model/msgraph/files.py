@@ -93,7 +93,7 @@ class MSGraphFilesSource(MSGraphSource):
                 site_drives=obj["site_drives"],
                 user_drives=obj["user_drives"],
                 userlist=frozenset(userlist) if userlist is not None else None,
-                sites=obj['sites'])
+                sites=obj.get('sites'))
 
 
 DUMMY_MIME = "application/vnd.os2.datascanner.graphdrive"
