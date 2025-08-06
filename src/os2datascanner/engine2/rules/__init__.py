@@ -11,3 +11,4 @@ from . import address  # noqa
 from . import wordlists  # noqa
 from . import dict_lookup  # noqa
 from . import passport  # noqa
+from . import api  # noqa

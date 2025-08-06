@@ -26,6 +26,7 @@ from os2datascanner.engine2.rules.links_follow import LinksFollowRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
+from os2datascanner.engine2.rules.api import APIRegexRule, APIWordlistRule
 
 from .scanner_reference import ScannerReference
 
@@ -43,6 +44,8 @@ RENDERABLE_RULES = (
     TurboHealthRule.type_label,
     PassportRule.type_label,
     SBSYSDBRule.type_label,
+    APIRegexRule.type_label,
+    APIWordlistRule.type_label,
 )
 
 
