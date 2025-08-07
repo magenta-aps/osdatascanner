@@ -30,7 +30,7 @@ class TestMSGraphDriveHandle:
         assert not the_same
 
     def test_to_json_object(self):
-        # And object like this has everything required to exist, is present in the wild,
+        # An object like this has everything required to exist, is present in the wild,
         # and as so, should *always* be convertable.
         obj = {'type': 'msgraph-files', 'userlist': None, 'client_id': None,
                'tenant_id': 'aaa12345-12aa-1234-1a23-abcdefghijkl', 'site_drives': True,
