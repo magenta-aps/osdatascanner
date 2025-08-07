@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 3.29.3, ?? ???? ????
+
+### General improvements
+
+- Extended test suite for the replay_checkups command.
+
 ## Version 3.29.2, 31st July 2025
 
 "Sunscreened"
