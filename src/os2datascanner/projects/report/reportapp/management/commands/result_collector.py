@@ -127,8 +127,7 @@ def outlook_categorize_enabled(owner: str) -> bool:
                         ).filter(num_categories__gte=2).exists()
 
 
-def handle_metadata_message(scan_tag, result):  # noqa: CCR001, Cognitive complexity is too high
-    # Evaluate the queryset that is updated later to lock it.
+def handle_metadata_message(scan_tag, result):  # noqa: CCR001, E501 too high cognitive complexity
     message = messages.MetadataMessage.from_json_object(result)
     path = message.handle.crunch(hash=True)
     owner = owner_from_metadata(message)
@@ -147,54 +146,58 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001, Cognitive comple
         }
     )
 
-    previous_report = DocumentReport.objects.select_for_update(
-        of=('self',)
-    ).filter(
-        path=path,
-        scanner_job=scanner
-    ).first()
+    locked_qs = DocumentReport.objects.select_for_update(of=('self',))
+    # The queryset is evaluated and locked here.
+    previous_report = locked_qs.filter(path=path, scanner_job=scanner).first()
 
-    resolution_status = None
-    lm = None
+    update_fields = {
+        "scan_time": scan_tag.time,
+        "raw_scan_tag": prepare_json_object(scan_tag.to_json_object()),
+        "raw_metadata": prepare_json_object(result),
+        "only_notify_superadmin": scan_tag.scanner.test,
+        "organization": get_org_from_scantag(scan_tag),
+        "owner": owner,
+    }
+
     if "last-modified" in message.metadata:
-        lm = OutputType.LastModified.decode_json_object(
-                message.metadata["last-modified"])
+        update_fields['datasource_last_modified'] = OutputType.LastModified.decode_json_object(
+            message.metadata["last-modified"]
+        )
     else:
         # If no scan_tag time is found, default value to current time as this
         # must be some-what close to actual scan_tag time.
         # If no datasource_last_modified value is ever set, matches will not be
         # shown.
-        lm = scan_tag.time or time_now()
+        update_fields['datasource_last_modified'] = scan_tag.time or time_now()
 
     # Specific to Outlook matches - if they have a "False Positive" category set, resolve them.
     outlook_categories = message.metadata.get("outlook-categories", [])
-    settings = outlook_settings_from_owner(owner)
-    if outlook_categories and settings and settings.false_positive_category:
-        outlook_false_positive = (settings.false_positive_category.category_name in
-                                  outlook_categories)
-    else:
-        outlook_false_positive = False
+    outlook_false_positive = False
+    if outlook_categories:
+        settings = outlook_settings_from_owner(owner)
+        if settings and settings.false_positive_category:
+            outlook_false_positive = (settings.false_positive_category.category_name in
+                                      outlook_categories)
 
-    # If the report is already handled as a false positive, keep it handled in that way.
-    previous_false_positive = (scan_tag.scanner.keep_fp and previous_report and
-                               previous_report.resolution_status ==
-                               ResolutionChoices.FALSE_POSITIVE.value)
-    if outlook_false_positive or previous_false_positive:
-        resolution_status = ResolutionChoices.FALSE_POSITIVE.value
+    fp_value = ResolutionChoices.FALSE_POSITIVE.value
+    if previous_report is not None and scan_tag.scanner.keep_fp \
+            and previous_report.resolution_status == fp_value:
+        # The scanner is set to keep false positives, and the report is a false positive.
+        update_fields['resolution_time'] = previous_report.resolution_time or time_now()
+    elif outlook_false_positive:
+        # The object is categorized as a false positive.
+        # Set resolution status and time, if they aren't already set
+        update_fields['resolution_status'] = fp_value
+        update_fields['resolution_time'] = previous_report.resolution_time or time_now()
+    else:
+        update_fields['resolution_status'] = None
+        update_fields['resolution_time'] = None
 
     dr, _ = DocumentReport.objects.update_or_create(
-            path=path, scanner_job=scanner,
-            defaults={
-                "scan_time": scan_tag.time,
-                "raw_scan_tag": prepare_json_object(
-                        scan_tag.to_json_object()),
-
-                "raw_metadata": prepare_json_object(result),
-                "datasource_last_modified": lm,
-                "only_notify_superadmin": scan_tag.scanner.test,
-                "resolution_status": resolution_status,
-                "owner": owner,
-            })
+        path=path,
+        scanner_job=scanner,
+        defaults=update_fields,
+    )
 
     # We've encountered an Outlook match that isn't categorized False Positive.
     if dr.source_type == MSGraphMailSource.type_label and not outlook_false_positive:
