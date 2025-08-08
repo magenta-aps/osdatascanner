@@ -1330,6 +1330,8 @@ class TestDPOStatisticsPageView:
 
     def test_progress_resolution_time_no_resolution_status(
             self, rf, egon_email_alias, egon_account, egon_dpo_position):
+        """When calculating the progress, only reports with a resolution status should be
+        counted as handled. Having a recent resolution time isn't enough."""
 
         # Arrange
 
