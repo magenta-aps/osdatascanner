@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
@@ -58,6 +60,17 @@ class Grant(models.Model):
 
     class Meta:
         abstract = False
+
+    @receiver(post_save)
+    def post_save_grant_extra(sender, instance, *args, **kwargs):
+        # Check if the grant is related to a GrantExtra
+        # This tells us if we are in the admin or report module.
+        # Also check if the grant is related to a GrantExtra -- we might be creating one!
+        if hasattr(instance, "grant_extra"):
+            # We are in the admin module ...
+            if instance.grant_extra:
+                # Save the related grant_extra
+                instance.grant_extra.save()
 
 
 def wrap_encrypted_field(field_name: str):

@@ -30,6 +30,15 @@ class Broadcasted(ABC):  # noqa
     decorator.)"""
 
 
+def get_broadcastable_dict(sender, instance, delete=False):
+    if delete:
+        return {sender.__name__: [str(instance.pk)]}
+    else:
+        serializer = get_serializer(sender)
+        serialized_data = serializer(instance).data
+        return {sender.__name__: [serialized_data]}
+
+
 # TODO: change to avoid using save/delete-signals as they are not called on bulk actions
 @receiver(post_save)
 def post_save_broadcast(sender, instance, created, **kwargs):
@@ -44,12 +53,29 @@ def post_save_broadcast(sender, instance, created, **kwargs):
             or suppress_django_signals):
         return
 
-    serializer = get_serializer(sender)
-    serialized_data = serializer(instance).data
-    broadcastable_dict = {sender.__name__: [serialized_data]}
-    if created:
-        event = BulkCreateEvent(broadcastable_dict)
+    # Special case for GrantExtra: GrantExtra does not exist in the report module, but Grant and
+    # subclasses of Grant do -- these are what we _actually_ want to synchronize here!
+    from os2datascanner.projects.admin.organizations.models.grant_extra import GrantExtra
+    if isinstance(instance, GrantExtra):
+        # The sender is GrantExtra. Let's check if the grant should be synchronized or deleted
+        should_broadcast = instance.should_broadcast
+        # Then we replace the instance with the Grant-object
+        instance = Grant.objects.get_subclass(pk=instance.grant.pk)
+        sender = instance.__class__
+        created = should_broadcast  # This is no good -- how do we know it was created, not updated?
+        broadcastable_dict = get_broadcastable_dict(sender, instance, delete=not should_broadcast)
     else:
+        broadcastable_dict = get_broadcastable_dict(sender, instance)
+
+    if created:
+        print("created")
+        event = BulkCreateEvent(broadcastable_dict)
+    elif not should_broadcast:
+        print("updated")
+        # Special case for deleting existing grants
+        event = BulkDeleteEvent(broadcastable_dict)
+    else:
+        print("deleted")
         event = BulkUpdateEvent(broadcastable_dict)
 
     publish_events([event])
@@ -62,9 +88,7 @@ def account_permissions_changed(sender, instance, action, *args, **kwargs):
     a post-save, so we have to do it here as well."""
     if not sender.__name__ == "Account_permissions" or action not in ["post_add", "post_remove"]:
         return
-    serializer = get_serializer(instance.__class__)
-    serialized_data = serializer(instance).data
-    broadcastable_dict = {instance.__class__.__name__: [serialized_data]}
+    broadcastable_dict = get_broadcastable_dict(sender, instance)
 
     event = BulkUpdateEvent(broadcastable_dict)
 
@@ -79,6 +103,6 @@ def post_delete_broadcast(sender, instance, **kwargs):
             or suppress_django_signals):
         return
 
-    broadcastable_dict = {sender.__name__: [str(instance.pk)]}
+    broadcastable_dict = get_broadcastable_dict(sender, instance, delete=True)
     event = BulkDeleteEvent(broadcastable_dict)
     publish_events([event])

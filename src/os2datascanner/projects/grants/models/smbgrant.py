@@ -68,7 +68,8 @@ class SMBGrantSerializer(BaseSerializer):
 
     class Meta:
         model = SMBGrant
-        fields = ["pk", "organization", "username", "domain", "password"]
+        # TODO: Test to make sure passwords are not passed unencrypted through this serializer
+        fields = ["pk", "organization", "username", "domain", "_password"]
 
 
 SMBGrant.serializer_class = SMBGrantSerializer
