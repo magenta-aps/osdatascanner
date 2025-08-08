@@ -155,7 +155,6 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001, E501 too high co
         "raw_scan_tag": prepare_json_object(scan_tag.to_json_object()),
         "raw_metadata": prepare_json_object(result),
         "only_notify_superadmin": scan_tag.scanner.test,
-        "organization": get_org_from_scantag(scan_tag),
         "owner": owner,
     }
 
@@ -260,10 +259,16 @@ def add_new_relations(aliases, new_objects, dr, tm):
             tm(documentreport_id=dr.pk, alias_id=alias.pk))
 
 
-def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cognitive complexity
+def handle_match_message(scan_tag, result):
+    """When we receive a match message we do one of 3 things.
+    1. If there are neither old or new matches, we simply ignore the message.
+    2. If the message contains matches,
+    we create or update a document report with all the received information.
+    3. If we already have an unhandled document report for the scanned object,
+    but the new message doesn't contain any matches, we update the scan time and withheld status.
+    Then we mark it as handled, if it doesn't stem from a last modified scan.
+    """
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
-    new_matches = messages.MatchesMessage.from_json_object(result)
-    path = new_matches.handle.crunch(hash=True)
 
     org = get_org_from_scantag(scan_tag)
     if not org:
@@ -278,101 +283,79 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
             "only_notify_superadmin": scan_tag.scanner.test,
         }
     )
+    message = messages.MatchesMessage.from_json_object(result)
+    path = message.handle.crunch(hash=True)
 
     # The queryset is evaluated and locked here.
-    previous_report = (locked_qs.filter(
-            path=path, scanner_job=scanner).order_by("-scan_time").first())
+    previous_report = locked_qs.filter(path=path, scanner_job=scanner).first()
 
-    matches = [(match.rule.presentation, match.matches) for match in new_matches.matches]
     logger.debug(
         "new matchMsg",
-        handle=str(new_matches.handle),
+        handle=str(message.handle),
         msgtype="matches",
-        matches=matches,
+        matches=[(match.rule.presentation, match.matches) for match in message.matches],
     )
-    if previous_report and previous_report.resolution_status is None:
-        # There are existing unresolved results; resolve them based on the new
-        # message
-        if not new_matches.matched:
-            # No new matches. Be cautiously optimistic, but check what
-            # actually happened
-            if (len(new_matches.matches) == 1
-                and isinstance(new_matches.matches[0].rule,
-                               LastModifiedRule)):
-                # The file hasn't been changed, so the matches are the same
-                # as they were last time. Instead of making a new entry,
-                # just update the timestamp on the old one
-                logger.debug("Resource not changed: updating scan timestamp",
-                             report=previous_report)
-                DocumentReport.objects.filter(pk=previous_report.pk).update(
-                        scan_time=scan_tag.time,
-                        # If there is a problem associated with this report, we
-                        # no longer care about it
-                        raw_problem=None)
 
-                if previous_report.only_notify_superadmin != scan_tag.scanner.test:
-                    # If the previous report doesn't have the same value for
-                    # only_notify_superadmin as the new scan, update the report
-                    DocumentReport.objects.filter(pk=previous_report.pk).update(
-                        only_notify_superadmin=scan_tag.scanner.test)
-            else:
-                # The file has been edited and the matches are no longer
-                # present
-                logger.debug("Resource changed: no matches, status is EDITED",
-                             report=previous_report)
-                DocumentReport.objects.filter(pk=previous_report.pk).update(
-                        resolution_status=ResolutionChoices.EDITED.value,
-                        resolution_time=time_now(),
-                        raw_problem=None)
-        else:
-            # The file has been edited, but matches are still present.
-            # Resolve the previous ones
-            logger.debug("matches still present, status is EDITED",
-                         report=previous_report)
-            DocumentReport.objects.filter(pk=previous_report.pk).update(
-                    resolution_status=ResolutionChoices.EDITED.value,
-                    resolution_time=time_now(),
-                    raw_problem=None)
+    update_fields = {
+        "raw_problem": None,
+        "only_notify_superadmin": scan_tag.scanner.test,
+        "scan_time": scan_tag.time,
+    }
 
-    if new_matches.matched:
-        # Collect and store the top-level type label from the matched object
-        source = new_matches.handle.source
+    if previous_report is None and not message.matched:
+        logger.debug("No new matches.")
+        return None
+
+    elif message.matched:
+        source = message.handle.source
         while source.handle:
             source = source.handle.source
 
-        if (scan_tag.scanner.keep_fp and previous_report and
-                previous_report.resolution_status == ResolutionChoices.FALSE_POSITIVE.value):
-            new_status = ResolutionChoices.FALSE_POSITIVE.value
+        update_fields |= {
+            "raw_scan_tag": prepare_json_object(scan_tag.to_json_object()),
+            "source_type": source.type_label,
+            "name": prepare_json_object(message.handle.presentation_name),
+            "sort_key": prepare_json_object(message.handle.sort_key),
+            "sensitivity": message.sensitivity.value,
+            "probability": message.probability,
+            "raw_matches": prepare_json_object(sort_matches_by_probability(result)),
+        }
+
+        fp_value = ResolutionChoices.FALSE_POSITIVE.value
+        if previous_report is not None and scan_tag.scanner.keep_fp \
+                and previous_report.resolution_status == fp_value:
+            # The scanner is set to keep false positives, and the report is a false positive.
+            update_fields |= {
+                "resolution_status": fp_value,
+                "resolution_time": previous_report.resolution_time or time_now(),
+            }
         else:
-            new_status = None
+            # We've received matches, so the document report isn't handled.
+            update_fields |= {
+                "resolution_status": None,
+                "resolution_time": None,
+            }
 
-        dr, _ = DocumentReport.objects.update_or_create(
-                path=path, scanner_job=scanner,
-                defaults={
-                    "scan_time": scan_tag.time,
-                    "raw_scan_tag": prepare_json_object(
-                            scan_tag.to_json_object()),
+    elif previous_report is not None and previous_report.resolution_status is None:
+        # We already have an unhandled document report for the scanned objects
 
-                    "source_type": source.type_label,
-                    "name": prepare_json_object(
-                            new_matches.handle.presentation_name),
-                    "sort_key": prepare_json_object(
-                            new_matches.handle.sort_key),
-                    "sensitivity": new_matches.sensitivity.value,
-                    "probability": new_matches.probability,
-                    "raw_matches": prepare_json_object(
-                            sort_matches_by_probability(result)),
-                    "only_notify_superadmin": scan_tag.scanner.test,
-                    "resolution_status": new_status,
+        if len(message.matches) == 1 and isinstance(message.matches[0].rule, LastModifiedRule):
+            # The file hasn't been changed, so the matches are the same as they were last time.
+            pass
+        else:
+            # The file has been edited and the matches are no longer present
+            logger.debug("Resource changed: no matches, status is EDITED", report=previous_report)
+            update_fields |= {
+                "resolution_status": ResolutionChoices.EDITED.value,
+                "resolution_time": time_now(),
+            }
 
-                    "raw_problem": None,
-                })
-
-        logger.debug("matches, saved DocReport", report=dr)
-        return dr
-    else:
-        logger.debug("No new matches.")
-        return None
+    dr, _ = DocumentReport.objects.update_or_create(
+        path=path,
+        scanner_job=scanner,
+        defaults=update_fields,
+    )
+    return dr if message.matched else None
 
 
 def sort_matches_by_probability(body):
