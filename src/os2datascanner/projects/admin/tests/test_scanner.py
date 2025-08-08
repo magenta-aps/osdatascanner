@@ -181,6 +181,46 @@ class TestScanners:
 
         assert not covered_accounts.exists()
 
+    def test_add_checkups_appends_problem_message_when_source_missing(self, msgraph_mailscanner,
+                                                                      web_scan_spec):
+        """ Tests that a ProblemMessage is appended to outbox and ScheduledCheckup is deleted,
+        when a Source is missing. """
+
+        # We're mismatching GraphMail scan with a WebScan scanspec, but that doesn't matter
+        # for this test - in a way, it highlights that we're definitely not still covering
+        # whatever Source we had a reference to. (and it was easier available when writing this)
+
+        # Arrange
+        outbox = []
+        # Build a valid handle representation
+        fake_source = graph_mail.MSGraphMailSource(
+                        client_id="4",
+                        tenant_id="5",
+                        client_secret="6")
+        fake_handle = graph_mail.MSGraphMailMessageHandle(
+            fake_source,
+            "idvaluegoeshere",
+            "Re: Yyuo haev won teh priez!",
+            "https://example.invalid/mail/idvaluegoeshere")
+        handle_repr = fake_handle.to_json_object()
+
+        # Create ScheduledCheckup
+        ScheduledCheckup.objects.create(
+            handle_representation=handle_repr,
+            scanner=msgraph_mailscanner
+        )
+
+        # Act
+        result_count = msgraph_mailscanner._add_checkups(web_scan_spec, outbox, force=False)
+
+        # Assert
+        assert result_count == 0
+        assert len(outbox) == 1
+        queue_name, problem_msg = outbox[0]
+        assert queue_name == "os2ds_problems"
+        assert problem_msg.irrelevant is True
+        assert not msgraph_mailscanner.checkups.exists()
+
     @skip("Accounts are now required, but this test doesn't create one")
     def test_scheduled_checkup_cleanup_bug(
             self,
