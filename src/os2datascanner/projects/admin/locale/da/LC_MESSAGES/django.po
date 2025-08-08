@@ -2567,8 +2567,8 @@ msgid "Update or delete the scanners first in order to delete the rule"
 msgstr "Opdater eller slet disse scannere først for at kunne slette reglen"
 
 #: adminapp/templates/rules.html
-msgid "No user defined rules added yet"
-msgstr "Der er i øjeblikket ingen brugerdefinerede regler."
+msgid "There are currently no user-defined rules to display."
+msgstr "Der er i øjeblikket ingen brugerdefinerede regler at vise."
 
 #: adminapp/templates/rules.html
 msgid "Delete rule"
@@ -2595,10 +2595,8 @@ msgid "select organization"
 msgstr "vælg organisation"
 
 #: adminapp/templates/system_rules.html
-msgid ""
-"Select the organization you want to configure system rules for."
-msgstr ""
-"Vælg den organisation, som du vil konfigurere systemregler for."
+msgid "Select the organization you want to configure system rules for."
+msgstr "Vælg den organisation, som du vil konfigurere systemregler for."
 
 #: adminapp/templates/system_rules.html
 msgid "select rule categories"
@@ -2618,8 +2616,8 @@ msgid "enable rule"
 msgstr "aktivér regel"
 
 #: adminapp/templates/system_rules.html
-msgid "No rules found with the chosen categories"
-msgstr "Ingen regler fundet for de valgte kategorier"
+msgid "No rules match the selected categories."
+msgstr "Ingen regler fundet for de valgte kategorier."
 
 #: adminapp/templatetags/utility_tags.py
 msgid "day"

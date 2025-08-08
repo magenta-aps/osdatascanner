@@ -44,32 +44,31 @@
         </div>
 
         <div class="section__body">
-          {% if customrule_list %}
- 
-            <div class="datatablex__card-container"
-                 role="region"
-                 tabindex="0"
-                 aria-label="{% trans "user defined rules"|capfirst %}">
-              <div class="datatablex__wrapper">
- 
-                <table class="datatablex rules-table rules-table--user-defined">
-                  <colgroup>
-                    <col class="column" />
-                    <col class="column" />
-                    <col class="column column--sensitivity" />
-                    <col class="column column--actions" />
-                  </colgroup>
+          <div class="datatablex__card-container"
+               role="region"
+               tabindex="0"
+               aria-label="{% trans "user defined rules"|capfirst %}">
+            <div class="datatablex__wrapper">
 
-                  <thead>
-                    <tr class="datatablex__row table-topbar">
-                      <th class="column column--name">{% trans "name"|capfirst %}</th>
-                      <th class="column column--info">{% trans "description"|capfirst %}</th>
-                      <th class="column column--sensitivity">{% trans "sensitivity"|capfirst %}</th>
-                      <th class="column column--actions">{% trans "action"|capfirst %}</th>
-                    </tr>
-                  </thead>
+              <table class="datatablex rules-table rules-table--user-defined">
+                <colgroup>
+                  <col class="column" />
+                  <col class="column" />
+                  <col class="column column--sensitivity" />
+                  <col class="column column--actions" />
+                </colgroup>
 
-                  <tbody>
+                <thead>
+                  <tr class="datatablex__row table-topbar">
+                    <th class="column column--name">{% trans "name"|capfirst %}</th>
+                    <th class="column column--info">{% trans "description"|capfirst %}</th>
+                    <th class="column column--sensitivity">{% trans "sensitivity"|capfirst %}</th>
+                    <th class="column column--actions">{% trans "action"|capfirst %}</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% if customrule_list %}
                     {% for rule in customrule_list %}
                       <tr class="datatablex__row" tabindex="0">
                         <td class="column column--name">
@@ -142,17 +141,16 @@
                         </td>
                       </tr>
                     {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
- 
-          {% else %}
-            <p>
-              <em>{% trans "No user defined rules added yet" %}</em>
-            </p>
-          {% endif %}
 
+                  {% else %}
+                    <tr class="datatablex__row" tabindex="0">
+                      <td class="nothing_found_row" colspan="4">{% trans "There are currently no user-defined rules to display." %}</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
