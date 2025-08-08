@@ -497,6 +497,7 @@ class Scanner(models.Model):
                                messages.ProblemMessage(
                                    scan_tag=spec_template.scan_tag,
                                    handle=rh,
+                                   source=rh.source,
                                    irrelevant=True,
                                    message="No longer relevant"
                                )))
