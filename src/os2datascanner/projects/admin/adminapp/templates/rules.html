@@ -3,6 +3,7 @@
 {% load i18n %}
 
 {% block scripts %}
+  <script src="{% static "js/tables/tableBehavior.js" %}"></script>
   <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
   <script src="{% static "js/index.js" %}"></script>
 {% endblock %}
@@ -44,16 +45,16 @@
         </div>
 
         <div class="section__body">
-          <div class="datatablex__card-container"
+          <div class="datatablex__card-container no-side-scroll"
                role="region"
                tabindex="0"
                aria-label="{% trans "user defined rules"|capfirst %}">
-            <div class="datatablex__wrapper">
+            <div class="datatablex__wrapper no-side-scroll">
 
-              <table class="datatablex rules-table rules-table--user-defined">
+              <table class="datatablex rules-table no-side-scroll">
                 <colgroup>
                   <col class="column" />
-                  <col class="column" />
+                  <col class="column column--info" />
                   <col class="column column--sensitivity" />
                   <col class="column column--actions" />
                 </colgroup>
@@ -74,19 +75,22 @@
                         <td class="column column--name">
                           <div class="name__container">
                             <a href="{% url "customrule_update" rule.pk %}"
-                               class="label"
-                               aria-label="{% trans "edit"|capfirst %} {{ rule.name }}"
-                               title="{% trans "edit"|capfirst %} &quot;{{ rule.name }}&quot;">
-                              <span>{{ rule.name }}</span>
-                            </a>
+                               aria-label="{% trans "edit"|capfirst %}"
+                               title="{% trans "edit"|capfirst %} &quot;{{ rule.name }}&quot;">{{ rule.name }}</a>
 
                             <span class="owner">({{ rule.organization }})</span>
                           </div>
- 
                         </td>
 
  
-                        <td class="column column--info">{{ rule.description }}</td>
+                        <td class="column column--info">
+                          <div class="expandable-content">
+                            <div class="overflow-ellipsis">
+                              <span>{{ rule.description }}</span>
+                              <button class="show-more button--transparent-button" type="button">{% trans "show more"|capfirst %}</button>
+                            </div>
+                          </div>
+                        </td>
  
                         <td class="column column--sensitivity">
                           <div class="status">
@@ -123,21 +127,16 @@
                         </td>
                       </tr>
 
+                      {# What's going on here? I don't recognice this?#}
                       <tr class="expandable-row"
-                        {# What's going on here? I don't recognice this?#}
-                        id="show-patterns-{{ forloop.counter }}"
-                        hidden>
-                        {% if user.is_superuser %}
-                          <td colspan="6">
-                          {% else %}
-                            <td colspan="5">
-                            {% endif %}
-                            {% if rule.regexrule.patterns.all|length > 0 %}
-                              {% for pattern in rule.regexrule.patterns.all %}
-                                <code class="code-grey">{{ pattern.pattern_string }}</code>
-                              {% endfor %}
-                            {% endif %}
-                          </td>
+                          id="show-patterns-{{ forloop.counter }}"
+                          hidden>
+                        <td colspan="{% if user.is_superuser %}6{% else %}5{% endif %}">
+                          {% if rule.regexrule.patterns.all|length > 0 %}
+                            {% for pattern in rule.regexrule.patterns.all %}
+                              <code class="code-grey">{{ pattern.pattern_string }}</code>
+                            {% endfor %}
+                          {% endif %}
                         </td>
                       </tr>
                     {% endfor %}

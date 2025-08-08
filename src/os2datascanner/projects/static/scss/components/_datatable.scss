@@ -1479,10 +1479,25 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // ************************
 
 .rules-table {
-  // Both:
   .column {
     &--name {
-      text-wrap: nowrap;
+      text-wrap: wrap;
+
+      .name__container {
+        display: flex;
+        flex-direction: column;
+        gap: $uniform_icon-label_gap-size;
+
+        .label:hover {
+          color: var(--color-primary-dark);
+        }
+
+        .owner {
+          font-size: 0.813rem;
+          color: var(--color-text-secondary);
+          font-style: italic;
+        }
+      }
     }
 
     &--sensitivity {
@@ -1531,36 +1546,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
     }
   }
-
-  &--user-defined {
-    // User defined rules:
-    .column {
-      &--name {
-        .name__container {
-          display: flex;
-          flex-direction: column;
-          gap: $uniform_icon-label_gap-size;
-
-          .label:hover {
-            color: var(--color-primary-dark);
-          }
-
-          .owner {
-            font-size: 0.813rem;
-            color: var(--color-text-secondary);
-            font-style: italic;
-          }
-        }
-      }
-    }
-  }
-
-  &--system {
-    // System rules:
-  }
 }
-
-// TBA
 
 // **************************
 // ***** SCANNER TABLES *****

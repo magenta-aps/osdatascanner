@@ -2550,6 +2550,10 @@ msgid "edit"
 msgstr "redigér"
 
 #: adminapp/templates/rules.html
+msgid "show more"
+msgstr "vis mere"
+
+#: adminapp/templates/rules.html
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
 
