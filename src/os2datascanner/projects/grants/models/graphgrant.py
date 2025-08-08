@@ -76,7 +76,7 @@ class GraphGrantSerializer(BaseSerializer):
 
     class Meta:
         model = GraphGrant
-        fields = ["pk", "organization", "app_id", "tenant_id", "expiry_date", "client_secret"]
+        fields = ["pk", "organization", "app_id", "tenant_id", "expiry_date", "_client_secret"]
 
 
 GraphGrant.serializer_class = GraphGrantSerializer

@@ -74,7 +74,7 @@ class GoogleApiGrantSerializer(BaseSerializer):
 
     class Meta:
         model = GoogleApiGrant
-        fields = ["pk", "organization", "service_account"]
+        fields = ["pk", "organization", "_service_account"]
 
 
 GoogleApiGrant.serializer_class = GoogleApiGrantSerializer

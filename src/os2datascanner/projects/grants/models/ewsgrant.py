@@ -30,7 +30,7 @@ class EWSGrantSerializer(BaseSerializer):
 
     class Meta:
         model = EWSGrant
-        fields = ["pk", "organization", "username", "password"]
+        fields = ["pk", "organization", "username", "_password"]
 
 
 EWSGrant.serializer_class = EWSGrantSerializer
