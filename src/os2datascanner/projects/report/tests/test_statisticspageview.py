@@ -1328,6 +1328,26 @@ class TestDPOStatisticsPageView:
 
         assert response.status_code == 200
 
+    def test_progress_resolution_time_no_resolution_status(
+            self, rf, egon_email_alias, egon_account, egon_dpo_position):
+
+        # Arrange
+
+        now = timezone.datetime.now()
+        # 5 handled, 4 unhandled
+        create_reports_for(egon_email_alias, num=4, created_at=now)
+        create_reports_for(egon_email_alias, num=5, created_at=now, resolution_status=0)
+        # Give all the reports a resolution time within the last 30 days.
+        DocumentReport.objects.all().update(resolution_time=now)
+
+        # Act
+        response_ctx = self.get_dpo_statisticspage_response(rf, egon_account).context_data
+
+        # Assert
+        assert response_ctx['unhandled_by_source']['other']['count'] == 4
+        assert response_ctx['total_by_source']['other']['count'] == 9
+        assert response_ctx['other_monthly_progress'] == 4
+
     # StatisticsPageView()
     def get_dpo_statisticspage_object(self):
         # XXX: we don't use request for anything! Is this deliberate?
