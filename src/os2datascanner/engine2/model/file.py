@@ -25,7 +25,8 @@ class FilesystemSource(Source):
     def path(self):
         return self._path
 
-    def _process_file(self, f: Path, base_path: Path, cutoff: datetime | None):
+    def _process_dirent(
+            self, f: Path, base_path: Path, cutoff: datetime | None):
         if f.is_file():
             if cutoff:
                 # Note that this is *not* a good implementation of rule
@@ -49,10 +50,10 @@ class FilesystemSource(Source):
                 cutoff = (after if not cutoff else max(cutoff, after))
 
         base_path = Path(self.path)
-        for d in base_path.glob("**"):
+        for directory in base_path.glob("**/"):
             try:
-                for f in d.iterdir():
-                    yield from self._process_file(f, base_path, cutoff)
+                for dirent in directory.iterdir():
+                    yield from self._process_dirent(dirent, base_path, cutoff)
             except PermissionError:
                 continue
 
