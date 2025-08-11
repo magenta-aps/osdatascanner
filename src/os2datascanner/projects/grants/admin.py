@@ -6,12 +6,6 @@ from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.projects.utils import aes
 from .models import EWSGrant, SMBGrant, GraphGrant, GoogleApiGrant
-from os2datascanner.projects.admin.organizations.models import GrantExtra
-
-
-class GrantExtraInline(admin.TabularInline):
-    model = GrantExtra
-    can_delete = False
 
 
 class AutoEncryptedField(forms.CharField):
@@ -71,8 +65,6 @@ class EWSGrantAdminForm(forms.ModelForm):
 class EWSGrantAdmin(admin.ModelAdmin):
     fields = ["organization", "username", "_password"]
     form = EWSGrantAdminForm
-
-    inlines = [GrantExtraInline]
 
 
 class SMBGrantAdminForm(forms.ModelForm):
