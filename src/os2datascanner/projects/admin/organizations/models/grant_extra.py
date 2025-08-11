@@ -15,6 +15,15 @@ class GrantExtra(models.Model):
     )
     should_broadcast = models.BooleanField(default=False,
                                            verbose_name=_("Should Broadcast"))
+    previous_should_broadcast = False
+
+    def save(self, *args, **kwargs):
+        try:
+            self.previous_should_broadcast = GrantExtra.objects.get(pk=self.pk).should_broadcast
+        except GrantExtra.DoesNotExist:
+            # This GrantExtra is just now being created -- nothing more to do!
+            pass
+        super().save(*args, **kwargs)
 
 
 class GrantExtraForm(forms.ModelForm):

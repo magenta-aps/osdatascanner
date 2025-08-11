@@ -59,23 +59,26 @@ def post_save_broadcast(sender, instance, created, **kwargs):
     if isinstance(instance, GrantExtra):
         # The sender is GrantExtra. Let's check if the grant should be synchronized or deleted
         should_broadcast = instance.should_broadcast
+        pre_should_broadcast = instance.previous_should_broadcast
+        if not should_broadcast and not pre_should_broadcast:
+            # Do nothing.
+            return
         # Then we replace the instance with the Grant-object
         instance = Grant.objects.get_subclass(pk=instance.grant.pk)
         sender = instance.__class__
-        created = should_broadcast  # This is no good -- how do we know it was created, not updated?
+        created = should_broadcast and not pre_should_broadcast
         broadcastable_dict = get_broadcastable_dict(sender, instance, delete=not should_broadcast)
     else:
+        should_broadcast = None  # Because we're not dealing with a GrantExtra
         broadcastable_dict = get_broadcastable_dict(sender, instance)
 
     if created:
-        print("created")
         event = BulkCreateEvent(broadcastable_dict)
-    elif not should_broadcast:
-        print("updated")
+    # It's important to distinguish between False and None here. (I.e. do not use "not")
+    elif should_broadcast is False:
         # Special case for deleting existing grants
         event = BulkDeleteEvent(broadcastable_dict)
     else:
-        print("deleted")
         event = BulkUpdateEvent(broadcastable_dict)
 
     publish_events([event])
