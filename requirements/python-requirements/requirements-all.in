@@ -30,7 +30,6 @@ lxml
 odfpy
 olefile
 openpyxl
-os2ds-rules==0.1.0
 pandas
 Pillow
 prometheus_client

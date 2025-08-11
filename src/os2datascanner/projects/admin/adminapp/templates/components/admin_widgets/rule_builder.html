@@ -33,8 +33,10 @@
       <option value="CustomRule_Address">{% trans "address" %}</option>
       <option value="EmailHeader">{% trans "e-mail header" %}</option>
       <optgroup label="{% trans 'Experimental' %}">
+        <!--
         <option value="TurboCPRRule">{% trans "CPR-nr. (Turbo)" %}</option>
         <option value="TurboHealthRule">{% trans "health information (Turbo)" %}</option>
+-->
         <option value="PassportRule">{% trans "passport" %}</option>
       </optgroup>
       <option value="RawRule">{% trans "raw rule" %}</option>
@@ -138,6 +140,7 @@
     </span>
   </span>
   <span id="PassportRule"></span>
+  <!--
   <span id="TurboCPRRule">
     ({% trans "with" %}
     <label>
@@ -152,6 +155,7 @@
     )
     <span id="TurboHealthRule"></span>
   </span>
+-->
   <span id="RawRule">
     <textarea></textarea>
   </span>
