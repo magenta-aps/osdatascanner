@@ -3,10 +3,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.core_organizational_structure.serializer import BaseSerializer
+from rest_framework import serializers
 from rest_framework.fields import UUIDField
 
 
 from .grant import UsernamePasswordGrant, LazyOrganizationRelatedField
+from .serializer import BaseGrantBulkSerializer
 
 
 class SMBGrant(UsernamePasswordGrant):
@@ -59,7 +61,16 @@ class SMBGrant(UsernamePasswordGrant):
         verbose_name = "SMB Service Account"
 
 
+class SMBGrantBulkSerializer(BaseGrantBulkSerializer):
+    class Meta:
+        model = SMBGrant
+
+
 class SMBGrantSerializer(BaseSerializer):
+    # This is a bit confusing, but there's some difference in UUID and PK interpretations and
+    # when what is available. Here we're just explicitly setting "pk" to be the value of UUID.
+    pk = serializers.UUIDField(read_only=False, format="hex_verbose", source="uuid")
+
     organization = LazyOrganizationRelatedField(
         required=True,
         allow_null=False,
@@ -68,8 +79,8 @@ class SMBGrantSerializer(BaseSerializer):
 
     class Meta:
         model = SMBGrant
-        # TODO: Test to make sure passwords are not passed unencrypted through this serializer
         fields = ["pk", "organization", "username", "domain", "_password"]
+        list_serializer_class = SMBGrantBulkSerializer
 
 
 SMBGrant.serializer_class = SMBGrantSerializer

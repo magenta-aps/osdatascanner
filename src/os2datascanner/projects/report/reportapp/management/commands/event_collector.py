@@ -44,7 +44,6 @@ ORDER_OF_DELETION = list(reversed(ORDER_OF_CREATION))
 def event_message_received_raw(body):  # noqa: CCR001 C901
     event_type = body.get("type")
     classes = body.get("classes")
-    print(body)
     try:
         with transaction.atomic():
             if event_type == "bulk_event_create":
