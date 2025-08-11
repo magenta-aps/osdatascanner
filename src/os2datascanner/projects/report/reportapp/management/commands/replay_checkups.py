@@ -61,9 +61,9 @@ class Command(BaseCommand):
         queryset = build_queryset_from(DocumentReport, filt_ops)
 
         queryset = queryset.filter(
-                # We're not interested in anything that's been handled...
+                # We are only interested in a report if it has not been handled ...
                 Q(resolution_status__isnull=True),
-                # ... or in anything that doesn't warrant a checkup
+                # ... and it contains either a match or a problem.
                 Q(raw_problem__isnull=False) | Q(raw_matches__isnull=False))
 
         queryset = queryset.order_by("-pk")
