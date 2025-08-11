@@ -72,7 +72,7 @@ class WebScanIntegrationTest(unittest.TestCase):
                 source_matches += self.parse_msg(msg)
             actual_matches += source_matches
 
-        self.assertEquals(
+        self.assertEqual(
             actual_matches,
             expected_matches,
             f"found matches: {actual_matches}, expected: {expected_matches}")

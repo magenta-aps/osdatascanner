@@ -51,7 +51,7 @@ class WebScanIntegrationTest(unittest.TestCase):
 
                 # Add one as sub_files does not include the index/landing page
                 expected_scanned_objects = int(sub_files) + 1
-                self.assertEquals(
+                self.assertEqual(
                     expected_scanned_objects, scanned_objects,
                     f"Expected {expected_scanned_objects} sources, found {scanned_objects}\n"
                     + f"link: {scan_url}")

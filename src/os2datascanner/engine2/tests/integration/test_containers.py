@@ -103,13 +103,13 @@ class Engine2ContainerTest(unittest.TestCase):
                     "//samba/general/backup",
                     "os2", "swordfish",
                     skip_super_hidden=False)
-            self.assertEquals(
+            self.assertEqual(
                     [k.relative_path for k in source.handles(sm)],
                     ["~snapshot/test-vector-hidden"],
                     "unskipped file not found")
 
             source._skip_super_hidden = True
-            self.assertEquals(
+            self.assertEqual(
                     [k.relative_path for k in source.handles(sm)],
                     [],
                     "skipped file unexpectedly found")
