@@ -121,6 +121,21 @@ msgstr "Indstillinger for resultater"
 msgid "Scheduled execution settings"
 msgstr "Indstillinger for planlagte kørsler"
 
+#: adminapp/forms/shared.py
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Remediators"
+msgstr "Opryddere"
+
+#: adminapp/forms/shared.py
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Contacts"
+msgstr "Kontakter"
+
+#: adminapp/forms/shared.py adminapp/templates/rules.html
+#: organizations/templates/organizations/account_detail.html
+msgid "Organization"
+msgstr "Organisation"
+
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"
 msgstr "f.eks. https://example.com/"
@@ -2021,10 +2036,6 @@ msgid "Scanner settings"
 msgstr "Scannerindstillinger"
 
 #: adminapp/templates/components/scanner/scanner_form.html
-msgid "Remediators"
-msgstr "Opryddere"
-
-#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "If any matches from the scanner job cannot be delegated to a specific user, "
 "the remediator(s) will see the results in their report module instead."
@@ -2043,10 +2054,6 @@ msgid ""
 msgstr ""
 "Universelle opryddere er automatisk tildelt oprydderrollen for alle "
 "scannerjobs."
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "Contacts"
-msgstr "Kontakter"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Schedule scan"
@@ -2510,11 +2517,6 @@ msgstr "(endnu ingen)"
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html
-#: organizations/templates/organizations/account_detail.html
-msgid "Organization"
-msgstr "Organisation"
-
 #: adminapp/templates/rules.html adminapp/templates/system_rules.html
 msgid "Description"
 msgstr "Beskrivelse"
@@ -2725,6 +2727,10 @@ msgid "User is not administrator for any client"
 msgstr "Brugeren er ikke administrator for en kunde"
 
 #: adminapp/views/scanner_views.py
+msgid "(Copy)"
+msgstr "(Kopi)"
+
+#: adminapp/views/scanner_views.py
 msgid ""
 "You should either choose organizational units to scan, or choose to scan the "
 "entire organization."
@@ -2798,18 +2804,6 @@ msgstr "oprettet"
 #: adminapp/views/views.py
 msgid "saved"
 msgstr "gemt"
-
-#: adminapp/views/webscanner_views.py
-msgid "e.g. https://example.com"
-msgstr "f.eks. https://example.com"
-
-#: adminapp/views/webscanner_views.py
-msgid "e.g. https://example.com/exclude1, https://example.com/exclude2"
-msgstr "f.eks. https://example.com/exclude1, https://example.com/exclude2"
-
-#: adminapp/views/webscanner_views.py
-msgid "Space is not allowed in the web-domain name."
-msgstr "Mellemrum er ikke tilladt i web-domænenavnet."
 
 #: core/admin.py
 msgid "Users who are already Administrators are not shown."

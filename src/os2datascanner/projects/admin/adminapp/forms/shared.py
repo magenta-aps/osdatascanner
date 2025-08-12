@@ -34,6 +34,7 @@ class Groups:
 class ScannerForm(GroupingModelForm):
 
     remediators = forms.ModelMultipleChoiceField(
+                    label=_("Remediators"),
                     queryset=Account.objects.all(),  # Take org into consideration
                     required=False,
                     widget=forms.SelectMultiple(attrs={
@@ -41,6 +42,7 @@ class ScannerForm(GroupingModelForm):
                     }))
 
     contacts = forms.ModelMultipleChoiceField(
+                    label=_("Contacts"),
                     queryset=User.objects.all(),  # Should only be admins for the org or superusers
                     required=False,
                     widget=forms.SelectMultiple(attrs={
@@ -48,6 +50,7 @@ class ScannerForm(GroupingModelForm):
                     }))
 
     organization = forms.ModelChoiceField(
+                    label=_("Organization"),
                     queryset=Organization.objects.all(),
                     empty_label=None,
                     widget=forms.Select(attrs={
