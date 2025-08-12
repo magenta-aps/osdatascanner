@@ -122,7 +122,7 @@ class Organization(models.Model):
 
     # Outlook settings
     outlook_delete_email_permission = models.BooleanField(
-        default=None, null=True,
+        default=False,
         verbose_name=_("allow deletion of emails in Outlook directly"))
 
     outlook_categorize_email_permission = models.CharField(
@@ -137,31 +137,31 @@ class Organization(models.Model):
 
     # Onedrive/Sharepoint
     onedrive_delete_permission = models.BooleanField(
-        default=None, null=True,
+        default=False,
         verbose_name=_("allow deletion of online drive files directly")
     )
 
     # smb settings
     smb_delete_permission = models.BooleanField(
-        default=None, null=True,
+        default=False,
         verbose_name=_("allow deletion of on-premise drive files directly")
     )
 
     # Exchange settings
     exchange_delete_permission = models.BooleanField(
-        default=None, null=True,
+        default=False,
         verbose_name=_("allow deletion of emails on Exchange server directly")
     )
 
     # Gmail settings
     gmail_delete_permission = models.BooleanField(
-        default=None, null=True,
+        default=False,
         verbose_name=_("allow deletion of emails in gmail directly")
     )
 
     # Google Drive settings
     gdrive_delete_permission = models.BooleanField(
-        default=None, null=True,
+        default=False,
         verbose_name=_("allow deletion of files in Google Drive directly")
     )
 

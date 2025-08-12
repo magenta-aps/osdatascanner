@@ -72,7 +72,15 @@ class Command(BaseCommand):
         client, _ = Client.objects.get_or_create(name="Development Client",
                                                  contact_email="dev@dev.com",
                                                  contact_phone="12345678")
-        Organization.objects.get_or_create(name="OSdatascanner", client=client)
+        Organization.objects.get_or_create(name="OSdatascanner", client=client,
+                                           defaults={
+                                            "outlook_delete_email_permission": True,
+                                            "onedrive_delete_permission": True,
+                                            "smb_delete_permission": True,
+                                            "exchange_delete_permission": True,
+                                            "gmail_delete_permission": True,
+                                            "gdrive_delete_permission": True
+                                           })
 
         self.stdout.write("Creating superuser dev/dev!")
         user, created = User.objects.get_or_create(

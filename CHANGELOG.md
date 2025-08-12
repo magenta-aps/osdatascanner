@@ -6,6 +6,9 @@
 
 - Extended test suite for the `replay_checkups` command.
 
+- Remove delete permissions from settings files. They are now wholly controlled through the
+  Organization.
+
 ### Bugfixes
 
 - The `quickstart_dev` management command no longer tries to create the same organization three

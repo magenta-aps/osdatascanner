@@ -38,18 +38,9 @@ OPTIONAL_MIDDLEWARE = [
 NOTIFICATION_INSTITUTION = 'MAGENTA APS'
 
 # [msgraph]
-MSGRAPH_ALLOW_WRITE = true
 MSGRAPH_APP_ID = ""
 MSGRAPH_CLIENT_SECRET = ""
 MSGRAPH_TENANT_ID = ""
-
-SMB_ALLOW_WRITE = true
-
-EWS_ALLOW_WRITE = true
-
-GMAIL_ALLOW_WRITE = true
-
-GDRIVE_ALLOW_WRITE = true
 
 # KEYCLOAK
 # These settings require a os2datascanner client, and a osdatascanner realm in Keycloak.
