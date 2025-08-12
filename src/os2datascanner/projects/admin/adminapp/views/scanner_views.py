@@ -139,6 +139,7 @@ class ScannerCreateDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMix
 class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMixin, _FormMixin,
                       UpdateView):
     scanner_view_type = ScannerViewType.UPDATE
+    edit = True
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.change_scanner"
 
@@ -146,11 +147,12 @@ class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMix
         """If the user does not have permission to validate a scan, changes made by that user
         must invalidate the scan."""
 
-        # Save the object instance without committing to the db
+        # Call the save method, but do not commit to the database.
+        # This gives us the object with updated fields.
         self.object = form.save(commit=False)
 
         # TODO: Only do this if changes have been made.
-        # Currently, callind "has_changed" on the Form always returns true because of something
+        # Currently, calling "has_changed" on the Form always returns true because of something
         # weird going on with the RecurrenceField.
 
         # If the user is not allowed to validate scans ...
