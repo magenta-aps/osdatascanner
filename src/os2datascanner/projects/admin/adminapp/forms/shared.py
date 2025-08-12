@@ -79,19 +79,13 @@ class ScannerForm(GroupingModelForm):
 
         # Only allow the user to choose between contacts who are admins for the organization client
         # or superusers
+        view_client_perm = Permission.objects.get(codename="view_client")
         self.fields["contacts"].queryset = self.fields["contacts"].queryset.filter(
             Q(administrator_for__client=self.org.client) |
-            Q(user_permissions=Permission.objects.get(codename="view_client")) |
-            Q(groups__permissions=Permission.objects.get(codename="view_client"))
+            Q(user_permissions=view_client_perm) |
+            Q(groups__permissions=view_client_perm)
         )
 
+        # Only allow the user to change the validation_status field with the correct permission
         if not self.user.has_perm("os2datascanner.can_validate"):
-            self.fields.pop("validation_status")
-            general_settings = self.groups[0][1]
-            if "validation_status" in general_settings:
-                general_settings.remove("validation_status")
-
-    def save(self, *args, **kwargs):
-        print(self.changed_data)
-        print(self.instance.schedule)
-        return super().save(*args, **kwargs)
+            self.fields["validation_status"].widget.attrs['disabled'] = True
