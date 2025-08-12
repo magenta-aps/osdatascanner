@@ -3,7 +3,7 @@ from datetime import datetime
 from functools import reduce
 
 from ..rule import Rule, SimpleRule
-from ..logical import OrRule, AndRule, NotRule, CompoundRule
+from ..logical import OrRule, AndRule, NotRule, CompoundRule, AllRule
 
 
 def compute_mss(r: Rule | None) -> set[SimpleRule]:
@@ -13,9 +13,14 @@ def compute_mss(r: Rule | None) -> set[SimpleRule]:
         case None:  # For convenience
             return set()
         case AndRule(components=cs):
+            # For the AndRule, all of its components needs to match.
+            # Therefore we combine the mss of every subrule using the "or" operator.
             c_sets = [compute_mss(c) for c in cs]
             return reduce(operator.or_, c_sets, set())
-        case OrRule(components=cs):
+        case OrRule(components=cs) | AllRule(components=cs):
+            # Only rules found in the mss of _every_ component of an OrRule or AllRule
+            # are strictly necessary.
+            # Therefore we combine the mss of the components using the "and" operator.
             head_set, *tail_sets = [compute_mss(c) for c in cs]
             return reduce(operator.and_, tail_sets, head_set)
         case CompoundRule():

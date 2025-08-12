@@ -14,6 +14,8 @@
 - The `quickstart_dev` management command no longer tries to create the same organization three
   times in the report module -- only once.
 
+- AllRules can now be used in scans utilizing smart-delta without issue.
+
 ## Version 3.29.2, 31st July 2025
 
 "Sunscreened"
