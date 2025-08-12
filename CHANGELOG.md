@@ -16,6 +16,9 @@
 
 - AllRules can now be used in scans utilizing smart-delta without issue.
 
+- A bug, causing unhandled reports with a resolution time to be counted as handled on the dpo page,
+  has been fixed.
+
 ## Version 3.29.2, 31st July 2025
 
 "Sunscreened"

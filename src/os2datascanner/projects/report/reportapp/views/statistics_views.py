@@ -80,6 +80,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             handled_recently=Case(
                 When(
                     resolution_time__gte=a_month_ago,
+                    resolution_status__isnull=False,
                     then=True,
                 ),
                 default=False
