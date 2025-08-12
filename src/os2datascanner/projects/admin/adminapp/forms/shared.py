@@ -78,7 +78,7 @@ class ScannerForm(GroupingModelForm):
 
         # Only allow the user to choose between remediators related to the organization
         self.fields["remediators"].queryset = self.fields["remediators"].queryset.filter(
-            organization=self.org)
+            organization=self.org).distinct()
 
         # Only allow the user to choose between contacts who are admins for the organization client
         # or superusers
@@ -87,7 +87,7 @@ class ScannerForm(GroupingModelForm):
             Q(administrator_for__client=self.org.client) |
             Q(user_permissions=view_client_perm) |
             Q(groups__permissions=view_client_perm)
-        )
+        ).distinct()
 
         # Only allow the user to change the validation_status field with the correct permission
         if not self.user.has_perm("os2datascanner.can_validate"):
