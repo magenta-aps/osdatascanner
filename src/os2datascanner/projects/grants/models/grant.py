@@ -66,21 +66,16 @@ class Grant(models.Model):
         if not isinstance(instance, Grant):
             # This is not a grant. Exit
             return
-        # Check if the grant is related to a GrantExtra
+
         # This tells us if we are in the admin or report module.
-        # Also check if the grant is related to a GrantExtra -- we might be creating one!
-        if hasattr(instance, "grant_extra"):
-            # If we are in the admin module, and there is a GrantExtra, save it.
-            instance.grant_extra.save()
-        else:
-            try:
-                # No GrantExtra found. Try creating one.
-                from os2datascanner.projects.admin.organizations.models import GrantExtra
-                GrantExtra.objects.create(grant_id=instance.uuid)
-            except RuntimeError as e:
-                print(e)
-                # Oops, we are probably in the report module. Nothing to do!
-                pass
+        # GrantExtra does not exist in the report module.
+        if hasattr(Grant, "grant_extra"):
+            # We are in the admin module
+            from os2datascanner.projects.admin.organizations.models import GrantExtra
+            grant_extra, created = GrantExtra.objects.get_or_create(grant_id=instance.uuid)
+            if not created:
+                # If we didn't just create a GrantExtra, we should save it, to trigger its signal.
+                instance.grant_extra.save()
 
 
 def wrap_encrypted_field(field_name: str):
