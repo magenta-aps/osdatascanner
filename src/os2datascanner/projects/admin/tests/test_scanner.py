@@ -30,13 +30,14 @@ class TestScanners:
 
     def test_user_without_permission_cannot_validate_scannerjob(self, user_admin, client,
                                                                 web_scanner):
-        """Make sure the "validation_status" field is not included in the scanner form for admins
+        """Make sure the "validation_status" field is disabled in the scanner form for admins
         without permission"""
 
         user_admin.user_permissions.add(Permission.objects.get(codename='change_scanner'))
         client.force_login(user_admin)
         response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
-        assert 'validation_status' not in str(response.context_data["form"].fields)
+        validation_status_field = response.context_data["form"].fields["validation_status"]
+        assert validation_status_field.disabled
 
     def test_user_with_permission_can_validate_scannerjob(self, user_admin, client, web_scanner):
         """Make sure the "validation_status" field is included in the scanner form for admins
