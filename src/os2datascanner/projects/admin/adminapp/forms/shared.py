@@ -89,6 +89,14 @@ class ScannerForm(GroupingModelForm):
             Q(groups__permissions=view_client_perm)
         ).distinct()
 
+        # Only allow the user to choose between rules related to the organization
+        # self.fields["rule"].queryset = self.fields["rule"].queryset.filter(
+        #     # Rules belonging to the organization ...
+        #     Q(organization_id=self.org.uuid) |
+        #     # ... or system rules applied to the organization
+        #     Q(organization=None, customrule__organizations__uuid=self.org.uuid)
+        # )
+
         # Only allow the user to change the validation_status field with the correct permission
         if not self.user.has_perm("os2datascanner.can_validate"):
             self.fields["validation_status"].disabled = True

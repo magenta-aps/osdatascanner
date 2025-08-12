@@ -33,7 +33,6 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner i
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.gmail import GmailScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.msgraph import (
     MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner)
-from os2datascanner.projects.admin.tests.test_utilities import dummy_rule_dict
 from os2datascanner.projects.grants.models import EWSGrant, GoogleApiGrant, GraphGrant, SMBGrant
 
 
@@ -101,8 +100,19 @@ def user_admin(test_org):
 
 @pytest.fixture
 def basic_rule(test_org):
-    rule = CustomRule.objects.create(**dummy_rule_dict)
+    rule = CustomRule.objects.create(name="dummy rule",
+                                     description="this is a dumb dumb dummy rule",
+                                     _rule={"type": "regex", "expression": "dummy"})
     rule.organizations.add(test_org)
+    return rule
+
+
+@pytest.fixture
+def disabled_system_rule(test_org):
+    rule = CustomRule.objects.create(name="disabled rule",
+                                     description="this is a dumb dumb disabled rule",
+                                     _rule={"type": "regex", "expression": "dummy"})
+    # Don't add any organizations.
     return rule
 
 

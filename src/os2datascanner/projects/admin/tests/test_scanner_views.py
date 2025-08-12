@@ -347,3 +347,28 @@ class TestScannerViewsPossibleRemediators:
         assert possible_rems
         for rem in possible_rems:
             assert rem.organization == org
+
+
+@pytest.mark.django_db
+class TestScannerViewsPossibleRules:
+
+    def test_only_organization_rules_possible_create(self, user_admin, org_rule, org2_rule,
+                                                     disabled_system_rule, client, test_org):
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("webscanner_add"))
+        possible_rules = response.context_data["form"].fields["rule"].queryset
+        assert possible_rules
+        for rule in possible_rules:
+            assert rule.organization == test_org or test_org in rule.customrule.organizations.all()
+
+    def test_only_organization_rules_possible_update(self, user_admin, org_rule, org2_rule,
+                                                     disabled_system_rule, client, test_org,
+                                                     web_scanner):
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
+        possible_rules = response.context_data["form"].fields["rule"].queryset
+        assert possible_rules
+        for rule in possible_rules:
+            assert rule.organization == test_org or test_org in rule.customrule.organizations.all()
