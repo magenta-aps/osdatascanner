@@ -32,7 +32,7 @@ class WebScannerForm(ScannerForm):
         ),
         (
             _("Advanced web crawler settings"),
-            ["extended_hints", "reduce_communication"]
+            ["reduce_communication"]
         ),
         (
             _("Scan settings"),
