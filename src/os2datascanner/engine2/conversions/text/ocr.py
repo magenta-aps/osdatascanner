@@ -55,7 +55,9 @@ def image_processor(r):
 # Some ostensibly-supported image formats are handled badly by tesseract, so
 # turn them into PNGs with ImageMagick's convert(1) command to make them more
 # palatable
-@conversion(OutputType.Text, "image/gif", "image/x-ms-bmp")
+@conversion(OutputType.Text, "image/gif", "image/x-ms-bmp",
+            # Many more MIME types have appeared for .bmp files. Groan
+            "image/bmp", "image/x-bmp")
 def intermediate_image_processor(r):
     with r.make_path() as p, NamedTemporaryFile("rb", suffix=".png") as ntf:
         result = run_custom(

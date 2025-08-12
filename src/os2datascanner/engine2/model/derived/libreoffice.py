@@ -118,6 +118,7 @@ class UnrecognisedFormatError(LookupError):
 
 @Source.mime_handler(
         "application/CDFV2",
+        "application/x-ole-storage",
         # LibreOffice is in the unusual position of supporting a few MIME types
         # for which it's no longer responsible *and* of performing sanity
         # checks to make sure that its input files' types are supported. To
