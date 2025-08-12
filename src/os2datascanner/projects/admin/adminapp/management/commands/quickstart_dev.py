@@ -7,8 +7,6 @@ from django.db import transaction
 from recurrence import Recurrence
 
 from os2datascanner.projects.grants.models import SMBGrant
-from ....organizations.broadcast_bulk_events import BulkCreateEvent
-from ....organizations.publish import publish_events
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner import (
     FileScanner,
 )
@@ -24,9 +22,7 @@ from os2datascanner.projects.admin.organizations.models.account import (
 from os2datascanner.projects.admin.organizations.models.aliases import (
     Alias, AliasType,
 )
-from os2datascanner.projects.admin.organizations.models.organization import (
-    Organization, OrganizationSerializer
-)
+from os2datascanner.projects.admin.organizations.models.organization import Organization
 from os2datascanner.projects.admin.core.models.client import Client
 
 
@@ -78,15 +74,6 @@ class Command(BaseCommand):
                                                  contact_phone="12345678")
         Organization.objects.get_or_create(name="OSdatascanner", client=client)
 
-        self.stdout.write("Synchronizing Organization to Report module ...")
-        creation_dict = {"Organization": OrganizationSerializer(
-            Organization.objects.all(), many=True).data,
-                         }
-        event = BulkCreateEvent(creation_dict)
-        publish_events([event])
-        self.stdout.write(self.style.SUCCESS(f"Sent Organization create message!:"
-                                             f" \n {creation_dict}"))
-
         self.stdout.write("Creating superuser dev/dev!")
         user, created = User.objects.get_or_create(
             username=username,
@@ -129,14 +116,6 @@ class Command(BaseCommand):
                                                  "created successfully!"))
         else:
             self.stdout.write("Remediator alias for account dev already exists!")
-
-        self.stdout.write("Synchronizing Organization to Report module")
-        creation_dict = {"Organization": OrganizationSerializer(
-            Organization.objects.all(), many=True).data}
-        event = BulkCreateEvent(creation_dict)
-        publish_events([event])
-        self.stdout.write(self.style.SUCCESS(f"Sent Organization create message!:"
-                                             f" \n {creation_dict}"))
 
         self.stdout.write("Creating file scanner for samba share")
         recurrence = Recurrence()
