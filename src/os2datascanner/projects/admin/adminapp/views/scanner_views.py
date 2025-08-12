@@ -110,7 +110,9 @@ class _FormMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        org = Organization.objects.filter(uuid=self.request.GET.get(
+        org = Organization.objects.filter(
+            UserWrapper(self.request.user).make_org_Q("uuid")
+        ).filter(uuid=self.request.GET.get(
             "organization",
         )).first() or \
             Organization.objects.filter(UserWrapper(self.request.user).make_org_Q("uuid")
