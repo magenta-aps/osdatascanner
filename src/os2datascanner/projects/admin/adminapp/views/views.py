@@ -73,17 +73,6 @@ class GuideView(TemplateView):
 
 
 # Create/Update/Delete Views.
-class RestrictedCreateViewDf(LoginRequiredMixin, CreateView):
-    def post(self, request, *args, **kwargs):
-        logger.info(
-            f"Create issued to {self.__class__.__name__}",
-            request_data=_hide_csrf_token_and_password(dict(request.POST)),
-            user=str(request.user),
-            **kwargs,
-        )
-        return super().post(request, *args, **kwargs)
-
-
 class RestrictedCreateView(LoginRequiredMixin, CreateView):
     """Base class for create views that are limited by user organization."""
 
@@ -140,19 +129,6 @@ class OrgRestrictedFormMixin(OrgRestrictedMixin, ModelFormMixin):
         fields = [f for f in self.fields]
 
         return fields
-
-
-class RestrictedUpdateViewDf(OrgRestrictedFormMixin, UpdateView):
-    """Base class for updateviews restricted by organiztion."""
-
-    def post(self, request, *args, **kwargs):
-        logger.info(
-            f"Update issued to {self.__class__.__name__}",
-            request_data=_hide_csrf_token_and_password(dict(request.POST)),
-            user=str(request.user),
-            **kwargs,
-        )
-        return super().post(request, *args, **kwargs)
 
 
 class RestrictedUpdateView(OrgRestrictedFormMixin, UpdateView):
