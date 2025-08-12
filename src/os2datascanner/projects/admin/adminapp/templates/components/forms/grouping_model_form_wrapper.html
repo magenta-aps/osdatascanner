@@ -47,7 +47,10 @@
         </h1>
       </div>
 
-      <form class="form form--new" method="post" action="{{ request.path }}">
+      <form class="form form--new"
+            method="post"
+            action="{{ request.path }}"
+            {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
         {% csrf_token %}
 
         {# The form itself: #}

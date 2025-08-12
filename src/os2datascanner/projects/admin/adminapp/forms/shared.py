@@ -89,3 +89,4 @@ class ScannerForm(GroupingModelForm):
         # Only allow the user to change the validation_status field with the correct permission
         if not self.user.has_perm("os2datascanner.can_validate"):
             self.fields["validation_status"].disabled = True
+            self.fields["validation_status"].required = False

@@ -193,7 +193,6 @@ class Scanner(models.Model):
 
     validation_status = models.IntegerField(choices=validation_choices,
                                             default=INVALID,
-                                            blank=True,
                                             verbose_name=_('validation status'))
 
     exclusion_rule = models.ForeignKey(Rule,
