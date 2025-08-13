@@ -36,6 +36,7 @@ nav:
   - Operations:
     - Role, Special roles and Alias: roles.md
     - Statistics: statistics.md
+    - Grants: grants.md
   - Frontend:
     - Frontend Architecture: architecture/frontend.md
     - Buttons: frontend/buttons/buttons.md
