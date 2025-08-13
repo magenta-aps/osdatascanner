@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='GrantExtra',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('should_broadcast', models.BooleanField(default=False, verbose_name='Should Broadcast')),
+                ('should_broadcast', models.BooleanField(default=False, verbose_name='Synchronize to report module')),
                 ('grant', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='grant_extra', to='grants.grant', verbose_name='Grant Extra')),
             ],
         ),

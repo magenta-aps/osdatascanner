@@ -14,7 +14,7 @@ class GrantExtra(models.Model):
             verbose_name=_("Grant Extra")
     )
     should_broadcast = models.BooleanField(default=False,
-                                           verbose_name=_("Should Broadcast"))
+                                           verbose_name=_("Synchronize to report module"))
     previous_should_broadcast = False
 
     def save(self, *args, **kwargs):
