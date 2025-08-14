@@ -107,12 +107,15 @@ def _rule_rhs_to_cv(
     # The right-hand side of a SBSYSDBRule expression is either a normal value
     # or (if it's a string starting with "&") a reference to another column
     rhs_constraints = true()
-    if isinstance(rhs, str) and rhs.startswith("&"):
-        rhs = rhs[1:]
-        rhs_constraints, rhs_val = resolve_complex_column_name(
-                table, rhs, all_tables)
-    else:
-        rhs_val = rhs if not rhs.startswith("\\") else rhs[1:]
+    match rhs:
+        case str() if rhs.startswith("&"):
+            rhs = rhs[1:]
+            rhs_constraints, rhs_val = resolve_complex_column_name(
+                    table, rhs, all_tables)
+        case str() if rhs.startswith("\\"):
+            rhs = rhs_val = rhs[1:]
+        case _:
+            rhs_val = rhs
 
     return rhs, rhs_constraints, rhs_val
 
