@@ -9,6 +9,9 @@
 - Remove delete permissions from settings files. They are now wholly controlled through the
   Organization.
 
+- Mixed-case tokens adjacent to a candidate CPR number are no longer treated as
+  reasons to disregard that candidate.
+
 ### Bugfixes
 
 - The `quickstart_dev` management command no longer tries to create the same organization three

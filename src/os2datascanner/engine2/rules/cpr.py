@@ -34,7 +34,7 @@ class WordOrSymbol:
 class Context(Enum):
     WHITELIST = 1
     # UNBALANCED = 2 is no longer treated as a problem
-    WRONG_CASE = 3
+    # WRONG_CASE = 3 is no longer treated as a problem
     NUMBER = 4
     # SYMBOL = 5 is no longer treated as a problem
     BLACKLIST = 6
@@ -217,11 +217,6 @@ class CPRRule(RegexRule):
             elif w.word and is_number(w.word):
                 probability = 0.0
                 ctype.append((Context.NUMBER, w.word))
-            elif w.word and not is_alpha_case(w.word):
-                # test for case, ie Magenta, magenta, MAGENTA are ok, but not MaGenTa
-                # nor magenta10. w must not be empty string
-                probability = 0.0
-                ctype.append((Context.WRONG_CASE, w.word))
 
         return probability, ctype
 
@@ -320,15 +315,6 @@ def is_number(s: str) -> bool:
     # this is the faster than try: float or re.match
     # https://stackoverflow.com/a/23639915
     return s.replace(".", "", 1).replace(",", "", 1).isdigit()
-
-
-def is_alpha_case(s: str) -> bool:
-    """Return True for Magenta, magenta, MAGENTA but not MaGenTa"""
-
-    # make sure words with hypen are accepted as long as the case is ok
-    s = s.replace("-", "")
-    # We could enforce s.isalpha() to prevent ma10ta, but then "nr:" would fail
-    return s.istitle() or s.islower() or s.isupper()  # and s.isalpha()
 
 
 def match_to_cpr(match: Match[str]):

@@ -57,10 +57,6 @@ class TestCPRRule:
                 # ignored
                 ("6742132882 1412661636 9424 1505642917 377377244444",
                  ["1412XXXXXX", "1505XXXXXX"]),
-                # CPR numbers near words with iCONSiSTenT CaPITALISaTion are
-                # ignored
-                ("COMpANY 1506432428 hAS fOUND tHE PROBLEM",
-                 ["1506XXXXXX"]),
             ])
     def test_context_check(self, text, potential):
         """Test that the context check causes valid CPR numbers to be
