@@ -5,6 +5,7 @@ from os2datascanner.projects.report.organizations.models import (Account, Alias,
                                                                  Organization, OrganizationalUnit,
                                                                  Position)
 
+from os2datascanner.projects.grants.models import SMBGrant
 from ..management.commands.event_collector import event_message_received_raw
 
 
@@ -129,3 +130,27 @@ class TestEventCollector:
         for position in update_message_position_body_not_in_order:
             # Assert: filters for every obj, unpacking all their expected params.
             assert Position.objects.filter(**position).exists() is True
+
+    # GRANT Create/Update/Delete
+
+    def test_event_collector_smbgrant(self, create_message_smbgrant,
+                                      update_message_smbgrant, delete_message_smbgrant):
+
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(create_message_smbgrant))
+
+        serialized_obj_create = create_message_smbgrant.get("classes").get("SMBGrant")[0]
+
+        assert SMBGrant.objects.filter(**serialized_obj_create).exists()
+
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(update_message_smbgrant))
+
+        serialized_obj_update = update_message_smbgrant.get("classes").get("SMBGrant")[0]
+
+        assert SMBGrant.objects.filter(**serialized_obj_update).exists()
+
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(delete_message_smbgrant))
+
+        assert SMBGrant.objects.count() == 0

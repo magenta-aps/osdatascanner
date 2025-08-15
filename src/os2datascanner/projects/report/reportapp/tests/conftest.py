@@ -699,3 +699,57 @@ def update_message_position_body_not_in_order(update_message_not_in_order):
 @pytest.fixture(scope="module")
 def update_message_org_body_not_in_order(update_message_not_in_order):
     return update_message_not_in_order.get("classes").get("Organization")
+
+
+@pytest.fixture(scope="module")
+def create_message_smbgrant():
+    return {
+        'time': '2025-08-14T13:26:30+02:00',
+        'type': 'bulk_event_create',
+        'publisher': 'admin',
+        'classes':
+            {
+                'SMBGrant': [
+                    {
+                        'pk': '1f40baf2-3be5-4706-92d0-b24c06a3ed1d',
+                        'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
+                        'username': 'service_account',
+                        'domain': 'C',
+                        '_password': ['4a4fd78c269fb555c510addb9b52eb52', '71f5d65516b95a724b']
+                        }
+                    ]
+            }
+        }
+
+
+@pytest.fixture(scope="module")
+def update_message_smbgrant():
+    return {
+        'time': '2025-08-14T13:49:04+02:00',
+        'type': 'bulk_event_update',
+        'publisher': 'admin',
+        'classes': {
+            'SMBGrant': [
+                {
+                    'pk': '1f40baf2-3be5-4706-92d0-b24c06a3ed1d',
+                    'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
+                    'username': 'service_account_edited',
+                    'domain': 'D',
+                    '_password': ['d2ff928efadf8f5f553e4fbb918368cb', '192473237f93bb056735d0dc']
+                }
+            ]
+        }
+    }
+
+
+@pytest.fixture(scope="module")
+def delete_message_smbgrant():
+    return {
+        'time': '2025-08-14T14:04:23+02:00',
+        'type': 'bulk_event_delete',
+        'publisher': 'admin',
+        'classes':
+            {
+                'SMBGrant': ['1f40baf2-3be5-4706-92d0-b24c06a3ed1d']
+            }
+    }
