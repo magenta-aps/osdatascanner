@@ -19,6 +19,16 @@ class TestCPRRule:
                 ("Joanne Bloggs og hendes mand Joe Bloggs, hhv. med CPR-numre"
                  " 1412669300 og 150564-0701, vil få energirådgivning af",
                  ["1412XXXXXX", "1505XXXXXX"]),
+                ("se om Brian Qvortrup-Larsen 080273-3941 kan have ret til"
+                 " tillægsydelser jf. lov om aktiv",
+                 ["0802XXXXXX"]),
+                ("USA's tidligere forsvarsminister Robert McNamara,"
+                 " 090616-1451, havde intet med Danmark at gøre, så det var"
+                 " nok ikke hans CPR-nummer, det dér",
+                 ["0906XXXXXX"]),
+                ("fået at høre fra Sean O'Something (010182-4241), at Irland"
+                 " er et sejt land at bo i. Det bør vi få undersøgt",
+                 ["0101XXXXXX"]),
             ])
     def test_simple_matches(self, text, expected):
         assert self.simplify_matches(CPRRule().match(text)) == expected
