@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.29.3, ?? ???? ????
+## Version 3.29.3, 18th August 2025
+
+"Get the Fly Out of the Ointment"
 
 ### General improvements
 
