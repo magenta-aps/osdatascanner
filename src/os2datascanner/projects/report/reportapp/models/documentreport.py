@@ -14,6 +14,7 @@ from os2datascanner.engine2.pipeline.messages import (
 )
 import structlog
 
+from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules.experimental.cpr import TurboCPRRule
 from os2datascanner.engine2.rules.experimental.health_rule import TurboHealthRule
@@ -38,6 +39,7 @@ RENDERABLE_RULES = (
     EmailHeaderRule.type_label,
     TurboHealthRule.type_label,
     PassportRule.type_label,
+    SBSYSDBRule.type_label,
 )
 
 
