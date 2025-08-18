@@ -22,6 +22,8 @@ from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
 
+from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
+
 from os2datascanner.engine2.conversions.types import OutputType
 
 
@@ -634,6 +636,34 @@ speciellæger.""",
             OutputType.ImageDimensions.value: None,
         })
         assert rhu[0]
+
+    @pytest.mark.parametrize("rule,db_row,matched", [
+        (SBSYSDBRule("Value0", "eq", 4), {"Value0": 5}, False),
+        (SBSYSDBRule("Value1", "neq", "dog"), {"Value1": "cat"}, True),
+        (SBSYSDBRule("Value2", "lt", 4), {"Value2": 4}, False),
+        (SBSYSDBRule("Value3", "lte", 4), {"Value3": 4}, True),
+        (SBSYSDBRule("Value4", "gt", 20), {"Value4": 19}, False),
+        (SBSYSDBRule("Value5", "gte", 20), {"Value5": 21}, True),
+        (SBSYSDBRule("Value6", "contains", "test"),
+         {"Value6": "valueTESTvalue"}, False),
+        (SBSYSDBRule("Value7", "icontains", "test"),
+         {"Value7": "valueTESTvalue"}, True),
+        (SBSYSDBRule("Value8", "in", ["alpha", "beta", "gamma", "delta"]),
+         {"Value8": "Gamma"}, False),
+        (SBSYSDBRule("Value9", "iin", ["alpha", "beta", "gamma", "delta"]),
+         {"Value9": "Gamma"}, True),
+        (SBSYSDBRule("Value10", "lt", "&Value11"),
+         {"Value10": 4, "Value11": 5}, True),
+        (SBSYSDBRule("Value12", "icontains", "&Value13"),
+         {"Value12": "cogwheel", "Value13": "lever"}, False),
+        (SBSYSDBRule("Value12", "icontains", "&Value13"),
+         {"Value12": "cogwheel", "Value13": "GWH"}, True),
+        (SBSYSDBRule("Value14", "eq", "\\&More Corporation"),
+         {"Value14": "&More Corporation"}, True),
+    ])
+    def test_dbrule(self, rule, db_row, matched):
+        conclusion, _ = rule.try_match({OutputType.DatabaseRow.value: db_row})
+        assert conclusion == matched
 
     @pytest.mark.parametrize("obj_limit,match_count", [
         (None, 15),
