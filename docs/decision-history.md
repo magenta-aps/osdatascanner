@@ -125,15 +125,6 @@ Do note that a number separated from the CPR-number by a symbol, such as a
 parenthesis, is not considered immediately before or after the CPR-number,
 the _symbol_ is.
 
-##### Surrounding mixed case words
-
-If the word immediately before or after the matched number is a word with 
-mixed case -- that is, a word which is not lowercase (`magenta`), uppercase 
-(`MAGENTA`). or capitalized (`Magenta`) -- the matched number is invalidated.
-
-This is because mixed case words indicate, that the string is randomly 
-generated, maybe part of an encrypted string or similar.
-
 ##### Surrounding words
 
 Similar to the `Blacklist` context check, this context check invalidates a 
@@ -165,6 +156,14 @@ reducing false positives, but several customers subsequently reported to us
 that these constraints were too rigid and were causing the scanner engine to
 overlook real (test) CPR numbers. We have accordingly removed them in newer
 releases.
+
+--
+
+Up to and including version 3.29.2, OSdatascanner would also skip over a CPR
+number candidate if it was adjacent to a mixed-case word, on the assumption
+that mixed-case words might indicate a procedurally generated string. Many
+ordinary names violate this assumption, however, so we have removed this
+constraint.
 
 #### Exceptions
 

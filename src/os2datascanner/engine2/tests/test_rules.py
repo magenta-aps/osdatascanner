@@ -81,10 +81,11 @@ Vejstrand Kommune, Børn- og Ungeforvaltningen. P-nummer: 2305000003
             whitelist=["whiteword"]
         ),
         """
-Vejstrand Kommune, Børn- og Ungeforvaltningen. WhiteWord 2205995008
-Vejstrand Kommune, Børn- og Ungeforvaltningen. NotAcceptedCase 2305000003
-Vejstrand Kommune, 240501-0006""",
-        ["2205XXXXXX", "2405XXXXXX"],
+Vejstrand Kommune, Børn- og Ungeforvaltningen. 2205995008 4444
+Vejstrand Kommune, Børn- og Ungeforvaltningen. whiteword 230500-0003 4444
+Vejstrand Kommune, Børn- og Ungeforvaltningen. Benjamin McDonald 240501-0006
+Vejstrand Kommune, 250501-1980""",
+        ["2305XXXXXX", "2405XXXXXX", "2505XXXXXX"],
     ),
     (
         CPRRule(
