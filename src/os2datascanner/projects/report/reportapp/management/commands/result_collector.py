@@ -127,7 +127,7 @@ def outlook_categorize_enabled(owner: str) -> bool:
                         ).filter(num_categories__gte=2).exists()
 
 
-def handle_metadata_message(scan_tag, result):  # noqa: CCR001, E501 too high cognitive complexity
+def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitive complexity
     message = messages.MetadataMessage.from_json_object(result)
     path = message.handle.crunch(hash=True)
     owner = owner_from_metadata(message)
@@ -259,14 +259,14 @@ def add_new_relations(aliases, new_objects, dr, tm):
             tm(documentreport_id=dr.pk, alias_id=alias.pk))
 
 
-def handle_match_message(scan_tag, result):
+def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cognitive complexity
     """When we receive a match message we do one of 3 things.
     1. If there are neither old or new matches, we simply ignore the message.
     2. If the message contains matches,
     we create or update a document report with all the received information.
     3. If we already have an unhandled document report for the scanned object,
     but the new message doesn't contain any matches, we update the scan time and withheld status.
-    Then we mark it as handled, if it doesn't stem from a last modified scan.
+    Then we mark it as handled, if the object is unchanged since last scan.
     """
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
 
