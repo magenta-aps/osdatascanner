@@ -1,5 +1,15 @@
 # Changelog
 
+## Version ???, ???
+
+""
+
+### New in this release
+
+- Grants can now be synchronized to the report module by checking a box in the grant form.
+  This frees the report module of manual Grant creation, though requires one-time manual 
+  correction if report module Grants already exist.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"
