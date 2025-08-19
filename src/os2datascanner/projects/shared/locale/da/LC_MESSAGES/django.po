@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-11 15:31+0200\n"
+"POT-Creation-Date: 2025-08-15 11:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,6 +88,26 @@ msgstr "Tak fordi du brugte vores side!"
 #: templates/components/feedback/password_reset_email.html
 msgid "Regards, the OSdatascanner team."
 msgstr "Mvh. OSdatascanner teamet."
+
+#: templates/django/forms/widgets/clearable_file_input.html
+msgid "browse"
+msgstr "gennemse"
+
+#: templates/django/forms/widgets/clearable_file_input.html
+msgid "remove file"
+msgstr "fjern fil"
+
+#: templates/django/forms/widgets/clearable_file_input.html
+msgid "Click here to remove the previously saved file."
+msgstr "Klik her for at fjerne den tidligere gemte fil."
+
+#: templates/django/forms/widgets/clearable_file_input.html
+msgid "no file chosen"
+msgstr "ingen fil valgt"
+
+#: templates/django/forms/widgets/clearable_file_input.html
+msgid "remove selected file"
+msgstr "fjern den valgte fil"
 
 #, python-format
 #~ msgid "(Hidden field %(name)s) %(error)s"
