@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from os2datascanner.projects.admin.organizations.models import broadcasted_mixin
@@ -36,6 +38,22 @@ def enqueued_events(monkeypatch):
     return enqueued_messages
 
 
+@pytest.fixture
+def fixed_time(monkeypatch):
+    fixed_dt = datetime.datetime(2025, 8, 19, 12, 0, 0)
+
+    def fake_time_now():
+        return fixed_dt
+
+    # Patch where BulkBroadcastEvent looks for it
+    monkeypatch.setattr(
+        "os2datascanner.projects.admin.organizations.broadcast_bulk_events.time_now",
+        fake_time_now
+    )
+
+    return fixed_dt
+
+
 @pytest.mark.django_db
 class TestSynchronizeGrants:
 
@@ -71,7 +89,7 @@ class TestSynchronizeGrants:
         assert google_api_grant.grant_extra
         assert google_api_grant.grant_extra.should_broadcast is False
 
-    def test_changing_should_broadcast_false_to_true(self, smb_grant, enqueued_events):
+    def test_changing_should_broadcast_false_to_true(self, smb_grant, enqueued_events, fixed_time):
         gextra = smb_grant.grant_extra
         gextra.should_broadcast = True
         gextra.save()
@@ -80,7 +98,7 @@ class TestSynchronizeGrants:
         assert enqueued_events[0][0].to_json_object() == BulkCreateEvent(
             get_broadcastable_dict(smb_grant.__class__, smb_grant)).to_json_object()
 
-    def test_changing_should_broadcast_true_to_false(self, smb_grant, enqueued_events):
+    def test_changing_should_broadcast_true_to_false(self, smb_grant, enqueued_events, fixed_time):
         gextra = smb_grant.grant_extra
         gextra.should_broadcast = True
         gextra.save()
@@ -101,7 +119,7 @@ class TestSynchronizeGrants:
 
         assert len(enqueued_events) == 0
 
-    def test_saving_grant_with_should_broadcast_true(self, smb_grant, enqueued_events):
+    def test_saving_grant_with_should_broadcast_true(self, smb_grant, enqueued_events, fixed_time):
         gextra = smb_grant.grant_extra
         gextra.should_broadcast = True
         gextra.save()
