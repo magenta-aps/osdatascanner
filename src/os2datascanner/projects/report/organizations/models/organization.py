@@ -18,7 +18,7 @@ from os2datascanner.core_organizational_structure.models import \
     OrganizationSerializer as Core_OrganizationSerializer
 from os2datascanner.core_organizational_structure.models import OutlookCategorizeChoices
 
-from ..seralizer import BaseBulkSerializer
+from os2datascanner.core_organizational_structure.serializer import BaseBulkSerializer
 
 
 class OrganizationManager(models.Manager):

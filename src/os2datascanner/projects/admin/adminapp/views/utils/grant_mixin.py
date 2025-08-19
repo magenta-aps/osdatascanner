@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth import PermissionDenied
 from utilities import UserWrapper
+from os2datascanner.projects.admin.organizations.models.grant_extra import (GrantExtra,
+                                                                            GrantExtraForm)
 
 
 def grant_permission_map(field_name: str) -> str:
@@ -83,7 +85,7 @@ class GrantMixin:
             if grant_form.is_valid():
                 grant = grant_form.save()
                 scanner_form.data = scanner_form.data.copy()
-                scanner_form.data[field_name] = grant.id
+                scanner_form.data[field_name] = grant.pk
 
                 grant_field = scanner_form[field_name]
                 response.write(
@@ -91,7 +93,7 @@ class GrantMixin:
                         "components/scanner/scanner_form_select_option_field.html",
                         {
                             "field": grant_field,
-                            "selected_value": grant.id,
+                            "selected_value": grant.pk,
                         },
                         request=request
                     )
@@ -103,3 +105,30 @@ class GrantMixin:
             return self.render_to_response(context)
 
         return super().post(request, *args, **kwargs)
+
+
+class GrantExtraMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        grant = getattr(self, 'object', None)
+        if grant:
+            grant_extra, _ = GrantExtra.objects.get_or_create(grant=grant)
+        else:
+            grant_extra = GrantExtra()
+
+        context["extra_form"] = GrantExtraForm(self.request.POST or None, instance=grant_extra)
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        grant_extra, _ = GrantExtra.objects.get_or_create(grant=self.object)
+        extra_form = GrantExtraForm(self.request.POST, instance=grant_extra)
+
+        if extra_form.is_valid():
+            extra_form.save()
+        else:
+            return self.form_invalid(form)
+
+        return response

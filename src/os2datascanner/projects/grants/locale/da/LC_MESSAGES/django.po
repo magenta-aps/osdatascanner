@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 13:53+0200\n"
+"POT-Creation-Date: 2025-08-14 09:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,6 +70,10 @@ msgid "Invalid service account"
 msgstr "Ugyldig service account"
 
 #: models/grant.py
+msgid "UUID"
+msgstr "UUID"
+
+#: models/grant.py
 msgid "Organization"
 msgstr "Organisation"
 
@@ -89,6 +93,10 @@ msgstr "brugernavn"
 msgid "password (encrypted)"
 msgstr "kodeord (krypteret)"
 
+#: models/grant.py
+msgid "A grant using this username already exists."
+msgstr "En bevilling med dette brugernavn eksisterer allerede."
+
 #: models/graphgrant.py
 msgid "app ID"
 msgstr "app ID"
@@ -105,175 +113,10 @@ msgstr "udløbsdato"
 msgid "client secret"
 msgstr "client secret"
 
-#: templates/grants/ewsgrant_update.html
-msgid ""
-"\n"
-"            An EWS Service Account grant represents a service account with "
-"impersonation access to a\n"
-"            traditional on-premises Microsoft Exchange instance.\n"
-"\n"
-"            Note that EWSGrants can no longer be used to authenticate "
-"against Office\n"
-"            365, but an appropriately configured GraphGrant can.\n"
-"      "
-msgstr ""
-"\n"
-"            En EWS Service Account bevilling repræsenterer en service "
-"account med efterligningsadgang til en\n"
-"            traditionel on-premises Microsoft Exchange instans.\n"
-"\n"
-"            Bemærk at en EWS bevilling ikke længere kan benyttes til "
-"autentificering mod Office 365, \n"
-"           men en korrekt konfigureret Graph bevilling kan.\n"
-"      "
+#: models/graphgrant.py
+msgid "A grant for this tenant already exists."
+msgstr "En bevilling for denne tenant eksisterer allerede."
 
-#: templates/grants/googleapigrant_update.html
-msgid ""
-"A Google API Grant represents a service account with access to your Google "
-"domain, which will allow OSdatascanner to access the permitted resources in "
-"your Google domain. You can control what resources the service account can "
-"access from the Google Admin panel."
-msgstr ""
-"En Google API bevilling repræsenterer en service account med adgang til din "
-"Google domæne, hvilket vil tillade OSdatascanner at tilgå de tilladte "
-"ressourcer i dit Google domæne. Du kan kontrollere hvilke ressourcer service "
-"accounten kan tilgå fra Google Admin panelet."
-
-#: templates/grants/grant_start.html
-msgid "Configure Microsoft Graph"
-msgstr "Konfigurér Microsoft Graph"
-
-#: templates/grants/grant_start.html
-msgid ""
-"To use this service, you must allow OSdatascanner access to its content."
-msgstr ""
-"For at benytte denne tjeneste skal du tillade OSdatascanner adgang til "
-"tjenestens indhold."
-
-#: templates/grants/grant_start.html
-msgid "The service refused to grant OSdatascanner the necessary rights:"
-msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
-
-#: templates/grants/grant_start.html
-msgid "Click the button below to try again."
-msgstr "Klik på knappen nedenfor for at prøve igen."
-
-#: templates/grants/grant_start.html
-msgid "Click the button below to forward to this service."
-msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
-
-#: templates/grants/grant_start.html
-msgid "Continue to"
-msgstr "Fortsæt til"
-
-#: templates/grants/grant_start.html
-msgid ""
-"You will be forwarded to the creation form after the service has issued the "
-"necessary rights."
-msgstr ""
-"Du bliver videresendt til oprettelsesformularen, efter tjenesten har udstedt "
-"de nødvendige rettigheder."
-
-#: templates/grants/grant_start.html
-msgid ""
-"The information pointing to the OSdatascanner system for this service is "
-"missing."
-msgstr ""
-"De informationer, der peger OSdatascanner-systemet på denne tjeneste, "
-"mangler."
-
-#: templates/grants/grant_update.html
-msgid "edit grant"
-msgstr "redigér bevillinger"
-
-#: templates/grants/grant_update.html
-msgid "create grant"
-msgstr "opret bevilling"
-
-#: templates/grants/grant_update.html
-#: templates/grants/grant_update_partial.html
-msgid "step 7 and 8 here"
-msgstr "trin 7 og 8 her"
-
-#: templates/grants/grant_update.html
-#: templates/grants/grant_update_partial.html
-msgid "save Grant"
-msgstr "gem bevilling"
-
-#: templates/grants/graphgrant_update.html
-msgid "fetch expiry date"
-msgstr "hent udløbsdato"
-
-#: templates/grants/graphgrant_update.html
-msgid ""
-"\n"
-"        A GraphGrant represents an entitlement to use the Microsoft Graph "
-"API\n"
-"          to explore the resources associated with a particular tenant.\n"
-"\n"
-"        Note that the specific permissions associated with this entitlement "
-"are\n"
-"        not specified here, but in the OSdatascanner application "
-"registration in\n"
-"        Microsoft's portal.\n"
-"      "
-msgstr ""
-"\n"
-"        En Graph bevilling repræsenterer en berettigelse til at benytte "
-"Microsoft Graph API'et\n"
-"          til at udforske ressourcer tilknyttet en specifik tenant.\n"
-"\n"
-"        Bemærk at de specifikke tilladelser tilknyttet denne berettigelse "
-"ikke\n"
-"        er specificeret her, men i OSdatascanner applikation registreringen "
-"i\n"
-"        Microsoft's portal.\n"
-"      "
-
-#: templates/grants/smbgrant_update.html
-msgid ""
-"\n"
-"        An SMB Service Account grant represents a service account with "
-"access to a\n"
-"          Windows domain, and thereby an entitlement for OSdatascanner\n"
-"          to access and scan that domain.\n"
-"      "
-msgstr ""
-"\n"
-"        En SMB Service Account bevilling repræsenterer en service konto med "
-"adgang til et \n"
-"          Windows domæne, og derved en berettigelse for OSdatascanner \n"
-"          til at tilgå og scanne dette domæne. \n"
-"      "
-
-#: views/googleapi_views.py
-msgid "Service Account JSON File"
-msgstr "Service Account JSON Fil"
-
-#: views/googleapi_views.py
-msgid ""
-"To create a service account follow the segments about service accounts <a "
-"href='https://developers.google.com/workspace/guides/create-credentials'> in "
-"this guide</a>. Make sure to grant it domain wide delegation."
-msgstr ""
-"For at oprette en service account, følg segmenterne om service accounts <a "
-"href='https://developers.google.com/workspace/guides/create-credentials'> i "
-"denne guide</a>. Sørg for at give den 'domain wide delegation'."
-
-#: views/msgraph_views.py
-msgid "Client secret"
-msgstr "Client secret"
-
-#: views/msgraph_views.py
-msgid ""
-"To acquire a new client secret, navigate to your Azure Portal and find the "
-"application created for OSdatascanner. Once you've found your application, "
-"you can follow the instructions in "
-msgstr ""
-"For at erhverve en client secret, skal du navigere til Azure Portal og finde "
-"applikationen oprettet for OSdatascanner. Når du har fundet applikationen, "
-"kan du følge instruktionerne i  "
-
-#: views/msgraph_views.py
-msgid "Expiry date"
-msgstr "Udløbsdato"
+#: models/smbgrant.py
+msgid "A grant using this username and domain already exists."
+msgstr "En bevilling med dette brugernavn og domæne eksisterer allerede."

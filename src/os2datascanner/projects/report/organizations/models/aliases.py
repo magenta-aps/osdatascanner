@@ -27,7 +27,7 @@ from os2datascanner.core_organizational_structure.models import \
 from os2datascanner.core_organizational_structure.models.aliases import AliasType, \
     validate_regex_SID  # noqa
 
-from ..seralizer import BaseBulkSerializer
+from os2datascanner.core_organizational_structure.serializer import BaseBulkSerializer
 
 logger = structlog.get_logger("report_organizations")
 

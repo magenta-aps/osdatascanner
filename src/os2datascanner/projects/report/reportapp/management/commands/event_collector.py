@@ -21,6 +21,7 @@ from django.core.management.base import BaseCommand
 from django.db.transaction import TransactionManagementError
 from rest_framework.serializers import ValidationError
 from os2datascanner.utils import debug
+from os2datascanner.projects.grants.models import SMBGrant, EWSGrant, GoogleApiGrant, GraphGrant
 from os2datascanner.core_organizational_structure.utils import get_serializer
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.projects.report.organizations.models import (Account, Alias, Organization,
@@ -35,7 +36,8 @@ SUMMARY = Summary("os2datascanner_event_collector_report",
 
 # OBS: Must be updated if new org-structure models are added,
 # or if the order of which creation/deletion is possible changes.
-ORDER_OF_CREATION = (Organization, OrganizationalUnit, Account, Alias, Position)
+ORDER_OF_CREATION = (Organization, OrganizationalUnit, Account, Alias, Position, SMBGrant, EWSGrant,
+                     GraphGrant, GoogleApiGrant)
 ORDER_OF_DELETION = list(reversed(ORDER_OF_CREATION))
 
 

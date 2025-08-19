@@ -13,7 +13,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
-from os2datascanner.projects.grants.views import MSGraphGrantRequestView
+from os2datascanner.projects.admin.organizations.views import MSGraphGrantRequestView
 from os2datascanner.projects.admin.organizations.models import Organization
 from ..models.msgraph_configuration import MSGraphConfiguration
 from os2datascanner.projects.admin.import_services.utils import start_msgraph_import

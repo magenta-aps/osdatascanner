@@ -16,7 +16,7 @@ from rest_framework.fields import UUIDField
 from os2datascanner.core_organizational_structure.models import Position as Core_Position
 from os2datascanner.core_organizational_structure.models import \
     PositionSerializer as Core_PositionSerializer
-from ..seralizer import BaseBulkSerializer
+from os2datascanner.core_organizational_structure.serializer import BaseBulkSerializer
 
 
 class Position(Core_Position):

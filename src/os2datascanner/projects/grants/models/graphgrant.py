@@ -1,8 +1,13 @@
 from uuid import uuid4
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.engine2.model.msgraph.utilities import make_token
-from .grant import Grant, wrap_encrypted_field
+from rest_framework import serializers
+from rest_framework.fields import UUIDField
+from .grant import Grant, wrap_encrypted_field, LazyOrganizationRelatedField
+from os2datascanner.core_organizational_structure.serializer import BaseSerializer
+from .serializer import BaseGrantBulkSerializer
 
 
 class GraphGrant(Grant):
@@ -48,10 +53,39 @@ class GraphGrant(Grant):
     def __str__(self):
         return f"Microsoft Graph access to tenant {self.tenant_id}"
 
+    def clean(self):
+        super().clean()
+        # Since we're using multi table inheritance, it is not possible to use database level
+        # constraints on f.e. tenant_id+organization (they reside in different tables).
+        if self.tenant_id:
+            if GraphGrant.objects.filter(tenant_id=self.tenant_id,
+                                         organization=self.organization,
+                                         ).exclude(pk=self.pk).exists():
+                raise ValidationError(_("A grant for this tenant already exists."))
+
     class Meta:
         verbose_name = "Microsoft Graph"
-        constraints = [
-            models.UniqueConstraint(
-                    fields=["organization", "tenant_id"],
-                    name="avoid_multiple_overlapping_grants")
-        ]
+
+
+class GraphGrantBulkSerializer(BaseGrantBulkSerializer):
+    class Meta:
+        model = GraphGrant
+
+
+class GraphGrantSerializer(BaseSerializer):
+    # This is a bit confusing, but there's some difference in UUID and PK interpretations and
+    # when what is available. Here we're just explicitly setting "pk" to be the value of UUID.
+    pk = serializers.UUIDField(read_only=False, format="hex_verbose", source="uuid")
+    organization = LazyOrganizationRelatedField(
+        required=True,
+        allow_null=False,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+
+    class Meta:
+        model = GraphGrant
+        fields = ["pk", "organization", "app_id", "tenant_id", "expiry_date", "_client_secret"]
+        list_serializer_class = GraphGrantBulkSerializer
+
+
+GraphGrant.serializer_class = GraphGrantSerializer

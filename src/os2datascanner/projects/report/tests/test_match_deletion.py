@@ -49,25 +49,21 @@ def graph_grant_without_secret(*, olsenbanden_organization):
 
 @pytest.fixture
 def graph_grant_with_secret(
-        *, graph_grant_without_secret):
-    grant = graph_grant_without_secret
-    grant.pk = None
-    grant.tenant_id = uuid.uuid4()
-    grant.client_secret = (
-            "FAEHOVEDERGROEDBOENDERHAENGEROEVEIGNORANTERJAMMERKOMMODER")
-    grant.save()
-    return grant
+        *, olsenbanden_organization):
+    return GraphGrant.objects.create(
+            organization=olsenbanden_organization,
+            tenant_id=uuid.uuid4(), app_id=uuid.uuid4(),
+            client_secret="FAEHOVEDERGROEDBOENDERHAENGEROEVEIGNORANTERJAMMERKOMMODER")
 
 
 @pytest.fixture
 def another_graph_grant_with_secret(
-        *, graph_grant_with_secret):
-    grant = graph_grant_with_secret
-    grant.pk = None
-    grant.tenant_id = uuid.uuid4()
-    grant.client_secret = "61CU5_Y[]3Dk`tVsCLxITX7e"
-    grant.save()
-    return grant
+        *, olsenbanden_organization):
+
+    return GraphGrant.objects.create(
+            organization=olsenbanden_organization,
+            tenant_id=uuid.uuid4(), app_id=uuid.uuid4(),
+            client_secret="61CU5_Y[]3Dk`tVsCLxITX7e")
 
 
 @pytest.mark.django_db

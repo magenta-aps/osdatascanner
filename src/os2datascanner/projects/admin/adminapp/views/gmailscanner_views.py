@@ -12,7 +12,7 @@
 # sector open source network <https://os2.eu/>.
 #
 from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantMixin
-from os2datascanner.projects.grants.views.googleapi_views import GoogleApiScannerForm
+from os2datascanner.projects.admin.organizations.views import GoogleApiScannerForm
 from ..models.scannerjobs.gmail import GmailScanner
 from .scanner_views import (
     ScannerBase,

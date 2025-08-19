@@ -2,8 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
 
-from ..admin import EWSGrantAdminForm
-from ..models.ewsgrant import EWSGrant
+from os2datascanner.projects.grants.admin import EWSGrantAdminForm
+from os2datascanner.projects.grants.models.ewsgrant import EWSGrant
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
 
 
 class EWSGrantForm(EWSGrantAdminForm):
@@ -22,7 +23,7 @@ class EWSGrantScannerForm(EWSGrantAdminForm):
         fields = ('__all__')
 
 
-class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, CreateView):
     model = EWSGrant
     form_class = EWSGrantForm
     permission_required = "grants.add_ewsgrant"
@@ -33,7 +34,7 @@ class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView
         return {"organization": self.kwargs.get('org')}
 
 
-class EWSGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+class EWSGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, UpdateView):
     model = EWSGrant
     form_class = EWSGrantForm
     permission_required = "grants.change_ewsgrant"

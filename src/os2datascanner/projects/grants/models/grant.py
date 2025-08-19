@@ -1,7 +1,14 @@
+from uuid import uuid4
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from model_utils.managers import InheritanceManager
 from os2datascanner.projects.utils import aes
+from rest_framework import serializers
 
 
 class Grant(models.Model):
@@ -11,6 +18,15 @@ class Grant(models.Model):
     Grants exist to allow a separation between the roles of the organisational
     administrator, who can delegate functions to OS2datascanner, and the
     OS2datascanner administrator, who does not necessarily have that power."""
+
+    objects = InheritanceManager()
+
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid4,
+        editable=False,
+        verbose_name=_('UUID'),
+    )
 
     organization = models.ForeignKey(
             'organizations.Organization',
@@ -43,7 +59,23 @@ class Grant(models.Model):
         return _("Not known")
 
     class Meta:
-        abstract = True
+        abstract = False
+
+    @receiver(post_save)
+    def post_save_grant_extra(sender, instance, *args, **kwargs):
+        if not isinstance(instance, Grant):
+            # This is not a grant. Exit
+            return
+
+        # This tells us if we are in the admin or report module.
+        # GrantExtra does not exist in the report module.
+        if hasattr(Grant, "grant_extra"):
+            # We are in the admin module
+            from os2datascanner.projects.admin.organizations.models import GrantExtra
+            grant_extra, created = GrantExtra.objects.get_or_create(grant_id=instance.uuid)
+            if not created:
+                # If we didn't just create a GrantExtra, we should save it, to trigger its signal.
+                instance.grant_extra.save()
 
 
 def wrap_encrypted_field(field_name: str):
@@ -72,13 +104,24 @@ class UsernamePasswordGrant(Grant):
     _password = models.JSONField(verbose_name=_("password (encrypted)"))
     password = wrap_encrypted_field("_password")
 
+    def clean(self):
+        super().clean()
+        # Since we're using multi table inheritance, it is not possible to use database level
+        # constraints on f.e. username+organization (they reside in different tables).
+        if self.username:
+            # We're in an abstract class and want the manager of whatever inheriting class.
+            if type(self).objects.filter(username=self.username,
+                                         organization=self.organization,
+                                         ).exclude(pk=self.pk).exists():
+                raise ValidationError(_("A grant using this username already exists."))
+
     class Meta:
         abstract = True
 
-        constraints = [
-            # It'll never make sense for one organization to define two Grants
-            # with the same model type and username but different passwords!
-            models.UniqueConstraint(
-                    fields=["organization", "username"],
-                    name="%(app_label)s_%(class)s_unique")
-        ]
+
+class LazyOrganizationRelatedField(serializers.PrimaryKeyRelatedField):
+    # For grant serializers, we need a way to grab organization project-independent, such that
+    # the primary key (UUID) can be converted to something serializable.
+    def get_queryset(self):
+        from django.apps import apps
+        return apps.get_model('organizations', 'Organization').objects.all()

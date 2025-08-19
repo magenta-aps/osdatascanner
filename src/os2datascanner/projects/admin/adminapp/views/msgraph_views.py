@@ -21,8 +21,8 @@ from rest_framework.generics import ListAPIView
 
 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource, make_token
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
-from os2datascanner.projects.grants.views import MSGraphGrantRequestView
-from os2datascanner.projects.grants.views.msgraph_views import MSGraphGrantScannerForm
+from os2datascanner.projects.admin.organizations.views import MSGraphGrantRequestView
+from os2datascanner.projects.admin.organizations.views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
 from ..models.scannerjobs.msgraph import MSGraphMailScanner

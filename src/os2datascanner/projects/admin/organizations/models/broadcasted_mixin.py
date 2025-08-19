@@ -15,6 +15,8 @@ from abc import ABC
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from os2datascanner.utils.test_helpers import in_test_environment
+
+from os2datascanner.projects.grants.models import Grant
 from ..broadcast_bulk_events import BulkCreateEvent, BulkUpdateEvent, BulkDeleteEvent
 from ..publish import publish_events
 
@@ -26,6 +28,15 @@ class Broadcasted(ABC):  # noqa
     """Virtual superclass for objects for which changes should be broadcasted.
     (Register classes as virtual subclasses using the Broadcasted.register
     decorator.)"""
+
+
+def get_broadcastable_dict(sender, instance, delete=False):
+    if delete:
+        return {sender.__name__: [str(instance.pk)]}
+    else:
+        serializer = get_serializer(sender)
+        serialized_data = serializer(instance).data
+        return {sender.__name__: [serialized_data]}
 
 
 # TODO: change to avoid using save/delete-signals as they are not called on bulk actions
@@ -41,12 +52,32 @@ def post_save_broadcast(sender, instance, created, **kwargs):
             or type(instance).__module__ == "__fake__"
             or suppress_django_signals):
         return
-    serializer = get_serializer(sender)
-    serialized_data = serializer(instance).data
-    broadcastable_dict = {sender.__name__: [serialized_data]}
+
+    # Special case for GrantExtra: GrantExtra does not exist in the report module, but Grant and
+    # subclasses of Grant do -- these are what we _actually_ want to synchronize here!
+    from os2datascanner.projects.admin.organizations.models.grant_extra import GrantExtra
+    if isinstance(instance, GrantExtra):
+        # The sender is GrantExtra. Let's check if the grant should be synchronized or deleted
+        should_broadcast = instance.should_broadcast
+        pre_should_broadcast = instance.previous_should_broadcast
+        if not should_broadcast and not pre_should_broadcast:
+            # Do nothing.
+            return
+        # Then we replace the instance with the Grant-object
+        instance = Grant.objects.get_subclass(pk=instance.grant.pk)
+        sender = instance.__class__
+        created = should_broadcast and not pre_should_broadcast
+        broadcastable_dict = get_broadcastable_dict(sender, instance, delete=not should_broadcast)
+    else:
+        should_broadcast = None  # Because we're not dealing with a GrantExtra
+        broadcastable_dict = get_broadcastable_dict(sender, instance)
 
     if created:
         event = BulkCreateEvent(broadcastable_dict)
+    # It's important to distinguish between False and None here. (I.e. do not use "not")
+    elif should_broadcast is False:
+        # Special case for deleting existing grants
+        event = BulkDeleteEvent(broadcastable_dict)
     else:
         event = BulkUpdateEvent(broadcastable_dict)
 
@@ -60,9 +91,7 @@ def account_permissions_changed(sender, instance, action, *args, **kwargs):
     a post-save, so we have to do it here as well."""
     if not sender.__name__ == "Account_permissions" or action not in ["post_add", "post_remove"]:
         return
-    serializer = get_serializer(instance.__class__)
-    serialized_data = serializer(instance).data
-    broadcastable_dict = {instance.__class__.__name__: [serialized_data]}
+    broadcastable_dict = get_broadcastable_dict(sender, instance)
 
     event = BulkUpdateEvent(broadcastable_dict)
 
@@ -77,6 +106,6 @@ def post_delete_broadcast(sender, instance, **kwargs):
             or suppress_django_signals):
         return
 
-    broadcastable_dict = {sender.__name__: [str(instance.pk)]}
+    broadcastable_dict = get_broadcastable_dict(sender, instance, delete=True)
     event = BulkDeleteEvent(broadcastable_dict)
     publish_events([event])

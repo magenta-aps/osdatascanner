@@ -3,8 +3,9 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView, CreateView
 from django import forms
-from ..models.googleapigrant import GoogleApiGrant
-from ..admin import AutoEncryptedFileField
+from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
+from os2datascanner.projects.grants.admin import AutoEncryptedFileField
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
 
 
 class GoogleApiGrantForm(forms.ModelForm):
@@ -49,7 +50,11 @@ class GoogleApiScannerForm(GoogleApiGrantForm):
         self.fields["_service_account"].initial = ""
 
 
-class GoogleApiGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+class GoogleApiGrantCreateView(
+        PermissionRequiredMixin,
+        LoginRequiredMixin,
+        GrantExtraMixin,
+        CreateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
     permission_required = "grants.add_googleapigrant"
@@ -62,7 +67,11 @@ class GoogleApiGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, Crea
         }
 
 
-class GoogleApiGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+class GoogleApiGrantUpdateView(
+        PermissionRequiredMixin,
+        LoginRequiredMixin,
+        GrantExtraMixin,
+        UpdateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
     permission_required = "grants.change_googleapigrant"

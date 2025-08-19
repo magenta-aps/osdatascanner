@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-31 14:15+0200\n"
+"POT-Creation-Date: 2025-08-15 15:39+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3550,22 +3550,27 @@ msgstr ""
 "tillade OSdatascanner adgang til dens indhold."
 
 #: import_services/templates/import_services/msgraph_oauth.html
+#: organizations/templates/grants/grant_start.html
 msgid "The service refused to grant OSdatascanner the necessary rights:"
 msgstr "Tjenesten nægtede at give OSdatascanner de nødvendige rettigheder:"
 
 #: import_services/templates/import_services/msgraph_oauth.html
+#: organizations/templates/grants/grant_start.html
 msgid "Click the button below to try again."
 msgstr "Klik på knappen nedenfor for at prøve igen."
 
 #: import_services/templates/import_services/msgraph_oauth.html
+#: organizations/templates/grants/grant_start.html
 msgid "Click the button below to forward to this service."
 msgstr "Klik på knappen nedenfor for at blive videresendt til denne tjeneste."
 
 #: import_services/templates/import_services/msgraph_oauth.html
+#: organizations/templates/grants/grant_start.html
 msgid "Continue to"
 msgstr "Fortsæt til"
 
 #: import_services/templates/import_services/msgraph_oauth.html
+#: organizations/templates/grants/grant_start.html
 msgid ""
 "You will be forwarded to the creation form after the service has issued the "
 "necessary rights."
@@ -3574,6 +3579,7 @@ msgstr ""
 "de nødvendige rettigheder."
 
 #: import_services/templates/import_services/msgraph_oauth.html
+#: organizations/templates/grants/grant_start.html
 msgid ""
 "The information pointing to the OSdatascanner system for this service is "
 "missing."
@@ -3649,6 +3655,14 @@ msgid ""
 "Can grant and take away permissions to and from users in the report module"
 msgstr ""
 
+#: organizations/models/grant_extra.py
+msgid "Grant Extra"
+msgstr "Grant Ekstra"
+
+#: organizations/models/grant_extra.py
+msgid "Synchronize to report module"
+msgstr "Synkronisér til rapportmodulet"
+
 #: organizations/models/organization.py
 msgid "slug"
 msgstr "slug"
@@ -3696,6 +3710,88 @@ msgstr "Gem alias og luk"
 #: organizations/templates/components/uni_dpo_dropdown.html
 msgid "Add universal DPO"
 msgstr "Tilføj universel DPO"
+
+#: organizations/templates/grants/ewsgrant_update.html
+msgid ""
+"An EWS Service Account grant represents a service account with impersonation "
+"access to a traditional on-premises Microsoft Exchange instance. Note that "
+"EWSGrants can no longer be used to authenticate against Office 365, but an "
+"appropriately configured GraphGrant can."
+msgstr ""
+"En EWS Service Account bevilling repræsenterer en service account med "
+"efterligningsadgang til en traditionel on-premises Microsoft Exchange instans. "
+"Bemærk at en EWS bevilling ikke længere kan benyttes til autentificering mod Office 365, "
+"men en korrekt konfigureret Graph bevilling kan."
+
+#: organizations/templates/grants/googleapigrant_update.html
+msgid ""
+"A Google API Grant represents a service account with access to your Google "
+"domain, which will allow OSdatascanner to access the permitted resources in "
+"your Google domain. You can control what resources the service account can "
+"access from the Google Admin panel."
+msgstr ""
+"En Google API bevilling repræsenterer en service account med adgang til din "
+"Google domæne, hvilket vil tillade OSdatascanner at tilgå de tilladte "
+"ressourcer i dit Google domæne. Du kan kontrollere hvilke ressourcer service "
+"accounten kan tilgå fra Google Admin panelet."
+
+#: organizations/templates/grants/grant_start.html
+msgid "Configure Microsoft Graph"
+msgstr "Konfigurér Microsoft Graph"
+
+#: organizations/templates/grants/grant_start.html
+msgid ""
+"To use this service, you must allow OSdatascanner access to its content."
+msgstr ""
+"For at benytte denne tjeneste skal du give OSdatascanner lov til at tilgå "
+"dens indhold."
+
+#: organizations/templates/grants/grant_update.html
+#: organizations/templates/organizations/grants_list.html
+msgid "edit grant"
+msgstr "redigér bevillinger"
+
+#: organizations/templates/grants/grant_update.html
+msgid "create grant"
+msgstr "opret bevilling"
+
+#: organizations/templates/grants/grant_update.html
+#: organizations/templates/grants/grant_update_partial.html
+msgid "step 7 and 8 here"
+msgstr "trin 7 og 8 her"
+
+#: organizations/templates/grants/grant_update.html
+#: organizations/templates/grants/grant_update_partial.html
+msgid "save Grant"
+msgstr "gem bevilling"
+
+#: organizations/templates/grants/graphgrant_update.html
+msgid "fetch expiry date"
+msgstr "hent udløbsdato"
+
+#: organizations/templates/grants/graphgrant_update.html
+msgid ""
+"A GraphGrant represents an entitlement to use the Microsoft Graph API to "
+"explore the resources associated with a particular tenant. Note that the "
+"specific permissions associated with this entitlement are not specified "
+"here, but in the OSdatascanner application registration in Microsoft's "
+"portal."
+msgstr ""
+"En Graph bevilling repræsenterer en tilladelse til at benytte Microsoft "
+"Graph API'et til at udforske ressourcer tilknyttet en bestemt 'tenant'. "
+"Bemærk at de specifikke tilladelser associeret med denne bevilling ikke er "
+"specificerede her, men i OSdatascanner applikationens registrering i "
+"Microsofts portal."
+
+#: organizations/templates/grants/smbgrant_update.html
+msgid ""
+"An SMB Service Account grant represents a service account with access to a "
+"Windows domain, and thereby an entitlement for OSdatascanner to access and "
+"scan that domain."
+msgstr ""
+"En SMB Service Account bevilling repræsenterer en servicekonto med adgang "
+"til et Windowsdomæne og dermed tilladelse til OSdatascanner til at tilgå og "
+"scanne domænet."
 
 #: organizations/templates/organizations/account_detail.html
 msgid "Account"
@@ -3890,10 +3986,6 @@ msgstr "type"
 #: organizations/templates/organizations/grants_list.html
 msgid "expiry date"
 msgstr "udløbsdato"
-
-#: organizations/templates/organizations/grants_list.html
-msgid "edit grant"
-msgstr "redigér bevillinger"
 
 #: organizations/templates/organizations/grants_list.html
 msgid "no grants found"
@@ -4229,6 +4321,21 @@ msgstr "Vælg ny leder"
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
 
+#: organizations/views/googleapi_views.py
+msgid "Service Account JSON File"
+msgstr "Servicekonto JSON-fil"
+
+#: organizations/views/googleapi_views.py
+msgid ""
+"To create a service account follow the segments about service accounts <a "
+"href='https://developers.google.com/workspace/guides/create-credentials'> in "
+"this guide</a>. Make sure to grant it domain wide delegation."
+msgstr ""
+"For at oprette en servicekonto følges afsnittene om servicekonti <a "
+"href='https://developers.google.com/workspace/guides/create-credentials'> i "
+"denne vejledning</a>. Vær sikker på at kontoen tildeles 'domain wide "
+"delegation'."
+
 #: organizations/views/keycloak_sso_views.py
 msgid "OSdatascanner user attribute"
 msgstr "OSdatascanner bruger attribut"
@@ -4236,6 +4343,24 @@ msgstr "OSdatascanner bruger attribut"
 #: organizations/views/keycloak_sso_views.py
 msgid "Claim attribute"
 msgstr "Claim attribut"
+
+#: organizations/views/msgraph_views.py
+msgid "Client secret"
+msgstr "Client secret"
+
+#: organizations/views/msgraph_views.py
+msgid ""
+"To acquire a new client secret, navigate to your Azure Portal and find the "
+"application created for OSdatascanner. Once you've found your application, "
+"you can follow the instructions in "
+msgstr ""
+"For at få en ny 'client secret' navigerer man til Azure-portalen og finder "
+"applikationen, som er oprettet til OSdatascanner. Derefter følges "
+"instruktionerne i "
+
+#: organizations/views/msgraph_views.py
+msgid "Expiry date"
+msgstr "Udløbsdato"
 
 #: organizations/views/org_views.py
 msgid "That name is already taken."

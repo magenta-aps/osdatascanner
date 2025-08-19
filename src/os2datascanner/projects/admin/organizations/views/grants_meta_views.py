@@ -1,13 +1,13 @@
-from itertools import chain
+from functools import reduce
+from operator import or_, and_
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionDenied
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views import View
 
-
 from os2datascanner.projects.admin.organizations.models import Organization
-from os2datascanner.projects.grants.models import GraphGrant, SMBGrant, EWSGrant
+from os2datascanner.projects.grants.models import Grant, GraphGrant, SMBGrant, EWSGrant
 
 from os2datascanner.projects.admin.adminapp.views.views import RestrictedListView
 from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
@@ -19,33 +19,43 @@ class GrantListView(RestrictedListView):
     context_object_name = "organizations"
 
     def get_queryset(self):
-        gg_perm = self.request.user.has_perm("grants.view_graphgrant")
-        sg_perm = self.request.user.has_perm("grants.view_smbgrant")
-        eg_perm = self.request.user.has_perm("grants.view_ewsgrant")
-        gag_perm = self.request.user.has_perm("grants.view_googleapigrant")
+        user = self.request.user
 
-        if not (gg_perm or sg_perm or eg_perm or gag_perm):
+        permissions = {
+            'graphgrant': user.has_perm("grants.view_graphgrant"),
+            'smbgrant': user.has_perm("grants.view_smbgrant"),
+            'ewsgrant': user.has_perm("grants.view_ewsgrant"),
+            'googleapigrant': user.has_perm("grants.view_googleapigrant"),
+        }
+
+        allowed_types = {key for key, allowed in permissions.items() if allowed}
+        disallowed_types = {key for key, allowed in permissions.items() if not allowed}
+
+        if not allowed_types:
             raise PermissionDenied
 
-        prefetches = [
-            Prefetch('graphgrant', to_attr='prefetched_graph_grants') if gg_perm else None,
-            Prefetch('smbgrant', to_attr='prefetched_smb_grants') if sg_perm else None,
-            Prefetch('ewsgrant', to_attr='prefetched_ews_grants') if eg_perm else None,
-            Prefetch('googleapigrant', to_attr='prefetched_googleapi_grants') if gag_perm else None
-        ]
+        # Build include (OR) clause for allowed types
+        include_q = [Q(**{f"{grant_type}__isnull": False}) for grant_type in allowed_types]
+        include_filter = reduce(or_, include_q)
 
+        # Build exclude (AND) clause for disallowed types
+        exclude_q = [Q(**{f"{grant_type}__isnull": True}) for grant_type in disallowed_types]
+        exclude_filter = reduce(and_, exclude_q) if exclude_q else Q()
+
+        # Final filter
+        final_filter = include_filter & exclude_filter
+
+        # Use in queryset
+        grants = Grant.objects.select_subclasses().filter(final_filter)
+
+        # Prefetch grants for each organization
         queryset = self.model.objects.prefetch_related(
-            *[prefetch for prefetch in prefetches if prefetch is not None])
+            Prefetch('grant', queryset=grants, to_attr='prefetched_grants')
+        )
 
         for org in queryset:
-            # Combine the related objects into a single attribute
-
-            org.grants = list(chain(
-                org.prefetched_graph_grants if gg_perm else [],
-                org.prefetched_smb_grants if sg_perm else [],
-                org.prefetched_ews_grants if eg_perm else [],
-                org.prefetched_googleapi_grants if gag_perm else []
-            ))
+            # Annotate each organization with appropriate Grant list for user.
+            org.grants = org.prefetched_grants
 
         return queryset
 
