@@ -41,6 +41,10 @@
     Any scanner reference without sufficient organizational info will be connected to the dummy
     organization "dummy_migration_organization".
 
+- General overhaul of the styling on the rules page.
+  - Datatables use the new table styling.
+  - Sensitivity icons are now using Google Material Symbols matching other alert icons.
+
 ### Bugfixes
 
 - Corrected issue where the first ever run of a Scannerjob with last modified check enabled
@@ -52,6 +56,7 @@
 
 - Corrected issue where raw_x and last_opened_time fields in DocumentReport as well as the
   org_units field in ScannerReference were nullable but the fields were still required.
+
 
 ## Version 3.29.3, 18th August 2025
 
@@ -76,10 +81,6 @@
 
 - A bug, causing unhandled reports with a resolution time to be counted as handled on the dpo page,
   has been fixed.
-
-- General overhaul of the styling on the rules page.
-  - Datatables use the new table styling.
-  - Sensitivity icons are now using Google Material Symbols matching other alert icons.
 
 ## Version 3.29.2, 31st July 2025
 

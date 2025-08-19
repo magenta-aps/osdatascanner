@@ -91,23 +91,12 @@ document.addEventListener("click", function (e) {
     return;
   }
 
-  // Toggle the container’s “full-path” class:
   const overflow = btn.parentElement;
   const expanded = overflow.classList.toggle("full-path");
-
-  // Fallback for gettext
-  const translate =
-    window.gettext ||
-    function (s) {
-      return s;
-    };
-
-  // Update the button text:
-  if (expanded) {
-    btn.textContent = translate("Show less");
-  } else {
-    btn.textContent = translate("Show more");
-  }
+  btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  btn.textContent = expanded
+    ? btn.dataset.labelExpanded
+    : btn.dataset.labelCollapsed;
 });
 
 // function to use localStorage

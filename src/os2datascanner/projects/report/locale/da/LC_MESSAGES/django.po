@@ -899,8 +899,12 @@ msgid "Opened for"
 msgstr "Åbnet for"
 
 #: reportapp/templates/components/reports/match.html
-msgid "Show more"
+msgid "show more"
 msgstr "Vis mere"
+
+#: reportapp/templates/components/reports/match.html
+msgid "show less"
+msgstr "vis mindre"
 
 #: reportapp/templates/components/reports/match.html
 msgid "Copy folder path"

@@ -85,9 +85,17 @@
  
                         <td class="column column--info">
                           <div class="expandable-content">
-                            <div class="overflow-ellipsis">
+                            <div id="info-{{ rule.pk }}" class="overflow-ellipsis">
                               <span>{{ rule.description }}</span>
-                              <button class="show-more button--transparent-button" type="button">{% trans "show more"|capfirst %}</button>
+
+                              <button class="show-more button--transparent-button"
+                                      type="button"
+                                      aria-expanded="false"
+                                      aria-controls="info-{{ rule.pk }}"
+                                      data-label-collapsed="{% trans "show more"|capfirst %}"
+                                      data-label-expanded="{% trans "show less"|capfirst %}">
+                                {% trans "show more"|capfirst %}
+                              </button>
                             </div>
                           </div>
                         </td>
