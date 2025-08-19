@@ -79,7 +79,9 @@ class FilteredResource(FileResource):
                 s.seek(0, 2)
                 ts = datetime.fromtimestamp(s.mtime)
                 self._mr = make_values_navigable(
-                        {k: getattr(s, k) for k in ("mtime", "filename")} |
+                        {k: getattr(s, k)
+                         for k in ("mtime", "filename", "name")
+                         if hasattr(s, k)} |
                         {"size": s.tell()} |
                         {OutputType.LastModified: ts})
         return self._mr

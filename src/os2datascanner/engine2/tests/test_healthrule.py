@@ -1,4 +1,5 @@
-from os2datascanner.engine2.rules.experimental.health_rule import TurboHealthRule
+from os2datascanner.engine2.rules.experimental.health_rule import (
+        TurboHealthRule)
 
 
 class TestTurboHealthRule:

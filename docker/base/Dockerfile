@@ -21,7 +21,7 @@ USER node
 # NB! Watches for changes, so no automatic exit!
 CMD ["npm", "run", "dev", "--prefix", "static"]
 
-FROM python:3.11.3 AS base
+FROM python:3.13.6-bookworm as base
 
 # Force the stdout and stderr streams from python to be unbuffered. See
 # https://docs.python.org/3/using/cmdline.html#cmdoption-u
@@ -31,7 +31,6 @@ ENV PYTHONUNBUFFERED=1 \
 # Ensure system user and install system depedencies
 WORKDIR /code/requirements
 COPY requirements/sys-requirements/sys-requirements-all.txt \
-     requirements/sys-requirements/backport-sys-requirements.txt \
      ./sys-requirements/
 
 COPY requirements/python-requirements/requirements-all.txt \
@@ -42,15 +41,9 @@ ARG SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 
 # hadolint ignore=DL3008,SC2046,DL4006
 RUN set -ex \
-  # We need LibreOffice 7.2 or higher, but this is not easily available through Debian \
-  # Use a backport repo to achieve this.
-  && echo "deb https://archive.debian.org/debian bullseye-backports main contrib non-free \
-  deb-src https://archive.debian.org/debian bullseye-backports main contrib non-free" >> /etc/apt/sources.list \
   # Install system dependencies from file.
   && apt-get -y update \
   && apt-get -y install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/sys-requirements*.txt) \
-  # Install from backport file too.
-  && apt-get -y -t bullseye-backports install --no-install-recommends $(grep -oh '^[^#][[:alnum:].-]*' sys-requirements/backport-sys-requirements.txt) \
   # clean up after apt-get and man-pages
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_* \
   # install supercronic

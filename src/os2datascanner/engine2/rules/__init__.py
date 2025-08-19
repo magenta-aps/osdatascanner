@@ -11,5 +11,3 @@ from . import address  # noqa
 from . import wordlists  # noqa
 from . import dict_lookup  # noqa
 from . import passport  # noqa
-from .experimental import cpr  # noqa
-from .experimental import health_rule  # noqa

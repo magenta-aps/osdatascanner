@@ -26,6 +26,7 @@ libsmbclient-dev
 ghostscript
 fonts-droid-fallback
 fonts-noto
+libreoffice-nogui
 
 # Report
 openssl
