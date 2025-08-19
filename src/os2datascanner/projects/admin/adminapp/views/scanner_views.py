@@ -164,6 +164,13 @@ class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMix
 
         return super().form_valid(form)
 
+    def get_initial(self):
+        return self.initial | {
+            "remediators": Account.objects.filter(
+                    aliases___alias_type=AliasType.REMEDIATOR.value,
+                    aliases___value=str(self.object.pk))
+        }
+
 
 class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
                     CreateView):
@@ -177,11 +184,20 @@ class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin
         return self.render_to_response(context)
 
     def get_initial(self):
-        initial = super().get_initial()
-        initial["validation_status"] = Scanner.INVALID
-        initial["name"] = self.object.name + " " + _("(Copy)")
+        new_name = self.get_object().name
+        while Scanner.objects.unfiltered().filter(name=new_name).exists():
+            new_name += " " + _("Copy")
 
-        return initial
+        return super().get_initial() | {
+            "remediators": Account.objects.filter(
+                    aliases___alias_type=AliasType.REMEDIATOR.value,
+                    aliases___value=str(self.get_object().pk)),
+
+            # Copied scannerjobs should be "Invalid" by default
+            # to avoid being able to misuse this feature.
+            "validation_status": Scanner.INVALID,
+            "name": new_name
+        }
 
 
 class ScannerBase(object):

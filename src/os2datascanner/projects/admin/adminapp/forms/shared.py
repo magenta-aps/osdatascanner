@@ -7,6 +7,8 @@ from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
 from os2datascanner.projects.admin.utilities import UserWrapper
 
+from ...organizations.models.aliases import AliasType
+
 
 class Groups:
     GENERAL_SETTINGS = (
@@ -76,9 +78,11 @@ class ScannerForm(GroupingModelForm):
         ).order_by("name")
         self.fields["organization"].initial = self.org.uuid
 
-        # Only allow the user to choose between remediators related to the organization
+        # Only allow the user to choose between remediators related to the organization.
+        # Exclude accounts which are already designated universal remediators.
         self.fields["remediators"].queryset = self.fields["remediators"].queryset.filter(
-            organization=self.org).distinct()
+            organization=self.org).exclude(
+                aliases___alias_type=AliasType.REMEDIATOR.value, aliases___value=0)
 
         # Only allow the user to choose between contacts who are admins for the organization client
         # or superusers
