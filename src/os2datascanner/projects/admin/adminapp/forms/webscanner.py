@@ -1,3 +1,5 @@
+import xml.etree.ElementTree as ET
+
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.model.utilities import sitemap
@@ -64,6 +66,19 @@ class WebScannerForm(ScannerForm):
                     "sitemap_url",
                     [_("Sitemap download requested, but no URL was given")])
         return sitemap_url
+
+    def clean_sitemap(self):
+        sitemap = self.cleaned_data["sitemap"]
+        if not sitemap:
+            return sitemap
+        try:
+            ET.parse(sitemap)
+        except Exception as e:
+            self.add_error(
+                "sitemap",
+                [_("Error parsing sitemap: {0}").format(e)]
+            )
+        return sitemap
 
     class Meta:
         model = WebScanner
