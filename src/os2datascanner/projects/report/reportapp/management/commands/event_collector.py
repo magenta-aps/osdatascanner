@@ -65,6 +65,25 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                     else:
                         logger.info("No objects to create of", model=model.__name__)
 
+                if raw_model_data := classes.get("Scanner"):
+                    # We have received a creation event of Scanner objects from the Admin module.
+                    # The Report module doesn't have a Scanner model,
+                    # but we instead need to create ScannerReferences.
+                    for scanner_dict in raw_model_data:
+                        sr = ScannerReference.objects.create(
+                            scanner_pk=scanner_dict['pk'],
+                            scanner_name=scanner_dict['name'],
+                            only_notify_superadmin=scanner_dict['only_notify_superadmin'],
+                            scan_entire_org=scanner_dict['scan_entire_org'],
+                        )
+                        if org_uuid := scanner_dict.get('organization'):
+                            sr.organization = Organization.objects.get(uuid=org_uuid)
+                        ou_uuids = scanner_dict.get('org_unit', [])
+                        sr.org_units.set(OrganizationalUnit.objects.filter(uuid__in=ou_uuids))
+                        sr.save()
+
+                    logger.info("Successfully ran broadcast create!")
+
             elif event_type == "bulk_event_update":
                 logger.info("Initiating broadcast update transaction...")
                 for model in ORDER_OF_CREATION:
@@ -104,6 +123,28 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         logger.info("Successfully ran broadcast update!")
                     else:
                         logger.info("Nothing to update for", model=model.__name__)
+
+                if raw_model_data := classes.get("Scanner"):
+                    # We have received an update event of Scanner objects from the Admin module.
+                    # The Report module doesn't have a Scanner model,
+                    # but we instead need to update ScannerReferences.
+                    for scanner_dict in raw_model_data:
+                        sr, created = ScannerReference.objects.get_or_create(
+                            scanner_pk=scanner_dict['pk'])
+                        if created:
+                            logger.info("Update for unknown ScannerReference received.")
+
+                        sr.scanner_name = scanner_dict['name']
+                        sr.only_notify_superadmin = scanner_dict['only_notify_superadmin']
+                        sr.scan_entire_org = scanner_dict['scan_entire_org']
+
+                        if org_uuid := scanner_dict.get('organization'):
+                            sr.organization = Organization.objects.get(uuid=org_uuid)
+                        ou_uuids = scanner_dict.get('org_unit', [])
+                        sr.org_units.set(OrganizationalUnit.objects.filter(uuid__in=ou_uuids))
+                        sr.save()
+
+                    logger.info("Successfully ran broadcast update!")
 
             elif event_type == "bulk_event_delete":
                 for model in ORDER_OF_DELETION:

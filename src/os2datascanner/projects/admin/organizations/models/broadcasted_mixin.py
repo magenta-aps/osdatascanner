@@ -36,7 +36,7 @@ def get_broadcastable_dict(sender, instance, delete=False):
     else:
         serializer = get_serializer(sender)
         serialized_data = serializer(instance).data
-        return {sender.__name__: [serialized_data]}
+        return {serializer.Meta.model.__name__: [serialized_data]}
 
 
 # TODO: change to avoid using save/delete-signals as they are not called on bulk actions
@@ -85,11 +85,14 @@ def post_save_broadcast(sender, instance, created, **kwargs):
 
 
 @receiver(m2m_changed)
-def account_permissions_changed(sender, instance, action, *args, **kwargs):
-    """When account permissions are changed, we want to propagate that change to the report module.
-    Since permissions on the Account model is a many-to-many field, it is not always registered in
-    a post-save, so we have to do it here as well."""
-    if not sender.__name__ == "Account_permissions" or action not in ["post_add", "post_remove"]:
+def broadcasted_m2m_changed(sender, instance, action, *args, **kwargs):
+    """ When a broadcasted ManyToMany relation is changed,
+    we want to propagate that change to the report module.
+    These changes are not always registered in a post-save, so we do it here as well.
+    This currently includes the Account-Permission and Scanner-OrganizationalUnit relations.
+    """
+    if sender.__name__ not in ["Account_permissions", "Scanner_org_unit"] \
+            or action not in ["post_add", "post_remove"]:
         return
     broadcastable_dict = get_broadcastable_dict(instance.__class__, instance)
 

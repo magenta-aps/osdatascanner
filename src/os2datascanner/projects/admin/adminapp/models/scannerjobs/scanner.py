@@ -23,6 +23,8 @@ from typing import Iterator
 import datetime
 from dateutil.tz import gettz
 import structlog
+from rest_framework import serializers
+from rest_framework.fields import UUIDField
 
 from django.db import models
 from django.db.models import Q
@@ -46,6 +48,8 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.conversions.types import OutputType
 from mptt.models import TreeManyToManyField
 from os2datascanner.projects.admin.adminapp.utils import CleanProblemMessage
+from os2datascanner.projects.admin.organizations.models.broadcasted_mixin import Broadcasted
+from os2datascanner.projects.admin.organizations.models.organization import Organization
 
 from ..rules import Rule
 from .scanner_helpers import (  # noqa (interface backwards compatibility)
@@ -79,6 +83,7 @@ class ScannerManager(InheritanceManager):
         return ScannerQuerySet(self.model, using=self._db, hints=self._hints)
 
 
+@Broadcasted.register
 class Scanner(models.Model):
 
     """A scanner, i.e. a template for actual scanning jobs."""
@@ -727,3 +732,32 @@ class Scanner(models.Model):
             ("unhide_scanner", _("Can unhide scannerjob from the removed scannerjob list")),
             ("view_hidden_scanner", _("Can view hidden scanners in the removed scannerjob list"))
         ]
+
+
+class ScannerSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all(),
+        required=False,
+        allow_null=True,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+    org_unit = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all(),
+        many=True,
+        allow_empty=True,
+        pk_field=UUIDField(format='hex_verbose')
+    )
+
+    class Meta:
+        model = Scanner
+        fields = [
+            "pk",
+            "name",
+            "organization",
+            "org_unit",
+            "scan_entire_org",
+            "only_notify_superadmin",
+        ]
+
+
+Scanner.serializer_class = ScannerSerializer
