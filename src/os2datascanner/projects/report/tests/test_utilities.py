@@ -3,6 +3,7 @@ import json
 from django.utils import timezone
 
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 from os2datascanner.projects.report.reportapp.utils import create_alias_and_match_relations
 
 # This is a real raw_matches field from test data. This could probably be done
@@ -313,11 +314,17 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
         else:
             problem_message = None
 
+        org = alias.account.organization
+        scanner, _ = ScannerReference.objects.get_or_create(
+            scanner_pk=scanner_job_pk,
+            scanner_name=scanner_job_name,
+        )
+        org.scanners.add(scanner)
+
         dr = DocumentReport.objects.create(
             name=f"Report-{source_type}-{i}{'-matched' if matched else ''}",
             owner=alias._value,
-            scanner_job_pk=scanner_job_pk,
-            scanner_job_name=scanner_job_name,
+            scanner_job=scanner,
             sensitivity=sensitivity,
             datasource_last_modified=datasource_last_modified,
             source_type=source_type,
@@ -329,7 +336,7 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                   f"-prob{problem if problem else 'None'}"
                   f"-rs{resolution_status if resolution_status is not None else 'None'}"),
             raw_matches=raw_matches_json_matched if matched else None,
-            organization=alias.account.organization,
+            organization=org,
             resolution_status=resolution_status,
             only_notify_superadmin=only_notify_superadmin,
             raw_problem=problem_message)

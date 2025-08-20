@@ -35,9 +35,9 @@
               {% trans "All scannerjobs" %}
             </option>
             {% for scan in scannerjob_choices %}
-              <option value="{{ scan.scanner_job_pk|unlocalize }}"
-                      {% if chosen_scannerjob == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
-                {{ scan.scanner_job_name }}
+              <option value="{{ scan.scanner_pk|unlocalize }}"
+                      {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
+                {{ scan.scanner_name }}
               </option>
             {% endfor %}
           </select>

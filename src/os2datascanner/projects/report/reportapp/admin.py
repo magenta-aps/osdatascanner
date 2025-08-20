@@ -18,26 +18,6 @@ from os2datascanner.projects.report.reportapp.management.commands import (
 import os2datascanner.engine2.model._staging.sbsysdb  # noqa
 
 
-class ScannerJobFilter(admin.SimpleListFilter):
-    title = _("scanner job")
-
-    parameter_name = "scanner"
-
-    def lookups(self, request, model_admin):
-        # Get all (scanner job name, scanner primary key) tuples
-        objects = DocumentReport.objects.order_by("-scanner_job_pk").only(
-                "scanner_job_name", "scanner_job_pk").distinct(
-                "scanner_job_name", "scanner_job_pk")
-        return (
-            (o.scanner_job_pk, o.scanner_job_name) for o in objects
-        )
-
-    def queryset(self, request, queryset):
-        v = self.value()
-        if v is not None:
-            return queryset.filter(scanner_job_pk=v)
-
-
 @admin.register(DocumentReport)
 class DocumentReportAdmin(admin.ModelAdmin):
     def get_urls(self):
@@ -95,14 +75,14 @@ class DocumentReportAdmin(admin.ModelAdmin):
         'name',
         'number_of_matches',
         'organization',
-        'scanner_job_name',
+        'scanner_job',
         'aliases',
         'resolution_status',
         'resolution_time', 'only_notify_superadmin')
 
     list_filter = (
         'organization',
-        ScannerJobFilter,)
+        'scanner_job',)
 
     def aliases(self, dr):
         return ", ".join([alias_relation.account.username

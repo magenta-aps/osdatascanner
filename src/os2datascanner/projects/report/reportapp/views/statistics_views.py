@@ -33,6 +33,7 @@ from django.urls import reverse_lazy
 from django.conf import settings
 
 from ..models.documentreport import DocumentReport
+from ..models.scanner_reference import ScannerReference
 from ...organizations.models.account import Account, StatusChoices
 from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
@@ -137,7 +138,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
         if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
             self.matches = self.matches.filter(
-                scanner_job_pk=scannerjob)
+                scanner_job__scanner_pk=scannerjob)
 
         if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
             confirmed_dpo = (self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
@@ -170,12 +171,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
 
         if self.scannerjob_filters is None:
-            # Create select options
-            self.scannerjob_filters = DocumentReport.objects.filter(
-                number_of_matches__gte=1).order_by('scanner_job_pk').values(
-                "scanner_job_name", "scanner_job_pk").distinct()
+            self.scannerjob_filters = ScannerReference.objects.all()
             if org := self.kwargs.get("org"):
-                self.scannerjob_filters = self.scannerjob_filters.filter(organization=org)
+                self.scannerjob_filters = org.scanners
 
         (context['match_data'],
          source_type_data,
@@ -445,8 +443,13 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         # Adds scannername and orgunit to name of csv file
         scanner = None
         if (scanner_pk := request.GET.get('scannerjob')) and scanner_pk != 'all':
-            scanner = DocumentReport.objects.filter(scanner_job_pk=scanner_pk).first()
-        self.exported_filename += f"_scannerjob_{scanner.scanner_job_name}" if scanner else ''
+            # TODO: This case is never reached when using the button,
+            # since 'scannerjob' isn't passed along in the get request.
+            if ScannerReference.objects.filter(scanner_pk=scanner_pk).exists():
+                scanner = ScannerReference.objects.get(scanner_pk=scanner_pk)
+            else:
+                logger.debug("Scanner doesn't exists", scanner_pk=scanner_pk)
+        self.exported_filename += f"_scannerjob_{scanner.scanner_name}" if scanner else ''
 
         orgunit = None
         if (orgunit_id := request.GET.get('orgunit')) and orgunit_id != 'all':
@@ -831,20 +834,17 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
         account = context["account"]
         matches_by_week = account.count_matches_by_week()
         context["matches_by_week"] = matches_by_week
-        scannerjobs = (
-            account.get_report(Account.ReportType.PERSONAL)
-            .order_by(
-                "scanner_job_pk"
-            ).values(
-                "scanner_job_pk",
-                "scanner_job_name"
-            ).annotate(
-                total=Count("pk", distinct=True),
-            ).values(
-                "scanner_job_pk",
-                "scanner_job_name",
-                "total"
-            ))
+
+        scannerjobs = ScannerReference.objects.annotate(
+            total=Count(
+                'document_reports',
+                filter=Q(document_reports__in=account.get_report(Account.ReportType.PERSONAL)),
+            )
+        ).filter(
+            Q(organization=account.organization, scan_entire_org=True, only_notify_superadmin=False)
+            | Q(org_units__in=account.units.all(), only_notify_superadmin=False)
+            | Q(total__gt=0)
+        ).distinct()
         context["scannerjobs"] = scannerjobs
         return context
 
@@ -862,7 +862,7 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
         account = Account.objects.get(pk=pk)
 
         reports = account.get_report(Account.ReportType.PERSONAL).filter(
-                scanner_job_pk=scannerjob_pk)
+                scanner_job__scanner_pk=scannerjob_pk)
 
         response_string = _(
             'You have deleted all results from %(scannerjob)s associated with '

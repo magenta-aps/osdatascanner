@@ -19,6 +19,6 @@ class TestDeleteScannerjobCommand:
         call_command("delete_scannerjob", 52)
 
         # Assert
-        assert DocumentReport.objects.filter(scanner_job_pk=51).count() == 10
-        assert DocumentReport.objects.filter(scanner_job_pk=52).count() == 0
-        assert DocumentReport.objects.filter(scanner_job_pk=53).count() == 10
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=51).count() == 10
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=52).count() == 0
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=53).count() == 10

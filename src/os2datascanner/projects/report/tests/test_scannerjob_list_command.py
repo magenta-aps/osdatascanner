@@ -19,7 +19,7 @@ class TestScannerjobListCommand:
         for pk, name in scannerjobs:
             create_reports_for(egon_email_alias, num=10, scanner_job_pk=pk, scanner_job_name=name)
 
-        expected = [f"{name} (PK: {pk})" for pk, name in scannerjobs]
+        expected = sorted([f"{name} (PK: {pk})" for pk, name in scannerjobs])
 
         # Act
         call_command("scannerjob_list")
@@ -29,6 +29,6 @@ class TestScannerjobListCommand:
         # Assert
         regex = r'(.+ \(PK: \d+\))'
 
-        result = re.findall(regex, out)
+        result = sorted(re.findall(regex, out))
 
         assert result == expected

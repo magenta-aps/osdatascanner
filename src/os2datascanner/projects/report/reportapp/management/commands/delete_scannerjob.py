@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from ...models.documentreport import DocumentReport
+from ...models.scanner_reference import ScannerReference
 
 
 class Command(BaseCommand):
@@ -18,7 +19,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, pk, *args, **options):  # noqa: CCR001, too high cognitive complexity
-        reports = DocumentReport.objects.filter(scanner_job_pk=pk)
+        if not ScannerReference.objects.filter(scanner_pk=pk).exists():
+            self.stderr.write(self.style.NOTICE(
+                f"Did not find any ScannerReference related to scanner job with pk {pk}."))
+            return
+
+        scanner = ScannerReference.objects.get(scanner_pk=pk)
+        reports = DocumentReport.objects.filter(scanner_job=scanner)
 
         if not reports.exists():
             self.stderr.write(self.style.NOTICE(

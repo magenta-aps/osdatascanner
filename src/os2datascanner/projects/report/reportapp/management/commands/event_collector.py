@@ -27,6 +27,7 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.projects.report.organizations.models import (Account, Alias, Organization,
                                                                  OrganizationalUnit, Position)
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 from prometheus_client import Summary, start_http_server
 from ...utils import create_alias_and_match_relations
 
@@ -156,14 +157,14 @@ def handle_clean_account_message(body):
         account_usernames = account_dict.get("usernames")
 
         related_reports = DocumentReport.objects.filter(
-            alias_relation__account__in=account_uuids, scanner_job_pk=scanner_pk)
+            alias_relation__account__in=account_uuids, scanner_job__scanner_pk=scanner_pk)
 
         _, deleted_reports_dict = related_reports.delete()
         deleted_reports = deleted_reports_dict.get("os2datascanner_report.DocumentReport", 0)
 
         logger.info(
             "Deleted DocumentReport objects!",
-            count=deleted_reports, scanner_job_pk=scanner_pk,
+            count=deleted_reports, scanner_pk=scanner_pk,
             associated_accounts=', '.join(account_usernames))
 
 
@@ -173,17 +174,17 @@ def handle_clean_problem_message(body):
     logger.info("CleanProblemMessage published by",
                 publisher=body.get('publisher'), published_time=body.get('time'))
 
-    scanners = body.get("scanners", [])
+    scanners = ScannerReference.objects.filter(scanner_pk__in=body.get("scanners", []))
 
     related_problems = DocumentReport.objects.filter(
-        number_of_matches=0, scanner_job_pk__in=scanners)
+        number_of_matches=0, scanner_job__in=scanners)
     _, deleted_problems_dict = related_problems.delete()
     deleted_problems = deleted_problems_dict.get(
         "os2datascanner_report.DocumentReport", 0)
 
     logger.info(
         "Deleted DocumentReport objects without matches ",
-        count=deleted_problems, scanner_job_pk=scanners)
+        count=deleted_problems, scanner_job=scanners)
 
 
 class EventCollectorRunner(PikaPipelineThread):

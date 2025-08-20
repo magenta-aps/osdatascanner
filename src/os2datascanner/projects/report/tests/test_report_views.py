@@ -62,8 +62,8 @@ class TestUserReportView:
         sensitivity_choice = next(response.context_data.get("sensitivity_choices"))
 
         # Assert
-        assert scanner_job_choice.get("filtered_total") == 10
-        assert scanner_job_choice.get("total") == 10
+        assert scanner_job_choice.filtered_total == 10
+        assert scanner_job_choice.total == 10
         assert source_type_choice.get("total") == 10
         assert sensitivity_choice[1] == 10
 
@@ -314,6 +314,29 @@ class TestUserReportView:
 
         # Assert
         assert qs.count() == num_old + num_new
+
+    def test_scannerjob_choices(
+            self,
+            egon_account,
+            scan_olsenbanden_org,
+            scan_olsenbanden_org_withheld,
+            scan_kun_egon,
+            scan_kun_egon_withheld,
+            scan_owned_by_olsenbanden,
+            rf):
+        # Act
+        response = self.get_userreport_response(rf,
+                                                egon_account,
+                                                params='&sensitivity_checkbox=on')
+        choices = list(response.context_data.get('scannerjob_choices'))
+
+        # Assert
+        assert len(choices) == 2
+        assert scan_olsenbanden_org in choices
+        assert scan_olsenbanden_org_withheld not in choices
+        assert scan_kun_egon in choices
+        assert scan_kun_egon_withheld not in choices
+        assert scan_owned_by_olsenbanden not in choices
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_smb_mass_deletion_buttons_filter_source_type(self, client, egon_account, org_perm,

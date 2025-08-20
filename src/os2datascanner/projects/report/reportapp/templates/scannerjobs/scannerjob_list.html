@@ -29,7 +29,7 @@
         {% if scannerjobs %}
           {% for scannerjob in scannerjobs %}
             <tr>
-              <td class="datatable__column--name">{{ scannerjob.scanner_job_name }}</td>
+              <td class="datatable__column--name">{{ scannerjob.scanner_name }}</td>
               <td class="datatable__column--source">
                 <span class="icon-filetype icon-filetype--{{ scannerjob.source_type }}"
                       title="{% find_scan_type scannerjob.source_type %}">
@@ -41,14 +41,14 @@
               <td class="datatable__column--matchcount">{{ scannerjob.count }}</td>
               <td class="datatable__column--actions">
                 <div class="action-wrapper button-group">
-                  <form action="{% url "delete_scannerjob" scannerjob.scanner_job_pk %}"
+                  <form action="{% url "delete_scannerjob" scannerjob.scanner_pk %}"
                         method="post"
                         style="display: inline-block">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit"
                             class="button button--icon-button button--transparent-button"
-                            onclick="return confirm(`{% trans "Do you really want to delete all reports from this scanner?" %}\n\n{{ scannerjob.scanner_job_name }}\n\n{% trans "The action cannot be reversed" %}`)"
+                            onclick="return confirm(`{% trans "Do you really want to delete all reports from this scanner?" %}\n\n{{ scannerjob.scanner_name }}\n\n{% trans "The action cannot be reversed" %}`)"
                             aria-label="{% trans "Delete reports from scanner job" %}"
                             title="{% trans "Delete reports from scanner job" %}">
                       <i id="delete" class="material-symbols">delete</i>

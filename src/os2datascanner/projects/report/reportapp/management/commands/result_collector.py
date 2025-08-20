@@ -34,6 +34,7 @@ from prometheus_client import Summary, start_http_server
 
 
 from ...models.documentreport import DocumentReport
+from ...models.scanner_reference import ScannerReference
 from ...utils import prepare_json_object
 from ....organizations.models import AccountOutlookSetting
 from ...views.utilities.msgraph_utilities import outlook_settings_from_owner
@@ -126,17 +127,22 @@ def outlook_categorize_enabled(owner: str) -> bool:
                         ).filter(num_categories__gte=2).exists()
 
 
-def handle_metadata_message(scan_tag, result):
+def handle_metadata_message(scan_tag, result):  # noqa: CCR001, Cognitive complexity is too high
     # Evaluate the queryset that is updated later to lock it.
     message = messages.MetadataMessage.from_json_object(result)
     path = message.handle.crunch(hash=True)
     owner = owner_from_metadata(message)
 
+    scanner, _ = ScannerReference.objects.get_or_create(
+        scanner_pk=scan_tag.scanner.pk,
+        scanner_name=scan_tag.scanner.name,
+    )
+
     previous_report = DocumentReport.objects.select_for_update(
         of=('self',)
     ).filter(
         path=path,
-        scanner_job_pk=scan_tag.scanner.pk
+        scanner_job=scanner
     ).first()
 
     resolution_status = None
@@ -168,7 +174,7 @@ def handle_metadata_message(scan_tag, result):
         resolution_status = ResolutionChoices.FALSE_POSITIVE.value
 
     dr, _ = DocumentReport.objects.update_or_create(
-            path=path, scanner_job_pk=scan_tag.scanner.pk,
+            path=path, scanner_job=scanner,
             defaults={
                 "scan_time": scan_tag.time,
                 "raw_scan_tag": prepare_json_object(
@@ -176,7 +182,6 @@ def handle_metadata_message(scan_tag, result):
 
                 "raw_metadata": prepare_json_object(result),
                 "datasource_last_modified": lm,
-                "scanner_job_name": scan_tag.scanner.name,
                 "only_notify_superadmin": scan_tag.scanner.test,
                 "resolution_status": resolution_status,
                 "organization": get_org_from_scantag(scan_tag),
@@ -223,7 +228,7 @@ def create_aliases(dr: DocumentReport):
         # Alias type must be remediator and value either 0 (all scannerjobs) or remediator
         # for this specific scannerjob.
         aliases = Alias.objects.filter(Q(_alias_type=AliasType.REMEDIATOR) &
-                                       (Q(_value=0) | Q(_value=dr.scanner_job_pk)))
+                                       (Q(_value=0) | Q(_value=dr.scanner_job.scanner_pk)))
     else:
         # This means we've found an alias that fits the owner - delete remediator relations if any.
         tm.objects.filter(documentreport_id=dr.pk,
@@ -248,9 +253,15 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
     new_matches = messages.MatchesMessage.from_json_object(result)
     path = new_matches.handle.crunch(hash=True)
+
+    scanner, _ = ScannerReference.objects.get_or_create(
+        scanner_pk=scan_tag.scanner.pk,
+        scanner_name=scan_tag.scanner.name,
+    )
+
     # The queryset is evaluated and locked here.
     previous_report = (locked_qs.filter(
-            path=path, scanner_job_pk=scan_tag.scanner.pk).order_by("-scan_time").first())
+            path=path, scanner_job=scanner).order_by("-scan_time").first())
 
     matches = [(match.rule.presentation, match.matches) for match in new_matches.matches]
     logger.debug(
@@ -316,7 +327,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
             new_status = None
 
         dr, _ = DocumentReport.objects.update_or_create(
-                path=path, scanner_job_pk=scan_tag.scanner.pk,
+                path=path, scanner_job=scanner,
                 defaults={
                     "scan_time": scan_tag.time,
                     "raw_scan_tag": prepare_json_object(
@@ -331,7 +342,6 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                     "probability": new_matches.probability,
                     "raw_matches": prepare_json_object(
                             sort_matches_by_probability(result)),
-                    "scanner_job_name": scan_tag.scanner.name,
                     "only_notify_superadmin": scan_tag.scanner.test,
                     "resolution_status": new_status,
                     "organization": get_org_from_scantag(scan_tag),
@@ -371,9 +381,14 @@ def handle_problem_message(scan_tag, result):
     obj = (problem.handle if problem.handle else problem.source)
     path = obj.crunch(hash=True)
 
+    scanner, _ = ScannerReference.objects.get_or_create(
+        scanner_pk=scan_tag.scanner.pk,
+        scanner_name=scan_tag.scanner.name,
+    )
+
     # Queryset is evaluated and locked here.
     previous_report = (locked_qs.filter(
-            path=path, scanner_job_pk=scan_tag.scanner.pk).
+            path=path, scanner_job=scanner).
             order_by("-scan_time").first())
 
     handle = problem.handle if problem.handle else None
@@ -463,7 +478,7 @@ def handle_problem_message(scan_tag, result):
 
             dr = DocumentReport.objects.create(
                     path=path,
-                    scanner_job_pk=scan_tag.scanner.pk,
+                    scanner_job=scanner,
 
                     scan_time=scan_tag.time,
                     raw_scan_tag=prepare_json_object(
@@ -475,7 +490,6 @@ def handle_problem_message(scan_tag, result):
                     sort_key=prepare_json_object(
                             handle.sort_key if handle else "(source)"),
                     raw_problem=prepare_json_object(result),
-                    scanner_job_name=scan_tag.scanner.name,
                     only_notify_superadmin=scan_tag.scanner.test,
                     resolution_status=None,
                     organization=get_org_from_scantag(scan_tag))

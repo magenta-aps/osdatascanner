@@ -52,7 +52,7 @@ class TestUserStatisticsPageView:
         response = self.get_user_statisticspage_response(rf, egon_account)
 
         # Assert
-        match_count = response.context_data.get("scannerjobs")[0].get("total")
+        match_count = response.context_data.get("scannerjobs")[0].total
         assert match_count == 10
 
     def test_double_relation_week_count(self, egon_account, egon_email_alias, egon_upn_alias, rf):

@@ -1,4 +1,5 @@
 import enum
+import structlog
 from functools import cached_property
 
 from django.db import models
@@ -12,7 +13,6 @@ from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.pipeline.messages import (
     MatchesMessage, ProblemMessage, MetadataMessage, ScanTagFragment
 )
-import structlog
 
 from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
 from os2datascanner.engine2.rules.cpr import CPRRule
@@ -25,6 +25,8 @@ from os2datascanner.engine2.rules.links_follow import LinksFollowRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
+
+from .scanner_reference import ScannerReference
 
 logger = structlog.get_logger("reportapp")
 
@@ -96,13 +98,11 @@ class DocumentReport(models.Model):
     # This timestamp is collected during scan and is from the datasource.
     datasource_last_modified = models.DateTimeField(null=True)
 
-    # Field to store the primary key of the scanner job that this DocumentReport stems from.
-    scanner_job_pk = models.IntegerField(null=True)
-    # Field to store name of the scanner job that this DocumentReport stems from.
-    scanner_job_name = models.CharField(
-        max_length=256,
+    scanner_job = models.ForeignKey(
+        ScannerReference,
+        on_delete=models.PROTECT,
         null=True,
-        db_index=True,
+        related_name='document_reports',
     )
 
     only_notify_superadmin = models.BooleanField(
@@ -256,7 +256,7 @@ class DocumentReport(models.Model):
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["scanner_job_pk", "path"],
+                fields=["scanner_job", "path"],
                 name="unique_scanner_pk_and_path")
         ]
         permissions = [
