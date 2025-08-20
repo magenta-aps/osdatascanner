@@ -460,7 +460,7 @@ class SharePointListing(ListAPIView):
 
     def get_queryset(self):
         if grant_id := self.request.query_params.get('grantId', None):
-            self._grant = GraphGrant.objects.filter(id=grant_id).first()
+            self._grant = GraphGrant.objects.filter(uuid=grant_id).first()
             self._sync_sites()
 
         return MSGraphSharePointSite.objects.all()

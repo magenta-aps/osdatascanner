@@ -30,6 +30,8 @@
 
 - A bug breaking the DPO page when any non-superuser accesses it has been fixed.
 
+- Fixed synchronizing SharePoint sites.
+
 ## Version 3.30.1, 26th September 2025
 
 "... And Sow What You'll Reap"
