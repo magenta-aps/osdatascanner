@@ -134,19 +134,6 @@
                           </div>
                         </td>
                       </tr>
-
-                      {# What's going on here? I don't recognice this?#}
-                      <tr class="expandable-row"
-                          id="show-patterns-{{ forloop.counter }}"
-                          hidden>
-                        <td colspan="{% if user.is_superuser %}6{% else %}5{% endif %}">
-                          {% if rule.regexrule.patterns.all|length > 0 %}
-                            {% for pattern in rule.regexrule.patterns.all %}
-                              <code class="code-grey">{{ pattern.pattern_string }}</code>
-                            {% endfor %}
-                          {% endif %}
-                        </td>
-                      </tr>
                     {% endfor %}
 
                   {% else %}
