@@ -11,7 +11,7 @@ def set_grant_uuid(apps, schema_editor):
         import_job.save(update_fields=['grant_uuid'])
 
     for conf in MSGraphConfiguration.objects.iterator():
-        conf.grant_uuid = conf.grant.uuid
+        conf.grant_uuid = conf.grant.uuid if conf.grant else None
         conf.save(update_fields=['grant_uuid'])
 
 
