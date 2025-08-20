@@ -742,6 +742,27 @@ def update_message_smbgrant():
     }
 
 
+@pytest.fixture
+def create_message_scanner(olsenbanden_organization):
+    return {
+        'time': '2025-08-19T10:11:23+02:00',
+        'type': 'bulk_event_create',
+        'publisher': 'admin',
+        'classes': {
+            'Scanner': [
+                {
+                    'pk': 17,
+                    'name': 'Test scanner',
+                    'organization': str(olsenbanden_organization.uuid),
+                    'org_unit': [],
+                    'scan_entire_org': True,
+                    'only_notify_superadmin': True
+                }
+            ]
+        }
+    }
+
+
 @pytest.fixture(scope="module")
 def delete_message_smbgrant():
     return {
@@ -752,4 +773,25 @@ def delete_message_smbgrant():
             {
                 'SMBGrant': ['1f40baf2-3be5-4706-92d0-b24c06a3ed1d']
             }
+    }
+
+
+@pytest.fixture
+def update_message_scanner(marvel_organization):
+    return {
+        'time': '2025-08-19T10:11:23+02:00',
+        'type': 'bulk_event_update',
+        'publisher': 'admin',
+        'classes': {
+            'Scanner': [
+                {
+                    'pk': 17,
+                    'name': 'New name',
+                    'organization': str(marvel_organization.uuid),
+                    'org_unit': [],
+                    'scan_entire_org': False,
+                    'only_notify_superadmin': False
+                }
+            ]
+        }
     }

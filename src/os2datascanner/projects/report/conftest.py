@@ -9,6 +9,7 @@ from os2datascanner.projects.report.organizations.models.position import Positio
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.core_organizational_structure.models.organization import LeaderTabConfigChoices
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 
 
 @pytest.fixture
@@ -319,6 +320,64 @@ def msgraph_grant(olsenbanden_organization):
     grant.client_secret = "A very secret secret"
     grant.save()
     return grant
+
+
+@pytest.fixture
+def scan_olsenbanden_org(olsenbanden_organization):
+    return ScannerReference.objects.create(
+        scanner_pk=1,
+        scanner_name="Scan all of Olsenbanden",
+        organization=olsenbanden_organization,
+        scan_entire_org=True,
+        only_notify_superadmin=False,
+    )
+
+
+@pytest.fixture
+def scan_olsenbanden_org_withheld(olsenbanden_organization):
+    return ScannerReference.objects.create(
+        scanner_pk=2,
+        scanner_name="Scan all of Olsenbanden (privately)",
+        organization=olsenbanden_organization,
+        scan_entire_org=True,
+        only_notify_superadmin=True,
+    )
+
+
+@pytest.fixture
+def scan_kun_egon(kun_egon_ou):
+    sr = ScannerReference.objects.create(
+        scanner_pk=3,
+        scanner_name="Scan kun Egon",
+        only_notify_superadmin=False,
+    )
+    sr.org_units.add(kun_egon_ou)
+    sr.save()
+    return sr
+
+
+@pytest.fixture
+def scan_kun_egon_withheld(kun_egon_ou):
+    sr = ScannerReference.objects.create(
+        scanner_pk=4,
+        scanner_name="Scan kun Egon (privately)",
+        only_notify_superadmin=True,
+    )
+    sr.org_units.add(kun_egon_ou)
+    sr.save()
+    return sr
+
+
+@pytest.fixture
+def scan_owned_by_olsenbanden(olsenbanden_organization):
+    return ScannerReference.objects.create(
+        scanner_pk=5,
+        scanner_name="This scanner lies under Olsenbanden",
+        organization=olsenbanden_organization,
+        scan_entire_org=False,
+        only_notify_superadmin=False,
+
+    )
 
 
 # MARVEL
