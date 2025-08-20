@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.template.response import TemplateResponse
 
 from .models.documentreport import DocumentReport
+from .models.scanner_reference import ScannerReference
 
 from os2datascanner.engine2.pipeline import messages  # noqa
 from os2datascanner.projects.report.organizations.models import Organization, Account
@@ -91,6 +92,19 @@ class DocumentReportAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super(DocumentReportAdmin, self).get_queryset(request).select_related(
             'organization').prefetch_related('alias_relation')
+
+
+@admin.register(ScannerReference)
+class ScannerReferenceAdmin(admin.ModelAdmin):
+    list_display = (
+        "scanner_name",
+        "scanner_pk",
+        "organization"
+    )
+
+    list_filter = (
+        "organization",
+    )
 
 
 class ProfileInline(admin.TabularInline):
