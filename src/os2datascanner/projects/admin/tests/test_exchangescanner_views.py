@@ -202,31 +202,19 @@ class TestExchangeScannerViews:
             'rule': basic_rule.pk
         })
 
-        context = response.context
-        form = context.get('form') if context else None
-        # If the userlist is incorrectly formatted, the form will exist in the
-        # context. If it is correctly formatted, the form will not exist.
-        userlist_is_valid = form is None
-
-        assert userlist_is_valid == valid
+        if valid:
+            # The scanner was created successfully, so we should have been redirected
+            assert response.status_code == 302
+        else:
+            # We should get the form back with errors
+            assert response.status_code == 200
+            assert response.context['form'].has_error('userlist')
 
     @pytest.mark.parametrize('mail_domain,valid', [
-        (
-            'olsenbanden.com',
-            False
-        ),
-        (
-            '',
-            False
-        ),
-        (
-            '@',
-            False
-        ),
-        (
-            '@olsenbanden.com',
-            True
-        )
+        ('olsenbanden.com', False),
+        ('', False),
+        ('@', False),
+        ('@olsenbanden.com', True)
     ])
     def test_domain_formatting(
             self,
@@ -257,13 +245,13 @@ class TestExchangeScannerViews:
             'ews_grant': exchange_grant.pk
         })
 
-        context = response.context
-        form = context.get('form') if context else None
-        # If the domain is incorrectly formatted, the form will exist in the
-        # context. If it is correctly formatted, the form will not exist.
-        domain_is_valid = form is None
-
-        assert domain_is_valid == valid
+        if valid:
+            # The scanner was created successfully, so we should have been redirected
+            assert response.status_code == 302
+        else:
+            # We should get the form back with errors
+            assert response.status_code == 200
+            assert response.context['form'].has_error('mail_domain')
 
     def test_createview_with_permission(self, client, user_admin):
         client.force_login(user_admin)
