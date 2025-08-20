@@ -2,7 +2,8 @@ import datetime
 
 import pytest
 
-from os2datascanner.projects.admin.organizations.models import broadcasted_mixin
+from django.contrib.auth.models import Permission
+from os2datascanner.projects.admin.organizations.models import broadcasted_mixin, Account
 
 from os2datascanner.projects.admin.organizations.broadcast_bulk_events import BulkCreateEvent, \
     BulkUpdateEvent, BulkDeleteEvent
@@ -134,3 +135,20 @@ class TestSynchronizeGrants:
         assert len(enqueued_events) == 1
         assert enqueued_events[0][0].to_json_object() == BulkUpdateEvent(
             get_broadcastable_dict(smb_grant.__class__, smb_grant)).to_json_object()
+
+
+@pytest.mark.django_db
+def test_account_add_permission(oluf, enqueued_events):
+    # Arrange
+    perm = Permission.objects.get(codename='view_sbsys_tab')
+    enqueued_events.clear()
+    assert oluf.permissions.count() == 0
+
+    # Act
+    oluf.permissions.add(perm)
+
+    # Assert
+    assert oluf.permissions.count() == 1
+    assert len(enqueued_events) == 1
+    assert enqueued_events[0][0].to_json_object() == BulkUpdateEvent(
+        get_broadcastable_dict(Account, oluf)).to_json_object()
