@@ -91,7 +91,7 @@ def account_permissions_changed(sender, instance, action, *args, **kwargs):
     a post-save, so we have to do it here as well."""
     if not sender.__name__ == "Account_permissions" or action not in ["post_add", "post_remove"]:
         return
-    broadcastable_dict = get_broadcastable_dict(sender, instance)
+    broadcastable_dict = get_broadcastable_dict(instance.__class__, instance)
 
     event = BulkUpdateEvent(broadcastable_dict)
 
