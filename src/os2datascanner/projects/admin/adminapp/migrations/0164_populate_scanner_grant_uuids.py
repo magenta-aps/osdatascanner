@@ -17,11 +17,11 @@ def set_grant_uuid(apps, schema_editor):
 
     for google_model in [GoogleDriveScanner, GmailScanner]:
         for scanner in google_model.objects.iterator():
-            scanner.grant_uuid =  scanner.google_api_grant.uuid
+            scanner.grant_uuid =  scanner.google_api_grant.uuid if scanner.google_api_grant else None
             scanner.save(update_fields=['grant_uuid'])
 
     for scanner in FileScanner.objects.iterator():
-        scanner.grant_uuid =  scanner.smb_grant.uuid
+        scanner.grant_uuid =  scanner.smb_grant.uuid if scanner.smb_grant else None
         scanner.save(update_fields=['grant_uuid'])
 
     for scanner in ExchangeScanner.objects.iterator():
@@ -32,11 +32,11 @@ def set_grant_uuid(apps, schema_editor):
     for msgraph_model in [MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner,
                           MSGraphTeamsFileScanner, MSGraphSharepointScanner]:
         for scanner in msgraph_model.objects.iterator():
-            scanner.grant_uuid = scanner.graph_grant.uuid
+            scanner.grant_uuid = scanner.graph_grant.uuid if scanner.graph_grant else None
             scanner.save(update_fields=['grant_uuid'])
 
     for scanner in SBSYSDBScanner.objects.iterator():
-        scanner.grant_uuid = scanner.grant.uuid
+        scanner.grant_uuid = scanner.grant.uuid if scanner.grant else None
         scanner.save(update_fields=['grant_uuid'])
 
 class Migration(migrations.Migration):
