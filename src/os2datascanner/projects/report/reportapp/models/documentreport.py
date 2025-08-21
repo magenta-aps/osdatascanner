@@ -8,7 +8,7 @@ from django.db.models import JSONField
 from django.db.models.functions import Upper
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.projects.report.organizations.models import Organization, Alias
+from os2datascanner.projects.report.organizations.models import Alias
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.pipeline.messages import (
     MatchesMessage, ProblemMessage, MetadataMessage, ScanTagFragment
@@ -65,11 +65,6 @@ class DocumentReport(models.Model):
 
     last_opened_time = models.DateTimeField(null=True, verbose_name=_('time last opened'))
 
-    organization = models.ForeignKey(Organization,
-                                     null=True, blank=True,
-                                     verbose_name=_('organization'),
-                                     on_delete=models.PROTECT)
-
     path = models.CharField(max_length=256, verbose_name=_("path"))
 
     raw_scan_tag = JSONField(null=True)
@@ -100,8 +95,7 @@ class DocumentReport(models.Model):
 
     scanner_job = models.ForeignKey(
         ScannerReference,
-        on_delete=models.PROTECT,
-        null=True,
+        on_delete=models.CASCADE,
         related_name='document_reports',
     )
 

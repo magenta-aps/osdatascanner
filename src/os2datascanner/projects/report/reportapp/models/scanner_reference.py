@@ -14,10 +14,8 @@ class ScannerReference(models.Model):
     )
     organization = models.ForeignKey(
         Organization,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='scanners',
-        default=None,
-        null=True,
     )
     org_units = models.ManyToManyField(
         OrganizationalUnit,
