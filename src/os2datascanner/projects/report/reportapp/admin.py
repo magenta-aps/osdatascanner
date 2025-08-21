@@ -75,23 +75,24 @@ class DocumentReportAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'number_of_matches',
-        'organization',
         'scanner_job',
         'aliases',
         'resolution_status',
-        'resolution_time', 'only_notify_superadmin')
+        'resolution_time',
+        'only_notify_superadmin',
+    )
 
     list_filter = (
-        'organization',
-        'scanner_job',)
+        'scanner_job',
+    )
 
     def aliases(self, dr):
         return ", ".join([alias_relation.account.username
                           for alias_relation in dr.alias_relation.all()])
 
     def get_queryset(self, request):
-        return super(DocumentReportAdmin, self).get_queryset(request).select_related(
-            'organization').prefetch_related('alias_relation')
+        return super(DocumentReportAdmin, self).get_queryset(request).prefetch_related(
+            'alias_relation')
 
 
 @admin.register(ScannerReference)
@@ -99,7 +100,7 @@ class ScannerReferenceAdmin(admin.ModelAdmin):
     list_display = (
         "scanner_name",
         "scanner_pk",
-        "organization"
+        "organization",
     )
 
     list_filter = (
