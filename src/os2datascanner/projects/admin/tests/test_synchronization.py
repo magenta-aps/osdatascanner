@@ -41,7 +41,7 @@ def enqueued_events(monkeypatch):
 
 @pytest.fixture
 def fixed_time(monkeypatch):
-    fixed_dt = datetime.datetime(2025, 8, 19, 12, 0, 0)
+    fixed_dt = datetime.datetime(2025, 8, 19, 12, 0, 0, tzinfo=datetime.timezone.utc)
 
     def fake_time_now():
         return fixed_dt
@@ -138,7 +138,7 @@ class TestSynchronizeGrants:
 
 
 @pytest.mark.django_db
-def test_account_add_permission(oluf, enqueued_events):
+def test_account_add_permission(oluf, enqueued_events, fixed_time):
     # Arrange
     perm = Permission.objects.get(codename='view_sbsys_tab')
     enqueued_events.clear()
