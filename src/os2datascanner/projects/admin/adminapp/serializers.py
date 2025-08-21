@@ -20,5 +20,6 @@ class SharePointSiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = MSGraphSharePointSite
         fields = (
+                'id',
                 'uuid',
                 'name')

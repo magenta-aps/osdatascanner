@@ -398,6 +398,12 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
+
+        return context
+
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
 
@@ -462,6 +468,10 @@ class SharePointListing(ListAPIView):
         if grant_id := self.request.query_params.get('grantId', None):
             self._grant = GraphGrant.objects.filter(uuid=grant_id).first()
             self._sync_sites()
+
+        if self.request.query_params.get('grantId') == "":
+            # A request was made with a blank grant UUID don't return anything
+            return
 
         return MSGraphSharePointSite.objects.all()
 

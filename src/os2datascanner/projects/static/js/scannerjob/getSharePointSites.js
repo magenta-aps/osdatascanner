@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const syncButton = document.getElementById('sharepoint-sync-btn');
     const selectElement = document.getElementById('sharepoint_sites');
+    const grantSelect = document.querySelector("#id_graph_grant");
     
     if (syncButton && selectElement) {
         syncButton.addEventListener('click', async function() {
             try {
-                grantId = document.querySelector("#id_graph_grant").value;
+                grantId = grantSelect.value;
                 syncButton.disabled = true;
                 
                 const selectedValues = Array.from(selectElement.selectedOptions).map(option => option.value);
@@ -27,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 data.forEach(site => {
                     const option = document.createElement('option');
-                    option.value = site.uuid;
+                    option.value = site.id;
                     option.textContent = site.name;
                     
-                    if (selectedValues.includes(site.uuid.toString())) {
+                    if (selectedValues.includes(site.id.toString())) {
                         option.selected = true;
                     }
                     
@@ -45,4 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    if (grantSelect.value === undefined || grantSelect.value === ''){
+        syncButton.disabled = true;
+    }
+
+    grantSelect.addEventListener('change', ()=> {
+        if (grantSelect.value === undefined || grantSelect.value === ''){
+            syncButton.disabled = true;
+        } else {
+            syncButton.disabled = false;
+        }
+    });
+
+    
 });

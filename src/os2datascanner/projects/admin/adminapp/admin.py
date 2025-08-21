@@ -38,6 +38,7 @@ from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScanner
 from .models.scannerjobs.gmail import GmailScanner
 from .models.scannerjobs.sbsysdb import SBSYSDBScanner
+from .models.MSGraphSharePointSite import MSGraphSharePointSite
 
 
 class RuleAdmin(admin.ModelAdmin):
@@ -198,6 +199,10 @@ class UserErrorLogAdmin(admin.ModelAdmin):
         'is_new',
         'is_resolved'
     )
+
+    @admin.register(MSGraphSharePointSite)
+    class MSGraphSharePointSite(admin.ModelAdmin):
+        list_display = ('uuid', 'name')
 
     actions = ('mark_new', 'mark_not_new', 'mark_removed', 'mark_not_removed',)
 
