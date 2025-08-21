@@ -138,7 +138,7 @@ class TestSynchronizeGrants:
 
 
 @pytest.mark.django_db
-def test_account_add_permission(oluf, enqueued_events):
+def test_account_add_permission(oluf, enqueued_events, fixed_time):
     # Arrange
     perm = Permission.objects.get(codename='view_sbsys_tab')
     enqueued_events.clear()
