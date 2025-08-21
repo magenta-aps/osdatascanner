@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from os2datascanner.projects.report.organizations.models import (Account, Alias,
                                                                  Organization, OrganizationalUnit,
                                                                  Position)
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 
 from os2datascanner.projects.grants.models import SMBGrant
 from ..management.commands.event_collector import event_message_received_raw
@@ -154,3 +155,33 @@ class TestEventCollector:
             next(event_message_received_raw(delete_message_smbgrant))
 
         assert SMBGrant.objects.count() == 0
+
+    # SCANNER Create/Update
+
+    def test_event_collector_scanner(self, create_message_scanner, update_message_scanner):
+
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(create_message_scanner))
+
+        serialized_obj_create = create_message_scanner.get("classes").get("Scanner")[0]
+
+        assert ScannerReference.objects.filter(
+            scanner_pk=serialized_obj_create['pk'],
+            scanner_name=serialized_obj_create['name'],
+            organization=serialized_obj_create['organization'],
+            scan_entire_org=serialized_obj_create['scan_entire_org'],
+            only_notify_superadmin=serialized_obj_create['only_notify_superadmin'],
+        ).exists()
+
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(update_message_scanner))
+
+        serialized_obj_update = update_message_scanner.get("classes").get("Scanner")[0]
+
+        assert ScannerReference.objects.filter(
+            scanner_pk=serialized_obj_update['pk'],
+            scanner_name=serialized_obj_update['name'],
+            organization=serialized_obj_update['organization'],
+            scan_entire_org=serialized_obj_update['scan_entire_org'],
+            only_notify_superadmin=serialized_obj_update['only_notify_superadmin'],
+        ).exists()

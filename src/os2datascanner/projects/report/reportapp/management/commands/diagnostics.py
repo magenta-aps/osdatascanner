@@ -25,6 +25,7 @@ from django.conf import settings
 
 from ....organizations.models import Account, Alias, OrganizationalUnit, Organization
 from ...models.documentreport import DocumentReport
+from ...models.scanner_reference import ScannerReference
 
 
 class Command(BaseCommand):
@@ -141,9 +142,6 @@ class Command(BaseCommand):
             resolution_status__isnull=False).values("resolution_status").order_by().annotate(
             count=Count("resolution_status")).order_by("-count")
         unhandled = matches.filter(resolution_status__isnull=True)
-        scannerjobs = matches.values(
-            "scanner_job_pk", "scanner_job_name").order_by().annotate(
-            count=Count("pk")).order_by("-count")
 
         print(f"Found {reports.count()} reports in total, {matches.count()} of which "
               f"contain matches, {unhandled.count()} of which are unhandled.")
@@ -160,11 +158,13 @@ class Command(BaseCommand):
             fig.show()
 
         if matches:
+            scannerjobs = ScannerReference.objects.annotate(
+                count=Count("document_reports")).order_by('-count')
             print("\nMatches come from the following scannerjobs:")
             labels = [
-                f"{scannerjob['scanner_job_name']} ({scannerjob['scanner_job_pk']})"
+                f"{scannerjob.scanner_name} ({scannerjob.scanner_pk})"
                 for scannerjob in scannerjobs]
-            counts = [scannerjob['count'] for scannerjob in scannerjobs]
+            counts = [scannerjob.count for scannerjob in scannerjobs]
 
             # Create figure in the terminal
             fig = tpl.figure()

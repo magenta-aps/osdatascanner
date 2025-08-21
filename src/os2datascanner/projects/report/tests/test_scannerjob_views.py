@@ -46,7 +46,7 @@ class TestScannerjobListView:
             scanner_job_name="Scanner A")
 
         response = self.get_scannerjoblistview_response(rf, superuser_account)
-        scanners = [scanner["scanner_job_pk"] for scanner in response.context_data["scannerjobs"]]
+        scanners = [scanner.scanner_pk for scanner in response.context_data["scannerjobs"]]
 
         assert 51 in scanners
         assert 52 in scanners
@@ -94,9 +94,9 @@ class TestScannerjobDeleteView:
 
         self.post_scannerjobdeleteview_response(client, superuser_account, 52)
 
-        assert DocumentReport.objects.filter(scanner_job_pk=51).count() == 10
-        assert DocumentReport.objects.filter(scanner_job_pk=52).count() == 0
-        assert DocumentReport.objects.filter(scanner_job_pk=53).count() == 10
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=51).count() == 10
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=52).count() == 0
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=53).count() == 10
 
     def test_superuser_delete_from_other_organization(
             self, client, superuser_account, egon_email_alias, hulk_email_alias):
@@ -122,7 +122,7 @@ class TestScannerjobDeleteView:
         self.post_scannerjobdeleteview_response(client, superuser_account, 53)
 
         # No reports should be deleted
-        assert DocumentReport.objects.filter(scanner_job_pk=53).count() == 10
+        assert DocumentReport.objects.filter(scanner_job__scanner_pk=53).count() == 10
 
     # Helper functions
 

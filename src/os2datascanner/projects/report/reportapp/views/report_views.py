@@ -39,6 +39,7 @@ from .utilities.smb_utilities import try_smb_delete_1
 from .utilities.document_report_utilities import handle_report, get_deviations
 from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport, RENDERABLE_RULES
+from ..models.scanner_reference import ScannerReference
 from ...organizations.models.account import Account
 
 from os2datascanner.core_organizational_structure.models.organization import SBSYSTabConfigChoices
@@ -174,7 +175,7 @@ class ReportView(LoginRequiredMixin, ListView):
 
         if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
             self.document_reports = self.document_reports.filter(
-                scanner_job_pk=int(scannerjob))
+                scanner_job__scanner_pk=int(scannerjob))
 
         if (sensitivity := self.request.GET.get('sensitivities')) and sensitivity != 'all':
             self.document_reports = self.document_reports.filter(sensitivity=int(sensitivity))
@@ -206,7 +207,7 @@ class ReportView(LoginRequiredMixin, ListView):
         sensitivity_filter = Q(sensitivity=self.request.GET.get('sensitivities')
                                ) if self.request.GET.get('sensitivities') not in \
             ['all', None] else Q()
-        scannerjob_filter = Q(scanner_job_pk=self.request.GET.get('scannerjob')
+        scannerjob_filter = Q(scanner_job__scanner_pk=self.request.GET.get('scannerjob')
                               ) if self.request.GET.get('scannerjob') not in \
             ['all', None] else Q()
         resolution_status_filter = Q(resolution_status=self.request.GET.get(
@@ -214,16 +215,22 @@ class ReportView(LoginRequiredMixin, ListView):
             ['all', None] else Q()
 
         if self.scannerjob_filters is None:
-            # Create select options
-            self.scannerjob_filters = self.all_reports.order_by(
-                'scanner_job_pk').values(
-                'scanner_job_pk').annotate(
-                filtered_total=Count('pk', distinct=True,
-                                     filter=sensitivity_filter & resolution_status_filter),
-                total=Count('pk', distinct=True)  # Todo: I'm not sure we're using this 'total'?
-                ).values(
-                    'scanner_job_name', 'total', 'filtered_total', 'scanner_job_pk'
-                ).order_by('scanner_job_name')
+            filtered_reports = self.all_reports.filter(
+                sensitivity_filter & resolution_status_filter)
+            self.scannerjob_filters = ScannerReference.objects.annotate(
+                filtered_total=Count(
+                    'document_reports',
+                    filter=Q(document_reports__in=filtered_reports),
+                ),
+                total=Count(
+                    'document_reports',
+                    filter=Q(document_reports__in=self.all_reports),
+                ),
+            ).filter(
+                Q(org_units__in=self.request.user.account.units.all(), only_notify_superadmin=False)
+                | Q(organization=self.org, scan_entire_org=True, only_notify_superadmin=False)
+                | Q(total__gt=0)
+            ).order_by('scanner_name').distinct()
 
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
@@ -629,7 +636,7 @@ class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView)
     def get_queryset(self):
         qs = super().get_queryset()
         scanner_job_pk = self.request.POST.get('distribute-to')
-        qs = qs.filter(scanner_job_pk=scanner_job_pk)
+        qs = qs.filter(scanner_job__scanner_pk=scanner_job_pk)
         return qs
 
     def post(self, request, *args, **kwargs):

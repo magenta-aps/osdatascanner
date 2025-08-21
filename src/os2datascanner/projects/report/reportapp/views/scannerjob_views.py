@@ -2,7 +2,7 @@ import structlog
 from django.db import transaction
 
 from django.views.generic import ListView
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -26,9 +26,13 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["scannerjobs"] = self.object_list.values(
-            "scanner_job_pk", "scanner_job_name", "source_type").order_by().annotate(
-                count=Count("scanner_job_name"))
+        org = self.kwargs['org']
+        context["scannerjobs"] = org.scanners.annotate(
+                count=Count(
+                    'document_reports',
+                    filter=Q(document_reports__in=self.object_list),
+                )
+            )
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -43,7 +47,7 @@ class ScannerjobDeleteView(PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         all_reports = super().get_queryset().filter(organization=self.kwargs["org"])
-        return all_reports.filter(scanner_job_pk=self.kwargs["pk"]).only("pk")
+        return all_reports.filter(scanner_job__scanner_pk=self.kwargs["pk"]).only("pk")
 
     def dispatch(self, request, *args, **kwargs):
         self.kwargs["org"] = request.user.account.organization

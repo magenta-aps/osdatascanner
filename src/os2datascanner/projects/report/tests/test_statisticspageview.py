@@ -52,7 +52,7 @@ class TestUserStatisticsPageView:
         response = self.get_user_statisticspage_response(rf, egon_account)
 
         # Assert
-        match_count = response.context_data.get("scannerjobs")[0].get("total")
+        match_count = response.context_data.get("scannerjobs")[0].total
         assert match_count == 10
 
     def test_double_relation_week_count(self, egon_account, egon_email_alias, egon_upn_alias, rf):
@@ -88,6 +88,27 @@ class TestUserStatisticsPageView:
         # Assert
         match_count = response.context_data.get("matches_by_week")[0].get("matches")
         assert match_count == 0
+
+    def test_scannerjobs(
+            self,
+            egon_account,
+            scan_olsenbanden_org,
+            scan_olsenbanden_org_withheld,
+            scan_kun_egon,
+            scan_kun_egon_withheld,
+            scan_owned_by_olsenbanden,
+            rf):
+        # Act
+        response = self.get_user_statisticspage_response(rf, egon_account)
+        choices = list(response.context_data.get('scannerjobs'))
+
+        # Assert
+        assert len(choices) == 2
+        assert scan_olsenbanden_org in choices
+        assert scan_olsenbanden_org_withheld not in choices
+        assert scan_kun_egon in choices
+        assert scan_kun_egon_withheld not in choices
+        assert scan_owned_by_olsenbanden not in choices
 
     # Helper functions
 

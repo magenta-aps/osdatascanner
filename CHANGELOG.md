@@ -10,6 +10,13 @@
   This frees the report module of manual Grant creation, though requires one-time manual 
   correction if report module Grants already exist.
 
+- Users are now able to see what scannerjobs they are covered by, even those they haven't
+  received any results from.
+
+### General improvements
+
+- A new model ScannerReference have been added to the report module, keeping track of scanner info.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"

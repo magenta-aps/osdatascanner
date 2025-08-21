@@ -115,18 +115,19 @@ def msgraph_mail_reports():  # noqa: ECE001
     flat_metadata.update(scan_tag_origin_metadata)
     nested_metadata.update(scan_tag_origin_metadata)
 
-    return [DocumentReport(
-        name="Report-nested",
-        owner="jean@claude.sky",
-        scanner_job_pk=1,
-        path="docx",
-        raw_metadata=flat_metadata),
+    return [
         DocumentReport(
             name="Report-nested",
             owner="jean@claude.sky",
-            scanner_job_pk=1,
             path="docx",
-            raw_metadata=nested_metadata)
+            raw_metadata=flat_metadata
+        ),
+        DocumentReport(
+            name="Report-nested",
+            owner="jean@claude.sky",
+            path="docx",
+            raw_metadata=nested_metadata
+        )
     ]
 
 
@@ -162,9 +163,9 @@ def not_msgraph_reports():
     return DocumentReport(
         name="Report-nested",
         owner="jean@claude.sky",
-        scanner_job_pk=1,
         path="docx",
-        raw_metadata=filescan_metadata)
+        raw_metadata=filescan_metadata,
+    )
 
 
 class TestMSGraphUtils:

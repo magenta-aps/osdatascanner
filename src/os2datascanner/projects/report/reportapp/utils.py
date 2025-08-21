@@ -304,7 +304,7 @@ def create_alias_and_match_relations(sub_alias: Alias) -> int:
             reports = all_reports.filter(
                 (Q(alias_relation__isnull=True) |
                  Q(alias_relation___alias_type=AliasType.REMEDIATOR.value)) &
-                Q(scanner_job_pk=remediator_for)
+                Q(scanner_job__scanner_pk=remediator_for)
             )
 
     tm_create_list = []

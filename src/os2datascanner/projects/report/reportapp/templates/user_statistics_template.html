@@ -108,10 +108,10 @@
                 {% if scannerjobs %}
                   <div class="mini-table">
                     {% for scannerjob in scannerjobs %}
-                      <div id="scannerjob-li__{{ scannerjob.scanner_job_pk|unlocalize }}"
+                      <div id="scannerjob-li__{{ scannerjob.scanner_pk|unlocalize }}"
                            class="unhandled-results__container">
                         <div class="unhandled-results__label">
-                          <span class="label__scannerjob-name">{{ scannerjob.scanner_job_name }}</span>
+                          <span class="label__scannerjob-name">{{ scannerjob.scanner_name }}</span>
 
                           <span class="label__amount">
                             {{ scannerjob.total }}
@@ -127,14 +127,14 @@
                           <button type="button"
                                   class="button button--icon-button button--datatable-actions"
                                   name="delete_from_scannerjob"
-                                  aria-label="{% trans 'Delete results from' %} &quot;{{ scannerjob.scanner_job_name }}&quot;"
-                                  title="{% trans 'Delete results from' %} &quot;{{ scannerjob.scanner_job_name }}&quot;"
+                                  aria-label="{% trans 'Delete results from' %} &quot;{{ scannerjob.scanner_name }}&quot;"
+                                  title="{% trans 'Delete results from' %} &quot;{{ scannerjob.scanner_name }}&quot;"
                                   hx-post="{% url 'statistics-user-id' account.uuid %}"
                                   hx-trigger="click"
-                                  hx-target="#scannerjob-li__{{ scannerjob.scanner_job_pk|unlocalize }}"
+                                  hx-target="#scannerjob-li__{{ scannerjob.scanner_pk|unlocalize }}"
                                   hx-swap="outerHTML"
-                                  hx-vals='{"pk": "{{ scannerjob.scanner_job_pk }}", "name": "{{ scannerjob.scanner_job_name }}"}'
-                                  hx-confirm="{% trans 'You are about to delete all results from the scannerjob' %} &quot;{{ scannerjob.scanner_job_name }}&quot; {% trans 'associated with the user' %} {{ account.get_full_name }} ({% trans Username %}{{ account.username }}). {% trans 'Are you sure? This action cannot be reversed.' %}">
+                                  hx-vals='{"pk": "{{ scannerjob.scanner_pk }}", "name": "{{ scannerjob.scanner_name }}"}'
+                                  hx-confirm="{% trans 'You are about to delete all results from the scannerjob' %} &quot;{{ scannerjob.scanner_name }}&quot; {% trans 'associated with the user' %} {{ account.get_full_name }} ({% trans Username %}{{ account.username }}). {% trans 'Are you sure? This action cannot be reversed.' %}">
                             <i id="delete" class="material-symbols">delete</i>
                           </button>
                         </div>

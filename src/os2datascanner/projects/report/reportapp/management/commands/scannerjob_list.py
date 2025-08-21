@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Count
 
-from ...models.documentreport import DocumentReport
+from ...models.scanner_reference import ScannerReference
 
 
 class Command(BaseCommand):
@@ -11,15 +10,14 @@ class Command(BaseCommand):
     help = "Lists all scannerjobs that the report module knows about."
 
     def handle(self, *args, **kwargs):
-        scannerjobs = DocumentReport.objects.values(
-            'scanner_job_pk', 'scanner_job_name').order_by().annotate(
-            count=Count('scanner_job_name')).order_by('scanner_job_pk')
+        scannerjobs = ScannerReference.objects.all()
 
-        if scannerjobs:
+        if scannerjobs.exists():
             self.stdout.write(self.style.SUCCESS("Scannerjobs:"))
 
             for job in scannerjobs:
-                self.stdout.write(f"{job['scanner_job_name']} (PK: {job['scanner_job_pk']})")
+                self.stdout.write(
+                    f"{job.scanner_name} (PK: {job.scanner_pk})")
 
         else:
             self.stdout.write(self.style.NOTICE("No scannerjobs found."))

@@ -16,7 +16,6 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import ScanStatus, Scanner
 from os2datascanner.core_organizational_structure.models import \
     OrganizationSerializer as Core_OrganizationSerializer
 from .broadcasted_mixin import Broadcasted
@@ -91,7 +90,8 @@ class Organization(Core_Organization):
 
     @property
     def scanners_running(self) -> bool:
-        org_scanners = Scanner.objects.filter(organization=self.uuid)
+        from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import ScanStatus
+        org_scanners = self.scannerjob.all()
         scanners_running = ScanStatus.objects.exclude(
                 ScanStatus._completed_or_cancelled_Q).filter(
                     scanner_id__in=org_scanners)

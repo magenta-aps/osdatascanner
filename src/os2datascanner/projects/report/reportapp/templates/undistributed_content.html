@@ -22,7 +22,7 @@
       <select id="distribute-to" name="distribute-to" multiple>
         {% for scan in undistributed_scannerjobs %}
           {% comment %} Check here for scannerjobs with the "only notify superadmin"-setting {% endcomment %}
-          <option value="{{ scan.scanner_job_pk|unlocalize }}">{{ scan.scanner_job_name }} ({{ scan.total }})</option>
+          <option value="{{ scan.scanner_pk|unlocalize }}">{{ scan.scanner_name }} ({{ scan.total }})</option>
         {% endfor %}
       </select>
       <button type="button"

@@ -43,9 +43,9 @@
                 </option>
 
                 {% for scan in scannerjob_choices %}
-                  <option value="{{ scan.scanner_job_pk|unlocalize }}"
-                          {% if chosen_scannerjob == scan.scanner_job_pk|stringformat:"i" %}selected="selected"{% endif %}>
-                    {{ scan.scanner_job_name }} ({{ scan.filtered_total }})
+                  <option value="{{ scan.scanner_pk|unlocalize }}"
+                          {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
+                    {{ scan.scanner_name }} ({{ scan.filtered_total }})
                   </option>
                 {% endfor %}
               </select>

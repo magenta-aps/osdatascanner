@@ -48,12 +48,12 @@ class TestHandleCleanAccountMessage:
         assert DocumentReport.objects.count() == 30
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
-            scanner_job_pk=1
+            scanner_job__scanner_pk=1
         ).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
         ).exclude(
-            scanner_job_pk=1
+            scanner_job__scanner_pk=1
         ).count() == 10
         assert DocumentReport.objects.filter(
             alias_relation__account=egon_account
@@ -102,21 +102,21 @@ class TestHandleCleanAccountMessage:
         assert DocumentReport.objects.count() == 20
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
-            scanner_job_pk=1
+            scanner_job__scanner_pk=1
         ).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
         ).exclude(
-            scanner_job_pk=1
+            scanner_job__scanner_pk=1
         ).count() == 10
         assert DocumentReport.objects.filter(
             alias_relation__account=egon_account,
-            scanner_job_pk=1
+            scanner_job__scanner_pk=1
         ).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=egon_account,
         ).exclude(
-            scanner_job_pk=1
+            scanner_job__scanner_pk=1
         ).count() == 10
 
     def test_cleaning_document_reports_single_account_multiple_scanners(
@@ -145,12 +145,12 @@ class TestHandleCleanAccountMessage:
         assert DocumentReport.objects.count() == 20
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
-            scanner_job_pk__in=[1, 2]
+            scanner_job__scanner_pk__in=[1, 2]
         ).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
         ).exclude(
-            scanner_job_pk__in=[1, 2]
+            scanner_job__scanner_pk__in=[1, 2]
         ).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=egon_account
@@ -181,16 +181,16 @@ class TestHandleCleanAccountMessage:
 
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
-            scanner_job_pk=1).count() == 0
+            scanner_job__scanner_pk=1).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=bøffen_account,
-            scanner_job_pk=2).count() == 0
+            scanner_job__scanner_pk=2).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=egon_account,
-            scanner_job_pk=1).count() == 0
+            scanner_job__scanner_pk=1).count() == 0
         assert DocumentReport.objects.filter(
             alias_relation__account=egon_account,
-            scanner_job_pk=2).count() == 0
+            scanner_job__scanner_pk=2).count() == 0
 
 
 @pytest.mark.django_db
@@ -210,13 +210,13 @@ class TestHandleCleanProblemMessage:
         # Make sure only the ten unmatched reports were deleted
         assert DocumentReport.objects.all().count() == 20
         assert DocumentReport.objects.filter(
-            scanner_job_pk=1,
+            scanner_job__scanner_pk=1,
             number_of_matches=0
         ).count() == 0
 
         # Make sure reports from other scanner are untouched
         assert DocumentReport.objects.filter(
-            scanner_job_pk=2
+            scanner_job__scanner_pk=2
         ).count() == 10
 
     def test_cleaning_problems_for_two_scanners(
@@ -233,10 +233,10 @@ class TestHandleCleanProblemMessage:
         # Make sure only problem reports were deleted
         assert DocumentReport.objects.all().count() == 10
         assert DocumentReport.objects.filter(
-            scanner_job_pk=1,
+            scanner_job__scanner_pk=1,
             number_of_matches=0
         ).count() == 0
         assert DocumentReport.objects.filter(
-            scanner_job_pk=2,
+            scanner_job__scanner_pk=2,
             number_of_matches=0
         ).count() == 0
