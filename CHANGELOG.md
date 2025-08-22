@@ -17,6 +17,11 @@
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.
 
+### Bugfixes
+
+- Corrected issue where the first ever run of a Scannerjob with last modified check enabled
+  was wrongly considered a delta scan. 
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"

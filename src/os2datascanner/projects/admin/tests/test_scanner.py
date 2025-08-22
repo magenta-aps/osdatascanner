@@ -459,3 +459,84 @@ class TestScannerSourcesWithAccounts:
         for acc, _ in msgraph_calendarscanner.generate_sources_with_accounts():
             assert acc in accounts_with_emails
             assert acc not in accounts_without_emails
+
+    def test_first_run_with_delta_on_is_a_full_scan(self, basic_scanner,
+                                                    test_client_with_queue_priority):
+        """ The first ever run of a do_last_modified_check enabled scanner, should be
+        considered a full scan, as there is no previous run providing any cutoff timestamp. """
+
+        # Arrange through fixtures
+
+        # By default, true, assuring it's the case we're testing on.
+        assert basic_scanner.do_last_modified_check
+
+        # Act
+        scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
+
+        assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
+        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+
+    def test_second_run_with_delta_on_is_a_delta_scan(self, basic_scanner,
+                                                      test_client_with_queue_priority,
+                                                      basic_scanstatus_completed):
+        """ A do_last_modified_check enabled scanner with a previous run, should
+         respect client queue configuration. I.e. use delta queues. """
+
+        # Arrange through fixtures
+
+        # By default, true, assuring it's the case we're testing on.
+        assert basic_scanner.do_last_modified_check
+
+        # Act
+        scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
+
+        assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_delta_queue
+        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_delta_queue
+
+    def test_force_run_on_delta_scan_is_full(self, basic_scanner,
+                                             test_client_with_queue_priority,
+                                             basic_scanstatus_completed):
+        """ Running a thorough scan (force=True) on a do_last_modified_check enabled scanner with
+        a previous run, should result in a full scan. """
+
+        # Arrange through fixtures
+
+        # By default, true, assuring it's the case we're testing on.
+        assert basic_scanner.do_last_modified_check
+
+        # Act
+        scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=True)
+
+        assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
+        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+
+    def test_disabled_last_modified_check_is_a_full_scan(self, basic_scanner,
+                                                         test_client_with_queue_priority):
+        """ A do_last_modified_check disabled scanner with no previous run, should
+        be a full scan"""
+
+        # Arrange
+        basic_scanner.do_last_modified_check = False
+        basic_scanner.save()
+
+        # Act
+        scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
+
+        assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
+        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+
+    def test_disabled_last_modified_check_with_previous_run_is_full(self, basic_scanner,
+                                                                    test_client_with_queue_priority,
+                                                                    basic_scanstatus_completed):
+        """ A do_last_modified_check disabled scanner with a previous run, should
+        be a full scan"""
+
+        # Arrange
+        basic_scanner.do_last_modified_check = False
+        basic_scanner.save()
+
+        # Act
+        scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
+
+        assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
+        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
