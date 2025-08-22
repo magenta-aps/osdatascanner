@@ -202,7 +202,7 @@ class UserErrorLogAdmin(admin.ModelAdmin):
 
     @admin.register(MSGraphSharePointSite)
     class MSGraphSharePointSite(admin.ModelAdmin):
-        list_display = ('uuid', 'name')
+        list_display = ('name', 'uuid')
 
     actions = ('mark_new', 'mark_not_new', 'mark_removed', 'mark_not_removed',)
 

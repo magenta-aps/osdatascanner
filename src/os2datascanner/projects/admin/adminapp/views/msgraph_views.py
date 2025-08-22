@@ -467,13 +467,10 @@ class SharePointListing(ListAPIView):
     def get_queryset(self):
         if grant_id := self.request.query_params.get('grantId', None):
             self._grant = GraphGrant.objects.filter(uuid=grant_id).first()
-            self._sync_sites()
+            if self.request.query_params.get('sync', False):
+                self._sync_sites()
 
-        if self.request.query_params.get('grantId') == "":
-            # A request was made with a blank grant UUID don't return anything
-            return
-
-        return MSGraphSharePointSite.objects.all()
+            return MSGraphSharePointSite.objects.filter(graph_grant__in=[self._grant])
 
     def _sync_sites(self):
         with requests.Session() as session:
@@ -493,6 +490,7 @@ class SharePointListing(ListAPIView):
                         name=site.get(
                             "name",
                             _("Unnamed Site")),
+                        graph_grant=self._grant
                         ))
 
             with transaction.atomic():
@@ -500,7 +498,7 @@ class SharePointListing(ListAPIView):
                     sites_list,
                     update_conflicts=True,
                     unique_fields=["uuid"],
-                    update_fields=["name"]
+                    update_fields=["name", "graph_grant"],
                 )
 
                 # Remove any sites no longer available
