@@ -5,6 +5,7 @@ from django.contrib.auth.models import Permission
 from unittest import skip
 from django.urls import reverse_lazy
 
+from os2datascanner.utils.ref import Counter
 from os2datascanner.engine2.model.data import unpack_data_url
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.msgraph import (
@@ -192,7 +193,6 @@ class TestScanners:
         # whatever Source we had a reference to. (and it was easier available when writing this)
 
         # Arrange
-        outbox = []
         # Build a valid handle representation
         fake_source = graph_mail.MSGraphMailSource(
                         client_id="4",
@@ -212,13 +212,15 @@ class TestScanners:
         )
 
         # Act
-        result_count = msgraph_mailscanner._add_checkups(web_scan_spec, outbox, force=False)
+        checkup_counter = Counter()
+        outbox = list(
+                msgraph_mailscanner._yield_checkups(web_scan_spec, False,
+                                                    checkup_counter))
 
         # Assert
-        assert result_count == 0
+        assert int(checkup_counter) == 0
         assert len(outbox) == 1
-        queue_name, problem_msg = outbox[0]
-        assert queue_name == "os2ds_problems"
+        problem_msg = outbox[0]
         assert problem_msg.irrelevant is True
         assert not msgraph_mailscanner.checkups.exists()
 
@@ -261,7 +263,7 @@ class TestScanners:
                 scanner=msgraph_mailscanner)
 
         sst = msgraph_mailscanner._construct_scan_spec_template(user=None, force=False)
-        msgraph_mailscanner._add_checkups(sst, [], force=False)
+        list(msgraph_mailscanner._yield_checkups(sst, force=False))
 
         assert ScheduledCheckup.objects.count() == 1
         assert ScheduledCheckup.objects.first() == sc

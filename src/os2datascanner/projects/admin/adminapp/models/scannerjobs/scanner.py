@@ -323,7 +323,7 @@ class Scanner(models.Model):
         prerules = []
         if not force and self.do_last_modified_check:
             if self._supports_account_annotations:
-                # _add_sources will add a per-Source LastModifiedRule, so we
+                # _yield_sources will add a per-Source LastModifiedRule, so we
                 # don't need to do anything here
                 pass
             else:
