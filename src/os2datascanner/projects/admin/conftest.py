@@ -71,6 +71,16 @@ def test_client():
 
 
 @pytest.fixture
+def test_client_with_queue_priority(test_client):
+    test_client.explorer_full_queue = "explorer_full"
+    test_client.explorer_delta_queue = "explorer_delta"
+    test_client.conversion_full_queue = "conversion_full"
+    test_client.conversion_delta_queue = "conversion_delta"
+    test_client.save()
+    return test_client
+
+
+@pytest.fixture
 def test_org(test_client):
     return Organization.objects.create(
         name='test_org',

@@ -370,7 +370,8 @@ class Scanner(models.Model):
 
         # Determine if we're running full or delta scan & set explorer and conversion queue
         # accordingly
-        is_true_delta_scan = (bool(self.statuses) and self.do_last_modified_check) and not force
+        is_true_delta_scan = (self.statuses.exists()
+                              and self.do_last_modified_check) and not force
         explorer_queue = (self.organization.client.explorer_delta_queue if is_true_delta_scan
                           else self.organization.client.explorer_full_queue)
         conversion_queue = (self.organization.client.conversion_delta_queue if is_true_delta_scan
