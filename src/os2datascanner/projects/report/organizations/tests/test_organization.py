@@ -27,11 +27,15 @@ class TestOrganization:
         make_matched_document_reports_for(
             egon_email_alias,
             handled=egon_matches,
-            amount=egon_matches)
+            amount=egon_matches,
+            organization=olsenbanden_organization,
+        )
         make_matched_document_reports_for(
             benny_email_alias,
             handled=benny_matches,
-            amount=benny_matches)
+            amount=benny_matches,
+            organization=olsenbanden_organization,
+        )
 
         for report in DocumentReport.objects.filter(alias_relation=benny_email_alias)[:benny_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE

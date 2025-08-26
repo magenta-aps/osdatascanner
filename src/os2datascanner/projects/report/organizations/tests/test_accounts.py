@@ -8,6 +8,7 @@ from django.db.utils import IntegrityError
 from ..models.account import StatusChoices, Account
 from ..models.position import Position
 from ...reportapp.models.documentreport import DocumentReport
+from ...reportapp.models.scanner_reference import ScannerReference
 from .utilities import make_matched_document_reports_for
 
 
@@ -204,23 +205,27 @@ class TestAccount:
             olsenbanden_organization,
             marvel_organization):
 
-        make_matched_document_reports_for(egon_email_alias, handled=10, amount=10)
-        drs = DocumentReport.objects.filter(alias_relation=egon_email_alias).order_by('pk')
-        for report in drs[:1]:
-            report.organization = marvel_organization
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=7,
+            amount=7,
+            organization=olsenbanden_organization,
+            scanner_pk=1,
+        )
+        make_matched_document_reports_for(
+            egon_email_alias,
+            handled=9,
+            amount=9,
+            organization=marvel_organization,
+            scanner_pk=2,
+        )
+
+        for report in ScannerReference.objects.get(scanner_pk=1).document_reports.all()[:3]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
             report.save()
-        for report in drs[1:3]:
-            report.organization = marvel_organization
-            report.resolution_status = DocumentReport.ResolutionChoices.OTHER
-            report.save()
-        for report in drs[3:6]:
-            report.organization = olsenbanden_organization
+
+        for report in ScannerReference.objects.get(scanner_pk=2).document_reports.all()[:4]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
-            report.save()
-        for report in drs[6:]:
-            report.organization = olsenbanden_organization
-            report.resolution_status = DocumentReport.ResolutionChoices.OTHER
             report.save()
 
         assert egon_account.false_positive_rate == 3 / 7

@@ -2,6 +2,7 @@ import json
 
 from django.utils import timezone
 
+from ..models import Organization
 from ...reportapp.models.documentreport import DocumentReport
 from ...reportapp.models.scanner_reference import ScannerReference
 
@@ -206,15 +207,23 @@ def make_matched_document_reports_for(
             scanner_name="test_scanner",
         ):
     for i in range(amount):
-        dr = DocumentReport.objects.create(raw_matches=raw_matches_json_matched)
-        dr.created_timestamp = created
-        if i < handled:
-            dr.resolution_status = 0
+        if organization is None:
+            organization = Organization.objects.all().first()
         scanner, _ = ScannerReference.objects.get_or_create(
             scanner_pk=scanner_pk,
             scanner_name=scanner_name,
             organization=organization,
         )
-        dr.scanner = scanner
-        dr.save()
+        dr = DocumentReport.objects.create(
+            raw_matches=raw_matches_json_matched,
+            scanner_job=scanner,
+            path=(f"report-{i}-{scanner_pk}-{alias.account.username}"
+                  f"-{alias._alias_type}:{alias._value}"
+                  f"-c{created if created else 'None'}"
+                  )
+        )
+        dr.created_timestamp = created
+        if i < handled:
+            dr.resolution_status = 0
         dr.alias_relation.add(alias)
+        dr.save()
