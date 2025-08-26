@@ -217,7 +217,7 @@ class ReportView(LoginRequiredMixin, ListView):
         if self.scannerjob_filters is None:
             filtered_reports = self.all_reports.filter(
                 sensitivity_filter & resolution_status_filter)
-            self.scannerjob_filters = ScannerReference.objects.annotate(
+            self.scannerjob_filters = self.org.scanners.annotate(
                 filtered_total=Count(
                     'document_reports',
                     filter=Q(document_reports__in=filtered_reports),
@@ -227,9 +227,8 @@ class ReportView(LoginRequiredMixin, ListView):
                     filter=Q(document_reports__in=self.all_reports),
                 ),
             ).filter(
-                Q(org_units__in=self.request.user.account.units.all(), only_notify_superadmin=False)
-                | Q(organization=self.org, scan_entire_org=True, only_notify_superadmin=False)
-                | Q(total__gt=0)
+                Q(total__gt=0)
+                | Q(scanner_pk__in=self.additional_scanners())
             ).order_by('scanner_name').distinct()
 
         context['scannerjob_choices'] = self.scannerjob_filters
@@ -301,6 +300,11 @@ class ReportView(LoginRequiredMixin, ListView):
 
         return filtered or (page_exists and all_from_source)
 
+    def additional_scanners(self):
+        """This method should be overwritten to return any scanner that should be visible even if
+        there aren't any relevant reports connected to it."""
+        return ScannerReference.objects.none()
+
 
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
@@ -321,6 +325,14 @@ class UserReportView(ReportView):
 
         return context
 
+    def additional_scanners(self):
+        """A user should be able to see any non-withheld scanner,
+        that either scans one of their orgunits, or the entire organization."""
+        return self.org.scanners.filter(only_notify_superadmin=False).filter(
+            Q(org_units__in=self.request.user.account.units.all())
+            | Q(scan_entire_org=True)
+        )
+
 
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
@@ -338,6 +350,10 @@ class RemediatorView(ReportView):
             logger.warning("Exception raised while trying to dispatch to user "
                            f"{request.user}: {e}")
         return redirect(reverse_lazy('index'))
+
+    def additional_scanners(self):
+        """A remediator should be able to see any scanner they are an remediator for."""
+        return self.request.user.account.scanners_remediator_for
 
 
 class UndistributedView(PermissionRequiredMixin, ReportView):

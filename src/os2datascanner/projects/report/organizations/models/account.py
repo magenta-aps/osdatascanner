@@ -620,6 +620,17 @@ class Account(Core_Account):
             case _:
                 return False
 
+    @property
+    def scanners_remediator_for(self):
+        """
+        Returns all scanners this account is a remediator for.
+        """
+        pks = [int(al._value) for al in self.aliases.filter(_alias_type=AliasType.REMEDIATOR)]
+        if 0 in pks:
+            # This account is an universal remediator. Return all scanners
+            return self.organization.scanners.all()
+        return self.organization.scanners.filter(scanner_pk__in=pks)
+
 
 @receiver(post_save, sender=Account)
 def resize_image(sender, **kwargs):
