@@ -42,6 +42,8 @@
 
 - Fixed wonky looking dropdown on DPO module card.
 
+- Timeouts during the pipeline's exploration stage no longer break the scan.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"
