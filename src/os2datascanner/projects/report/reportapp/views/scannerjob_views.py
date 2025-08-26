@@ -14,6 +14,7 @@ from os2datascanner.projects.report.organizations.models import Alias
 logger = structlog.get_logger()
 
 
+# TODO: Change to use ScannerReference
 class ScannerjobListView(PermissionRequiredMixin, ListView):
     model = DocumentReport
     template_name = "scannerjobs/scannerjob_list.html"
@@ -22,7 +23,7 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
     def get_queryset(self):
         return DocumentReport.objects.filter(
             number_of_matches__gte=1,
-            organization=self.kwargs["org"])
+            scanner_job__organization=self.kwargs["org"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,12 +42,13 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
 
+# TODO: Change to use ScannerReference
 class ScannerjobDeleteView(PermissionRequiredMixin, ListView):
     model = DocumentReport
     permission_required = 'os2datascanner_report.delete_documentreport'
 
     def get_queryset(self):
-        all_reports = super().get_queryset().filter(organization=self.kwargs["org"])
+        all_reports = super().get_queryset().filter(scanner_job__organization=self.kwargs["org"])
         return all_reports.filter(scanner_job__scanner_pk=self.kwargs["pk"]).only("pk")
 
     def dispatch(self, request, *args, **kwargs):

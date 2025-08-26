@@ -8,6 +8,8 @@ from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 
+from os2datascanner.projects.report.organizations.models import Organization
+
 
 @pytest.fixture
 def time0():
@@ -25,10 +27,19 @@ def time2():
 
 
 @pytest.fixture
-def org_frag():
+def test_org():
+    return Organization.objects.create(
+        name="test_org",
+        uuid=uuid.UUID("d92ff0c9-f066-40dc-a57e-541721b6c23e"),
+    )
+
+
+@pytest.fixture
+def org_frag(test_org):
     return messages.OrganisationFragment(
-            name="test_org",
-            uuid=uuid.UUID("d92ff0c9-f066-40dc-a57e-541721b6c23e"))
+        name=test_org.name,
+        uuid=test_org.uuid,
+    )
 
 
 @pytest.fixture

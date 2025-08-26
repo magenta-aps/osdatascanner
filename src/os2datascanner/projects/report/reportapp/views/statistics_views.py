@@ -115,7 +115,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 # organization
                 org = request.user.account.organization
                 self.kwargs["org"] = org
-                self.matches = self.matches.filter(organization=org)
+                self.matches = self.matches.filter(scanner_job__organization=org)
                 if self.request.user.account.is_universal_dpo:
                     self.user_units = OrganizationalUnit.objects.filter(
                         organization=self.request.user.account.organization).order_by("name")

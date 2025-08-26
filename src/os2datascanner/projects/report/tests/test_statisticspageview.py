@@ -15,6 +15,7 @@ from os2datascanner.projects.report.tests.test_utilities import create_reports_f
 
 from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
 from ..reportapp.models.documentreport import DocumentReport
+from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.statistics_views import (
         UserStatisticsPageView, LeaderUnitsStatisticsPageView, LeaderUnitsStatisticsCSVView,
@@ -67,21 +68,10 @@ class TestUserStatisticsPageView:
         match_count = response.context_data.get("matches_by_week")[0].get("matches")
         assert match_count == 10
 
-    def test_reports_no_org(self, egon_account, egon_email_alias, rf):
-        # Arrange
-        create_reports_for(egon_email_alias, num=10)
-        DocumentReport.objects.update(organization=None)
-        # Act
-        response = self.get_user_statisticspage_response(rf, egon_account)
-
-        # Assert
-        match_count = response.context_data.get("matches_by_week")[0].get("matches")
-        assert match_count == 0
-
     def test_reports_different_org(self, marvel_organization, egon_account, egon_email_alias, rf):
         # Arrange
-        create_reports_for(egon_email_alias, num=10)
-        DocumentReport.objects.update(organization=marvel_organization)
+        create_reports_for(egon_email_alias, num=10, scanner_job_pk=1)
+        ScannerReference.objects.filter(scanner_pk=1).update(organization=marvel_organization)
         # Act
         response = self.get_user_statisticspage_response(rf, egon_account)
 
@@ -1120,8 +1110,8 @@ class TestDPOStatisticsPageView:
             hulk_matches):
         """A user should only be able to see results from their own organization."""
 
-        create_reports_for(egon_email_alias, num=egon_matches)
-        create_reports_for(hulk_email_alias, num=hulk_matches)
+        create_reports_for(egon_email_alias, num=egon_matches, scanner_job_pk=1)
+        create_reports_for(hulk_email_alias, num=hulk_matches, scanner_job_pk=2)
 
         response = self.get_dpo_statisticspage_response(rf, egon_account)
 

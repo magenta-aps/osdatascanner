@@ -75,6 +75,9 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                             scanner_name=scanner_dict['name'],
                             only_notify_superadmin=scanner_dict['only_notify_superadmin'],
                             scan_entire_org=scanner_dict['scan_entire_org'],
+                            organization=Organization.objects.get(
+                                uuid=scanner_dict.get('organization')
+                            ),
                         )
                         if org_uuid := scanner_dict.get('organization'):
                             sr.organization = Organization.objects.get(uuid=org_uuid)
@@ -129,20 +132,23 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                     # The Report module doesn't have a Scanner model,
                     # but we instead need to update ScannerReferences.
                     for scanner_dict in raw_model_data:
-                        sr, created = ScannerReference.objects.get_or_create(
-                            scanner_pk=scanner_dict['pk'])
+                        sr, created = ScannerReference.objects.update_or_create(
+                            scanner_pk=scanner_dict['pk'],
+                            defaults={
+                                'scanner_name': scanner_dict['name'],
+                                'only_notify_superadmin': scanner_dict['only_notify_superadmin'],
+                                'scan_entire_org': scanner_dict['scan_entire_org'],
+                                'organization': Organization.objects.get(
+                                    uuid=scanner_dict.get('organization')
+                                ),
+                            }
+                        )
                         if created:
                             logger.info("Update for unknown ScannerReference received.")
 
-                        sr.scanner_name = scanner_dict['name']
-                        sr.only_notify_superadmin = scanner_dict['only_notify_superadmin']
-                        sr.scan_entire_org = scanner_dict['scan_entire_org']
-
-                        if org_uuid := scanner_dict.get('organization'):
-                            sr.organization = Organization.objects.get(uuid=org_uuid)
-                        ou_uuids = scanner_dict.get('org_unit', [])
-                        sr.org_units.set(OrganizationalUnit.objects.filter(uuid__in=ou_uuids))
-                        sr.save()
+                        if ou_uuids := scanner_dict.get('org_unit', []):
+                            sr.org_units.set(OrganizationalUnit.objects.filter(uuid__in=ou_uuids))
+                            sr.save()
 
                     logger.info("Successfully ran broadcast update!")
 
