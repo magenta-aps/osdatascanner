@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-19 11:15+0200\n"
+"POT-Creation-Date: 2025-08-26 11:16+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -135,6 +135,17 @@ msgstr "Kontakter"
 #: organizations/templates/organizations/account_detail.html
 msgid "Organization"
 msgstr "Organisation"
+
+#: adminapp/forms/shared.py adminapp/models/rules.py
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
+msgid "Rule"
+msgstr "Regel"
+
+#: adminapp/forms/shared.py
+msgid "Exclusion rule"
+msgstr "Udelukkelsesregel"
 
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"
@@ -278,13 +289,6 @@ msgstr "sygemelding"
 #: adminapp/models/rules.py
 msgid "Danish"
 msgstr "dansk"
-
-#: adminapp/models/rules.py
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
-#: adminapp/templates/components/rules/customrule_form.html
-#: adminapp/templates/components/rules/regexrule_form.html
-msgid "Rule"
-msgstr "Regel"
 
 #: adminapp/models/rules.py
 msgid "categories"
@@ -3714,9 +3718,10 @@ msgid ""
 "appropriately configured GraphGrant can."
 msgstr ""
 "En EWS Service Account bevilling repræsenterer en service account med "
-"efterligningsadgang til en traditionel on-premises Microsoft Exchange instans. "
-"Bemærk at en EWS bevilling ikke længere kan benyttes til autentificering mod Office 365, "
-"men en korrekt konfigureret Graph bevilling kan."
+"efterligningsadgang til en traditionel on-premises Microsoft Exchange "
+"instans. Bemærk at en EWS bevilling ikke længere kan benyttes til "
+"autentificering mod Office 365, men en korrekt konfigureret Graph bevilling "
+"kan."
 
 #: organizations/templates/grants/googleapigrant_update.html
 msgid ""

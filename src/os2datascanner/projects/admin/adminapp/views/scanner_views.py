@@ -110,13 +110,22 @@ class _FormMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        org = Organization.objects.filter(
-            UserWrapper(self.request.user).make_org_Q("uuid")
-        ).filter(uuid=self.request.GET.get(
-            "organization",
-        )).first() or \
-            Organization.objects.filter(UserWrapper(self.request.user).make_org_Q("uuid")
-                                        ).order_by("name").first()
+
+        # We need to serve the correct organization to the form
+        user_orgs = Organization.objects.filter(
+                UserWrapper(self.request.user).make_org_Q("uuid")
+            )
+        requested_org_uuid = self.request.GET.get("organization")
+        if org := user_orgs.filter(uuid=requested_org_uuid).first():
+            # A specific organization was requested, and the user has access to it. Use that one.
+            pass
+        elif self.object:
+            # We are updating an existing scanner, grab the organization.
+            org = self.object.organization
+        else:
+            # We are creating a new scanner, grab the first organization we can find
+            org = user_orgs.order_by("name").first()
+
         kwargs.update({"user": self.request.user, "org": org, "this_url": self.request.path})
         return kwargs
 

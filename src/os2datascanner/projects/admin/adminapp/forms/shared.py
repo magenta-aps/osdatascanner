@@ -6,6 +6,7 @@ from django.db.models import Q
 from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
 from os2datascanner.projects.admin.utilities import UserWrapper
+from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
 from ...organizations.models.aliases import AliasType
 
@@ -62,6 +63,23 @@ class ScannerForm(GroupingModelForm):
                     }))
     # Change validation_status to a RadioSelect
 
+    rule = forms.ModelChoiceField(
+                    label=_("Rule"),
+                    queryset=Rule.objects.all(),
+                    widget=forms.Select(attrs={
+                        "hx-swap-oob": "true"
+                    })
+                    )
+
+    exclusion_rule = forms.ModelChoiceField(
+                    label=_("Exclusion rule"),
+                    queryset=Rule.objects.all(),
+                    required=False,
+                    widget=forms.Select(attrs={
+                        "hx-swap-oob": "true"
+                    })
+                    )
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
         self.org = kwargs.pop("org")
@@ -95,6 +113,14 @@ class ScannerForm(GroupingModelForm):
 
         # Only allow the user to choose between rules related to the organization
         self.fields["rule"].queryset = self.fields["rule"].queryset.filter(
+            # Rules belonging to the organization ...
+            Q(organization_id=self.org.uuid) |
+            # ... or system rules applied to the organization
+            Q(organization=None, customrule__organizations__uuid=self.org.uuid)
+        )
+
+        # Only allow the user to choose between exclusion rules related to the organization
+        self.fields["exclusion_rule"].queryset = self.fields["exclusion_rule"].queryset.filter(
             # Rules belonging to the organization ...
             Q(organization_id=self.org.uuid) |
             # ... or system rules applied to the organization
