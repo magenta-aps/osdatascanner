@@ -20,6 +20,7 @@ class ScannerReference(models.Model):
     org_units = models.ManyToManyField(
         OrganizationalUnit,
         related_name='scanners',
+        blank=True
     )
     scan_entire_org = models.BooleanField(
         default=False,
