@@ -345,11 +345,12 @@ def scan_olsenbanden_org_withheld(olsenbanden_organization):
 
 
 @pytest.fixture
-def scan_kun_egon(kun_egon_ou):
+def scan_kun_egon(olsenbanden_organization, kun_egon_ou):
     sr = ScannerReference.objects.create(
         scanner_pk=3,
         scanner_name="Scan kun Egon",
         only_notify_superadmin=False,
+        organization=olsenbanden_organization,
     )
     sr.org_units.add(kun_egon_ou)
     sr.save()
@@ -424,6 +425,17 @@ def hulk_dpo_position(hulk_account, avengers_ou):
     return Position.dpos.create(
         account=hulk_account,
         unit=avengers_ou
+    )
+
+
+@pytest.fixture
+def scan_marvel(marvel_organization):
+    return ScannerReference.objects.create(
+        scanner_pk=6,
+        scanner_name="Scan all of Marvel",
+        organization=marvel_organization,
+        scan_entire_org=True,
+        only_notify_superadmin=False,
     )
 
 # More test orgs
