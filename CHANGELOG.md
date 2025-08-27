@@ -13,6 +13,9 @@
 - Users are now able to see what scannerjobs they are covered by, even those they haven't
   received any results from.
 
+  - This includes Remediators, who can now choose any scannerjob they are remediator for,
+    on their remediator page.
+
 ### General improvements
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.
