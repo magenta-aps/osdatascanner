@@ -20,6 +20,21 @@
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.
 
+  - The fields `scanner_job_pk` and `scanner_job_name` have been removed from DocumentReport.
+    Instead the model now has a ForeignKey `scanner_job` pointing to a ScannerReference.
+    Unlike `scanner_job_pk`, this ForeignKey is not nullable, meaning every report needs a scanner.
+
+  - Any DocumentReport without sufficient scanner info will be connected to a dummy scanner called
+    "dummy_migration_scanner_reference" which has the pk 260504.
+
+  - The `organization` field has been removed from DocumentReport.
+    Instead the organization is found through the connected ScannerReference.
+
+  - Unlike the old `organization` field on DocumentReport,
+    the new `organization` field on ScannerReference is not nullable.
+    Any scanner reference without sufficient organizational info will be connected to the dummy
+    organization "dummy_migration_organization".
+
 ### Bugfixes
 
 - Corrected issue where the first ever run of a Scannerjob with last modified check enabled
