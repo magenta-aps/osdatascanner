@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from .test_utilities import create_reports_for
 from ..reportapp.views.scannerjob_views import ScannerjobListView
 from ..reportapp.models.documentreport import DocumentReport
+from ..reportapp.models.scanner_reference import ScannerReference
 
 
 @pytest.mark.django_db
@@ -62,7 +63,6 @@ class TestScannerjobListView:
 
 @pytest.mark.django_db
 class TestScannerjobDeleteView:
-
     def test_delete_scannerjobs_non_superuser(self, client, egon_account):
         """A non-superuser can't delete scannerjobs."""
         response = self.post_scannerjobdeleteview_response(client, egon_account, 10)
@@ -70,6 +70,10 @@ class TestScannerjobDeleteView:
 
     def test_delete_scannerjobs_superuser(self, client, superuser_account):
         """A superuser can delete scannerjobs."""
+        ScannerReference.objects.create(
+            scanner_pk=10,
+            organization=superuser_account.organization,
+        )
         response = self.post_scannerjobdeleteview_response(client, superuser_account, 10)
         assert response.status_code == 302
 
