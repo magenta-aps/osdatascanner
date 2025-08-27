@@ -370,7 +370,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
             acct = self.request.user.account
             self.org = acct.organization
             return DocumentReport.objects.filter(
-                    organization=self.org,
+                    scanner_job__organization=self.org,
                     only_notify_superadmin=True,
                     number_of_matches__gte=1,
                     resolution_status__isnull=not self.archive)

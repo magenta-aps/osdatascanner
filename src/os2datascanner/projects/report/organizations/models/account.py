@@ -85,7 +85,7 @@ class AccountQuerySet(models.QuerySet):
                             aliases__match_relation__number_of_matches__gte=1,
                             aliases__match_relation__resolution_status__isnull=True,
                             aliases__match_relation__only_notify_superadmin=False,
-                            aliases__match_relation__organization=F('organization'),
+                            aliases__match_relation__scanner_job__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -106,7 +106,7 @@ class AccountQuerySet(models.QuerySet):
                             aliases__match_relation__number_of_matches__gte=1,
                             aliases__match_relation__resolution_status__isnull=True,
                             aliases__match_relation__only_notify_superadmin=True,
-                            aliases__match_relation__organization=F('organization'),
+                            aliases__match_relation__scanner_job__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -133,7 +133,7 @@ class AccountQuerySet(models.QuerySet):
                             aliases__match_relation__resolution_status__isnull=True,
                             aliases__match_relation__only_notify_superadmin=False,
                             aliases__match_relation__datasource_last_modified__lte=cutoff_date,
-                            aliases__match_relation__organization=F('organization'),
+                            aliases__match_relation__scanner_job__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -159,7 +159,7 @@ class AccountQuerySet(models.QuerySet):
                          & Q(aliases__shared=False,
                              aliases__match_relation__number_of_matches__gte=1,
                              aliases__match_relation__only_notify_superadmin=False,
-                             aliases__match_relation__organization=F('organization'),
+                             aliases__match_relation__scanner_job__organization=F('organization'),
                              )
                          )
         unhandled_filter = Q(aliases__match_relation__resolution_status__isnull=True)
@@ -370,10 +370,11 @@ class Account(Core_Account):
                 Account.ReportType.WITHHELD_AND_SHARED,)
 
         qs = DocumentReport.objects.filter(
-                organization=self.organization,
-                number_of_matches__gte=1,
-                resolution_status__isnull=not archived,
-                only_notify_superadmin=select_withheld)
+            scanner_job__organization=self.organization,
+            number_of_matches__gte=1,
+            resolution_status__isnull=not archived,
+            only_notify_superadmin=select_withheld,
+        )
 
         rt = Account.ReportType  # Just to make the cases a bit tidier
         match type_:
@@ -484,7 +485,7 @@ class Account(Core_Account):
             number_of_matches__gte=1,
             alias_relation__in=aliases,
             only_notify_superadmin=False,
-            organization=self.organization,
+            scanner_job__organization=self.organization,
         ).values(
             "created_timestamp",
             "resolution_time",

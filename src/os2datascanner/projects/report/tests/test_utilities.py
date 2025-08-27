@@ -318,8 +318,8 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
         scanner, _ = ScannerReference.objects.get_or_create(
             scanner_pk=scanner_job_pk,
             scanner_name=scanner_job_name,
+            organization=org,
         )
-        org.scanners.add(scanner)
 
         dr = DocumentReport.objects.create(
             name=f"Report-{source_type}-{i}{'-matched' if matched else ''}",
@@ -336,7 +336,6 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                   f"-prob{problem if problem else 'None'}"
                   f"-rs{resolution_status if resolution_status is not None else 'None'}"),
             raw_matches=raw_matches_json_matched if matched else None,
-            organization=org,
             resolution_status=resolution_status,
             only_notify_superadmin=only_notify_superadmin,
             raw_problem=problem_message)

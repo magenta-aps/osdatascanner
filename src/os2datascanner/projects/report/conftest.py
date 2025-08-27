@@ -358,11 +358,12 @@ def scan_kun_egon(olsenbanden_organization, kun_egon_ou):
 
 
 @pytest.fixture
-def scan_kun_egon_withheld(kun_egon_ou):
+def scan_kun_egon_withheld(olsenbanden_organization, kun_egon_ou):
     sr = ScannerReference.objects.create(
         scanner_pk=4,
         scanner_name="Scan kun Egon (privately)",
         only_notify_superadmin=True,
+        organization=olsenbanden_organization,
     )
     sr.org_units.add(kun_egon_ou)
     sr.save()
@@ -377,7 +378,6 @@ def scan_owned_by_olsenbanden(olsenbanden_organization):
         organization=olsenbanden_organization,
         scan_entire_org=False,
         only_notify_superadmin=False,
-
     )
 
 

@@ -52,8 +52,8 @@ def categorize_email_from_report(document_report,
     """
 
     # Return early scenarios
-    check_msgraph_grant(document_report.organization)
-    if not document_report.organization.has_categorize_permission():
+    check_msgraph_grant(document_report.scanner_job.organization)
+    if not document_report.scanner_job.organization.has_categorize_permission():
         org_permission_message = _("Your organization does not allow this operation.")
         logger.warning(org_permission_message)
         raise PermissionDenied(org_permission_message)

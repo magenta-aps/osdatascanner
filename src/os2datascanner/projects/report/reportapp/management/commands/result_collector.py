@@ -133,9 +133,18 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001, Cognitive comple
     path = message.handle.crunch(hash=True)
     owner = owner_from_metadata(message)
 
+    org = get_org_from_scantag(scan_tag)
+    if not org:
+        logger.warning("Received message without an organization. Discarding")
+        return
+
     scanner, _ = ScannerReference.objects.get_or_create(
         scanner_pk=scan_tag.scanner.pk,
-        scanner_name=scan_tag.scanner.name,
+        defaults={
+            "scanner_name": scan_tag.scanner.name,
+            "organization": org,
+            "only_notify_superadmin": scan_tag.scanner.test,
+        }
     )
 
     previous_report = DocumentReport.objects.select_for_update(
@@ -184,7 +193,6 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001, Cognitive comple
                 "datasource_last_modified": lm,
                 "only_notify_superadmin": scan_tag.scanner.test,
                 "resolution_status": resolution_status,
-                "organization": get_org_from_scantag(scan_tag),
                 "owner": owner,
             })
 
@@ -254,9 +262,18 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
     new_matches = messages.MatchesMessage.from_json_object(result)
     path = new_matches.handle.crunch(hash=True)
 
+    org = get_org_from_scantag(scan_tag)
+    if not org:
+        logger.warning("Received message without an organization. Discarding")
+        return None
+
     scanner, _ = ScannerReference.objects.get_or_create(
         scanner_pk=scan_tag.scanner.pk,
-        scanner_name=scan_tag.scanner.name,
+        defaults={
+            "scanner_name": scan_tag.scanner.name,
+            "organization": org,
+            "only_notify_superadmin": scan_tag.scanner.test,
+        }
     )
 
     # The queryset is evaluated and locked here.
@@ -344,7 +361,6 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                             sort_matches_by_probability(result)),
                     "only_notify_superadmin": scan_tag.scanner.test,
                     "resolution_status": new_status,
-                    "organization": get_org_from_scantag(scan_tag),
 
                     "raw_problem": None,
                 })
@@ -381,9 +397,18 @@ def handle_problem_message(scan_tag, result):
     obj = (problem.handle if problem.handle else problem.source)
     path = obj.crunch(hash=True)
 
+    org = get_org_from_scantag(scan_tag)
+    if not org:
+        logger.warning("Received message without an organization. Discarding")
+        return None
+
     scanner, _ = ScannerReference.objects.get_or_create(
         scanner_pk=scan_tag.scanner.pk,
-        scanner_name=scan_tag.scanner.name,
+        defaults={
+            "scanner_name": scan_tag.scanner.name,
+            "organization": org,
+            "only_notify_superadmin": scan_tag.scanner.test,
+        }
     )
 
     # Queryset is evaluated and locked here.
@@ -491,8 +516,7 @@ def handle_problem_message(scan_tag, result):
                             handle.sort_key if handle else "(source)"),
                     raw_problem=prepare_json_object(result),
                     only_notify_superadmin=scan_tag.scanner.test,
-                    resolution_status=None,
-                    organization=get_org_from_scantag(scan_tag))
+                    resolution_status=None)
 
             logger.debug(
                 "Unresolved, created new report",
