@@ -562,6 +562,58 @@ class TestAccount:
 
         assert not kjeld_account.is_manager
 
+    def test_account_scanners_remediator_for(
+            self,
+            egon_account,
+            egon_remediator_alias,
+            scan_olsenbanden_org,
+            scan_kun_egon):
+        """An account with an remediator alias pointing at a scanner,
+        is a remediator for that scanner."""
+        # Arrange
+        egon_remediator_alias._value = scan_olsenbanden_org.scanner_pk
+        egon_remediator_alias.save()
+
+        # Act
+        scanners = egon_account.scanners_remediator_for
+
+        # Assert
+        assert scanners.count() == 1
+        assert scan_olsenbanden_org in scanners
+        assert scan_kun_egon not in scanners
+
+    def test_account_scanners_remediator_for_wrong_org(
+            self, egon_account, egon_remediator_alias, scan_marvel):
+        """An account with an remediator alias pointing at a scanner,
+        is not a remediator for that scanner, if it comes from a different org."""
+        # Arrange
+        egon_remediator_alias._value = scan_marvel.scanner_pk
+        egon_remediator_alias.save()
+
+        # Act
+        scanners = egon_account.scanners_remediator_for
+
+        # Assert
+        assert scanners.count() == 0
+        assert scan_marvel not in scanners
+
+    def test_account_scanners_remediator_for_universal_remediator(
+            self,
+            egon_account,
+            egon_remediator_alias,
+            scan_olsenbanden_org,
+            scan_kun_egon,
+            scan_marvel):
+        """A universal remediator (_value=0) is remediator for every scan in their organization."""
+        # Act
+        scanners = egon_account.scanners_remediator_for
+
+        # Assert
+        assert scanners.count() == 2
+        assert scan_olsenbanden_org in scanners
+        assert scan_kun_egon in scanners
+        assert scan_marvel not in scanners
+
 
 @pytest.mark.django_db
 class TestUserAccountConnection:

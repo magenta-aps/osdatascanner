@@ -583,6 +583,44 @@ class TestRemediatorView:
         # But should not see any results
         assert qs.count() == 0
 
+    def test_scannerjob_choices_remediator_matches(
+            self,
+            egon_account,
+            egon_remediator_alias,
+            rf):
+        """When an account has a remediator alias connected to reports,
+        their scanner should show up as a scannerjob option."""
+
+        # Arrange
+        egon_remediator_alias._value = 2
+        egon_remediator_alias.save()
+        create_reports_for(egon_remediator_alias, num=10, scanner_job_pk=1)
+
+        # Act
+        response = self.get_remediator_response(rf, egon_account)
+        choices = list(response.context_data.get('scannerjob_choices'))
+
+        # Assert
+        assert len(choices) == 1
+        assert choices[0].scanner_pk == 1
+
+    def test_scannerjob_choices_remediator_for(
+            self,
+            egon_account,
+            egon_remediator_alias,
+            scan_olsenbanden_org,
+            rf):
+        """When an account has a remediator alias connected to a scanner,
+        it should show up as a scannerjob option."""
+
+        # Act
+        response = self.get_remediator_response(rf, egon_account)
+        choices = list(response.context_data.get('scannerjob_choices'))
+
+        # Assert
+        assert len(choices) == 1
+        assert choices[0].scanner_pk == 1
+
     def remediator_get_queryset(self, rf, account, params=''):
         request = rf.get('/remediator/' + params)
         request.user = account.user
@@ -590,6 +628,11 @@ class TestRemediatorView:
         view.setup(request)
         qs = view.get_queryset()
         return qs
+
+    def get_remediator_response(self, rf, account, params='', **kwargs):
+        request = rf.get('/remediator/' + params)
+        request.user = account.user
+        return RemediatorView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db
