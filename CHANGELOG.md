@@ -50,6 +50,9 @@
 
 - Timeouts during the pipeline's exploration stage no longer break the scan.
 
+- Corrected issue where raw_x and last_opened_time fields in DocumentReport as well as the
+  org_units field in ScannerReference were nullable but the fields were still required.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"
