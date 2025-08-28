@@ -11,5 +11,8 @@ class SyncedPermission(models.Model):
         abstract = True
         permissions = [
             # SBSYS
-            ("view_sbsys_tab", _("Can view the SBSYS tab in Report"))
+            ("view_sbsys_tab", _("Can view the SBSYS tab in Report")),
+            # Leader Statistics Page
+            ("filter_scannerjob_leader_overview",
+                _("Can filter by scannerjob in the leader overview")),
         ]

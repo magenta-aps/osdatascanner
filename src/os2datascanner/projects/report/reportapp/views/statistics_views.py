@@ -558,7 +558,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(last_name__icontains=search_field) |
                 Q(username__istartswith=search_field))
 
-        if (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all":
+        if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
+                (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
             sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
             reports = sr.document_reports.all()
         else:
@@ -928,7 +929,8 @@ class EmployeeView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all":
+        if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
+                (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
             sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
             reports = sr.document_reports.all()
         else:
