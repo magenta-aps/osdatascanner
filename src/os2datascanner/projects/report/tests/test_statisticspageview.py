@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Permission
+from django.http import Http404
 
 from os2datascanner.projects.report.organizations.models.organizational_unit import (
     OrganizationalUnit)
@@ -357,6 +358,95 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params="?view_all=on")
         assert response.context_data.get("employee_count") == 4
+
+    def test_leader_statisticspage_scanner_filter(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}&scannerjob=1",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 3
+
+    def test_leader_statisticspage_scanner_no_filter(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 7
+
+    def test_leader_statisticspage_scanner_filter_all(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}&scannerjob=all",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 7
+
+    def test_leader_statisticspage_scanner_filter_404(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act & Assert
+        with pytest.raises(Http404):
+            self.get_leader_statisticspage_response(
+                rf,
+                superuser_account,
+                params=f"?org_unit={børges_værelse.pk}&scannerjob=3",
+            )
 
     def test_leader_export_as_manager(self, rf, egon_account, egon_manager_position):
         """A user with a 'manager'-position to an organizational unit should
