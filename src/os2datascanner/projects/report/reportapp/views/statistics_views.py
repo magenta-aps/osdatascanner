@@ -587,9 +587,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         # Determine number of columns from context
-        num_cols = 4 + context['show_retention_column'] + self.request.user.has_perm(
+        context['num_cols'] = 4 + context['show_retention_column'] + self.request.user.has_perm(
             "os2datascanner_report.see_withheld_documentreport")
-        context['num_cols'] = num_cols
 
         return context
 
@@ -635,6 +634,18 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         context["active_tab"] = "accounts"
         context["view_url"] = reverse_lazy("statistics-leader-accounts")
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
+
+        scannerjobs = self.org.scanners.filter(
+            document_reports__number_of_matches__gte=1,
+            document_reports__alias_relations__account__in=context['employees'],
+            document_reports__alias_relations__shared=False,
+        ).distinct()
+        if not self.request.user.has_perm(
+                "os2datascanner_report.see_withheld_documentreport"):
+            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
+
+        context['scannerjob_choices'] = scannerjobs
+
         return context
 
     def get(self, request, *args, **kwargs):
@@ -670,6 +681,21 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         context["org_unit"] = self.org_unit
         context["view_url"] = reverse_lazy("statistics-leader-units")
         context["export_url"] = reverse_lazy("statistics-leader-units-export")
+
+        scannerjobs = self.org.scanners.filter(
+            Q(org_units__in=self.descendant_units)
+            | Q(
+                document_reports__number_of_matches__gte=1,
+                document_reports__alias_relations__account__in=context['employees'],
+                document_reports__alias_relations__shared=False,
+            )
+        ).distinct()
+        if not self.request.user.has_perm(
+                "os2datascanner_report.see_withheld_documentreport"):
+            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
+
+        context['scannerjob_choices'] = scannerjobs
+
         return context
 
     def set_user_units_and_org_unit(self, request):
