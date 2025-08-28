@@ -23,11 +23,15 @@
 }
 
 /* NOTE: Remove the parent class nesting, when we've been through all other ".card" elements. */
-.statistics--dpo,
 .form--new {
   .card {
     @include spacing-reset;
+  }
+}
 
+.statistics--dpo,
+.form--new {
+  .card {
     container-type: inline-size;
     container-name: card-component;
     /* NOTE: this makes it possible to add container dependent sizes to the children. */

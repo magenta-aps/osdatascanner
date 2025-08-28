@@ -40,6 +40,8 @@
 - Corrected issue where the first ever run of a Scannerjob with last modified check enabled
   was wrongly considered a delta scan. 
 
+- Fixed wonky looking dropdown on DPO module card.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"
