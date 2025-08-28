@@ -136,12 +136,12 @@
                   </label>
 
                   <button type="button"
-                          class="order-by button button--caret-button {% if order_by == 'unhandled_matches' and order == 'ascending' %}up{% endif %}"
+                          class="order-by button button--caret-button {% if order_by == 'unhandled_results' and order == 'ascending' %}up{% endif %}"
                           id="matches-caret"
-                          name="unhandled_matches"
-                          value="{% if order_by == 'unhandled_matches' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                          name="unhandled_results"
+                          value="{% if order_by == 'unhandled_results' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                     <i id="expand_more"
-                       class="material-symbols {% if order_by == 'unhandled_matches' %}active{% endif %}"
+                       class="material-symbols {% if order_by == 'unhandled_results' %}active{% endif %}"
                        aria-hidden="true">expand_more</i>
                   </button>
                 </div>
@@ -160,12 +160,12 @@
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'old' and order == 'ascending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'old_results' and order == 'ascending' %}up{% endif %}"
                             id="old-matches-caret"
-                            name="old"
-                            value="{% if order_by == 'old' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                            name="old_results"
+                            value="{% if order_by == 'old_results' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                       <i id="expand_more"
-                         class="material-symbols {% if order_by == 'old' %}active{% endif %}"
+                         class="material-symbols {% if order_by == 'old_results' %}active{% endif %}"
                          aria-hidden="true">expand_more</i>
                     </button>
                   </div>
@@ -184,12 +184,12 @@
                     </label>
 
                     <button type="button"
-                            class="order-by button button--caret-button {% if order_by == 'withheld' and order == 'ascending' %}up{% endif %}"
+                            class="order-by button button--caret-button {% if order_by == 'withheld_results' and order == 'ascending' %}up{% endif %}"
                             id="withheld-matches-caret"
-                            name="withheld"
-                            value="{% if order_by == 'withheld' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                            name="withheld_results"
+                            value="{% if order_by == 'withheld_results' and order == 'descending' %}ascending{% else %}descending{% endif %}">
                       <i id="expand_more"
-                         class="material-symbols {% if order_by == 'withheld' %}active{% endif %}"
+                         class="material-symbols {% if order_by == 'withheld_results' %}active{% endif %}"
                          aria-hidden="true">expand_more</i>
                     </button>
                   </div>

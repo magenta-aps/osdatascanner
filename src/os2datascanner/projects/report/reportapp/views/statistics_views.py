@@ -558,11 +558,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(last_name__icontains=search_field) |
                 Q(username__istartswith=search_field))
 
-        qs = qs.with_unhandled_matches()
-        qs = qs.with_withheld_matches()
+        retention_days = self.org.retention_days if self.org.retention_policy else None
+        qs = qs.with_result_stats(retention_policy=retention_days)
+
         qs = qs.with_status()
-        if self.org.retention_policy:
-            qs = qs.with_old_matches(self.org.retention_days)
 
         qs = self.order_employees(qs)
 
@@ -590,9 +589,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         """Checks if a sort key is allowed and orders the employees queryset"""
         allowed_sorting_properties = [
             'first_name',
-            'unhandled_matches',
-            'withheld',
-            'old',
+            'unhandled_results',
+            'withheld_results',
+            'old_results',
             'handle_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):
@@ -706,7 +705,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
             'type': CSVExportMixin.ColumnType.FIELD,
         },
         {
-            'name': 'unhandled_matches',
+            'name': 'unhandled_results',
             'label': _("Matches"),
             'type': CSVExportMixin.ColumnType.FIELD,
         },
@@ -728,7 +727,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         columns = self.columns.copy()
         if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
             columns = columns + [{
-                'name': 'withheld',
+                'name': 'withheld_results',
                 'label': _("Withheld matches"),
                 'type': CSVExportMixin.ColumnType.FIELD,
             }]
@@ -736,7 +735,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         if self.org.retention_policy:
             # Don't use '.append()' to avoid shallow copies
             columns = columns + [{
-                    'name': 'old',
+                    'name': 'old_results',
                     'label': _("Results older than %(days)s days") % {"days": self.org.retention_days},  # noqa
                     'type': CSVExportMixin.ColumnType.FIELD,
                 }]
@@ -771,7 +770,7 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
             'type': CSVExportMixin.ColumnType.FIELD,
         },
         {
-            'name': 'unhandled_matches',
+            'name': 'unhandled_results',
             'label': _("Matches"),
             'type': CSVExportMixin.ColumnType.FIELD,
         },

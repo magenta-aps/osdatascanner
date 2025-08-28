@@ -275,95 +275,81 @@ class TestAccount:
                 organization=olsenbanden_organization
             )
 
-    def test_account_with_unhandled_matches_equals_match_count(
+    def test_account_unhandled_results_equals_match_count(
             self, egon_email_alias, egon_account):
-        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
-        using the property match_count."""
+        """Using with_result_stats on a queryset of Accounts should give the same value for
+        unhandled_results as using the property match_count."""
         # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=6,
-            amount=10)
+        make_matched_document_reports_for(egon_email_alias, handled=6, amount=10)
 
         qs = Account.objects.filter(pk=egon_account.pk)
         assert qs.count() == 1
 
         # Act
-        qs = qs.with_unhandled_matches()
+        qs = qs.with_result_stats()
 
         # Assert
-        assert qs.first().unhandled_matches == egon_account.match_count
+        assert qs.first().unhandled_results == egon_account.match_count
 
-    def test_account_with_unhandled_matches_remediator_alias(
+    def test_account_unhandled_results_remediator_alias(
             self, egon_email_alias, egon_remediator_alias, egon_account):
-        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
-        using the property match_count, both of which ignoring matches from remediator aliases."""
+        """Using with_result_stats on a queryset of Accounts should give the same value for
+        unhandled_results as using the property match_count,
+        both of which ignoring matches from remediator aliases."""
         # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=6,
-            amount=10)
-
-        qs = Account.objects.filter(pk=egon_account.pk)
-        assert qs.count() == 1
-
+        make_matched_document_reports_for(egon_email_alias, handled=6, amount=10)
         make_matched_document_reports_for(egon_remediator_alias, handled=5, amount=10)
 
-        # Act
-        qs = qs.with_unhandled_matches()
-
-        # Assert
-        assert qs.first().unhandled_matches == egon_account.match_count
-
-    def test_account_with_unhandled_matches_shared_alias(
-            self, egon_email_alias, egon_shared_email_alias, egon_account):
-        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
-        using the property match_count, both of which ignoring matches from shared aliases."""
-        # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=6,
-            amount=10)
-
         qs = Account.objects.filter(pk=egon_account.pk)
         assert qs.count() == 1
 
+        # Act
+        qs = qs.with_result_stats()
+
+        # Assert
+        assert qs.first().unhandled_results == egon_account.match_count
+
+    def test_account_unhandled_results_shared_alias(
+            self, egon_email_alias, egon_shared_email_alias, egon_account):
+        """Using with_result_stats on a queryset of Accounts should give the same value for
+        unhandled_results as using the property match_count,
+        both of which ignoring matches from shared aliases."""
+        # Arrange
+        make_matched_document_reports_for(egon_email_alias, handled=6, amount=10)
         make_matched_document_reports_for(egon_shared_email_alias, handled=5, amount=10)
 
-        # Act
-        qs = qs.with_unhandled_matches()
-
-        # Assert
-        assert qs.first().unhandled_matches == egon_account.match_count
-
-    def test_account_with_unhandled_matches_distinct(
-            self, egon_email_alias, egon_sid_alias, egon_account):
-        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
-        using the property match_count, both of which ignoring duplicate matches in case of
-        multiple aliases."""
-        # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=6,
-            amount=10)
-        make_matched_document_reports_for(
-            egon_sid_alias,
-            handled=5,
-            amount=8)
         qs = Account.objects.filter(pk=egon_account.pk)
         assert qs.count() == 1
 
         # Act
-        qs = qs.with_unhandled_matches()
+        qs = qs.with_result_stats()
 
         # Assert
-        assert qs.first().unhandled_matches == egon_account.match_count
+        assert qs.first().unhandled_results == egon_account.match_count
 
-    def test_account_with_unhandled_matches_different_org(
+    def test_account_unhandled_results_distinct(
+            self, egon_email_alias, egon_sid_alias, egon_account):
+        """Using with_result_stats on a queryset of Accounts should give the same value for
+        unhandled_results as using the property match_count,
+        both of which ignoring duplicate matches in case of multiple aliases."""
+        # Arrange
+        make_matched_document_reports_for(egon_email_alias, handled=6, amount=10)
+        make_matched_document_reports_for(egon_sid_alias, handled=5, amount=8)
+
+        qs = Account.objects.filter(pk=egon_account.pk)
+        assert qs.count() == 1
+
+        # Act
+        qs = qs.with_result_stats()
+
+        # Assert
+        assert qs.first().unhandled_results == egon_account.match_count
+
+    def test_account_unhandled_results_different_org(
             self, egon_email_alias, egon_account, marvel_organization):
-        """Using with_unhandled_matches on a queryset of Accounts should give the same result as
-        using the property match_count, both of which ignoring matches with from
-        other organizations."""
+        """Using with_result_stats on a queryset of Accounts should give the same value for
+        unhandled_results as using the property match_count,
+        both of which ignoring matches with from other organizations."""
         # Arrange
         make_matched_document_reports_for(
             egon_email_alias,
@@ -376,10 +362,10 @@ class TestAccount:
         assert qs.count() == 1
 
         # Act
-        qs = qs.with_unhandled_matches()
+        qs = qs.with_result_stats()
 
         # Assert
-        assert qs.first().unhandled_matches == egon_account.match_count
+        assert qs.first().unhandled_results == egon_account.match_count
 
     @pytest.mark.parametrize('handled_matches,total_matches',
                              [(0, 1), (1, 0), (7, 10), (8, 10), (3, 4), (10, 10)])
