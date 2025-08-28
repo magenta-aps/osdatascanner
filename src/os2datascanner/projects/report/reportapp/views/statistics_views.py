@@ -558,8 +558,14 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(last_name__icontains=search_field) |
                 Q(username__istartswith=search_field))
 
+        if (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all":
+            sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
+            reports = sr.document_reports.all()
+        else:
+            reports = DocumentReport.objects.all()
+
         retention_days = self.org.retention_days if self.org.retention_policy else None
-        qs = qs.with_result_stats(retention_policy=retention_days)
+        qs = qs.with_result_stats(reports=reports, retention_policy=retention_days)
 
         qs = qs.with_status()
 
@@ -577,6 +583,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['show_retention_column'] = self.org.retention_policy
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
+        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         # Determine number of columns from context
         num_cols = 4 + context['show_retention_column'] + self.request.user.has_perm(
@@ -917,12 +924,25 @@ class EmployeeView(LoginRequiredMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.org = request.user.account.organization
         response = super().get(request, *args, **kwargs)
-        self.object.save()
         return response
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all":
+            sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
+            reports = sr.document_reports.all()
+        else:
+            reports = DocumentReport.objects.all()
+
+        retention_days = self.org.retention_days if self.org.retention_policy else None
+        qs = qs.with_result_stats(reports=reports, retention_policy=retention_days)
+
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['show_retention_column'] = self.org.retention_policy
+        context['scannerjob'] = self.request.GET.get('scannerjob', 'all')
         return context
 
 

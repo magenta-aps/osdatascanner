@@ -25,7 +25,7 @@
       {% endif %}
 
       <div class="matches">
-        <span class="datatable-numeral">{{ employee.match_count }}</span>
+        <span class="datatable-numeral">{{ employee.unhandled_results }}</span>
       </div>
     </div>
   </td>
@@ -34,7 +34,7 @@
     <td class="column column--matches-old column--numeral">
       <div class="matches_container">
         <div class="matches">
-          <span class="datatable-numeral">{{ employee.old_matches }}</span>
+          <span class="datatable-numeral">{{ employee.old_results }}</span>
         </div>
       </div>
     </td>
@@ -44,7 +44,7 @@
     <td class="column column--matches-withheld column--numeral">
       <div class="matches_container">
         <div class="matches">
-          <span class="datatable-numeral">{{ employee.withheld_matches }}</span>
+          <span class="datatable-numeral">{{ employee.withheld_results }}</span>
         </div>
       </div>
     </td>
