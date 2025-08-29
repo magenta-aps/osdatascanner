@@ -15,3 +15,6 @@ services:
       - "8019:5000"
     networks:
       - os2datascanner_default
+    profiles:
+      - helpers
+      - sbsys
