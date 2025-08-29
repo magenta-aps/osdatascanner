@@ -1,0 +1,8 @@
+flask
+parse
+pymssql
+gunicorn
+requests
+sqlalchemy
+cryptography
+python-dateutil
