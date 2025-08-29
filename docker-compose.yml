@@ -1,3 +1,6 @@
+include:
+  - helpers/document-proxy/docker-compose.yml
+
 networks:
   # This allows OS2datascanners admin and admin_runner containers access 
   # to both the default network in OS2datascanner, and in the OS2mo-project,
