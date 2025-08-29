@@ -1,0 +1,17 @@
+networks:
+  os2datascanner_default:
+    name:
+      os2datascanner_default
+    external: true
+
+services:
+  document_proxy:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./src:/code/src
+    ports:
+      - "8019:5000"
+    networks:
+      - os2datascanner_default
