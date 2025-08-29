@@ -21,33 +21,35 @@ include:
     file:
       - gitlab-ci-templates/common/docker-build-meta.v2.yml
 
-stages:          # List of stages for jobs, and their order of execution
-  - build
-  - release
-
 variables:
   # Project variables
   RELEASE_REGISTRY: docker.io
   RELEASE_IMAGE: index.docker.io/magentaaps/document_proxy
 
-  IMAGE: ${CI_REGISTRY_IMAGE}/image:${CI_COMMIT_SHA}
+  IMAGE: ${CI_REGISTRY_IMAGE}/document-proxy:${CI_COMMIT_SHA}
 
 Build document_proxy:
-  extends: .build-docker
+  stage: build
+  needs: []
+  services: []
+  image:
+    name: gcr.io/kaniko-project/executor:v1.6.0-debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --cache
+      --context=$CI_PROJECT_DIR/helpers/document-proxy
+      --dockerfile=$CI_PROJECT_DIR/helpers/document-proxy/docker/Dockerfile
+      --destination=${IMAGE}
 
-.release-default: &release-default
+Release document_proxy:
   stage: release
   needs:
     - Build document_proxy
   image: alpine
   variables:
     GIT_STRATEGY: none # We do not need the source code
-
-# Versioned release:
-.release: &release
-  <<: *release-default
-  rules:
-    - when: manual
   script:
     - apk add skopeo
     - skopeo copy
@@ -60,9 +62,9 @@ Build document_proxy:
       --dest-creds=${RELEASE_REGISTRY_USER}:${RELEASE_REGISTRY_PASSWORD}
       "docker://${IMAGE_FROM}"
       "docker://${IMAGE_TO}:latest"
-
-Release document_proxy:
-  <<: *release
   before_script:
     - export IMAGE_FROM="${IMAGE}"
     - export IMAGE_TO="${RELEASE_IMAGE}"
+
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^document-proxy-(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/
