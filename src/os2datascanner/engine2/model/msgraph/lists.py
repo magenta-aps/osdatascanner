@@ -20,9 +20,10 @@ class MSGraphListsSource(MSGraphSource):
 
     eq_properties = MSGraphSource.eq_properties
 
-    def __init__(self, client_id, tenant_id, client_secret, sites=None):
+    def __init__(self, client_id, tenant_id, client_secret, sites=None, scan_descriptions=False):
         super().__init__(client_id, tenant_id, client_secret)
         self.sites = sites
+        self.scan_descriptions = scan_descriptions
 
     def handles(self, sm, *, rule: Rule | None = None):  # noqa
         cutoff = None
@@ -82,12 +83,15 @@ class MSGraphListsSource(MSGraphSource):
                 client_id=obj["client_id"],
                 tenant_id=obj["tenant_id"],
                 client_secret=obj["client_secret"],
-                sites=obj.get("sites"))
+                sites=obj.get("sites"),
+                scan_descriptions=obj.get("scan_descriptions")
+        )
 
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            sites=self.sites
+            sites=self.sites,
+            scan_descriptions=self.scan_descriptions
         )
 
 
@@ -189,14 +193,21 @@ class MSGraphListSource(DerivedSource):
                 cutoff = (after if not cutoff else max(cutoff, after))
 
         query = self._build_query(cutoff=cutoff, query=query)
-        list_items = list_items = gc.paginated_get(query)
 
-        for item in list_items:
+        for item in gc.paginated_get(query):
             rel_path = f"{self.handle.relative_path}/items/{item['id']}"
             yield MSGraphListItemHandle(
                 self,
                 rel_path,
                 self.handle._site_id, item["id"], item["webUrl"], item["fields"].get("LinkTitle", ))
+
+        if self.handle.source.scan_descriptions:
+            list_weburl = gc.get(
+                f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}").json()['webUrl']
+            yield MSGraphListDescriptionHandle(self,
+                                               f"{self.handle.relative_path}",
+                                               list_weburl
+                                               )
 
 
 class MSGraphListItemResource(FileResource):
@@ -238,9 +249,10 @@ class MSGraphListItemResource(FileResource):
         return "text/csv"
 
     def make_path(self):
-        return f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}"
+        return f"sites/{self.handle.source.handle._site_id}/lists/{self.handle.relative_path}"
 
-    def json_to_csv_bytes(self, jsonObj):
+    @staticmethod
+    def json_to_csv_bytes(jsonObj):
         output = StringIO()
 
         # Define columns to exclude (system/metadata columns)?
@@ -284,9 +296,24 @@ class MSGraphListItemResource(FileResource):
 
     @contextmanager
     def make_stream(self):
-        response = self._get_cookie().get(self.make_path())
-        list_item = response.json()["fields"]
-        list_csv = self.json_to_csv_bytes(list_item)
+        if isinstance(self.handle, MSGraphListItemHandle):
+            response = self._get_cookie().get(self.make_path())
+            list_item = response.json()["fields"]
+            list_csv = self.json_to_csv_bytes(list_item)
+
+        elif isinstance(self.handle, MSGraphListDescriptionHandle):
+            query = self.make_path()+'/columns?$select=displayName,description'
+            response = self._get_cookie().get(query).json()
+
+            description = {}
+            for desc in response['value']:
+                description[desc["displayName"]] = desc["description"]
+
+            list_csv = self.json_to_csv_bytes(description)
+
+        else:
+            list_csv = b''
+
         with BytesIO(list_csv) as fp:
             yield fp
 
@@ -349,4 +376,54 @@ class MSGraphListItemHandle(Handle):
             item_id=obj.get("item_id"),
             webUrl=obj.get("webUrl"),
             item_name=obj.get("item_name")
+        )
+
+
+class MSGraphListDescriptionHandle(Handle):
+    type_label = "msgraph-list-description"
+    resource_type = MSGraphListItemResource
+
+    def __init__(self, source, path, webUrl):
+        super().__init__(source, path)
+        self.webUrl = webUrl
+
+    @property
+    def presentation_name(self):
+        # It would be cool if we could tell the user which field has the description with a result
+        return _('Description in list "{list_name}"').format(
+             list_name=self.source.handle._list_name)
+
+    @property
+    def site_name(self):
+        return unquote(self.webUrl.split("/")[4])
+
+    @property
+    def presentation_place(self):
+        return _('List "{list_name}" (on site {site_name})').format(
+            list_name=self.source.handle._list_name, site_name=self.site_name)
+
+    @property
+    def presentation_url(self):
+        return self.webUrl
+
+    @property
+    def sort_key(self):
+        return f"{self.site_name}/{self.source.handle._list_name}/description"
+
+    def guess_type(self):
+        return "text/csv"
+
+    def to_json_object(self):
+        return dict(
+            **super().to_json_object(),
+            webUrl=self.webUrl
+        )
+
+    @staticmethod
+    @Handle.json_handler(type_label)
+    def from_json_object(obj):
+        return MSGraphListDescriptionHandle(
+            Source.from_json_object(obj["source"]),
+            path=obj["path"],
+            webUrl=obj.get("webUrl"),
         )
