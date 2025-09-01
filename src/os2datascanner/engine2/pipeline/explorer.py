@@ -1,12 +1,10 @@
 import structlog
-from .. import settings
 from ..model.core import (
         Source, takes_named_arg, UnknownSchemeError, DeserialisationError)
 from ..model.core.errors import (ModelException,
                                  UncontactableError,
                                  UnauthorisedError,
                                  UnavailableError)
-from ..utilities.backoff import DummyRetrier, TimeoutRetrier
 from . import messages
 from .utilities.filtering import is_handle_relevant
 
@@ -89,20 +87,10 @@ def message_received_raw(body, channel, source_manager):  # noqa
 
     it = handles_method(source_manager, **extra_kwargs)
 
-    if scan_spec.source.yields_independent_sources:
-        # As a special case, we allow meta-Sources to run without timeout
-        # enforcement. This is chiefly so that we don't interrupt the
-        # exploration in the middle of a backoff request-induced sleep()
-        retrier = DummyRetrier()
-    else:
-        retrier = TimeoutRetrier(
-                seconds=settings.pipeline["op_timeout"],
-                max_tries=settings.pipeline["op_tries"])
-
     log = logger.bind(scan_tag=scan_tag)
 
     try:
-        while (handle := retrier.run(next, it)):
+        for handle in it:
             if isinstance(handle, tuple) and handle[1]:
                 # We were able to construct a Handle for something that
                 # exists, but then something unexpected (that we can tie to

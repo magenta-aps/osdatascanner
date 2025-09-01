@@ -59,7 +59,6 @@ extra_args = ["-l", "dan+eng", "-c", "tessedit_do_invert=0"]
 
 [pipeline]
 # The maximum runtime (in seconds) allowed:
-# * in the explorer stage, for a Source to produce a single Handle;
 # * in the processor stage, for a single conversion operation; or
 # * in the tagger stage, for a single metadata extraction
 op_timeout = 60
