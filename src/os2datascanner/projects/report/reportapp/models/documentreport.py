@@ -63,14 +63,15 @@ class DocumentReport(models.Model):
     created_timestamp = models.DateTimeField(null=True,
                                              verbose_name=_('created timestamp'))
 
-    last_opened_time = models.DateTimeField(null=True, verbose_name=_('time last opened'))
+    last_opened_time = models.DateTimeField(
+        null=True, verbose_name=_('time last opened'), blank=True)
 
     path = models.CharField(max_length=256, verbose_name=_("path"))
 
-    raw_scan_tag = JSONField(null=True)
-    raw_matches = JSONField(null=True)
-    raw_problem = JSONField(null=True)
-    raw_metadata = JSONField(null=True)
+    raw_scan_tag = JSONField(null=True, blank=True)
+    raw_matches = JSONField(null=True, blank=True)
+    raw_problem = JSONField(null=True, blank=True)
+    raw_metadata = JSONField(null=True, blank=True)
 
     # sort results from a Source. It does not make sense to sort across Sources
     sort_key = models.CharField(
