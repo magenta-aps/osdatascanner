@@ -22,6 +22,8 @@
 
   - The layout has changed, and is now structured in a more intuitive way.
 
+- Added an option to hide new OrganizationalUnits by default to import configurations.
+
 ### General improvements
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.

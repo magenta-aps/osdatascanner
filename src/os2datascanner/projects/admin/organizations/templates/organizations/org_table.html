@@ -130,6 +130,13 @@
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                         {% else %}
+                          <a href="{% url 'edit-os2mo' pk=organization.pk %}"
+                             id="button-add-configuration"
+                             aria-label="{% trans 'edit OS2mo configuration'|capfirst  %}"
+                             title="{% trans 'edit OS2mo configuration'|capfirst  %}"
+                             class="button button--outline-button button--icon-button">
+                            <i id="library_add_check" class="material-icons">library_add_check</i>
+                          </a>
                           <button type="button"
                                   aria-label="{% trans 'sync'|capfirst %}"
                                   title="{% trans 'sync'|capfirst %}"

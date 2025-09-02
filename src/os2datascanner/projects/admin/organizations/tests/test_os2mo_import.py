@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from more_itertools import one
@@ -11,6 +11,8 @@ from os2datascanner.projects.admin.organizations.models import Organization, \
     OrganizationalUnit, Account, Position, Alias
 from os2datascanner.projects.admin.organizations.os2mo_import_actions import \
     perform_os2mo_import
+
+from os2datascanner.projects.admin.import_services.models import OS2moConfiguration
 
 
 @pytest.fixture
@@ -204,6 +206,16 @@ def mo_org(dummy_client):
 @pytest.mark.django_db
 class TestOS2moImport:
 
+    @pytest.fixture(autouse=True)
+    def os2mo_import_config(self, mo_org):
+        return OS2moConfiguration.objects.create(organization=mo_org,
+                                                 hide_units_on_import=False,
+                                                 last_modified=datetime(
+                                                       2025, 9, 2, 12,
+                                                       0, 0,
+                                                       tzinfo=timezone.utc)
+                                                 )
+
     def import_from_list(self, import_list, org):
 
         # Test "Act" step included here
@@ -233,6 +245,7 @@ class TestOS2moImport:
         assert top_level_unit.last_import.date() == today
         assert top_level_unit.last_import_requested.date() == today
         assert top_level_unit.parent is None
+        assert not top_level_unit.hidden
 
         assert unit1.imported_id == "7fc7769e-00e1-4bad-aa8e-9ce91bde9f64"
         assert unit1.organization == mo_org
@@ -240,6 +253,7 @@ class TestOS2moImport:
         assert unit1.last_import.date() == today
         assert unit1.last_import_requested.date() == today
         assert unit1.parent.name == "Top level unit"
+        assert not unit1.hidden
 
         assert unit2.imported_id == "57e39d7b-63db-4bc3-a811-29cc02ceafb0"
         assert unit2.organization == mo_org
@@ -247,6 +261,7 @@ class TestOS2moImport:
         assert unit2.last_import.date() == today
         assert unit2.last_import_requested.date() == today
         assert unit2.parent.name == "Top level unit"
+        assert not unit2.hidden
 
         assert unit3.imported_id == "473ad333-c4d5-447c-a858-d03b021caba9"
         assert unit3.organization == mo_org
@@ -254,6 +269,49 @@ class TestOS2moImport:
         assert unit3.last_import.date() == today
         assert unit3.last_import_requested.date() == today
         assert unit3.parent.name == "Top level unit"
+        assert not unit3.hidden
+
+    def test_ou_import_all_hidden(self, mo_org_units_list, mo_org, os2mo_import_config):
+        # Arrange: Set default config to hidden
+        os2mo_import_config.hide_units_on_import = True
+        os2mo_import_config.save()
+
+        # Act: Import
+        perform_os2mo_import(mo_org_units_list, mo_org)
+
+        # Assert: Check configuration and verify that only hidden units were created
+        assert mo_org.importservice.hide_units_on_import
+        assert OrganizationalUnit.objects.filter(hidden=True).exists()
+        assert not OrganizationalUnit.objects.filter(hidden=False).exists()
+
+    def test_existing_ou_visible_new_hidden_ou_import(self, mo_org_units_list, mo_org,
+                                                      os2mo_import_config):
+
+        # Arrange: Import, set default config to hidden, add new unit
+        perform_os2mo_import(mo_org_units_list, mo_org)
+        os2mo_import_config.hide_units_on_import = True
+        os2mo_import_config.save()
+        mo_org_units_list.append(
+            {
+                "current": {
+                    "name": "Hide and seekers",
+                    "uuid": "99e99d7b-99db-4bc3-a811-29cc02aaaaa9",
+                    "parent": {
+                        "name": "Top level unit",
+                        "uuid": "23b6386a-6142-4495-975c-92ff41dd4100"
+                    },
+                    "managers": [],
+                    "engagements": []
+                }
+            }
+        )
+
+        # Act: Import again
+        perform_os2mo_import(mo_org_units_list, mo_org)
+
+        # Assert: Verify existing units are still visible and the new one is hidden
+        assert OrganizationalUnit.objects.filter(name="Hide and seekers", hidden=True).exists()
+        assert OrganizationalUnit.objects.filter(hidden=False).exists()
 
     def test_employee_import(self, mo_org, mo_org_units_list):
         # Act

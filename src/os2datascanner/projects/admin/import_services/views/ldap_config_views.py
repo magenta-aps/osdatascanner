@@ -37,6 +37,7 @@ class LDAPEditForm(forms.ModelForm):
             'import_into',
             'group_filter',
             'import_managers',
+            'hide_units_on_import',
             'username_attribute',
             'rdn_attribute',
             'uuid_attribute',
@@ -77,6 +78,7 @@ class LDAPEditForm(forms.ModelForm):
             'import_into',
             'group_filter',
             'import_managers',
+            'hide_units_on_import',
         ]
         return fields
 

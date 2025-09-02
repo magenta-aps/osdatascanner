@@ -77,6 +77,7 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
             org_unit = OrganizationalUnit(
                 imported_id=unit_imported_id,
                 organization=organization,
+                hidden=organization.importservice.hide_units_on_import,
                 name=unit_name,
                 imported=True,
                 last_import=now,

@@ -1,11 +1,23 @@
+import datetime
 import pytest
 from copy import deepcopy
+from os2datascanner.projects.admin.import_services.models import MSGraphConfiguration
 from ..models import Account, OrganizationalUnit, Alias, Position
 from .. import msgraph_import_actions
 
 
 @pytest.mark.django_db
 class TestMSGraphImport:
+
+    @pytest.fixture(autouse=True)
+    def graph_import_config(self, test_org):
+        return MSGraphConfiguration.objects.create(organization=test_org,
+                                                   hide_units_on_import=False,
+                                                   last_modified=datetime.datetime(
+                                                       2025, 9, 2, 12,
+                                                       0, 0,
+                                                       tzinfo=datetime.timezone.utc)
+                                                   )
 
     @pytest.fixture()
     def TEST_CORP(self):
@@ -92,7 +104,11 @@ class TestMSGraphImport:
         ]
 
     @pytest.fixture(autouse=True)
-    def import_run(self, test_org, TEST_CORP):
+    def import_run(self, test_org, TEST_CORP, settings):
+        # Running with immediate constraints off
+        # test_account_changed_uuid will/should fail, without it-
+        # our dev-env has this setting true, but default and CI-test settings are false.
+        settings.PREPNPUB_IMMEDIATE_CONSTRAINTS = False
         # Import from json
         msgraph_import_actions.perform_msgraph_import(
             TEST_CORP, test_org
@@ -108,6 +124,40 @@ class TestMSGraphImport:
 
         for imp_id in imported_ids:
             assert (imp_id["imported_id"] in list(all_uuids)), "Not all OU's were created!"
+
+        # Should be no hidden units.
+        assert not OrganizationalUnit.objects.filter(hidden=True).exists()
+
+    def test_import_new_ou_hidden_default(self, TEST_CORP, test_org, graph_import_config):
+
+        # Arrange: Add a new OU and update configuration
+        TEST_CORP.append(
+            {
+                "uuid": "11a1aa1a-a111-1f11-1a11-a111111aa111",
+                "name": "Hide and seekers",
+                "members": [
+                    {
+                        "type": "user",
+                        "uuid": "998e5d18-90ba-4150-a11c-1234c24bb5ce",
+                        "givenName": "Casper",
+                        "surname": "Ghost",
+                        "userPrincipalName": "Casper@Ghost.onmicrosoft.com",
+                        "email": "Casper@Ghost.onmicrosoft.com"
+                        }
+                    ]
+                })
+
+        graph_import_config.hide_units_on_import = True
+        graph_import_config.save()
+
+        # Act: Run import
+        msgraph_import_actions.perform_msgraph_import(
+            TEST_CORP, test_org
+        )
+
+        # Assert: Verify the newly imported unit is hidden and existing ones aren't
+        assert OrganizationalUnit.objects.filter(name="Hide and seekers", hidden=True).exists()
+        assert OrganizationalUnit.objects.filter(hidden=False).exists()
 
     def test_account_import(self, TEST_CORP):
         """ Importing should create corresponding account objects """

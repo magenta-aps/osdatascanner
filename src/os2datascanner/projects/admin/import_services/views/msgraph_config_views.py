@@ -33,6 +33,7 @@ class MSGraphEditForm(forms.ModelForm):
         fields = [
             'organization',
             'grant',
+            'hide_units_on_import'
         ]
 
 

@@ -54,6 +54,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             org_unit = OrganizationalUnit(
                 imported_id=unit_imported_id,
                 organization=organization,
+                hidden=organization.importservice.hide_units_on_import,
                 name=unit_name,
                 imported=True,
                 last_import=now,

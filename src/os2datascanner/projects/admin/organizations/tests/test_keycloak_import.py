@@ -1,5 +1,6 @@
+import datetime
 import pytest
-
+from os2datascanner.projects.admin.import_services.models import LDAPConfig
 from ..models import Account, OrganizationalUnit, Alias, Position
 from ..models.aliases import AliasType
 from .. import keycloak_actions
@@ -235,6 +236,19 @@ def account_dn_managed_units_paths(TEST_CORP):
 @pytest.mark.django_db
 class TestKeycloakImport:
 
+    @pytest.fixture(autouse=True)
+    def ldap_import_config(self, test_org):
+        # A very minimalistic LDAPConfig
+        return LDAPConfig.objects.create(organization=test_org,
+                                         hide_units_on_import=False,
+                                         last_modified=datetime.datetime(
+                                                       2025, 9, 2, 12,
+                                                       0, 0,
+                                                       tzinfo=datetime.timezone.utc),
+                                         _ldap_password="topsecret",
+                                         search_scope=1,
+                                         )
+
     # SECTION: helper_functions
 
     def test_path_to_unit_with_existing_unit(self, unit_dn, test_org, bingoklubben):
@@ -467,6 +481,60 @@ class TestKeycloakImport:
             account = Account.objects.get(uuid=tester["id"])
             assert tester['username'] == account.username, "user import failure"
 
+    def test_ou_import_not_hidden(self, TEST_CORP, test_org):
+        # Arrange: Fixtures
+
+        # Act: Import
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert: Check configuration and verify that no hidden units were created
+        assert not test_org.importservice.hide_units_on_import
+        assert not OrganizationalUnit.objects.filter(hidden=True).exists()
+        assert OrganizationalUnit.objects.filter(hidden=False).exists()
+
+    def test_ou_import_all_hidden(self, TEST_CORP, test_org, ldap_import_config):
+        # Arrange
+        ldap_import_config.hide_units_on_import = True
+        ldap_import_config.save()
+
+        # Act: Import
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert: Check configuration and verify that only hidden units were created
+        assert test_org.importservice.hide_units_on_import
+        assert OrganizationalUnit.objects.filter(hidden=True).exists()
+        assert not OrganizationalUnit.objects.filter(hidden=False).exists()
+
+    def test_existing_ou_visible_new_hidden_ou_import(
+            self, TEST_CORP, test_org, ldap_import_config):
+        # Arrange: Import once, change config and add a new entry
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        ldap_import_config.hide_units_on_import = True
+        ldap_import_config.save()
+
+        TEST_CORP.append(
+            {
+                "id": "1f111111-6174-6173-6361-6e6e99999999",
+                "username": "Casper@the.ghost",
+                "firstName": "Casper",
+                "lastName": "The Ghost",
+                "attributes": {
+                    "LDAP_ENTRY_DN": [
+                        "CN=Casper The Ghost,OU=Hide and seekers,O=Test Corp."
+                        ],
+                    "group_dn": "CN=Hide and seekers group,O=Test Corp."
+                    }
+                }
+        )
+
+        # Act: Import again
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert: Verify existing units are still visible and the new one is hidden
+        assert OrganizationalUnit.objects.filter(name="Hide and seekers", hidden=True).exists()
+        assert OrganizationalUnit.objects.filter(hidden=False).exists()
+
     def test_group_import(self, TEST_CORP, test_org):
         """It should be possible to import users into a group-based hierarchy
         from Keycloak's JSON output."""
@@ -480,6 +548,61 @@ class TestKeycloakImport:
 
             group = tester.get("attributes", {}).get("group_dn", None)
             assert account.units.filter(imported_id=group).exists(), "user not in group"
+
+    def test_group_import_not_hidden(self, TEST_CORP, test_org):
+        # Arrange: Fixtures
+
+        # Act: Import
+        self.perform_group_import(TEST_CORP, test_org)
+
+        # Assert: Check configuration and verify that no hidden units were created
+        assert not test_org.importservice.hide_units_on_import
+        assert not OrganizationalUnit.objects.filter(hidden=True).exists()
+        assert OrganizationalUnit.objects.filter(hidden=False).exists()
+
+    def test_group_import_all_hidden(self, TEST_CORP, test_org, ldap_import_config):
+        # Arrange
+        ldap_import_config.hide_units_on_import = True
+        ldap_import_config.save()
+
+        # Act: Import
+        self.perform_group_import(TEST_CORP, test_org)
+
+        # Assert: Check configuration and verify that only hidden units were created
+        assert test_org.importservice.hide_units_on_import
+        assert OrganizationalUnit.objects.filter(hidden=True).exists()
+        assert not OrganizationalUnit.objects.filter(hidden=False).exists()
+
+    def test_existing_ou_visible_new_hidden_group_import(
+            self, TEST_CORP, test_org, ldap_import_config):
+        # Arrange: Import once, change config and add a new entry
+        self.perform_group_import(TEST_CORP, test_org)
+
+        ldap_import_config.hide_units_on_import = True
+        ldap_import_config.save()
+
+        TEST_CORP.append(
+            {
+                "id": "1f111111-6174-6173-6361-6e6e99999999",
+                "username": "Casper@the.ghost",
+                "firstName": "Casper",
+                "lastName": "The Ghost",
+                "attributes": {
+                    "LDAP_ENTRY_DN": [
+                        "CN=Casper The Ghost,OU=Hide and seekers,O=Test Corp."
+                        ],
+                    "group_dn": "CN=Hide and seekers group,O=Test Corp."
+                    }
+                }
+        )
+
+        # Act: Import again
+        self.perform_group_import(TEST_CORP, test_org)
+
+        # Assert: Verify existing units are still visible and the new one is hidden
+        assert OrganizationalUnit.objects.filter(
+            name="Hide and seekers group", hidden=True).exists()
+        assert OrganizationalUnit.objects.filter(hidden=False).exists()
 
     def test_removal(self, TEST_CORP, test_org):
         """Removing a user from Keycloak's JSON output should also remove that
