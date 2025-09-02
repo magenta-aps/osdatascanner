@@ -37,6 +37,7 @@ from django.contrib.auth.models import User
 from model_utils.managers import InheritanceManager, InheritanceQuerySet
 from recurrence.fields import RecurrenceField
 
+from os2datascanner.utils.ref import Counter
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Source
 from os2datascanner.engine2.rules.meta import HasConversionRule
@@ -322,7 +323,7 @@ class Scanner(models.Model):
         prerules = []
         if not force and self.do_last_modified_check:
             if self._supports_account_annotations:
-                # _add_sources will add a per-Source LastModifiedRule, so we
+                # _yield_sources will add a per-Source LastModifiedRule, so we
                 # don't need to do anything here
                 pass
             else:
@@ -392,14 +393,11 @@ class Scanner(models.Model):
     def _supports_account_annotations(self) -> bool:
         return hasattr(self, "generate_sources_with_accounts")
 
-    def _add_sources(
-            self, spec_template: messages.ScanSpecMessage,
-            outbox: list, force: bool) -> int:
-        """Creates scan specifications, based on the provided scan
-        specification template, for every Source covered by this scanner, and
-        puts them into the provided outbox list. Returns the number of sources
-        added."""
-        source_count = 0
+    def _yield_sources(
+            self, spec_template: messages.ScanSpecMessage, force: bool,
+            source_counter: Counter | None = None):
+        """Yields scan specifications, based on the provided scan
+        specification template, for every Source covered by this scanner."""
         if (self.do_last_modified_check
                 and not force
                 and self._supports_account_annotations):
@@ -425,22 +423,15 @@ class Scanner(models.Model):
                     logger.info(
                             f"{self}: account {account} not previously"
                             " scanned")
-                outbox.append((
-                    spec_template.explorer_queue,
-                    spec_template._replace(source=source, rule=rule)))
-                source_count += 1
-            return source_count
+                Counter.try_incr(source_counter)
+                yield spec_template._replace(source=source, rule=rule)
         else:
             # The scanner isn't CoveredAccount-aware, or we're running without
             # the Last-Modified check. In either case, we just put Sources into
             # the queue without fiddling around with the rule
             for source in self.generate_sources():
-                outbox.append((
-                    spec_template.explorer_queue,
-                    spec_template._replace(source=source)
-                ))
-                source_count += 1
-        return source_count
+                Counter.try_incr(source_counter)
+                yield spec_template._replace(source=source)
 
     @classmethod
     def _make_remap_dict(cls, source_iterator):
@@ -475,14 +466,14 @@ class Scanner(models.Model):
 
         return (True, handle.remap(remap_dict))
 
-    def _add_checkups(
+    def _yield_checkups(
             self, spec_template: messages.ScanSpecMessage,
-            outbox: list,
-            force: bool) -> int:
-        """Creates instructions to rescan every object covered by this
+            force: bool,
+            checkup_counter: Counter | None = None,
+            problem_counter: Counter | None = None):
+        """Yields instructions to rescan every object covered by this
         scanner's ScheduledCheckup objects (in the process deleting objects no
-        longer covered by one of this scanner's Sources), and puts them into
-        the provided outbox list. Returns the number of checkups added."""
+        longer covered by one of this scanner's Sources)."""
 
         uncensor_map = self._make_remap_dict(self.generate_sources())
 
@@ -492,21 +483,19 @@ class Scanner(models.Model):
                 progress=messages.ProgressFragment(
                     rule=None,
                     matches=[]))
-        checkup_count = 0
         for reminder in self.checkups.iterator():
             remapped, rh = self._uncensor_handle(uncensor_map, reminder.handle)
             if not remapped:
                 # This checkup refers to a Source that we no longer care about
                 # (for example, an account that's been removed from the scan).
                 # Let the report module know about it...
-                outbox.append(("os2ds_problems",
-                               messages.ProblemMessage(
-                                   scan_tag=spec_template.scan_tag,
-                                   handle=rh,
-                                   source=rh.source,
-                                   irrelevant=True,
-                                   message="No longer relevant"
-                               )))
+                Counter.try_incr(problem_counter)
+                yield messages.ProblemMessage(
+                       scan_tag=spec_template.scan_tag,
+                       handle=rh,
+                       source=rh.source,
+                       irrelevant=True,
+                       message="No longer relevant")
                 # ... and then delete the checkup
                 reminder.delete()
                 continue
@@ -516,13 +505,11 @@ class Scanner(models.Model):
             rule_here = AndRule.make(
                     LastModifiedRule(ib) if ib and not force else True,
                     spec_template.rule)
-            outbox.append((spec_template.conversion_queue,
-                           conv_template._deep_replace(
-                               scan_spec__source=rh.source,
-                               handle=rh,
-                               progress__rule=rule_here)))
-            checkup_count += 1
-        return checkup_count
+            Counter.try_incr(checkup_counter)
+            yield conv_template._deep_replace(
+                    scan_spec__source=rh.source,
+                    handle=rh,
+                    progress__rule=rule_here)
 
     def run(
             self, user=None,
@@ -549,22 +536,23 @@ class Scanner(models.Model):
         scan_tag = spec_template.scan_tag
 
         outbox = []
+        source_counter = Counter()
+        checkup_counter = Counter()
+        problem_counter = Counter()
 
-        source_count = 0
         if explore:
-            source_count = self._add_sources(spec_template, outbox, force)
+            outbox.extend(self._yield_sources(spec_template, force,
+                                              source_counter))
 
-            if source_count == 0:
+            if not source_counter:
                 raise ValueError(f"{self} produced 0 explorable sources")
 
-        checkup_count = 0
         if checkup:
-            checkup_count = self._add_checkups(
-                spec_template,
-                outbox,
-                force)
+            outbox.extend(self._yield_checkups(spec_template, force,
+                                               checkup_counter,
+                                               problem_counter))
 
-        if source_count == 0 and checkup_count == 0:
+        if not checkup_counter and not problem_counter:
             raise ValueError(f"nothing to do for {self}")
 
         self.save()
@@ -572,8 +560,9 @@ class Scanner(models.Model):
         # Create a model object to track the status of this scan...
         new_status = ScanStatus.objects.create(
                 scanner=self, scan_tag=scan_tag.to_json_object(),
-                last_modified=scan_tag.time, total_sources=source_count,
-                total_objects=checkup_count)
+                last_modified=scan_tag.time,
+                total_sources=int(source_counter),
+                total_objects=int(checkup_counter))
 
         # Synchronize the 'covered_accounts'-field with accounts, which are
         # about to be scanned.
@@ -581,10 +570,25 @@ class Scanner(models.Model):
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(
-                write={queue for queue, _ in outbox}) as sender:
+                write={
+                    spec_template.explorer_queue,
+                    spec_template.conversion_queue,
+                    "os2ds_problems"
+                }) as sender:
 
-            for queue, message in outbox:
-                sender.enqueue_message(queue, message.to_json_object())
+            for message in outbox:
+                match message:
+                    case messages.ScanSpecMessage():
+                        queue = spec_template.explorer_queue
+                    case messages.ConversionMessage():
+                        queue = spec_template.conversion_queue
+                    case messages.ProblemMessage():
+                        queue = "os2ds_problems"
+                    case _:
+                        queue = None
+                if queue:
+                    sender.enqueue_message(queue, message.to_json_object())
+
             sender.enqueue_stop()
             sender.start()
             sender.join()

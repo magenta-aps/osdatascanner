@@ -2,6 +2,7 @@ import pytest
 import json
 
 from uuid import UUID
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -19,13 +20,15 @@ from os2datascanner.engine2.pipeline.messages import (
     ProblemMessage)
 from os2datascanner.engine2.rules.regex import RegexRule
 
+from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.admin.adminapp.models.rules import CustomRule, Sensitivity
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
     Organization, OrganizationalUnit, Account, Position, Alias)
 from os2datascanner.projects.admin.core.models import Administrator, Client
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import ScanStatus
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
+        ScanStatus, ScheduledCheckup)
 from os2datascanner.projects.admin.adminapp.models.usererrorlog import UserErrorLog
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner import (
@@ -153,6 +156,56 @@ def web_scanner(test_org, basic_rule):
         organization=test_org,
         url="http://www.example.com/",
         rule=basic_rule
+    )
+
+
+@pytest.fixture
+def ws_page_1(web_scanner):
+    wh = WebHandle(WebSource("http://www.example.com"), "IIS/Page1.aspx")
+    return ScheduledCheckup.objects.create(
+        handle_representation=wh.to_json_object(),
+        interested_before=time_now() - timedelta(days=-100),
+        scanner_id=web_scanner.pk,
+
+        path=wh.censor().crunch(hash=True)
+    )
+
+
+@pytest.fixture
+def ws_page_2(web_scanner):
+    wh = WebHandle(WebSource("http://www.example.com"), "cgi-bin/page2.pl")
+    return ScheduledCheckup.objects.create(
+        handle_representation=wh.to_json_object(),
+        interested_before=time_now() - timedelta(days=-100),
+        scanner_id=web_scanner.pk,
+
+        path=wh.censor().crunch(hash=True)
+    )
+
+
+@pytest.fixture
+def ws_page_3(web_scanner):
+    wh = WebHandle(WebSource("http://www.example.com"), "ph-admin/page3.php")
+    return ScheduledCheckup.objects.create(
+        handle_representation=wh.to_json_object(),
+        interested_before=time_now() - timedelta(days=-100),
+        scanner_id=web_scanner.pk,
+
+        path=wh.censor().crunch(hash=True)
+    )
+
+
+@pytest.fixture
+def ws_irrelevant_page(web_scanner):
+    # XXX: this could also be a dead link -- do we really want to treat it as
+    # irrelevant?
+    wh = WebHandle(WebSource("http://www.example.net"), "COB-BIN/HPAGE.CBL")
+    return ScheduledCheckup.objects.create(
+        handle_representation=wh.to_json_object(),
+        interested_before=time_now() - timedelta(days=-100),
+        scanner_id=web_scanner.pk,
+
+        path=wh.censor().crunch(hash=True)
     )
 
 
