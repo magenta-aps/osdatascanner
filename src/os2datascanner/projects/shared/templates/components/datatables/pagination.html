@@ -1,0 +1,126 @@
+{# Pagination component — For use in datatables #}
+
+{% comment %}
+  How to use:
+  * Nest inside of a `<tfoot></tfoot>`
+  * Requires:
+    * colspan=""
+    * content_list=""
+    * target_selector=""
+    * select_selector=""
+    * swap_type=""
+{% endcomment %}
+
+{% load i18n l10n pagination_tags %}
+
+<tr class="datatablex__row pagination">
+  <td colspan="{{ colspan }}" class="column">
+    <div class="flex">
+      <span class="page_of_pages">
+        {% object_interval object_list page_obj paginate_by %} {% trans "of" %} {{ page_obj.paginator.count }}
+      </span>
+      {% if is_paginated %}
+        <div class="pages">
+          {% if page_obj.previous_page_number != 0 %}
+            <a class="link link--pre flex"
+               href="#"
+               name="page-button"
+               hx-get="{{ request.path }}"
+               hx-target="{{ target_selector }}"
+               hx-select="{{ select_selector }}"
+               hx-swap="{{ swap_type }}"
+               hx-vals='{"page": "{{ page_obj.previous_page_number|unlocalize }}"}'>
+              <i id="chevron_left" class="material-icons">chevron_left</i>
+
+              {% trans "Previous" %}
+            </a>
+
+          {% else %}
+
+            <a class="link--pre disabled flex">
+              <i id="chevron_left" class="material-icons">chevron_left</i>
+              {% trans "Previous" %}
+            </a>
+ 
+          {% endif %}
+
+          {% if paginator.num_pages > 1 %}
+            {% for n in paginator.page_range %}
+              {% if page_obj.number|add:'-2' == n %}
+                {# If current page -2 = 1 (n) #}
+                {# First page: #}
+                <a class="page"
+                   href="#"
+                   name="page-button"
+                   hx-get="{{ request.path }}"
+                   hx-target="{{ target_selector }}"
+                   hx-select="{{ select_selector }}"
+                   hx-swap="{{ swap_type }}"
+                   hx-vals='{"page": "1"}'>1</a>
+                {% if n != 1 %}<span class="page--dot">...</span>{% endif %}
+
+              {% elif page_obj.number == n %}
+
+                {# Current page: #}
+                <a class="page page--active" href="#">{{ n }}</a>
+                {# Set how many pages on each side of current page #}
+
+              {% elif page_obj.number|add:'-2' < n and n < page_obj.number|add:'2' %}
+
+                {# Pages around current page: #}
+                <a class="page"
+                   href="#"
+                   name="page-button"
+                   hx-get="{{ request.path }}"
+                   hx-target="{{ target_selector }}"
+                   hx-select="{{ select_selector }}"
+                   hx-swap="{{ swap_type }}"
+                   hx-vals='{"page": "{{ n|unlocalize }}"}'
+                   hx-indicator="#report-page-indicator">{{ n }}</a>
+
+              {% elif page_obj.number|add:'2' == n %}
+
+                {# Last page #}
+                {% if page_obj.number != paginator.num_pages %}<span class="page--dot">...</span>{% endif %}
+ 
+                <a class="page"
+                   href="#"
+                   name="page-button"
+                   hx-get="{{ request.path }}"
+                   hx-target="{{ target_selector }}"
+                   hx-select="{{ select_selector }}"
+                   hx-swap="{{ swap_type }}"
+                   hx-vals='{"page": "{{ paginator.num_pages|unlocalize }}"}'>{{ paginator.num_pages }}</a>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if page_obj.number != page_obj.paginator.num_pages %}
+            <a class="link link--next flex"
+               href="#"
+               name="page-button"
+               hx-get="{{ request.path }}"
+               hx-target="{{ target_selector }}"
+               hx-select="{{ select_selector }}"
+               hx-swap="{{ swap_type }}"
+               hx-vals='{"page": "{{ page_obj.next_page_number|unlocalize }}"}'>
+              {% trans "Next" %}
+
+              <i id="chevron_right" class="material-icons">chevron_right</i>
+            </a>
+
+          {% else %}
+ 
+            <a class="link--next disabled flex">
+              {% trans "Next" %}
+              <i id="chevron_right" class="material-icons">chevron_right</i>
+            </a>
+
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% include "components/pagination/load_results.html" %}
+    </div>
+  </td>
+</tr>

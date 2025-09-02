@@ -1837,8 +1837,43 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // Redmine ticket: [#60289]
 
 // ONGOING SCANS:
+// Redmine ticket: [#66057]
+
 // FINISHED SCANS:
+// Redmine ticket: [#66056]
+
 // ERROR MESSAGES:
+.errorlog-table {
+  .column {
+    &--message {
+      // Empty
+    }
+
+    &--starttime {
+      width: calc(var(--datatable-cell-padding) + 17ch);
+
+      @media (max-width: $break-xl) {
+        width: calc(var(--datatable-cell-padding) + 11ch);
+      }
+    }
+
+    &--path {
+      // Empty
+    }
+
+    &--scannername {
+      // Empty
+    }
+
+    &--actions {
+      width: 10rem; // 160px
+
+      .button-group {
+        flex-wrap: nowrap;
+      }
+    }
+  }
+}
 
 // TBA
 
