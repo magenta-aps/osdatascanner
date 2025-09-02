@@ -1,13 +1,14 @@
+import xml.etree.ElementTree as ET
+
 from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.model.utilities import sitemap
-from os2datascanner.projects.shared.forms import GroupingModelForm
 
 from ..models.scannerjobs.webscanner import WebScanner
-from .shared import Groups
+from .shared import Groups, ScannerForm
 
 
-class WebScannerForm(GroupingModelForm):
+class WebScannerForm(ScannerForm):
     # By default django.forms validates fields in the order in which they're
     # defined in the model class. If you want to force some fields to be
     # evaluated in a particular order (here, for example, our validation logic
@@ -33,13 +34,13 @@ class WebScannerForm(GroupingModelForm):
         ),
         (
             _("Advanced web crawler settings"),
-            ["extended_hints", "reduce_communication"]
+            ["reduce_communication"]
         ),
         (
             _("Scan settings"),
             ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule"]
         ),
-        Groups.RESULT_SETTINGS,
+        Groups.ADVANCED_RESULT_SETTINGS,
         Groups.SCHEDULED_EXECUTION_SETTINGS,
     )
 
@@ -65,6 +66,19 @@ class WebScannerForm(GroupingModelForm):
                     "sitemap_url",
                     [_("Sitemap download requested, but no URL was given")])
         return sitemap_url
+
+    def clean_sitemap(self):
+        sitemap = self.cleaned_data["sitemap"]
+        if not sitemap:
+            return sitemap
+        try:
+            ET.parse(sitemap)
+        except Exception as e:
+            self.add_error(
+                "sitemap",
+                [_("Error parsing sitemap: {0}").format(e)]
+            )
+        return sitemap
 
     class Meta:
         model = WebScanner

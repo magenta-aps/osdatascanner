@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-15 15:39+0200\n"
+"POT-Creation-Date: 2025-08-26 11:16+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -121,6 +121,32 @@ msgstr "Indstillinger for resultater"
 msgid "Scheduled execution settings"
 msgstr "Indstillinger for planlagte kørsler"
 
+#: adminapp/forms/shared.py
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Remediators"
+msgstr "Opryddere"
+
+#: adminapp/forms/shared.py
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Contacts"
+msgstr "Kontakter"
+
+#: adminapp/forms/shared.py adminapp/templates/rules.html
+#: organizations/templates/organizations/account_detail.html
+msgid "Organization"
+msgstr "Organisation"
+
+#: adminapp/forms/shared.py adminapp/models/rules.py
+#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
+#: adminapp/templates/components/rules/customrule_form.html
+#: adminapp/templates/components/rules/regexrule_form.html
+msgid "Rule"
+msgstr "Regel"
+
+#: adminapp/forms/shared.py
+msgid "Exclusion rule"
+msgstr "Udelukkelsesregel"
+
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"
 msgstr "f.eks. https://example.com/"
@@ -149,6 +175,11 @@ msgstr "Sitemap er ikke gyldigt"
 #: adminapp/forms/webscanner.py
 msgid "Sitemap download requested, but no URL was given"
 msgstr "Sitemap-URL forventet men mangler"
+
+#: adminapp/forms/webscanner.py
+#, python-brace-format
+msgid "Error parsing sitemap: {0}"
+msgstr "Fejl i læsning a sitemap: {0}"
 
 #: adminapp/management/commands/graphgrant_expiry_check.py
 msgid "Your GraphGrant needs updating!"
@@ -258,13 +289,6 @@ msgstr "sygemelding"
 #: adminapp/models/rules.py
 msgid "Danish"
 msgstr "dansk"
-
-#: adminapp/models/rules.py
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
-#: adminapp/templates/components/rules/customrule_form.html
-#: adminapp/templates/components/rules/regexrule_form.html
-msgid "Rule"
-msgstr "Regel"
 
 #: adminapp/models/rules.py
 msgid "categories"
@@ -2021,10 +2045,6 @@ msgid "Scanner settings"
 msgstr "Scannerindstillinger"
 
 #: adminapp/templates/components/scanner/scanner_form.html
-msgid "Remediators"
-msgstr "Opryddere"
-
-#: adminapp/templates/components/scanner/scanner_form.html
 msgid ""
 "If any matches from the scanner job cannot be delegated to a specific user, "
 "the remediator(s) will see the results in their report module instead."
@@ -2043,10 +2063,6 @@ msgid ""
 msgstr ""
 "Universelle opryddere er automatisk tildelt oprydderrollen for alle "
 "scannerjobs."
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "Contacts"
-msgstr "Kontakter"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Schedule scan"
@@ -2510,11 +2526,6 @@ msgstr "(endnu ingen)"
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html
-#: organizations/templates/organizations/account_detail.html
-msgid "Organization"
-msgstr "Organisation"
-
 #: adminapp/templates/rules.html adminapp/templates/system_rules.html
 msgid "Description"
 msgstr "Beskrivelse"
@@ -2798,18 +2809,6 @@ msgstr "oprettet"
 #: adminapp/views/views.py
 msgid "saved"
 msgstr "gemt"
-
-#: adminapp/views/webscanner_views.py
-msgid "e.g. https://example.com"
-msgstr "f.eks. https://example.com"
-
-#: adminapp/views/webscanner_views.py
-msgid "e.g. https://example.com/exclude1, https://example.com/exclude2"
-msgstr "f.eks. https://example.com/exclude1, https://example.com/exclude2"
-
-#: adminapp/views/webscanner_views.py
-msgid "Space is not allowed in the web-domain name."
-msgstr "Mellemrum er ikke tilladt i web-domænenavnet."
 
 #: core/admin.py
 msgid "Users who are already Administrators are not shown."
@@ -3719,9 +3718,10 @@ msgid ""
 "appropriately configured GraphGrant can."
 msgstr ""
 "En EWS Service Account bevilling repræsenterer en service account med "
-"efterligningsadgang til en traditionel on-premises Microsoft Exchange instans. "
-"Bemærk at en EWS bevilling ikke længere kan benyttes til autentificering mod Office 365, "
-"men en korrekt konfigureret Graph bevilling kan."
+"efterligningsadgang til en traditionel on-premises Microsoft Exchange "
+"instans. Bemærk at en EWS bevilling ikke længere kan benyttes til "
+"autentificering mod Office 365, men en korrekt konfigureret Graph bevilling "
+"kan."
 
 #: organizations/templates/grants/googleapigrant_update.html
 msgid ""

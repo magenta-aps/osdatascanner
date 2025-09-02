@@ -13,8 +13,6 @@ def reconcile_remediators(rl: list[Account], scanner: Scanner):
             _alias_type=AliasType.REMEDIATOR.value,
             _value=scanner.pk)
 
-    print(scanner, existing_aliases, rl)
-
     # XXX: this is not an efficient implementation of this, but a) does that
     # matter? and b) we want the extra sanity checks of AliasManager.create
     for e in existing_aliases:

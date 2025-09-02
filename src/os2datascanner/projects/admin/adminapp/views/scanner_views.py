@@ -24,14 +24,17 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelMultipleChoiceField, ModelChoiceField
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import CreateView, UpdateView
 
 from os2datascanner.projects.admin.organizations.models import Organization, Account, Alias
 from os2datascanner.projects.admin.utilities import UserWrapper
 
 from .views import RestrictedListView, RestrictedCreateView, \
-    RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView
+    RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
+    OrgRestrictedMixin
 from ..models.rules import CustomRule
 from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
@@ -45,6 +48,7 @@ from ..models.scannerjobs.gmail import GmailScanner
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from ..models.scannerjobs.scanner_helpers import CoveredAccount
 from ..utils import CleanAccountMessage
+from .utils.remediators import reconcile_remediators
 from ...organizations.models.aliases import AliasType
 
 logger = structlog.get_logger("adminapp")
@@ -89,6 +93,120 @@ class ScannerList(RestrictedListView):
         context["scanner_tabs"] = [scanner for scanner in scanner_models if scanner.enabled()]
 
         return context
+
+
+class _FormMixin:
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+
+    def get_context_data(self, *args, **kwargs):
+        d = super().get_context_data(*args, **kwargs)
+        d["scanner_model"] = self.model  # compat
+        return d
+
+    def form_valid(self, form):
+        rv = super().form_valid(form)
+        reconcile_remediators(form.cleaned_data["remediators"], self.object)
+        return rv
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        # We need to serve the correct organization to the form
+        user_orgs = Organization.objects.filter(
+                UserWrapper(self.request.user).make_org_Q("uuid")
+            )
+        requested_org_uuid = self.request.GET.get("organization")
+        if org := user_orgs.filter(uuid=requested_org_uuid).first():
+            # A specific organization was requested, and the user has access to it. Use that one.
+            pass
+        elif self.object:
+            # We are updating an existing scanner, grab the organization.
+            org = self.object.organization
+        else:
+            # We are creating a new scanner, grab the first organization we can find
+            org = user_orgs.order_by("name").first()
+
+        kwargs.update({"user": self.request.user, "org": org, "this_url": self.request.path})
+        return kwargs
+
+
+class _AdminOnlyMixin:
+
+    def dispatch(self, request, *args, **kwargs):
+        # The user is only allowed in if they have access to at least one organization
+        if hasattr(request.user, "administrator_for") or request.user.has_perm("core.view_client"):
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(_("User is not administrator for any client"))
+
+
+class ScannerCreateDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
+                      CreateView):
+    scanner_view_type = ScannerViewType.CREATE
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+    permission_required = "os2datascanner.add_scanner"
+
+
+class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMixin, _FormMixin,
+                      UpdateView):
+    scanner_view_type = ScannerViewType.UPDATE
+    edit = True
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+    permission_required = "os2datascanner.change_scanner"
+
+    def form_valid(self, form):
+        """If the user does not have permission to validate a scan, changes made by that user
+        must invalidate the scan."""
+
+        # Call the save method, but do not commit to the database.
+        # This gives us the object with updated fields.
+        self.object = form.save(commit=False)
+
+        # TODO: Only do this if changes have been made.
+        # Currently, calling "has_changed" on the Form always returns true because of something
+        # weird going on with the RecurrenceField.
+
+        # If the user is not allowed to validate scans ...
+        if not self.request.user.has_perm("os2datascanner.can_validate"):
+            # ... invalidate the scanner
+            self.object.validation_status = Scanner.INVALID
+
+        return super().form_valid(form)
+
+    def get_initial(self):
+        return self.initial | {
+            "remediators": Account.objects.filter(
+                    aliases___alias_type=AliasType.REMEDIATOR.value,
+                    aliases___value=str(self.object.pk))
+        }
+
+
+class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
+                    CreateView):
+    scanner_view_type = ScannerViewType.COPY
+    template_name = "components/forms/grouping_model_form_wrapper.html"
+    permission_required = "os2datascanner.add_scanner"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_initial(self):
+        new_name = self.get_object().name
+        while Scanner.objects.unfiltered().filter(name=new_name).exists():
+            new_name += " " + _("Copy")
+
+        return super().get_initial() | {
+            "remediators": Account.objects.filter(
+                    aliases___alias_type=AliasType.REMEDIATOR.value,
+                    aliases___value=str(self.get_object().pk)),
+
+            # Copied scannerjobs should be "Invalid" by default
+            # to avoid being able to misuse this feature.
+            "validation_status": Scanner.INVALID,
+            "name": new_name
+        }
 
 
 class ScannerBase(object):

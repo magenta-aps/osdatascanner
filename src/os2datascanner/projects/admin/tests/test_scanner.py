@@ -1,9 +1,9 @@
 import pytest
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory
 from django.contrib.auth.models import Permission
 from unittest import skip
+from django.urls import reverse_lazy
 
 from os2datascanner.engine2.model.data import unpack_data_url
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
@@ -15,38 +15,39 @@ from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.projects.admin.organizations.models import OrganizationalUnit, Alias, Account
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
-from os2datascanner.projects.admin.adminapp.views.webscanner_views \
-    import WebScannerUpdate
 from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
-
-
-def get_webscannerupdate_view(user):
-    request = RequestFactory().get('/')
-    request.user = user
-    view = WebScannerUpdate()
-    view.setup(request)
-    return view
 
 
 @pytest.mark.django_db
 class TestScanners:
 
-    def test_superuser_can_validate_scannerjob(self, superuser):
+    def test_superuser_can_validate_scannerjob(self, superuser, client, web_scanner):
+        """Make sure the "validation_status" field is included in the scanner form for superusers"""
 
-        view = get_webscannerupdate_view(superuser)
-        form_fields = view.get_form_fields()
-        assert 'validation_status' in str(form_fields)
+        client.force_login(superuser)
+        response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
+        assert 'validation_status' in str(response.context_data["form"].fields)
 
-    def test_user_cannot_validate_scannerjob(self, user):
-        view = get_webscannerupdate_view(user)
-        form_fields = view.get_form_fields()
-        assert 'validation_status' not in str(form_fields)
+    def test_user_without_permission_cannot_validate_scannerjob(self, user_admin, client,
+                                                                web_scanner):
+        """Make sure the "validation_status" field is disabled in the scanner form for admins
+        without permission"""
 
-    def test_user_with_permission_can_validate_scannerjob(self, user):
-        user.user_permissions.add(Permission.objects.get(codename='can_validate'))
-        view = get_webscannerupdate_view(user)
-        form_fields = view.get_form_fields()
-        assert 'validation_status' in str(form_fields)
+        user_admin.user_permissions.add(Permission.objects.get(codename='change_scanner'))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
+        validation_status_field = response.context_data["form"].fields["validation_status"]
+        assert validation_status_field.disabled
+
+    def test_user_with_permission_can_validate_scannerjob(self, user_admin, client, web_scanner):
+        """Make sure the "validation_status" field is included in the scanner form for admins
+        with permission"""
+
+        user_admin.user_permissions.add(*Permission.objects.filter(codename__in=['can_validate',
+                                                                                 'change_scanner']))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("webscanner_update", kwargs={"pk": web_scanner.pk}))
+        assert 'validation_status' in str(response.context_data["form"].fields)
 
     def test_scanner_job_sitemap(self, web_scanner):
         # Arrange...

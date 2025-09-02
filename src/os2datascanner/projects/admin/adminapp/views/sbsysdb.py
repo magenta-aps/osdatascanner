@@ -5,8 +5,7 @@ from ..forms.sbsysdb import SBSYSDBScannerForm
 from ..models.scannerjobs.sbsysdb import SBSYSDBScanner
 from ..models.scannerjobs.scanner import Scanner
 from ...organizations.models import Account, AliasType
-from .utils.remediators import reconcile_remediators
-from .scanner_views import ScannerList, ScannerViewType
+from .scanner_views import ScannerList, ScannerViewType, _FormMixin
 
 
 class SBSYSDBScannerList(ScannerList):
@@ -16,28 +15,16 @@ class SBSYSDBScannerList(ScannerList):
     type = 'sbsys-db'
 
 
-class _Form_Mixin:
+class SBSYSDBScannerCreateDF(_FormMixin, CreateView):
+    scanner_view_type = ScannerViewType.CREATE
     model = SBSYSDBScanner
     form_class = SBSYSDBScannerForm
-    template_name = "components/forms/grouping_model_form_wrapper.html"
-
-    def get_context_data(self):
-        d = super().get_context_data()
-        d["scanner_model"] = self.model  # compat
-        return d
-
-    def form_valid(self, form):
-        rv = super().form_valid(form)
-        reconcile_remediators(form.cleaned_data["remediators"], self.object)
-        return rv
 
 
-class SBSYSDBScannerCreateDF(_Form_Mixin, CreateView):
-    scanner_view_type = ScannerViewType.CREATE
-
-
-class SBSYSDBScannerUpdateDF(_Form_Mixin, UpdateView):
+class SBSYSDBScannerUpdateDF(_FormMixin, UpdateView):
     scanner_view_type = ScannerViewType.UPDATE
+    model = SBSYSDBScanner
+    form_class = SBSYSDBScannerForm
     edit = True  # compat
 
     def get_initial(self):
@@ -48,8 +35,10 @@ class SBSYSDBScannerUpdateDF(_Form_Mixin, UpdateView):
         }
 
 
-class SBSYSDBScannerCopyDF(_Form_Mixin, CreateView):
+class SBSYSDBScannerCopyDF(_FormMixin, CreateView):
     scanner_view_type = ScannerViewType.COPY
+    model = SBSYSDBScanner
+    form_class = SBSYSDBScannerForm
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
