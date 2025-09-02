@@ -43,7 +43,11 @@ class WebScannerForm(ScannerForm):
         ),
         (
             _("Scan settings"),
-            ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule"]
+            ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule",
+                (
+                    _("Web scan settings"),
+                    ["do_link_check", "exclude_urls"]
+                )]
         ),
         Groups.ADVANCED_RESULT_SETTINGS,
         Groups.SCHEDULED_EXECUTION_SETTINGS,

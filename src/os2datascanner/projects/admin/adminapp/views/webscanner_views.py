@@ -27,18 +27,6 @@ class WebScannerList(ScannerList):
     type = 'web'
 
 
-web_scanner_fields = [
-    'url',
-    'download_sitemap',
-    'sitemap_url',
-    'sitemap',
-    'do_link_check',
-    'exclude_urls',
-    'reduce_communication',
-    'always_crawl',
-]
-
-
 class WebScannerCreate(ScannerCreateDf):
     model = WebScanner
     form_class = WebScannerForm
