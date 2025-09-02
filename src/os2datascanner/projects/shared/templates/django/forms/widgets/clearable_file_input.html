@@ -1,8 +1,82 @@
-{# djlint:off #}
-{% if widget.is_initial %}{{ widget.initial_text }}: <a href="{{ widget.value.url }}">{{ widget.value }}</a>{% if not widget.required %}
-<input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %}{% if widget.attrs.checked %} checked{% endif %}>
-<label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>{% endif %}<br>
-{{ widget.input_text }}:{% endif %}
-<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
-<!-- custom widget -->
-{# djlint:on #}
+{% load i18n static %}
+
+{# Custom widget for Django Forms' clearable file input fields #}
+
+{% block extra_head_html %}
+  <script type="text/javascript"
+          src="{% static 'js/forms/clearUploadedFile.js' %}"></script>
+{% endblock extra_head_html %}
+
+<div class="custom-field custom-field--file-upload" data-widget="file">
+  {# The "real" input (visually hidden but focusable & form-bound): #}
+  <input class="screen-reader-only"
+         type="file"
+         name="{{ widget.name }}"
+         id="{{ widget.attrs.id }}"
+         {% include "django/forms/widgets/attrs.html" %}
+         data-role="form-input">
+
+  {# The visually rendered content: #}
+  <div class="field__wrapper">
+    <button type="button"
+            class="field__upload-button button button--text-button"
+            data-action="upload-file">
+      <span>{% trans "browse"|capfirst %}</span>
+    </button>
+ 
+    <div class="field__content" data-role="content">
+      {% if widget.is_initial %}
+        <div class="uploaded-file uploaded-file--old" data-role="display">
+          <span class="uploaded-file__label">
+            <i class="material-symbols uploaded-file__icon">description</i>
+            <span class="uploaded-file__name">{{ widget.value.name }}</span>
+          </span>
+ 
+          {% if not widget.required %}
+            <button type="button"
+                    class="button button--transparent-button button--icon-button uploaded-file__remove"
+                    data-action="remove-existing"
+                    aria-label="{% trans 'remove file'|capfirst %}"
+                    title="{% trans 'Click here to remove the previously saved file.' %}">
+              <i class="material-symbols uploaded-file__icon">close</i>
+            </button>
+          {% endif %}
+        </div>
+
+      {% else %}
+        <div class="uploaded-file uploaded-file--empty" data-role="display">
+          <span class="uploaded-file__placeholder">{% trans "no file chosen"|capfirst %}</span>
+        </div>
+      {% endif %}
+ 
+      {% if not widget.required %}
+        {# Keep Django's "clear input on save"-checkbox, hidden but accessible: #}
+        <span class="screen-reader-only" data-role="clear-wrapper">
+          <input type="checkbox"
+                 name="{{ widget.checkbox_name }}"
+                 id="{{ widget.checkbox_id }}"
+                 value="on"
+                 data-role="clear-existing">
+          <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{# Template JS can clone for new selections: #}
+<template data-template="uploaded-new">
+  <div class="uploaded-file uploaded-file--new" data-role="display">
+    <span class="uploaded-file__label">
+      <i class="material-symbols uploaded-file__icon">description</i>
+      <span class="uploaded-file__name" data-role="filename"></span>
+    </span>
+
+    <button type="button"
+            class="button button--transparent-button button--icon-button uploaded-file__remove"
+            data-action="remove-new"
+            aria-label="{% trans 'remove selected file'|capfirst %}">
+      <i class="material-symbols uploaded-file__icon">close</i>
+    </button>
+  </div>
+</template>

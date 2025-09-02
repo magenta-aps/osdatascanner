@@ -29,12 +29,17 @@ class WebScannerForm(ScannerForm):
         Groups.GENERAL_SETTINGS,
         (
             _("Web crawler settings"),
-            ["url", "download_sitemap", "sitemap_url", "sitemap",
-             "always_crawl"]
-        ),
-        (
-            _("Advanced web crawler settings"),
-            ["reduce_communication"]
+            [
+                "url",
+                "download_sitemap",
+                "sitemap_url",
+                "sitemap",
+                "always_crawl",
+                (
+                    _("Advanced web crawler settings"),
+                    ["reduce_communication"]
+                )
+            ]
         ),
         (
             _("Scan settings"),
