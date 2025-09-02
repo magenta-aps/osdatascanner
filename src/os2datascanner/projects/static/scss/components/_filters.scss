@@ -180,28 +180,11 @@
 }
 
 .rule_filtering_wrapper {
-  float: left;
   max-width: 600px;
-  margin-bottom: 2rem;
-
-  .rule-filter-form {
-    display: flex;
-    flex-direction: column;
-
-    .button {
-      max-width: fit-content;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-  }
+  @include layout-vertical(1rem);
 
   #categories_select2 {
-    min-width: 30rem;
-  }
-
-  .select2-selection__rendered {
-    height: fit-content !important;
-    overflow-y: scroll !important;
+    min-width: 100%;
   }
 }
 

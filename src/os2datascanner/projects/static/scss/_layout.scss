@@ -150,3 +150,44 @@ body {
     overflow-x: auto;
   }
 }
+
+.section {
+  @include spacing-reset;
+  @include layout-vertical(2rem);
+
+  margin-top: 2rem;
+  @media (min-width: $break-lg) {
+    margin-top: 0rem;
+  }
+
+  & + & {
+    margin-top: 3.5rem;
+
+    @media (min-width: $break-lg) {
+      margin-top: 0rem;
+    }
+  }
+
+  &__header {
+    @include layout-vertical(1.5rem);
+
+    padding: 0 1rem;
+    @media (min-width: $break-lg) {
+      padding: 0rem;
+    }
+  }
+
+  &__label {
+    // Empty
+  }
+
+  &__body {
+    @include layout-vertical(1.5rem);
+  }
+
+  .label-wrapper {
+    @include layout-horizontal {
+      justify-content: space-between;
+    }
+  }
+}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-26 11:16+0200\n"
+"POT-Creation-Date: 2025-09-02 12:49+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -131,7 +131,7 @@ msgstr "Opryddere"
 msgid "Contacts"
 msgstr "Kontakter"
 
-#: adminapp/forms/shared.py adminapp/templates/rules.html
+#: adminapp/forms/shared.py
 #: organizations/templates/organizations/account_detail.html
 msgid "Organization"
 msgstr "Organisation"
@@ -255,19 +255,22 @@ msgid "API keys"
 msgstr "API-nøgler"
 
 #: adminapp/models/rules.py adminapp/models/scannerjobs/scanner.py
+#: adminapp/templates/rules.html adminapp/templates/system_rules.html
 #: core/models/client.py organizations/templates/organizations/grants_list.html
 #: organizations/templates/organizations/org_table.html
 #: organizations/templates/organizations/orgunit_list.html
 msgid "name"
 msgstr "navn"
 
-#: adminapp/models/rules.py
+#: adminapp/models/rules.py adminapp/templates/rules.html
+#: adminapp/templates/system_rules.html
 msgid "description"
-msgstr "Beskrivelse"
+msgstr "beskrivelse"
 
-#: adminapp/models/rules.py
+#: adminapp/models/rules.py adminapp/templates/rules.html
+#: adminapp/templates/system_rules.html
 msgid "sensitivity"
-msgstr "Følsomhed"
+msgstr "følsomhed"
 
 #: adminapp/models/rules.py
 msgid "number ID"
@@ -290,7 +293,7 @@ msgstr "sygemelding"
 msgid "Danish"
 msgstr "dansk"
 
-#: adminapp/models/rules.py
+#: adminapp/models/rules.py adminapp/templates/system_rules.html
 msgid "categories"
 msgstr "kategorier"
 
@@ -1183,7 +1186,6 @@ msgstr "Opret nyt scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html
 #: adminapp/templates/components/navigation/navigation.html
-#: adminapp/templates/rules.html
 msgid "Rules"
 msgstr "Regler"
 
@@ -1344,7 +1346,6 @@ msgstr "Navngiv reglen og vælg hvilken organisation reglen skal tilhøre"
 #: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
 #: adminapp/templates/components/scanner/active_scanners_table.html
 #: adminapp/templates/components/scanner/removed_scanners_table.html
-#: adminapp/templates/rules.html adminapp/templates/system_rules.html
 #: organizations/templates/organizations/account_detail.html
 #: organizations/templates/organizations/account_list.html
 msgid "Name"
@@ -1543,7 +1544,7 @@ msgstr ""
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html
 #: adminapp/templates/components/scanner/scan_completed.html
 #: adminapp/templates/components/scanstatus/scan_status_table.html
-#: adminapp/templates/error_log.html adminapp/templates/rules.html
+#: adminapp/templates/error_log.html
 #: organizations/templates/organizations/org_table.html
 msgid "Delete"
 msgstr "Slet"
@@ -1610,12 +1611,10 @@ msgid "Next scan"
 msgstr "Næste scan"
 
 #: adminapp/templates/components/scanner/active_scanners_table.html
-#: adminapp/templates/rules.html
 msgid "Action"
 msgstr "Handling"
 
 #: adminapp/templates/components/scanner/active_scanners_table.html
-#: adminapp/templates/rules.html
 msgid "Edit"
 msgstr "Redigér"
 
@@ -2026,7 +2025,7 @@ msgstr "Vælg SharePoint sider"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "SharePoint Sites"
-msgstr "Vælg SharePoint sider"
+msgstr "SharePoint sider"
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Refresh SharePoint sites list"
@@ -2523,20 +2522,48 @@ msgid "(none yet)"
 msgstr "(endnu ingen)"
 
 #: adminapp/templates/rules.html
+msgid "rules"
+msgstr "regler"
+
+#: adminapp/templates/rules.html
 msgid "Add rule"
 msgstr "Tilføj regel"
 
-#: adminapp/templates/rules.html adminapp/templates/system_rules.html
-msgid "Description"
-msgstr "Beskrivelse"
+#: adminapp/templates/rules.html
+msgid "Click here to add a new rule."
+msgstr "Klik her for at tilføje en ny regel"
 
-#: adminapp/templates/rules.html adminapp/templates/system_rules.html
-msgid "Sensitivity"
-msgstr "Følsomhed"
+#: adminapp/templates/rules.html
+msgid "add rule"
+msgstr "tilføj regel"
+
+#: adminapp/templates/rules.html
+msgid "user defined rules"
+msgstr "brugerdefineret regler"
+
+#: adminapp/templates/rules.html
+msgid "action"
+msgstr "handling"
+
+#: adminapp/templates/rules.html
+msgid "edit"
+msgstr "redigér"
+
+#: adminapp/templates/rules.html
+msgid "show more"
+msgstr "vis mere"
+
+#: adminapp/templates/rules.html
+msgid "show less"
+msgstr "vis mindre"
 
 #: adminapp/templates/rules.html
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
+
+#: adminapp/templates/rules.html
+msgid "delete"
+msgstr "slet"
 
 #: adminapp/templates/rules.html
 msgid "This rule cannot be deleted, as it is used in the following scanners"
@@ -2548,8 +2575,8 @@ msgid "Update or delete the scanners first in order to delete the rule"
 msgstr "Opdater eller slet disse scannere først for at kunne slette reglen"
 
 #: adminapp/templates/rules.html
-msgid "No rules added yet"
-msgstr "Der er endnu ikke tilføjet nogle regler"
+msgid "There are currently no user-defined rules to display."
+msgstr "Der er i øjeblikket ingen brugerdefinerede regler at vise."
 
 #: adminapp/templates/rules.html
 msgid "Delete rule"
@@ -2567,17 +2594,25 @@ msgstr "Handlingen kan ikke fortrydes."
 msgid "Add scannerjob"
 msgstr "Tilføj scannerjob"
 
-#: adminapp/templates/system_rules.html organizations/admin.py
-msgid "System rules"
-msgstr "Systemregler"
+#: adminapp/templates/system_rules.html organizations/models/organization.py
+msgid "system rules"
+msgstr "systemregler"
 
 #: adminapp/templates/system_rules.html
-msgid "Filter for categories"
-msgstr "Filtrér efter kategorier"
+msgid "select organization"
+msgstr "vælg organisation"
+
+#: adminapp/templates/system_rules.html
+msgid "Select the organization you want to configure system rules for."
+msgstr "Vælg den organisation, som du vil konfigurere systemregler for."
+
+#: adminapp/templates/system_rules.html
+msgid "select rule categories"
+msgstr "vælg regelkategorier"
 
 #: adminapp/templates/system_rules.html
 msgid "Filter system rules by the chosen categories."
-msgstr "Filtrér systemreglerne efter de valgte kategorier"
+msgstr "Filtrér systemreglerne ud fra de valgte kategorier."
 
 #: adminapp/templates/system_rules.html
 #: organizations/templates/organizations/orgunit_list.html
@@ -2585,20 +2620,12 @@ msgid "filter"
 msgstr "filtrér"
 
 #: adminapp/templates/system_rules.html
-msgid "Choose system rules for organization"
-msgstr "Vælg systemregler for organizationen"
+msgid "enable rule"
+msgstr "aktivér regel"
 
 #: adminapp/templates/system_rules.html
-msgid "Categories"
-msgstr "Kategorier"
-
-#: adminapp/templates/system_rules.html
-msgid "Enable rule"
-msgstr "Aktivér regel"
-
-#: adminapp/templates/system_rules.html
-msgid "No rules found with the chosen categories"
-msgstr "Ingen regler fundet for de valgte kategorier"
+msgid "No rules match the selected categories."
+msgstr "Ingen regler fundet for de valgte kategorier."
 
 #: adminapp/templatetags/utility_tags.py
 msgid "day"
@@ -3631,6 +3658,10 @@ msgstr "Opbevaringspolitik"
 msgid "Grant prioritization settings"
 msgstr "Bevillingsprioritering"
 
+#: organizations/admin.py
+msgid "System rules"
+msgstr "Systemregler"
+
 #: organizations/admin.py organizations/templates/organizations/org_update.html
 msgid "Deletion settings"
 msgstr "Indstillinger for sletning"
@@ -3665,10 +3696,6 @@ msgstr "Synkronisér til rapportmodulet"
 #: organizations/models/organization.py
 msgid "slug"
 msgstr "slug"
-
-#: organizations/models/organization.py
-msgid "system rules"
-msgstr "systemregler"
 
 #: organizations/models/organization.py
 msgid "synchronization time"

@@ -85,18 +85,18 @@ document.addEventListener("click", function (e) {
     document.getElementById("order_by").value = targ.name;
   }
 
-  // So far only used in results tables on Report
-  if (hasClass(targ, "show-more")) {
-    let overflowDiv = targ.parentElement;
-
-    // Toggle the expanded class and update the button text
-    overflowDiv.classList.toggle("full-path");
-    if (overflowDiv.classList.contains("full-path")) {
-      targ.innerText = gettext("Show less");
-    } else {
-      targ.innerText = gettext("Show more");
-    }
+  // ***** Toggle for <td>'s with a "show more" button *****
+  const btn = e.target.closest(".show-more");
+  if (!btn) {
+    return;
   }
+
+  const overflow = btn.parentElement;
+  const expanded = overflow.classList.toggle("full-path");
+  btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  btn.textContent = expanded
+    ? btn.dataset.labelExpanded
+    : btn.dataset.labelCollapsed;
 });
 
 // function to use localStorage

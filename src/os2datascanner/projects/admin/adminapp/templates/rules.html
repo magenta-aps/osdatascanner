@@ -1,10 +1,11 @@
-{% extends 'components/common/base.html' %}
+{% extends "components/common/base.html" %}
 {% load static %}
 {% load i18n %}
 
 {% block scripts %}
-  <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
-  <script src="{% static 'js/index.js' %}"></script>
+  <script src="{% static "js/tables/tableBehavior.js" %}"></script>
+  <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
+  <script src="{% static "js/index.js" %}"></script>
 {% endblock %}
 
 {% block jquery_script %}
@@ -26,108 +27,126 @@
     {% include "components/common/main.html" with active_tab="rules" %}
 
     <div class="content">
-      <div class="content-header">
-        <div class="aside">
-          <h1 class="page-title">{% trans "Rules" %}</h1>
-
-          <div class="btn">
+      <section class="section">
+        <div class="section__header">
+          <div class="label-wrapper">
+            <h1 class="page-title">{% trans "rules"|capfirst %}</h1>
+ 
             <a class="button button--cta-button button--icon-text-button"
-               href="{% url 'customrule_add' %}"
-               aria-label="{% trans 'Add rule' %}"
-               title="{% trans 'Add rule' %}">
+               href="{% url "customrule_add" %}"
+               aria-label="{% trans "Add rule" %}"
+               title="{% trans "Click here to add a new rule." %}">
               <svg class="icon button__plus-icon">
                 <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
               </svg>
-              <span>{% trans "Add rule" %}</span>
+              <span>{% trans "add rule"|capfirst %}</span>
             </a>
           </div>
         </div>
-      </div>
 
-      {% include "components/feedback/snackbarNew.html" %}
-      {% if customrule_list %}
-        <div class="datatable-wrapper card xl"
-             role="region"
-             tabindex="0"
-             aria-label="{% trans 'Rules' %}">
-          <table class="datatable">
-            <colgroup>
-              <col class="datatable__column--name" />
-              <col class="datatable__column--org" />
-              <col class="datatable__column--info" />
-              <col class="datatable__column--sensitivity" />
-              <col class="datatable__column--actions" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th class="datatable__column--name">{% trans "Name" %}</th>
-                <th class="datatable__column--org">{% trans "Organization" %}</th>
-                <th class="datatable__column--info">{% trans "Description" %}</th>
-                <th class="datatable__column--sensitivity">{% trans "Sensitivity" %}</th>
-                <th class="datatable__column--actions">{% trans "Action" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for rule in customrule_list %}
-                <tr tabindex="0">
-                  <td class="datatable__column--name">{{ rule.name }}</td>
-                  <td class="datatable__column--org">{{ rule.organization }}</td>
-                  <td class="datatable__column--info">{{ rule.description }}</td>
-                  <td class="datatable__column--sensitivity">
-                    <span class="flex">
-                      <span class="flex--width">{% include "components/rules/sensitivity_icon.html" %}</span>
-                      <span>{{ rule.get_sensitivity_display }}</span>
-                    </span>
-                  </td>
-                  <td class="datatable__column--actions">
-                    <div class="action-wrapper button-group">
-                      <a href="{% url 'customrule_update' rule.pk %}"
-                         class="button button--icon-button"
-                         aria-label="{% trans 'Edit' %} {# {% trans 'rule' %} #}"
-                         title="{% trans 'Edit' %} {# {% trans 'rule' %} #}">
-                        <i id="edit" class="material-icons">edit</i>
-                      </a>
+        <div class="section__body">
+          <div class="datatablex__card-container no-side-scroll"
+               role="region"
+               tabindex="0"
+               aria-label="{% trans "user defined rules"|capfirst %}">
+            <div class="datatablex__wrapper no-side-scroll">
 
-                      <form action="{% url 'customrule_delete' rule.pk %}" method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit"
-                                class="button button--icon-button"
-                                onclick="return confirm(`{% trans 'Do you really want to delete this rule?' %}\n\n{{ rule.name }}\n\n{% trans 'The action cannot be reversed' %}`)"
-                                aria-label="{% trans 'Delete' %}"
-                                title="{% if rule.scanners.exists %}{% trans 'This rule cannot be deleted, as it is used in the following scanners' %}: {{ rule.scanners.all|join:', ' }}. {% trans 'Update or delete the scanners first in order to delete the rule' %}.{% else %}{% trans 'Delete' %}{% endif %}"
-                                {% if rule.scanners.exists %}disabled{% endif %}>
-                          <i id="delete_forever" class="material-icons">delete_forever</i>
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-                <tr class="expandable-row"
-                    id="show-patterns-{{ forloop.counter }}"
-                    hidden>
-                  {% if user.is_superuser %}
-                    <td colspan="6">
-                    {% else %}
-                      <td colspan="5">
-                      {% endif %}
-                      {% if rule.regexrule.patterns.all|length > 0 %}
-                        {% for pattern in rule.regexrule.patterns.all %}
-                          <code class="code-grey">{{ pattern.pattern_string }}</code>
-                        {% endfor %}
-                      {% endif %}
-                    </td>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+              <table class="datatablex rules-table no-side-scroll">
+                <colgroup>
+                  <col class="column" />
+                  <col class="column column--info" />
+                  <col class="column column--sensitivity" />
+                  <col class="column column--actions" />
+                </colgroup>
+
+                <thead>
+                  <tr class="datatablex__row table-topbar">
+                    <th class="column column--name">{% trans "name"|capfirst %}</th>
+                    <th class="column column--info">{% trans "description"|capfirst %}</th>
+                    <th class="column column--sensitivity">{% trans "sensitivity"|capfirst %}</th>
+                    <th class="column column--actions">{% trans "action"|capfirst %}</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% if customrule_list %}
+                    {% for rule in customrule_list %}
+                      <tr class="datatablex__row" tabindex="0">
+                        <td class="column column--name">
+                          <div class="name__container">
+                            <a href="{% url "customrule_update" rule.pk %}"
+                               aria-label="{% trans "edit"|capfirst %}"
+                               title="{% trans "edit"|capfirst %} &quot;{{ rule.name }}&quot;">{{ rule.name }}</a>
+
+                            <span class="owner">({{ rule.organization }})</span>
+                          </div>
+                        </td>
+
+ 
+                        <td class="column column--info">
+                          <div class="expandable-content">
+                            <div id="info-{{ rule.pk }}" class="overflow-ellipsis">
+                              <span>{{ rule.description }}</span>
+
+                              <button class="show-more button--transparent-button"
+                                      type="button"
+                                      aria-expanded="false"
+                                      aria-controls="info-{{ rule.pk }}"
+                                      data-label-collapsed="{% trans "show more"|capfirst %}"
+                                      data-label-expanded="{% trans "show less"|capfirst %}">
+                                {% trans "show more"|capfirst %}
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+ 
+                        <td class="column column--sensitivity">
+                          <div class="status">
+                            <div class="status__wrapper" data-status="{{ rule.sensitivity }}">
+                              <span class="status__icon">{% include "components/rules/sensitivity_icon.html" %}</span>
+                              <span class="status__label">{{ rule.get_sensitivity_display }}</span>
+                            </div>
+                          </div>
+                        </td>
+ 
+                        <td class="column column--actions">
+                          <div class="action-wrapper button-group">
+                            <a href="{% url "customrule_update" rule.pk %}"
+                               class="button button--icon-button"
+                               aria-label="{% trans "edit"|capfirst %}"
+                               title="{% trans "edit"|capfirst %} &quot;{{ rule.name }}&quot;">
+                              <i id="edit" class="material-icons">edit</i>
+                            </a>
+ 
+                            <form action="{% url 'customrule_delete' rule.pk %}" method="post">
+                              {% csrf_token %}
+
+                              {{ form.as_p }}
+                              <button type="submit"
+                                      class="button button--icon-button"
+                                      onclick="return confirm(`{% trans "Do you really want to delete this rule?" %}\n\n&quot;{{ rule.name }}&quot;\n\n{% trans "The action cannot be reversed" %}`)"
+                                      aria-label="{% trans "delete"|capfirst %}"
+                                      title="{% if rule.scanners.exists %}{% trans "This rule cannot be deleted, as it is used in the following scanners" %}: {{ rule.scanners.all|join:", " }}. {% trans "Update or delete the scanners first in order to delete the rule" %}.{% else %}{% trans "delete"|capfirst %}{% endif %}"
+                                      {% if rule.scanners.exists %}disabled{% endif %}>
+                                <i id="delete_forever" class="material-icons">delete_forever</i>
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+
+                  {% else %}
+                    <tr class="datatablex__row" tabindex="0">
+                      <td class="nothing_found_row" colspan="4">{% trans "There are currently no user-defined rules to display." %}</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      {% else %}
-        <p>
-          <em>{% trans "No rules added yet" %}</em>
-        </p>
-      {% endif %}
+      </section>
 
       {% include "system_rules.html" %}
 

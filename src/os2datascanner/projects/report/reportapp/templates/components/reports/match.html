@@ -217,10 +217,15 @@
       <td class="column column--path">
         <div class="td-content__container">
           <div class="expandable-content">
-            <div class="overflow-ellipsis">
+            <div id="info-{{ rule.pk }}" class="overflow-ellipsis">
               <span>{{ document_report.matches.handle.presentation_place }}</span>
 
-              <button class="show-more button--transparent-button" type="button">{% trans "Show more" %}</button>
+              <button class="show-more button--transparent-button"
+                      type="button"
+                      aria-expanded="false"
+                      aria-controls="info-{{ rule.pk }}"
+                      data-label-collapsed="{% trans "show more"|capfirst %}"
+                      data-label-expanded="{% trans "show less"|capfirst %}">{% trans "show more"|capfirst %}</button>
             </div>
           </div>
 
