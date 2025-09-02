@@ -16,6 +16,12 @@
   - This includes Remediators, who can now choose any scannerjob they are remediator for,
     on their remediator page.
 
+- The WebScanner form now uses django forms behind the scenes.
+
+  - The template has been vastly simplified, and is now shared between all views.
+
+  - The layout has changed, and is now structured in a more intuitive way.
+
 ### General improvements
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.
