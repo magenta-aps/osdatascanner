@@ -24,6 +24,13 @@
 
 - Added an option to hide new OrganizationalUnits by default to import configurations.
 
+- The OSdatascanner codebase now includes an optional web-based component
+  for retrieving document content and metadata for documents stored in the
+  SBSYS case management system.
+
+  Note that support for this component is not yet integrated into the scanner
+  engine. In particular, it cannot yet be used to scan SBSYS documents.
+
 ### General improvements
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.

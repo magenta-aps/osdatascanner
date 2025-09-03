@@ -9,6 +9,7 @@ include:
     file:
       - /gitlab-ci-templates/common/saltbert.v1.yml
       - gitlab-ci-templates/common/docker-build-meta.v2.yml
+  - helpers/document-proxy/.gitlab-ci.yml
 
 stages:
   - lint
