@@ -232,6 +232,7 @@ def _path_to_unit(org: Organization,
             unit = OrganizationalUnit(
                     imported_id=unit_id,
                     name=label, parent=parent, organization=org,
+                    hidden=org.importservice.hide_units_on_import,
                     # Clear the MPTT tree fields for now -- they get
                     # recomputed after we do bulk_create
                     lft=0, rght=0, tree_id=0, level=0)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-02 12:49+0200\n"
+"POT-Creation-Date: 2025-09-02 16:34+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3049,6 +3049,14 @@ msgid "organization UUID"
 msgstr "UUID for organisation"
 
 #: import_services/models/import_service.py
+msgid "hide new units on import"
+msgstr "skjul nye enheder ved import"
+
+#: import_services/models/import_service.py
+msgid "hide new organizational units by default"
+msgstr "skjul nye organisatoriske enheder som standard"
+
+#: import_services/models/import_service.py
 #: organizations/templates/organizations/org_table.html
 msgid "import service"
 msgstr "importservice"
@@ -3614,16 +3622,20 @@ msgstr ""
 "mangler."
 
 #: import_services/templates/import_services/os2mo_edit.html
+msgid "configure OS2mo"
+msgstr "konfigurér OS2mo"
+
+#: import_services/templates/import_services/os2mo_edit.html
 msgid "connect to OS2mo"
 msgstr "opret forbindelse til OS2mo"
 
 #: import_services/templates/import_services/os2mo_edit.html
-msgid "Add OS2mo configuration for organization:"
-msgstr "Tilføj OS2mo-konfiguration til organisationen:"
+msgid "OS2mo configuration for organization:"
+msgstr "OS2mo-konfiguration til organisationen:"
 
 #: import_services/templates/import_services/os2mo_edit.html
 msgid "save OS2mo configuration"
-msgstr "tilføj OS2mo-konfiguration"
+msgstr "gem OS2mo-konfiguration"
 
 #: import_services/templates/import_services/os2mo_errorview.html
 msgid "Configure OS2mo"
@@ -4069,6 +4081,10 @@ msgstr "synkroniser"
 #: organizations/templates/organizations/org_table.html
 msgid "Add OS2mo configuration"
 msgstr "Tilføj OS2mo-konfiguration"
+
+#: organizations/templates/organizations/org_table.html
+msgid "edit OS2mo configuration"
+msgstr "redigér OS2mo-konfiguration"
 
 #: organizations/templates/organizations/org_table.html
 msgid "Add Microsoft Graph configuration"

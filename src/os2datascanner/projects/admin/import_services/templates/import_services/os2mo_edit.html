@@ -9,16 +9,24 @@
 {% block content %}
   {% include "components/common/breadcrumb.html" with page="os2mo" %}
 
+  <div class="aside">
+    <h1>{% trans "configure OS2mo"|capfirst %}</h1>
+  </div>
+
   <form class="form" method="post">
     {% csrf_token %}
     <section class="data-form">
       <h3>{% trans "connect to OS2mo"|capfirst %}</h3>
-      {% trans "Add OS2mo configuration for organization:" %} {{ organization.name }}
-      <div>
-        <br>
-        <p>UUID:</p>
-        {{ form.organization }}
-      </div>
+      {% trans "OS2mo configuration for organization:" %} {{ organization.name }}
+      <fieldset class="form__fieldset">
+        <div class="form__group">
+          {% comment %} So minimal, so we're just reusing MSGraph {% endcomment %}
+          {% for field in form %}
+            {% include 'import_services/msgraph_import_field_snippet.html' %}
+          {% endfor %}
+        </div>
+      </fieldset>
+
     </section>
 
     <div class="content-footer">

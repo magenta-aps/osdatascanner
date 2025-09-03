@@ -1,5 +1,9 @@
+import datetime
+
 import pytest
 from copy import deepcopy
+
+from os2datascanner.projects.admin.import_services.models import LDAPConfig
 from ..models import Account, OrganizationalUnit, Alias, Position
 from .. import keycloak_actions
 
@@ -114,6 +118,19 @@ class TestDeprecatedKeycloakImportTest:
     users an attribute 'group_dn'. However, until clients update their LDAP configuration,
     they will still use the old memberOf based logic. Therefore, these tests have been preserved,
     to ensure the deprecated logic still works."""
+
+    @pytest.fixture(autouse=True)
+    def ldap_import_config(self, test_org):
+        # A very minimalistic LDAPConfig
+        return LDAPConfig.objects.create(organization=test_org,
+                                         hide_units_on_import=False,
+                                         last_modified=datetime.datetime(
+                                                       2025, 9, 2, 12,
+                                                       0, 0,
+                                                       tzinfo=datetime.timezone.utc),
+                                         _ldap_password="topsecret",
+                                         search_scope=1,
+                                         )
 
     def test_ou_import(self, test_org):
         """It should be possible to import users into an LDAP OU-based hierarchy

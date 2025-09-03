@@ -7,9 +7,6 @@
 # WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 # for the specific language governing rights and limitations under the
 # License.
-#
-# OS2datascanner is developed by Magenta in collaboration with the OS2 public
-# sector open source network <https://os2.eu/>.
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -22,7 +19,7 @@ class ImportService(models.Model):
 
     An ImportService represents the (optional) external identity management
     system for an Organization. When configured, an ImportService allows the
-    OS2datascanner system to import relevant Accounts, OrganizationalUnits and
+    OSdatascanner system to import relevant Accounts, OrganizationalUnits and
     Positions from the external system.
 
     NB! Should not be instantiated on its own! It is kept non-abstract to
@@ -37,6 +34,12 @@ class ImportService(models.Model):
         primary_key=True,
         on_delete=models.CASCADE,
         verbose_name=_('organization UUID'),
+    )
+
+    hide_units_on_import = models.BooleanField(
+        default=False,
+        verbose_name=_('hide new units on import'),
+        help_text=_("hide new organizational units by default"),
     )
 
     class Meta:

@@ -12,7 +12,7 @@ from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views import View
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 
 from os2datascanner.projects.admin.organizations.models import Organization
@@ -31,6 +31,7 @@ class OS2moEditForm(forms.ModelForm):
         model = OS2moConfiguration
         fields = [
             'organization',
+            'hide_units_on_import'
         ]
 
     organization = forms.CharField()
@@ -83,6 +84,19 @@ class _OS2moAddView(LoginRequiredMixin, CreateView):
         form.instance.organization = self.kwargs['organization']
         result = super().form_valid(form)
         return result
+
+
+class OS2moUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = OS2moConfiguration
+    template_name = 'import_services/os2mo_edit.html'
+    success_url = reverse_lazy('organization-list')
+    form_class = OS2moEditForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['organization'] = self.object.organization
+        return context
 
 
 class _OS2moErrorView(LoginRequiredMixin, TemplateView):
