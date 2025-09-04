@@ -424,16 +424,35 @@ SbSysNetDrift["Sag"] = [
         "SagIdentity": "6DB35330-CDC3-41E9-A498-67127B205BCF",
         "Nummer": "22.13.01-K02-3-13",
         "Titel": "Personfølsomme Informationer",
-        "ErBeskyttet": 1,
+        "ErBeskyttet": 0,
         "BehandlerID": 1,  # Reference to the "Bruger" table
         "Kommentar": "Borgeren Rebecca Testsen har bedt os om at opbevare sit"
-                     " CPR-nummer (111111-1118) på sikker vis.",
+                     " CPR-nummer på sikker vis.",
         "SagsPartID": 0,
         "SagsStatusID": 8,
         "CreatedByID": 1,
         "Created": datetime(2015, 4, 21),
         "LastChangedByID": 1,
         "LastChanged": datetime(2015, 4, 22),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+    },
+    _SAG_BASE | {
+        "ID": 4,
+        "SagIdentity": "D9CA920C-240C-412A-993E-A6B5161DFDEC",
+        "Nummer": "14.07.22-K02-3-13",
+        "Titel": "Hvor kom navnet fra?",
+        "ErBeskyttet": 0,
+        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "Kommentar": "Lars Jensen, 111111-1118, har bedt om en forklaring for"
+                     " navnet 'Vejstrand Kommune', nu hvor kommunen ikke er"
+                     " i nærheden af en strand.",
+        "SagsPartID": 0,
+        "SagsStatusID": 8,
+        "CreatedByID": 1,
+        "Created": datetime(2016, 3, 28),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2016, 3, 31),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
     },
@@ -481,6 +500,44 @@ with open("1111111118.pdf", "rb") as fp:
             "Data": fp.read()
         }
     ]
+    size = fp.tell()
+
+
+SbSysNetDrift["DokumentDataInfo"] = [
+    {
+        "ID": 1331,
+        "DokumentID": 1274,
+        "FileName": "1111111118",
+        "FileExtension": ".pdf",
+        "FileSize": size,
+        "DokumentDataType": 6,
+        "DokumentDataInfoType": 2,
+    }
+]
+
+
+SbSysNetDrift["Dokument"] = [
+    {
+        "ID": 1274,
+        "DokumentArtID": 6,
+        "OprettetAfID": 1,
+        "Oprettet": datetime(2015, 4, 22),
+        "DokumentType": 0,
+        "Navn": "1111111118.pdf",
+    }
+]
+
+
+SbSysNetDrift["DokumentRegistrering"] = [
+    {
+        "ID": 25,
+        "SagID": 3,
+        "DokumentID": 1274,
+        "Registreret": datetime(2015, 4, 22),
+        "RegistreretAfID": 1,  # Reference to the "Bruger" table
+        "Navn": "Dokument fra borgeren",
+    },
+]
 
 
 SbSysNetDrift["DokumentDataInfoTypeOpslag"] = [
