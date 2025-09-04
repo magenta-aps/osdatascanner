@@ -1,6 +1,7 @@
 const syncButton = document.getElementById('sharepoint-sync-btn');
 const selectElement = document.getElementById('sharepoint_sites');
 const grantSelect = document.querySelector("#id_graph_grant");
+let savedValues = JSON.parse(document.getElementById('savedValues').textContent);
 
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -21,14 +22,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         getSites();
     });
-    
+
+    getSites();
+
 });
 
 async function getSites(sync){
     try {
-        grantId = grantSelect.value;
+        const grantId = grantSelect.value;
         syncButton.disabled = true;
-        
+
         const selectedValues = Array.from(selectElement.selectedOptions).map(option => option.value);
         let query = "";
 
@@ -52,7 +55,7 @@ async function getSites(sync){
         const data = await response.json();
         
         selectElement.innerHTML = '';
-        
+
         data.forEach(site => {
             const option = document.createElement('option');
             option.value = site.id;
@@ -60,10 +63,14 @@ async function getSites(sync){
             
             if (selectedValues.includes(site.id.toString())) {
                 option.selected = true;
+            } else if (savedValues && savedValues.includes(site.id)) {
+                option.selected = true;
             }
-            
+
             selectElement.appendChild(option);
         });
+
+        savedValues = [];
         
     } catch (error) {
         console.error('Error fetching SharePoint sites:', error);

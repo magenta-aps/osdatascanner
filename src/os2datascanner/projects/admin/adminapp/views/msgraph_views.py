@@ -19,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from rest_framework.generics import ListAPIView
 
-from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource, make_token
+from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.admin.organizations.views import MSGraphGrantRequestView
 from os2datascanner.projects.admin.organizations.views import MSGraphGrantScannerForm
@@ -377,12 +377,6 @@ msgraph_sharepoint_scanner_fields = [
 
 
 class MSGraphSharepointScannerCreate(View):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
-
-        return context
-
     def dispatch(self, request, *args, **kwargs):
         user = UserWrapper(request.user)
         if GraphGrant.objects.filter(user.make_org_Q()).exists():
@@ -397,12 +391,6 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
     model = MSGraphSharepointScanner
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
-
-        return context
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
@@ -426,12 +414,6 @@ class MSGraphSharepointCopy(GrantMixin, ScannerCopy):
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
-
-        return context
-
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
 
@@ -440,12 +422,6 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
     model = MSGraphSharepointScanner
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['sharepoint_sites'] = MSGraphSharePointSite.objects.all()
-
-        return context
 
     def get_grant_form_classes(self):
         return {"graph_grant": MSGraphGrantScannerForm}
@@ -466,15 +442,18 @@ class SharePointListing(ListAPIView):
 
     def get_queryset(self):
         if grant_id := self.request.query_params.get('grantId', None):
-            self._grant = GraphGrant.objects.filter(uuid=grant_id).first()
+            grant = GraphGrant.objects.filter(uuid=grant_id).first()
             if self.request.query_params.get('sync', False):
-                self._sync_sites()
+                self._sync_sites(grant)
 
-            return MSGraphSharePointSite.objects.filter(graph_grant__in=[self._grant])
+            return MSGraphSharePointSite.objects.filter(graph_grant=grant)
 
-    def _sync_sites(self):
+        return None
+
+    @staticmethod
+    def _sync_sites(grant):
         with requests.Session() as session:
-            gc = MSGraphSource.GraphCaller(self._make_token, session)
+            gc = MSGraphSource.GraphCaller(grant.make_token, session)
             # We only want their id and name, but we have to include isPersonalSite to
             # filter on that value
             sites = gc.paginated_get(
@@ -490,7 +469,7 @@ class SharePointListing(ListAPIView):
                         name=site.get(
                             "name",
                             _("Unnamed Site")),
-                        graph_grant=self._grant
+                        graph_grant=grant
                         ))
 
             with transaction.atomic():
@@ -506,6 +485,3 @@ class SharePointListing(ListAPIView):
                 MSGraphSharePointSite.objects.exclude(uuid__in=current_sites).delete()
                 # Maybe add a check here based on grant so we don't delete sites when
                 # switching grants?
-
-    def _make_token(self):
-        return make_token(self._grant.app_id, self._grant.tenant_id, self._grant.client_secret)
