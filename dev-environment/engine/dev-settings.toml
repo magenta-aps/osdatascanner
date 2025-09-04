@@ -16,3 +16,6 @@ ttl = 25
 
 [pipeline]
 extra_modules = [".model._staging.sbsysdb"]
+
+[model.sbsysdb]
+document_proxy = "http://document_proxy:5000/"

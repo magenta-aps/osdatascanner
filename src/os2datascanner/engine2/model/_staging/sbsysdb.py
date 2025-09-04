@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from sqlalchemy import select, MetaData, create_engine
 from sqlalchemy.sql.expression import func as sql_func, text as sql_text
 
-
+from os2datascanner.engine2 import settings
 from os2datascanner.engine2.model.core import (
         Source, Handle, Resource, FileResource, SourceManager)
 from os2datascanner.engine2.model.derived import DerivedSource
@@ -19,8 +19,21 @@ from .sbsysdb_rule import SBSYSDBRule  # noqa
 from .sbsysdb_utilities import (
         exec_expr, convert_rule_to_select, resolve_complex_column_names)
 
+# For communication with a document-proxy instance
+from os2datascanner.utils.oauth2 import mint_cc_token
+from os2datascanner.utils.token_caller import TokenCaller
+from os2datascanner.engine2.utilities.backoff import WebRetrier
+
 
 logger = structlog.get_logger("engine2")
+
+
+# Is a document-proxy instance available?
+match settings.model["sbsysdb"]:
+    case {"document_proxy": url} if url:
+        dp_url = url
+    case _:
+        dp_url = None
 
 
 class SBSYSDBSource(Source):
@@ -49,21 +62,37 @@ class SBSYSDBSource(Source):
                 reflect_tables=self._reflect_tables,
                 base_weblink=self._base_weblink)
 
+    def _make_dp_token(self):
+        return mint_cc_token(
+                f"{dp_url}/sbsys.document/token",
+                client_id=(
+                    f"{self._user}@{self._server}:{self._port}/{self._db}"),
+                client_secret=self._password,
+
+                wrapper=WebRetrier().run,
+                post_timeout=settings.utils["oauth2"]["cc_token_timeout"])
+
     def _generate_state(self, sm: SourceManager):
         engine = create_engine(
                 "mssql+pymssql://"
                 f"{self._user}:{self._password}"
                 f"@{self._server}:{self._port}/{self._db}")
 
+        if dp_url:
+            dp_caller = TokenCaller(
+                    self._make_dp_token, f"{dp_url}/sbsys.document")
+        else:
+            dp_caller = None
+
         metadata_obj = MetaData()
         metadata_obj.reflect(bind=engine, only=self.reflect_tables)
 
-        yield engine, metadata_obj.tables
+        yield engine, metadata_obj.tables, dp_caller
 
     def handles(
             self, sm: SourceManager,
             *, rule=None) -> Iterable['SBSYSDBHandles.Case']:
-        engine, tables = sm.open(self)
+        engine, tables, _ = sm.open(self)
         Sag = tables["Sag"]
 
         constraint, columns = resolve_complex_column_names(
@@ -239,7 +268,7 @@ class SBSYSDBSources:
         derived_from = SBSYSDBHandles.Case
 
         def fetch(self, sm: SourceManager):
-            engine, tables = sm.open(self)
+            engine, tables, _ = sm.open(self)
             Sag = tables["Sag"]
 
             row_hints = self.handle.hint("db_row", {})
