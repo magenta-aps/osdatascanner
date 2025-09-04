@@ -249,6 +249,7 @@ class MSGraphListItemResource(FileResource):
         return "text/csv"
 
     def make_path(self):
+        # Points to the site id saved in MSGraphListHandle
         return f"sites/{self.handle.source.handle._site_id}/lists/{self.handle.relative_path}"
 
     @staticmethod
@@ -338,7 +339,12 @@ class MSGraphListItemHandle(Handle):
 
     @property
     def site_name(self):
-        return unquote(self._webUrl.split("/")[4])
+        try:
+            # webUrl for sharepoint sites is formated as
+            # https://{DOMAIN-NAME}.sharepoint.com/sites/{SITE-NAME}/Lists/{LIST-NAME}/
+            return unquote(self._webUrl.split("/")[4])
+        except (IndexError, AttributeError, TypeError):
+            return 'SharePoint'
 
     @property
     def presentation_place(self):
@@ -395,7 +401,12 @@ class MSGraphListDescriptionHandle(Handle):
 
     @property
     def site_name(self):
-        return unquote(self.webUrl.split("/")[4])
+        try:
+            # webUrl for sharepoint sites is formated as
+            # https://{DOMAIN-NAME}.sharepoint.com/sites/{SITE-NAME}/Lists/{LIST-NAME}/
+            return unquote(self.webUrl.split("/")[4])
+        except (IndexError, AttributeError, TypeError):
+            return 'SharePoint'
 
     @property
     def presentation_place(self):
