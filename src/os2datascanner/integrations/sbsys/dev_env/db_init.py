@@ -27,7 +27,12 @@ def defer_constraints(conn: Connection):
                 "NOCHECK CONSTRAINT all"
                 "';"))
         yield
-    finally:
+    except BaseException:
+        # The transaction is doomed. Give up immediately and let the exception
+        # bubble up
+        raise
+    else:
+        # The transaction is not doomed. Put the constraints back
         conn.execute(sql_text(
                 "EXEC sp_MSforeachtable 'ALTER TABLE ? "
                 # If you don't specify "WITH CHECK" then changes made while
