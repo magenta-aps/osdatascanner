@@ -54,7 +54,7 @@ class SBSYSDBSource(Source):
 
     @property
     def reflect_tables(self):
-        return self._reflect_tables or ("Sag", "Person",)
+        return self._reflect_tables or ("Sag", "Person", "DokumentRegistrering",)
 
     def censor(self):
         return SBSYSDBSource(
@@ -205,7 +205,6 @@ class SBSYSDBHandles:
         def to_json_object(self):
             return super().to_json_object() | {
                 "title": self._title,
-                "hints": self._hints,
                 "weblink": self._weblink,
             }
 
@@ -255,6 +254,58 @@ class SBSYSDBHandles:
         def presentation_place(self):
             return str(self.source.handle.presentation_place)
 
+    class Document(Handle):
+        class _Resource(FileResource):
+            def _head(self):
+                _, _, dp = self._get_cookie()
+                return dp.head(self.handle.relative_path)
+
+            def check(self):
+                return self._head().status_code not in (404, 410,)
+
+            def compute_type(self):
+                return self._head().headers.get(
+                        "content-type", "application/octet-stream")
+
+            def get_size(self):
+                return self._head().headers["content-length"]
+
+            @contextmanager
+            def make_stream(self):
+                _, _, dp = self._get_cookie()
+                response = dp.get(self.handle.relative_path)
+                with BytesIO(response.content) as io:
+                    yield io
+
+        type_label = "sbsys-db-document"
+        resource_type = _Resource
+
+        def __init__(self, source, relative_path, name, **kwargs):
+            super().__init__(source, relative_path, **kwargs)
+            self._name = name
+
+        def to_json_object(self):
+            return super().to_json_object() | {
+                "name": self._name
+            }
+
+        @staticmethod
+        @Handle.json_handler(type_label)
+        def from_json_object(obj):
+            return SBSYSDBHandles.Document(
+                    SBSYSDBSources.Case.from_json_object(obj["source"]),
+                    obj["path"],
+                    name=obj["name"])
+
+        @property
+        def presentation_name(self):
+            return _("document \"{name}\" (attached to {handle})").format(
+                    name=self._name, handle=str(self.source.handle))
+
+        @property
+        def presentation_place(self):
+            return str(self.source.handle.presentation_place)
+
 
 @registry.conversion(OutputType.DatabaseRow, SBSYSDBHandles.Case._DUMMY_MIME)
 def get_database_row(r):
@@ -268,7 +319,7 @@ class SBSYSDBSources:
         derived_from = SBSYSDBHandles.Case
 
         def fetch(self, sm: SourceManager):
-            engine, tables, _ = sm.open(self)
+            engine, tables, dp = sm.open(self)
             Sag = tables["Sag"]
 
             row_hints = self.handle.hint("db_row", {})
@@ -297,4 +348,15 @@ class SBSYSDBSources:
             yield sm.open(self.handle.source)
 
         def handles(self, sm: SourceManager):
+            values = self.fetch(sm)
+
+            engine, tables, dp = sm.open(self)
             yield SBSYSDBHandles.Field(self, "Kommentar")
+
+            DokReg = tables["DokumentRegistrering"]
+            expr = select(DokReg.c.DokumentID, DokReg.c.Navn).where(
+                    DokReg.c.SagID == values["ID"])
+
+            for document_id, name in exec_expr(engine, expr):
+                yield SBSYSDBHandles.Document(
+                        self, str(document_id), name)
