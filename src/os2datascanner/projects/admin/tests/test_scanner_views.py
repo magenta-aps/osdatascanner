@@ -215,10 +215,15 @@ class TestScannerViewsMethods:
 
         client.force_login(user_admin)
         response = client.get(reverse_lazy("index"), follow=True)
-        scanner_tabs = response.context["scanner_tabs"]
+        if not any(enabled_scanners):
+            # None of the scanners are enabled, there should not even be a "scanners_tab" context
+            # object
+            assert "scanner_tabs" not in response.context
+        else:
+            scanner_tabs = response.context["scanner_tabs"]
 
-        for scanner_model, enabled in zip(models, enabled_scanners):
-            assert (scanner_model in scanner_tabs) == enabled
+            for scanner_model, enabled in zip(models, enabled_scanners):
+                assert (scanner_model in scanner_tabs) == enabled
 
 
 @pytest.mark.django_db
