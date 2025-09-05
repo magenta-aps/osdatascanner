@@ -35,6 +35,10 @@ class Handle(TypePropertyEquality, JSONSerialisable):
     # same path
     eq_properties = ('_source', '_relpath',)
 
+    # A tuple of strings that name hints that should be deleted during the
+    # censoring process
+    censor_hints = ()
+
     @property
     @abstractmethod
     def type_label(self) -> str:
@@ -182,7 +186,16 @@ class Handle(TypePropertyEquality, JSONSerialisable):
         As the Handle returned by this method is not useful for anything other
         than identifying an object, this method should normally only be used
         when transmitting a Handle to a less trusted context."""
-        return self.remap({self.source: self.source.censor()})
+        hints_to_censor = (
+                set(self.censor_hints) & set((self._hints or {}).keys()))
+
+        base = deepcopy(self) if hints_to_censor else self
+
+        nv = base.remap({self.source: self.source.censor()})
+        for hint_name in hints_to_censor:
+            nv._hints.pop(hint_name, None)
+
+        return nv
 
     def follow(self, sm):
         """Follows this Handle using the state in the StateManager @sm,

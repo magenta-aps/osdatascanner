@@ -162,7 +162,7 @@ class SBSYSDBHandles:
                 return True
 
             def _generate_metadata(self):
-                row = registry.convert(self, OutputType.DatabaseRow)
+                row = registry.convert(self, OutputType.DatabaseRow) or {}
                 if upn := row.get("Behandler.UserPrincipalName"):
                     yield ("user-principal-name", upn)
 
@@ -171,6 +171,7 @@ class SBSYSDBHandles:
 
         resource_type = _Resource
         type_label = "sbsys-db-case"
+        censor_hints = ("db_row",)
 
         def __init__(
                 self,
