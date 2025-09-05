@@ -214,22 +214,23 @@ class DialogSuccess(TemplateView):
 
 
 class IndexView(LoginRequiredMixin, RedirectView):
-    setting_and_url_list = [
-        (settings.ENABLE_WEBSCAN, reverse_lazy("webscanners")),
-        (settings.ENABLE_FILESCAN, reverse_lazy("filescanners")),
-        (settings.ENABLE_EXCHANGESCAN, reverse_lazy("exchangescanners")),
-        (settings.ENABLE_GOOGLEDRIVESCAN, reverse_lazy("googledrivescanners")),
-        (settings.ENABLE_GMAILSCAN, reverse_lazy("gmailscanners")),
-        (settings.ENABLE_MSGRAPH_MAILSCAN, reverse_lazy("msgraphmailscanners")),
-        (settings.ENABLE_MSGRAPH_FILESCAN, reverse_lazy("msgraphfilescanners")),
-        (settings.ENABLE_MSGRAPH_CALENDARSCAN, reverse_lazy("msgraphcalendarscanners")),
-        (settings.ENABLE_MSGRAPH_TEAMS_FILESCAN, reverse_lazy("msgraphteamsfilescanners")),
-        (settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, reverse_lazy("msgraphsharepointscanners")),
-        (settings.ENABLE_SBSYSSCAN, reverse_lazy("sbsysscanners"))
-    ]
 
     def get_redirect_url(self, *args, **kwargs):
-        for setting, url in self.setting_and_url_list:
+        setting_and_url_list = [
+            (settings.ENABLE_WEBSCAN, reverse_lazy("webscanners")),
+            (settings.ENABLE_FILESCAN, reverse_lazy("filescanners")),
+            (settings.ENABLE_EXCHANGESCAN, reverse_lazy("exchangescanners")),
+            (settings.ENABLE_GOOGLEDRIVESCAN, reverse_lazy("googledrivescanners")),
+            (settings.ENABLE_GMAILSCAN, reverse_lazy("gmailscanners")),
+            (settings.ENABLE_MSGRAPH_MAILSCAN, reverse_lazy("msgraphmailscanners")),
+            (settings.ENABLE_MSGRAPH_FILESCAN, reverse_lazy("msgraphfilescanners")),
+            (settings.ENABLE_MSGRAPH_CALENDARSCAN, reverse_lazy("msgraphcalendarscanners")),
+            (settings.ENABLE_MSGRAPH_TEAMS_FILESCAN, reverse_lazy("msgraphteamsfilescanners")),
+            (settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, reverse_lazy("msgraphsharepointscanners")),
+            (settings.ENABLE_SBSYSSCAN, reverse_lazy("sbsysscanners"))
+        ]
+
+        for setting, url in setting_and_url_list:
             if setting:
                 return url
         else:

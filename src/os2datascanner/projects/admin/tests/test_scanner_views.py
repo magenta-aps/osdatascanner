@@ -199,7 +199,6 @@ class TestScannerViewsMethods:
         (False, False, False, False, False, False, False, False, False, True, False),
         (False, False, False, False, False, False, False, False, False, False, True),
         (True, True, True, True, True, True, True, True, True, True, True),
-
     ])
     def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings):
         models = [
@@ -372,3 +371,58 @@ class TestScannerViewsPossibleRules:
         assert possible_rules
         for rule in possible_rules:
             assert rule.organization == test_org or test_org in rule.customrule.organizations.all()
+
+
+@pytest.mark.django_db
+class TestIndexView:
+
+    @pytest.mark.parametrize('enabled_scanners', [
+        (False, False, False, False, False, False, False, False, False, False, False),
+        (True, False, False, False, False, False, False, False, False, False, False),
+        (False, True, False, False, False, False, False, False, False, False, False),
+        (False, False, True, False, False, False, False, False, False, False, False),
+        (False, False, False, True, False, False, False, False, False, False, False),
+        (False, False, False, False, True, False, False, False, False, False, False),
+        (False, False, False, False, False, True, False, False, False, False, False),
+        (False, False, False, False, False, False, True, False, False, False, False),
+        (False, False, False, False, False, False, False, True, False, False, False),
+        (False, False, False, False, False, False, False, False, True, False, False),
+        (False, False, False, False, False, False, False, False, False, True, False),
+        (False, False, False, False, False, False, False, False, False, False, True),
+        (True, True, True, True, True, True, True, True, True, True, True),
+    ])
+    def test_indexview_redirect(self, enabled_scanners, client, user_admin, settings):
+        models = [
+            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
+            GmailScanner, GoogleDriveScanner, SbsysScanner
+        ]
+
+        def first_setting_index(settings):
+            for i, setting in enumerate(settings):
+                if setting:
+                    return i
+            else:
+                # None of the settings are True :(
+                return None
+
+        (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN, settings.ENABLE_EXCHANGESCAN,
+            settings.ENABLE_MSGRAPH_MAILSCAN, settings.ENABLE_MSGRAPH_FILESCAN,
+            settings.ENABLE_MSGRAPH_CALENDARSCAN, settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
+            settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
+            settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN) = enabled_scanners
+
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("index"))
+
+        if not any(enabled_scanners):
+            # No scanners are enabled -- raise an error!
+            assert response.status_code == 404
+        else:
+            # At least one scanner is enabled. We should be redirected
+            assert response.status_code == 302
+            response = client.get(reverse_lazy("index"), follow=True)
+
+            expected_model_type = models[first_setting_index(enabled_scanners)].get_type()
+
+            assert response.context["view"].model.get_type() == expected_model_type
