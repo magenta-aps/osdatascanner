@@ -215,7 +215,7 @@ class TestScannerViewsMethods:
             settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN) = enabled_scanners
 
         client.force_login(user_admin)
-        response = client.get(reverse_lazy("index"))
+        response = client.get(reverse_lazy("index"), follow=True)
         scanner_tabs = response.context["scanner_tabs"]
 
         for scanner_model, enabled in zip(models, enabled_scanners):
