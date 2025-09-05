@@ -33,8 +33,8 @@ import inspect
 from .views import (exchangescanner_views, filescanner_views, dropboxscanner_views,
                     googledrivescanner_views, gmailscanner_views, sbsysscanner_views,
                     webscanner_views, msgraph_views, sbsysdb as sbsysdb_views)
+from .views.views import IndexView
 from .views.exchangescanner_views import OrganizationalUnitListing
-from .views.webscanner_views import WebScannerList
 
 from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete,
@@ -72,7 +72,7 @@ logger = get_logger(__name__)
 
 urlpatterns = [
     # App URLs
-    re_path(r'^$', WebScannerList.as_view(), name='index'),
+    re_path(r'^$', IndexView.as_view(), name='index'),
     re_path(r'^api/openapi.yaml$', TemplateView.as_view(
         template_name="openapi.yaml", content_type="application/yaml"),
         name="json-api"),

@@ -17,10 +17,11 @@ from django.forms.models import modelform_factory
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, TemplateView, DetailView
+from django.views.generic import ListView, TemplateView, DetailView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.edit import ModelFormMixin, DeleteView
 from django.conf import settings
+from django.urls import reverse_lazy
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from ..models.scannerjobs.dropboxscanner import DropboxScanner
@@ -210,3 +211,27 @@ class DialogSuccess(TemplateView):
         context['action'] = _("created") if created else _("saved")
         context['reload_url'] = '/' + model_type + '/'
         return context
+
+
+class IndexView(LoginRequiredMixin, RedirectView):
+    setting_and_url_list = [
+        (settings.ENABLE_WEBSCAN, reverse_lazy("webscanners")),
+        (settings.ENABLE_FILESCAN, reverse_lazy("filescanners")),
+        (settings.ENABLE_EXCHANGESCAN, reverse_lazy("exchangescanners")),
+        (settings.ENABLE_GOOGLEDRIVESCAN, reverse_lazy("googledrivescanners")),
+        (settings.ENABLE_GMAILSCAN, reverse_lazy("gmailscanners")),
+        (settings.ENABLE_MSGRAPH_MAILSCAN, reverse_lazy("msgraphmailscanners")),
+        (settings.ENABLE_MSGRAPH_FILESCAN, reverse_lazy("msgraphfilescanners")),
+        (settings.ENABLE_MSGRAPH_CALENDARSCAN, reverse_lazy("msgraphcalendarscanners")),
+        (settings.ENABLE_MSGRAPH_TEAMS_FILESCAN, reverse_lazy("msgraphteamsfilescanners")),
+        (settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, reverse_lazy("msgraphsharepointscanners")),
+        (settings.ENABLE_SBSYSSCAN, reverse_lazy("sbsysscanners"))
+    ]
+
+    def get_redirect_url(self, *args, **kwargs):
+        for setting, url in self.setting_and_url_list:
+            if setting:
+                return url
+        else:
+            # We will only reach this point if the above for-loop gets to finish.
+            raise Http404(_("No scanner types are enabled for this installation"))
