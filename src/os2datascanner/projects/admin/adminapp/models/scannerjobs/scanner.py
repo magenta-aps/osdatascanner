@@ -561,7 +561,7 @@ class Scanner(models.Model):
                                                checkup_counter,
                                                problem_counter))
 
-        if not checkup_counter and not problem_counter:
+        if not outbox:
             raise ValueError(f"nothing to do for {self}")
 
         if dry_run:  # Finish early
