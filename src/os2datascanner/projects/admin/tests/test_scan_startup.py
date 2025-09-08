@@ -28,7 +28,7 @@ class TestScanStartup:
             ws_page_1, ws_page_2, ws_page_3):
         template = web_scanner._construct_scan_spec_template(None, True)
 
-        match list(web_scanner._yield_checkups(template, True)):
+        match list(web_scanner._yield_checkups(template, True, False)):
             case [messages.ConversionMessage(handle=ws_page_1.handle),
                   messages.ConversionMessage(handle=ws_page_2.handle),
                   messages.ConversionMessage(handle=ws_page_3.handle)]:
@@ -43,7 +43,7 @@ class TestScanStartup:
             ws_page_1, ws_irrelevant_page):
         template = web_scanner._construct_scan_spec_template(None, True)
 
-        match list(web_scanner._yield_checkups(template, True)):
+        match list(web_scanner._yield_checkups(template, True, False)):
             case [messages.ConversionMessage(handle=ws_page_1.handle),
                   messages.ProblemMessage(handle=ws_irrelevant_page.handle,
                                           irrelevant=True)]:
