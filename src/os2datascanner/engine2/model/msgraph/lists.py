@@ -252,8 +252,26 @@ class MSGraphListItemResource(FileResource):
         # Points to the site id saved in MSGraphListHandle
         return f"sites/{self.handle.source.handle._site_id}/lists/{self.handle.relative_path}"
 
-    @staticmethod
-    def json_to_csv_bytes(jsonObj):
+    def flatten_dict(self, json_obj, parent_key='', sep='.'):
+        flattened = {}
+        for key, value in json_obj.items():
+            new_key = f"{parent_key}{sep}{key}" if parent_key else key
+
+            if isinstance(value, dict):
+                # Recursively flatten nested dictionaries
+                flattened.update(self.flatten_dict(value, new_key, sep))
+            elif isinstance(value, list):
+                flattened[new_key] = '; '.join(str(item) for item in value)
+            elif isinstance(value, bool):
+                flattened[new_key] = str(value)
+            elif value is None:
+                flattened[new_key] = ''
+            else:
+                flattened[new_key] = value
+
+        return flattened
+
+    def json_to_csv_bytes(self, json_obj):
         output = StringIO()
 
         # Define columns to exclude (system/metadata columns)?
@@ -266,19 +284,7 @@ class MSGraphListItemResource(FileResource):
             '_ComplianceTagUserId', 'AppEditorLookupId'
         }
 
-        flattened = {}
-        for key, value in jsonObj.items():
-            if isinstance(value, dict):
-                for nested_key, nested_value in value.items():
-                    flattened[f"{key}.{nested_key}"] = nested_value
-            elif isinstance(value, list):
-                flattened[key] = '; '.join(str(item) for item in value)
-            elif isinstance(value, bool):
-                flattened[key] = str(value)
-            elif value is None:
-                flattened[key] = ''
-            else:
-                flattened[key] = value
+        flattened = self.flatten_dict(json_obj)
 
         filtered_columns = [col for col in flattened.keys() if col not in exclude_columns]
 
