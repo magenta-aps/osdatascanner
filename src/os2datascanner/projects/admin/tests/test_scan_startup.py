@@ -10,6 +10,11 @@ from os2datascanner.engine2.pipeline import messages
 
 @pytest.mark.django_db
 class TestScanStartup:
+    def test_simple_scan_startup(self, web_scanner):
+        assert (messages.ScanTagFragment.from_json_object(
+                        web_scanner.run(dry_run=True))
+                is not None)
+
     def test_webscan_source(
             self, *,
             web_scanner):
@@ -28,7 +33,7 @@ class TestScanStartup:
             ws_page_1, ws_page_2, ws_page_3):
         template = web_scanner._construct_scan_spec_template(None, True)
 
-        match list(web_scanner._yield_checkups(template, True)):
+        match list(web_scanner._yield_checkups(template, True, False)):
             case [messages.ConversionMessage(handle=ws_page_1.handle),
                   messages.ConversionMessage(handle=ws_page_2.handle),
                   messages.ConversionMessage(handle=ws_page_3.handle)]:
@@ -43,7 +48,7 @@ class TestScanStartup:
             ws_page_1, ws_irrelevant_page):
         template = web_scanner._construct_scan_spec_template(None, True)
 
-        match list(web_scanner._yield_checkups(template, True)):
+        match list(web_scanner._yield_checkups(template, True, False)):
             case [messages.ConversionMessage(handle=ws_page_1.handle),
                   messages.ProblemMessage(handle=ws_irrelevant_page.handle,
                                           irrelevant=True)]:

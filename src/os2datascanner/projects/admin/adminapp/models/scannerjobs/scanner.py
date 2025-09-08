@@ -468,12 +468,13 @@ class Scanner(models.Model):
 
     def _yield_checkups(
             self, spec_template: messages.ScanSpecMessage,
-            force: bool,
+            force: bool, dry_run: bool,
             checkup_counter: Counter | None = None,
             problem_counter: Counter | None = None):
         """Yields instructions to rescan every object covered by this
         scanner's ScheduledCheckup objects (in the process deleting objects no
-        longer covered by one of this scanner's Sources)."""
+        longer covered by one of this scanner's Sources, unless the dry_run
+        flag is set)."""
 
         uncensor_map = self._make_remap_dict(self.generate_sources())
 
@@ -497,7 +498,8 @@ class Scanner(models.Model):
                        irrelevant=True,
                        message="No longer relevant")
                 # ... and then delete the checkup
-                reminder.delete()
+                if not dry_run:
+                    reminder.delete()
                 continue
 
             # XXX: we could be adding LastModifiedRule twice
@@ -515,7 +517,8 @@ class Scanner(models.Model):
             self, user=None,
             explore: bool = True,
             checkup: bool = True,
-            force: bool = False):  # noqa: CCR001
+            force: bool = False,
+            dry_run: bool = False):  # noqa: CCR001
         """Schedules a scan to be run by the pipeline. Returns the scan tag of
         the resulting scan on success.
 
@@ -527,6 +530,12 @@ class Scanner(models.Model):
 
         If the @force flag is True, then no Last-Modified checks will be
         requested, not even for ScheduledCheckup objects.
+
+        If the @dry_run flag is True, then the method will return before
+        creating a ScanStatus object or submitting anything to the pipeline
+        (and the internal call to _yield_checkups will not delete irrelevant
+        checkups). This allows callers to check the validity of the scanner
+        without actually running it.
 
         An exception will be raised if the underlying source is not available,
         and a pika.exceptions.AMQPError (or a subclass) will be raised if it
@@ -548,12 +557,15 @@ class Scanner(models.Model):
                 raise ValueError(f"{self} produced 0 explorable sources")
 
         if checkup:
-            outbox.extend(self._yield_checkups(spec_template, force,
+            outbox.extend(self._yield_checkups(spec_template, force, dry_run,
                                                checkup_counter,
                                                problem_counter))
 
-        if not checkup_counter and not problem_counter:
+        if not outbox:
             raise ValueError(f"nothing to do for {self}")
+
+        if dry_run:  # Finish early
+            return scan_tag.to_json_object()
 
         self.save()
 

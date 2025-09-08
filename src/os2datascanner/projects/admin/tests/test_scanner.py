@@ -215,7 +215,7 @@ class TestScanners:
         checkup_counter = Counter()
         outbox = list(
                 msgraph_mailscanner._yield_checkups(web_scan_spec, False,
-                                                    checkup_counter))
+                                                    False, checkup_counter))
 
         # Assert
         assert int(checkup_counter) == 0
@@ -263,7 +263,8 @@ class TestScanners:
                 scanner=msgraph_mailscanner)
 
         sst = msgraph_mailscanner._construct_scan_spec_template(user=None, force=False)
-        list(msgraph_mailscanner._yield_checkups(sst, force=False))
+        list(msgraph_mailscanner._yield_checkups(
+                sst, force=False, dry_run=False))
 
         assert ScheduledCheckup.objects.count() == 1
         assert ScheduledCheckup.objects.first() == sc
