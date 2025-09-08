@@ -94,6 +94,13 @@ class ScannerList(RestrictedListView):
 
         return context
 
+    def get(self, request, *args, **kwargs):
+        if self.model == Scanner or self.model.enabled():
+            return super().get(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(
+                f"This scanner type is not enabled in this installation: {self.model.get_type()}")
+
 
 class _FormMixin:
     template_name = "components/forms/grouping_model_form_wrapper.html"
@@ -146,6 +153,13 @@ class ScannerCreateDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMix
     template_name = "components/forms/grouping_model_form_wrapper.html"
     permission_required = "os2datascanner.add_scanner"
 
+    def get(self, request, *args, **kwargs):
+        if self.model.enabled():
+            return super().get(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(
+                f"This scanner type is not enabled in this installation: {self.model.get_type()}")
+
 
 class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMixin, _FormMixin,
                       UpdateView):
@@ -180,6 +194,13 @@ class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMix
                     aliases___value=str(self.object.pk))
         }
 
+    def get(self, request, *args, **kwargs):
+        if self.model.enabled():
+            return super().get(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(
+                f"This scanner type is not enabled in this installation: {self.model.get_type()}")
+
 
 class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
                     CreateView):
@@ -188,9 +209,13 @@ class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin
     permission_required = "os2datascanner.add_scanner"
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+        if self.model.enabled():
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
+        else:
+            raise PermissionDenied(
+                f"This scanner type is not enabled in this installation: {self.model.get_type()}")
 
     def get_initial(self):
         new_name = self.get_object().name
@@ -352,6 +377,13 @@ class ScannerBase(object):
                                  "or choose to scan the entire organization."))
                 return super().form_invalid(form)
         return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        if self.model.enabled():
+            return super().get(request, *args, **kwargs)
+        else:
+            raise PermissionDenied(
+                f"This scanner type is not enabled in this installation: {self.model.get_type()}")
 
 
 class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):

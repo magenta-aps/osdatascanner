@@ -17,6 +17,21 @@ from ..adminapp.models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from ..adminapp.models.scannerjobs.sbsysscanner import SbsysScanner
 
 
+@pytest.fixture(autouse=True)
+def teardown_settings(settings):
+    # We want to do this after the test.
+    yield
+    scanner_settings = (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN,
+                        settings.ENABLE_EXCHANGESCAN, settings.ENABLE_MSGRAPH_MAILSCAN,
+                        settings.ENABLE_MSGRAPH_FILESCAN, settings.ENABLE_MSGRAPH_CALENDARSCAN,
+                        settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
+                        settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
+                        settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN)
+
+    for setting in scanner_settings:
+        setting = True  # noqa: F841 (flake8 does not like that we never use this assigned var)
+
+
 @pytest.mark.django_db
 class TestRemovedScannerViews:
 
