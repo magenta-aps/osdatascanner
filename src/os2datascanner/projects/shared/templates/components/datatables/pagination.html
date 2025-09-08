@@ -75,8 +75,7 @@
                    hx-target="{{ target_selector }}"
                    hx-select="{{ select_selector }}"
                    hx-swap="{{ swap_type }}"
-                   hx-vals='{"page": "{{ n|unlocalize }}"}'
-                   hx-indicator="#report-page-indicator">{{ n }}</a>
+                   hx-vals='{"page": "{{ n|unlocalize }}"}'>{{ n }}</a>
 
               {% elif page_obj.number|add:'2' == n %}
 
