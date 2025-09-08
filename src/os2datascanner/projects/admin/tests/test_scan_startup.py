@@ -10,6 +10,11 @@ from os2datascanner.engine2.pipeline import messages
 
 @pytest.mark.django_db
 class TestScanStartup:
+    def test_simple_scan_startup(self, web_scanner):
+        assert (messages.ScanTagFragment.from_json_object(
+                        web_scanner.run(dry_run=True))
+                is not None)
+
     def test_webscan_source(
             self, *,
             web_scanner):
