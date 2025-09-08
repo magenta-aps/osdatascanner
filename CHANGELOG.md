@@ -12,6 +12,8 @@
 
 - SharePoint scanner now supports scanning of list field's descriptions.
 
+- New scannertype for scanning shared drives in Google Drive. 
+
 ### General improvements
 
 ### Bugfixes

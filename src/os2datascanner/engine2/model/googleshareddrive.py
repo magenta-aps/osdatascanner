@@ -134,10 +134,13 @@ class GoogleSharedDriveSource(GoogleSource):
             supportsAllDrives=True,
             useDomainAdminAccess=True
         ).execute()
+        logger.info("drive access permission missing, creating it",
+                    drive=drive.get("id"),
+                    service_account=self._google_admin_account)
 
     def get_location(self, parent_id, service, drive):
         """
-        Finds the path for a google drive file with caching to reduce API calls.
+        Finds the path for a Google Drive file with caching to reduce API calls.
         """
         path_parts = []
         current_id = parent_id
