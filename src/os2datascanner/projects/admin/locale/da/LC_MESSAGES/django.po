@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-03 10:54+0200\n"
+"POT-Creation-Date: 2025-09-08 10:06+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -884,7 +884,7 @@ msgstr ""
 "Et objekt blev sprunget over enten fordi det ikke kunne åbnes eller at det "
 "tog for lang tid at skanne."
 
-#: adminapp/models/usererrorlog.py adminapp/templates/error_log.html
+#: adminapp/models/usererrorlog.py
 msgid "error log"
 msgstr "fejlbesked"
 
@@ -1431,7 +1431,6 @@ msgid "Completed scans"
 msgstr "Udførte scanninger"
 
 #: adminapp/templates/components/navigation/scanner_tabs.html
-#: adminapp/templates/error_log.html
 msgid "Error Log"
 msgstr "Fejlbeskeder"
 
@@ -2360,6 +2359,10 @@ msgid "Save"
 msgstr "Gem"
 
 #: adminapp/templates/error_log.html
+msgid "error messages"
+msgstr "fejlbeskeder"
+
+#: adminapp/templates/error_log.html
 msgid "Search for error message"
 msgstr "Søg efter fejlbesked"
 
@@ -2368,13 +2371,13 @@ msgid "Show seen error messages"
 msgstr "Vis sete fejlbeskeder"
 
 #: adminapp/templates/error_log.html
-msgid "Mark all error logs as &quot;seen&quot;."
+msgid "Mark all error messages as &quot;seen&quot;."
 msgstr "Markér alle fejlbeskeder som &quot;set&quot;."
 
 #: adminapp/templates/error_log.html
 msgid ""
-"You are about to mark all error log messages as &quot;seen&quot;. This "
-"action cannot be reverted. Are you sure?"
+"You are about to mark all error messages as &quot;seen&quot;. This action "
+"cannot be reverted. Are you sure?"
 msgstr ""
 "Du er ved at markere alle fejlbeskeder som &quot;set&quot;. Denne handling "
 "kan ikke fortrydes. Er du sikker?"
@@ -2384,15 +2387,15 @@ msgid "Mark all as seen"
 msgstr "Markér alle som set"
 
 #: adminapp/templates/error_log.html
-msgid "Remove all error logs."
-msgstr "Slet alle fejlbeskeder"
+msgid "Remove all error messages."
+msgstr "Slet alle fejlbeskeder."
 
 #: adminapp/templates/error_log.html
 msgid "You are about to remove"
 msgstr "Du er ved at slette"
 
 #: adminapp/templates/error_log.html
-msgid "error logs. This action cannot be reverted. Are you sure?"
+msgid "error messages. This action cannot be reverted. Are you sure?"
 msgstr "fejlbesked(er). Denne handling kan ikke fortrydes. Er du sikker?"
 
 #: adminapp/templates/error_log.html
@@ -2400,7 +2403,7 @@ msgid "Remove all"
 msgstr "Slet alle"
 
 #: adminapp/templates/error_log.html
-msgid "Export all error log data as a CSV-file."
+msgid "Export all error message data as a CSV-file."
 msgstr "Eksportér alle fejlbeskeder til en CSV-fil."
 
 #: adminapp/templates/error_log.html
@@ -2448,7 +2451,7 @@ msgid "show less"
 msgstr "vis mindre"
 
 #: adminapp/templates/error_log.html
-msgid "mark this error log as seen."
+msgid "mark this error message as seen."
 msgstr "markér denne fejlbesked som set."
 
 #: adminapp/templates/error_log.html
@@ -2456,7 +2459,11 @@ msgid "Delete permanently"
 msgstr "Slet permanent"
 
 #: adminapp/templates/error_log.html
-msgid "No error logs found."
+msgid "error message"
+msgstr "fejlbeskeder"
+
+#: adminapp/templates/error_log.html
+msgid "No error messages found."
 msgstr "Ingen fejlbeskeder fundet."
 
 #: adminapp/templates/miniscan.html
