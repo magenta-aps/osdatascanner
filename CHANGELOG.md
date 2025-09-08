@@ -53,11 +53,13 @@
     organization "dummy_migration_organization".
 
 - General overhaul of the styling on the rules page.
-  - Datatables use the new table styling.
+  - Datatables use the new styling.
   - Sensitivity icons are now using Google Material Symbols matching other alert icons.
 
 - It is now possible to choose multiple scannerjobs to distribute results from,
   on the page for withheld results.
+
+- The error message datatable now use the new styling.
 
 ### Bugfixes
 
