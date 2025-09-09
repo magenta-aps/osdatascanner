@@ -24,7 +24,7 @@ def teardown_settings(settings):
     scanner_settings = (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN,
                         settings.ENABLE_EXCHANGESCAN, settings.ENABLE_MSGRAPH_MAILSCAN,
                         settings.ENABLE_MSGRAPH_FILESCAN, settings.ENABLE_MSGRAPH_CALENDARSCAN,
-                        settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
+                        settings.ENABLE_MSGRAPH_TEAMS_FILESCAN, settings.ENABLE_DROPBOXSCAN,
                         settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
                         settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN)
 
