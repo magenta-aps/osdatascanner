@@ -91,8 +91,7 @@ Each container also accepts the following environment variables:
 ## Configuration for the Report-module
 
 An almost minimal example of the `report-user-settings.toml` configuration file
-can be seen below. **Please note:** the metadata settings for `SAML2_AUTH` are
-mutually exclusive, and you should only ever set one of them.
+can be seen below. 
 
 ```toml
 SECRET_KEY = "<some secret key - see Django documentation>"
