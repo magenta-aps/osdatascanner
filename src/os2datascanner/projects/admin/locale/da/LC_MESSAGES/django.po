@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 10:06+0200\n"
+"POT-Creation-Date: 2025-09-08 15:51+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3751,10 +3751,6 @@ msgid "Alias type"
 msgstr "Aliastype"
 
 #: organizations/templates/components/modals/alias_create.html
-msgid "select"
-msgstr "vælg"
-
-#: organizations/templates/components/modals/alias_create.html
 msgid "Shared"
 msgstr "Fælles"
 
@@ -4376,6 +4372,14 @@ msgstr ""
 #: organizations/utils.py
 msgid "Account not found."
 msgstr "Konto ikke fundet."
+
+#: organizations/views/account_views.py
+msgid "Alias created!"
+msgstr "Alias oprettet!"
+
+#: organizations/views/account_views.py
+msgid "Alias with this value already exists"
+msgstr "Et alias med denne værdi eksisterer allerede"
 
 #: organizations/views/account_views.py
 msgid "Choose Account"

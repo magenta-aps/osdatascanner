@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import TrigramSimilarity
 from django.views.generic import DetailView, CreateView, DeleteView
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.forms import ModelForm
@@ -11,6 +11,9 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Concat, Greatest
 from django.db.models import CharField, Value, Max
 from django.contrib.auth.models import Permission
+from django import forms
+from django.http import HttpResponse
+from django.db import IntegrityError
 
 from ..models import Account, Alias, OrganizationalUnit, SyncedPermission
 from ..models.aliases import AliasType
@@ -172,10 +175,34 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
         return self.get(request, *args, **kwargs)
 
 
+class AliasForm(forms.ModelForm):
+    value = forms.CharField(max_length=256)
+    alias_choices = list(AliasType.choices)
+    alias_choices.remove((AliasType.REMEDIATOR.value, AliasType.REMEDIATOR.label), )
+
+    alias_type = forms.ChoiceField(choices=[("", "----")] + alias_choices)
+
+    class Meta:
+        model = Alias
+        fields = ('alias_type', 'value', 'shared')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        alias_type = cleaned_data.get('alias_type')
+        value = cleaned_data.get('value')
+        try:
+            self.instance._alias_type = alias_type
+            self.instance.value = value
+        except ValidationError as e:
+            self.add_error("value", e)
+
+        return cleaned_data
+
+
 class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
     model = Alias
+    form_class = AliasForm
     template_name = "components/modals/alias_create.html"
-    fields = ('_alias_type', '_value', 'shared')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -191,26 +218,26 @@ class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
     def form_valid(self, form: ModelForm):
         form.instance.account = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
         try:
-            form.instance.value = form.cleaned_data['_value']
-        except ValidationError as e:
-            messages.error(self.request, e.message)
-            return self.form_invalid(form)
-        return super().form_valid(form)
+            form.save()
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                _("Alias created!"),
+                extra_tags="auto_close"
+            )
 
-    def form_invalid(self, form):
-        return HttpResponseRedirect(
-            reverse_lazy(
+            response = HttpResponse()
+
+            response['HX-Redirect'] = reverse_lazy(
                 'account',
                 kwargs={
-                    'org_slug': self.kwargs.get('org').slug,
-                    'pk': self.kwargs.get('acc_uuid')}))
+                    'org_slug': self.kwargs.get('org_slug'),
+                    'pk': self.kwargs.get('acc_uuid')})
 
-    def get_success_url(self):
-        return reverse_lazy(
-            'account',
-            kwargs={
-                'org_slug': self.kwargs.get('org_slug'),
-                'pk': self.kwargs.get('acc_uuid')})
+            return response
+        except IntegrityError:
+            form.add_error('value', _("Alias with this value already exists"))
+            return self.form_invalid(form)
 
 
 class AliasDeleteView(LoginRequiredMixin, ClientAdminMixin, DeleteView):

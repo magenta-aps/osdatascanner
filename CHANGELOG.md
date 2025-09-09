@@ -77,6 +77,9 @@
 
 - Users in the admin module are no longer able to interact with disabled scanner types.
 
+- Fixed issue in the admin module where the modal window closed itself without showing any error
+  messages when you tried to submit invalid data when creating an alias.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"

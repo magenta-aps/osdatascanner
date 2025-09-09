@@ -7,8 +7,8 @@
 
 
 <form class="form"
-      action="{% url 'create-alias' organization.slug account.uuid %}"
-      method="post">
+      hx-post="{% url 'create-alias' organization.slug account.uuid %}"
+      hx-target=".form">
   {% csrf_token %}
 
   <div class="modal__form__title">
@@ -17,15 +17,7 @@
 
   <div id="id__alias_type_container" class="dropdown__group form__group">
     <label class="required-form" for="id__alias_type">{% trans "Alias type" %}</label>
-    <div class="dropdown">
-      <select id="id__alias_type"
-              name="_alias_type"
-              onchange="validateAliasType()"
-              required>
-        <option value="">--{% trans "select" %}--</option>
-        {% for type in AliasType %}<option value="{{ type }}">{{ type.label }}</option>{% endfor %}
-      </select>
-    </div>
+    <div class="dropdown">{{ form.alias_type }}</div>
   </div>
 
   <div id="id__shared_container" class="form__group">
@@ -33,14 +25,11 @@
     <input type="checkbox" name="shared" id="id__shared" />
   </div>
 
-  <div id="id__value_container" class="form__group">
+  <div id="id__value_container"
+       class="form__group {% if form.value.errors %}has-error{% endif %}">
     <label class="required-form" for="id__value">{% trans "Value" %}</label>
-    <input id="id__value"
-           name="_value"
-           type="text"
-           class="form-control"
-           maxlength="256"
-           required />
+    {{ form.value }}
+    {% if form.errors %}{{ form.value.errors }}{% endif %}
   </div>
 
   <div class="modal__form__actions">
