@@ -1,5 +1,10 @@
 import pytest
 
+from datetime import datetime
+from django.utils import timezone
+from dateutil import tz
+
+from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.models.documentreport import DocumentReport, count_matches
 from .test_utilities import create_reports_for, raw_matches_json_matched
 
@@ -112,3 +117,65 @@ class TestCountMatchesDocumentReport:
 
         assert dr.number_of_matches == matches
         assert dr.number_of_matches == old_matches - 1
+
+    def test_document_report_resolution_time_when_status_is_none(self, test_org):
+        """ The resolution_time field should not be updated when the resolution_status field is set
+            to None """
+
+        # Arrange
+        scanner, _ = ScannerReference.objects.get_or_create(
+            scanner_pk=20,
+            scanner_name='scanner_job_name',
+            organization=test_org,
+        )
+
+        dr: DocumentReport = DocumentReport.objects.create(
+            path='test',
+            sort_key='test',
+            source_type='test',
+            resolution_status=2,
+            scanner_job=scanner,
+            resolution_time=datetime(2025, 1, 1, 19, 0, tzinfo=timezone.get_default_timezone())
+        )
+        expected_resolution_time: datetime = dr.resolution_time
+
+        # Act
+        dr.resolution_status = None
+        dr.save()
+
+        # Assert
+        dr.refresh_from_db()
+        assert expected_resolution_time == dr.resolution_time
+
+    def test_document_report_resolution_time_when_status_is_not_none(self, test_org):
+        """ The resolution_time field should be updated to the current date and time if
+            resolution_status is not None """
+
+        # Arrange
+        scanner, _ = ScannerReference.objects.get_or_create(
+            scanner_pk=20,
+            scanner_name='test_scanner',
+            organization=test_org,
+        )
+
+        dr: DocumentReport = DocumentReport.objects.create(
+            path='test',
+            sort_key='test',
+            source_type='test',
+            resolution_status=None,
+            scanner_job=scanner,
+            resolution_time=datetime(2025, 1, 1, 19, 0).replace(tzinfo=tz.gettz(), microsecond=0)
+        )
+
+        expected_resolution_time: datetime = datetime.now().replace(
+            tzinfo=tz.gettz(),
+            microsecond=0
+            )
+
+        # Act
+        dr.resolution_status = 4
+        dr.save()
+
+        # Assert
+        dr.refresh_from_db()
+        assert expected_resolution_time == dr.resolution_time

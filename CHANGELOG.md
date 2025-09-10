@@ -90,6 +90,9 @@
 
 - OSdatascanner's HTTP `User-Agent` is now also used when retrieving sitemap
   files, which should make servers that block `python-requests` happy.
+  
+- Fixed the resolution_time field in DocumentReport, so it will only be updated when 
+  resolution_status is not None
 
 ## Version 3.29.3, 18th August 2025
 

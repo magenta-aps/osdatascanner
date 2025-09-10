@@ -209,9 +209,9 @@ class DocumentReport(models.Model):
                 kwargs["update_fields"].add("number_of_matches")
 
         # If Resolution status goes from not handled to handled - change resolution_time to now
-        if self.__resolution_status is None and (
-                self.resolution_status or self.resolution_status == 0):
-            self.resolution_time = time_now()
+        if self.resolution_status != self.__resolution_status:
+            if self.resolution_status is not None:
+                self.resolution_time = time_now()
 
         # Adds a timestamp if it's a new match:
         if not self.pk:
