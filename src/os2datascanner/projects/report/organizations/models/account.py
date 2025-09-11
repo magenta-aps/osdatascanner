@@ -77,26 +77,26 @@ class AccountQuerySet(models.QuerySet):
         `unhandled_results`: The number of reports that are
         - Matched
         - Unhandled
-        - Isn't withheld
-        - Doesn't come from a remediator alias
-        - Doesn't come from a shared alias
+        - Not withheld
+        - Not from a remediator alias
+        - Not from a shared alias
         This field should contain the same value as the 'match_count' property.
 
         `withheld_results`: The number of reports that are
         - Matched
         - Unhandled
-        - Is withheld
-        - Doesn't come from a remediator alias
-        - Doesn't come from a shared alias
+        - Withheld
+        - Not from a remediator alias
+        - Not from a shared alias
         This field should contain the same value as the 'withheld_matches' property.
 
         `old_results`: The number of reports that are
         - Matched
         - Unhandled
-        - Isn't withheld
-        - Doesn't come from a remediator alias
-        - Doesn't come from a shared alias
-        - The datasource is older than `retention_policy` days.
+        - Not withheld
+        - Not from a remediator alias
+        - Not from a shared alias
+        - From a datasource older than `retention_policy` days.
         This field will only be annotated if a `retention_policy` is given.
         This field should contain the same value as the 'old_matches' property.
         """
