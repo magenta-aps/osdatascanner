@@ -52,7 +52,7 @@ class UserErrorLog(models.Model):
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
-        related_name='usererrorlog',
+        related_name='usererrorlogs',
         verbose_name=_('organization'),
         null=True
     )

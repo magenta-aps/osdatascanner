@@ -106,7 +106,7 @@ class Scanner(models.Model):
     organization = models.ForeignKey(
         'organizations.Organization',
         on_delete=models.CASCADE,
-        related_name='scannerjob',
+        related_name='scannerjobs',
         verbose_name=_('organization'),
         default=None,
         null=True,
@@ -120,7 +120,7 @@ class Scanner(models.Model):
         help_text=_("The users who should be notified on completed scans.")
     )
 
-    org_unit = TreeManyToManyField(
+    org_units = TreeManyToManyField(
         "organizations.OrganizationalUnit",
         related_name="scanners",
         blank=True,

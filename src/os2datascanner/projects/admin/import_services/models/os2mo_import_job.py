@@ -68,7 +68,7 @@ class OS2moImportJob(BackgroundJob):
         'organizations.Organization',
         on_delete=models.CASCADE,
         verbose_name=_('organization'),
-        related_name='os2moimport'
+        related_name='os2moimportjobs'
     )
 
     @staticmethod

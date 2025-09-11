@@ -14,7 +14,7 @@ class LDAPImportJob(BackgroundJob):
         on_delete=models.CASCADE,
         null=False,
         blank=False,
-        related_name='importjob',
+        related_name='importjobs',
     )
 
     handled = models.IntegerField(null=True, blank=True)
