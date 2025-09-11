@@ -63,6 +63,7 @@ from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
 from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .models.scannerjobs.webscanner import WebScanner
 from .models.scannerjobs.sbsysdb import SBSYSDBScanner
+from .models.scannerjobs.scanner import Scanner
 
 from structlog import get_logger
 
@@ -217,9 +218,15 @@ for module in [exchangescanner_views,
             continue
         action = cls.scanner_view_type.value
 
-        if not hasattr(cls, "model"):
+        if not hasattr(cls, "model") or cls.model is None:
             continue
         model = cls.model
+        print("class:", cls)
+        print("model:", model)
+
+        if not model == Scanner:
+            if not model.enabled():
+                continue
 
         if not model:
             continue
