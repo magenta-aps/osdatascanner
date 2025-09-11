@@ -23,4 +23,5 @@ class SharePointSiteSerializer(serializers.ModelSerializer):
                 'id',
                 'uuid',
                 'name',
-                'graph_grant')
+                'graph_grant',
+                'organization')

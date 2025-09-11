@@ -452,7 +452,7 @@ class SharePointListing(ListAPIView):
 
     @staticmethod
     def _sync_sites(grant):
-        with requests.Session() as session:
+        with (requests.Session() as session):
             gc = MSGraphSource.GraphCaller(grant.make_token, session)
             # We only want their id and name, but we have to include isPersonalSite to
             # filter on that value
@@ -469,19 +469,20 @@ class SharePointListing(ListAPIView):
                         name=site.get(
                             "name",
                             _("Unnamed Site")),
-                        graph_grant=grant
+                        graph_grant=grant,
+                        organization=grant.organization,
                         ))
 
             with transaction.atomic():
                 MSGraphSharePointSite.objects.bulk_create(
                     sites_list,
                     update_conflicts=True,
-                    unique_fields=["uuid"],
-                    update_fields=["name", "graph_grant"],
+                    unique_fields=["uuid", "organization"],
+                    update_fields=["name", "graph_grant", "organization"],
                 )
 
-                # Remove any sites no longer available
+                # Remove any sites for no longer available within the used grant only
                 current_sites = [site.uuid for site in sites_list]
-                MSGraphSharePointSite.objects.exclude(uuid__in=current_sites).delete()
-                # Maybe add a check here based on grant so we don't delete sites when
-                # switching grants?
+                MSGraphSharePointSite.objects.filter(
+                    graph_grant=grant).exclude(
+                    uuid__in=current_sites).delete()

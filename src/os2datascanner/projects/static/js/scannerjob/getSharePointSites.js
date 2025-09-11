@@ -1,6 +1,7 @@
 const syncButton = document.getElementById('sharepoint-sync-btn');
 const selectElement = document.getElementById('sharepoint_sites');
 const grantSelect = document.querySelector("#id_graph_grant");
+const orgSelect = document.querySelector('#id_organization');
 let savedValues = JSON.parse(document.getElementById('savedValues').textContent);
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -14,11 +15,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     grantSelect.addEventListener('change', ()=> {
-        if (grantSelect.value === undefined || grantSelect.value === ''){
-            syncButton.disabled = true;
-        } else {
-            syncButton.disabled = false;
-        }
+        syncButton.disabled = grantSelect.value === undefined || grantSelect.value === '';
+
+        getSites();
+    });
+
+    orgSelect.addEventListener('change', ()=> {
+        syncButton.disabled = grantSelect.value === undefined || grantSelect.value === '';
 
         getSites();
     });
@@ -56,11 +59,14 @@ async function getSites(sync){
         
         selectElement.innerHTML = '';
 
-        data.forEach(site => {
+        const filtered = data.filter((site)=> site.organization === orgSelect.value);
+
+        filtered.forEach(site => {
             const option = document.createElement('option');
             option.value = site.id;
             option.textContent = site.name;
-            
+
+            //Preserve selected options
             if (selectedValues.includes(site.id.toString())) {
                 option.selected = true;
             } else if (savedValues && savedValues.includes(site.id)) {
