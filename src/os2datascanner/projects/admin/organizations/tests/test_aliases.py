@@ -101,8 +101,6 @@ class TestAliasBehaviour:
         # Arrange
         client.force_login(superuser)
 
-        error_found = False
-
         url = reverse_lazy(
             'create-alias',
             kwargs={'org_slug': egon.organization.slug,
@@ -114,22 +112,14 @@ class TestAliasBehaviour:
 
         form = context.get('form')
 
-        error = form.errors
-        if error:
-            error_found = True
-
-        alias_found = Alias.objects.filter(_value='invalid SID').exists()
-
         # Assert
-        assert error_found is True
-        assert alias_found is False
+        assert form.errors
+        assert not Alias.objects.filter(_value='invalid SID').exists()
 
     def test_add_alias_view_superuser_invalid_email(self, superuser, client, gertrud):
 
         # Arrange
         client.force_login(superuser)
-
-        error_found = False
 
         url = reverse_lazy(
             'create-alias',
@@ -142,22 +132,14 @@ class TestAliasBehaviour:
         context = res.context_data
         form = context.get('form')
 
-        error = form.errors
-        if error:
-            error_found = True
-
-        alias_found = Alias.objects.filter(_value='invalid EMAIL').exists()
-
         # Assert
-        assert error_found is True
-        assert alias_found is False
+        assert form.errors
+        assert not Alias.objects.filter(_value='invalid EMAIL').exists()
 
     def test_add_alias_view_superuser_invalid_upn(self, superuser, client, egon):
 
         # Arrange
         client.force_login(superuser)
-
-        error_found = False
 
         url = reverse_lazy(
             'create-alias',
@@ -171,15 +153,9 @@ class TestAliasBehaviour:
         context = res.context_data
         form = context.get('form')
 
-        error = form.errors
-        if error:
-            error_found = True
-
-        alias_found = Alias.objects.filter(_value='invalid UPN').exists()
-
         # Assert
-        assert error_found is True
-        assert alias_found is False
+        assert form.errors
+        assert not Alias.objects.filter(_value='invalid UPN').exists()
 
     def test_add_alias_client_administrator(self, client, user_admin):
         """An administrator for a client should be able to add aliases to
