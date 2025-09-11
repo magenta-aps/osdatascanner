@@ -66,7 +66,7 @@ exchange_scanner_fields = [
     'userlist',
     'service_endpoint',
     'ews_grant',
-    'org_unit',
+    'org_units',
     'scan_subject',
 ]
 
@@ -215,8 +215,8 @@ def validate_userlist_or_org_units(form):  # noqa CCR001
     """Validates whether the form has either a userlist or organizational units.
     Also checks that the formatting of the userlist is valid.
     NB : must be called after initialize form. """
-    if not form.cleaned_data['userlist'] and not form.cleaned_data['org_unit']:
-        form.add_error('org_unit', _("No organizational units has been selected"))
+    if not form.cleaned_data['userlist'] and not form.cleaned_data['org_units']:
+        form.add_error('org_units', _("No organizational units has been selected"))
         form.add_error('userlist', _("No userlist has been selected"))
     if userlist := form.cleaned_data.get('userlist'):
         userlist_errors = set()

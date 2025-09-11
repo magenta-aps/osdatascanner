@@ -100,7 +100,7 @@ class TestBroadcastScanners:
         assert scanner_dict['only_notify_superadmin'] is False
 
     def test_add_orgunit(self, enqueued_events, basic_rule, olsen_banden):
-        """Adding a organizational unit to the m2m relation `org_unit` on a scanner,
+        """Adding a organizational unit to the m2m relation `org_units` on a scanner,
         should be broadcasted."""
         # Arrange
         scanner = Scanner.objects.create(
@@ -109,7 +109,7 @@ class TestBroadcastScanners:
         enqueued_events.clear()
 
         # Act
-        scanner.org_unit.add(olsen_banden)
+        scanner.org_units.add(olsen_banden)
 
         # Assert
         assert len(enqueued_events) == 1
@@ -119,12 +119,12 @@ class TestBroadcastScanners:
         assert len(event['classes']['Scanner']) == 1
 
         scanner_dict = event['classes']['Scanner'][0]
-        assert len(scanner_dict['org_unit']) == 1
-        assert scanner_dict['org_unit'][0] == str(olsen_banden.uuid)
+        assert len(scanner_dict['org_units']) == 1
+        assert scanner_dict['org_units'][0] == str(olsen_banden.uuid)
 
     def test_set_orgunits(self, enqueued_events, basic_rule, olsen_banden, familien_sand,
                           nisserne):
-        """Adding multiple organizational units to the m2m relation `org_unit` on a scanner,
+        """Adding multiple organizational units to the m2m relation `org_units` on a scanner,
         should be broadcasted."""
         # Arrange
         scanner = Scanner.objects.create(
@@ -133,7 +133,7 @@ class TestBroadcastScanners:
         enqueued_events.clear()
 
         # Act
-        scanner.org_unit.set([olsen_banden, familien_sand, nisserne])
+        scanner.org_units.set([olsen_banden, familien_sand, nisserne])
 
         # Assert
         assert len(enqueued_events) == 1
@@ -143,6 +143,6 @@ class TestBroadcastScanners:
         assert len(event['classes']['Scanner']) == 1
 
         scanner_dict = event['classes']['Scanner'][0]
-        assert len(scanner_dict['org_unit']) == 3
+        assert len(scanner_dict['org_units']) == 3
         ou_uuids = sorted([str(ou.uuid) for ou in [olsen_banden, familien_sand, nisserne]])
-        assert sorted(scanner_dict['org_unit']) == ou_uuids
+        assert sorted(scanner_dict['org_units']) == ou_uuids

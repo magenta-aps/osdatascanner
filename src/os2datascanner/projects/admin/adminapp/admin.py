@@ -129,7 +129,7 @@ class ScannerAdmin(admin.ModelAdmin):
         """Only show organizational units if relevant."""
 
         if type(obj) not in self.include_orgunit_scanners:
-            self.exclude = ('org_unit', )
+            self.exclude = ('org_units', )
 
         if type(obj) not in self.include_scan_entire_org_scanners:
             self.exclude = ('scan_entire_org', )

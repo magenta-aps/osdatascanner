@@ -32,7 +32,7 @@ class GoogleDriveScannerList(ScannerList):
 
 google_drive_scanner_fields = [
     'google_api_grant',
-    'org_unit',
+    'org_units',
     'scan_entire_org',
 ]
 

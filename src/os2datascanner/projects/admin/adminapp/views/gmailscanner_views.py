@@ -33,7 +33,7 @@ class GmailScannerList(ScannerList):
 gmail_scanner_fields = [
     'scan_subject',
     'google_api_grant',
-    'org_unit',
+    'org_units',
     'scan_attachments',
     'scan_entire_org',
 ]
