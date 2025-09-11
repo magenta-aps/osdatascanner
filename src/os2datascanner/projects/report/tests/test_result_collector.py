@@ -796,9 +796,9 @@ class TestPipelineCollector:
             smb_metadata_3a):
         """Receiving a metadata object with no owner value will cause that
         DocumentReport to be distributed to the remediator (if there is one)."""
-        assert jens_remediator_alias.match_relation.count() == 0
+        assert jens_remediator_alias.reports.count() == 0
         record_metadata(smb_metadata_3a)
-        assert jens_remediator_alias.match_relation.count() == 1
+        assert jens_remediator_alias.reports.count() == 1
 
     def test_remediator_distrib_with_owner(
             self,
@@ -808,9 +808,9 @@ class TestPipelineCollector:
         """Receiving a metadata object with an owner value for which no alias
         exists will cause that DocumentReport to be distributed to the
         remediator (if there is one)."""
-        assert jens_remediator_alias.match_relation.count() == 0
+        assert jens_remediator_alias.reports.count() == 0
         record_metadata(smb_metadata_3b)
-        assert jens_remediator_alias.match_relation.count() == 1
+        assert jens_remediator_alias.reports.count() == 1
 
     def test_message_discarding(
             self,

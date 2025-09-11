@@ -214,7 +214,7 @@ def create_aliases(dr: DocumentReport):
     identical aliases (think shared mailboxes or websites). Thus, relations are handled by
     bulk operations.
     """
-    tm = Alias.match_relation.through
+    tm = Alias.reports.through
     new_objects = []
     owner = dr.owner
     try:
@@ -248,7 +248,7 @@ def create_aliases(dr: DocumentReport):
         # Bulk create relations as there might be more than one.
         tm.objects.bulk_create(new_objects, ignore_conflicts=True)
     except Exception:
-        logger.error("Failed to create match_relation", exc_info=True)
+        logger.error("Failed to create match relation", exc_info=True)
 
 
 def add_new_relations(aliases, new_objects, dr, tm):

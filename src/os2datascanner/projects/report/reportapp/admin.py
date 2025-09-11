@@ -88,11 +88,11 @@ class DocumentReportAdmin(admin.ModelAdmin):
 
     def aliases(self, dr):
         return ", ".join([alias_relation.account.username
-                          for alias_relation in dr.alias_relation.all()])
+                          for alias_relation in dr.alias_relations.all()])
 
     def get_queryset(self, request):
         return super(DocumentReportAdmin, self).get_queryset(request).prefetch_related(
-            'alias_relation')
+            'alias_relations')
 
 
 @admin.register(ScannerReference)

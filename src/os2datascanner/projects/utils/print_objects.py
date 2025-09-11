@@ -265,7 +265,7 @@ class Command(BaseCommand):
                 marks around string values ("name__icontains=bestyrelse") or
                 use a special colon-separated prefix to invoke a Django
                 aggregation or query function
-                ("match_count=Count:match_relation",
+                ("match_count=Count:reports",
                 "username=F:account__username").')""")
 
     def handle(  # noqa CCR001

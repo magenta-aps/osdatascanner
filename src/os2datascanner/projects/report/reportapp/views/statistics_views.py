@@ -152,17 +152,17 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 self.matches = (
                     self.matches.annotate(
                         total_relations=Count(
-                            'alias_relation',
+                            'alias_relations',
                             distinct=True
                         ),
                         shared_relations=Count(
-                            'alias_relation',
-                            filter=Q(alias_relation__shared=True),
+                            'alias_relations',
+                            filter=Q(alias_relations__shared=True),
                             distinct=True
                         )
                     )
                     # Ensure at least one relation is to these accounts
-                    .filter(alias_relation__account__in=accounts)
+                    .filter(alias_relations__account__in=accounts)
                     # Keep only if not all relations are shared (i.e., at least one is not shared)
                     .filter(~Q(total_relations=F('shared_relations')))
                 )

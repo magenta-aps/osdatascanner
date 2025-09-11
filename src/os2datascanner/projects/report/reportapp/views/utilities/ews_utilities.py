@@ -80,11 +80,11 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
     organization = account.organization
 
     # Verify that the active user has an association to the DocumentReports
-    illegal_reports = reports.exclude(alias_relation__in=aliases)
+    illegal_reports = reports.exclude(alias_relations__in=aliases)
     if illegal_reports.exists():
         logger.warning(
                 "EWS deletion request with no alias association!",
-                user=user, aliases=illegal_reports.values_list("alias_relation", flat=True))
+                user=user, aliases=illegal_reports.values_list("alias_relations", flat=True))
         return (False, "Account not associated with these DocumentReports")
 
     # Check that the DocumentReports represents a match (and not, for example,

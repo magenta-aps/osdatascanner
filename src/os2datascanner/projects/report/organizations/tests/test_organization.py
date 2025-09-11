@@ -37,11 +37,11 @@ class TestOrganization:
             organization=olsenbanden_organization,
         )
 
-        for report in DocumentReport.objects.filter(alias_relation=benny_email_alias)[:benny_fp]:
+        for report in DocumentReport.objects.filter(alias_relations=benny_email_alias)[:benny_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
             report.save()
 
-        for report in DocumentReport.objects.filter(alias_relation=egon_email_alias)[:egon_fp]:
+        for report in DocumentReport.objects.filter(alias_relations=egon_email_alias)[:egon_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
             report.save()
 

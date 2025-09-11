@@ -128,8 +128,8 @@ class TestAccount:
 
         # Handle 9/10
 
-        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(resolution_status=0)
-        dr = DocumentReport.objects.filter(alias_relation=egon_email_alias).first()
+        DocumentReport.objects.filter(alias_relations=egon_email_alias).update(resolution_status=0)
+        dr = DocumentReport.objects.filter(alias_relations=egon_email_alias).first()
         dr.resolution_status = None
         dr.save()
 
@@ -137,7 +137,7 @@ class TestAccount:
         assert egon_account.match_count == 1
 
         # Handle all matches
-        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(resolution_status=0)
+        DocumentReport.objects.filter(alias_relations=egon_email_alias).update(resolution_status=0)
 
         # Assert
         assert egon_account.match_count == 0
@@ -148,7 +148,7 @@ class TestAccount:
         make_matched_document_reports_for(egon_email_alias, handled=handled, amount=all_matches)
 
         # Mark Egon's matches as withheld
-        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(
+        DocumentReport.objects.filter(alias_relations=egon_email_alias).update(
             only_notify_superadmin=True)
 
         # Assert
@@ -156,9 +156,9 @@ class TestAccount:
         assert egon_account.match_count == 0
 
         # Distribute 9 of  Egon's matches
-        DocumentReport.objects.filter(alias_relation=egon_email_alias).update(
+        DocumentReport.objects.filter(alias_relations=egon_email_alias).update(
             only_notify_superadmin=False)
-        dr = DocumentReport.objects.filter(alias_relation=egon_email_alias).first()
+        dr = DocumentReport.objects.filter(alias_relations=egon_email_alias).first()
         dr.only_notify_superadmin = True
         dr.save()
 
@@ -167,7 +167,7 @@ class TestAccount:
         assert egon_account.match_count == 9
 
         # Distribute last one
-        DocumentReport.objects.filter(alias_relation=egon_email_alias,
+        DocumentReport.objects.filter(alias_relations=egon_email_alias,
                                       only_notify_superadmin=True).update(
             only_notify_superadmin=False)
 
@@ -192,7 +192,7 @@ class TestAccount:
 
         make_matched_document_reports_for(egon_email_alias, handled=all_matches, amount=all_matches)
         for report in DocumentReport.objects.filter(
-                alias_relation=egon_email_alias)[:false_positives]:
+                alias_relations=egon_email_alias)[:false_positives]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
             report.save()
 
@@ -258,11 +258,11 @@ class TestAccount:
             handled=benny_matches,
             amount=benny_matches)
 
-        for report in DocumentReport.objects.filter(alias_relation=benny_email_alias)[:benny_fp]:
+        for report in DocumentReport.objects.filter(alias_relations=benny_email_alias)[:benny_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
             report.save()
 
-        for report in DocumentReport.objects.filter(alias_relation=egon_email_alias)[:egon_fp]:
+        for report in DocumentReport.objects.filter(alias_relations=egon_email_alias)[:egon_fp]:
             report.resolution_status = DocumentReport.ResolutionChoices.FALSE_POSITIVE
             report.save()
 

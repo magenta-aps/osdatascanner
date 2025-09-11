@@ -64,7 +64,7 @@ class ScannerjobDeleteView(PermissionRequiredMixin, ListView):
             # Using private method _raw_delete to avoid using Django's CASCADE handling, as it's
             # very slow when fast pathing is unavailable (i.e. there are relations to consider.)
             # However, it means we have to handle Alias relations ourselves.
-            alias_through_relations = Alias.match_relation.through.objects.filter(
+            alias_through_relations = Alias.reports.through.objects.filter(
                 documentreport_id__in=qs
             )
             alias_relations = alias_through_relations._raw_delete(alias_through_relations.db)

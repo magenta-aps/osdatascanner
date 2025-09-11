@@ -47,16 +47,16 @@ class TestHandleCleanAccountMessage:
 
         assert DocumentReport.objects.count() == 30
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
             scanner_job__scanner_pk=1
         ).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
         ).exclude(
             scanner_job__scanner_pk=1
         ).count() == 10
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account
+            alias_relations__account=egon_account
         ).count() == 20
 
     def test_cleaning_document_reports_with_no_scanners(
@@ -74,10 +74,10 @@ class TestHandleCleanAccountMessage:
 
         assert DocumentReport.objects.count() == 40
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account
+            alias_relations__account=bøffen_account
         ).count() == 20
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account
+            alias_relations__account=egon_account
         ).count() == 20
 
     def test_cleaning_document_reports_multiple_accounts_single_scanner(
@@ -101,20 +101,20 @@ class TestHandleCleanAccountMessage:
 
         assert DocumentReport.objects.count() == 20
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
             scanner_job__scanner_pk=1
         ).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
         ).exclude(
             scanner_job__scanner_pk=1
         ).count() == 10
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account,
+            alias_relations__account=egon_account,
             scanner_job__scanner_pk=1
         ).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account,
+            alias_relations__account=egon_account,
         ).exclude(
             scanner_job__scanner_pk=1
         ).count() == 10
@@ -144,16 +144,16 @@ class TestHandleCleanAccountMessage:
 
         assert DocumentReport.objects.count() == 20
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
             scanner_job__scanner_pk__in=[1, 2]
         ).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
         ).exclude(
             scanner_job__scanner_pk__in=[1, 2]
         ).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account
+            alias_relations__account=egon_account
         ).count() == 20
 
     def test_cleaning_document_reports_multiple_accounts_and_scanners(
@@ -180,16 +180,16 @@ class TestHandleCleanAccountMessage:
         handle_clean_account_message(message)
 
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
             scanner_job__scanner_pk=1).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=bøffen_account,
+            alias_relations__account=bøffen_account,
             scanner_job__scanner_pk=2).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account,
+            alias_relations__account=egon_account,
             scanner_job__scanner_pk=1).count() == 0
         assert DocumentReport.objects.filter(
-            alias_relation__account=egon_account,
+            alias_relations__account=egon_account,
             scanner_job__scanner_pk=2).count() == 0
 
 
