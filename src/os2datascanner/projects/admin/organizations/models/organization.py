@@ -91,7 +91,7 @@ class Organization(Core_Organization):
     @property
     def scanners_running(self) -> bool:
         from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import ScanStatus
-        org_scanners = self.scannerjob.all()
+        org_scanners = self.scannerjobs.all()
         scanners_running = ScanStatus.objects.exclude(
                 ScanStatus._completed_or_cancelled_Q).filter(
                     scanner_id__in=org_scanners)
