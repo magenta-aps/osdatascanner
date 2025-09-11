@@ -221,8 +221,6 @@ for module in [exchangescanner_views,
         if not hasattr(cls, "model") or cls.model is None:
             continue
         model = cls.model
-        print("class:", cls)
-        print("model:", model)
 
         if not model == Scanner:
             if not model.enabled():
