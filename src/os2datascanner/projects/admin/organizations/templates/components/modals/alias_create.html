@@ -7,8 +7,7 @@
 
 
 <form class="form"
-      hx-post="{% url 'create-alias' organization.slug account.uuid %}"
-      hx-target=".form">
+      hx-post="{% url 'create-alias' organization.slug account.uuid %}">
   {% csrf_token %}
 
   <div class="modal__form__title">

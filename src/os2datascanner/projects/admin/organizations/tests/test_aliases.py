@@ -95,47 +95,91 @@ class TestAliasBehaviour:
         assert gertrud.aliases.count() == 1
         assert gertrud.aliases.first()._value == 'tony@stark.co.uk'
 
-    def test_add_alias_view_superuser_invalid_alias(self, superuser, client, egon, gertrud):
+    def test_add_alias_view_superuser_invalid_sid(self, superuser, client, egon):
         """ A superuser should not be able to add an alias with invalid data """
 
         # Arrange
         client.force_login(superuser)
 
-        error_res1_found = False
-        error_res2_found = False
+        error_found = False
 
-        url1 = reverse_lazy('create-alias', kwargs={'org_slug':
-                                                    egon.organization.slug, 'acc_uuid': egon.uuid})
-        url2 = reverse_lazy(
+        url = reverse_lazy(
+            'create-alias',
+            kwargs={'org_slug': egon.organization.slug,
+                    'acc_uuid': egon.uuid})
+        # Act
+        res = client.post(url, {'alias_type': AliasType.SID, 'value': 'invalid SID'})
+
+        context = res.context_data
+
+        form = context.get('form')
+
+        error = form.errors
+        if error:
+            error_found = True
+
+        alias_found = Alias.objects.filter(_value='invalid SID').exists()
+
+        # Assert
+        assert error_found is True
+        assert alias_found is False
+
+    def test_add_alias_view_superuser_invalid_email(self, superuser, client, gertrud):
+
+        # Arrange
+        client.force_login(superuser)
+
+        error_found = False
+
+        url = reverse_lazy(
             'create-alias',
             kwargs={
                 'org_slug': gertrud.organization.slug,
                 'acc_uuid': gertrud.uuid})
         # Act
-        res1 = client.post(url1, {'alias_type': AliasType.SID, 'value': 'invalid SID'})
-        res2 = client.post(url2, {'alias_type': AliasType.EMAIL, 'value': 'invalid EMAIL'})
+        res = client.post(url, {'alias_type': AliasType.EMAIL, 'value': 'invalid EMAIL'})
 
-        context_res1 = res1.context_data
-        context_res2 = res2.context_data
+        context = res.context_data
+        form = context.get('form')
 
-        form_res1 = context_res1.get('form')
-        form_res2 = context_res2.get('form')
+        error = form.errors
+        if error:
+            error_found = True
 
-        error_res1 = form_res1.errors
-        if error_res1:
-            error_res1_found = True
-        error_res2 = form_res2.errors
-        if error_res2:
-            error_res2_found = True
-
-        egon_alias_found = Alias.objects.filter(_value='invalid SID').exists()
-        gertrud_alias_found = Alias.objects.filter(_value='invalid').exists()
+        alias_found = Alias.objects.filter(_value='invalid EMAIL').exists()
 
         # Assert
-        assert error_res1_found is True
-        assert error_res2_found is True
-        assert egon_alias_found is False
-        assert gertrud_alias_found is False
+        assert error_found is True
+        assert alias_found is False
+
+    def test_add_alias_view_superuser_invalid_upn(self, superuser, client, egon):
+
+        # Arrange
+        client.force_login(superuser)
+
+        error_found = False
+
+        url = reverse_lazy(
+            'create-alias',
+            kwargs={'org_slug': egon.organization.slug,
+                    'acc_uuid': egon.uuid})
+        # Act
+        res = client.post(
+            url, {
+                'alias_type': AliasType.USER_PRINCIPAL_NAME, 'value': 'invalid UPN'})
+
+        context = res.context_data
+        form = context.get('form')
+
+        error = form.errors
+        if error:
+            error_found = True
+
+        alias_found = Alias.objects.filter(_value='invalid UPN').exists()
+
+        # Assert
+        assert error_found is True
+        assert alias_found is False
 
     def test_add_alias_client_administrator(self, client, user_admin):
         """An administrator for a client should be able to add aliases to
