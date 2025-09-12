@@ -1,6 +1,8 @@
 import pytest
 from functools import partial
 
+from django.apps import apps
+from os2datascanner.projects.utils import print_objects
 from django.core.management import call_command as _call_command
 
 
@@ -48,3 +50,19 @@ class TestDiagnosticsCommand:
             assert string in stdout
         for string in not_in_stdout:
             assert string not in stderr
+
+    @pytest.mark.parametrize("model,expected_class", [
+        ("Account", apps.get_model("organizations", "Account")),
+        ("Rule", apps.get_model("os2datascanner", "Rule")),
+        ("os2datascanner.Rule", apps.get_model("os2datascanner", "Rule")),
+        ("recurrence.Rule", apps.get_model("recurrence", "Rule")),
+    ])
+    def test_model_selection(self, model: str, expected_class: type):
+        # Arrange
+        pass
+
+        # Act
+        selected_class = print_objects.model_class(model)
+
+        # Assert
+        assert selected_class is expected_class
