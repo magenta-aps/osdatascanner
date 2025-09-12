@@ -46,13 +46,15 @@
                         style="display: inline-block">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button type="submit"
-                            class="button button--icon-button button--transparent-button"
-                            onclick="return confirm(`{% trans "Do you really want to delete all reports from this scanner?" %}\n\n{{ scannerjob.scanner_name }}\n\n{% trans "The action cannot be reversed" %}`)"
-                            aria-label="{% trans "Delete reports from scanner job" %}"
-                            title="{% trans "Delete reports from scanner job" %}">
-                      <i id="delete" class="material-symbols">delete</i>
-                    </button>
+                    {% if scannerjob.count > 0 %}
+                      <button type="submit"
+                              class="button button--icon-button button--transparent-button"
+                              onclick="return confirm(`{% trans "Do you really want to delete all reports from this scanner?" %}\n\n{{ scannerjob.scanner_name }}\n\n{% trans "The action cannot be reversed" %}`)"
+                              aria-label="{% trans "Delete reports from scanner job" %}"
+                              title="{% trans "Delete reports from scanner job" %}">
+                        <i id="delete" class="material-symbols">delete</i>
+                      </button>
+                    {% endif %}
                   </form>
                 </div>
               </td>
