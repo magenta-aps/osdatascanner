@@ -216,22 +216,22 @@ class DialogSuccess(TemplateView):
 class IndexView(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        setting_and_url_list = [
-            (settings.ENABLE_WEBSCAN, reverse_lazy("webscanners")),
-            (settings.ENABLE_FILESCAN, reverse_lazy("filescanners")),
-            (settings.ENABLE_EXCHANGESCAN, reverse_lazy("exchangescanners")),
-            (settings.ENABLE_GOOGLEDRIVESCAN, reverse_lazy("googledrivescanners")),
-            (settings.ENABLE_GMAILSCAN, reverse_lazy("gmailscanners")),
-            (settings.ENABLE_MSGRAPH_MAILSCAN, reverse_lazy("msgraphmailscanners")),
-            (settings.ENABLE_MSGRAPH_FILESCAN, reverse_lazy("msgraphfilescanners")),
-            (settings.ENABLE_MSGRAPH_CALENDARSCAN, reverse_lazy("msgraphcalendarscanners")),
-            (settings.ENABLE_MSGRAPH_TEAMS_FILESCAN, reverse_lazy("msgraphteamsfilescanners")),
-            (settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, reverse_lazy("msgraphsharepointscanners")),
-            (settings.ENABLE_SBSYSSCAN, reverse_lazy("sbsysscanners"))
+        model_and_url_list = [
+            (WebScanner, reverse_lazy("webscanners")),
+            (FileScanner, reverse_lazy("filescanners")),
+            (ExchangeScanner, reverse_lazy("exchangescanners")),
+            (GoogleDriveScanner, reverse_lazy("googledrivescanners")),
+            (GmailScanner, reverse_lazy("gmailscanners")),
+            (MSGraphMailScanner, reverse_lazy("msgraphmailscanners")),
+            (MSGraphFileScanner, reverse_lazy("msgraphfilescanners")),
+            (MSGraphCalendarScanner, reverse_lazy("msgraphcalendarscanners")),
+            (MSGraphTeamsFileScanner, reverse_lazy("msgraphteamsfilescanners")),
+            (MSGraphSharepointScanner, reverse_lazy("msgraphsharepointscanners")),
+            (SbsysScanner, reverse_lazy("sbsysscanners"))
         ]
 
-        for setting, url in setting_and_url_list:
-            if setting:
+        for model, url in model_and_url_list:
+            if model.enabled():
                 return url
         else:
             # We will only reach this point if the above for-loop gets to finish.

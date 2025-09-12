@@ -6,31 +6,6 @@ from django.contrib.auth.models import Permission
 from ..adminapp.views.scanner_views import RemovedScannersView
 from ..adminapp.models.scannerjobs.scanner import Scanner
 
-from ..adminapp.models.scannerjobs.filescanner import FileScanner
-from ..adminapp.models.scannerjobs.webscanner import WebScanner
-from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
-from ..adminapp.models.scannerjobs.msgraph import (MSGraphCalendarScanner, MSGraphFileScanner,
-                                                   MSGraphMailScanner, MSGraphSharepointScanner,
-                                                   MSGraphTeamsFileScanner)
-from ..adminapp.models.scannerjobs.gmail import GmailScanner
-from ..adminapp.models.scannerjobs.googledrivescanner import GoogleDriveScanner
-from ..adminapp.models.scannerjobs.sbsysscanner import SbsysScanner
-
-
-@pytest.fixture(autouse=True)
-def teardown_settings(settings):
-    # We want to do this after the test.
-    yield
-    scanner_settings = (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN,
-                        settings.ENABLE_EXCHANGESCAN, settings.ENABLE_MSGRAPH_MAILSCAN,
-                        settings.ENABLE_MSGRAPH_FILESCAN, settings.ENABLE_MSGRAPH_CALENDARSCAN,
-                        settings.ENABLE_MSGRAPH_TEAMS_FILESCAN, settings.ENABLE_DROPBOXSCAN,
-                        settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
-                        settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN)
-
-    for setting in scanner_settings:
-        setting = True  # noqa: F841 (flake8 does not like that we never use this assigned var)
-
 
 @pytest.mark.django_db
 class TestRemovedScannerViews:
@@ -215,18 +190,29 @@ class TestScannerViewsMethods:
         (False, False, False, False, False, False, False, False, False, False, True),
         (True, True, True, True, True, True, True, True, True, True, True),
     ])
-    def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings):
+    def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings,
+                                  monkeypatch):
+        # We need to import the scanner models from the view files to mock their methods
+        from os2datascanner.projects.admin.adminapp.views.webscanner_views import WebScanner
+        from os2datascanner.projects.admin.adminapp.views.filescanner_views import FileScanner
+        from os2datascanner.projects.admin.adminapp.views.exchangescanner_views import (
+            ExchangeScanner)
+        from os2datascanner.projects.admin.adminapp.views.msgraph_views import (
+            MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner, MSGraphTeamsFileScanner,
+            MSGraphSharepointScanner)
+        from os2datascanner.projects.admin.adminapp.views.gmailscanner_views import GmailScanner
+        from os2datascanner.projects.admin.adminapp.views.googledrivescanner_views import (
+            GoogleDriveScanner)
+        from os2datascanner.projects.admin.adminapp.views.sbsysscanner_views import SbsysScanner
+
         models = [
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
             GmailScanner, GoogleDriveScanner, SbsysScanner
         ]
 
-        (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN, settings.ENABLE_EXCHANGESCAN,
-            settings.ENABLE_MSGRAPH_MAILSCAN, settings.ENABLE_MSGRAPH_FILESCAN,
-            settings.ENABLE_MSGRAPH_CALENDARSCAN, settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
-            settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
-            settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN) = enabled_scanners
+        for scanner_model, enabled in zip(models, enabled_scanners):
+            monkeypatch.setattr(scanner_model, "enabled", lambda enabled=enabled: enabled)
 
         client.force_login(user_admin)
         response = client.get(reverse_lazy("index"), follow=True)
@@ -411,7 +397,13 @@ class TestIndexView:
         (False, False, False, False, False, False, False, False, False, False, True),
         (True, True, True, True, True, True, True, True, True, True, True),
     ])
-    def test_indexview_redirect(self, enabled_scanners, client, user_admin, settings):
+    def test_indexview_redirect(self, enabled_scanners, client, user_admin, settings, monkeypatch):
+        # We need to import the scanner models from the view files to mock their methods
+        from os2datascanner.projects.admin.adminapp.views.views import (
+            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner, GmailScanner,
+            GoogleDriveScanner, SbsysScanner)
+
         models = [
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
@@ -426,11 +418,11 @@ class TestIndexView:
                 # None of the settings are True :(
                 return None
 
-        (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN, settings.ENABLE_EXCHANGESCAN,
-            settings.ENABLE_MSGRAPH_MAILSCAN, settings.ENABLE_MSGRAPH_FILESCAN,
-            settings.ENABLE_MSGRAPH_CALENDARSCAN, settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
-            settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
-            settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN) = enabled_scanners
+        for scanner_model, enabled in zip(models, enabled_scanners):
+            monkeypatch.setattr(scanner_model, "enabled", lambda enabled=enabled: enabled)
+
+        for scanner_model in models:
+            print(scanner_model, scanner_model.enabled())
 
         client.force_login(user_admin)
         response = client.get(reverse_lazy("index"))
