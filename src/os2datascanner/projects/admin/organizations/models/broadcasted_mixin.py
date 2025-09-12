@@ -91,7 +91,7 @@ def broadcasted_m2m_changed(sender, instance, action, *args, **kwargs):
     These changes are not always registered in a post-save, so we do it here as well.
     This currently includes the Account-Permission and Scanner-OrganizationalUnit relations.
     """
-    if sender.__name__ not in ["Account_permissions", "Scanner_org_unit"] \
+    if sender.__name__ not in ["Account_permissions", "Scanner_org_units"] \
             or action not in ["post_add", "post_remove"]:
         return
     broadcastable_dict = get_broadcastable_dict(instance.__class__, instance)

@@ -754,7 +754,7 @@ def create_message_scanner(olsenbanden_organization):
                     'pk': 17,
                     'name': 'Test scanner',
                     'organization': str(olsenbanden_organization.uuid),
-                    'org_unit': [],
+                    'org_units': [],
                     'scan_entire_org': True,
                     'only_notify_superadmin': True
                 }
@@ -788,7 +788,7 @@ def update_message_scanner(marvel_organization):
                     'pk': 17,
                     'name': 'New name',
                     'organization': str(marvel_organization.uuid),
-                    'org_unit': [],
+                    'org_units': [],
                     'scan_entire_org': False,
                     'only_notify_superadmin': False
                 }

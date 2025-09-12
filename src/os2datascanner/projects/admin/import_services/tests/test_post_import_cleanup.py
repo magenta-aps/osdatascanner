@@ -39,7 +39,7 @@ class TestPostImportCleanup:
             ]
         )
 
-        basic_scanner.org_unit.add(familien_sand, nisserne)
+        basic_scanner.org_units.add(familien_sand, nisserne)
 
         return basic_scanner, benny
 

@@ -98,5 +98,5 @@ class TestQuickstartDevCommand:
         assert org.client.name == 'Development Client'
         assert org.user_accounts.first().username == 'dev'
         assert org.system_rules.first().name == 'CPR regel'
-        assert org.scannerjob.order_by('name').first().name == 'Lille Samba'
-        assert org.scannerjob.order_by('name').last().name == 'Local nginx'
+        assert org.scannerjobs.order_by('name').first().name == 'Lille Samba'
+        assert org.scannerjobs.order_by('name').last().name == 'Local nginx'

@@ -76,7 +76,7 @@ class TestScanners:
         """Make sure that synchronizing covered accounts on the Scanner works
         correctly."""
         # Creating some test objects...
-        basic_scanner.org_unit.add(nisserne)
+        basic_scanner.org_units.add(nisserne)
 
         basic_scanner.record_covered_accounts(basic_scanstatus)
 
@@ -103,9 +103,9 @@ class TestScanners:
         gertrud.units.add(bingoklubben)
         benny.units.add(familien_sand)
 
-        basic_scanner.org_unit.add(familien_sand, bingoklubben)
+        basic_scanner.org_units.add(familien_sand, bingoklubben)
         basic_scanner.record_covered_accounts(basic_scanstatus)
-        basic_scanner.org_unit.remove(familien_sand)  # Now only Getrud is covered
+        basic_scanner.org_units.remove(familien_sand)  # Now only Getrud is covered
 
         stale_accounts = basic_scanner.compute_stale_accounts()
 
@@ -130,7 +130,7 @@ class TestScanners:
         oluf.units.add(nørre_snede_if)
         benny.units.add(familien_sand, kok_sokker)
 
-        basic_scanner.org_unit.add(familien_sand, bingoklubben, nørre_snede_if, kok_sokker)
+        basic_scanner.org_units.add(familien_sand, bingoklubben, nørre_snede_if, kok_sokker)
 
         covered_accounts = basic_scanner.compute_covered_accounts()
 
@@ -414,7 +414,7 @@ class TestScannerSourcesWithAccounts:
         """Make sure the 'generate_sources_with_accounts'-method on the ExchangeScanner-model
         only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
 
-        exchange_scanner.org_unit.set((nisserne, familien_sand))
+        exchange_scanner.org_units.set((nisserne, familien_sand))
 
         for acc, _ in exchange_scanner.generate_sources_with_accounts():
             assert acc in accounts_with_emails
@@ -425,7 +425,7 @@ class TestScannerSourcesWithAccounts:
             gmail_scanner):
         """Make sure the 'generate_sources_with_accounts'-method on the GmailScanner-model
         only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
-        gmail_scanner.org_unit.set((nisserne, familien_sand))
+        gmail_scanner.org_units.set((nisserne, familien_sand))
 
         for acc, _ in gmail_scanner.generate_sources_with_accounts():
             assert acc in accounts_with_emails
@@ -436,7 +436,7 @@ class TestScannerSourcesWithAccounts:
             msgraph_mailscanner):
         """Make sure the 'generate_sources_with_accounts'-method on the MSGraphMailScanner-model
         only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
-        msgraph_mailscanner.org_unit.set((nisserne, familien_sand))
+        msgraph_mailscanner.org_units.set((nisserne, familien_sand))
 
         for acc, _ in msgraph_mailscanner.generate_sources_with_accounts():
             assert acc in accounts_with_emails
@@ -447,7 +447,7 @@ class TestScannerSourcesWithAccounts:
             msgraph_filescanner):
         """Make sure the 'generate_sources_with_accounts'-method on the MSGraphMailScanner-model
         only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
-        msgraph_filescanner.org_unit.set((nisserne, familien_sand))
+        msgraph_filescanner.org_units.set((nisserne, familien_sand))
 
         for acc, _ in msgraph_filescanner.generate_sources_with_accounts():
             assert acc in accounts_with_emails
@@ -458,7 +458,7 @@ class TestScannerSourcesWithAccounts:
             msgraph_calendarscanner):
         """Make sure the 'generate_sources_with_accounts'-method on the MSGraphMailScanner-model
         only returns emails from the associated accounts' 'email'-field, not the email-aliases."""
-        msgraph_calendarscanner.org_unit.set((nisserne, familien_sand))
+        msgraph_calendarscanner.org_units.set((nisserne, familien_sand))
 
         for acc, _ in msgraph_calendarscanner.generate_sources_with_accounts():
             assert acc in accounts_with_emails

@@ -28,21 +28,21 @@ class OrganizationlUnitManager(TreeManager):
     def with_match_counts(self):
         return self.annotate(
             total_ou_matches=Count(
-                'positions__account__aliases__match_relation',
+                'positions__account__aliases__reports',
                 filter=Q(
-                    positions__account__aliases__match_relation__number_of_matches__gte=1,
-                    positions__account__aliases__match_relation__only_notify_superadmin=False,
-                    positions__account__aliases__match_relation__organization=F('organization'),
+                    positions__account__aliases__reports__number_of_matches__gte=1,
+                    positions__account__aliases__reports__only_notify_superadmin=False,
+                    positions__account__aliases__reports__organization=F('organization'),
                 ),
                 exclude=Q(positions__account__aliases__shared=True),
                 distinct=True),
             handled_ou_matches=Count(
-                'positions__account__aliases__match_relation',
+                'positions__account__aliases__reports',
                 filter=Q(
-                    positions__account__aliases__match_relation__resolution_status__isnull=False,
-                    positions__account__aliases__match_relation__number_of_matches__gte=1,
-                    positions__account__aliases__match_relation__only_notify_superadmin=False,
-                    positions__account__aliases__match_relation__organization=F('organization'),
+                    positions__account__aliases__reports__resolution_status__isnull=False,
+                    positions__account__aliases__reports__number_of_matches__gte=1,
+                    positions__account__aliases__reports__only_notify_superadmin=False,
+                    positions__account__aliases__reports__organization=F('organization'),
                 ),
                 distinct=True))
 

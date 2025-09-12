@@ -167,7 +167,7 @@ def get_msgraph_mail_document_reports(account):
     # On the other hand, it might be annoying for the user to have an email cateogorized
     # if they've already handled the result in OS2datascanner.
     document_report = DocumentReport.objects.filter(
-        alias_relation__account=account,
+        alias_relations__account=account,
         source_type="msgraph-mail",
         number_of_matches__gte=1)
     if not document_report:

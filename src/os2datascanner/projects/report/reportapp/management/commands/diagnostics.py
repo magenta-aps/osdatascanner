@@ -199,21 +199,21 @@ class Command(BaseCommand):
                 f" the 'resolution_time' is earlier than the 'created_timestamp'.")
 
         # Check for unrelated reports
-        unrelated_matches = matches.filter(alias_relation__isnull=True)
+        unrelated_matches = matches.filter(alias_relations__isnull=True)
 
         if unrelated_matches.count():
             print(f"Found {unrelated_matches.count()} matched reports "
                   "without a relation to an alias.")
 
         # Top five matched accounts
-        account_matches = matches.values("alias_relation__account__username").order_by(
-            ).annotate(count=Count("alias_relation__account__username")).order_by("-count")
+        account_matches = matches.values("alias_relations__account__username").order_by(
+            ).annotate(count=Count("alias_relations__account__username")).order_by("-count")
 
         if account_matches:
             print("\nPresenting the five accounts with most matched reports:")
             nl = '\n  '
             print(" " + nl.join(
-                [f"{acc['alias_relation__account__username']}: {acc['count']} "
+                [f"{acc['alias_relations__account__username']}: {acc['count']} "
                  "matched reports" for acc in account_matches[:5] if acc['count']]))
 
     def diagnose_units(self):

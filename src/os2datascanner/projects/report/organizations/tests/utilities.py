@@ -225,5 +225,5 @@ def make_matched_document_reports_for(
         dr.created_timestamp = created
         if i < handled:
             dr.resolution_status = 0
-        dr.alias_relation.add(alias)
+        dr.alias_relations.add(alias)
         dr.save()

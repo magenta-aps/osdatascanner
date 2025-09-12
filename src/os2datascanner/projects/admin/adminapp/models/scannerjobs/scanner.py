@@ -106,7 +106,7 @@ class Scanner(models.Model):
     organization = models.ForeignKey(
         'organizations.Organization',
         on_delete=models.CASCADE,
-        related_name='scannerjob',
+        related_name='scannerjobs',
         verbose_name=_('organization'),
         default=None,
         null=True,
@@ -120,7 +120,7 @@ class Scanner(models.Model):
         help_text=_("The users who should be notified on completed scans.")
     )
 
-    org_unit = TreeManyToManyField(
+    org_units = TreeManyToManyField(
         "organizations.OrganizationalUnit",
         related_name="scanners",
         blank=True,
@@ -632,8 +632,8 @@ class Scanner(models.Model):
         """Return all accounts which would be scanned by this scannerjob, if
         run at this moment."""
         from os2datascanner.projects.admin.organizations.models import Position, Account, OrganizationalUnit  # noqa: avoid circular import
-        if self.org_unit.exists():
-            relevant_units = self.org_unit.all()
+        if self.org_units.exists():
+            relevant_units = self.org_units.all()
         elif self._supports_account_annotations and self.scan_entire_org:
             relevant_units = OrganizationalUnit.objects.filter(
                     organization=self.organization)
@@ -758,7 +758,7 @@ class ScannerSerializer(serializers.ModelSerializer):
         allow_null=True,
         pk_field=UUIDField(format='hex_verbose')
     )
-    org_unit = serializers.PrimaryKeyRelatedField(
+    org_units = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all(),
         many=True,
         allow_empty=True,
@@ -771,7 +771,7 @@ class ScannerSerializer(serializers.ModelSerializer):
             "pk",
             "name",
             "organization",
-            "org_unit",
+            "org_units",
             "scan_entire_org",
             "only_notify_superadmin",
         ]

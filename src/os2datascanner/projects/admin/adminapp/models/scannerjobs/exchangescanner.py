@@ -99,7 +99,7 @@ class ExchangeScanner(Scanner):
     def compute_covered_accounts(self):
         # A Scanner that uses a userlist file shouldn't have a populated
         # covered_accounts field, so return QuerySet.none() in that case
-        if self.userlist and not self.org_unit.exists():
+        if self.userlist and not self.org_units.exists():
             return Account.objects.none()
         else:
             return super().compute_covered_accounts()

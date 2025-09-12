@@ -141,7 +141,7 @@ class TestMatchDistribution:
 
         caro = Account.objects.get(username="CARO")
 
-        assert dr in caro.aliases.get().match_relation.all()
+        assert dr in caro.aliases.get().reports.all()
 
     def test_retroactive_distribution(
             self,
@@ -162,4 +162,4 @@ class TestMatchDistribution:
 
         caro = Account.objects.get(username="CARO")
 
-        assert dr in caro.aliases.get().match_relation.all()
+        assert dr in caro.aliases.get().reports.all()

@@ -425,7 +425,7 @@ class TestDiagnosticsReportCommand:
         create_reports_for(egon_email_alias, num=10)
 
         for report in DocumentReport.objects.iterator():
-            report.alias_relation.clear()
+            report.alias_relations.clear()
 
         call_command("diagnostics", only=["DocumentReport"])
 

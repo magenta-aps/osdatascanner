@@ -36,7 +36,7 @@ class AliasQuerySet(models.query.QuerySet):
     def associated_report_keys(self):
         return reduce(
             lambda results, it: results | it,
-            (set(al.match_relation.values_list('pk', flat=True).iterator())
+            (set(al.reports.values_list('pk', flat=True).iterator())
                 for al in self),
             set())
 

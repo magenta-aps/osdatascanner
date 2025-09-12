@@ -26,7 +26,7 @@ class MSGraphImportJob(BackgroundJob):
         'organizations.Organization',
         on_delete=models.CASCADE,
         verbose_name=_('organization'),
-        related_name='msimport'
+        related_name='msimportjobs'
     )
 
     handled = models.IntegerField(null=True, blank=True)

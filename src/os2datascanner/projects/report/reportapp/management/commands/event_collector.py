@@ -81,7 +81,7 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         )
                         if org_uuid := scanner_dict.get('organization'):
                             sr.organization = Organization.objects.get(uuid=org_uuid)
-                        ou_uuids = scanner_dict.get('org_unit', [])
+                        ou_uuids = scanner_dict.get('org_units', [])
                         sr.org_units.set(OrganizationalUnit.objects.filter(uuid__in=ou_uuids))
                         sr.save()
 
@@ -146,7 +146,7 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                         if created:
                             logger.info("Update for unknown ScannerReference received.")
 
-                        if ou_uuids := scanner_dict.get('org_unit', []):
+                        if ou_uuids := scanner_dict.get('org_units', []):
                             sr.org_units.set(OrganizationalUnit.objects.filter(uuid__in=ou_uuids))
                             sr.save()
 
@@ -204,7 +204,7 @@ def handle_clean_account_message(body):
         account_usernames = account_dict.get("usernames")
 
         related_reports = DocumentReport.objects.filter(
-            alias_relation__account__in=account_uuids, scanner_job__scanner_pk=scanner_pk)
+            alias_relations__account__in=account_uuids, scanner_job__scanner_pk=scanner_pk)
 
         _, deleted_reports_dict = related_reports.delete()
         deleted_reports = deleted_reports_dict.get("os2datascanner_report.DocumentReport", 0)

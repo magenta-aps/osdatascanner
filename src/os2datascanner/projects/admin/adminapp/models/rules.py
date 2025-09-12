@@ -43,7 +43,7 @@ class Rule(models.Model):
     organization = models.ForeignKey(
         'organizations.Organization',
         on_delete=models.CASCADE,
-        related_name='rule',
+        related_name='rules',
         verbose_name=_('organization'),
         default=None,
         null=True,

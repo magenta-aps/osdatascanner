@@ -77,15 +77,15 @@ class AccountQuerySet(models.QuerySet):
         shared aliases, or withheld matches.
         This field should contain the same value as the 'match_count' property."""
         return self.annotate(unhandled_matches=Count(
-                    "aliases__match_relation",
+                    "aliases__reports",
                     filter=(
                         ~Q(aliases___alias_type=AliasType.REMEDIATOR)
                         & Q(
                             aliases__shared=False,
-                            aliases__match_relation__number_of_matches__gte=1,
-                            aliases__match_relation__resolution_status__isnull=True,
-                            aliases__match_relation__only_notify_superadmin=False,
-                            aliases__match_relation__scanner_job__organization=F('organization'),
+                            aliases__reports__number_of_matches__gte=1,
+                            aliases__reports__resolution_status__isnull=True,
+                            aliases__reports__only_notify_superadmin=False,
+                            aliases__reports__scanner_job__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -98,15 +98,15 @@ class AccountQuerySet(models.QuerySet):
         shared aliases.
         This field should contain the same value as the 'withheld_matches' property."""
         return self.annotate(withheld=Count(
-                    "aliases__match_relation",
+                    "aliases__reports",
                     filter=(
                         ~Q(aliases___alias_type=AliasType.REMEDIATOR)
                         & Q(
                             aliases__shared=False,
-                            aliases__match_relation__number_of_matches__gte=1,
-                            aliases__match_relation__resolution_status__isnull=True,
-                            aliases__match_relation__only_notify_superadmin=True,
-                            aliases__match_relation__scanner_job__organization=F('organization'),
+                            aliases__reports__number_of_matches__gte=1,
+                            aliases__reports__resolution_status__isnull=True,
+                            aliases__reports__only_notify_superadmin=True,
+                            aliases__reports__scanner_job__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -124,16 +124,16 @@ class AccountQuerySet(models.QuerySet):
         number_of_days_policy = policy
         cutoff_date = time_now() - timedelta(days=number_of_days_policy)
         return self.annotate(old=Count(
-                    "aliases__match_relation",
+                    "aliases__reports",
                     filter=(
                         ~Q(aliases___alias_type=AliasType.REMEDIATOR)
                         & Q(
                             aliases__shared=False,
-                            aliases__match_relation__number_of_matches__gte=1,
-                            aliases__match_relation__resolution_status__isnull=True,
-                            aliases__match_relation__only_notify_superadmin=False,
-                            aliases__match_relation__datasource_last_modified__lte=cutoff_date,
-                            aliases__match_relation__scanner_job__organization=F('organization'),
+                            aliases__reports__number_of_matches__gte=1,
+                            aliases__reports__resolution_status__isnull=True,
+                            aliases__reports__only_notify_superadmin=False,
+                            aliases__reports__datasource_last_modified__lte=cutoff_date,
+                            aliases__reports__scanner_job__organization=F('organization'),
                         )
                     ),
                     distinct=True
@@ -157,28 +157,28 @@ class AccountQuerySet(models.QuerySet):
 
         valid_reports = (~Q(aliases___alias_type=AliasType.REMEDIATOR)
                          & Q(aliases__shared=False,
-                             aliases__match_relation__number_of_matches__gte=1,
-                             aliases__match_relation__only_notify_superadmin=False,
-                             aliases__match_relation__scanner_job__organization=F('organization'),
+                             aliases__reports__number_of_matches__gte=1,
+                             aliases__reports__only_notify_superadmin=False,
+                             aliases__reports__scanner_job__organization=F('organization'),
                              )
                          )
-        unhandled_filter = Q(aliases__match_relation__resolution_status__isnull=True)
+        unhandled_filter = Q(aliases__reports__resolution_status__isnull=True)
         handled_filter = Q(
-            aliases__match_relation__resolution_status__isnull=False,
-            aliases__match_relation__resolution_time__gte=three_weeks_ago)
-        new_filter = Q(aliases__match_relation__created_timestamp__gte=three_weeks_ago)
+            aliases__reports__resolution_status__isnull=False,
+            aliases__reports__resolution_time__gte=three_weeks_ago)
+        new_filter = Q(aliases__reports__created_timestamp__gte=three_weeks_ago)
 
         qs = self.annotate(
             _unhandled_count=Count(
-                'aliases__match_relation',
+                'aliases__reports',
                 filter=valid_reports & unhandled_filter,
                 distinct=True),
             _handled_count=Count(
-                'aliases__match_relation',
+                'aliases__reports',
                 filter=valid_reports & handled_filter,
                 distinct=True),
             _new_count=Count(
-                'aliases__match_relation',
+                'aliases__reports',
                 filter=valid_reports & new_filter,
                 distinct=True),
             _handled_new_ratio=Case(
@@ -397,7 +397,7 @@ class Account(Core_Account):
             case _:
                 raise TypeError(type_)
 
-        return qs.filter(alias_relation__in=aliases).order_by(
+        return qs.filter(alias_relations__in=aliases).order_by(
                 "sort_key", "pk").distinct()
 
     @property
@@ -483,7 +483,7 @@ class Account(Core_Account):
 
         all_matches = DocumentReport.objects.filter(
             number_of_matches__gte=1,
-            alias_relation__in=aliases,
+            alias_relations__in=aliases,
             only_notify_superadmin=False,
             scanner_job__organization=self.organization,
         ).values(

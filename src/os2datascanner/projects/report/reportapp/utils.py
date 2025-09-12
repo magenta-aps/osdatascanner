@@ -273,10 +273,10 @@ def get_max_sens_prop_value(doc_report_obj, key):
 def create_alias_and_match_relations(sub_alias: Alias) -> int:
     """Method for creating match_relations for a given alias
     with all the matching DocumentReports"""
-    tm = Alias.match_relation.through
+    tm = Alias.reports.through
     # We're using "only" here in combination with iterator later, to avoid
     # running into RAM issues on large datasets. DocumentReports can be many and they can be large.
-    all_reports = DocumentReport.objects.only("pk", "alias_relation")
+    all_reports = DocumentReport.objects.only("pk", "alias_relations")
 
     # Although RFC 5321 says that the local part of an email address
     # -- the bit to the left of the @ --
@@ -296,14 +296,14 @@ def create_alias_and_match_relations(sub_alias: Alias) -> int:
 
         if remediator_for == "0":  # Remediator for all scannerjobs, becomes a string,
             reports = all_reports.filter(
-                (Q(alias_relation__isnull=True) |
-                 Q(alias_relation___alias_type=AliasType.REMEDIATOR.value))
+                (Q(alias_relations__isnull=True) |
+                 Q(alias_relations___alias_type=AliasType.REMEDIATOR.value))
             )
 
         else:  # Remediator for a specific scannerjob
             reports = all_reports.filter(
-                (Q(alias_relation__isnull=True) |
-                 Q(alias_relation___alias_type=AliasType.REMEDIATOR.value)) &
+                (Q(alias_relations__isnull=True) |
+                 Q(alias_relations___alias_type=AliasType.REMEDIATOR.value)) &
                 Q(scanner_job__scanner_pk=remediator_for)
             )
 

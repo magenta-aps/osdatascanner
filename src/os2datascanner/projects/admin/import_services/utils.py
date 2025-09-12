@@ -43,7 +43,7 @@ def start_ldap_import(ldap_conf: LDAPConfig):
     realm = get_object_or_404(Realm, organization_id=ldap_conf.pk)
 
     # get latest import job
-    latest_importjob = realm.importjob.first()
+    latest_importjob = realm.importjobs.first()
     if not latest_importjob \
             or latest_importjob.exec_state == JobState.FINISHED \
             or latest_importjob.exec_state == JobState.FAILED \

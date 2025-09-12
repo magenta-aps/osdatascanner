@@ -52,10 +52,13 @@ class DocumentReport(models.Model):
     # Changed save_model in admin.py, to make sure m2m relations doesn't get cleared after save
     # noqa Source: https://stackoverflow.com/questions/1925383/issue-with-manytomany-relationships-not-updating-immediately-after-save/1925784#1925784
 
-    alias_relation = models.ManyToManyField(Alias, blank=True,
-                                            verbose_name=_('Alias relation'),
-                                            related_name='match_relation',
-                                            db_table="new_alias_relation")
+    alias_relations = models.ManyToManyField(
+        Alias,
+        blank=True,
+        verbose_name=_('Alias relation'),
+        related_name='reports',
+        db_table="new_alias_relation",
+    )
 
     scan_time = models.DateTimeField(null=True, db_index=True,
                                      verbose_name=_('scan time'))

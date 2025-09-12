@@ -75,7 +75,7 @@ def patch_form(view, form):
 
 msgraph_mail_scanner_fields = [
     'graph_grant',
-    'org_unit',
+    'org_units',
     'scan_entire_org',
     'scan_deleted_items_folder',
     'scan_syncissues_folder',
@@ -157,7 +157,7 @@ class MSGraphFileScannerCreate(View):
 
 msgraph_file_scanner_fields = [
     'graph_grant',
-    'org_unit',
+    'org_units',
     'scan_entire_org',
     'scan_site_drives',
     'scan_user_drives',
@@ -237,7 +237,7 @@ class MSGraphCalendarScannerCreate(View):
 
 msgraph_calendar_scanner_fields = [
     'graph_grant',
-    'org_unit',
+    'org_units',
     'scan_entire_org',
 ]
 

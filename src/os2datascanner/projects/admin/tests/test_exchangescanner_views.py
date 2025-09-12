@@ -105,7 +105,7 @@ class TestExchangeScannerViews:
         """ The used scannerjob has a filepath stored but also an org_unit chosen.
         The system should choose to use the org_unit selected."""
 
-        exchange_scanner_with_userlist.org_unit.add(nisserne)
+        exchange_scanner_with_userlist.org_units.add(nisserne)
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         nisse_usernames = [acc.username for acc in (fritz, günther, hansi)]
@@ -121,7 +121,7 @@ class TestExchangeScannerViews:
             familien_sand,
             oluf, gertrud):
 
-        exchange_scanner_with_userlist.org_unit.add(familien_sand)
+        exchange_scanner_with_userlist.org_units.add(familien_sand)
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for ews_source in exchange_scanner_source:
@@ -136,7 +136,7 @@ class TestExchangeScannerViews:
         of users with email values"""
 
         sources_yielded = 0  # Store a count
-        exchange_scanner_with_userlist.org_unit.set((nisserne, familien_sand))
+        exchange_scanner_with_userlist.org_units.set((nisserne, familien_sand))
         exchange_scanner_source = exchange_scanner_with_userlist.generate_sources()
 
         for _ews_source in exchange_scanner_source:
@@ -240,7 +240,7 @@ class TestExchangeScannerViews:
             'mail_domain': mail_domain,
             'organization': test_org.uuid,
             'validation_status': 0,
-            'org_unit': nisserne.uuid,
+            'org_units': nisserne.uuid,
             'rule': basic_rule.pk,
             'ews_grant': exchange_grant.pk
         })
