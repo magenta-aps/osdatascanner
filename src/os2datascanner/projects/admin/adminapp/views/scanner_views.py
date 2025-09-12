@@ -35,7 +35,7 @@ from os2datascanner.projects.admin.utilities import UserWrapper
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
     OrgRestrictedMixin
-from ..models.rules import CustomRule
+from ..models.rules import Rule
 from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.webscanner import WebScanner
@@ -245,7 +245,7 @@ class ScannerBase(object):
 
         form.fields['organization'].initial = selected_org
 
-        allowed_rules = CustomRule.objects.filter(
+        allowed_rules = Rule.objects.filter(
             Q(organization__in=org_qs) | Q(organization__isnull=True, organizations=selected_org))
 
         form.fields["rule"] = ModelChoiceField(

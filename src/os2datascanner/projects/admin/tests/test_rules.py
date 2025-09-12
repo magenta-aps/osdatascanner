@@ -1,7 +1,7 @@
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.regex import RegexRule
 
-from ..adminapp.models.rules import CustomRule, Sensitivity
+from ..adminapp.models.rules import Rule, Sensitivity
 
 
 class TestRules:
@@ -10,11 +10,11 @@ class TestRules:
 
         rules = (RegexRule(name) for name in names)
 
-        r = CustomRule(
+        r = Rule(
             name="Look for names",
             description="A rule that looks for some names",
             sensitivity=Sensitivity.CRITICAL,
-            _rule=OrRule.make(*rules).to_json_object(),
+            raw_rule=OrRule.make(*rules).to_json_object(),
             )
 
         e2r = r.make_engine2_rule()
@@ -38,9 +38,9 @@ The first steps will be taken on Tuesday. Mwahahahaha ha ha ha ha.
 Yours in nastiness
 Kristjan Evil
 """
-        r = CustomRule(
+        r = Rule(
                 name="Look for names",
-                _rule={
+                raw_rule={
                     "type": "name",
                     "expansive": False,
                     "whitelist": [],

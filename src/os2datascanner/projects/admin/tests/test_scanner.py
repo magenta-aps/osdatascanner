@@ -271,7 +271,7 @@ class TestScanners:
 
     def test_msgraph_mailscanner_construct_rule(self, msgraph_mailscanner):
         # Arrange
-        basic_rule = msgraph_mailscanner.rule.customrule.make_engine2_rule()
+        basic_rule = msgraph_mailscanner.rule.make_engine2_rule()
         expected = OrRule(EmailHeaderRule("subject", basic_rule), basic_rule)
 
         # Act
@@ -283,7 +283,7 @@ class TestScanners:
     def test_msgraph_mailscanner_construct_rule_scan_subject_false(self, msgraph_mailscanner):
         # Arrange
         msgraph_mailscanner.scan_subject = False
-        basic_rule = msgraph_mailscanner.rule.customrule.make_engine2_rule()
+        basic_rule = msgraph_mailscanner.rule.make_engine2_rule()
 
         # Act
         rule = msgraph_mailscanner._construct_rule(force=False)

@@ -13,9 +13,9 @@ from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 
-from ..models.rules import CustomRule
+from ..models.rules import Rule
 
-from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.rules.rule import Rule as E2Rule
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
 from os2datascanner.engine2.model.utilities.temp_resource import (
@@ -43,13 +43,13 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
 
         if self.request.GET.get('customrulepk'):
             try:
-                context['custom_rule'] = CustomRule.objects.annotate(
-                     rule_field=F("_rule")).get(
+                context['custom_rule'] = Rule.objects.annotate(
+                     rule_field=F("raw_rule")).get(
                      pk=self.request.GET.get('customrulepk'))
-            except CustomRule.DoesNotExist:
+            except Rule.DoesNotExist:
                 logger.warning("Non-existant rule requested")
 
-        context["customrule_list"] = CustomRule.objects.annotate(rule_field=F("_rule"))
+        context["customrule_list"] = Rule.objects.annotate(rule_field=F("raw_rule"))
 
         return context
 
@@ -138,7 +138,7 @@ def execute_mini_scan(request):
 
     rule = None
     if halfbaked_rule:
-        rule = Rule.from_json_object(halfbaked_rule)
+        rule = E2Rule.from_json_object(halfbaked_rule)
 
     if file_obj:
         for m in mini_scan(file_obj, rule):
@@ -151,7 +151,7 @@ def execute_mini_scan(request):
 
 
 class CustomRuleCreateMiniscan(RuleCreate):
-    model = CustomRule
+    model = Rule
     template_name = "components/miniscanner/miniscanner_customrule_form.html"
     fields = ['name', 'description', 'sensitivity', 'organization']
 

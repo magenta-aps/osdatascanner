@@ -21,7 +21,7 @@ from os2datascanner.engine2.pipeline.messages import (
 from os2datascanner.engine2.rules.regex import RegexRule
 
 from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule, Sensitivity
+from os2datascanner.projects.admin.adminapp.models.rules import Rule, Sensitivity
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
     Organization, OrganizationalUnit, Account, Position, Alias)
@@ -103,30 +103,30 @@ def user_admin(test_org):
 
 @pytest.fixture
 def basic_rule(test_org):
-    rule = CustomRule.objects.create(name="dummy rule",
-                                     description="this is a dumb dumb dummy rule",
-                                     _rule={"type": "regex", "expression": "dummy"})
+    rule = Rule.objects.create(name="dummy rule",
+                               description="this is a dumb dumb dummy rule",
+                               raw_rule={"type": "regex", "expression": "dummy"})
     rule.organizations.add(test_org)
     return rule
 
 
 @pytest.fixture
 def disabled_system_rule(test_org):
-    rule = CustomRule.objects.create(name="disabled rule",
-                                     description="this is a dumb dumb disabled rule",
-                                     _rule={"type": "regex", "expression": "dummy"})
+    rule = Rule.objects.create(name="disabled rule",
+                               description="this is a dumb dumb disabled rule",
+                               raw_rule={"type": "regex", "expression": "dummy"})
     # Don't add any organizations.
     return rule
 
 
 @pytest.fixture
 def org_rule(test_org):
-    return CustomRule.objects.create(
+    return Rule.objects.create(
         name="org_rule",
         description="org_rule",
         organization=test_org,
         sensitivity=Sensitivity.CRITICAL,
-        _rule=RegexRule(r"[A-Z]{10}").to_json_object(),
+        raw_rule=RegexRule(r"[A-Z]{10}").to_json_object(),
     )
 
 
@@ -783,11 +783,11 @@ def test_org2():
 
 @pytest.fixture
 def org2_rule(test_org2):
-    return CustomRule.objects.create(
+    return Rule.objects.create(
         name="org2_rule",
         description="org2_rule",
         organization=test_org2,
-        _rule=RegexRule(r"[A-Z]{10}").to_json_object(),
+        raw_rule=RegexRule(r"[A-Z]{10}").to_json_object(),
     )
 
 

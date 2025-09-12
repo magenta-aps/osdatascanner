@@ -23,7 +23,7 @@ from django.conf import settings
 
 from ....organizations.models import Account, Alias, OrganizationalUnit, Organization
 from ...models.usererrorlog import UserErrorLog
-from ...models.rules import CustomRule
+from ...models.rules import Rule
 
 
 class Command(BaseCommand):
@@ -153,7 +153,7 @@ class Command(BaseCommand):
 
     def diagnose_rules(self):
         print("\n\n>> Running diagnostics on rules ...")
-        rules = CustomRule.objects.all()
+        rules = Rule.objects.all()
 
         print(f"Found {rules.count()} custom rules:")
         for rule in rules:
@@ -174,7 +174,7 @@ class Command(BaseCommand):
 
             # We run this through a JSON-formatter to print it prettier.
             print("\nRule JSON:")
-            print(json.dumps(rule._rule, indent=2))
+            print(json.dumps(rule.raw_rule, indent=2))
 
     def diagnose_settings(self):
         print("\n\n>> Running diagnostics on settings ...")

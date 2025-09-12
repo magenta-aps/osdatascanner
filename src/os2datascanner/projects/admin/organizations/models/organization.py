@@ -19,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from os2datascanner.core_organizational_structure.models import \
     OrganizationSerializer as Core_OrganizationSerializer
 from .broadcasted_mixin import Broadcasted
-from os2datascanner.projects.admin.adminapp.models.rules import CustomRule
+from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
 
 from os2datascanner.core_organizational_structure.models import Organization as Core_Organization
@@ -69,7 +69,7 @@ class Organization(Core_Organization):
         verbose_name=_('slug'),
     )
     system_rules = models.ManyToManyField(
-        CustomRule,
+        Rule,
         related_name='organizations',
         verbose_name=_('system rules'),
     )

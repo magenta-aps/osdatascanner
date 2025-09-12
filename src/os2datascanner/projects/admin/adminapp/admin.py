@@ -21,7 +21,7 @@ from django.utils.translation import gettext_lazy as _
 from .models.apikey import APIKey
 from .models.scannerjobs.scanner_helpers import CoveredAccount, MIMETypeProcessStat
 from .models.usererrorlog import UserErrorLog
-from .models.rules import CustomRule, RuleCategory
+from .models.rules import Rule, RuleCategory
 from .models.scannerjobs.scanner import (ScanStatus,
                                          ScheduledCheckup,
                                          ScanStatusSnapshot)
@@ -60,27 +60,27 @@ class CustomRuleForm(forms.ModelForm):
     list_display = ('name', 'organization', 'sensitivity')
 
     class Meta:
-        model = CustomRule
+        model = Rule
         exclude = ()
         fields = ("__all__")
         widgets = {
-            '_rule': CustomRuleWidget(),
+            'raw_rule': CustomRuleWidget(),
         }
 
     # Check that POST-response is valid using clean_<field_name>
     def clean__rule(self):
-        if str(self.cleaned_data["_rule"]).count("'type': 'cpr'") > 1:
+        if str(self.cleaned_data["raw_rule"]).count("'type': 'cpr'") > 1:
             raise forms.ValidationError(
                 _("CPR rule should not be used more than once"))
 
-        if str(self.cleaned_data["_rule"]).count("'type': 'ordered-wordlist'") > 1:
+        if str(self.cleaned_data["raw_rule"]).count("'type': 'ordered-wordlist'") > 1:
             raise forms.ValidationError(
                 _("Health-information rule should not be used more than once"))
 
-        return self.cleaned_data["_rule"]
+        return self.cleaned_data["raw_rule"]
 
 
-@admin.register(CustomRule)
+@admin.register(Rule)
 class CustomRuleAdmin(admin.ModelAdmin):
     form = CustomRuleForm
 

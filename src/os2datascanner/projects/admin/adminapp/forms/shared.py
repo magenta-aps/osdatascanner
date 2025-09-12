@@ -116,7 +116,7 @@ class ScannerForm(GroupingModelForm):
             # Rules belonging to the organization ...
             Q(organization_id=self.org.uuid) |
             # ... or system rules applied to the organization
-            Q(organization=None, customrule__organizations__uuid=self.org.uuid)
+            Q(organization=None, organizations__uuid=self.org.uuid)
         )
 
         # Only allow the user to choose between exclusion rules related to the organization
@@ -124,7 +124,7 @@ class ScannerForm(GroupingModelForm):
             # Rules belonging to the organization ...
             Q(organization_id=self.org.uuid) |
             # ... or system rules applied to the organization
-            Q(organization=None, customrule__organizations__uuid=self.org.uuid)
+            Q(organization=None, organizations__uuid=self.org.uuid)
         )
 
         # Only allow the user to change the validation_status field with the correct permission

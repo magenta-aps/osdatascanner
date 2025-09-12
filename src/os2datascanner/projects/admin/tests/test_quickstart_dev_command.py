@@ -7,7 +7,7 @@ from os2datascanner.projects.grants.models import SMBGrant
 from ..core.models.client import Client
 from ..organizations.models.organization import Organization
 from ..organizations.models.aliases import Alias, AliasType
-from ..adminapp.models.rules import CustomRule
+from ..adminapp.models.rules import Rule
 from ..adminapp.models.scannerjobs.filescanner import FileScanner
 from ..adminapp.models.scannerjobs.webscanner import WebScanner
 
@@ -42,7 +42,7 @@ class TestQuickstartDevCommand:
                                {'name': 'Development Client'}),
                                  (Organization,
                                   {'name': 'OSdatascanner'}),
-                                 (CustomRule,
+                                 (Rule,
                                   {'name': 'CPR regel',
                                    'description': 'Denne regel finder alle gyldige CPR numre.'}),
                                  (get_user_model(),

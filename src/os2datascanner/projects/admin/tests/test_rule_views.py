@@ -4,7 +4,7 @@ import json
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse_lazy
 
-from ..adminapp.models.rules import CustomRule, RuleCategory
+from ..adminapp.models.rules import Rule, RuleCategory
 
 
 @pytest.fixture
@@ -34,11 +34,11 @@ def address_category():
 
 @pytest.fixture
 def system_rule1(name_category, address_category):
-    rule = CustomRule.objects.create(
+    rule = Rule.objects.create(
         name="system_rule1",
         description="system_rule1",
         sensitivity=1,
-        _rule='{"type": "regex", "expression": "dummy"}'
+        raw_rule='{"type": "regex", "expression": "dummy"}'
     )
     rule.categories.add(name_category, address_category)
     return rule
@@ -46,11 +46,11 @@ def system_rule1(name_category, address_category):
 
 @pytest.fixture
 def system_rule2(name_category):
-    rule = CustomRule.objects.create(
+    rule = Rule.objects.create(
         name="system_rule2",
         description="system_rule2",
         sensitivity=2,
-        _rule='{"type": "regex", "expression": "dummy"}'
+        raw_rule='{"type": "regex", "expression": "dummy"}'
     )
     rule.categories.add(name_category)
     return rule
@@ -95,13 +95,13 @@ class TestCustomRuleCreate:
 
         self.post_rule_create(client, user_admin, rule_data)
 
-        created_rule = CustomRule.objects.last()
+        created_rule = Rule.objects.last()
 
         assert created_rule.name == rule_data['name']
         assert created_rule.description == rule_data['description']
         assert created_rule.sensitivity == rule_data['sensitivity']
         assert str(created_rule.organization.uuid) == rule_data['organization']
-        assert json.dumps(created_rule._rule) == rule_data['rule']
+        assert json.dumps(created_rule.raw_rule) == rule_data['rule']
 
     @pytest.mark.parametrize('exceptions,valid', [
         ('abc', False),
@@ -217,13 +217,13 @@ class TestCustomRuleUpdate:
 
         self.post_rule_update(client, user_admin, org_rule.pk, rule_data)
 
-        updated_rule = CustomRule.objects.get(pk=org_rule.pk)
+        updated_rule = Rule.objects.get(pk=org_rule.pk)
 
         assert updated_rule.name == rule_data['name']
         assert updated_rule.description == rule_data['description']
         assert updated_rule.sensitivity == rule_data['sensitivity']
         assert str(updated_rule.organization.uuid) == rule_data['organization']
-        assert json.dumps(updated_rule._rule) == rule_data['rule']
+        assert json.dumps(updated_rule.raw_rule) == rule_data['rule']
 
     def get_rule_update(self, client, user, pk, **kwargs):
         if not isinstance(user, AnonymousUser):
@@ -262,7 +262,7 @@ class TestCustomRuleDelete:
 
         self.post_rule_delete(client, user_admin, org_rule.pk)
 
-        assert CustomRule.objects.filter(pk=org_rule.pk).exists() is False
+        assert Rule.objects.filter(pk=org_rule.pk).exists() is False
 
     def post_rule_delete(self, client, user, pk, **kwargs):
         if not isinstance(user, AnonymousUser):

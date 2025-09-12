@@ -31,19 +31,19 @@ from .views import RestrictedListView, RestrictedCreateView, \
 from .validators import customrule_validator
 from ..models.scannerjobs.scanner import Scanner
 from ..models.sensitivity_level import Sensitivity
-from ..models.rules import Rule, CustomRule, RuleCategory
+from ..models.rules import Rule, RuleCategory
 from ...utilities import UserWrapper
 
 
 class RuleList(RestrictedListView):
     """Displays list of scanners."""
 
-    model = CustomRule
+    model = Rule
     context_object_name = 'rules'
     template_name = 'rules.html'
 
     def get_system_rules(self, organization):
-        system_rules = CustomRule.objects.filter(organization__isnull=True)
+        system_rules = Rule.objects.filter(organization__isnull=True)
         if selected_categories_pks := self.request.GET.getlist("categories"):
             unselected_categories = RuleCategory.objects.exclude(pk__in=selected_categories_pks)
 
@@ -52,9 +52,9 @@ class RuleList(RestrictedListView):
         system_rules = system_rules.annotate(
             # Check if each rule is connected to the organization.
             connected=Exists(
-                CustomRule.organizations.through.objects.filter(
+                Rule.organizations.through.objects.filter(
                     organization_id=organization.uuid,
-                    customrule_id=OuterRef('pk'))),
+                    pk=OuterRef('pk'))),
         )
 
         return system_rules
@@ -130,7 +130,7 @@ class RuleCreate(RestrictedCreateView):
                               "include any symbols or spaces."))
                 raise ValidationError(_("Formatting error"), code="formatting")
             else:
-                rule._rule = crule
+                rule.raw_rule = crule
         rule.save()
         return rule
 
@@ -158,7 +158,7 @@ class RuleCreate(RestrictedCreateView):
 
 
 class CustomRuleCreate(RuleCreate):
-    model = CustomRule
+    model = Rule
     template_name = "components/rules/customrule_form.html"
     fields = ['name', 'description', 'sensitivity', 'organization']
 
@@ -200,14 +200,14 @@ class RuleUpdate(RestrictedUpdateView):
 
 
 class CustomRuleUpdate(RuleUpdate):
-    model = CustomRule
+    model = Rule
     fields = ['name', 'description', 'sensitivity', 'organization']
     template_name = "components/rules/customrule_form.html"
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['rule'] = forms.JSONField(
-            initial=self.object._rule,
+            initial=self.object.raw_rule,
             validators=[customrule_validator])
 
         return form
@@ -232,11 +232,11 @@ class RuleDelete(RestrictedDeleteView):
 
 
 class CustomRuleDelete(RuleDelete):
-    model = CustomRule
+    model = Rule
 
 
 class CustomRuleConnect(LoginRequiredMixin, UpdateView):
-    model = CustomRule
+    model = Rule
 
     def post(self, request, *args, **kwargs):
         response = HttpResponse()
