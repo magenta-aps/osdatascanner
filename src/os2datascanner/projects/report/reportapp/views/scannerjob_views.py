@@ -4,9 +4,10 @@ from django.db import transaction
 from django.views.generic import ListView
 from django.db.models import Count, Q
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
+from ..models.scanner_reference import ScannerReference
 from ..models.documentreport import DocumentReport
 from os2datascanner.projects.report.organizations.models import Alias
 
@@ -14,42 +15,37 @@ from os2datascanner.projects.report.organizations.models import Alias
 logger = structlog.get_logger()
 
 
-# TODO: Change to use ScannerReference
 class ScannerjobListView(PermissionRequiredMixin, ListView):
-    model = DocumentReport
+    model = ScannerReference
     template_name = "scannerjobs/scannerjob_list.html"
     permission_required = 'os2datascanner_report.delete_documentreport'
+    context_object_name = "scannerjobs"
 
     def get_queryset(self):
-        return DocumentReport.objects.filter(
-            number_of_matches__gte=1,
-            scanner_job__organization=self.kwargs["org"])
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         org = self.kwargs['org']
-        context["scannerjobs"] = org.scanners.annotate(
-                count=Count(
-                    'document_reports',
-                    filter=Q(document_reports__in=self.object_list),
-                )
+        return super().get_queryset().filter(organization=org).annotate(
+            count=Count(
+                'document_reports',
+                filter=Q(document_reports__number_of_matches__gte=1),
             )
-        return context
+        )
 
     def dispatch(self, request, *args, **kwargs):
-
         self.kwargs["org"] = request.user.account.organization
         return super().dispatch(request, *args, **kwargs)
 
 
-# TODO: Change to use ScannerReference
 class ScannerjobDeleteView(PermissionRequiredMixin, ListView):
     model = DocumentReport
     permission_required = 'os2datascanner_report.delete_documentreport'
 
     def get_queryset(self):
-        all_reports = super().get_queryset().filter(scanner_job__organization=self.kwargs["org"])
-        return all_reports.filter(scanner_job__scanner_pk=self.kwargs["pk"]).only("pk")
+        scanner = get_object_or_404(
+            ScannerReference,
+            pk=self.kwargs["pk"],
+            organization=self.kwargs["org"],
+        )
+        return scanner.document_reports.all()
 
     def dispatch(self, request, *args, **kwargs):
         self.kwargs["org"] = request.user.account.organization
