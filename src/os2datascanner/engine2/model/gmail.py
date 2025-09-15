@@ -1,16 +1,16 @@
 from contextlib import contextmanager
 from io import BytesIO
 from datetime import datetime
+
+from .utilities.utilities import GoogleSource
 from ..rules.rule import Rule
 from .core import Source, Handle, FileResource
-from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
-from googleapiclient.discovery import build
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 import base64
 
 
-class GmailSource(Source):
+class GmailSource(GoogleSource):
     """Implements Gmail API using a service account.
        The organization must create a project, a service account,
         enable G Suite Domain-wide Delegation for the service account,
@@ -26,22 +26,14 @@ class GmailSource(Source):
 
     type_label = "gmail"
 
-    eq_properties = ("_user_email_gmail",)
+    eq_properties = ("_user_email",)
 
     def __init__(self, google_api_grant, user_email_gmail, scan_attachments):
-        self.google_api_grant = google_api_grant
-        self._user_email_gmail = user_email_gmail
+        super().__init__(google_api_grant, user_email_gmail)
         self.scan_attachments = scan_attachments
 
     def _generate_state(self, source_manager):
-        SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-        credentials = service_account.Credentials.from_service_account_info(
-            self.google_api_grant,
-            scopes=SCOPES).with_subject(
-                self._user_email_gmail
-            )
-        service = build(serviceName='gmail', version='v1', credentials=credentials)
-        yield service
+        yield from super()._generate_state('gmail')
 
     def _generate_query(
             self,
@@ -60,7 +52,7 @@ class GmailSource(Source):
         service = sm.open(self)
         # Call the Gmail API to retrieve all labels
         labels = service.users().labels().list(
-            userId=self._user_email_gmail).execute()
+            userId=self._user_email).execute()
 
         # Filter 'DRAFT' and 'TRASH' from the labels
         label_ids = [label['id'] for label in labels["labels"]
@@ -75,40 +67,31 @@ class GmailSource(Source):
 
         for label_id in label_ids:
             # Call the Gmail API to fetch INBOX
-            results = service.users().messages().list(userId=self._user_email_gmail,
-                                                      labelIds=[label_id],
-                                                      maxResults=500,
-                                                      q=q).execute()
 
-            messages = []
-            if 'messages' in results:
-                messages.extend(results['messages'])
-                while 'nextPageToken' in results:
-                    page_token = results['nextPageToken']
-                    results = service.users().messages().list(userId=self._user_email_gmail,
-                                                              labelIds=[label_id], maxResults=500,
-                                                              pageToken=page_token, q=q).execute()
-                    messages.extend(results['messages'])
+            messages = self.paginated_get(service=service.users().messages(),
+                                          collection_name='messages',
+                                          q=q,
+                                          userId=self._user_email,
+                                          labelIds=[label_id],
+                                          maxResults=500)
 
-                for message in messages:
-                    # Fetch info on specific email
-                    msgId = message.get("id")
-                    email = service.users().messages().get(userId=self._user_email_gmail,
-                                                           id=msgId).execute()
-                    headers = email["payload"]["headers"]
-                    subject = [i['value'] for i in headers if i["name"] == "Subject"][0]
-                    # Id of given email is set to be path.
-                    yield GmailHandle(self, msgId, mail_subject=subject)
+            for message in messages:
+                # Fetch info on specific email
+                msgId = message.get("id")
+                email = service.users().messages().get(userId=self._user_email,
+                                                       id=msgId).execute()
+                headers = email["payload"]["headers"]
+                subject = [i['value'] for i in headers if i["name"] == "Subject"][0]
+                # Id of given email is set to be path.
+                yield GmailHandle(self, msgId, mail_subject=subject)
 
     # Censoring service account details
     def censor(self):
-        return GmailSource(None, self._user_email_gmail, self.scan_attachments)
+        return GmailSource(None, self._user_email, self.scan_attachments)
 
     def to_json_object(self):
         return dict(
             **super().to_json_object(),
-            google_api_grant=self.google_api_grant,
-            user_email=self._user_email_gmail,
             scan_attachments=self.scan_attachments
         )
 
@@ -124,7 +107,7 @@ class GmailResource(FileResource):
         self._metadata = None
 
     def _generate_metadata(self):
-        yield "email-account", self.handle.source._user_email_gmail
+        yield "email-account", self.handle.source._user_email
         yield from super()._generate_metadata()
 
     def check(self) -> bool:
@@ -140,14 +123,14 @@ class GmailResource(FileResource):
     def metadata(self):
         if self._metadata is None:
             self._metadata = self._get_cookie().users().messages().get(
-                userId=self.handle.source._user_email_gmail,
+                userId=self.handle.source._user_email,
                 id=self.handle.relative_path, format="metadata").execute()
         return self._metadata
 
     @contextmanager
     def make_stream(self):
         response = self._get_cookie().users().messages().get(
-            userId=self.handle.source._user_email_gmail,
+            userId=self.handle.source._user_email,
             id=self.handle.relative_path,
             format="raw").execute()
         response_bts = base64.urlsafe_b64decode(response['raw'].encode('ASCII'))
@@ -184,7 +167,7 @@ class GmailHandle(Handle):
 
     @property
     def presentation_place(self):
-        return f"account {self.source._user_email_gmail}"
+        return f"account {self.source._user_email}"
 
     @property
     def presentation_url(self):
@@ -196,7 +179,7 @@ class GmailHandle(Handle):
              DOMAIN/ACCOUNT/MAIL_SUBJECT"""
         # We should probably look towards EWS implementation and see if you get/can get folder
         # the mail resides in and add this.
-        account, domain = self.source._user_email_gmail.split("@", 1)
+        account, domain = self.source._user_email.split("@", 1)
         return f'{domain}/{account}/{self._mail_subject}'
 
     def guess_type(self):
