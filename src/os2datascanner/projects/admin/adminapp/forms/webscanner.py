@@ -1,7 +1,9 @@
 import xml.etree.ElementTree as ET
+from urllib.parse import urljoin
 
 from django.utils.translation import gettext_lazy as _
 
+from os2datascanner.engine2 import factory
 from os2datascanner.engine2.model.utilities import sitemap
 
 from ..models.scannerjobs.webscanner import WebScanner
@@ -14,7 +16,7 @@ class WebScannerForm(ScannerForm):
     # evaluated in a particular order (here, for example, our validation logic
     # needs "download_sitemap" to be validated and available /before/ we check
     # "sitemap_url"), you can do that here
-    field_order = ["download_sitemap", "sitemap_url", "sitemap"]
+    field_order = ["url", "download_sitemap", "sitemap_url", "sitemap"]
 
     placeholders = {
         "url": _("e.g. https://example.com/"),
@@ -56,11 +58,20 @@ class WebScannerForm(ScannerForm):
     def clean_sitemap_url(self):
         sitemap_url = self.cleaned_data["sitemap_url"]
         download_sitemap = self.cleaned_data["download_sitemap"]
+        if self.has_error("url") or "url" not in self.cleaned_data:
+            # We need the URL field to be populated to be able to do validation
+            # here, so just give up if it isn't
+            return sitemap_url
+        else:
+            url = self.cleaned_data["url"]
+
         if sitemap_url:
             try:
                 # All we want to do here is to check that process_sitemap_url
                 # can yield a single link without raising an exception
-                for _k in sitemap.process_sitemap_url(sitemap_url):
+                for _k in sitemap.process_sitemap_url(
+                        urljoin(url, sitemap_url),
+                        context=factory.make_session()):
                     break
             except sitemap.SitemapMissingError:
                 self.add_error(

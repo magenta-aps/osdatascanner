@@ -88,6 +88,9 @@
 
 - System rules in the "rules" tab of the admin module are no longer unchecked when loading the page.
 
+- OSdatascanner's HTTP `User-Agent` is now also used when retrieving sitemap
+  files, which should make servers that block `python-requests` happy.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"

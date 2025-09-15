@@ -1,3 +1,5 @@
+import requests
+
 from . import settings
 from .utilities.backoff import WebRetrier
 
@@ -33,3 +35,20 @@ def make_webretrier(**kwargs) -> WebRetrier:
             **kwargs)
 
     return WebRetrier(**kwargs)
+
+
+def make_session(**kwargs) -> requests.Session:
+    """Returns a fresh, correctly configured requests.Session for making HTTP
+    requests."""
+    from os2datascanner import __version__  # noqa
+
+    session = requests.Session(**kwargs)
+
+    session.headers.update(
+        {"User-Agent": f"OSdatascanner/{__version__}"
+         # Honour our heritage (and hopefully also keep this UA working for
+         # everybody who's previously whitelisted "OS2datascanner")
+         " (previously OS2datascanner) (+https://osdatascanner.dk/agent)"}
+    )
+
+    return session

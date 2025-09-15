@@ -159,16 +159,7 @@ class WebSource(Source):
                 return False
 
     def _generate_state(self, sm):
-        from ... import __version__
-        with requests.Session() as session:
-            session.headers.update(
-                {"User-Agent": f"OSdatascanner/{__version__}"
-                 # Honour our heritage (and hopefully also keep
-                 # this UA working for everybody who's previously
-                 # whitelisted "OS2datascanner")
-                 " (previously OS2datascanner)"
-                 " (+https://osdatascanner.dk/agent)"}
-            )
+        with factory.make_session() as session:
             yield session
 
     def censor(self) -> "WebSource":
@@ -187,7 +178,8 @@ class WebSource(Source):
         wc.add(self._url)
 
         if self._sitemap:
-            for (address, hints) in process_sitemap_url(self._sitemap):
+            for (address, hints) in process_sitemap_url(
+                    self._sitemap, context=session):
                 if wc.is_crawlable(address):
                     wc.add(address, **hints)
             if not self._always_crawl:
