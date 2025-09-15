@@ -265,6 +265,10 @@ for model in [
         SbsysScanner,
         WebScanner,
         SBSYSDBScanner]:
+
+    if not model.enabled():
+        continue
+
     stype: str = model.get_type().lower()
     urlpatterns.append(path(
         f"{stype}scanners/<int:pk>/askrun/",
