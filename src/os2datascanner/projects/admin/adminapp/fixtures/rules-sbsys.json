@@ -282,5 +282,39 @@
         5
       ]
     }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990108,
+    "fields": {
+      "name": "(SBSYS) Dokumenter med CPR uden sikkerhed",
+      "organization": null,
+      "description": "Aktive SBSYS-sager med vedhæftde dokumenter med CPR-nummer i, som ikke er markeret som beskyttet.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsStatus.SagsTilstand.Navn",
+            "operator": "eq",
+            "value": "Aktiv"
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "ErBeskyttet",
+            "operator": "eq",
+            "value": false
+          },
+          {
+            "type": "cpr",
+            "name": "Dokumenter med CPR uden sikkerhed"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
   }
 ]
