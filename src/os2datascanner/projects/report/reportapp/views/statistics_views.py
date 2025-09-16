@@ -558,11 +558,17 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
                 Q(last_name__icontains=search_field) |
                 Q(username__istartswith=search_field))
 
-        qs = qs.with_unhandled_matches()
-        qs = qs.with_withheld_matches()
+        if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
+                (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
+            sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
+            reports = sr.document_reports.all()
+        else:
+            reports = DocumentReport.objects.all()
+
+        retention_days = self.org.retention_days if self.org.retention_policy else None
+        qs = qs.with_result_stats(reports=reports, retention_policy=retention_days)
+
         qs = qs.with_status()
-        if self.org.retention_policy:
-            qs = qs.with_old_matches(self.org.retention_days)
 
         qs = self.order_employees(qs)
 
@@ -578,11 +584,11 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['show_retention_column'] = self.org.retention_policy
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
+        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         # Determine number of columns from context
-        num_cols = 4 + context['show_retention_column'] + self.request.user.has_perm(
+        context['num_cols'] = 4 + context['show_retention_column'] + self.request.user.has_perm(
             "os2datascanner_report.see_withheld_documentreport")
-        context['num_cols'] = num_cols
 
         return context
 
@@ -590,9 +596,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         """Checks if a sort key is allowed and orders the employees queryset"""
         allowed_sorting_properties = [
             'first_name',
-            'unhandled_matches',
-            'withheld',
-            'old',
+            'unhandled_results',
+            'withheld_results',
+            'old_results',
             'handle_status']
         if (sort_key := self.request.GET.get('order_by', 'first_name')) and (
                 order := self.request.GET.get('order', 'ascending')):
@@ -628,6 +634,18 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         context["active_tab"] = "accounts"
         context["view_url"] = reverse_lazy("statistics-leader-accounts")
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
+
+        scannerjobs = self.org.scanners.filter(
+            document_reports__number_of_matches__gte=1,
+            document_reports__alias_relations__account__in=context['employees'],
+            document_reports__alias_relations__shared=False,
+        ).distinct()
+        if not self.request.user.has_perm(
+                "os2datascanner_report.see_withheld_documentreport"):
+            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
+
+        context['scannerjob_choices'] = scannerjobs
+
         return context
 
     def get(self, request, *args, **kwargs):
@@ -663,6 +681,21 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         context["org_unit"] = self.org_unit
         context["view_url"] = reverse_lazy("statistics-leader-units")
         context["export_url"] = reverse_lazy("statistics-leader-units-export")
+
+        scannerjobs = self.org.scanners.filter(
+            Q(org_units__in=self.descendant_units)
+            | Q(
+                document_reports__number_of_matches__gte=1,
+                document_reports__alias_relations__account__in=context['employees'],
+                document_reports__alias_relations__shared=False,
+            )
+        ).distinct()
+        if not self.request.user.has_perm(
+                "os2datascanner_report.see_withheld_documentreport"):
+            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
+
+        context['scannerjob_choices'] = scannerjobs
+
         return context
 
     def set_user_units_and_org_unit(self, request):
@@ -706,7 +739,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
             'type': CSVExportMixin.ColumnType.FIELD,
         },
         {
-            'name': 'unhandled_matches',
+            'name': 'unhandled_results',
             'label': _("Matches"),
             'type': CSVExportMixin.ColumnType.FIELD,
         },
@@ -728,7 +761,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         columns = self.columns.copy()
         if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
             columns = columns + [{
-                'name': 'withheld',
+                'name': 'withheld_results',
                 'label': _("Withheld matches"),
                 'type': CSVExportMixin.ColumnType.FIELD,
             }]
@@ -736,7 +769,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         if self.org.retention_policy:
             # Don't use '.append()' to avoid shallow copies
             columns = columns + [{
-                    'name': 'old',
+                    'name': 'old_results',
                     'label': _("Results older than %(days)s days") % {"days": self.org.retention_days},  # noqa
                     'type': CSVExportMixin.ColumnType.FIELD,
                 }]
@@ -771,7 +804,7 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
             'type': CSVExportMixin.ColumnType.FIELD,
         },
         {
-            'name': 'unhandled_matches',
+            'name': 'unhandled_results',
             'label': _("Matches"),
             'type': CSVExportMixin.ColumnType.FIELD,
         },
@@ -918,12 +951,26 @@ class EmployeeView(LoginRequiredMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.org = request.user.account.organization
         response = super().get(request, *args, **kwargs)
-        self.object.save()
         return response
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
+                (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
+            sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
+            reports = sr.document_reports.all()
+        else:
+            reports = DocumentReport.objects.all()
+
+        retention_days = self.org.retention_days if self.org.retention_policy else None
+        qs = qs.with_result_stats(reports=reports, retention_policy=retention_days)
+
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['show_retention_column'] = self.org.retention_policy
+        context['scannerjob'] = self.request.GET.get('scannerjob', 'all')
         return context
 
 

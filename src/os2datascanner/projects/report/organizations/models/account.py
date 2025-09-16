@@ -71,74 +71,76 @@ class AccountQuerySet(models.QuerySet):
             ignore_conflicts=False  # If this is true, we can't get the PK in the return value.
         )
 
-    def with_unhandled_matches(self):
-        """Annotates each account in the queryset with 'unhandled_matches', which contains the
-        number of unhandled matches the user has. Doesn't count matches from remediator aliases,
-        shared aliases, or withheld matches.
-        This field should contain the same value as the 'match_count' property."""
-        return self.annotate(unhandled_matches=Count(
+    def with_result_stats(self, reports=None, retention_policy=None):
+        """Given a queryset of reports, annotates each account in the queryset with
+
+        `unhandled_results`: The number of reports that are
+        - Matched
+        - Unhandled
+        - Not withheld
+        - Not from a remediator alias
+        - Not from a shared alias
+        This field should contain the same value as the 'match_count' property.
+
+        `withheld_results`: The number of reports that are
+        - Matched
+        - Unhandled
+        - Withheld
+        - Not from a remediator alias
+        - Not from a shared alias
+        This field should contain the same value as the 'withheld_matches' property.
+
+        `old_results`: The number of reports that are
+        - Matched
+        - Unhandled
+        - Not withheld
+        - Not from a remediator alias
+        - Not from a shared alias
+        - From a datasource older than `retention_policy` days.
+        This field will only be annotated if a `retention_policy` is given.
+        This field should contain the same value as the 'old_matches' property.
+        """
+
+        base_filter = (
+            ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+            & Q(
+                aliases__shared=False,
+                aliases__reports__number_of_matches__gte=1,
+                aliases__reports__resolution_status__isnull=True,
+                aliases__reports__scanner_job__organization=F('organization'),
+            )
+        )
+
+        if reports is not None:
+            base_filter &= Q(aliases__reports__in=reports)
+
+        qs = self.annotate(
+            unhandled_results=Count(
+                "aliases__reports",
+                filter=base_filter & Q(aliases__reports__only_notify_superadmin=False),
+                distinct=True
+            ),
+            withheld_results=Count(
+                "aliases__reports",
+                filter=base_filter & Q(aliases__reports__only_notify_superadmin=True),
+                distinct=True
+            ),
+        )
+
+        if retention_policy is not None:
+            cutoff_date = time_now() - timedelta(days=retention_policy)
+            qs = qs.annotate(old_results=Count(
                     "aliases__reports",
                     filter=(
-                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
-                        & Q(
-                            aliases__shared=False,
-                            aliases__reports__number_of_matches__gte=1,
-                            aliases__reports__resolution_status__isnull=True,
-                            aliases__reports__only_notify_superadmin=False,
-                            aliases__reports__scanner_job__organization=F('organization'),
-                        )
+                        base_filter
+                        & Q(aliases__reports__only_notify_superadmin=False)
+                        & Q(aliases__reports__datasource_last_modified__lte=cutoff_date)
                     ),
                     distinct=True
                 )
             )
 
-    def with_withheld_matches(self):
-        """Annotates each account in the queryset with 'withheld', which contains the
-        number of withheld matches the user has. Doesn't count matches from remediator aliases or
-        shared aliases.
-        This field should contain the same value as the 'withheld_matches' property."""
-        return self.annotate(withheld=Count(
-                    "aliases__reports",
-                    filter=(
-                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
-                        & Q(
-                            aliases__shared=False,
-                            aliases__reports__number_of_matches__gte=1,
-                            aliases__reports__resolution_status__isnull=True,
-                            aliases__reports__only_notify_superadmin=True,
-                            aliases__reports__scanner_job__organization=F('organization'),
-                        )
-                    ),
-                    distinct=True
-                )
-            )
-
-    def with_old_matches(self, policy: int):
-        """Annotates each account in the queryset with 'old', which contains the number
-        of matches older than the specified number of days the user has. Doesn't count matches from
-        remediator aliases, shared aliases or withheld matches.
-        This field should contain the same value as the 'old_matches' property."""
-        if not policy >= 0:
-            raise ValueError("The retention policy value given to the 'with_old_matches'-method "
-                             f"must be a positive integer. Received {policy}")
-        number_of_days_policy = policy
-        cutoff_date = time_now() - timedelta(days=number_of_days_policy)
-        return self.annotate(old=Count(
-                    "aliases__reports",
-                    filter=(
-                        ~Q(aliases___alias_type=AliasType.REMEDIATOR)
-                        & Q(
-                            aliases__shared=False,
-                            aliases__reports__number_of_matches__gte=1,
-                            aliases__reports__resolution_status__isnull=True,
-                            aliases__reports__only_notify_superadmin=False,
-                            aliases__reports__datasource_last_modified__lte=cutoff_date,
-                            aliases__reports__scanner_job__organization=F('organization'),
-                        )
-                    ),
-                    distinct=True
-                )
-            )
+        return qs
 
     def with_status(self):
         """Annotates each account in the queryset with 'handle_status', which contains

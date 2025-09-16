@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Permission
+from django.http import Http404
 
 from os2datascanner.projects.report.organizations.models.organizational_unit import (
     OrganizationalUnit)
@@ -303,6 +304,73 @@ class TestLeaderAccountsStatisticsPageView:
 
         assert "Withheld matches" in reader.fieldnames
 
+    def test_leader_accounts_page_scanner_choices(
+                self,
+                rf,
+                egon_account,
+                benny_account,
+                benny_email_alias,
+            ):
+        # Arrange
+        benny_account.manager = egon_account
+        benny_account.save()
+        create_reports_for(benny_email_alias, scanner_job_pk=1)
+        create_reports_for(benny_email_alias, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 2
+        assert choices.filter(scanner_pk=1).exists()
+        assert choices.filter(scanner_pk=2).exists()
+
+    def test_leader_accounts_page_scanner_choices_not_employee(
+                self,
+                rf,
+                egon_account,
+                benny_account,
+                benny_email_alias,
+                kjeld_email_alias,
+            ):
+        # Arrange
+        benny_account.manager = egon_account
+        benny_account.save()
+        create_reports_for(benny_email_alias, scanner_job_pk=1)
+        create_reports_for(kjeld_email_alias, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 1
+        assert choices.filter(scanner_pk=1).exists()
+        assert not choices.filter(scanner_pk=2).exists()
+
+    def test_leader_accounts_page_scanner_choices_withheld(
+                self,
+                rf,
+                egon_account,
+                benny_account,
+                benny_email_alias,
+            ):
+        # Arrange
+        benny_account.manager = egon_account
+        benny_account.save()
+        create_reports_for(benny_email_alias, scanner_job_pk=1, only_notify_superadmin=False)
+        create_reports_for(benny_email_alias, scanner_job_pk=2, only_notify_superadmin=True)
+
+        # Act
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 1
+        assert choices.filter(scanner_pk=1).exists()
+        assert not choices.filter(scanner_pk=2).exists()
+
     # Helper functions
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-leader-accounts') + params)
@@ -357,6 +425,219 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params="?view_all=on")
         assert response.context_data.get("employee_count") == 4
+
+    def test_leader_statisticspage_scanner_filter(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}&scannerjob=1",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 3
+
+    def test_leader_statisticspage_scanner_no_filter(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 7
+
+    def test_leader_statisticspage_scanner_filter_all(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}&scannerjob=all",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 7
+
+    def test_leader_statisticspage_scanner_filter_404(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2)
+
+        # Act & Assert
+        with pytest.raises(Http404):
+            self.get_leader_statisticspage_response(
+                rf,
+                superuser_account,
+                params=f"?org_unit={børges_værelse.pk}&scannerjob=3",
+            )
+
+    def test_leader_units_page_scanner_choices_match_connection(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params="?view_all=on",
+        )
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 2
+        assert choices.filter(scanner_pk=1).exists()
+        assert choices.filter(scanner_pk=2).exists()
+
+    def test_leader_units_page_scanner_choices_match_connection_not_employee(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+                egon_email_alias,
+            ):
+        # Arrange
+        create_reports_for(børge_email_alias, scanner_job_pk=1)
+        create_reports_for(egon_email_alias, scanner_job_pk=2)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params="?view_all=on",
+        )
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 1
+        assert choices.filter(scanner_pk=1).exists()
+        assert not choices.filter(scanner_pk=2).exists()
+
+    def test_leader_units_page_scanner_choices_org_unit_connection(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+            ):
+        # Arrange
+        sr = ScannerReference.objects.create(
+            scanner_pk=1,
+            organization=børges_værelse.organization,
+        )
+        sr.org_units.add(børges_værelse)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}",
+        )
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 1
+
+    def test_leader_units_page_scanner_choices_org_unit_connection_not_descendant(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                kun_egon_ou,
+            ):
+        # Arrange
+        sr = ScannerReference.objects.create(
+            scanner_pk=1,
+            organization=kun_egon_ou.organization,
+        )
+        sr.org_units.add(kun_egon_ou)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}",
+        )
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 0
+
+    def test_leader_units_page_scanner_choices_withheld(
+                self,
+                rf,
+                egon_account,
+                kun_egon_ou,
+                egon_email_alias,
+            ):
+        # Arrange
+        create_reports_for(egon_email_alias, scanner_job_pk=1, only_notify_superadmin=True)
+        create_reports_for(egon_email_alias, scanner_job_pk=2, only_notify_superadmin=False)
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            egon_account,
+            params="?view_all=on",
+        )
+        choices = response.context_data['scannerjob_choices']
+
+        # Assert
+        assert choices.count() == 1
+        assert not choices.filter(scanner_pk=1).exists()
+        assert choices.filter(scanner_pk=2).exists()
 
     def test_leader_export_as_manager(self, rf, egon_account, egon_manager_position):
         """A user with a 'manager'-position to an organizational unit should
