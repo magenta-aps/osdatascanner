@@ -222,7 +222,7 @@ for module in [exchangescanner_views,
             continue
         model = cls.model
 
-        if not model == Scanner:
+        if model is not Scanner:
             if not model.enabled():
                 continue
 

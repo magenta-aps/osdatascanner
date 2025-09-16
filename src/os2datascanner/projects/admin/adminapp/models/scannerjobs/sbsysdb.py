@@ -14,7 +14,7 @@ class SBSYSDBScanner(Scanner):
 
     @staticmethod
     def enabled():
-        settings.ENABLE_SBSYSSCAN
+        return settings.ENABLE_SBSYSSCAN
 
     db_server = models.CharField(
             max_length=None,
