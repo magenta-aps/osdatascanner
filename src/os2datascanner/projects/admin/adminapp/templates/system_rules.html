@@ -6,7 +6,6 @@
 
     <div class="rule_filtering_wrapper">
 
-
       <form class="form form--new"
             hx-get="{% url "rules" %}"
             hx-swap="outerHTML"
@@ -19,13 +18,13 @@
             <div class="form-widget form-widget--filtering">
               <label class="form-widget__label" for="selected_org">
                 <span>{% trans "select organization"|capfirst %}</span>
- 
+
                 <span class="help-tooltip"
                       title="{% trans "Select the organization you want to configure system rules for." %}">
                   <i id="help" class="material-symbols">help</i>
                 </span>
               </label>
- 
+
               <div class="form-widget__input-wrapper">
                 <select id="selected_org"
                         name="selected_org"
@@ -41,10 +40,10 @@
                 </select>
               </div>
             </div>
- 
+
             <div class="form-widget form-widget--filtering">
               <label class="form-widget__label" for="categories_select2">{% trans "select rule categories"|capfirst %}</label>
- 
+
               <div class="form-widget__input-wrapper">
                 <select id="categories_select2" name="categories" multiple>
                   {% for category in categories %}
@@ -56,7 +55,7 @@
                 </select>
               </div>
             </div>
- 
+
             <button type="button"
                     class="button button--text-button"
                     id="rule-filter-button"
@@ -77,7 +76,7 @@
          aria-label="{% trans "system rules"|capfirst %}">
       <div class="datatablex__card-container">
         <div class="datatablex__wrapper">
- 
+
           <table class="datatablex rules-table">
             <colgroup>
               <col class="column column--checkbox" />
@@ -86,7 +85,7 @@
               <col class="column" />
               <col class="column column--sensitivity" />
             </colgroup>
- 
+
             <thead>
               <tr class="datatablex__row table-topbar">
                 <th class="column column--checkbox"></th>
@@ -96,49 +95,65 @@
                 <th class="column column--sensitivity column--attribute">{% trans "sensitivity"|capfirst %}</th>
               </tr>
             </thead>
- 
+
             <tbody>
               {% if systemrule_list %}
                 {% for rule in systemrule_list %}
                   <tr class="datatablex__row" tabindex="0">
                     <td class="column column--checkbox">
                       <div class="ds-checkbox">
-                        <input type="checkbox" id="table-checkbox-{{ rule.pk|unlocalize }}" value="{{ rule.pk|unlocalize }}" name="table-checkbox" class="datatable-checkbox" hx-post="{% url "connect-rule-to-org" rule.pk %}" hx-headers="{"X-CSRFToken": "{{ csrf_token }}"}" hx-swap="none" hx-include="[id="selected_org"], [id="table-checkbox-{{ rule.pk|unlocalize }}"]" hx-trigger="change" {% if rule.connected %}checked{% endif %} autocomplete="off" />
-                        <label for="table-checkbox-{{ rule.pk|unlocalize }}"
-                               aria-label="{% trans "enable rule"|capfirst %}"
-                               title="{% trans "enable rule"|capfirst %}"></label>
-                      </div>
-                    </td>
-
-                    <td class="column column--name">{{ rule.name }}</td>
- 
-                    <td class="column column--categories">
-                      {% for category in rule.categories.all %}<span class="category tag">{{ category|capfirst }}</span>{% endfor %}
-                    </td>
- 
-                    <td class="column column--info">{{ rule.description }}</td>
- 
-                    <td class="column column--sensitivity">
-                      <div class="status">
-                        <div class="status__wrapper" data-status="{{ rule.sensitivity }}">
-                          <span class="status__icon">{% include "components/rules/sensitivity_icon.html" %}</span>
-                          <span class="status__label">{{ rule.get_sensitivity_display }}</span>
+                        <input type="checkbox"
+                          id="table-checkbox-{{ rule.pk|unlocalize }}"
+                          value="{{ rule.pk|unlocalize }}"
+                          name="table-checkbox"
+                          class="datatable-checkbox"
+                          hx-post="{% url "connect-rule-to-org" rule.pk %}"
+                          hx-swap="none"
+                          {% comment %}
+                            Keys and values in json objects have to be surrounded by double
+                            quotation marks ("). Single quotation marks (') are _not_ allowed. For
+                            that reason, our outer quotation marks have to be single here.
+                          {% endcomment %}
+                          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                          hx-include='[id="selected_org"], [id="table-checkbox-{{ rule.pk|unlocalize }}"]'
+                          hx-trigger="change"
+                          {% if rule.connected %}checked="checked"{% endif %}
+                          autocomplete="off" />
+                          <label for="table-checkbox-{{ rule.pk|unlocalize }}"
+                                 aria-label="{% trans "enable rule"|capfirst %}"
+                                 title="{% trans "enable rule"|capfirst %}"></label>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                {% endfor %}
+                      </td>
 
-              {% else %}
-                <tr class="datatablex__row" tabindex="0">
-                  <td class="nothing_found_row" colspan="5">{% trans "No rules match the selected categories." %}</td>
-                </tr>
-              {% endif %}
-            </tbody>
-          </table>
- 
+                      <td class="column column--name">{{ rule.name }}</td>
+
+                      <td class="column column--categories">
+                        {% for category in rule.categories.all %}<span class="category tag">{{ category|capfirst }}</span>{% endfor %}
+                      </td>
+
+                      <td class="column column--info">{{ rule.description }}</td>
+
+                      <td class="column column--sensitivity">
+                        <div class="status">
+                          <div class="status__wrapper" data-status="{{ rule.sensitivity }}">
+                            <span class="status__icon">{% include "components/rules/sensitivity_icon.html" %}</span>
+                            <span class="status__label">{{ rule.get_sensitivity_display }}</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+
+                {% else %}
+                  <tr class="datatablex__row" tabindex="0">
+                    <td class="nothing_found_row" colspan="5">{% trans "No rules match the selected categories." %}</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>

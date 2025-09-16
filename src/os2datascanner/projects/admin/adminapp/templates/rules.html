@@ -3,7 +3,6 @@
 {% load i18n %}
 
 {% block scripts %}
-  <script src="{% static "js/tables/tableBehavior.js" %}"></script>
   <script src="{% static "3rdparty/jquery.modal.js" %} "></script>
   <script src="{% static "js/index.js" %}"></script>
 {% endblock %}
@@ -31,7 +30,7 @@
         <div class="section__header">
           <div class="label-wrapper">
             <h1 class="page-title">{% trans "rules"|capfirst %}</h1>
- 
+
             <a class="button button--cta-button button--icon-text-button"
                href="{% url "customrule_add" %}"
                aria-label="{% trans "Add rule" %}"
@@ -82,7 +81,7 @@
                           </div>
                         </td>
 
- 
+
                         <td class="column column--info">
                           <div class="expandable-content">
                             <div id="info-{{ rule.pk }}" class="overflow-ellipsis">
@@ -99,7 +98,7 @@
                             </div>
                           </div>
                         </td>
- 
+
                         <td class="column column--sensitivity">
                           <div class="status">
                             <div class="status__wrapper" data-status="{{ rule.sensitivity }}">
@@ -108,7 +107,7 @@
                             </div>
                           </div>
                         </td>
- 
+
                         <td class="column column--actions">
                           <div class="action-wrapper button-group">
                             <a href="{% url "customrule_update" rule.pk %}"
@@ -117,7 +116,7 @@
                                title="{% trans "edit"|capfirst %} &quot;{{ rule.name }}&quot;">
                               <i id="edit" class="material-icons">edit</i>
                             </a>
- 
+
                             <form action="{% url 'customrule_delete' rule.pk %}" method="post">
                               {% csrf_token %}
 
