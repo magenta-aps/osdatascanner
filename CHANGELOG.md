@@ -68,6 +68,8 @@
 
 - Fixed django admin being unable to mark all list rows in the admin module.
 
+- Users in the admin module are no longer able to interact with disabled scanner types.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"
