@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-02 16:34+0200\n"
+"POT-Creation-Date: 2025-09-08 10:06+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -163,6 +163,10 @@ msgstr "Webcrawler-indstillinger"
 #: adminapp/forms/webscanner.py
 msgid "Advanced web crawler settings"
 msgstr "Avancerede webcrawler-indstillinger"
+
+#: adminapp/forms/webscanner.py
+msgid "Web scan settings"
+msgstr "Webscanner-indstillinger"
 
 #: adminapp/forms/webscanner.py
 msgid "Couldn't find a sitemap here"
@@ -664,6 +668,7 @@ msgid "connected scanner job"
 msgstr "tilknyttet scannerjob"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
+#: adminapp/templates/error_log.html
 msgid "path"
 msgstr "sti"
 
@@ -879,7 +884,7 @@ msgstr ""
 "Et objekt blev sprunget over enten fordi det ikke kunne åbnes eller at det "
 "tog for lang tid at skanne."
 
-#: adminapp/models/usererrorlog.py adminapp/templates/error_log.html
+#: adminapp/models/usererrorlog.py
 msgid "error log"
 msgstr "fejlbesked"
 
@@ -899,8 +904,7 @@ msgstr "Kan eksportere fejlbeskeder til CSV"
 msgid "Can mark error log as viewed"
 msgstr "Kan markere fejlbesked som set"
 
-#: adminapp/models/usererrorlog.py adminapp/templates/error_log.html
-#: adminapp/views/user_error_log_views.py
+#: adminapp/models/usererrorlog.py adminapp/views/user_error_log_views.py
 msgid "Path"
 msgstr "Sti"
 
@@ -1427,7 +1431,6 @@ msgid "Completed scans"
 msgstr "Udførte scanninger"
 
 #: adminapp/templates/components/navigation/scanner_tabs.html
-#: adminapp/templates/error_log.html
 msgid "Error Log"
 msgstr "Fejlbeskeder"
 
@@ -1706,7 +1709,6 @@ msgstr "Sidste scan"
 #: adminapp/templates/components/scanner/removed_scanners_table.html
 #: adminapp/templates/components/scanner/scan_completed.html
 #: adminapp/templates/components/scanstatus/scan_status_table.html
-#: adminapp/templates/error_log.html
 #: organizations/templates/organizations/grants_list.html
 #: organizations/templates/organizations/org_table.html
 msgid "Actions"
@@ -1733,7 +1735,6 @@ msgid " scan status data. This action cannot be reverted. Are you sure?"
 msgstr " datascanninger. Denne handling kan ikke fortrydes. Er du sikker?"
 
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/error_log.html
 msgid "Export to CSV"
 msgstr "Eksportér til CSV"
 
@@ -1743,7 +1744,6 @@ msgid "Select all results"
 msgstr "Vælg alle resultater"
 
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/error_log.html
 msgid "Started"
 msgstr "Startet"
 
@@ -1805,6 +1805,7 @@ msgid "Finished"
 msgstr "Afsluttet"
 
 #: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/error_log.html
 msgid "scannerjob"
 msgstr "scannerjob"
 
@@ -2358,6 +2359,10 @@ msgid "Save"
 msgstr "Gem"
 
 #: adminapp/templates/error_log.html
+msgid "error messages"
+msgstr "fejlbeskeder"
+
+#: adminapp/templates/error_log.html
 msgid "Search for error message"
 msgstr "Søg efter fejlbesked"
 
@@ -2366,72 +2371,100 @@ msgid "Show seen error messages"
 msgstr "Vis sete fejlbeskeder"
 
 #: adminapp/templates/error_log.html
+msgid "Mark all error messages as &quot;seen&quot;."
+msgstr "Markér alle fejlbeskeder som &quot;set&quot;."
+
+#: adminapp/templates/error_log.html
+msgid ""
+"You are about to mark all error messages as &quot;seen&quot;. This action "
+"cannot be reverted. Are you sure?"
+msgstr ""
+"Du er ved at markere alle fejlbeskeder som &quot;set&quot;. Denne handling "
+"kan ikke fortrydes. Er du sikker?"
+
+#: adminapp/templates/error_log.html
 msgid "Mark all as seen"
 msgstr "Markér alle som set"
 
 #: adminapp/templates/error_log.html
-msgid ""
-"You are about to mark all error log messages as seen. This action cannot be "
-"reverted. Are you sure?"
-msgstr ""
-"Du er ved at markere alle fejlbeskeder som set. Denne handling kan ikke "
-"fortrydes. Er du sikker?"
-
-#: adminapp/templates/error_log.html
-msgid "Remove all"
-msgstr "Slet alle"
+msgid "Remove all error messages."
+msgstr "Slet alle fejlbeskeder."
 
 #: adminapp/templates/error_log.html
 msgid "You are about to remove"
 msgstr "Du er ved at slette"
 
 #: adminapp/templates/error_log.html
-msgid " error logs. This action cannot be reverted. Are you sure?"
-msgstr " fejlbeskeder. Denne handling kan ikke fortrydes. Er du sikker?"
+msgid "error messages. This action cannot be reverted. Are you sure?"
+msgstr "fejlbesked(er). Denne handling kan ikke fortrydes. Er du sikker?"
 
 #: adminapp/templates/error_log.html
-msgid "Error"
-msgstr "Fejl"
+msgid "Remove all"
+msgstr "Slet alle"
 
 #: adminapp/templates/error_log.html
-msgid "Sort table by"
-msgstr "Sortér tabel efter"
+msgid "Export all error message data as a CSV-file."
+msgstr "Eksportér alle fejlbeskeder til en CSV-fil."
 
 #: adminapp/templates/error_log.html
-msgid "error type"
-msgstr "fejltype"
+msgid "Export CSV"
+msgstr "Eksportér CSV"
+
+#: adminapp/templates/error_log.html
+msgid "error"
+msgstr "fejl"
+
+#: adminapp/templates/error_log.html
+msgid "Sort table by error type"
+msgstr "Sortér tabel efter fejltype"
 
 #: adminapp/templates/error_log.html
 msgid "start time"
 msgstr "startet"
 
 #: adminapp/templates/error_log.html
-msgid "path name"
-msgstr "sti navn"
+msgid "Sort table by start time"
+msgstr "Sortér tabel efter starttid"
 
 #: adminapp/templates/error_log.html
-msgid "Scan"
-msgstr "Scan"
+msgid "Sort table by path name"
+msgstr "Sortér tabel efter sti navn"
+
+#: adminapp/templates/error_log.html
+msgid "actions"
+msgstr "handlinger"
 
 #: adminapp/templates/error_log.html
 msgid "Select results"
 msgstr "Vælg resultater"
 
 #: adminapp/templates/error_log.html
-msgid "New"
-msgstr "Ny"
+msgid "new"
+msgstr "ny"
+
+#: adminapp/templates/error_log.html adminapp/templates/rules.html
+msgid "show more"
+msgstr "vis mere"
+
+#: adminapp/templates/error_log.html adminapp/templates/rules.html
+msgid "show less"
+msgstr "vis mindre"
+
+#: adminapp/templates/error_log.html
+msgid "mark this error message as seen."
+msgstr "markér denne fejlbesked som set."
 
 #: adminapp/templates/error_log.html
 msgid "Delete permanently"
 msgstr "Slet permanent"
 
 #: adminapp/templates/error_log.html
-msgid "Mark as seen"
-msgstr "Markér som set"
+msgid "error message"
+msgstr "fejlbeskeder"
 
 #: adminapp/templates/error_log.html
-msgid "no errors found."
-msgstr "ingen fejl fundet."
+msgid "No error messages found."
+msgstr "Ingen fejlbeskeder fundet."
 
 #: adminapp/templates/miniscan.html
 msgid "OSdatascanner mini-scanner"
@@ -2548,14 +2581,6 @@ msgstr "handling"
 #: adminapp/templates/rules.html
 msgid "edit"
 msgstr "redigér"
-
-#: adminapp/templates/rules.html
-msgid "show more"
-msgstr "vis mere"
-
-#: adminapp/templates/rules.html
-msgid "show less"
-msgstr "vis mindre"
 
 #: adminapp/templates/rules.html
 msgid "Do you really want to delete this rule?"

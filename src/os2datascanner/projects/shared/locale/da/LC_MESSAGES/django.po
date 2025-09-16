@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-15 11:58+0200\n"
+"POT-Creation-Date: 2025-09-08 14:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,6 +54,18 @@ msgstr "tilføj rettighed"
 #: templates/components/containers/permission_list.html
 msgid "Choose permission"
 msgstr "Vælg rettighed"
+
+#: templates/components/datatables/pagination.html
+msgid "of"
+msgstr "af"
+
+#: templates/components/datatables/pagination.html
+msgid "Previous"
+msgstr "Forrige"
+
+#: templates/components/datatables/pagination.html
+msgid "Next"
+msgstr "Næste"
 
 #: templates/components/decoration/info-icon.html
 #, python-format

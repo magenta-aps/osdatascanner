@@ -296,12 +296,14 @@
   }
 }
 
-.errorlog_filtering_wrapper {
+.errormessage_filtering_wrapper {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
+  margin: 2rem 1rem;
 
-  > div {
-    margin: 1rem;
+  @media (min-width: $break-lg) {
+    margin: 2rem 0;
   }
 }
 
