@@ -16,6 +16,7 @@
 
 import structlog
 from django.db import models
+from django.conf import settings
 from django.core.validators import MinLengthValidator
 from django.utils.translation import pgettext_lazy
 from django.utils.translation import gettext_lazy as _
@@ -47,6 +48,10 @@ class DropboxScanner(Scanner):
     def make_engine2_source(self):
         return DropboxSource(
             self.token)
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_DROPBOXSCAN
 
     object_name = pgettext_lazy("unit of scan", "file")
     object_name_plural = pgettext_lazy("unit of scan", "files")

@@ -33,8 +33,8 @@ import inspect
 from .views import (exchangescanner_views, filescanner_views, dropboxscanner_views,
                     googledrivescanner_views, gmailscanner_views, sbsysscanner_views,
                     webscanner_views, msgraph_views, sbsysdb as sbsysdb_views)
+from .views.views import IndexView
 from .views.exchangescanner_views import OrganizationalUnitListing
-from .views.webscanner_views import WebScannerList
 
 from .views.rule_views import (RuleList, CustomRuleCreate,
                                CustomRuleUpdate, CustomRuleDelete,
@@ -63,6 +63,7 @@ from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
 from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .models.scannerjobs.webscanner import WebScanner
 from .models.scannerjobs.sbsysdb import SBSYSDBScanner
+from .models.scannerjobs.scanner import Scanner
 
 from structlog import get_logger
 
@@ -72,7 +73,7 @@ logger = get_logger(__name__)
 
 urlpatterns = [
     # App URLs
-    re_path(r'^$', WebScannerList.as_view(), name='index'),
+    re_path(r'^$', IndexView.as_view(), name='index'),
     re_path(r'^api/openapi.yaml$', TemplateView.as_view(
         template_name="openapi.yaml", content_type="application/yaml"),
         name="json-api"),
@@ -217,9 +218,13 @@ for module in [exchangescanner_views,
             continue
         action = cls.scanner_view_type.value
 
-        if not hasattr(cls, "model"):
+        if not hasattr(cls, "model") or cls.model is None:
             continue
         model = cls.model
+
+        if model is not Scanner:
+            if not model.enabled():
+                continue
 
         if not model:
             continue
@@ -260,6 +265,10 @@ for model in [
         SbsysScanner,
         WebScanner,
         SBSYSDBScanner]:
+
+    if not model.enabled():
+        continue
+
     stype: str = model.get_type().lower()
     urlpatterns.append(path(
         f"{stype}scanners/<int:pk>/askrun/",

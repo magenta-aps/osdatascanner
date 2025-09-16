@@ -17,10 +17,11 @@ from django.forms.models import modelform_factory
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, TemplateView, DetailView
+from django.views.generic import ListView, TemplateView, DetailView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.edit import ModelFormMixin, DeleteView
 from django.conf import settings
+from django.urls import reverse_lazy
 
 from os2datascanner.projects.admin.utilities import UserWrapper
 from ..models.scannerjobs.dropboxscanner import DropboxScanner
@@ -210,3 +211,28 @@ class DialogSuccess(TemplateView):
         context['action'] = _("created") if created else _("saved")
         context['reload_url'] = '/' + model_type + '/'
         return context
+
+
+class IndexView(LoginRequiredMixin, RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        model_and_url_list = [
+            (WebScanner, reverse_lazy("webscanners")),
+            (FileScanner, reverse_lazy("filescanners")),
+            (ExchangeScanner, reverse_lazy("exchangescanners")),
+            (GoogleDriveScanner, reverse_lazy("googledrivescanners")),
+            (GmailScanner, reverse_lazy("gmailscanners")),
+            (MSGraphMailScanner, reverse_lazy("msgraphmailscanners")),
+            (MSGraphFileScanner, reverse_lazy("msgraphfilescanners")),
+            (MSGraphCalendarScanner, reverse_lazy("msgraphcalendarscanners")),
+            (MSGraphTeamsFileScanner, reverse_lazy("msgraphteamsfilescanners")),
+            (MSGraphSharepointScanner, reverse_lazy("msgraphsharepointscanners")),
+            (SbsysScanner, reverse_lazy("sbsysscanners"))
+        ]
+
+        for model, url in model_and_url_list:
+            if model.enabled():
+                return url
+        else:
+            # We will only reach this point if the above for-loop gets to finish.
+            raise Http404(_("No scanner types are enabled for this installation"))

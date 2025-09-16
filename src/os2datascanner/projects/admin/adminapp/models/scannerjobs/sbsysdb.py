@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
+from django.conf import settings
 
 from os2datascanner.engine2.model._staging import sbsysdb
 from os2datascanner.projects.grants.models import SMBGrant
@@ -10,6 +11,10 @@ class SBSYSDBScanner(Scanner):
     @classmethod
     def get_type(cls):
         return "sbsys-db"
+
+    @staticmethod
+    def enabled():
+        return settings.ENABLE_SBSYSSCAN
 
     db_server = models.CharField(
             max_length=None,

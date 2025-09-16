@@ -6,16 +6,6 @@ from django.contrib.auth.models import Permission
 from ..adminapp.views.scanner_views import RemovedScannersView
 from ..adminapp.models.scannerjobs.scanner import Scanner
 
-from ..adminapp.models.scannerjobs.filescanner import FileScanner
-from ..adminapp.models.scannerjobs.webscanner import WebScanner
-from ..adminapp.models.scannerjobs.exchangescanner import ExchangeScanner
-from ..adminapp.models.scannerjobs.msgraph import (MSGraphCalendarScanner, MSGraphFileScanner,
-                                                   MSGraphMailScanner, MSGraphSharepointScanner,
-                                                   MSGraphTeamsFileScanner)
-from ..adminapp.models.scannerjobs.gmail import GmailScanner
-from ..adminapp.models.scannerjobs.googledrivescanner import GoogleDriveScanner
-from ..adminapp.models.scannerjobs.sbsysscanner import SbsysScanner
-
 
 @pytest.mark.django_db
 class TestRemovedScannerViews:
@@ -199,27 +189,42 @@ class TestScannerViewsMethods:
         (False, False, False, False, False, False, False, False, False, True, False),
         (False, False, False, False, False, False, False, False, False, False, True),
         (True, True, True, True, True, True, True, True, True, True, True),
-
     ])
-    def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings):
+    def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings,
+                                  monkeypatch):
+        # We need to import the scanner models from the view files to mock their methods
+        from os2datascanner.projects.admin.adminapp.views.webscanner_views import WebScanner
+        from os2datascanner.projects.admin.adminapp.views.filescanner_views import FileScanner
+        from os2datascanner.projects.admin.adminapp.views.exchangescanner_views import (
+            ExchangeScanner)
+        from os2datascanner.projects.admin.adminapp.views.msgraph_views import (
+            MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner, MSGraphTeamsFileScanner,
+            MSGraphSharepointScanner)
+        from os2datascanner.projects.admin.adminapp.views.gmailscanner_views import GmailScanner
+        from os2datascanner.projects.admin.adminapp.views.googledrivescanner_views import (
+            GoogleDriveScanner)
+        from os2datascanner.projects.admin.adminapp.views.sbsysscanner_views import SbsysScanner
+
         models = [
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
             GmailScanner, GoogleDriveScanner, SbsysScanner
         ]
 
-        (settings.ENABLE_WEBSCAN, settings.ENABLE_FILESCAN, settings.ENABLE_EXCHANGESCAN,
-            settings.ENABLE_MSGRAPH_MAILSCAN, settings.ENABLE_MSGRAPH_FILESCAN,
-            settings.ENABLE_MSGRAPH_CALENDARSCAN, settings.ENABLE_MSGRAPH_TEAMS_FILESCAN,
-            settings.ENABLE_MSGRAPH_SHAREPOINTSCAN, settings.ENABLE_GMAILSCAN,
-            settings.ENABLE_GOOGLEDRIVESCAN, settings.ENABLE_SBSYSSCAN) = enabled_scanners
+        for scanner_model, enabled in zip(models, enabled_scanners):
+            monkeypatch.setattr(scanner_model, "enabled", lambda enabled=enabled: enabled)
 
         client.force_login(user_admin)
-        response = client.get(reverse_lazy("index"))
-        scanner_tabs = response.context["scanner_tabs"]
+        response = client.get(reverse_lazy("index"), follow=True)
+        if not any(enabled_scanners):
+            # None of the scanners are enabled, there should not even be a "scanners_tab" context
+            # object
+            assert "scanner_tabs" not in response.context
+        else:
+            scanner_tabs = response.context["scanner_tabs"]
 
-        for scanner_model, enabled in zip(models, enabled_scanners):
-            assert (scanner_model in scanner_tabs) == enabled
+            for scanner_model, enabled in zip(models, enabled_scanners):
+                assert (scanner_model in scanner_tabs) == enabled
 
 
 @pytest.mark.django_db
@@ -372,3 +377,64 @@ class TestScannerViewsPossibleRules:
         assert possible_rules
         for rule in possible_rules:
             assert rule.organization == test_org or test_org in rule.customrule.organizations.all()
+
+
+@pytest.mark.django_db
+class TestIndexView:
+
+    @pytest.mark.parametrize('enabled_scanners', [
+        (False, False, False, False, False, False, False, False, False, False, False),
+        (True, False, False, False, False, False, False, False, False, False, False),
+        (False, True, False, False, False, False, False, False, False, False, False),
+        (False, False, True, False, False, False, False, False, False, False, False),
+        (False, False, False, True, False, False, False, False, False, False, False),
+        (False, False, False, False, True, False, False, False, False, False, False),
+        (False, False, False, False, False, True, False, False, False, False, False),
+        (False, False, False, False, False, False, True, False, False, False, False),
+        (False, False, False, False, False, False, False, True, False, False, False),
+        (False, False, False, False, False, False, False, False, True, False, False),
+        (False, False, False, False, False, False, False, False, False, True, False),
+        (False, False, False, False, False, False, False, False, False, False, True),
+        (True, True, True, True, True, True, True, True, True, True, True),
+    ])
+    def test_indexview_redirect(self, enabled_scanners, client, user_admin, settings, monkeypatch):
+        # We need to import the scanner models from the view files to mock their methods
+        from os2datascanner.projects.admin.adminapp.views.views import (
+            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner, GmailScanner,
+            GoogleDriveScanner, SbsysScanner)
+
+        models = [
+            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
+            GmailScanner, GoogleDriveScanner, SbsysScanner
+        ]
+
+        def first_setting_index(settings):
+            for i, setting in enumerate(settings):
+                if setting:
+                    return i
+            else:
+                # None of the settings are True :(
+                return None
+
+        for scanner_model, enabled in zip(models, enabled_scanners):
+            monkeypatch.setattr(scanner_model, "enabled", lambda enabled=enabled: enabled)
+
+        for scanner_model in models:
+            print(scanner_model, scanner_model.enabled())
+
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy("index"))
+
+        if not any(enabled_scanners):
+            # No scanners are enabled -- raise an error!
+            assert response.status_code == 404
+        else:
+            # At least one scanner is enabled. We should be redirected
+            assert response.status_code == 302
+            response = client.get(reverse_lazy("index"), follow=True)
+
+            expected_model_type = models[first_setting_index(enabled_scanners)].get_type()
+
+            assert response.context["view"].model.get_type() == expected_model_type
