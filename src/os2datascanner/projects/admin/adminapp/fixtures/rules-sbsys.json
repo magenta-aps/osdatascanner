@@ -17,13 +17,15 @@
                 "type": "sbsys-db-fieldrule",
                 "field": "SagsStatus.SagsTilstand.Navn",
                 "operator": "eq",
-                "value": "Aktiv"
+                "value": "Aktiv",
+                "name": ""
               },
               {
                 "type": "sbsys-db-fieldrule",
                 "field": "SagsPart.PartType.Navn",
                 "operator": "eq",
-                "value": "Person"
+                "value": "Person",
+                "name": ""
               },
               {
                 "type": "sbsys-db-fieldrule",
@@ -41,13 +43,15 @@
                 "type": "sbsys-db-fieldrule",
                 "field": "SagsStatus.SagsTilstand.Navn",
                 "operator": "eq",
-                "value": "Aktiv"
+                "value": "Aktiv",
+                "name": ""
               },
               {
                 "type": "sbsys-db-fieldrule",
                 "field": "SagsPart.PartType.Navn",
                 "operator": "eq",
-                "value": "Firma"
+                "value": "Firma",
+                "name": ""
               },
               {
                 "type": "sbsys-db-fieldrule",
@@ -80,7 +84,8 @@
             "type": "sbsys-db-fieldrule",
             "field": "SagsPart",
             "operator": "neq",
-            "value": null
+            "value": null,
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
@@ -111,7 +116,8 @@
             "type": "sbsys-db-fieldrule",
             "field": "ErBeskyttet",
             "operator": "eq",
-            "value": false
+            "value": false,
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
@@ -142,7 +148,8 @@
             "type": "sbsys-db-fieldrule",
             "field": "ErBeskyttet",
             "operator": "eq",
-            "value": true
+            "value": true,
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
@@ -193,13 +200,15 @@
             "type": "sbsys-db-fieldrule",
             "field": "SagsStatus.SagsTilstand.Navn",
             "operator": "eq",
-            "value": "Aktiv"
+            "value": "Aktiv",
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
             "field": "SagsPart.PartType.Navn",
             "operator": "eq",
-            "value": "Person"
+            "value": "Person",
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
@@ -230,13 +239,15 @@
             "type": "sbsys-db-fieldrule",
             "field": "SagsStatus.SagsTilstand.Navn",
             "operator": "eq",
-            "value": "Aktiv"
+            "value": "Aktiv",
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
             "field": "SagsPart.PartType.Navn",
             "operator": "eq",
-            "value": "Person"
+            "value": "Person",
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
@@ -267,7 +278,8 @@
             "type": "sbsys-db-fieldrule",
             "field": "ErBeskyttet",
             "operator": "eq",
-            "value": false
+            "value": false,
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
@@ -298,13 +310,15 @@
             "type": "sbsys-db-fieldrule",
             "field": "SagsStatus.SagsTilstand.Navn",
             "operator": "eq",
-            "value": "Aktiv"
+            "value": "Aktiv",
+            "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
             "field": "ErBeskyttet",
             "operator": "eq",
-            "value": false
+            "value": false,
+            "name": ""
           },
           {
             "type": "cpr",
