@@ -29,19 +29,11 @@ variables:
   IMAGE: ${CI_REGISTRY_IMAGE}/document-proxy:${CI_COMMIT_SHA}
 
 Build document_proxy:
-  stage: build
-  needs: []
-  services: []
-  image:
-    name: gcr.io/kaniko-project/executor:v1.6.0-debug
-    entrypoint: [""]
-  script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor
-      --cache
-      --context=$CI_PROJECT_DIR/helpers/document-proxy
-      --dockerfile=$CI_PROJECT_DIR/helpers/document-proxy/docker/Dockerfile
-      --destination=${IMAGE}
+  stage: pre-build
+  extends: .build-docker
+  variables:
+    CI_IMAGE: ${IMAGE}
+    TARGET: base
 
 Release document_proxy:
   stage: release
