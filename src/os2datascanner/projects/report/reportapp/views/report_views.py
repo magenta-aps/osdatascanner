@@ -651,8 +651,8 @@ class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView)
 
     def get_queryset(self):
         qs = super().get_queryset()
-        scanner_job_pk = self.request.POST.get('distribute-to')
-        qs = qs.filter(scanner_job__scanner_pk=scanner_job_pk)
+        scanner_job_pks = self.request.POST.getlist('distribute-to')
+        qs = qs.filter(scanner_job__in=scanner_job_pks)
         return qs
 
     def post(self, request, *args, **kwargs):
