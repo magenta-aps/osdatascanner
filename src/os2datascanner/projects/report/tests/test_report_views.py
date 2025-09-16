@@ -13,6 +13,7 @@ from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 
 from ..reportapp.models.documentreport import DocumentReport
+from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
@@ -1165,3 +1166,70 @@ class TestDistributeMatchesView:
         response = client.post(self.url, data={})
 
         assert response.status_code == 400
+
+    def test_distribute_single_scanner(self, client, egon_account, egon_email_alias):
+        # Arrange
+        create_reports_for(
+            egon_email_alias,
+            num=3,
+            only_notify_superadmin=True,
+            scanner_job_pk=1,
+        )
+        create_reports_for(
+            egon_email_alias,
+            num=4,
+            only_notify_superadmin=True,
+            scanner_job_pk=2,
+        )
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="distribute_withheld_documentreport"))
+        client.force_login(egon_account.user)
+
+        # Act
+        client.post(self.url, data={"distribute-to": [1]}, **self.headers)
+
+        # Assert
+        assert ScannerReference.objects.get(
+            scanner_pk=1).document_reports.filter(
+            only_notify_superadmin=False).count() == 3
+        assert ScannerReference.objects.get(
+            scanner_pk=2).document_reports.filter(
+            only_notify_superadmin=True).count() == 4
+
+    def test_distribute_multiple_scanners(self, client, egon_account, egon_email_alias):
+        # Arrange
+        create_reports_for(
+            egon_email_alias,
+            num=3,
+            only_notify_superadmin=True,
+            scanner_job_pk=1,
+        )
+        create_reports_for(
+            egon_email_alias,
+            num=4,
+            only_notify_superadmin=True,
+            scanner_job_pk=2,
+        )
+        create_reports_for(
+            egon_email_alias,
+            num=5,
+            only_notify_superadmin=True,
+            scanner_job_pk=3,
+        )
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="distribute_withheld_documentreport"))
+        client.force_login(egon_account.user)
+
+        # Act
+        client.post(self.url, data={"distribute-to": [1, 2]}, **self.headers)
+
+        # Assert
+        assert ScannerReference.objects.get(
+            scanner_pk=1).document_reports.filter(
+            only_notify_superadmin=False).count() == 3
+        assert ScannerReference.objects.get(
+            scanner_pk=2).document_reports.filter(
+            only_notify_superadmin=False).count() == 4
+        assert ScannerReference.objects.get(
+            scanner_pk=3).document_reports.filter(
+            only_notify_superadmin=True).count() == 5

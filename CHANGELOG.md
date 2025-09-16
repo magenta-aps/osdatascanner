@@ -54,6 +54,9 @@
   - Datatables use the new table styling.
   - Sensitivity icons are now using Google Material Symbols matching other alert icons.
 
+- It is now possible to choose multiple scannerjobs to distribute results from,
+  on the page for withheld results.
+
 ### Bugfixes
 
 - Corrected issue where the first ever run of a Scannerjob with last modified check enabled
