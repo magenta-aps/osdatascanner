@@ -31,6 +31,8 @@
   Note that support for this component is not yet integrated into the scanner
   engine. In particular, it cannot yet be used to scan SBSYS documents.
 
+- The leader statistics page now support filtering based on scannerjob.
+
 ### General improvements
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.
