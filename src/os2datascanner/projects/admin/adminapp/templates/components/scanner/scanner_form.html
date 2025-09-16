@@ -94,7 +94,7 @@
         rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/js/select2.min.js"></script>
 
-  {% if form.org_unit %}
+  {% if form.org_units %}
     <script src="{% static 'js/scannerjob/dropdowntree.js' %}"></script>
     <script src="{% static 'js/scannerjob/getOrgUnits.js' %}"></script>
   {% endif %}
@@ -127,7 +127,7 @@
           {% endif %}
         </h1>
       </div>
- 
+
       {% if form.non_field_errors %}
         <div class="alert alert--warning" role="alert">
           <ul>
@@ -211,11 +211,11 @@
               {% if form.graph_grant %}
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.graph_grant %}
               {% endif %}
- 
+
               {% if form.google_api_grant %}
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.google_api_grant %}
               {% endif %}
- 
+
 
               {% if form.smb_grant %}
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.smb_grant %}
@@ -377,21 +377,21 @@
           {% endif %}
         </section>
 
-        {% if form.userlist and form.org_unit %}
+        {% if form.userlist and form.org_units %}
           <section class="data-form">
             <fieldset class="form__fieldset">
               <h3 class="required-form">{% trans "add users"|capfirst %}</h3>
               <p class="information">{% trans "select users from"|capfirst %}</p>
-              <div class="form__group {% if form.org_unit.errors %}has-error{% endif %}">
+              <div class="form__group {% if form.org_units.errors %}has-error{% endif %}">
                 <label class="treeview-label {% if required %}required-form{% endif %}"
-                       for="{{ form.org_unit.name }}">{% trans "organizational units"|capfirst %}</label>
+                       for="{{ form.org_units.name }}">{% trans "organizational units"|capfirst %}</label>
                 <select class="treeview"
                         id="sel_1"
-                        name="{{ form.org_unit.name }}"
+                        name="{{ form.org_units.name }}"
                         multiple
                         size="10"
                         url="{% url 'org-units-listing' %}"></select>
-                {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
+                {% if form.org_units.errors %}{{ form.org_units.errors }}{% endif %}
               </div>
 
               <p class="information">{% trans "or upload"|capfirst %}</p>
@@ -464,7 +464,7 @@
           </section>
         {% endif %}
 
-        {% if not form.userlist and form.org_unit %}
+        {% if not form.userlist and form.org_units %}
           <section class="data-form">
             <fieldset class="form__fieldset">
               <h3 class="required-form">{% trans "add accounts"|capfirst %}</h3>
@@ -488,18 +488,18 @@
               {% endif %}
 
               <p class="information" id="org-unit-info">{% trans "scan accounts from"|capfirst %}</p>
-              <div class="form__group {% if form.org_unit.errors %}has-error{% endif %}"
+              <div class="form__group {% if form.org_units.errors %}has-error{% endif %}"
                    id="org-units">
                 <label class="treeview-label {% if required %}required-form{% endif %}"
-                       for="{{ form.org_unit.name }}">{% trans "organizational units"|capfirst %}</label>
+                       for="{{ form.org_units.name }}">{% trans "organizational units"|capfirst %}</label>
                 <select class="treeview"
                         id="sel_1"
-                        name="{{ form.org_unit.name }}"
+                        name="{{ form.org_units.name }}"
                         multiple
                         size="10"
                         url="{% url 'org-units-listing' %}"
                         {% if form.scan_entire_org.value %}disabled{% endif %}></select>
-                {% if form.org_unit.errors %}{{ form.org_unit.errors }}{% endif %}
+                {% if form.org_units.errors %}{{ form.org_units.errors }}{% endif %}
               </div>
 
             </fieldset>
@@ -525,7 +525,7 @@
                       </option>
                     {% endfor %}
                   </select>
- 
+
                   <button type="button"
                           id="sharepoint-sync-btn"
                           class="button button__icon-button button__sync-button"
@@ -536,13 +536,13 @@
                     </svg>
                   </button>
                 </div>
- 
+
                 <div class="form__help-text">
                   {% trans "Choose which sites to include in this scan. Selecting no sites will scan all sites." %}
                 </div>
               </div>
               {% if form.sharepoint_sites.errors %}{{ form.sharepoint_sites.errors }}{% endif %}
- 
+
             </fieldset>
           </section>
         {% endif %}
@@ -624,19 +624,19 @@
                     {% include "components/scanner/scanner_form_input_field.html" with field=form.exclude_urls placeholder=form.exclude_urls.field.widget.attrs.placeholder %}
                   </div>
                 {% endif %}
- 
+
                 {% if form.scan_drives %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_drives %}
                   </div>
                 {% endif %}
- 
+
                 {% if form.scan_lists %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_lists %}
                   </div>
                 {% endif %}
- 
+
               </div>
             </div>
           </fieldset>
