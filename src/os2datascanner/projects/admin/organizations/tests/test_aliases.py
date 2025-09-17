@@ -85,8 +85,8 @@ class TestAliasBehaviour:
                 'org_slug': gertrud.organization.slug,
                 'acc_uuid': gertrud.uuid})
         # Act
-        client.post(url1, {'_alias_type': AliasType.GENERIC, '_value': 'teletubby-world.se'})
-        client.post(url2, {'_alias_type': AliasType.EMAIL, '_value': 'tony@stark.co.uk'})
+        client.post(url1, {'alias_type': AliasType.GENERIC, 'value': 'teletubby-world.se'})
+        client.post(url2, {'alias_type': AliasType.EMAIL, 'value': 'tony@stark.co.uk'})
 
         # Assert
         assert not egon.organization == gertrud.organization
@@ -94,6 +94,68 @@ class TestAliasBehaviour:
         assert egon.aliases.first()._value == 'teletubby-world.se'
         assert gertrud.aliases.count() == 1
         assert gertrud.aliases.first()._value == 'tony@stark.co.uk'
+
+    def test_add_alias_view_superuser_invalid_sid(self, superuser, client, egon):
+        """ A superuser should not be able to add an alias with invalid data """
+
+        # Arrange
+        client.force_login(superuser)
+
+        url = reverse_lazy(
+            'create-alias',
+            kwargs={'org_slug': egon.organization.slug,
+                    'acc_uuid': egon.uuid})
+        # Act
+        res = client.post(url, {'alias_type': AliasType.SID, 'value': 'invalid SID'})
+
+        context = res.context_data
+
+        form = context.get('form')
+
+        # Assert
+        assert form.errors
+        assert not Alias.objects.filter(_value='invalid SID').exists()
+
+    def test_add_alias_view_superuser_invalid_email(self, superuser, client, gertrud):
+
+        # Arrange
+        client.force_login(superuser)
+
+        url = reverse_lazy(
+            'create-alias',
+            kwargs={
+                'org_slug': gertrud.organization.slug,
+                'acc_uuid': gertrud.uuid})
+        # Act
+        res = client.post(url, {'alias_type': AliasType.EMAIL, 'value': 'invalid EMAIL'})
+
+        context = res.context_data
+        form = context.get('form')
+
+        # Assert
+        assert form.errors
+        assert not Alias.objects.filter(_value='invalid EMAIL').exists()
+
+    def test_add_alias_view_superuser_invalid_upn(self, superuser, client, egon):
+
+        # Arrange
+        client.force_login(superuser)
+
+        url = reverse_lazy(
+            'create-alias',
+            kwargs={'org_slug': egon.organization.slug,
+                    'acc_uuid': egon.uuid})
+        # Act
+        res = client.post(
+            url, {
+                'alias_type': AliasType.USER_PRINCIPAL_NAME, 'value': 'invalid UPN'})
+
+        context = res.context_data
+        form = context.get('form')
+
+        # Assert
+        assert form.errors
+        assert not Alias.objects.filter(_value='invalid UPN').exists()
 
     def test_add_alias_client_administrator(self, client, user_admin):
         """An administrator for a client should be able to add aliases to
@@ -112,7 +174,7 @@ class TestAliasBehaviour:
                 'acc_uuid': tinkywinky.uuid})
 
         # Act
-        client.post(url, {'_alias_type': AliasType.GENERIC, '_value': 'teletubby-world.se'})
+        client.post(url, {'alias_type': AliasType.GENERIC, 'value': 'teletubby-world.se'})
 
         # Assert
         assert tinkywinky.aliases.count() == 1
