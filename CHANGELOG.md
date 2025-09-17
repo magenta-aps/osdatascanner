@@ -79,6 +79,8 @@
 
 - Fixed issue in the admin module where the modal window closed itself without showing any error
   messages when you tried to submit invalid data when creating an alias.
+  
+- Removed delete button for scannerjobs with no results
 
 ## Version 3.29.3, 18th August 2025
 
