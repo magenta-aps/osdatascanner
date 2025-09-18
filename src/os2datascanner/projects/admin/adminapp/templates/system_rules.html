@@ -106,7 +106,7 @@
                           id="table-checkbox-{{ rule.pk|unlocalize }}"
                           value="{{ rule.pk|unlocalize }}"
                           name="table-checkbox"
-                          class="datatable-checkbox"
+                          class="datatable-checkbox keep-value"
                           hx-post="{% url "connect-rule-to-org" rule.pk %}"
                           hx-swap="none"
                           {% comment %}
