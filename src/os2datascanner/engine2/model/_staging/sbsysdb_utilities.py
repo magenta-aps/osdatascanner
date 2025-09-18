@@ -196,4 +196,4 @@ def exec_expr(engine, expr: Select, *labels: str):
                 expr, execution_options={
                     "yield_per": 2000
                 }):
-            yield dict(zip(labels, db_row))
+            yield dict(zip(labels, db_row)) if labels else tuple(db_row)

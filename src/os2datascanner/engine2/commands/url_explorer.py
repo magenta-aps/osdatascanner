@@ -31,22 +31,23 @@ def format_d(depth, fmt, *args, **kwargs):
 def print_source(  # noqa
         manager, *source_path,
         guess=False, summarise=False, metadata=False, max_depth=None,
-        hints=False):  # noqa
+        hints=False, censor=True):  # noqa
     base_source = source_path[0]
 
     source = source_path[-1]
     depth = len(source_path)
     try:
         for handle in source.handles(manager):
-            printfunc(format_d(depth, "{0}", handle))
+            disp_handle = handle.censor() if censor else handle
+            printfunc(format_d(depth, "{0}", disp_handle))
             if hints:
-                for k, v in (handle._hints or {}).items():
+                for k, v in (disp_handle._hints or {}).items():
                     printfunc(format_d(depth + 1, "hint:{0} {1}", k, v))
 
                 # These are hints of sorts, but aren't stored in _hints
                 printfunc(format_d(
-                        depth + 1, "hint:referrer {0}", handle.referrer))
-                if p_url := handle.presentation_url:
+                        depth + 1, "hint:referrer {0}", disp_handle.referrer))
+                if p_url := disp_handle.presentation_url:
                     printfunc(format_d(
                             depth + 1, "hint:presentation_url {0}", p_url))
 
@@ -79,7 +80,7 @@ def print_source(  # noqa
                             manager, *source_path, derived_source,
                             guess=guess, summarise=summarise,
                             metadata=metadata, max_depth=max_depth,
-                            hints=hints)
+                            hints=hints, censor=censor)
     except Exception:
         print(
                 format_d(depth, f"{type(source).__name__}: unexpected error:"),
@@ -121,6 +122,11 @@ def add_control_arguments(parser):
             "--hints",
             action="store_true",
             help="Print the hints associated with each file.")
+    parser.add_argument(
+            "--no-censor",
+            dest="censor",
+            action="store_false",
+            help="Don't censor handles before printing them.")
     parser.add_argument(
             "--setting",
             metavar=("KEY", "VALUE"),
@@ -217,7 +223,8 @@ def main():  # noqa: C901, CCR001
                             summarise=args.summarise,
                             metadata=args.metadata,
                             max_depth=args.max_depth,
-                            hints=args.hints)
+                            hints=args.hints,
+                            censor=args.censor)
                     if args.stop:
                         signal.raise_signal(signal.SIGSTOP)
             except UnknownSchemeError:
