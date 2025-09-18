@@ -1,0 +1,334 @@
+[
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990100,
+    "fields": {
+      "name": "(SBSYS) Sager der muligvis kan afsluttes",
+      "organization": null,
+      "description": "SBSYS-sager med sagspart og aktiv tilstand, som ikke er blevet opdateret indenfor 6 måneder (for personer) eller 12 måneder (for virksomheder).",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "or",
+        "components": [
+          {
+            "type": "and",
+            "components": [
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "SagsStatus.SagsTilstand.Navn",
+                "operator": "eq",
+                "value": "Aktiv",
+                "name": ""
+              },
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "SagsPart.PartType.Navn",
+                "operator": "eq",
+                "value": "Person",
+                "name": ""
+              },
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "?Age?",
+                "operator": "gt",
+                "value": 180,
+                "name": "Sager der muligvis kan afsluttes"
+              }
+            ]
+          },
+          {
+            "type": "and",
+            "components": [
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "SagsStatus.SagsTilstand.Navn",
+                "operator": "eq",
+                "value": "Aktiv",
+                "name": ""
+              },
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "SagsPart.PartType.Navn",
+                "operator": "eq",
+                "value": "Firma",
+                "name": ""
+              },
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "?Age?",
+                "operator": "gt",
+                "value": 365,
+                "name": "Sager der muligvis kan afsluttes"
+              }
+            ]
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990101,
+    "fields": {
+      "name": "(SBSYS) Ulåste sager med sagspart",
+      "organization": null,
+      "description": "SBSYS-sager med sagspart, men som mangler beskyttelse.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart",
+            "operator": "neq",
+            "value": null,
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "ErBeskyttet",
+            "operator": "eq",
+            "value": false,
+            "name": "Ulåste sager med sagspart"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990102,
+    "fields": {
+      "name": "(SBSYS) Ulåste sager med sikkerhedsgruppe",
+      "organization": null,
+      "description": "SBSYS-sager med sikkerhedsgruppe, men som mangler beskyttelse.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "ErBeskyttet",
+            "operator": "eq",
+            "value": false,
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SecuritySetID",
+            "operator": "neq",
+            "value": null,
+            "name": "Ulåste sager med sikkerhedsgruppe"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990103,
+    "fields": {
+      "name": "(SBSYS) Låste sager uden sikkerhedsgruppe",
+      "organization": null,
+      "description": "SBSYS-sager med beskyttelse, men som mangler sikkerhedsgruppe.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "ErBeskyttet",
+            "operator": "eq",
+            "value": true,
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SecuritySetID",
+            "operator": "eq",
+            "value": null,
+            "name": "Låste sager uden sikkerhedsgruppe"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990104,
+    "fields": {
+      "name": "(SBSYS) Mine aktuelle sager",
+      "organization": null,
+      "description": "SBSYS-sager i aktiv tilstand.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "sbsys-db-fieldrule",
+        "field": "SagsStatus.SagsTilstand.Navn",
+        "operator": "eq",
+        "value": "Aktiv",
+        "name": "Mine aktuelle sager"
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990105,
+    "fields": {
+      "name": "(SBSYS) Åbne sager hvor part er afgået ved døden",
+      "organization": null,
+      "description": "SBSYS-sager med sagspart og aktiv tilstand, men hvor sagsparten er afgået ved døden.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsStatus.SagsTilstand.Navn",
+            "operator": "eq",
+            "value": "Aktiv",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.PartType.Navn",
+            "operator": "eq",
+            "value": "Person",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.Part as Person.Civilstand.Kode",
+            "operator": "eq",
+            "value": "D",
+            "name": "Åbne sager hvor part er afgået ved døden"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990106,
+    "fields": {
+      "name": "(SBSYS) Åbne sager hvor part er fraflyttet kommune",
+      "organization": null,
+      "description": "SBSYS-sager med sagspart og aktiv tilstand, men hvor sagsparten er flyttet fra kommunen.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsStatus.SagsTilstand.Navn",
+            "operator": "eq",
+            "value": "Aktiv",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.PartType.Navn",
+            "operator": "eq",
+            "value": "Person",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.Part as Person.KommuneID",
+            "operator": "neq",
+            "value": "&KommuneID",
+            "name": "Åbne sager hvor part er fraflyttet kommune"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990107,
+    "fields": {
+      "name": "(SBSYS) Sager med Part uden sikkerhed",
+      "organization": null,
+      "description": "SBSYS-sager med en menneskelig sagspart, men som mangler beskyttelse.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "ErBeskyttet",
+            "operator": "eq",
+            "value": false,
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.PartType.Navn",
+            "operator": "eq",
+            "value": "Person",
+            "name": "Sager med Part uden sikkerhed"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990108,
+    "fields": {
+      "name": "(SBSYS) Dokumenter med CPR uden sikkerhed",
+      "organization": null,
+      "description": "Aktive SBSYS-sager med vedhæftde dokumenter med CPR-nummer i, som ikke er markeret som beskyttet.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsStatus.SagsTilstand.Navn",
+            "operator": "eq",
+            "value": "Aktiv",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "ErBeskyttet",
+            "operator": "eq",
+            "value": false,
+            "name": ""
+          },
+          {
+            "type": "cpr",
+            "name": "Dokumenter med CPR uden sikkerhed"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
+  }
+]

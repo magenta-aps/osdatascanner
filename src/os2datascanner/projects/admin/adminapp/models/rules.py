@@ -22,6 +22,36 @@ from os2datascanner.engine2.rules.rule import Rule as E2Rule
 from os2datascanner.engine2.rules.rule import Sensitivity as E2Sensitivity
 
 
+class RuleCategory(models.Model):
+    """Category for categorizing rules. For sorting purposes."""
+
+    class CategoryNames(models.TextChoices):
+        # Properties of the target scanned for
+        NUMBER_ID = "number_id", _("number ID")
+        NAMES = "names", _("names")
+        ADDRESSES = "addresses", _("addresses")
+        SICK_LEAVE = "sick_leave", _("sick leave")
+
+        # Language
+        DANISH = "danish", _("Danish")
+
+    name = models.CharField(
+        max_length=256,
+        choices=CategoryNames.choices,
+        verbose_name=_("name"),
+        unique=True)
+
+    @classmethod
+    def populate(cls):
+        existing = cls.objects.values_list("name", flat=True)
+        for category in cls.CategoryNames.choices:
+            if category not in existing:
+                cls.objects.create(name=category)
+
+    def __str__(self):
+        return self.get_name_display()
+
+
 _sensitivity_mapping = {
     Sensitivity.OK: E2Sensitivity.NOTICE,
     Sensitivity.LOW: E2Sensitivity.WARNING,
@@ -59,6 +89,15 @@ class Rule(models.Model):
         verbose_name=_('sensitivity'),
     )
 
+    raw_rule = models.JSONField(
+        verbose_name=_("Rule"),
+        null=True, blank=True)
+
+    categories = models.ManyToManyField(
+        RuleCategory,
+        verbose_name=_("categories"),
+        related_name="rules")
+
     @property
     def display_name(self):
         """The name used when displaying the regexrule on the web page."""
@@ -74,59 +113,7 @@ class Rule(models.Model):
 
     def make_engine2_rule(self) -> E2Rule:
         """Construct an engine2 Rule corresponding to this Rule."""
-        # (this can't use the @abstractmethod decorator because of metaclass
-        # conflicts with Django, but subclasses should override this method!)
-        raise NotImplementedError("Rule.make_engine2_rule")
-
-    def make_engine2_sensitivity(self) -> E2Sensitivity:
-        return _sensitivity_mapping[self.sensitivity]
-
-
-class RuleCategory(models.Model):
-    """Category for categorizing rules. For sorting purposes."""
-
-    class CategoryNames(models.TextChoices):
-        # Properties of the target scanned for
-        NUMBER_ID = "number_id", _("number ID")
-        NAMES = "names", _("names")
-        ADDRESSES = "addresses", _("addresses")
-        SICK_LEAVE = "sick_leave", _("sick leave")
-
-        # Language
-        DANISH = "danish", _("Danish")
-
-    name = models.CharField(
-        max_length=256,
-        choices=CategoryNames.choices,
-        verbose_name=_("name"),
-        unique=True)
-
-    @classmethod
-    def populate(cls):
-        existing = cls.objects.values_list("name", flat=True)
-        for category in cls.CategoryNames.choices:
-            if category not in existing:
-                cls.objects.create(name=category)
-
-    def __str__(self):
-        return self.get_name_display()
-
-
-class CustomRule(Rule):
-    """CustomRule is an escape hatch that allows for the JSON representation of
-    an arbitrary engine2 rule to be stored in the administration system's
-    database."""
-
-    _rule = models.JSONField(verbose_name=_('Rule'))
-
-    categories = models.ManyToManyField(
-        RuleCategory,
-        verbose_name=_("categories"),
-        related_name="rules")
-
-    @property
-    def rule(self):
-        r = E2Rule.from_json_object(self._rule)
+        r = E2Rule.from_json_object(self.raw_rule)
         if not r._name:
             r._name = self.name
         r._sensitivity = E2Sensitivity(max(
@@ -137,9 +124,5 @@ class CustomRule(Rule):
                 self.make_engine2_sensitivity().value))
         return r
 
-    @rule.setter
-    def set_rule(self, r: E2Rule):
-        self._rule = r.to_json_object()
-
-    def make_engine2_rule(self) -> E2Rule:
-        return self.rule
+    def make_engine2_sensitivity(self) -> E2Sensitivity:
+        return _sensitivity_mapping[self.sensitivity]

@@ -69,7 +69,7 @@ class GmailScanner(Scanner):
 
     def local_or_rules(self) -> list:
         if self.scan_subject:
-            return [EmailHeaderRule(prop="subject", rule=self.rule.customrule.make_engine2_rule())]
+            return [EmailHeaderRule(prop="subject", rule=self.rule.make_engine2_rule())]
         else:
             return []
 

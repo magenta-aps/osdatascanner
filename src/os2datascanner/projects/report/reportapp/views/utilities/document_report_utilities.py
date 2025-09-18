@@ -49,7 +49,7 @@ def get_deviations(report: DocumentReport) -> list[str]:
 
         rule = frag.rule
 
-        if rule._name:
+        if rule._name is not None:
             label = rule._name
         elif isinstance(rule, SBSYSDBRule):
             # XXX: move this and its translations to
@@ -89,7 +89,7 @@ def get_deviations(report: DocumentReport) -> list[str]:
         else:
             label = rule.presentation
 
-        if label not in seen:
+        if label and label not in seen:
             seen.add(label)
             out.append(label)
 

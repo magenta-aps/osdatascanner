@@ -14,7 +14,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import
     WebScanner,
 )
 from os2datascanner.projects.admin.adminapp.models.rules import (
-    CustomRule,
+    Rule,
 )
 from os2datascanner.projects.admin.organizations.models.account import (
     Account,
@@ -34,7 +34,7 @@ def get_default_org_and_cprrule():
 
     default_org = Organization.objects.first()
 
-    cpr = CustomRule.objects.filter(
+    cpr = Rule.objects.filter(
         name="CPR regel",
         description="Denne regel finder alle gyldige CPR numre.",
         ).first()

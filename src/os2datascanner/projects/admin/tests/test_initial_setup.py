@@ -8,7 +8,7 @@ from django.conf import settings
 from ..core.models.client import Client
 from ..organizations.models.organization import Organization
 from ..organizations.models.account import Account
-from ..adminapp.models.rules import CustomRule
+from ..adminapp.models.rules import Rule
 
 
 @pytest.mark.django_db
@@ -129,7 +129,7 @@ class TestInitialSetup:
 
         # Act
         self.call_command()
-        rule = CustomRule.objects.get(name="CPR regel")
+        rule = Rule.objects.get(name="CPR regel")
 
         # Assert
         assert rule.organizations.get() == Organization.objects.get(name="DUMMY")

@@ -318,7 +318,7 @@ class Scanner(models.Model):
     def _construct_rule(self, force: bool) -> Rule:
         """Builds an object that represents the rules configured for this
         scanner."""
-        rule = self.rule.customrule.make_engine2_rule()
+        rule = self.rule.make_engine2_rule()
 
         prerules = []
         if not force and self.do_last_modified_check:
@@ -357,7 +357,7 @@ class Scanner(models.Model):
 
     def _construct_filter_rule(self) -> Rule:
         try:
-            return self.exclusion_rule.customrule.make_engine2_rule()\
+            return self.exclusion_rule.make_engine2_rule()\
                 if self.exclusion_rule else None
         except ValueError:
             pass

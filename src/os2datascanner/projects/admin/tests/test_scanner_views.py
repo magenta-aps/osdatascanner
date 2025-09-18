@@ -365,7 +365,7 @@ class TestScannerViewsPossibleRules:
         possible_rules = response.context_data["form"].fields["rule"].queryset
         assert possible_rules
         for rule in possible_rules:
-            assert rule.organization == test_org or test_org in rule.customrule.organizations.all()
+            assert rule.organization == test_org or test_org in rule.organizations.all()
 
     def test_only_organization_rules_possible_update(self, user_admin, org_rule, org2_rule,
                                                      disabled_system_rule, client, test_org,
@@ -376,7 +376,7 @@ class TestScannerViewsPossibleRules:
         possible_rules = response.context_data["form"].fields["rule"].queryset
         assert possible_rules
         for rule in possible_rules:
-            assert rule.organization == test_org or test_org in rule.customrule.organizations.all()
+            assert rule.organization == test_org or test_org in rule.organizations.all()
 
 
 @pytest.mark.django_db

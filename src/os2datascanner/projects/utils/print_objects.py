@@ -26,11 +26,44 @@ model_mapping = {model.__name__: model for model in apps.get_models()}
 eprint = partial(print, file=sys.stderr)
 
 
-def model_class(model):
-    """Given the simple name of a registered Django model class, returns that
-    class."""
-    if model in model_mapping:
-        return model_mapping[model]
+def separate(it, criterion) -> list:
+    """Reorders the given iterable to put all the elements for which the
+    criterion function returns True at the start of the list. (The order is
+    otherwise not changed.)"""
+    left = []
+    right = []
+    for k in it:
+        if criterion(k):
+            left.append(k)
+        else:
+            right.append(k)
+    return left + right
+
+
+def model_class(model: str) -> type:
+    """Returns a named Django model class.
+
+    Classes defined in the OSdatascanner code base are preferred over others.
+    To force a model to be selected from a particular app, prefix the name with
+    its label (for example, "recurrence.Rule")."""
+    match model.split(".", maxsplit=1):
+        case [simple_name]:
+            app_label = None
+            model_name = simple_name
+        case [app_label, simple_name]:
+            app_label = app_label
+            model_name = simple_name
+
+    for mclass in separate(apps.get_models(),
+                           lambda t: "os2datascanner" in t.__module__):
+        if mclass.__name__ != model_name:
+            continue
+
+        match (app_label, mclass._meta.app_label):
+            case (None, _):
+                return mclass
+            case (p, q) if p == q:
+                return mclass
     else:
         raise argparse.ArgumentTypeError(
                 "'{0}': Model class not known".format(model))
@@ -73,13 +106,15 @@ def build_queryset_from(
         filt_ops: list[list[str]]) -> QuerySet:
     manager = model.objects
     model_name = model._meta.object_name
+    model_app = model._meta.app_label
 
     if hasattr(manager, "select_subclasses"):
         queryset = manager.select_subclasses().all()
     else:
         queryset = manager.all()
 
-    print(f" table:        {model_name}, {queryset.count()} row(s)")
+    print(f" table:        {model_app}.{model_name},"
+          f" {queryset.count()} row(s)")
 
     for verb, fexpr, *rest in (filt_ops or ()):
         lhs, rhs = parse_fl_string(fexpr)

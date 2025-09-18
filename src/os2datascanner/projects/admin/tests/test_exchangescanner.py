@@ -37,7 +37,7 @@ class TestExchangeScanner:
 
     def test_construct_rule(self, exchange_scanner):
         # Arrange
-        basic_rule = exchange_scanner.rule.customrule.make_engine2_rule()
+        basic_rule = exchange_scanner.rule.make_engine2_rule()
         expected = OrRule(EmailHeaderRule("subject", basic_rule), basic_rule)
 
         # Act
@@ -49,7 +49,7 @@ class TestExchangeScanner:
     def test_construct_rule_scan_subject_false(self, exchange_scanner):
         # Arrange
         exchange_scanner.scan_subject = False
-        basic_rule = exchange_scanner.rule.customrule.make_engine2_rule()
+        basic_rule = exchange_scanner.rule.make_engine2_rule()
 
         # Act
         rule = exchange_scanner._construct_rule(force=False)
