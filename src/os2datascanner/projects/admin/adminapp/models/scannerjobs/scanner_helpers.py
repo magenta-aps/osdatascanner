@@ -371,6 +371,13 @@ class ScanStatus(AbstractScanStatus):
             snapshot_data.append({"x": seconds_since_start, "y": fraction_scanned*100})
         return snapshot_data
 
+    def data_types(self) -> dict:
+        """Return a dict of size and time spent scanning different MIME types covered by scan."""
+        stats = {}
+        for stat in self.process_stats.iterator():
+            stats[stat.mime_type] = {"size": stat.total_size, "time": stat.total_time}
+        return stats
+
 
 class ScanStatusSnapshot(AbstractScanStatus):
     """

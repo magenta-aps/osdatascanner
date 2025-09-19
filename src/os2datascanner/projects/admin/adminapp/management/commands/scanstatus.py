@@ -58,3 +58,18 @@ class Command(BaseCommand):
                  xlabel="Seconds since start time",
                  title="Percentage scanned over time")
         fig.show()
+
+        mime_types, sizes, times = zip(*[(k, p["size"], p["time"].seconds)
+                                       for k, p in status.data_types().items()])
+
+        print("---Total size of scanned mime types [bytes]---")
+        s, m = zip(*sorted(zip(sizes, mime_types), reverse=True))
+        fig_size = tpl.figure()
+        fig_size.barh(s, m)
+        fig_size.show()
+
+        print("---Total time spent scanning mime types in seconds---")
+        t, m = zip(*sorted(zip(times, mime_types), reverse=True))
+        fig_times = tpl.figure()
+        fig_times.barh(t, m)
+        fig_times.show()
