@@ -82,6 +82,10 @@
   
 - Removed delete button for scannerjobs with no results
 
+- Users in the admin module can now enable system rules for their organization.
+
+- System rules in the "rules" tab of the admin module are no longer unchecked when loading the page.
+
 ## Version 3.29.3, 18th August 2025
 
 "Get the Fly Out of the Ointment"
