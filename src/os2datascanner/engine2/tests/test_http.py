@@ -387,7 +387,24 @@ class HTTPTestRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(500)
         self.end_headers()
 
-    def do_GET(self):
+    def _nobots(self):
+        ua = self.headers.get("user-agent")
+        match ua, self.path:
+            case (k, _) if "python-requests" in k:
+                self.send_response(403)
+                self.end_headers()
+            case (_, "/nobots/sitemap.xml"):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/xml")
+                self.end_headers()
+                self.wfile.write(
+                        b'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                        b"<url>"
+                        b"<loc>http://localhost:64346/nobots/index.html</loc>"
+                        b"</url>"
+                        b"</urlset>")
+
+    def do_GET(self):  # noqa: CCR001 C901
         host = self.headers.get("host")
         if not host.startswith("localhost"):
             self._redirect_response()
@@ -411,6 +428,8 @@ class HTTPTestRequestHandler(http.server.SimpleHTTPRequestHandler):
             self._unavailable_for_legal_reasons_response()
         elif self.path.startswith("/forbidden"):
             self._forbidden_response()
+        elif self.path.startswith("/nobots"):
+            self._nobots()
         elif self.path.startswith("/internal_server_error"):
             self._internal_server_error_response()
 
@@ -768,6 +787,21 @@ class Engine2HTTPSitemapTest(Engine2HTTPSetup, unittest.TestCase):
             "sitemap xml-parser is vulnerable to XXE(XML External Entity) injection."
             "Make sure to disable `resolve_entities` in the xml parser"
         )
+
+    def test_sitemap_ua(self):
+        """Requests for sitemaps are made with OSdatascanner's User-Agent."""
+        # Arrange
+        ws = WebSource("https://www.magenta.dk")
+        sm = SourceManager()
+        # Get a requests.Session from a WebSource so that it has our User-Agent
+        # on it
+        context = sm.open(ws)
+
+        # Act
+        links = [url for url, hints in process_sitemap_url(
+                "http://localhost:64346/nobots/sitemap.xml", context=context)]
+        # Assert
+        assert links == ["http://localhost:64346/nobots/index.html"]
 
     @mock.patch('os2datascanner.engine2.model.utilities.sitemap.requests.get',
                 side_effect=mocked_requests_get)

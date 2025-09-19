@@ -49,8 +49,10 @@ def _get_url_data(url: str, context=requests) -> Optional[bytes]:
                 # the server served a file that needs to be unpacked
                 return convert_data_to_text(r.content, mime=content_type)
         else:
+            logger.warning("unexpected HTTP status", code=r.status_code)
             return None
     except requests.exceptions.RequestException:
+        logger.warning("unexpected HTTP error", exc_info=True)
         return None
 
 
@@ -66,7 +68,7 @@ def process_sitemap_url(  # noqa: CCR001, E501 too high cognitive complexity
     if url.startswith("data:"):
         _, sitemap = unpack_data_url(url)
     else:
-        sitemap = _get_url_data(url)
+        sitemap = _get_url_data(url, context=context)
 
     if sitemap is None:
         raise SitemapMissingError(url)
@@ -112,8 +114,8 @@ def process_sitemap_url(  # noqa: CCR001, E501 too high cognitive complexity
                 loc = _xp(sitemap, "sitemap:loc/text()")[0].strip()
                 # Sitemap indexes aren't allowed to reference other sitemap
                 # indexes, so forbid that to avoid infinite loops
-                yield from process_sitemap_url(loc,
-                                               context=context, allow_sitemap=False)
+                yield from process_sitemap_url(
+                        loc, context=context, allow_sitemap=False)
         else:
             raise SitemapMalformedError(url)
     except etree.XMLSyntaxError:
