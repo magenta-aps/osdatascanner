@@ -1,6 +1,7 @@
 """Presents information about a given ScanStatus"""
 
 import termplotlib as tpl
+import termtables as tt
 
 from django.core.management.base import BaseCommand
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import ScanStatus
@@ -31,7 +32,7 @@ class Command(BaseCommand):
         print("Scanner:", status.scanner)
         print("Start time:", status.start_time)
 
-        print("---Current status---")
+        print("\n---Current status---")
         if status.is_running:
             print("Scanner is still running!")
             print("Stage:", status.stage)
@@ -39,17 +40,27 @@ class Command(BaseCommand):
         else:
             print("Scanner is not running.")
 
-        print("---Objects---")
-        print("Fraction scanned:", str(round(status.fraction_scanned*100, 2)) + "%")
-        print("Objects scanned:", status.scanned_objects)
-        print("Total objects:", status.total_objects)
-        print("Known objects skipped:", status.skipped_by_last_modified)
-        print("Results found:", status.matches_found)
-        print("Scanned size:", status.scanned_size, "bytes")
+        if status.status_is_error:
+            print("Error:", status.message)
 
-        print("---Settings---")
-        print("Resolved:", boolean_symbol(status.resolved))
-        print("Email sent:", boolean_symbol(status.email_sent))
+        print("\n---Objects---")
+        tt.print([
+            ["Fraction scanned", str(round(status.fraction_scanned*100, 2)) + "%"],
+            ["Objects scanned", status.scanned_objects],
+            ["Total objects", status.total_objects],
+            ["Known objects skipped", status.skipped_by_last_modified],
+            ["Results found", status.matches_found],
+            ["Scanned size", str(status.scanned_size) + " bytes"]
+            ],
+            style=tt.styles.markdown,
+        )
+
+        print("\n---Settings---")
+        tt.print([
+            ("Resolved", boolean_symbol(status.resolved)),
+            ("Email sent", boolean_symbol(status.email_sent))],
+            style=tt.styles.markdown
+        )
 
         x_data, y_data = zip(*[(d["x"], d["y"]) for d in status.timeline()])
 
@@ -62,13 +73,13 @@ class Command(BaseCommand):
         mime_types, sizes, times = zip(*[(k, p["size"], p["time"].seconds)
                                        for k, p in status.data_types().items()])
 
-        print("---Total size of scanned mime types [bytes]---")
+        print("\n---Total size of scanned mime types [bytes]---")
         s, m = zip(*sorted(zip(sizes, mime_types), reverse=True))
         fig_size = tpl.figure()
         fig_size.barh(s, m)
         fig_size.show()
 
-        print("---Total time spent scanning mime types in seconds---")
+        print("\n---Total time spent scanning mime types in seconds---")
         t, m = zip(*sorted(zip(times, mime_types), reverse=True))
         fig_times = tpl.figure()
         fig_times.barh(t, m)

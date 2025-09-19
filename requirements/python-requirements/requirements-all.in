@@ -3,6 +3,7 @@ pycryptodome
 pytest-django
 python-dateutil
 tenacity
+termtables
 
 # API
 gunicorn
@@ -20,6 +21,7 @@ rich
 sortedcontainers
 structlog
 toml
+termplotlib
 
 # Engine
 chardet
@@ -62,7 +64,6 @@ psutil
 pytest-django
 python3-saml
 randomtimestamp
-termplotlib
 
 # Test
 coverage
