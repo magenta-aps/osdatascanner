@@ -45,7 +45,8 @@ class Command(BaseCommand):
 
         print("\n---Objects---")
         tt.print([
-            ["Fraction scanned", str(round(status.fraction_scanned*100, 2)) + "%"],
+            ["Fraction scanned",
+             str(round(status.fraction_scanned*100, 2) if status.fraction_scanned else 0.0) + "%"],
             ["Objects scanned", status.scanned_objects],
             ["Total objects", status.total_objects],
             ["Known objects skipped", status.skipped_by_last_modified],
@@ -62,25 +63,29 @@ class Command(BaseCommand):
             style=tt.styles.markdown
         )
 
-        x_data, y_data = zip(*[(d["x"], d["y"]) for d in status.timeline()])
+        timeline = status.timeline()
+        if timeline:
+            x_data, y_data = zip(*[(d["x"], d["y"]) for d in timeline])
 
-        fig = tpl.figure()
-        fig.plot(x_data, y_data,
-                 xlabel="Seconds since start time",
-                 title="Percentage scanned over time")
-        fig.show()
+            fig = tpl.figure()
+            fig.plot(x_data, y_data,
+                     xlabel="Seconds since start time",
+                     title="Percentage scanned over time")
+            fig.show()
 
-        mime_types, sizes, times = zip(*[(k, p["size"], p["time"].seconds)
-                                       for k, p in status.data_types().items()])
+        data_types = status.data_types()
+        if data_types:
+            mime_types, sizes, times = zip(*[(k, p["size"], p["time"].seconds)
+                                             for k, p in data_types.items()])
 
-        print("\n---Total size of scanned mime types [bytes]---")
-        s, m = zip(*sorted(zip(sizes, mime_types), reverse=True))
-        fig_size = tpl.figure()
-        fig_size.barh(s, m)
-        fig_size.show()
+            print("\n---Total size of scanned mime types [bytes]---")
+            s, m = zip(*sorted(zip(sizes, mime_types), reverse=True))
+            fig_size = tpl.figure()
+            fig_size.barh(s, m)
+            fig_size.show()
 
-        print("\n---Total time spent scanning mime types in seconds---")
-        t, m = zip(*sorted(zip(times, mime_types), reverse=True))
-        fig_times = tpl.figure()
-        fig_times.barh(t, m)
-        fig_times.show()
+            print("\n---Total time spent scanning mime types in seconds---")
+            t, m = zip(*sorted(zip(times, mime_types), reverse=True))
+            fig_times = tpl.figure()
+            fig_times.barh(t, m)
+            fig_times.show()
