@@ -81,6 +81,37 @@ Currently, the command can be used to abort running scans, to change the log
 log level of the live system, and to obtain profiling information from live
 processes.
 
+#### Abort a scan
+
+To abort a scan, use **one** of the following flags:
+
+| Flag               | Help                                                                      |
+|--------------------|---------------------------------------------------------------------------|
+| --abort-scantag    | the tag of a running scan that should be stopped                          |
+| --abort-scannerjob | the primary key of a scanner job whose most recent scan should be stopped |
+| --abort-scanstatus | the primary key of a ScanStatus object whose scan should be stopped       |
+
+#### Change the log level
+
+To change the log level of the running pipeline, use `--log-level=LEVEL` where
+`LEVEL` can be any of `critical`, `error`, `warn`, `warning`, `info` or
+`debug`.
+
+#### Switch profiling on and off
+
+To enable runtime profiling for pipeline components, use the `--profile`
+parameter. To switch it off again, use `--no-profile`.
+
+While runtime profiling is enabled, Python's `cProfile` profiler will record
+details of what each pipeline process is doing and how long it takes.
+Disabling runtime profiling will print the active profile to the log
+(sorted by the total time spent in each function call) before clearing it and
+switching the profiler off.
+
+Attempting to enable runtime profiling while it's already enabled (that is,
+calling `pipelinectl --profile` twice) will print and clear the active profile,
+effectively resetting the profiler without switching it off.
+
 
 ### `cleanup_account_results`
 
@@ -113,36 +144,12 @@ of the following arguments:
 * "UserErrorLog"
 * "Rule"
 
-#### Abort a scan
 
-To abort a scan, use **one** of the following flags:
+### `scanstatus`
 
-| Flag               | Help                                                                      |
-|--------------------|---------------------------------------------------------------------------|
-| --abort-scantag    | the tag of a running scan that should be stopped                          |
-| --abort-scannerjob | the primary key of a scanner job whose most recent scan should be stopped |
-| --abort-scanstatus | the primary key of a ScanStatus object whose scan should be stopped       |
-
-#### Change the log level
-
-To change the log level of the running pipeline, use `--log-level=LEVEL` where
-`LEVEL` can be any of `critical`, `error`, `warn`, `warning`, `info` or
-`debug`.
-
-#### Switch profiling on and off
-
-To enable runtime profiling for pipeline components, use the `--profile`
-parameter. To switch it off again, use `--no-profile`.
-
-While runtime profiling is enabled, Python's `cProfile` profiler will record
-details of what each pipeline process is doing and how long it takes.
-Disabling runtime profiling will print the active profile to the log
-(sorted by the total time spent in each function call) before clearing it and
-switching the profiler off.
-
-Attempting to enable runtime profiling while it's already enabled (that is,
-calling `pipelinectl --profile` twice) will print and clear the active profile,
-effectively resetting the profiler without switching it off.
+Replicates the useful information normally presented on the "scanner status" page of the UI for a
+given ScanStatus object.
+The command takes one argument: The primary key of the ScanStatus object.
 
 
 ## Report application

@@ -353,6 +353,31 @@ class ScanStatus(AbstractScanStatus):
         else:
             logger.warning("Tried to cancel a scannerjob which is not running. Doing nothing.")
 
+    def timeline(self) -> list[dict]:
+        """Returns a timeline of percentage scanned over time in the format:
+            [
+                {"x": <float>, "y": <float>},
+                {"x": <float>, "y": <float>},
+                ...
+            ]
+            where "x" denoted the time since scan start time in seconds and "y" denotes the
+            percentage of all objects scanned at the given time."""
+        snapshot_data = []
+        for snapshot in ScanStatusSnapshot.objects.filter(scan_status=self).iterator():
+            seconds_since_start = (snapshot.time_stamp - self.start_time).total_seconds()
+            # Calculating a new fraction, due to early versions of
+            # snapshots not knowing the total number of objects.
+            fraction_scanned = snapshot.scanned_objects/self.total_objects
+            snapshot_data.append({"x": seconds_since_start, "y": fraction_scanned*100})
+        return snapshot_data
+
+    def data_types(self) -> dict:
+        """Return a dict of size and time spent scanning different MIME types covered by scan."""
+        stats = {}
+        for stat in self.process_stats.iterator():
+            stats[stat.mime_type] = {"size": stat.total_size, "time": stat.total_time}
+        return stats
+
 
 class ScanStatusSnapshot(AbstractScanStatus):
     """

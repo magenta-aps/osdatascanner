@@ -30,3 +30,6 @@ libreoffice-nogui
 
 # Report
 openssl
+
+# Admin
+gnuplot

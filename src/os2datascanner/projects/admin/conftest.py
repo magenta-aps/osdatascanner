@@ -534,14 +534,16 @@ def basic_problem_message(basic_scan_tag, file_handle, basic_rule):
 def basic_scanstatus(basic_scanner):
     return ScanStatus.objects.create(
         scanner=basic_scanner,
-        scan_tag=basic_scanner._construct_scan_tag().to_json_object())
+        scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
+        total_sources=1)
 
 
 @pytest.fixture
 def web_scanstatus(web_scanner):
     return ScanStatus.objects.create(
         scanner=web_scanner,
-        scan_tag=web_scanner._construct_scan_tag().to_json_object())
+        scan_tag=web_scanner._construct_scan_tag().to_json_object(),
+        total_sources=1)
 
 
 @pytest.fixture
