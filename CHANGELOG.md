@@ -33,6 +33,8 @@
 
 - The leader statistics page now support filtering based on scannerjob.
 
+- New management command for displaying scanner status information in a CLI.
+
 ### General improvements
 
 - A new model ScannerReference have been added to the report module, keeping track of scanner info.
