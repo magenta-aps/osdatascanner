@@ -257,8 +257,8 @@ function prepareTable() {
     document.querySelector(".matches-expand-all").click();
   }
 
-  // Uncheck checkboxes on load.
-  $("input[name='table-checkbox']").prop("checked", false);
+  // Uncheck checkboxes on load (unless they have the "keep-value" class).
+  $("input[name='table-checkbox']:not('.keep-value')").prop("checked", false);
   $("#select-all").prop("checked", false);
   $(".table-checkbox__action").prop("disabled", true);
 
