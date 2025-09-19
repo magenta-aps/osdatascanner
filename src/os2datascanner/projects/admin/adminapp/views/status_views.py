@@ -9,7 +9,7 @@ from os2datascanner.projects.utils.pagination import EmptyPagePaginator
 
 from .user_error_log_views import count_new_errors
 from .views import RestrictedListView, RestrictedDetailView, RestrictedDeleteView
-from ..models.scannerjobs.scanner import ScanStatus, ScanStatusSnapshot
+from ..models.scannerjobs.scanner import ScanStatus
 from ....utils.view_mixins import CSVExportMixin
 
 
@@ -173,15 +173,7 @@ class StatusTimeline(RestrictedDetailView):
         context = super().get_context_data(**kwargs)
 
         status = context['status']
-        snapshot_data = []
-        for snapshot in ScanStatusSnapshot.objects.filter(scan_status=status).iterator():
-            seconds_since_start = (snapshot.time_stamp - status.start_time).total_seconds()
-            # Calculating a new fraction, due to early versions of
-            # snapshots not knowing the total number of objects.
-            fraction_scanned = snapshot.scanned_objects/status.total_objects
-            snapshot_data.append({"x": seconds_since_start, "y": fraction_scanned*100})
-
-        context['snapshot_data'] = snapshot_data
+        context['snapshot_data'] = status.timeline()
 
         return context
 

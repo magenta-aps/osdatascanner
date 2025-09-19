@@ -353,6 +353,24 @@ class ScanStatus(AbstractScanStatus):
         else:
             logger.warning("Tried to cancel a scannerjob which is not running. Doing nothing.")
 
+    def timeline(self) -> list[dict]:
+        """Returns a timeline of percentage scanned over time in the format:
+            [
+                {"x": <float>, "y": <float>},
+                {"x": <float>, "y": <float>},
+                ...
+            ]
+            where "x" denoted the time since scan start time in seconds and "y" denotes the
+            percentage of all objects scanned at the given time."""
+        snapshot_data = []
+        for snapshot in ScanStatusSnapshot.objects.filter(scan_status=self).iterator():
+            seconds_since_start = (snapshot.time_stamp - self.start_time).total_seconds()
+            # Calculating a new fraction, due to early versions of
+            # snapshots not knowing the total number of objects.
+            fraction_scanned = snapshot.scanned_objects/self.total_objects
+            snapshot_data.append({"x": seconds_since_start, "y": fraction_scanned*100})
+        return snapshot_data
+
 
 class ScanStatusSnapshot(AbstractScanStatus):
     """
