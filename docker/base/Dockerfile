@@ -50,7 +50,9 @@ RUN set -ex \
   && curl -fsSL "https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/supercronic-linux-amd64" \
      -o /usr/local/bin/supercronic \
   && echo "${SUPERCRONIC_SHA1SUM}  /usr/local/bin/supercronic" | sha1sum -c - \
-  && chmod +x /usr/local/bin/supercronic \
+  && chmod +x /usr/local/bin/supercronic
+
+RUN set -ex \
   # Install python dependencies and clean up build dependencies
   && pip install --no-cache-dir -r python-requirements/requirements-all.txt \
   && apt-get -y autoremove
