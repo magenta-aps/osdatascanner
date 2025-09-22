@@ -54,7 +54,7 @@ class RuleList(RestrictedListView):
             connected=Exists(
                 Rule.organizations.through.objects.filter(
                     organization_id=organization.uuid,
-                    pk=OuterRef('pk'))),
+                    rule_id=OuterRef('pk'))),
         )
 
         return system_rules
