@@ -142,7 +142,7 @@
     show: function() {
       this.$elm.trigger($.modal.BEFORE_OPEN, [this._ctx()]);
       if (this.options.showClose) {
-        this.closeButton = $('<button href="#close-modal" data-modal="modal:close" class="close-modal ' + this.options.closeClass + '" title="' + this.options.closeText + '">' + this.options.closeIcon + '</button>');
+        this.closeButton = $('<button data-modal="modal:close" class="close-modal ' + this.options.closeClass + '" title="' + this.options.closeText + '">' + this.options.closeIcon + '</button>');
         this.$elm.append(this.closeButton);
       }
       this.$elm.addClass(this.options.modalClass).appendTo(this.$blocker);

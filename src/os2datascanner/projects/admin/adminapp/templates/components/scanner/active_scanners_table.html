@@ -42,8 +42,8 @@
                     <span class="scanner-organization name__org">({{ scanner.organization }})</span>
                   {% endif %}
                 </div>
-
-                <div class="UI-container">
+ 
+                <div id="cleanup-stale-accounts" class="UI-container">
                   {% if scanner.compute_stale_accounts.exists %}
                     <a class="button button--icon-text-button stale-accounts"
                        href="#cleanup-accounts-modal"

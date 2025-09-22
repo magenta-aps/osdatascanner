@@ -627,6 +627,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
                 CoveredAccount.objects.filter(
                         scanner=self.object,
                         account_id__in=acc_dict["uuids"]).delete()
+
             return render(
                 request,
                 "components/scanner/scanner_cleanup_response.html",
