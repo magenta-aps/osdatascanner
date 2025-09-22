@@ -115,7 +115,8 @@ class _FormMixin:
         user_orgs = Organization.objects.filter(
                 UserWrapper(self.request.user).make_org_Q("uuid")
             )
-        requested_org_uuid = self.request.GET.get("organization")
+        requested_org_uuid = self.request.GET.get("organization") \
+            or self.request.POST.get("organization")
         if org := user_orgs.filter(uuid=requested_org_uuid).first():
             # A specific organization was requested, and the user has access to it. Use that one.
             pass
