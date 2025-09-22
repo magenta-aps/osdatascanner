@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 import pytest
 from sqlalchemy import (
         MetaData,
@@ -334,3 +335,25 @@ class TestRuleTranslation:
                 'SELECT "PartyInfo"."PartyID" \n'
                 'FROM "PartyInfo" \n'
                 'WHERE "PartyInfo"."PartyID" IS NOT NULL')
+
+    @pytest.mark.parametrize("obj,attrs,ev,raises", [
+        (SimpleNamespace(dog=20, cat=40, gerbil=60),
+         ["gerbil", "cat", "dog"], 60, False),
+        (SimpleNamespace(cat="fluffy"),
+         ["gerbil", "cat", "dog"], "fluffy", False),
+        (SimpleNamespace(cat="fluffy", dog="playful"),
+         ["gerbil", "dog"], "playful", False),
+        (SimpleNamespace(lolcat="can haz cheeseburger??",
+                         doge="such test. very robustness. wow"),
+         ["dog", "cat"], None, True),
+    ])
+    def test_get_first_attr(self, obj, attrs, ev, raises):
+        """The get_first_attr function correctly returns the first named
+        attribute present on an object."""
+        try:
+            assert dbu.get_first_attr(obj, *attrs) == ev
+            if raises:
+                pytest.fail("expected AttributeError")
+        except AttributeError:
+            if not raises:
+                pytest.fail("didn't expect this exception")
