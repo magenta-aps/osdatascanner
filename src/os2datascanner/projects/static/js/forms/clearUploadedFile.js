@@ -10,7 +10,7 @@ const emptyLabel = (f) => {
   if (f && f.dataset && typeof f.dataset.emptyLabel !== "undefined") {
     return f.dataset.emptyLabel;
   }
-  return "No file chosen";
+  return gettext("No file chosen");
 };
 
 // Clone the "new upload" template and insert the filename:
