@@ -14,6 +14,24 @@ from .sbsysdb_rule import SBSYSDBRule
 logger = structlog.get_logger("engine2")
 
 
+__undefined = object()
+
+
+def get_first_attr(obj: object, *attrs: str, default=__undefined):
+    """Returns the first of the named attributes present on the given object.
+    Raises AttributeError if none of the attributes are present and no default
+    value is provided."""
+    while attrs:
+        attr, *attrs = attrs
+        try:
+            return getattr(obj, attr)
+        except AttributeError:
+            if not attrs:
+                if default is not __undefined:
+                    return default
+                raise
+
+
 def resolve_complex_column_name(
         start: Table, col_name: str, all_tables) -> (Select, Column):
     """Given a Table at which to start and a complex column name that may
@@ -42,13 +60,8 @@ def resolve_complex_column_name(
             # allow the points-to relation to be set explicitly
             part, explicit_cast = part.split(" as ", maxsplit=1)
 
-        # ... we first select the "BehandlerID" column...
-        try:
-            link_column = getattr(here.c, part + "ID")
-        except AttributeError:
-            # Handle foreign key reference columns that don't use the "ID"
-            # name suffix convention
-            link_column = getattr(here.c, part)
+        # ... we first select the "BehandlerID" (or "Behandler") column...
+        link_column = get_first_attr(here.c, part + "ID", part)
 
         if not explicit_cast:
             # ... then we follow the foreign key to get a reference to the
@@ -67,7 +80,11 @@ def resolve_complex_column_name(
 
     # Finally, we take the last part of the column name ("Landekode") and look
     # it up in the table we've ended up at
-    return and_(*links), getattr(here.c, last)
+    # (here we assume that the "-ID" suffix is less likely to occur, but it's
+    # still allowed)
+    last_column = get_first_attr(here.c, last, last + "ID")
+
+    return and_(*links), last_column
 
 
 def resolve_complex_column_names(
