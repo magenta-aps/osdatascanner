@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 15:51+0200\n"
+"POT-Creation-Date: 2025-09-22 12:56+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -258,24 +258,6 @@ msgstr "API-nøgle"
 msgid "API keys"
 msgstr "API-nøgler"
 
-#: adminapp/models/rules.py adminapp/models/scannerjobs/scanner.py
-#: adminapp/templates/rules.html adminapp/templates/system_rules.html
-#: core/models/client.py organizations/templates/organizations/grants_list.html
-#: organizations/templates/organizations/org_table.html
-#: organizations/templates/organizations/orgunit_list.html
-msgid "name"
-msgstr "navn"
-
-#: adminapp/models/rules.py adminapp/templates/rules.html
-#: adminapp/templates/system_rules.html
-msgid "description"
-msgstr "beskrivelse"
-
-#: adminapp/models/rules.py adminapp/templates/rules.html
-#: adminapp/templates/system_rules.html
-msgid "sensitivity"
-msgstr "følsomhed"
-
 #: adminapp/models/rules.py
 msgid "number ID"
 msgstr "identifikationsnummer"
@@ -296,6 +278,24 @@ msgstr "sygemelding"
 #: adminapp/models/rules.py
 msgid "Danish"
 msgstr "dansk"
+
+#: adminapp/models/rules.py adminapp/models/scannerjobs/scanner.py
+#: adminapp/templates/rules.html adminapp/templates/system_rules.html
+#: core/models/client.py organizations/templates/organizations/grants_list.html
+#: organizations/templates/organizations/org_table.html
+#: organizations/templates/organizations/orgunit_list.html
+msgid "name"
+msgstr "navn"
+
+#: adminapp/models/rules.py adminapp/templates/rules.html
+#: adminapp/templates/system_rules.html
+msgid "description"
+msgstr "beskrivelse"
+
+#: adminapp/models/rules.py adminapp/templates/rules.html
+#: adminapp/templates/system_rules.html
+msgid "sensitivity"
+msgstr "følsomhed"
 
 #: adminapp/models/rules.py adminapp/templates/system_rules.html
 msgid "categories"
@@ -2861,6 +2861,10 @@ msgstr "oprettet"
 #: adminapp/views/views.py
 msgid "saved"
 msgstr "gemt"
+
+#: adminapp/views/views.py
+msgid "No scanner types are enabled for this installation"
+msgstr "Ingen scannertyper er slået til for denne installation"
 
 #: core/admin.py
 msgid "Users who are already Administrators are not shown."
