@@ -311,3 +311,26 @@ class TestRuleTranslation:
                 "'%' || lower(:Title_1) || '%')")
 
         assert compiled_expr.params["Title_1"] == "&More"
+
+    def test_complex_name_final_component_id(
+            self, *, metadata, partyinfo_table):
+        """The convenience syntax that allows the "-ID" suffix to be omitted
+        also works for the last component of a complex name."""
+        # Arrange
+        rule = dbr.SBSYSDBRule("Party", "neq", None)
+
+        # Act
+        column_labels = {}
+        sql_expr = dbu.convert_rule_to_select(
+                rule,
+                partyinfo_table, metadata.tables,
+                select(), column_labels)
+
+        # Assert
+        assert list(column_labels.keys()) == ["Party"]
+
+        compiled_expr = sql_expr.compile()
+        assert str(compiled_expr) == (
+                'SELECT "PartyInfo"."PartyID" \n'
+                'FROM "PartyInfo" \n'
+                'WHERE "PartyInfo"."PartyID" IS NOT NULL')
