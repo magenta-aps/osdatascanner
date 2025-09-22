@@ -119,8 +119,8 @@ class TestCountMatchesDocumentReport:
         assert dr.number_of_matches == old_matches - 1
 
     def test_document_report_resolution_time_when_status_is_none(self, test_org):
-        """ The resolution_time field should not be updated when the resolution_status field is set
-            to None """
+        """ If the resolution_status field is set to None the resolution_time field should be set
+            to None as well """
 
         # Arrange
         scanner, _ = ScannerReference.objects.get_or_create(
@@ -129,7 +129,7 @@ class TestCountMatchesDocumentReport:
             organization=test_org,
         )
 
-        dr: DocumentReport = DocumentReport.objects.create(
+        dr = DocumentReport.objects.create(
             path='test',
             sort_key='test',
             source_type='test',
@@ -137,7 +137,7 @@ class TestCountMatchesDocumentReport:
             scanner_job=scanner,
             resolution_time=datetime(2025, 1, 1, 19, 0, tzinfo=timezone.get_default_timezone())
         )
-        expected_resolution_time: datetime = dr.resolution_time
+        expected_resolution_time = None
 
         # Act
         dr.resolution_status = None
@@ -158,7 +158,7 @@ class TestCountMatchesDocumentReport:
             organization=test_org,
         )
 
-        dr: DocumentReport = DocumentReport.objects.create(
+        dr = DocumentReport.objects.create(
             path='test',
             sort_key='test',
             source_type='test',
@@ -167,10 +167,10 @@ class TestCountMatchesDocumentReport:
             resolution_time=datetime(2025, 1, 1, 19, 0).replace(tzinfo=tz.gettz(), microsecond=0)
         )
 
-        expected_resolution_time: datetime = datetime.now().replace(
+        expected_resolution_time = datetime.now().replace(
             tzinfo=tz.gettz(),
             microsecond=0
-            )
+        )
 
         # Act
         dr.resolution_status = 4
@@ -178,4 +178,38 @@ class TestCountMatchesDocumentReport:
 
         # Assert
         dr.refresh_from_db()
+        assert expected_resolution_time == dr.resolution_time
+
+    def test_document_report_resolution_time_field_when_resolution_status_has_not_changed(
+            self,
+            test_org):
+        """ The resolution_time field should not be updated if resolution status has not changed """
+
+        # Arrange
+        scanner, _ = ScannerReference.objects.get_or_create(
+            scanner_pk=20,
+            scanner_name='test_scanner',
+            organization=test_org,
+        )
+        dr = DocumentReport.objects.create(
+            path='test',
+            sort_key='test',
+            source_type='test',
+            resolution_status=2,
+            scanner_job=scanner,
+            resolution_time=datetime(2025, 1, 1, 19, 0).replace(tzinfo=tz.gettz(), microsecond=0)
+        )
+
+        expected_resolution_time = datetime(2025, 1, 1, 19, 0).replace(
+            tzinfo=tz.gettz(),
+            microsecond=0
+        )
+
+        # Act
+        dr.resolution_status = 2
+        dr.save()
+
+        # Assert
+        dr.refresh_from_db()
+
         assert expected_resolution_time == dr.resolution_time

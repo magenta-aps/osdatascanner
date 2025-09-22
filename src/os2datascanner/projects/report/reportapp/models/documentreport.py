@@ -212,6 +212,8 @@ class DocumentReport(models.Model):
         if self.resolution_status != self.__resolution_status:
             if self.resolution_status is not None:
                 self.resolution_time = time_now()
+            else:
+                self.resolution_time = None
 
         # Adds a timestamp if it's a new match:
         if not self.pk:
