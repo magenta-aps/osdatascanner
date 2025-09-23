@@ -43,6 +43,11 @@ class TestLeaderOverviewCommand:
         """All accounts directly managed by the chosen account are shown"""
         call_command("leader_overview", olsenbanden_organization.uuid, leader=egon_account.username)
 
+        benny_account.manager = egon_account
+        benny_account.save()
+        kjeld_account.manager = egon_account
+        kjeld_account.save()
+
         usernames = re.findall(
             r'\n\|\s+(\w+)\s+\|',
             capfd.readouterr()[0])

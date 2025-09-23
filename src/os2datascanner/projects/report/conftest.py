@@ -53,7 +53,6 @@ def benny_account(olsenbanden_organization, egon_account):
       first_name="Benny",
       last_name="Frandsen",
       organization=olsenbanden_organization,
-      manager=egon_account
     )
 
 
@@ -64,7 +63,6 @@ def kjeld_account(olsenbanden_organization, egon_account):
       first_name="Kjeld",
       last_name="Jensen",
       organization=olsenbanden_organization,
-      manager=egon_account
     )
 
 
