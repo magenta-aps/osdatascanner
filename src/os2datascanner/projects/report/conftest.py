@@ -47,22 +47,24 @@ def egon_account(olsenbanden_organization):
 
 
 @pytest.fixture
-def benny_account(olsenbanden_organization):
+def benny_account(olsenbanden_organization, egon_account):
     return Account.objects.create(
       username="skide_godt",
       first_name="Benny",
       last_name="Frandsen",
-      organization=olsenbanden_organization
+      organization=olsenbanden_organization,
+      manager=egon_account
     )
 
 
 @pytest.fixture
-def kjeld_account(olsenbanden_organization):
+def kjeld_account(olsenbanden_organization, egon_account):
     return Account.objects.create(
       username="jensen123",
       first_name="Kjeld",
       last_name="Jensen",
-      organization=olsenbanden_organization
+      organization=olsenbanden_organization,
+      manager=egon_account
     )
 
 
