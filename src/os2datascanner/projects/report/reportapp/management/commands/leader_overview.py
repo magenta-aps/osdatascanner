@@ -1,6 +1,5 @@
-"""Presents information about a given ScanStatus"""
+"""Presents the same information as the leader overview in the report module."""
 
-# import termplotlib as tpl
 import termtables as tt
 
 from django.core.management.base import BaseCommand
