@@ -1,8 +1,8 @@
 # Changelog
 
-## Version ???, ???
+## Version 3.30.0, 23rd September 2025
 
-""
+"Reap What You Sow 🐱 💉 "
 
 ### New in this release
 
