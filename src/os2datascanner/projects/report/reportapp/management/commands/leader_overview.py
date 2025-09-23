@@ -27,22 +27,35 @@ class Command(BaseCommand):
             metavar="PK"
         )
 
-    def handle(self, organization_id: int, *args, unit: int | None = None, **kwargs):
+        parser.add_argument(
+            "--leader",
+            help="an account username for the manager",
+            type=str,
+        )
+
+    def handle(self, organization_id: int, *args,
+               unit: int | None = None,
+               leader: str | None = None,
+               **kwargs):
         org = Organization.objects.get(pk=organization_id)
 
-        # It would probably be nice if this tool uses the exact same logic as the view.
+        accounts = Account.objects.filter(organization=org)
+
         if unit:
             org_unit = OrganizationalUnit.objects.get(organization=org, pk=unit)
-            accounts = Account.objects.filter(organization=org, positions__unit=org_unit)
-        else:
-            accounts = Account.objects.filter(organization=org)
+            accounts = accounts.filter(positions__unit=org_unit)
+        elif leader:
+            manager = Account.objects.get(username=leader, organization=org)
+            accounts = accounts.filter(manager=manager)
 
         accounts = accounts.distinct().with_result_stats().with_status()
 
         print("===LEADER OVERVIEW===")
         print("Organization:", org)
-        if org_unit:
+        if unit:
             print("Organizational unit:", org_unit)
+        if leader:
+            print("Manager:", manager)
         print("Number of employees:", accounts.count())
 
         headers = ["Username", "Name", "Results", "Withheld", "Status"]
