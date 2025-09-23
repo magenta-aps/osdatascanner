@@ -43,7 +43,7 @@ class Command(BaseCommand):
         if unit:
             org_unit = OrganizationalUnit.objects.get(organization=org, pk=unit)
             accounts = accounts.filter(positions__unit=org_unit)
-        elif leader:
+        if leader:
             manager = Account.objects.get(username=leader, organization=org)
             accounts = accounts.filter(manager=manager)
 
@@ -64,4 +64,7 @@ class Command(BaseCommand):
                        acc.withheld_results,
                        acc.status] for acc in accounts]
 
-        tt.print(table_rows, style=tt.styles.markdown, header=headers)
+        if table_rows:
+            tt.print(table_rows, style=tt.styles.markdown, header=headers)
+        else:
+            print("No employees found.")

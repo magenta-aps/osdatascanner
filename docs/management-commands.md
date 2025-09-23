@@ -178,7 +178,7 @@ Takes two optional arguments:
 
 * `--unit`: An OrganizationalUnit UUID. Restricts shown accounts to only those related to the unit.
 * `--leader`: An Account username. Restricts shown accounts to only those directly managed by the
-  account. If the `--unit` argument is also present, this argument will be ignored.
+  account.
 
 ### `initial_setup`
 
