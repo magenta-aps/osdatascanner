@@ -1,4 +1,4 @@
-FROM python:3.13.6-bookworm AS application
+FROM python:3.13.6-bookworm AS dproxy
 
 ENV PYTHONUNBUFFERED=1 \
   PYTHONPATH=/code/src/:$PYTHONPATH
