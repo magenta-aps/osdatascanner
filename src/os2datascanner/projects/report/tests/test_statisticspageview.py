@@ -101,12 +101,62 @@ class TestUserStatisticsPageView:
         assert scan_kun_egon_withheld not in choices
         assert scan_owned_by_olsenbanden not in choices
 
+    def test_delete_without_permissions(self, rf, egon_account):
+        # Arrange: Is just the egon_account fixture, no permissions.
+
+        # Act / Assert
+        with pytest.raises(PermissionDenied):
+            self.post_delete_user_statisticspage_response(rf, egon_account, "", "")
+
+    def test_delete_with_permissions(self, rf, egon_account, egon_email_alias):
+
+        # Arrange
+        scanner_pk = 1
+        scanner_name = "Scan af Egon"
+
+        create_reports_for(
+            egon_email_alias, num=10,
+            scanner_job_pk=scanner_pk, scanner_job_name=scanner_name
+        )
+
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="delete_documentreport")
+        )
+
+        # Verify that we indeed have results
+        assert egon_email_alias.reports.filter(
+            scanner_job__scanner_pk=scanner_pk,
+            scanner_job__scanner_name=scanner_name).count() == 10
+
+        # Act
+        response = self.post_delete_user_statisticspage_response(rf, egon_account,
+                                                                 scanner_name, scanner_pk)
+
+        # Assert
+        assert response.status_code == 200
+        assert egon_email_alias.reports.filter(
+            scanner_job__scanner_pk=scanner_pk,
+            scanner_job__scanner_name=scanner_name).count() == 0
+
     # Helper functions
 
     def get_user_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get('/statistics/view/' + params)
         request.user = account.user
         return UserStatisticsPageView.as_view()(request, **kwargs)
+
+    def post_delete_user_statisticspage_response(self, rf, account,
+                                                 scanner_name, scanner_pk, **kwargs):
+
+        request = rf.post(
+            f"/statistics/user/{account.pk}",
+            {
+                "pk": scanner_pk,
+                "name": scanner_name
+            }
+        )
+        request.user = account.user
+        return UserStatisticsPageView.as_view()(request, pk=account.pk, **kwargs)
 
 
 @pytest.mark.django_db
