@@ -317,9 +317,11 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
         org = alias.account.organization
         scanner, _ = ScannerReference.objects.get_or_create(
             scanner_pk=scanner_job_pk,
-            scanner_name=scanner_job_name,
-            organization=org,
-            only_notify_superadmin=only_notify_superadmin,
+            defaults={
+                "scanner_name": scanner_job_name,
+                "organization": org,
+                "only_notify_superadmin": only_notify_superadmin,
+            }
         )
 
         dr = DocumentReport.objects.create(

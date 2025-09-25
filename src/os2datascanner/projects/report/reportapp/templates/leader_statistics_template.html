@@ -227,15 +227,7 @@
           <tbody>
             {% if employees %}
               {% for employee in employees %}
-                <tr class="soft-load datatablex__row"
-                    hx-get="{% url 'employee' employee.uuid %}"
-                    hx-vals='{"scannerjob": "{{ chosen_scannerjob }}"}'
-                    hx-swap="outerHTML swap:200ms"
-                    hx-target="this"
-                    hx-trigger="revealed"
-                    hx-push-url="false">
-                  <td class="column column--loading" colspan="{{ num_cols }}">{% trans "Loading employee ..." %}</td>
-                </tr>
+                {% include "components/statistics/employee_template.html" with employee=employee chosen_scannerjob=chosen_scannerjob %}
               {% endfor %}
             {% else %}
               <tr class="datatablex__row">

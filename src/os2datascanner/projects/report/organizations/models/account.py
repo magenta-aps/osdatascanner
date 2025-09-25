@@ -150,7 +150,7 @@ class AccountQuerySet(models.QuerySet):
         - StatusChoices.BAD if they have no handled matches in the last 3 weeks
           OR if the ratio between handled matches and new matches for the last 3 weeks in below 75%
         - StatusChoices.OK otherwise.
-        This field should contain the same value as the 'match_status' property."""
+        """
         next_monday = timezone.now() + timedelta(weeks=1) - timedelta(
                 days=timezone.now().weekday(),
                 hours=timezone.now().hour,
@@ -332,8 +332,9 @@ class Account(Core_Account):
         return os.path.join(settings.MEDIA_ROOT, self._image.url) if self._image else None
 
     @property
-    def status(self):
-        return StatusChoices(self.match_status).label
+    def status_label(self):
+        # Requires calling with_status beforehand
+        return StatusChoices(self.handle_status).label
 
     class ReportType(Enum):
         RAW = auto()
@@ -428,23 +429,6 @@ class Account(Core_Account):
     @property
     def handled_matches(self) -> int:
         return self.get_report(Account.ReportType.PERSONAL, True).count()
-
-    @property
-    def match_status(self) -> StatusChoices:
-        matches_by_week = self.count_matches_by_week(weeks=3, exclude_shared=True)
-
-        total_new = 0
-        total_handled = 0
-        for week_obj in matches_by_week:
-            total_new += week_obj["new"]
-            total_handled += week_obj["handled"]
-
-        if matches_by_week[0]["matches"] == 0:
-            return StatusChoices.GOOD
-        elif total_handled == 0 or (total_new != 0 and total_handled/total_new < 0.75):
-            return StatusChoices.BAD
-        else:
-            return StatusChoices.OK
 
     @property
     def false_positive_rate(self) -> float:
