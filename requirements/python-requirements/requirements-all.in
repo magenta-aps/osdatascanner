@@ -3,7 +3,6 @@ pycryptodome
 pytest-django
 python-dateutil
 tenacity
-termtables
 
 # API
 gunicorn
@@ -22,6 +21,7 @@ sortedcontainers
 structlog
 toml
 termplotlib
+termtables
 
 # Engine
 chardet
