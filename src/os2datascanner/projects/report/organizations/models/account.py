@@ -37,6 +37,8 @@ from os2datascanner.core_organizational_structure.models.organization import \
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from os2datascanner.utils.system_utilities import time_now
 
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
+
 from os2datascanner.core_organizational_structure.serializer import (BaseBulkSerializer,
                                                                      SelfRelatingField)
 
@@ -633,6 +635,18 @@ class Account(Core_Account):
             # This account is an universal remediator. Return all scanners
             return self.organization.scanners.all()
         return self.organization.scanners.filter(scanner_pk__in=pks)
+
+    def get_scannerjobs_list(self):
+        return ScannerReference.objects.annotate(
+            total=Count(
+                'document_reports',
+                filter=Q(document_reports__in=self.get_report(Account.ReportType.PERSONAL)),
+            )
+        ).filter(
+            Q(organization=self.organization, scan_entire_org=True, only_notify_superadmin=False)
+            | Q(org_units__in=self.units.all(), only_notify_superadmin=False)
+            | Q(total__gt=0)
+        ).distinct()
 
 
 @receiver(post_save, sender=Account)
