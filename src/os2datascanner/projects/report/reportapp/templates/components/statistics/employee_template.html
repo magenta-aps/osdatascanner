@@ -15,9 +15,9 @@
 
   <td class="column column--matches-all column--numeral">
     <div class="matches_container">
-      {% if employee.false_positive_alarm %}
+      {% if employee.fp_ratio > 2org_fp_rate %}
         <i id="warning" class="material-symbols"
-          title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.false_positive_percentage }}%">
+          title="{% trans "The user's false positive rate is unusually high:" %} {{ employee.fp_percentage|floatformat:2 }}%">
           warning
         </i>
       {% endif %}

@@ -606,6 +606,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         qs = qs.with_status()
 
+        qs = qs.with_fp_ratio()
+
         qs = self.order_employees(qs)
 
         self.employee_count = qs.count()
@@ -623,6 +625,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
+        context['2org_fp_rate'] = 2 * self.org.false_positive_rate
 
         # Determine number of columns from context
         context['num_cols'] = 4 + context['show_retention_column'] + self.request.user.has_perm(

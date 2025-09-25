@@ -20,7 +20,8 @@ from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.conf import settings
 from django.db import models
-from django.db.models import Count, Q, Case, When, Value, F, IntegerField, FloatField
+from django.db.models import (Count, Q, Case, When, Value, F, IntegerField, FloatField,
+                              ExpressionWrapper)
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -201,6 +202,46 @@ class AccountQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             )
+
+    def with_fp_ratio(self):
+        """
+        Annotates each Account with `fp_ratio` which is the number of false positives
+        divided by the total number of handled reports.
+        """
+        from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+        FP = DocumentReport.ResolutionChoices.FALSE_POSITIVE
+        own_reports = (
+            ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+            & Q(
+                aliases__shared=False,
+                aliases__reports__number_of_matches__gte=1,
+                aliases__reports__only_notify_superadmin=False,
+                aliases__reports__scanner_job__organization=F('organization'),
+            )
+        )
+        qs = self.annotate(
+            _handled=Count(
+                'aliases__reports',
+                filter=own_reports & Q(aliases__reports__resolution_status__isnull=False),
+            ),
+            _fp=Count(
+                'aliases__reports',
+                filter=own_reports & Q(aliases__reports__resolution_status=FP),
+            ),
+        )
+        qs = qs.annotate(
+            fp_ratio=Case(
+                When(
+                    _handled__gt=0,
+                    then=F('_fp') * 1.0 / F('_handled'),
+                ),
+                default=0.0,
+                output_field=FloatField(),
+            )
+        )
+        return qs.annotate(
+            fp_percentage=ExpressionWrapper(F('fp_ratio') * 100, output_field=FloatField())
+        )
 
 
 class AccountManager(models.Manager):
@@ -442,14 +483,6 @@ class Account(Core_Account):
     @property
     def false_positive_percentage(self) -> float:
         return round(self.false_positive_rate * 100, 2)
-
-    def false_positive_alarm(self) -> bool:
-        org_fp_rate = self.organization.false_positive_rate
-        acc_fp_rate = self.false_positive_rate
-
-        # If the account's false positive rate is more than twice the
-        # organization's false positive rate, raise the alarm!
-        return acc_fp_rate > 2*org_fp_rate
 
     def count_matches_by_week(self, weeks: int = 52, exclude_shared=False):  # noqa: CCR001
         """
