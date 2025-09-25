@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 3.30.x, xx xxx 2025
+
+""
+
+### New in this release
+
+### General improvements
+
+### Bugfixes
+
+- Fixed the resolution_time field in DocumentReport so it will be set to None if the 
+  resolution_status is set to None.
+
 ## Version 3.30.0, 23rd September 2025
 
 "Reap What You Sow 🐱 💉 "
