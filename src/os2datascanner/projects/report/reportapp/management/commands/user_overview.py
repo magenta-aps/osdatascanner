@@ -58,5 +58,8 @@ class Command(BaseCommand):
         scannerjobs_queryset = account.get_scannerjobs_list()
         scanner_table = [[scanner.scanner_name, scanner.total] for scanner in scannerjobs_queryset]
 
-        tt.print(scanner_table, header=["Scanner name", "Total results"],
-                 style=tt.styles.markdown, alignment="lc")
+        if scanner_table:
+            tt.print(scanner_table, header=["Scanner name", "Total results"],
+                     style=tt.styles.markdown, alignment="lc")
+        else:
+            print("No scanner jobs found for this user.")
