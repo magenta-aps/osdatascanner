@@ -5,13 +5,6 @@ from django.core.management.base import BaseCommand
 from os2datascanner.projects.report.organizations.models import Account
 
 
-def boolean_symbol(boolean):
-    if boolean:
-        return "✅"
-    else:
-        return "❌"
-
-
 def weeks_dict_to_table(d: dict):
     return [[w["weeknum"], w["matches"], w["new"], w["handled"]] for w in d]
 
