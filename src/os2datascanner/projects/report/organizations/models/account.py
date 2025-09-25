@@ -37,8 +37,6 @@ from os2datascanner.core_organizational_structure.models.organization import \
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from os2datascanner.utils.system_utilities import time_now
 
-from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
-
 from os2datascanner.core_organizational_structure.serializer import (BaseBulkSerializer,
                                                                      SelfRelatingField)
 
@@ -637,7 +635,7 @@ class Account(Core_Account):
         return self.organization.scanners.filter(scanner_pk__in=pks)
 
     def get_scannerjobs_list(self):
-        return ScannerReference.objects.annotate(
+        return self.organization.scanners.annotate(
             total=Count(
                 'document_reports',
                 filter=Q(document_reports__in=self.get_report(Account.ReportType.PERSONAL)),
