@@ -190,7 +190,7 @@ class AccountQuerySet(models.QuerySet):
                     _new_count__gt=0,
                     then=(F('_handled_count') * 1.0 / F('_new_count'))
                 ),
-                default=0.0,
+                default=1.0,
                 output_field=FloatField()))
 
         return qs.annotate(handle_status=Case(

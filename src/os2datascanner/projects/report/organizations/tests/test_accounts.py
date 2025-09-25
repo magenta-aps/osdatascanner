@@ -36,7 +36,8 @@ class TestAccount:
         make_matched_document_reports_for(egon_remediator_alias, handled=5, amount=10)
 
         assert egon_account.match_count == all_matches - handled_matches
-        assert egon_account.match_status == StatusChoices.OK
+        egon = Account.objects.all().with_status().get(pk=egon_account.pk)
+        assert egon.handle_status == StatusChoices.OK
 
     @pytest.mark.parametrize("handled_num,all_num,status", [
         (100, 100, StatusChoices.GOOD),
@@ -56,7 +57,8 @@ class TestAccount:
         make_matched_document_reports_for(egon_email_alias, handled=handled_num, amount=all_num)
 
         assert all_num-handled_num == egon_account.match_count
-        assert egon_account.match_status == status
+        egon = Account.objects.all().with_status().get(pk=egon_account.pk)
+        assert egon.handle_status == status
 
     def test_save_with_no_new_matches_and_no_handled(self, egon_account, egon_email_alias):
         """If a user has not handled any matches, their status should be 'BAD',
@@ -74,7 +76,8 @@ class TestAccount:
                 days=100))
 
         assert all_matches-handled == egon_account.match_count
-        assert egon_account.match_status == StatusChoices.BAD
+        egon = Account.objects.all().with_status().get(pk=egon_account.pk)
+        assert egon.handle_status == StatusChoices.BAD
 
     @pytest.mark.parametrize('num_weeks', [
         (-3),
@@ -366,87 +369,6 @@ class TestAccount:
 
         # Assert
         assert qs.first().unhandled_results == egon_account.match_count
-
-    @pytest.mark.parametrize('handled_matches,total_matches',
-                             [(0, 1), (1, 0), (7, 10), (8, 10), (3, 4), (10, 10)])
-    def test_account_with_status_equals_match_status(
-            self, egon_email_alias, egon_account, handled_matches, total_matches):
-        """Check that with_status annotates the same value as given by match_status."""
-        # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=handled_matches,
-            amount=total_matches)
-        qs = Account.objects.filter(pk=egon_account.pk)
-        assert qs.count() == 1
-
-        # Act
-        qs = qs.with_status()
-
-        # Assert
-        assert qs.first().handle_status == egon_account.match_status
-
-    @pytest.mark.parametrize('days_ago', list(range(13, 22)))
-    def test_account_with_status_old_matches(self, egon_email_alias, egon_account, days_ago):
-        """Check that with_status gives the same output for reports aged between 2 and 3 weeks."""
-        # Arrange
-        t = timezone.now() - datetime.timedelta(days=days_ago)
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=1,
-            amount=2,
-            created=t)
-        DocumentReport.objects.all().update(resolution_time=t)
-        qs = Account.objects.filter(pk=egon_account.pk)
-        assert qs.count() == 1
-
-        # Act
-        qs = qs.with_status()
-
-        # Assert
-        assert qs.first().handle_status == egon_account.match_status
-
-    def test_account_with_status_shared_alias(
-            self, egon_email_alias, egon_shared_email_alias, egon_account):
-        """Using with_status on a queryset of Accounts should give the same result as
-        using the property match_status, both of which ignoring matches from shared aliases."""
-        # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=4,
-            amount=5)
-
-        qs = Account.objects.filter(pk=egon_account.pk)
-        assert qs.count() == 1
-
-        make_matched_document_reports_for(egon_shared_email_alias, handled=0, amount=10)
-
-        # Act
-        qs = qs.with_status()
-
-        # Assert
-        assert qs.first().handle_status == egon_account.match_status
-
-    def test_account_with_status_remediator_alias(
-            self, egon_email_alias, egon_remediator_alias, egon_account):
-        """Using with_status on a queryset of Accounts should give the same result as
-        using the property match_status, both of which ignoring matches from remediator aliases."""
-        # Arrange
-        make_matched_document_reports_for(
-            egon_email_alias,
-            handled=4,
-            amount=5)
-
-        qs = Account.objects.filter(pk=egon_account.pk)
-        assert qs.count() == 1
-
-        make_matched_document_reports_for(egon_remediator_alias, handled=0, amount=10)
-
-        # Act
-        qs = qs.with_status()
-
-        # Assert
-        assert qs.first().handle_status == egon_account.match_status
 
     def test_account_is_account_manager_true_two_accounts(self, egon_account, benny_account,
                                                           kjeld_account):
