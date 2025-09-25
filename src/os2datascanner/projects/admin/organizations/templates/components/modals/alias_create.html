@@ -6,7 +6,7 @@
 {% endblock %}
 
 
-<form class="form"
+<form class="form add-alias-modal"
       hx-post="{% url 'create-alias' organization.slug account.uuid %}">
   {% csrf_token %}
 

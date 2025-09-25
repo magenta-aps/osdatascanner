@@ -269,6 +269,11 @@
       width: 100%;
     }
 
+    // Fits the content inside the alias modal in the Safari browser
+    &.add-alias-modal {
+      height: fit-content;
+    }
+
     .modal__form__title {
       padding-bottom: 1.5rem; // ***** This can be removed after the form style sheet has been refactored *****
       > h2 {
