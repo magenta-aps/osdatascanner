@@ -32,8 +32,8 @@ class Command(BaseCommand):
             type=str,
         )
 
-    def handle(self, organization_id: int, *args,
-               unit: int | None = None,
+    def handle(self, organization_id: str, *args,
+               unit: str | None = None,
                leader: str | None = None,
                **kwargs):
         org = Organization.objects.get(pk=organization_id)
