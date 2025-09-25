@@ -1,5 +1,3 @@
-"""Presents the same information as the leader overview in the report module."""
-
 import termtables as tt
 
 from django.core.management.base import BaseCommand
@@ -9,6 +7,7 @@ from os2datascanner.projects.report.organizations.models import (
 
 
 class Command(BaseCommand):
+    """Presents the same information as the leader overview in the report module."""
     help = __doc__
 
     def add_arguments(self, parser):
