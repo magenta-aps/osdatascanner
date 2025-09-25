@@ -43,7 +43,12 @@
                   {% endif %}
                 </div>
  
-                <div id="cleanup-stale-accounts" class="UI-container">
+                <div id="cleanup-stale-accounts"
+                     class="UI-container"
+                     hx-get=""
+                     hx-trigger="update-stale-accounts"
+                     hx-target="#cleanup-stale-accounts"
+                     hx-select="#cleanup-stale-accounts">
                   {% if scanner.compute_stale_accounts.exists %}
                     <a class="button button--icon-text-button stale-accounts"
                        href="#cleanup-accounts-modal"

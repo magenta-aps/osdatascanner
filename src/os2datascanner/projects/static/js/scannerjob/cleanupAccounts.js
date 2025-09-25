@@ -3,7 +3,7 @@ $('#cleanup-accounts-modal').on($.modal.CLOSE, function () {
   wrapp.dispatchEvent(new Event('modal-closed'));
 });
 
-// Adds event listener to reload page to remove stale accounts button.
-document.querySelector('#cleanup-stale-accounts').addEventListener('modal-closed', function () {
-  location.reload();
+// Adds event listener and event to reload stale accounts button.
+document.querySelector('#cleanup-stale-accounts').addEventListener('modal-closed', function (e) {
+  e.target.dispatchEvent(new Event("update-stale-accounts"));
 });
