@@ -22,7 +22,7 @@ for key, value in get_3_layer_config(
         logger.debug("adding setting!", setting=key)
         globals()[key] = value
 
-del key, Path, value, logger, get_3_layer_config
+del key, Path, value, get_3_layer_config
 
 LOGGING = {
         'version': 1,
@@ -120,3 +120,30 @@ structlog.configure(
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
+
+
+if globals()["FORCE_LEGACY_OPENSSL_PROVIDER"]:
+    import ctypes
+
+    libssl = ctypes.CDLL("libssl.so")
+    for provider in ("default", "legacy",):
+        # OSSL_PROVIDER_load returns a pointer to the provider object,
+        # represented in Python as a plain integer, or NULL/0 if it couldn't
+        # be loaded
+        if libssl.OSSL_PROVIDER_load(None, provider.encode()) == 0:
+            raise ImportError(f"failed to enable provider \"{provider}\"")
+
+    try:
+        import hashlib
+        hashctx = hashlib.new("md4", b"test")
+        if hashctx.hexdigest() != "db346d691d7acc4dc2625db19f9e3f52":
+            raise ValueError("MD4 hash miscalculated(?)")
+    except ValueError as ex:
+        raise ImportError("failed to enable legacy provider") from ex
+
+    logger.warning("enabled legacy OpenSSL provider")
+
+    del ctypes, libssl, provider, hashlib, hashctx
+
+
+del logger
