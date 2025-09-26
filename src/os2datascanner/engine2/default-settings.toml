@@ -16,6 +16,10 @@ USE_I18N = true
 # outside of interactive use
 LANGUAGES = ["da"]
 
+# Should engine2 attempt to forcibly enable the legacy OpenSSL provider?
+# (required for some on-premises Exchange scans)
+FORCE_LEGACY_OPENSSL_PROVIDER = true
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"

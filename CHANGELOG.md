@@ -1,14 +1,13 @@
 # Changelog
 
-## Version 3.30.x, xx xxx 2025
+## Version 3.30.1, 26th September 2025
 
-""
-
-### New in this release
-
-### General improvements
+"... And Sow What You'll Reap"
 
 ### Bugfixes
+
+- On-premises Exchange Web Services scans for Windows environments with
+  outdated authentication methods work properly again.
 
 - Fixed the resolution_time field in DocumentReport so it will be set to None if the 
   resolution_status is set to None.
