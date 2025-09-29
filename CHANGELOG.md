@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 3.3X.X, XX XX 202X
+
+### New in this release
+
+- New management command for displaying information from the leader overview in a CLI.
+
+### General improvements
+
+### Bugfixes
+
 ## Version 3.30.1, 26th September 2025
 
 "... And Sow What You'll Reap"

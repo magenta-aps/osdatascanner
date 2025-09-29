@@ -168,6 +168,17 @@ Provided a PK of a scanner job finds associated document reports and lists:
 To execute this command run:
 `docker-compose exec report python manage.py scannerjob_info <PK>`
 
+### `leader_overview`
+
+Replicates the information found on the leader overview page of the report module UI.
+
+Takes an organization UUID as an argument and shows all accounts related to that organization.
+
+Takes two optional arguments:
+
+* `--unit`: An OrganizationalUnit UUID. Restricts shown accounts to only those related to the unit.
+* `--leader`: An Account username. Restricts shown accounts to only those directly managed by the
+  account.
 
 ### `initial_setup`
 

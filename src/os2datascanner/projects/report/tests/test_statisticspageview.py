@@ -1024,7 +1024,8 @@ class TestDPOStatisticsPageView:
         create_reports_for(egon_email_alias, num=1)
 
         view = self.get_dpo_statisticspage_object()
-        created_timestamp = view.matches[0].get('created_month')
+        matches = view.base_query()
+        created_timestamp = matches[0].get('created_month')
         now = timezone.now().date()
 
         # If a document report has no created_timestamp it is assigned the date 1970/1/1.
@@ -1074,9 +1075,12 @@ class TestDPOStatisticsPageView:
 
         view = self.get_dpo_statisticspage_object()
 
-        _, _, _, view.created_month, view.resolved_month = view.make_data_structures(view.matches)
+        matches = view.base_query()
 
-        new_matches_by_month = view.count_new_matches_by_month(test_date)
+        _, _, _, created_month, _ = view.make_data_structures(matches)
+
+        new_matches_by_month = view.count_new_matches_by_month(matches, created_month,
+                                                               current_date=test_date)
 
         if month_matches == (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
             assert len(new_matches_by_month) == 0
@@ -1118,9 +1122,13 @@ class TestDPOStatisticsPageView:
 
         view = self.get_dpo_statisticspage_object()
 
-        _, _, _, view.created_month, view.resolved_month = view.make_data_structures(view.matches)
+        matches = view.base_query()
 
-        unhandled_by_month = view.count_unhandled_matches_by_month(test_date)
+        _, _, _, created_month, resolved_month = view.make_data_structures(matches)
+
+        unhandled_by_month = view.count_unhandled_matches_by_month(matches, created_month,
+                                                                   resolved_month,
+                                                                   current_date=test_date)
 
         if month_unhandled == (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
             assert len(unhandled_by_month) == 0
