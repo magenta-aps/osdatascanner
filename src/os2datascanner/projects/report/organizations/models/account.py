@@ -641,7 +641,7 @@ class Account(Core_Account):
                 filter=Q(document_reports__in=self.get_report(Account.ReportType.PERSONAL)),
             )
         ).filter(
-            Q(organization=self.organization, scan_entire_org=True, only_notify_superadmin=False)
+            Q(scan_entire_org=True, only_notify_superadmin=False)
             | Q(org_units__in=self.units.all(), only_notify_superadmin=False)
             | Q(total__gt=0)
         ).distinct()
