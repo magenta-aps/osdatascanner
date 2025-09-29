@@ -371,7 +371,8 @@ msgraph_sharepoint_scanner_fields = [
      "graph_grant",
      "scan_drives",
      "scan_lists",
-     "sharepoint_sites"
+     "sharepoint_sites",
+     "scan_descriptions",
  ]
 
 

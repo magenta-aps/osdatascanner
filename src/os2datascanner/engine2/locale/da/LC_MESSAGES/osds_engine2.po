@@ -24,6 +24,11 @@ msgstr "mappen \"{folder}\" af mailkontoen {mail_account}"
 
 #: locale/../model/msgraph/lists.py
 #, python-brace-format
+msgid "Description in list \"{list_name}\""
+msgstr "Beskrivelse i liste \"{list_name}\""
+
+#: locale/../model/msgraph/lists.py
+#, python-brace-format
 msgid "List \"{list_name}\" (on site {site_name})"
 msgstr "Liste \"{list_name}\" (på websted {site_name})"
 

@@ -473,6 +473,10 @@ msgid "scan drives"
 msgstr "scan SharePoint fildrev"
 
 #: adminapp/models/scannerjobs/msgraph.py
+msgid "scan list descriptions"
+msgstr "Scan listebeskrivelser"
+
+#: adminapp/models/scannerjobs/msgraph.py
 msgid "SharePoint sites to scan"
 msgstr "SharePoint sider til scanning"
 
