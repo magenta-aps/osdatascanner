@@ -16,6 +16,8 @@
 
 ### General improvements
 
+- CSV export for DPO statistics now use applied filters.
+
 ### Bugfixes
 
 - Fixed the stale accounts button in the scannerjob overview in the admin module. The button will

@@ -481,8 +481,6 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
         # Adds scannername and orgunit to name of csv file
         scanner = None
         if (scanner_pk := request.GET.get('scannerjob')) and scanner_pk != 'all':
-            # TODO: This case is never reached when using the button,
-            # since 'scannerjob' isn't passed along in the get request.
             if ScannerReference.objects.filter(scanner_pk=scanner_pk).exists():
                 scanner = ScannerReference.objects.get(scanner_pk=scanner_pk)
             else:

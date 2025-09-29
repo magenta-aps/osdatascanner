@@ -2,6 +2,7 @@ import csv
 from enum import Enum
 
 from django.http import StreamingHttpResponse
+from urllib.parse import quote
 
 from os2datascanner.utils.system_utilities import time_now
 
@@ -78,7 +79,7 @@ class CSVExportMixin:
             content_type="text/csv",
             headers={
                 "Content-Disposition":
-                f'attachment; filename="{time_now()}-{self.exported_filename}.csv"'})
+                f'attachment; filename="{time_now()}-{quote(self.exported_filename)}.csv"'})
 
         return response
 
