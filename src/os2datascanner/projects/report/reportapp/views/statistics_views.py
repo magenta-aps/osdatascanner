@@ -63,14 +63,13 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
     # TODO: We need to figure out multi tenancy. I.e. only view stuff from your organization
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+    @staticmethod
+    def base_query():
         placeholder_time = timezone.make_aware(timezone.datetime(1970, 1, 1))
         today = timezone.now()
         a_month_ago = today - timedelta(days=30)
 
-        self.matches = DocumentReport.objects.filter(number_of_matches__gte=1).annotate(
+        return DocumentReport.objects.filter(number_of_matches__gte=1).annotate(
             created_recently=Case(
                 When(
                     created_timestamp__gte=a_month_ago,
@@ -125,7 +124,52 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         else:
             raise Account.DoesNotExist(_("The user does not have an account."))
 
+    @staticmethod
+    def filter_by_unit(reports, unit: OrganizationalUnit):
+        descendant_units = unit.get_descendants(include_self=True)
+        positions = Position.employees.filter(unit__in=descendant_units)
+        accounts = Account.objects.filter(positions__in=positions).distinct()
+
+        return (
+            reports.annotate(
+                total_relations=Count(
+                    'alias_relations',
+                    distinct=True
+                ),
+                shared_relations=Count(
+                    'alias_relations',
+                    filter=Q(alias_relations__shared=True),
+                    distinct=True
+                )
+            )
+            # Ensure at least one relation is to these accounts
+            .filter(alias_relations__account__in=accounts)
+            # Keep only if not all relations are shared (i.e., at least one is not shared)
+            .filter(~Q(total_relations=F('shared_relations')))
+        )
+
+    @staticmethod
+    def source_type_progress(source_type_data: dict):
+        progress_dict = {}
+        progress_dict["total_by_source"] = {}
+        progress_dict["unhandled_by_source"] = {}
+
+        for src_type, values in source_type_data.items():
+            # The progress is calculated by subtracting the number of recently handled matches
+            # from the number of recently created matches
+            progress_dict[f'{src_type}_monthly_progress'] = \
+                values['created_recent'] - values['handled_recent']
+
+            progress_dict['total_by_source'][src_type] = {
+                'label': values['label'], 'count': values['total']}
+            progress_dict['unhandled_by_source'][src_type] = {
+                'label': values['label'], 'count': values['unhandled']}
+
+        return progress_dict
+
     def get(self, request, *args, **kwargs):
+        self.matches = self.base_query()
+
         self._check_access(request)
 
         response = super().get(request, *args, **kwargs)
@@ -145,27 +189,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                              or self.request.user.account.is_universal_dpo)
             if (self.request.user.is_superuser or confirmed_dpo):
                 selected_unit = self.user_units.get(uuid=orgunit)
-                descendant_units = selected_unit.get_descendants(include_self=True)
-                positions = Position.employees.filter(unit__in=descendant_units)
-                accounts = Account.objects.filter(positions__in=positions).distinct()
-
-                self.matches = (
-                    self.matches.annotate(
-                        total_relations=Count(
-                            'alias_relations',
-                            distinct=True
-                        ),
-                        shared_relations=Count(
-                            'alias_relations',
-                            filter=Q(alias_relations__shared=True),
-                            distinct=True
-                        )
-                    )
-                    # Ensure at least one relation is to these accounts
-                    .filter(alias_relations__account__in=accounts)
-                    # Keep only if not all relations are shared (i.e., at least one is not shared)
-                    .filter(~Q(total_relations=F('shared_relations')))
-                )
+                self.matches = self.filter_by_unit(self.matches, selected_unit)
             else:
                 raise OrganizationalUnit.DoesNotExist(
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
@@ -178,14 +202,17 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         (context['match_data'],
          source_type_data,
          context['resolution_status'],
-         self.created_month,
-         self.resolved_month) = self.make_data_structures(self.matches)
+         created_month,
+         resolved_month) = self.make_data_structures(self.matches)
 
         context['unhandled_matches_by_month'] = \
-            self.count_unhandled_matches_by_month(today, num_months=number_of_months)
+            self.count_unhandled_matches_by_month(self.matches, created_month,
+                                                  resolved_month, current_date=today,
+                                                  num_months=number_of_months)
 
         context['new_matches_by_month'] = \
-            self.count_new_matches_by_month(today, num_months=number_of_months)
+            self.count_new_matches_by_month(self.matches, created_month,
+                                            current_date=today, num_months=number_of_months)
 
         # This is removed, until we make some structural changes, which should
         # prevent clients from having stupid amounts of organizational data.
@@ -197,19 +224,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         #     context['matches_by_org_unit_handled'] = highest_handled_ou
         #     context['matches_by_org_unit_total'] = highest_total_ou
 
-        context['total_by_source'] = {}
-        context['unhandled_by_source'] = {}
-
-        for src_type, values in source_type_data.items():
-            # The progress is calculated by subtracting the number of recently handled matches
-            # from the number of recently created matches
-            context[f'{src_type}_monthly_progress'] = \
-                values['created_recent'] - values['handled_recent']
-
-            context['total_by_source'][src_type] = {
-                'label': values['label'], 'count': values['total']}
-            context['unhandled_by_source'][src_type] = {
-                'label': values['label'], 'count': values['unhandled']}
+        context = context | self.source_type_progress(source_type_data)
 
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
@@ -235,7 +250,8 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                            f"{request.user}: {e}")
         return redirect(reverse_lazy('index'))
 
-    def make_data_structures(self, matches):  # noqa C901, CCR001
+    @staticmethod
+    def make_data_structures(matches):  # noqa C901, CCR001
         """To avoid making multiple separate queries to the DocumentReport
         table, we instead use the one call defined previously, then packages
         data into separate structures, which can then be used for statistical
@@ -303,18 +319,28 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return handled_unhandled, source_type, resolution_status, created_month, resolved_month
 
-    def count_unhandled_matches_by_month(self, current_date, num_months=12):
+    @staticmethod
+    def count_unhandled_matches_by_month(matches, created_month: dict, resolved_month: dict,
+                                         current_date=timezone.now(), num_months=12):
         """Counts new matches and resolved matches by month for the last year,
         rotates the current month to the end of the list, inserts and subtracts using the counts
-        and then makes a running total"""
+        and then makes a running total.
+
+        The "created_month" and "resolved_month" input variables should contain dicts on the form:
+
+        {
+            <date>: <count>,
+            <date>: <count>,
+            ...
+        }"""
         a_year_ago: date = (
                 current_date - timedelta(days=365)).date().replace(day=1)
 
-        new_matches_by_month = sort_by_keys(self.created_month)
+        new_matches_by_month = sort_by_keys(created_month)
 
-        resolved_matches_by_month = sort_by_keys(self.resolved_month)
+        resolved_matches_by_month = sort_by_keys(resolved_month)
 
-        if self.matches.exists():
+        if matches.exists():
             earliest_month = min(
                     key
                     for key in new_matches_by_month.keys() | resolved_matches_by_month.keys())
@@ -353,11 +379,21 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         return [[month_abbr[month_start.month] + " " + str(month_start.year), total]
                 for month_start, total in list(_make_running_total())[-num_months:]]
 
-    def count_new_matches_by_month(self, current_date, num_months=12):
+    @staticmethod
+    def count_new_matches_by_month(matches, created_month: dict,
+                                   current_date=timezone.now(), num_months=12):
         """Counts matches by months for the last year
-        and rotates them by the current month"""
+        and rotates them by the current month
 
-        matches_by_month = sort_by_keys(self.created_month)
+        The "created_month" input variable should contain a dict on the form:
+
+        {
+            <date>: <count>,
+            <date>: <count>,
+            ...
+        }"""
+
+        matches_by_month = sort_by_keys(created_month)
 
         # We only want data from the last <num_months> months
         cutoff_day = ((current_date - relativedelta(months=num_months-1)).replace(day=1)).date()
@@ -368,7 +404,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         a_year_ago: date = (
                 current_date - timedelta(days=365)).date().replace(day=1)
 
-        if self.matches.exists() and matches_by_month:
+        if matches.exists() and matches_by_month:
             earliest_month = min(
                     key
                     for key in matches_by_month.keys())
@@ -437,6 +473,8 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
     def get(self, request, *args, **kwargs):
         if not settings.DPO_CSV_EXPORT:
             raise PermissionDenied
+
+        self.matches = self.base_query()
 
         self._check_access(request)
 
