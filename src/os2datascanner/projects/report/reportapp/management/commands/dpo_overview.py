@@ -90,10 +90,10 @@ class Command(BaseCommand):
 
         # Percentage of results handled
         print("\nHandled results")
+        handled_results = match_data["handled"]["count"]
+        total_results = (match_data["handled"]["count"]+match_data["unhandled"]["count"])*100
         print(
-            round(
-                match_data["handled"]["count"] /
-                (match_data["handled"]["count"]+match_data["unhandled"]["count"])*100, 2),
+            round(handled_results / total_results, 2) if total_results > 0 else "0",
             "% handled")
 
         print(match_data["handled"]["count"],
@@ -122,25 +122,26 @@ class Command(BaseCommand):
         unhandled_matches_by_month = \
             DPOStatisticsPageView.count_unhandled_matches_by_month(reports, created_month,
                                                                    resolved_month)
+        if unhandled_matches_by_month:
+            x_data, y_data = (
+                [i for i in range(len(unhandled_matches_by_month))],
+                [data_point[1] for data_point in unhandled_matches_by_month]
+            )
 
-        x_data, y_data = (
-            [i for i in range(len(unhandled_matches_by_month))],
-            [data_point[1] for data_point in unhandled_matches_by_month]
-        )
-
-        fig = tpl.figure()
-        fig.plot(x_data, y_data, xlabel=f"Months since {unhandled_matches_by_month[0][0]}")
-        fig.show()
+            fig = tpl.figure()
+            fig.plot(x_data, y_data, xlabel=f"Months since {unhandled_matches_by_month[0][0]}")
+            fig.show()
 
         # Development overview -- new results per month
         print("\nNew results per month")
         new_matches_by_month = DPOStatisticsPageView.count_new_matches_by_month(reports,
                                                                                 created_month)
-        x_data, y_data = (
-            [data_point[1] for data_point in new_matches_by_month],
-            [data_point[0] for data_point in new_matches_by_month]
-        )
+        if new_matches_by_month:
+            x_data, y_data = (
+                [data_point[1] for data_point in new_matches_by_month],
+                [data_point[0] for data_point in new_matches_by_month]
+            )
 
-        fig = tpl.figure()
-        fig.barh(x_data, y_data)
-        fig.show()
+            fig = tpl.figure()
+            fig.barh(x_data, y_data)
+            fig.show()
