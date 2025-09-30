@@ -4,6 +4,7 @@ import termplotlib as tpl
 import termtables as tt
 
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 
 from os2datascanner.projects.report.organizations.models import (
@@ -57,11 +58,11 @@ class Command(BaseCommand):
                 try:
                     org = Organization.objects.get(lookup)
                     break
-                except Organization.DoesNotExist:
+                except (ValidationError, Organization.DoesNotExist):
                     continue
             else:
-                print(f"No organization with the name or UUID '{organization}' found.")
-                return
+                raise Organization.DoesNotExist(
+                    f"No organization with the name or UUID '{organization}' found.")
 
         print("===DPO Overview===")
         print("Organization:", org)
