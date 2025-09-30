@@ -12,6 +12,11 @@
 
 ### Bugfixes
 
+- Fixed the stale accounts button in the scannerjob overview in the admin module. The button will
+  now disappear when there are no stale accounts.
+
+- Fixed the alias modal in Safari so you don't need to scroll to see the content.
+
 ## Version 3.30.1, 26th September 2025
 
 "... And Sow What You'll Reap"
@@ -23,9 +28,6 @@
 
 - Fixed the resolution_time field in DocumentReport so it will be set to None if the 
   resolution_status is set to None.
-
-- Fixed the stale accounts button in the scannerjob overview in the admin module. The button will
-  now disappear when there are no stale accounts.
 
 ## Version 3.30.0, 23rd September 2025
 
