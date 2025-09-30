@@ -1,8 +1,9 @@
 import pytest
+import random
 
 from django.core.management import call_command
 
-from os2datascanner.projects.report.organizations.models import OrganizationalUnit
+from os2datascanner.projects.report.organizations.models import OrganizationalUnit, Organization
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 from .test_utilities import create_reports_for
 
@@ -32,3 +33,18 @@ class TestDPOOverviewCommand:
         with pytest.raises(ScannerReference.DoesNotExist):
             call_command("dpo_overview", organization=olsenbanden_organization.uuid,
                          scanner=scan_marvel.scanner_pk)
+
+    @pytest.mark.parametrize("case_func", [
+        lambda s: s.upper(),
+        lambda s: s.lower(),
+        # Mixed case
+        lambda s: "".join([random.choice((x.upper(), x.lower())) for x in s])
+    ])
+    def test_dpo_overview_command_organization_name(self, olsenbanden_organization, case_func):
+        """Calling the command using the organization's name should work. All cases should work."""
+        call_command("dpo_overview", organization=case_func(olsenbanden_organization.name))
+
+    def test_dpo_overview_command_invalid_name(self, olsenbanden_organization):
+        """Calling the command with the wrong name you should an appropriate error."""
+        with pytest.raises(Organization.DoesNotExist):
+            call_command("dpo_overview", organization="ThisIsDefinitelyNotTheNameOfTheOrganization")
