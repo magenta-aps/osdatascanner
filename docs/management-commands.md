@@ -184,10 +184,11 @@ Takes two optional arguments:
 
 Replicates the information found on the DPO overview page of the report module UI.
 
-Takes an organization UUID as an argument and shows all information related to that information.
+Takes three optional arguments:
 
-Takes two optional arguments:
-
+* `--organization`: The name or UUID of an organization. If none are given, the tool assumes only
+  one organization exists and uses that one. If multiple organizations exist, this argument is
+  required. Names are case insensitive.
 * `--unit`: An OrganizationalUnit UUID. Restricts data foundation to reports related to accounts
   related to the unit or descendant units of the unit.
 * `--scanner`: A scanner primary key (from the admin module). Restricts data foundation to reports

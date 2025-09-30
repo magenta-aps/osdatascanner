@@ -4,6 +4,7 @@ import termplotlib as tpl
 import termtables as tt
 
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 from os2datascanner.projects.report.organizations.models import (
     Organization, OrganizationalUnit)
@@ -23,8 +24,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "organization_id",
-            help="an organization UUID",
+            "--organization",
+            help="an organization UUID or name (case insensitive)",
             type=str,
             metavar="PK"
         )
@@ -43,10 +44,24 @@ class Command(BaseCommand):
             metavar="PK"
         )
 
-    def handle(self, organization_id: str, *args,
+    def handle(self, *args,
+               organization: str | None = None,
                unit: str | None = None,
                scanner: int | None = None, **kwargs):
-        org = Organization.objects.get(uuid=organization_id)
+
+        if not organization:
+            org = Organization.objects.get()
+        else:
+            for lookup in [Q(uuid=organization),
+                           Q(name__iexact=organization)]:
+                try:
+                    org = Organization.objects.get(lookup)
+                    break
+                except Organization.DoesNotExist:
+                    continue
+            else:
+                print(f"No organization with the name or UUID '{organization}' found.")
+                return
 
         print("===DPO Overview===")
         print("Organization:", org)
