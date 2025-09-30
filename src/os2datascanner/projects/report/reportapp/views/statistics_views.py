@@ -906,16 +906,7 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
         matches_by_week = account.count_matches_by_week()
         context["matches_by_week"] = matches_by_week
 
-        scannerjobs = ScannerReference.objects.annotate(
-            total=Count(
-                'document_reports',
-                filter=Q(document_reports__in=account.get_report(Account.ReportType.PERSONAL)),
-            )
-        ).filter(
-            Q(organization=account.organization, scan_entire_org=True, only_notify_superadmin=False)
-            | Q(org_units__in=account.units.all(), only_notify_superadmin=False)
-            | Q(total__gt=0)
-        ).distinct()
+        scannerjobs = account.get_scannerjobs_list()
         context["scannerjobs"] = scannerjobs
         return context
 

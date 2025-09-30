@@ -634,6 +634,18 @@ class Account(Core_Account):
             return self.organization.scanners.all()
         return self.organization.scanners.filter(scanner_pk__in=pks)
 
+    def get_scannerjobs_list(self):
+        return self.organization.scanners.annotate(
+            total=Count(
+                'document_reports',
+                filter=Q(document_reports__in=self.get_report(Account.ReportType.PERSONAL)),
+            )
+        ).filter(
+            Q(scan_entire_org=True, only_notify_superadmin=False)
+            | Q(org_units__in=self.units.all(), only_notify_superadmin=False)
+            | Q(total__gt=0)
+        ).distinct()
+
 
 @receiver(post_save, sender=Account)
 def resize_image(sender, **kwargs):

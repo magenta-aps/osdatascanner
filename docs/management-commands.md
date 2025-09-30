@@ -180,6 +180,12 @@ Takes two optional arguments:
 * `--leader`: An Account username. Restricts shown accounts to only those directly managed by the
   account.
 
+### `user_overview`
+
+Replicates the information found on the user overview page of the report module UI.
+
+Takes an account username as an argument and shows information about that account.
+
 ### `initial_setup`
 
 This command should only be used _after_ running the corresponding command in the admin module.
