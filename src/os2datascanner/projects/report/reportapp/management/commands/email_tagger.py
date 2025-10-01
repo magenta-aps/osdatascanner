@@ -17,6 +17,16 @@ SUMMARY = Summary("os2datascanner_email_tagger",
                   "Messages through os2ds_email_tags")
 
 
+def get_grant(dr: DocumentReport) -> GraphGrant | None:
+    try:
+        return GraphGrant.objects.get(organization=dr.organization)
+    except GraphGrant.DoesNotExist:
+        logger.warning("No GraphGrant found! Can't categorize mail!")
+    except GraphGrant.MultipleObjectsReturned:
+        logger.warning("Too many GraphGrants found! Can't categorize mail!")
+    return None
+
+
 class EmailTaggerRunner(PikaPipelineThread):
     def __init__(self, source_manager, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,13 +48,8 @@ class EmailTaggerRunner(PikaPipelineThread):
                         MSGraphMailMessageHandle)
                     mail_source = mail_handle.source
 
-                    try:
-                        graph_grant = GraphGrant.objects.get(
-                            organization=document_report.organization)
-                    except GraphGrant.DoesNotExist:
-                        logger.warning("No GraphGrant found! Can't categorize mail!")
-                    except GraphGrant.MultipleObjectsReturned:
-                        logger.warning("Too many GraphGrants found! Can't categorize mail!")
+                    if not (graph_grant := get_grant(document_report)):
+                        return
 
                     # We censor these when going through our pipeline, hence we need to set them
                     # again from settings.
