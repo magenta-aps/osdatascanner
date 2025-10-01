@@ -19,6 +19,9 @@
 
 - Fixed the alias modal in Safari so you don't need to scroll to see the content.
 
+- The email tagger component no longer crashes immediately when asked to tag
+  an email.
+
 ## Version 3.30.1, 26th September 2025
 
 "... And Sow What You'll Reap"
