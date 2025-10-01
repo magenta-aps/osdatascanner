@@ -19,7 +19,7 @@ SUMMARY = Summary("os2datascanner_email_tagger",
 
 def get_grant(dr: DocumentReport) -> GraphGrant | None:
     try:
-        return GraphGrant.objects.get(organization=dr.organization)
+        return GraphGrant.objects.get(organization=dr.scanner_job.organization)
     except GraphGrant.DoesNotExist:
         logger.warning("No GraphGrant found! Can't categorize mail!")
     except GraphGrant.MultipleObjectsReturned:
