@@ -1,4 +1,5 @@
 import enum
+import warnings
 import structlog
 from functools import cached_property
 
@@ -264,6 +265,14 @@ class DocumentReport(models.Model):
             ("distribute_withheld_documentreport",
              _("Can distribute withheld DocumentReports to users"))
         ]
+
+    @property
+    def organization(self):
+        warnings.warn(
+                "DocumentReport.organization is deprecated;"
+                " use .scanner_job.organization instead",
+                DeprecationWarning, stacklevel=2)
+        return self.scanner_job.organization
 
 
 def count_matches(matches: MatchesMessage) -> int:

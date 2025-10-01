@@ -69,13 +69,6 @@ def scan_tag6(time1, org_frag):
 
 
 @pytest.fixture
-def common_handle():
-    return FilesystemHandle(
-        FilesystemSource("/mnt/fs01.magenta.dk/brugere/af"),
-        "OS2datascanner/Dokumenter/Verdensherredømme - plan.txt")
-
-
-@pytest.fixture
 def common_handle_corrupt():
     return FilesystemHandle(
         FilesystemSource("/mnt/fs01.magenta.dk/brugere/af"),
@@ -88,17 +81,6 @@ def dimension_rule():
 
 
 @pytest.fixture
-def common_scan_spec(common_handle, common_rule):
-    return messages.ScanSpecMessage(
-        scan_tag=None,  # placeholder
-        source=common_handle.source,
-        rule=common_rule,
-        configuration={},
-        filter_rule=None,
-        progress=None)
-
-
-@pytest.fixture
 def common_scan_spec_corrupt(common_handle_corrupt, common_rule):
     return messages.ScanSpecMessage(
         scan_tag=None,  # placeholder
@@ -107,19 +89,6 @@ def common_scan_spec_corrupt(common_handle_corrupt, common_rule):
         configuration={},
         filter_rule=None,
         progress=None)
-
-
-@pytest.fixture
-def positive_match(common_scan_spec, scan_tag0, common_handle, common_rule):
-    return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
-        handle=common_handle,
-        matched=True,
-        matches=[
-            messages.MatchFragment(
-                rule=common_rule,
-                matches=[{"dummy": "match object"}])
-        ])
 
 
 @pytest.fixture
