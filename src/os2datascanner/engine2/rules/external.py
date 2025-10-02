@@ -11,6 +11,10 @@ logger = structlog.get_logger("engine2")
 
 
 def get_prediction(sentence, endpoint) -> [int, float]:
+    """This helper method takes a `sentence` as a string, and an endpoint that should point
+    to an available api. It will then call the api with the given sentence, and return
+    - an integer, either 0 or 1, indicating whether or not the sentence is a match
+    - a float, between 0 and 1, indicating the confidence in the reached conclusion."""
     try:
         params = {
             'sentence': sentence,
@@ -41,8 +45,8 @@ def split_sentences(content):
         yield current_sentence
 
 
-class APIRegexRule(RegexRule):
-    type_label = "api-regex"
+class ExternallyExecutedRegexRule(RegexRule):
+    type_label = "external-regex"
     confidence_cutoff = 0.60
 
     def __init__(self, expression: str, endpoint: str, censor_token: str, **super_kwargs):
@@ -86,7 +90,7 @@ class APIRegexRule(RegexRule):
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj: dict):
-        return APIRegexRule(
+        return ExternallyExecutedRegexRule(
             expression=obj["expression"],
             endpoint=obj["endpoint"],
             censor_token=obj["censor_token"],
@@ -95,8 +99,8 @@ class APIRegexRule(RegexRule):
         )
 
 
-class APIWordlistRule(OrderedWordlistRule):
-    type_label = "api-wordlist"
+class ExternallyExecutedWordlistRule(OrderedWordlistRule):
+    type_label = "external-wordlist"
     confidence_cutoff = 0.60
 
     properties = RuleProperties(
@@ -147,7 +151,7 @@ class APIWordlistRule(OrderedWordlistRule):
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj: dict):
-        return APIWordlistRule(
+        return ExternallyExecutedWordlistRule(
             dataset=obj["dataset"],
             endpoint=obj["endpoint"],
             censor_token=obj["censor_token"],

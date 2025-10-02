@@ -1,12 +1,12 @@
-from os2datascanner.engine2.rules.api import APIRegexRule, APIWordlistRule
+from ..rules.external import ExternallyExecutedRegexRule, ExternallyExecutedWordlistRule
 
 
-def test_api_regex(requests_mock):
+def test_ee_regex(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 1.00})
 
-    rule = APIRegexRule(expression="test", endpoint=url, censor_token="<censored>")
+    rule = ExternallyExecutedRegexRule(expression="test", endpoint=url, censor_token="<censored>")
 
     # Act
     result = list(rule.match("This is a test"))
@@ -16,12 +16,12 @@ def test_api_regex(requests_mock):
     assert result[0]['context'] == "This is a <censored>"
 
 
-def test_api_regex_confidentely_wrong(requests_mock):
+def test_ee_regex_confidentely_wrong(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 0, "confidence": 1.00})
 
-    rule = APIRegexRule(expression="test", endpoint=url, censor_token="<censored>")
+    rule = ExternallyExecutedRegexRule(expression="test", endpoint=url, censor_token="<censored>")
 
     # Act
     result = list(rule.match("This is a test"))
@@ -30,12 +30,12 @@ def test_api_regex_confidentely_wrong(requests_mock):
     assert len(result) == 0
 
 
-def test_api_regex_insecure(requests_mock):
+def test_ee_regex_insecure(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 0.15})
 
-    rule = APIRegexRule(expression="test", endpoint=url, censor_token="<censored>")
+    rule = ExternallyExecutedRegexRule(expression="test", endpoint=url, censor_token="<censored>")
 
     # Act
     result = list(rule.match("This is a test"))
@@ -44,12 +44,12 @@ def test_api_regex_insecure(requests_mock):
     assert len(result) == 0
 
 
-def test_api_regex_no_match(requests_mock):
+def test_ee_regex_no_match(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 1.00})
 
-    rule = APIRegexRule(expression="exam", endpoint=url, censor_token="<censored>")
+    rule = ExternallyExecutedRegexRule(expression="exam", endpoint=url, censor_token="<censored>")
 
     # Act
     result = list(rule.match("This is a test"))
@@ -58,12 +58,12 @@ def test_api_regex_no_match(requests_mock):
     assert len(result) == 0
 
 
-def test_api_regex_censor_multiple(requests_mock):
+def test_ee_regex_censor_multiple(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 1.00})
 
-    rule = APIRegexRule(expression="test", endpoint=url, censor_token="<censored>")
+    rule = ExternallyExecutedRegexRule(expression="test", endpoint=url, censor_token="<censored>")
 
     # Act
     result = list(rule.match("testing, one two three, testing"))
@@ -73,12 +73,12 @@ def test_api_regex_censor_multiple(requests_mock):
     assert result[0]['context'] == "<censored>ing, one two three, <censored>ing"
 
 
-def test_api_wordlist(requests_mock):
+def test_ee_wordlist(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 1.00})
 
-    rule = APIWordlistRule(
+    rule = ExternallyExecutedWordlistRule(
         "en_20211018_unit_test_words",
         endpoint=url,
         censor_token="<sundhedsterm>",
@@ -92,12 +92,12 @@ def test_api_wordlist(requests_mock):
     assert result[0]['context'] == "<sundhedsterm> er noget farligt noget"
 
 
-def test_api_wordlist_confidentely_incorrect(requests_mock):
+def test_ee_wordlist_confidentely_incorrect(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 0, "confidence": 1.00})
 
-    rule = APIWordlistRule(
+    rule = ExternallyExecutedWordlistRule(
         "en_20211018_unit_test_words",
         endpoint=url,
         censor_token="<sundhedsterm>",
@@ -110,12 +110,12 @@ def test_api_wordlist_confidentely_incorrect(requests_mock):
     assert len(result) == 0
 
 
-def test_api_wordlist_insecure(requests_mock):
+def test_ee_wordlist_insecure(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 0.15})
 
-    rule = APIWordlistRule(
+    rule = ExternallyExecutedWordlistRule(
         "en_20211018_unit_test_words",
         endpoint=url,
         censor_token="<sundhedsterm>",
@@ -128,12 +128,12 @@ def test_api_wordlist_insecure(requests_mock):
     assert len(result) == 0
 
 
-def test_api_wordlist_no_match(requests_mock):
+def test_ee_wordlist_no_match(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 1.00})
 
-    rule = APIWordlistRule(
+    rule = ExternallyExecutedWordlistRule(
         "en_20211018_unit_test_words",
         endpoint=url,
         censor_token="<sundhedsterm>",
@@ -146,12 +146,12 @@ def test_api_wordlist_no_match(requests_mock):
     assert len(result) == 0
 
 
-def test_api_wordlist_censor_multiple(requests_mock):
+def test_ee_wordlist_censor_multiple(requests_mock):
     # Arrange
     url = 'http://fake-endpoint.test/predict'
     requests_mock.get(url, json={"prediction": 1, "confidence": 1.00})
 
-    rule = APIWordlistRule(
+    rule = ExternallyExecutedWordlistRule(
         "en_20211018_unit_test_words",
         endpoint=url,
         censor_token="<sundhedsterm>",
