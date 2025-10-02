@@ -8,3 +8,4 @@ from . import googledrivescanner_views  # noqa
 from . import gmailscanner_views  # noqa
 from . import sbsysscanner_views  # noqa
 from . import validators  # noqa
+from . import googleshareddrivescanner_views  # noqa

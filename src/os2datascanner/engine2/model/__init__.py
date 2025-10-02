@@ -32,3 +32,4 @@ from . import googledrive  # noqa
 from . import gmail  # noqa
 from . import sbsys  # noqa
 from . import derived  # noqa
+from . import googleshareddrive  # noqa

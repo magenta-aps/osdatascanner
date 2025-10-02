@@ -78,3 +78,33 @@ def is_base64(sb: Union[str, bytes]) -> bool:
         return True
     except binascii.Error:
         return False
+
+
+class GoogleSource(Source):
+    def __init__(self, google_api_grant):
+        self.google_api_grant = google_api_grant
+
+    def paginated_get(self, service, collection_name: str, **kwargs):
+        """
+        Performs a paginated list request on specified Google API service.
+        Uses generators to go through pages if any.
+
+        Args:
+            service: Google API service object (e.g., service.files(), service.messages())
+            collection_name: Name of the collection in response (e.g. 'files')
+            **kwargs: Additional parameters for the API call (e.g. q='query')
+        """
+        page_token = None
+
+        while True:
+            if page_token:
+                kwargs['pageToken'] = page_token
+
+            result = service.list(**kwargs).execute()
+
+            items = result.get(collection_name, [])
+            yield from items
+
+            page_token = result.get('nextPageToken', None)
+            if page_token is None:
+                break

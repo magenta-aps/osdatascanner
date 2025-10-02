@@ -142,7 +142,7 @@
                       </button>
                     </span>
                   {% endif %}
-                  {% if show_gmail_delete_button and type == 'googledrive' %}
+                  {% if show_gdrive_delete_button and type == 'googledrive' or show_gdrive_delete_button and type == 'googleshareddrive' %}
                     <span class="delete-gdrive">
                       <button class="button button--deletion-button"
                               type="button"

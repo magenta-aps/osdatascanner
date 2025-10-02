@@ -197,7 +197,7 @@ class Command(BaseCommand):
                        "ENABLE_MSGRAPH_MAILSCAN", "ENABLE_MSGRAPH_FILESCAN",
                        "ENABLE_MSGRAPH_CALENDARSCAN",
                        "ENABLE_MSGRAPH_TEAMS_FILESCAN",
-                       "ENABLE_GOOGLEDRIVESCAN", "ENABLE_GMAILSCAN",
+                       "ENABLE_GOOGLEDRIVESCAN", "ENABLE_GOOGLESHAREDDRIVESCAN", "ENABLE_GMAILSCAN",
                        "ENABLE_SBSYSSCAN")
 
         print("\n# [logging]")

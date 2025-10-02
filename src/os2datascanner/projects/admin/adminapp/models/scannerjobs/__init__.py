@@ -9,3 +9,4 @@ from . import gmail  # noqa
 from . import sbsysscanner  # noqa
 from . import analysisscanner  # noqa
 from . import sbsysdb  # noqa
+from . import googleshareddrivescannner  # noqa

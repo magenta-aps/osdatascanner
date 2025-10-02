@@ -216,6 +216,12 @@
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.google_api_grant %}
               {% endif %}
 
+              {% if form.google_admin_account %}
+                <div id="{{ form.google_admin_account.auto_id }}_container"
+                     class="form__group{% if form.google_admin_account.errors %} has-error{% endif %}">
+                  {% include "components/scanner/scanner_form_input_field.html" with field=form.google_admin_account required="True" placeholder="admin@yourdomain.com" %}
+                </div>
+              {% endif %}
 
               {% if form.smb_grant %}
                 {% include "components/scanner/scanner_form_grant_select_option_field.html"  with field=form.smb_grant %}
