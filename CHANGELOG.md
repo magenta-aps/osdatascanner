@@ -6,6 +6,8 @@
 
 - New management command for displaying information from the leader overview in a CLI.
 
+- New management command for displaying information from the DPO overview in a CLI.
+
 - New management command for displaying information from the user overview in a CLI.
 
 - SharePoint scanner now supports scanning of list field's descriptions.
