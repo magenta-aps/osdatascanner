@@ -180,6 +180,20 @@ Takes two optional arguments:
 * `--leader`: An Account username. Restricts shown accounts to only those directly managed by the
   account.
 
+### `dpo_overview`
+
+Replicates the information found on the DPO overview page of the report module UI.
+
+Takes three optional arguments:
+
+* `--organization`: The name or UUID of an organization. If none are given, the tool assumes only
+  one organization exists and uses that one. If multiple organizations exist, this argument is
+  required. Names are case insensitive.
+* `--unit`: An OrganizationalUnit UUID. Restricts data foundation to reports related to accounts
+  related to the unit or descendant units of the unit.
+* `--scanner`: A scanner primary key (from the admin module). Restricts data foundation to reports
+  related to ScannerReference objects containing that `scanner_pk` value.
+
 ### `user_overview`
 
 Replicates the information found on the user overview page of the report module UI.

@@ -4,6 +4,8 @@ import termplotlib as tpl
 import termtables as tt
 
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 from os2datascanner.projects.report.organizations.models import (
     Organization, OrganizationalUnit)
@@ -23,8 +25,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "organization_id",
-            help="an organization UUID",
+            "--organization",
+            help="an organization UUID or name (case insensitive)",
             type=str,
             metavar="PK"
         )
@@ -43,10 +45,24 @@ class Command(BaseCommand):
             metavar="PK"
         )
 
-    def handle(self, organization_id: str, *args,
+    def handle(self, *args,
+               organization: str | None = None,
                unit: str | None = None,
                scanner: int | None = None, **kwargs):
-        org = Organization.objects.get(uuid=organization_id)
+
+        if not organization:
+            org = Organization.objects.get()
+        else:
+            for lookup in [Q(uuid=organization),
+                           Q(name__iexact=organization)]:
+                try:
+                    org = Organization.objects.get(lookup)
+                    break
+                except (ValidationError, Organization.DoesNotExist):
+                    continue
+            else:
+                raise Organization.DoesNotExist(
+                    f"No organization with the name or UUID '{organization}' found.")
 
         print("===DPO Overview===")
         print("Organization:", org)
@@ -90,10 +106,10 @@ class Command(BaseCommand):
 
         # Percentage of results handled
         print("\nHandled results")
+        handled_results = match_data["handled"]["count"]
+        total_results = (match_data["handled"]["count"]+match_data["unhandled"]["count"])*100
         print(
-            round(
-                match_data["handled"]["count"] /
-                (match_data["handled"]["count"]+match_data["unhandled"]["count"])*100, 2),
+            round(handled_results / total_results, 2) if total_results > 0 else "0",
             "% handled")
 
         print(match_data["handled"]["count"],
@@ -122,25 +138,26 @@ class Command(BaseCommand):
         unhandled_matches_by_month = \
             DPOStatisticsPageView.count_unhandled_matches_by_month(reports, created_month,
                                                                    resolved_month)
+        if unhandled_matches_by_month:
+            x_data, y_data = (
+                [i for i in range(len(unhandled_matches_by_month))],
+                [data_point[1] for data_point in unhandled_matches_by_month]
+            )
 
-        x_data, y_data = (
-            [i for i in range(len(unhandled_matches_by_month))],
-            [data_point[1] for data_point in unhandled_matches_by_month]
-        )
-
-        fig = tpl.figure()
-        fig.plot(x_data, y_data, xlabel=f"Months since {unhandled_matches_by_month[0][0]}")
-        fig.show()
+            fig = tpl.figure()
+            fig.plot(x_data, y_data, xlabel=f"Months since {unhandled_matches_by_month[0][0]}")
+            fig.show()
 
         # Development overview -- new results per month
         print("\nNew results per month")
         new_matches_by_month = DPOStatisticsPageView.count_new_matches_by_month(reports,
                                                                                 created_month)
-        x_data, y_data = (
-            [data_point[1] for data_point in new_matches_by_month],
-            [data_point[0] for data_point in new_matches_by_month]
-        )
+        if new_matches_by_month:
+            x_data, y_data = (
+                [data_point[1] for data_point in new_matches_by_month],
+                [data_point[0] for data_point in new_matches_by_month]
+            )
 
-        fig = tpl.figure()
-        fig.barh(x_data, y_data)
-        fig.show()
+            fig = tpl.figure()
+            fig.barh(x_data, y_data)
+            fig.show()
