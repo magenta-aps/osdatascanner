@@ -14,6 +14,8 @@
 
 - Improve help text on rule field of rule form.
 
+- All google data sources use a common GoogleSource.
+
 ### Bugfixes
 
 - Report ownership is now enforced in the backend when handling reports.

@@ -26,14 +26,9 @@ class GmailSource(GoogleSource):
 
     type_label = "gmail"
 
-    eq_properties = ("_user_email",)
-
     def __init__(self, google_api_grant, user_email_gmail, scan_attachments):
-        super().__init__(google_api_grant, user_email_gmail)
+        super().__init__(google_api_grant, user_email_gmail, 'gmail')
         self.scan_attachments = scan_attachments
-
-    def _generate_state(self, source_manager):
-        yield from super()._generate_state('gmail')
 
     def _generate_query(
             self,

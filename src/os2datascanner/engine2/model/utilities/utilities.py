@@ -83,10 +83,13 @@ def is_base64(sb: Union[str, bytes]) -> bool:
 
 
 class GoogleSource(Source):
-    def __init__(self, google_api_grant, user_email):
+    eq_properties = ("_user_email",)
+
+    def __init__(self, google_api_grant, user_email, scope):
         super().__init__()
         self._google_api_grant = google_api_grant
         self._user_email = user_email
+        self.scope = scope
 
     def paginated_get(self, service, collection_name: str, **kwargs):
         """
@@ -114,23 +117,25 @@ class GoogleSource(Source):
                 break
 
     def censor(self):
-        return type(self)(None, self._user_email)
+        return type(self)(None, self._user_email, self.scope)
 
-    def _generate_state(self, scope):
-        SCOPES = [f'https://www.googleapis.com/auth/{scope}.readonly']
-
+    @property
+    def version(self):
         # List of supported services and versions can be found @:
         # https://googleapis.github.io/google-api-python-client/docs/dyn/
-        versions = {
+        return {
                     'drive': 'v3',
                     'gmail': 'v1'
-        }
+        }[self.scope]
+
+    def _generate_state(self, sm):
+        SCOPES = [f'https://www.googleapis.com/auth/{self.scope}.readonly']
 
         credentials = service_account.Credentials.from_service_account_info(
             self._google_api_grant,
             scopes=SCOPES).with_subject(self._user_email)
 
-        service = build(serviceName=scope, version=versions[scope], credentials=credentials)
+        service = build(serviceName=self.scope, version=self.version, credentials=credentials)
         yield service
 
     def to_json_object(self):

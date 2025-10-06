@@ -4,8 +4,6 @@ from datetime import datetime, timezone
 from io import BytesIO
 
 from ..rules.rule import Rule
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.errors import HttpError
 from .core import Source, Handle, FileResource
@@ -27,21 +25,9 @@ class GoogleSharedDriveSource(GoogleSource):
 
     type_label = "googleshareddrive"
 
-    eq_properties = ("_google_admin_account",)
-
     def __init__(self, google_api_grant, google_admin_account):
-        super().__init__(google_api_grant)
-        self._google_admin_account = google_admin_account
+        super().__init__(google_api_grant, google_admin_account, 'drive')
         self.parent_cache = {}
-
-    def _generate_state(self, source_manager):
-        SCOPES = ['https://www.googleapis.com/auth/drive']
-        credentials = service_account.Credentials.from_service_account_info(
-            self.google_api_grant,
-            scopes=SCOPES).with_subject(self._google_admin_account)
-
-        service = build(serviceName='drive', version='v3', credentials=credentials)
-        yield service
 
     # The Google Drive V3 API query operators can be found at:
     # https://developers.google.com/workspace/drive/api/guides/search-files
@@ -126,7 +112,7 @@ class GoogleSharedDriveSource(GoogleSource):
         new_permission = {
             'role': 'reader',
             'type': 'user',
-            'emailAddress': self._google_admin_account
+            'emailAddress': self._user_email
         }
         service.permissions().create(
             fileId=drive.get('id'),
@@ -136,7 +122,7 @@ class GoogleSharedDriveSource(GoogleSource):
         ).execute()
         logger.info("drive access permission missing, creating it",
                     drive=drive.get("id"),
-                    service_account=self._google_admin_account)
+                    service_account=self._user_email)
 
     def get_location(self, parent_id, service, drive):
         """
@@ -186,19 +172,12 @@ class GoogleSharedDriveSource(GoogleSource):
 
     # Censoring service account file info and user email.
     def censor(self):
-        return GoogleSharedDriveSource(None, self._google_admin_account)
-
-    def to_json_object(self):
-        return dict(
-            **super().to_json_object(),
-            google_api_grant=self.google_api_grant,
-            google_admin_account=self._google_admin_account,
-        )
+        return GoogleSharedDriveSource(None, self._user_email)
 
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GoogleSharedDriveSource(obj["google_api_grant"], obj["google_admin_account"])
+        return GoogleSharedDriveSource(obj["google_api_grant"], obj["user_email"])
 
 
 class GoogleSharedDriveResource(FileResource):

@@ -22,13 +22,11 @@ class GoogleDriveSource(GoogleSource):
 
     type_label = "googledrive"
 
-    eq_properties = ("_user_email",)
+    def __init__(self, google_api_grant, user_email):
+        super().__init__(google_api_grant, user_email, 'drive')
 
-    def _generate_state(self, source_manager):
-        yield from super()._generate_state('drive')
-
-        # The Google Drive V3 API query operators can be found at:
-        # https://developers.google.com/workspace/drive/api/guides/search-files
+    # The Google Drive V3 API query operators can be found at:
+    # https://developers.google.com/workspace/drive/api/guides/search-files
     def _generate_query(
             self,
             cutoff: datetime | None = None):
