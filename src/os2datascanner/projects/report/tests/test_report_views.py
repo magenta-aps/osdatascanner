@@ -1249,8 +1249,7 @@ class TestHandleMatchView:
     def test_handle_single_report_correct_account(self, egon_account, egon_email_alias, client):
         create_reports_for(egon_email_alias)
 
-        report = egon_account.get_report(Account.ReportType.RAW
-                                         ).filter(resolution_status__isnull=True).first()
+        report = egon_account.get_report(Account.ReportType.RAW).first()
 
         url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
         data = {"action": DocumentReport.ResolutionChoices.REMOVED}
@@ -1258,17 +1257,14 @@ class TestHandleMatchView:
         client.force_login(egon_account.user)
         response = client.post(url, data=data, **self.htmx_header)
 
-        reports = egon_account.get_report(Account.ReportType.RAW
-                                          ).filter(resolution_status__isnull=True)
+        reports = egon_account.get_report(Account.ReportType.RAW)
 
         assert response.status_code == 200
         assert report not in reports
 
     def test_handle_single_report_incorrect_account(self, egon_account, benny_email_alias, client):
         create_reports_for(benny_email_alias)
-        report = benny_email_alias.account.get_report(Account.ReportType.RAW
-                                                      ).filter(resolution_status__isnull=True
-                                                               ).first()
+        report = benny_email_alias.account.get_report(Account.ReportType.RAW).first()
 
         url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
         data = {"action": DocumentReport.ResolutionChoices.REMOVED}
@@ -1276,8 +1272,7 @@ class TestHandleMatchView:
         client.force_login(egon_account.user)
         response = client.post(url, data=data, **self.htmx_header)
 
-        reports = benny_email_alias.account.get_report(Account.ReportType.RAW
-                                                       ).filter(resolution_status__isnull=True)
+        reports = benny_email_alias.account.get_report(Account.ReportType.RAW)
 
         assert response.status_code == 404
         assert report in reports
@@ -1286,8 +1281,7 @@ class TestHandleMatchView:
     def test_handle_single_report_different_states(self, client, status, egon_account,
                                                    egon_email_alias):
         create_reports_for(egon_email_alias)
-        report = egon_account.get_report(Account.ReportType.RAW
-                                         ).filter(resolution_status__isnull=True).first()
+        report = egon_account.get_report(Account.ReportType.RAW).first()
 
         url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
         data = {"action": status}
@@ -1296,8 +1290,7 @@ class TestHandleMatchView:
         response = client.post(url, data=data, **self.htmx_header)
 
         report.refresh_from_db()
-        reports = egon_account.get_report(Account.ReportType.RAW
-                                          ).filter(resolution_status__isnull=True)
+        reports = egon_account.get_report(Account.ReportType.RAW)
 
         assert response.status_code == 200
         assert report not in reports
@@ -1306,24 +1299,16 @@ class TestHandleMatchView:
     def test_revert_single_report(self, client, egon_account, egon_email_alias):
         create_reports_for(egon_email_alias,
                            resolution_status=DocumentReport.ResolutionChoices.REMOVED)
-        report = egon_account.get_report(
-                Account.ReportType.RAW
-            ).filter(
-                resolution_status=DocumentReport.ResolutionChoices.REMOVED
-            ).first()
+        report = egon_account.get_report(Account.ReportType.RAW, archived=True).first()
 
-        url = reverse_lazy("handle-match", {"pk": report.pk})
-        data = {"action": None}
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {}
 
         client.force_login(egon_account.user)
         response = client.post(url, data=data, **self.htmx_header)
 
         report.refresh_from_db()
-        reports = egon_account.get_report(
-                Account.ReportType.RAW
-            ).filter(
-                resolution_status=DocumentReport.ResolutionChoices.REMOVED
-            )
+        reports = egon_account.get_report(Account.ReportType.RAW, archived=True)
 
         assert response.status_code == 200
         assert report not in reports
@@ -1331,8 +1316,7 @@ class TestHandleMatchView:
 
     def test_handle_multiple_reports_correct_account(self, client, egon_account, egon_email_alias):
         create_reports_for(egon_email_alias)
-        drs = egon_account.get_report(Account.ReportType.RAW
-                                      ).filter(resolution_status__isnull=True)[:5]
+        drs = egon_account.get_report(Account.ReportType.RAW)[:5]
 
         url = reverse_lazy("mass-handle")
         data = {"action": DocumentReport.ResolutionChoices.REMOVED,
@@ -1341,8 +1325,7 @@ class TestHandleMatchView:
         client.force_login(egon_account.user)
         response = client.post(url, data=data, **self.htmx_header)
 
-        reports = egon_account.get_report(Account.ReportType.RAW
-                                          ).filter(resolution_status__isnull=True)
+        reports = egon_account.get_report(Account.ReportType.RAW)
 
         assert response.status_code == 200
         assert all([dr not in reports for dr in drs])
@@ -1350,8 +1333,7 @@ class TestHandleMatchView:
     def test_handle_multiple_reports_incorrect_account(self, client, egon_account,
                                                        benny_email_alias):
         create_reports_for(benny_email_alias)
-        drs = benny_email_alias.account.get_report(Account.ReportType.RAW
-                                                   ).filter(resolution_status__isnull=True)[:5]
+        drs = benny_email_alias.account.get_report(Account.ReportType.RAW)[:5]
 
         url = reverse_lazy("mass-handle")
         data = {"action": DocumentReport.ResolutionChoices.REMOVED,
@@ -1360,8 +1342,7 @@ class TestHandleMatchView:
         client.force_login(egon_account.user)
         response = client.post(url, data=data, **self.htmx_header)
 
-        reports = benny_email_alias.account.get_report(Account.ReportType.RAW
-                                                       ).filter(resolution_status__isnull=True)
+        reports = benny_email_alias.account.get_report(Account.ReportType.RAW)
 
         assert response.status_code == 404
         assert all([dr in reports for dr in drs])
@@ -1370,8 +1351,7 @@ class TestHandleMatchView:
     def test_handle_multiple_reports_different_status(self, client, status, egon_account,
                                                       egon_email_alias):
         create_reports_for(egon_email_alias)
-        drs = egon_account.get_report(Account.ReportType.RAW
-                                      ).filter(resolution_status__isnull=True)[:5]
+        drs = egon_account.get_report(Account.ReportType.RAW)[:5]
 
         url = reverse_lazy("mass-handle")
         data = {"action": status,
@@ -1381,8 +1361,7 @@ class TestHandleMatchView:
         response = client.post(url, data=data, **self.htmx_header)
 
         drs = DocumentReport.objects.filter(pk__in=[dr.pk for dr in drs])
-        reports = egon_account.get_report(Account.ReportType.RAW
-                                          ).filter(resolution_status__isnull=True)
+        reports = egon_account.get_report(Account.ReportType.RAW)
 
         assert response.status_code == 200
         assert all([dr not in reports for dr in drs])

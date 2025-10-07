@@ -577,8 +577,6 @@ class HTMXEndpointView(LoginRequiredMixin, View):
         return response
 
     def dispatch(self, request, *args, **kwargs):
-        print(request.headers)
-        print(request.POST)
         self.is_htmx = request.headers.get('HX-Request')
         if self.is_htmx == "true":
             return super().dispatch(request, *args, **kwargs)
@@ -589,8 +587,13 @@ class HTMXEndpointView(LoginRequiredMixin, View):
 class HandleMatchView(HTMXEndpointView, DetailView):
     """Endpoint for handling matches via HTMX."""
 
+    def get_queryset(self):
+        return self.account.get_report(Account.ReportType.RAW) | \
+            self.account.get_report(Account.ReportType.RAW, archived=True)
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
+        self.account = request.user.account
         report = self.get_object()
         action = request.POST.get('action')
         handle_report(self.request.user.account, report, action)
@@ -617,6 +620,7 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
+        self.account = request.user.account
         reports = self.get_queryset()
         action = request.POST.get('action')
         self.handle_reports(reports, action)
@@ -625,10 +629,16 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
 
     def handle_reports(self, reports, action):
         try:
-            self.request.user.account.update_last_handle()
+            self.account.update_last_handle()
         except Exception as e:
             logger.warning("Exception raised while trying to update last_handle field "
                            f"of account belonging to user {self.request.user}:", e)
+
+        # Make sure all reports belong to the account -- otherwise raise 404 error
+        account_reports = self.account.get_report(Account.ReportType.RAW)
+        if account_reports.intersection(reports).count() != reports.count():
+            # At least some of the reports are not accessible by the account. Raise the alarm!
+            raise Http404("At least one of the specified reports not found!")
 
         for report in reports:
             report.resolution_status = action
