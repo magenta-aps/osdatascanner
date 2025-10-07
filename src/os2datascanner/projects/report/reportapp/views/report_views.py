@@ -129,37 +129,53 @@ class ReportView(LoginRequiredMixin, ListView):
             'subtitle': "",
         }
 
+        # TODO:
+        match list(set(context["page_obj"].object_list.values_list("source_type", flat=True))):
+            case s if len(s) > 1:
+                logger.debug(
+                    "More than one source type on page. Mass deletion button not applicable.",
+                    source=s
+                )
+            case ["smbc"]:
+                context["show_smb_mass_delete_button"] = (
+                    self.request.user.account.organization.has_smb_file_delete_permission()
+                )
+            case ["ews"]:
+                context["show_ews_mass_delete_button"] = (
+                    self.request.user.account.organization.has_exchange_email_delete_permission()
+                )
+            case ["gmail"]:
+                context["show_gmail_mass_delete_button"] = (
+                    self.request.user.account.organization.has_gmail_email_delete_permission()
+                )
+            case ["googledrive"]:
+                context["show_gdrive_mass_delete_button"] = (
+                    self.request.user.account.organization.has_gdrive_file_delete_permission()
+                )
+            case ["msgraph-mail"]:
+                context["show_msgraph_email_mass_delete_button"] = (
+                    self.request.user.account.organization.has_msgraph_email_delete_permission()
+                )
+            case ["msgraph-files"]:
+                context["show_msgraph_file_mass_delete_button"] = (
+                    self.request.user.account.organization.has_msgraph_file_delete_permission()
+                )
+            case _:
+                logger.info("Mass deletion not applicable", source=s)
+
         # Check permissions for deleting shared files
         context["show_smb_delete_button"] = (
             self.request.user.account.organization.has_smb_file_delete_permission())
-        context["show_smb_mass_delete_button"] = (
-            self.request.user.account.organization.has_smb_file_delete_permission() and
-            self.all_reports_from_same_source("smbc", context["page_obj"]))
         context["show_ews_delete_button"] = (
             self.request.user.account.organization.has_exchange_email_delete_permission())
-        context["show_ews_mass_delete_button"] = (
-            self.request.user.account.organization.has_exchange_email_delete_permission() and
-            self.all_reports_from_same_source("ews", context["page_obj"]))
         context["show_gmail_delete_button"] = (
             self.request.user.account.organization.has_gmail_email_delete_permission())
-        context["show_gmail_mass_delete_button"] = (
-            self.request.user.account.organization.has_gmail_email_delete_permission() and
-            self.all_reports_from_same_source("gmail", context["page_obj"]))
         context["show_gdrive_delete_button"] = (
             self.request.user.account.organization.has_gdrive_file_delete_permission())
-        context["show_gdrive_mass_delete_button"] = (
-            self.request.user.account.organization.has_gdrive_file_delete_permission() and
-            self.all_reports_from_same_source("googledrive", context["page_obj"]))
         context["show_msgraph_email_delete_button"] = (
             self.request.user.account.organization.has_msgraph_email_delete_permission())
-        context["show_msgraph_email_mass_delete_button"] = (
-            self.request.user.account.organization.has_msgraph_email_delete_permission() and
-            self.all_reports_from_same_source("msgraph-mail", context["page_obj"]))
         context["show_msgraph_file_delete_button"] = (
             self.request.user.account.organization.has_msgraph_file_delete_permission())
-        context["show_msgraph_file_mass_delete_button"] = (
-            self.request.user.account.organization.has_msgraph_file_delete_permission() and
-            self.all_reports_from_same_source("msgraph-files", context["page_obj"]))
 
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
@@ -282,23 +298,6 @@ class ReportView(LoginRequiredMixin, ListView):
         # Overrides get_paginate_by to allow changing it in the template
         # as url param paginate_by=xx
         return self.request.GET.get('paginate_by', self.paginate_by)
-
-    def all_reports_from_same_source(self, source_type: str, page_obj) -> bool:
-        """Checks if all reports on the page stem from the source type. The source_type-argument
-        is a string, and is checked against the source_type-field on DocumentReport."""
-        # Check if the filtering option specifies this source type. In that case, all reports must
-        # be from this type of source.
-        filtered = self.request.GET.get("source_type") == source_type
-
-        # Check if there is anything on the page.
-        page_exists = page_obj.object_list.exists()
-
-        # Check if all elements of the page stem from this source type
-        all_from_source = not DocumentReport.objects.filter(
-                pk__in=page_obj.object_list.values_list("pk")
-            ).exclude(source_type=source_type).exists()
-
-        return filtered or (page_exists and all_from_source)
 
     def additional_scanners(self):
         """This method should be overwritten to return any scanner that should be visible even if
