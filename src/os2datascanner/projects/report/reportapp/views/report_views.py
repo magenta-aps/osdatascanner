@@ -73,7 +73,56 @@ class ReportView(LoginRequiredMixin, ListView):
     filter_types: list[str] = []
     exclude_types: list[str] = ["sbsys-db"]
 
-    def get_queryset_base(self):
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        sort_key, order = None, None
+
+        # Filtering logic - and stores sort_key and order, if present, for the ordering logic.
+        for key, value in self.request.GET.items():
+            if value == "all":  # skip no-op filters early.
+                continue
+            match key:
+                case "order_by":
+                    sort_key = value
+                case "order":
+                    order = value
+                case "scannerjob":
+                    self.object_list = self.object_list.filter(
+                        scanner_job__scanner_pk=int(value))
+                case "sensitivities":
+                    self.object_list = self.object_list.filter(
+                        sensitivity=int(value))
+                case "resolution_status":
+                    self.object_list = self.object_list.filter(
+                        resolution_status=int(value))
+                case "source_type":
+                    self.object_list = self.object_list.filter(
+                        source_type=value)
+                case "retention":
+                    if self.org.retention_policy and value == "false":
+                        older_than_ret_pol = time_now() - timedelta(days=self.org.retention_days)
+                        self.object_list = self.object_list.filter(
+                            datasource_last_modified__lte=older_than_ret_pol)
+                case _:
+                    # Unknown param
+                    pass
+
+        # Ordering logic - by allowed properties and sets ascending or descending order.
+        allowed_sorting_properties = [
+            'sort_key',
+            'number_of_matches',
+            'resolution_status',
+            'datasource_last_modified']
+        if (sort_key in allowed_sorting_properties) and order:
+            match order:
+                case 'ascending':
+                    self.object_list = self.object_list.order_by(sort_key, 'pk')
+                case 'descending':
+                    self.object_list = self.object_list.order_by(f'-{sort_key}', 'pk')
+
+        return self.render_to_response(self.get_context_data(object_list=self.object_list))
+
+    def get_queryset(self):
         try:
             acct = self.request.user.account
             self.org = acct.organization
@@ -83,30 +132,22 @@ class ReportView(LoginRequiredMixin, ListView):
                 report = report.filter(source_type__in=self.filter_types)
             if self.exclude_types:
                 report = report.exclude(source_type__in=self.exclude_types)
-
-            return report
+            return report.only(
+                "name",
+                "resolution_status",
+                "resolution_time",
+                "last_opened_time",
+                "raw_matches",
+                "datasource_last_modified",
+                "raw_problem",
+                "number_of_matches"
+                )
 
         except Account.DoesNotExist:
             logger.warning(
                     "unexpected error in ReportView.get_queryset_base",
                     exc_info=True)
             return DocumentReport.objects.none()
-
-    def get_queryset(self):
-        self.all_reports = self.document_reports = self.get_queryset_base()
-        self.apply_filters()
-        self.order_queryset_by_property()
-
-        return self.document_reports.only(
-            "name",
-            "resolution_status",
-            "resolution_time",
-            "last_opened_time",
-            "raw_matches",
-            "datasource_last_modified",
-            "raw_problem",
-            "number_of_matches"
-        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -129,39 +170,53 @@ class ReportView(LoginRequiredMixin, ListView):
             'subtitle': "",
         }
 
-        # TODO:
-        match list(set(context["page_obj"].object_list.values_list("source_type", flat=True))):
-            case s if len(s) > 1:
-                logger.debug(
-                    "More than one source type on page. Mass deletion button not applicable.",
-                    source=s
-                )
-            case ["smbc"]:
-                context["show_smb_mass_delete_button"] = (
-                    self.request.user.account.organization.has_smb_file_delete_permission()
-                )
-            case ["ews"]:
-                context["show_ews_mass_delete_button"] = (
-                    self.request.user.account.organization.has_exchange_email_delete_permission()
-                )
-            case ["gmail"]:
-                context["show_gmail_mass_delete_button"] = (
-                    self.request.user.account.organization.has_gmail_email_delete_permission()
-                )
-            case ["googledrive"]:
-                context["show_gdrive_mass_delete_button"] = (
-                    self.request.user.account.organization.has_gdrive_file_delete_permission()
-                )
-            case ["msgraph-mail"]:
-                context["show_msgraph_email_mass_delete_button"] = (
-                    self.request.user.account.organization.has_msgraph_email_delete_permission()
-                )
-            case ["msgraph-files"]:
-                context["show_msgraph_file_mass_delete_button"] = (
-                    self.request.user.account.organization.has_msgraph_file_delete_permission()
-                )
-            case _:
-                logger.info("Mass deletion not applicable", source=s)
+        # Might be slightly over-optimizing - but the evaluation of object_list can be expensive,
+        # and there's no reason to do so, if we know in advance that there's no relevant permission
+        # f.e. in a WebScanner-only environment.
+        org = self.request.user.account.organization
+        has_delete_permission = any(
+            check() for check in [
+                org.has_smb_file_delete_permission,
+                org.has_exchange_email_delete_permission,
+                org.has_gmail_email_delete_permission,
+                org.has_gdrive_file_delete_permission,
+                org.has_msgraph_email_delete_permission,
+                org.has_msgraph_file_delete_permission,
+            ]
+        )
+        if has_delete_permission:
+            match list(set(context["page_obj"].object_list.values_list("source_type", flat=True))):
+                case s if len(s) > 1:
+                    logger.debug(
+                        "More than one source type on page. Mass deletion button not applicable.",
+                        source=s
+                    )
+                case ["smbc"]:
+                    context["show_smb_mass_delete_button"] = (
+                        self.request.user.account.organization.has_smb_file_delete_permission()
+                    )
+                case ["ews"]:
+                    context["show_ews_mass_delete_button"] = (
+                       self.request.user.account.organization.has_exchange_email_delete_permission()
+                    )
+                case ["gmail"]:
+                    context["show_gmail_mass_delete_button"] = (
+                        self.request.user.account.organization.has_gmail_email_delete_permission()
+                    )
+                case ["googledrive"]:
+                    context["show_gdrive_mass_delete_button"] = (
+                        self.request.user.account.organization.has_gdrive_file_delete_permission()
+                    )
+                case ["msgraph-mail"]:
+                    context["show_msgraph_email_mass_delete_button"] = (
+                        self.request.user.account.organization.has_msgraph_email_delete_permission()
+                    )
+                case ["msgraph-files"]:
+                    context["show_msgraph_file_mass_delete_button"] = (
+                        self.request.user.account.organization.has_msgraph_file_delete_permission()
+                    )
+                case _:
+                    logger.info("Mass deletion not applicable", source=s)
 
         # Check permissions for deleting shared files
         context["show_smb_delete_button"] = (
@@ -183,42 +238,6 @@ class ReportView(LoginRequiredMixin, ListView):
 
         return context
 
-    def apply_filters(self):
-        if self.org.retention_policy and self.request.GET.get('retention') == 'false':
-            older_than_ret_pol = time_now() - timedelta(days=self.org.retention_days)
-            self.document_reports = self.document_reports.filter(
-                datasource_last_modified__lte=older_than_ret_pol)
-
-        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
-            self.document_reports = self.document_reports.filter(
-                scanner_job__scanner_pk=int(scannerjob))
-
-        if (sensitivity := self.request.GET.get('sensitivities')) and sensitivity != 'all':
-            self.document_reports = self.document_reports.filter(sensitivity=int(sensitivity))
-
-        if (method := self.request.GET.get('resolution_status')) and method != 'all':
-            self.document_reports = self.document_reports.filter(resolution_status=int(method))
-
-        if (source_type := self.request.GET.get('source_type')) and source_type != 'all':
-            self.document_reports = self.document_reports.filter(source_type=source_type)
-
-    def order_queryset_by_property(self):
-        """Checks if a sort key is allowed and orders the queryset"""
-        allowed_sorting_properties = [
-            'sort_key',
-            'number_of_matches',
-            'resolution_status',
-            'datasource_last_modified']
-        if (sort_key := self.request.GET.get('order_by')) and (
-                order := self.request.GET.get('order')):
-
-            if sort_key not in allowed_sorting_properties:
-                return
-
-            if order != 'ascending':
-                sort_key = '-'+sort_key
-            self.document_reports = self.document_reports.order_by(sort_key, 'pk')
-
     def add_form_context(self, context):
         sensitivity_filter = Q(sensitivity=self.request.GET.get('sensitivities')
                                ) if self.request.GET.get('sensitivities') not in \
@@ -230,55 +249,77 @@ class ReportView(LoginRequiredMixin, ListView):
             'resolution_status')) if self.request.GET.get('resolution_status') not in \
             ['all', None] else Q()
 
-        if self.scannerjob_filters is None:
-            filtered_reports = self.all_reports.filter(
-                sensitivity_filter & resolution_status_filter)
-            self.scannerjob_filters = self.org.scanners.annotate(
-                filtered_total=Count(
-                    'document_reports',
-                    filter=Q(document_reports__in=filtered_reports),
-                ),
-                total=Count(
-                    'document_reports',
-                    filter=Q(document_reports__in=self.all_reports),
-                ),
-            ).filter(
-                Q(total__gt=0)
-                | Q(scanner_pk__in=self.additional_scanners())
-            ).order_by('scanner_name').distinct()
+        # Aggregate counts from DocumentReport queryset.
+        # We call get_queryset() because we want counts from non-filtered results too - using
+        # object_list would make that unavailable.
+        # DR PK's must be distinct, because one person can have multiple alias relations, to the
+        # same result: Think UPN and Email.
+        scanner_counts = (
+            self.get_queryset().filter(
+                scanner_job__organization_id=self.org.pk
+            )
+            .values('scanner_job_id').order_by()
+            .annotate(
+                total_reports=Count('pk', distinct=True),
+                filtered_reports=Count('pk', distinct=True),
+            )
+        )
+
+        # Map scanner counts
+        scanner_counts_map = {row['scanner_job_id']: row for row in scanner_counts}
+
+        # Slightly convoluted, but we must add whatever's in "additional_scanners", to show
+        # covering jobs with 0 results - but first check that it isn't already there, since
+        # additional_scanners() will also return jobs with results.
+        scanner_ids = [scanner_id for scanner_id, counts in scanner_counts_map.items()]
+        for scanner_ref in self.additional_scanners():
+            # We _could_ remove this if check, but it'd duplicate some PK's as described above.
+            # Though the outcome of the next filter will be the same, it seems wrong.
+            if scanner_ref.pk not in scanner_ids:
+                scanner_ids.append(scanner_ref.pk)
+
+        # Fetch ScannerReference objects
+        self.scannerjob_filters = (
+            ScannerReference.objects.filter(pk__in=scanner_ids)
+            .order_by('scanner_name')
+        )
+
+        # Attach counts from the DocumentReport aggregation
+        for scanner in self.scannerjob_filters:
+            counts = scanner_counts_map.get(scanner.pk, {})
+            scanner.total = counts.get('total_reports', 0)
+            scanner.filtered_total = counts.get('filtered_reports', 0)
 
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
         context['retention'] = self.request.GET.get('retention', 'true')
 
-        sensitivities = self.all_reports.order_by(
-                '-sensitivity').values(
+        sensitivities = self.object_list.values(
                 'sensitivity').annotate(
                 total=Count('pk',
                             distinct=True, filter=scannerjob_filter & resolution_status_filter)
             ).values(
                 'sensitivity', 'total'
-            )
-
-        context['sensitivity_choices'] = ((Sensitivity(s["sensitivity"]),
-                                           s["total"]) for s in sensitivities)
+            ).order_by(
+                '-sensitivity')
+        context['sensitivity_choices'] = ((Sensitivity(s["sensitivity"]), s["total"]) for s in
+                                          sensitivities)
         context['chosen_sensitivity'] = self.request.GET.get('sensitivities', 'all')
-
-        context['source_type_choices'] = self.all_reports.order_by("source_type").values(
+        context['source_type_choices'] = self.object_list.order_by("source_type").values(
             "source_type"
         ).annotate(
             total=Count("pk", filter=sensitivity_filter & scannerjob_filter, distinct=True),
         ).values("source_type", "total")
         context['chosen_source_type'] = self.request.GET.get('source_type', 'all')
 
-        resolution_status = self.all_reports.order_by(
-                'resolution_status').values(
+        resolution_status = self.object_list.values(
                 'resolution_status').annotate(
                 total=Count('pk', distinct=True,
                             filter=sensitivity_filter & scannerjob_filter),
                 ).values('resolution_status', 'total',
-                         )
+                         ).order_by(
+                'resolution_status')
 
         for method in resolution_status:
             method['resolution_label'] = DocumentReport.ResolutionChoices(
@@ -362,7 +403,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     permission_required = "os2datascanner_report.see_withheld_documentreport"
     template_name = "undistributed_content.html"
 
-    def get_queryset_base(self):
+    def get_queryset(self):
         # This is the only ReportView subclass that doesn't use Aliases to get
         # results, so it doesn't use the Account.get_report() mechanism
         try:
