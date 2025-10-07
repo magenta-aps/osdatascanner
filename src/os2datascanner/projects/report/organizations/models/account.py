@@ -375,6 +375,9 @@ class Account(Core_Account):
     @property
     def status_label(self):
         # Requires calling with_status beforehand
+        if not hasattr(self, 'handle_status'):
+            raise AttributeError("status_label called without using AccountQueryset.with_status",
+                                 name='status_label', obj=self)
         return StatusChoices(self.handle_status).label
 
     class ReportType(Enum):

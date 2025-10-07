@@ -79,6 +79,32 @@ class TestAccount:
         egon = Account.objects.all().with_status().get(pk=egon_account.pk)
         assert egon.handle_status == StatusChoices.BAD
 
+    @pytest.mark.parametrize("handled_num,all_num,status", [
+        (100, 100, StatusChoices.GOOD),
+        (0, 0, StatusChoices.GOOD),
+        (0, 100, StatusChoices.BAD),
+        (25, 100, StatusChoices.BAD),
+        (50, 100, StatusChoices.BAD),
+        (75, 100, StatusChoices.OK),
+        (99, 100, StatusChoices.OK),
+    ])
+    def test_status_label(
+            self, egon_account, egon_email_alias, handled_num, all_num, status):
+        """After using with_status the label describing the users status should be available
+        using status_label."""
+
+        make_matched_document_reports_for(egon_email_alias, handled=handled_num, amount=all_num)
+
+        egon = Account.objects.all().with_status().get(pk=egon_account.pk)
+        assert egon.status_label == status.label
+
+    def test_status_label_raises_error(self, egon_account):
+        """Using the status_label property should raise an AttributeError
+        when used before with_status"""
+
+        with pytest.raises(AttributeError):
+            egon_account.status_label
+
     @pytest.mark.parametrize('num_weeks', [
         (-3),
         (0),
