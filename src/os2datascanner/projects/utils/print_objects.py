@@ -173,7 +173,8 @@ class CollectorActionFactory:
                 values = [values]
             getattr(namespace, self.dest).append(self.prefix + values)
 
-    def make_collector_action(self, *prefix):
+    @classmethod
+    def make_collector_action(cls, *prefix):
         return partial(
                 CollectorActionFactory.Action,
                 prefix=prefix)
@@ -193,28 +194,26 @@ class Command(BaseCommand):
     help = __doc__
 
     def add_arguments(self, parser):
-        caf = CollectorActionFactory()
-
         parser.add_argument(
             '--exclude',
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("exclude"),
+            action=CollectorActionFactory.make_collector_action("exclude"),
             help="a Django field lookup to exclude objects")
         parser.add_argument(
             '--filter',
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("filter"),
+            action=CollectorActionFactory.make_collector_action("filter"),
             help="a Django field lookup to filter objects")
         parser.add_argument(
             '--annotate',
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("annotate"),
+            action=CollectorActionFactory.make_collector_action("annotate"),
             help="a Django field lookup describing an annotation to add to the"
                  " query set")
         parser.add_argument(
@@ -222,7 +221,7 @@ class Command(BaseCommand):
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("alias"),
+            action=CollectorActionFactory.make_collector_action("alias"),
             help="a Django field lookup describing an alias to add to the"
                  " query set")
 
