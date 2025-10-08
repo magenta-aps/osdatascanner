@@ -2,7 +2,7 @@ import structlog
 from django.db import transaction
 
 from django.views.generic import ListView
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -16,19 +16,37 @@ logger = structlog.get_logger()
 
 
 class ScannerjobListView(PermissionRequiredMixin, ListView):
-    model = ScannerReference
+    model = DocumentReport
     template_name = "scannerjobs/scannerjob_list.html"
     permission_required = 'os2datascanner_report.delete_documentreport'
     context_object_name = "scannerjobs"
 
     def get_queryset(self):
         org = self.kwargs['org']
-        return super().get_queryset().filter(organization=org).annotate(
-            count=Count(
-                'document_reports',
-                filter=Q(document_reports__number_of_matches__gte=1),
-            )
+        # TODO: Question: This shows counts regardless of resolution status, intended?
+        # if yes, shouldn't we provide some help text clarifying what's displayed?
+        return super().get_queryset().filter(scanner_job__organization=org,
+                                             number_of_matches__gte=1)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # We shouldn't need distinct=True here, since pk is already unique
+        scanner_counts = self.get_queryset().values('scanner_job_id').order_by().annotate(
+            total_reports=Count(
+                'pk')
         )
+        scanner_counts_map = {row['scanner_job_id']: row for row in scanner_counts}
+        scanner_ids = [scanner_id for scanner_id, counts in scanner_counts_map.items()]
+
+        scanner_refs = ScannerReference.objects.filter(
+                pk__in=scanner_ids).order_by('scanner_name')
+
+        for scanner in scanner_refs:
+            counts = scanner_counts_map.get(scanner.pk, {})
+            scanner.count = counts.get('total_reports', 0)
+
+        context["scannerjobs"] = scanner_refs
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         self.kwargs["org"] = request.user.account.organization
