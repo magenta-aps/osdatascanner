@@ -8,8 +8,10 @@
 from ast import literal_eval
 import sys
 import json
+import uuid
 import yaml
 from pprint import pformat
+import datetime
 from functools import partial
 
 import argparse
@@ -18,12 +20,17 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.core.exceptions import FieldError
 from django.core.management.base import BaseCommand
+import recurrence
 
 
 model_mapping = {model.__name__: model for model in apps.get_models()}
 
 
 eprint = partial(print, file=sys.stderr)
+
+
+def get_full_typename(t: type) -> str:
+    return f"{t.__module__}.{t.__qualname__}"
 
 
 def separate(it, criterion) -> list:
@@ -346,6 +353,13 @@ class Command(BaseCommand):
                             or "token" in key)
                     if key_is_suspicious and isinstance(value, str):
                         obj[key] = "█" * min(len(value), 8)
+                    elif isinstance(
+                            value,
+                            (uuid.UUID, datetime.date, datetime.datetime,
+                             recurrence.Recurrence,)):
+                        # Types for which we trust str() (with a tag)
+                        type_name = get_full_typename(type(value))
+                        obj[key] = f"{value!s} [{type_name}]"
                     elif not isinstance(
                             value,
                             (int, float, dict, str, list, type(None))):
