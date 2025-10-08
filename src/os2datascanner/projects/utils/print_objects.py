@@ -184,10 +184,12 @@ def get_possible_fields(qs: QuerySet) -> list[str]:
     """Returns all of the fields, including annotations, available in the given
     QuerySet."""
     # Trivially adapted from django.db.models.sql.query.Query.names_to_path
-    return sorted([
-            *models.sql.query.get_field_names_from_opts(qs.model._meta),
-            *qs.query.annotation_select,
-            *qs.query._filtered_relations])
+    return sorted(
+            {
+                *models.sql.query.get_field_names_from_opts(qs.model._meta),
+                *qs.query.annotation_select,
+                *qs.query._filtered_relations
+            }, key=lambda n: (len(n), n))
 
 
 class Command(BaseCommand):
