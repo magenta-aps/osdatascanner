@@ -24,10 +24,19 @@ from django.core.management.base import BaseCommand
 import recurrence
 
 
-model_mapping = {model.__name__: model for model in apps.get_models()}
-
-
 eprint = partial(print, file=sys.stderr)
+
+
+def censor(value):
+    match value:
+        case str() | bytes():
+            return "█" * max(len(value), 8)
+        case list():
+            return [censor(v) for v in value]
+        case dict():
+            return {k: censor(v) for k, v in value.items()}
+        case _:
+            return value
 
 
 def get_all_subclasses(t: type) -> Iterator[type]:
@@ -190,6 +199,14 @@ def get_possible_fields(qs: QuerySet) -> list[str]:
                 *qs.query.annotation_select,
                 *qs.query._filtered_relations
             }, key=lambda n: (len(n), n))
+
+
+def is_suspicious(field: str) -> bool:
+    return any(
+            susword in field
+            for susword in (
+                    "password", "secret", "token", "private",
+                    "_service_account",))
 
 
 class Command(BaseCommand):
@@ -379,12 +396,8 @@ class Command(BaseCommand):
                             break
 
                 for key, value in obj.items():
-                    key_is_suspicious = (
-                            "password" in key
-                            or "secret" in key
-                            or "token" in key)
-                    if key_is_suspicious and isinstance(value, str):
-                        obj[key] = "█" * min(len(value), 8)
+                    if is_suspicious(key):
+                        obj[key] = censor(value)
                     elif isinstance(
                             value,
                             (uuid.UUID, datetime.date, datetime.datetime,
