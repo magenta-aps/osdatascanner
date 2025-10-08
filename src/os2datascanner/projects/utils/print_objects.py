@@ -11,6 +11,7 @@ import json
 import uuid
 import yaml
 from pprint import pformat
+from typing import Iterator
 import datetime
 from functools import partial
 
@@ -27,6 +28,12 @@ model_mapping = {model.__name__: model for model in apps.get_models()}
 
 
 eprint = partial(print, file=sys.stderr)
+
+
+def get_all_subclasses(t: type) -> Iterator[type]:
+    for s in t.__subclasses__():
+        yield s
+        yield from get_all_subclasses(s)
 
 
 def get_full_typename(t: type) -> str:
@@ -219,14 +226,21 @@ class Command(BaseCommand):
             help="a Django field lookup describing an alias to add to the"
                  " query set")
 
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             '--field',
             dest="fields",
             metavar="NAME",
             type=str,
             action="append",
             help="a Django field name to include in the output (can be used"
-                 " multiple times; if not used, all fields are included)")
+                 " multiple times)")
+        group.add_argument(
+            '--subclasses',
+            action="store_true",
+            help="convert parent model objects into their descendants before"
+                 " displaying them")
+
         parser.add_argument(
             '--distinct',
             action="store_true",
@@ -313,8 +327,16 @@ class Command(BaseCommand):
     def handle(  # noqa CCR001
             self, *,
             order_by, order_by_desc, limit, offset, model, fields,
-            filt_ops, with_sql, format, distinct, **kwargs):
+            filt_ops, with_sql, format, distinct, subclasses, **kwargs):
         queryset = build_queryset_from(model, (filt_ops or []))
+        model_subclasses = (
+                [c for c in get_all_subclasses(model) if not c._meta.abstract]
+                if subclasses else [])
+        if subclasses and not model_subclasses:
+            print("subclass conversion requested,"
+                  f" but class '{model.__name__}' is not a parent class;"
+                  " exiting")
+            return
 
         queryset = queryset.order_by(
                 order_by
@@ -346,6 +368,15 @@ class Command(BaseCommand):
             # Lightly postprocess the results: obscure passwords and prevent
             # UUIDField objects from being dumped in their unhelpful raw form
             for obj in queryset:
+                if subclasses:
+                    pk = obj[model._meta.pk.name]
+                    for msc in model_subclasses:
+                        if (qs := msc.objects.filter(pk=pk)).exists():
+                            obj.clear()
+                            obj["__actual_type"] = get_full_typename(msc)
+                            obj.update(qs.values().get())
+                            break
+
                 for key, value in obj.items():
                     key_is_suspicious = (
                             "password" in key
