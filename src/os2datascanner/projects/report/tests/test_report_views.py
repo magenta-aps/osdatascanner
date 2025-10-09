@@ -1366,3 +1366,39 @@ class TestHandleMatchView:
         assert response.status_code == 200
         assert all([dr not in reports for dr in drs])
         assert all([dr.resolution_status == status for dr in drs])
+
+    def test_handle_withheld_report_superuser(self, client, egon_email_alias, superuser_account):
+        create_reports_for(egon_email_alias, only_notify_superadmin=True)
+        report = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                               resolution_status__isnull=True).first()
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+
+        client.force_login(superuser_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                                resolution_status__isnull=True)
+
+        assert response.status_code == 200
+        assert report not in reports
+
+    def test_handle_multiple_withheld_report_superuser(
+            self, client, egon_email_alias, superuser_account):
+        create_reports_for(egon_email_alias, only_notify_superadmin=True)
+        drs = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)[:5]
+
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(superuser_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                                resolution_status__isnull=True)
+
+        assert response.status_code == 200
+        assert all([dr.pk not in reports for dr in drs])
