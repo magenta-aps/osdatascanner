@@ -12,6 +12,7 @@ from django.http import Http404
 
 from os2datascanner.projects.report.organizations.models.organizational_unit import (
     OrganizationalUnit)
+from os2datascanner.projects.report.organizations.models.account import Account
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 
 from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
@@ -1455,6 +1456,39 @@ class TestDPOStatisticsPageView:
         response = self.get_dpo_statisticspage_response(rf, egon_account)
 
         assert response.context_data.get('match_data').get('unhandled').get('count') == egon_matches
+
+    @pytest.mark.parametrize('account_name,expected_count', [
+        ('admin', 3),
+        ('manden_med_planen', 2),
+        ('the_hulk', 1),
+    ])
+    def test_scannerjob_choices(
+                self,
+                rf,
+                account_name,
+                expected_count,
+                superuser_account,
+                egon_account,
+                egon_dpo_position,
+                hulk_account,
+                hulk_dpo_position,
+                olsenbanden_organization,
+                marvel_organization,
+                scan_marvel,
+                scan_olsenbanden_org,
+                scan_kun_egon
+            ):
+        """The available scannerjob choices should be those owned by your organization,
+        except if you are a superuser, in which case every scanner should be available."""
+        # Arrange
+        account = Account.objects.get(username=account_name)
+
+        # Act
+        response = self.get_dpo_statisticspage_response(rf, account)
+        scanner_choices = list(response.context_data.get('scannerjob_choices'))
+
+        # Assert
+        assert len(scanner_choices) == expected_count
 
     @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     @pytest.mark.parametrize('egon_matches,benny_matches,kjeld_matches', [

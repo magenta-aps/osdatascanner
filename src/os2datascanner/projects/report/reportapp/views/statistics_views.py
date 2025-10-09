@@ -197,7 +197,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         if self.scannerjob_filters is None:
             self.scannerjob_filters = ScannerReference.objects.all()
             if org := self.kwargs.get("org"):
-                self.scannerjob_filters = org.scanners
+                self.scannerjob_filters = org.scanners.all()
 
         (context['match_data'],
          source_type_data,

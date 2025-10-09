@@ -28,6 +28,8 @@
 - The email tagger component no longer crashes immediately when asked to tag
   an email.
 
+- A bug breaking the DPO page when any non-superuser accesses it has been fixed.
+
 ## Version 3.30.1, 26th September 2025
 
 "... And Sow What You'll Reap"
