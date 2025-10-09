@@ -100,7 +100,7 @@
   {% endif %}
 
   {% if form.sharepoint_sites %}
-    <script src="{% static 'js/scannerjob/dropdown2.js' %}"></script>
+    {{ form.sharepoint_sites.value|json_script:"savedValues" }}
     <script src="{% static 'js/scannerjob/getSharePointSites.js' %}"></script>
   {% endif %}
 
@@ -523,15 +523,8 @@
                   <select multiple
                           name="sharepoint_sites"
                           id="sharepoint_sites"
-                          class="sharepoint_sites_select2">
-                    {% for site in sharepoint_sites %}
-                      <option value="{{ site.id }}"
-                              {% if site.id in form.sharepoint_sites.value %}selected{% endif %}>
-                        {{ site.name }}
-                      </option>
-                    {% endfor %}
-                  </select>
-
+                          class="sharepoint_sites_select2"></select>
+ 
                   <button type="button"
                           id="sharepoint-sync-btn"
                           class="button button__icon-button button__sync-button"
