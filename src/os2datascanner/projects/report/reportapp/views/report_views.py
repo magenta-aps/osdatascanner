@@ -588,8 +588,15 @@ class HandleMatchView(HTMXEndpointView, DetailView):
     """Endpoint for handling matches via HTMX."""
 
     def get_queryset(self):
-        return self.account.get_report(Account.ReportType.RAW) | \
+        qs = self.account.get_report(Account.ReportType.RAW) | \
             self.account.get_report(Account.ReportType.RAW, archived=True)
+
+        # Include withheld reports if the user has permission to handle those.
+        # TODO: Check for permission here instead of superuser status.
+        if self.request.user.is_superuser:
+            qs |= DocumentReport.objects.filter(only_notify_superadmin=True).distinct()
+
+        return qs
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -636,6 +643,14 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
 
         # Make sure all reports belong to the account -- otherwise raise 404 error
         account_reports = self.account.get_report(Account.ReportType.RAW)
+
+        # Include all withheld reports in the queryset of account reports if the user has permission
+        # to handle those.
+        # TODO: Check for permission here instead of superuser status
+        if self.request.user.is_superuser:
+            account_reports = account_reports.union(
+                DocumentReport.objects.filter(only_notify_superadmin=True))
+
         if account_reports.intersection(reports).count() != reports.count():
             # At least some of the reports are not accessible by the account. Raise the alarm!
             raise Http404("At least one of the specified reports not found!")
