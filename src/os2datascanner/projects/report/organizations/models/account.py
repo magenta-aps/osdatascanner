@@ -40,6 +40,8 @@ from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.core_organizational_structure.serializer import (BaseBulkSerializer,
                                                                      SelfRelatingField)
 
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
+
 logger = structlog.get_logger("report_organizations")
 
 
@@ -635,16 +637,27 @@ class Account(Core_Account):
         return self.organization.scanners.filter(scanner_pk__in=pks)
 
     def get_scannerjobs_list(self):
-        return self.organization.scanners.annotate(
-            total=Count(
-                'document_reports',
-                filter=Q(document_reports__in=self.get_report(Account.ReportType.PERSONAL)),
-            )
-        ).filter(
-            Q(scan_entire_org=True, only_notify_superadmin=False)
-            | Q(org_units__in=self.units.all(), only_notify_superadmin=False)
-            | Q(total__gt=0)
-        ).distinct()
+        scanner_counts = (self.get_report(
+            Account.ReportType.PERSONAL)
+                          .values('scanner_job_id')
+                          .order_by()
+                          .annotate(total_reports=Count('pk')
+                                    )
+                          )
+
+        # TODO: reuse potential: duplicated code
+        scanner_counts_map = {row['scanner_job_id']: row for row in scanner_counts}
+        scanner_ids = [scanner_id for scanner_id, counts in scanner_counts_map.items()]
+
+        scanner_refs = ScannerReference.objects.filter(
+                pk__in=scanner_ids).order_by('scanner_name')
+
+        # TODO: should this method include covering scanners with 0 results?
+        for scanner in scanner_refs:
+            counts = scanner_counts_map.get(scanner.pk, {})
+            scanner.total = counts.get('total_reports', 0)
+
+        return scanner_refs
 
 
 @receiver(post_save, sender=Account)

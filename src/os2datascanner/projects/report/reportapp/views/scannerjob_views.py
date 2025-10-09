@@ -23,8 +23,8 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         org = self.kwargs['org']
-        # TODO: Question: This shows counts regardless of resolution status, intended?
-        # if yes, shouldn't we provide some help text clarifying what's displayed?
+        # TODO: Provide help text #66955
+        # TODO: Show Scannerjobs with 0 result / determine responsibility #66960
         return super().get_queryset().filter(scanner_job__organization=org,
                                              number_of_matches__gte=1)
 
