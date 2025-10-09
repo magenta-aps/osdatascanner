@@ -17,42 +17,6 @@
 
     <div class="filtering-UI__wrapper">
       <div class="filtering-UI__body">
-        <div>
-          <div class="dropdown__wrapper">
-            <div class="dropdown__label">
-              <label for="scannerjobs" class="match_filtering_label">{% trans "Scan" %}</label>
-
-              <button type="button"
-                      class="match_filtering_clear_button"
-                      name="clear_scannerjob"
-                      hx-trigger="click"
-                      hx-get="{{ request.path }}"
-                      hx-swap="outerHTML"
-                      hx-target=".content"
-                      hx-select=".content"
-                      hx-include="[id='filter_form'], [id='dropdown_options']"
-                      hx-params="not scannerjob"
-                      hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
-            </div>
-
-            <div class="match_filtering dropdown">
-              <select name="scannerjob" id="scannerjobs" autocomplete="off">
-                <option value="all"
-                        {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
-                  {% trans "All scannerjobs" %}
-                </option>
-
-                {% for scan in scannerjob_choices %}
-                  <option value="{{ scan.scanner_pk|unlocalize }}"
-                          {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
-                    {{ scan.scanner_name }} ({{ scan.filtered_total }})
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-        </div>
-
         {% if not "/sbsys" in request.path %}
           <div id="source_type_filter">
             <div class="dropdown__wrapper">
@@ -73,7 +37,10 @@
               </div>
 
               <div class="match_filtering dropdown">
-                <select name="source_type" id="source_type" autocomplete="off">
+                <select name="source_type"
+                        id="source_type"
+                        autocomplete="off"
+                        {% if chosen_source_type != "all" %}disabled{% endif %}>
                   <option value="all"
                           {% if chosen_source_type == "all" %}selected="selected"{% endif %}>
                     {% trans "All source types" %}
@@ -87,6 +54,7 @@
                     </option>
                   {% endfor %}
                 </select>
+                {% if chosen_source_type != "all" %}<input name="source_type" hidden value={{ chosen_source_type }}>{% endif %}
               </div>
             </div>
           </div>
@@ -206,6 +174,48 @@
             </div>
           </div>
         {% endif %}
+        <div>
+          <div class="dropdown__wrapper">
+            <div class="dropdown__label">
+              <label for="scannerjobs" class="match_filtering_label">{% trans "Scan" %}</label>
+
+              <button type="button"
+                      class="match_filtering_clear_button"
+                      name="clear_scannerjob"
+                      hx-trigger="click"
+                      hx-get="{{ request.path }}"
+                      hx-swap="outerHTML"
+                      hx-target=".content"
+                      hx-select=".content"
+                      hx-include="[id='filter_form'], [id='dropdown_options']"
+                      hx-params="not scannerjob"
+                      hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
+            </div>
+
+            <div class="match_filtering dropdown">
+              <select name="scannerjob"
+                      id="scannerjobs"
+                      autocomplete="off"
+                      {% if chosen_scannerjob != "all" %}disabled{% endif %}>
+                <option value="all"
+                        {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
+                  {% trans "All scannerjobs" %}
+                </option>
+
+                {% for scan in scannerjob_choices %}
+                  <option value="{{ scan.scanner_pk|unlocalize }}"
+                          {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
+                    {{ scan.scanner_name }} ({{ scan.total }})
+                  </option>
+                {% endfor %}
+              </select>
+
+              {% if chosen_scannerjob != "all" %}<input name="scannerjob" hidden value={{ chosen_scannerjob }}>{% endif %}
+
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="filtering-UI__footer">

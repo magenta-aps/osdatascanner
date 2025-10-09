@@ -73,12 +73,48 @@ class ReportView(LoginRequiredMixin, ListView):
     filter_types: list[str] = []
     exclude_types: list[str] = ["sbsys-db"]
 
-    def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        sort_key, order = None, None
+    def get_base_queryset(self):
+        try:
+            acct = self.request.user.account
+            self.org = acct.organization
+            reports = acct.get_report(self.report_type, self.archive)
 
+            if self.filter_types:
+                reports = reports.filter(source_type__in=self.filter_types)
+            if self.exclude_types:
+                reports = reports.exclude(source_type__in=self.exclude_types)
+
+            return reports
+
+        except Account.DoesNotExist:
+            logger.warning(
+                    "unexpected error in ReportView.get_queryset_base",
+                    exc_info=True)
+            return DocumentReport.objects.none()
+
+    def get_queryset(self):
+        reports = self.get_base_queryset()
+        reports = self.apply_get_param_filters(self.request, self.org, reports)
+
+        return reports.only(
+            "name",
+            "resolution_status",
+            "resolution_time",
+            "last_opened_time",
+            "raw_matches",
+            "datasource_last_modified",
+            "raw_problem",
+            "number_of_matches"
+            )
+
+    @staticmethod
+    def apply_get_param_filters(request, org, reports):
+        """Called by get_queryset(), filters and orders DocumentReport queryset according
+        to request.GET parameters. """
+
+        sort_key, order = None, None
         # Filtering logic - and stores sort_key and order, if present, for the ordering logic.
-        for key, value in self.request.GET.items():
+        for key, value in request.GET.items():
             if value == "all":  # skip no-op filters early.
                 continue
             match key:
@@ -87,21 +123,22 @@ class ReportView(LoginRequiredMixin, ListView):
                 case "order":
                     order = value
                 case "scannerjob":
-                    self.object_list = self.object_list.filter(
+                    reports = reports.filter(
                         scanner_job__scanner_pk=int(value))
                 case "sensitivities":
-                    self.object_list = self.object_list.filter(
+                    reports = reports.filter(
                         sensitivity=int(value))
                 case "resolution_status":
-                    self.object_list = self.object_list.filter(
+                    reports = reports.filter(
                         resolution_status=int(value))
                 case "source_type":
-                    self.object_list = self.object_list.filter(
+                    reports = reports.filter(
                         source_type=value)
                 case "retention":
-                    if self.org.retention_policy and value == "false":
-                        older_than_ret_pol = time_now() - timedelta(days=self.org.retention_days)
-                        self.object_list = self.object_list.filter(
+                    if org.retention_policy and value == "false":
+                        older_than_ret_pol = time_now() - timedelta(
+                            days=org.retention_days)
+                        reports = reports.filter(
                             datasource_last_modified__lte=older_than_ret_pol)
                 case _:
                     # Unknown param
@@ -116,38 +153,10 @@ class ReportView(LoginRequiredMixin, ListView):
         if (sort_key in allowed_sorting_properties) and order:
             match order:
                 case 'ascending':
-                    self.object_list = self.object_list.order_by(sort_key, 'pk')
+                    reports = reports.order_by(sort_key, 'pk')
                 case 'descending':
-                    self.object_list = self.object_list.order_by(f'-{sort_key}', 'pk')
-
-        return self.render_to_response(self.get_context_data(object_list=self.object_list))
-
-    def get_queryset(self):
-        try:
-            acct = self.request.user.account
-            self.org = acct.organization
-            report = acct.get_report(self.report_type, self.archive)
-
-            if self.filter_types:
-                report = report.filter(source_type__in=self.filter_types)
-            if self.exclude_types:
-                report = report.exclude(source_type__in=self.exclude_types)
-            return report.only(
-                "name",
-                "resolution_status",
-                "resolution_time",
-                "last_opened_time",
-                "raw_matches",
-                "datasource_last_modified",
-                "raw_problem",
-                "number_of_matches"
-                )
-
-        except Account.DoesNotExist:
-            logger.warning(
-                    "unexpected error in ReportView.get_queryset_base",
-                    exc_info=True)
-            return DocumentReport.objects.none()
+                    reports = reports.order_by(f'-{sort_key}', 'pk')
+        return reports
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -250,33 +259,23 @@ class ReportView(LoginRequiredMixin, ListView):
             ['all', None] else Q()
 
         # Aggregate counts from DocumentReport queryset.
-        # We call get_queryset() because we want counts from non-filtered results too - using
-        # object_list would make that unavailable.
         # DR PK's must be distinct, because one person can have multiple alias relations, to the
         # same result: Think UPN and Email.
         scanner_counts = (
-            self.get_queryset().filter(
+            self.object_list.filter(
                 scanner_job__organization_id=self.org.pk
             )
             .values('scanner_job_id').order_by()
             .annotate(
-                total_reports=Count('pk', distinct=True),
-                filtered_reports=Count('pk', distinct=True),
+                total=Count('pk',
+
+                            distinct=True),
             )
         )
 
         # Map scanner counts
         scanner_counts_map = {row['scanner_job_id']: row for row in scanner_counts}
-
-        # Slightly convoluted, but we must add whatever's in "additional_scanners", to show
-        # covering jobs with 0 results - but first check that it isn't already there, since
-        # additional_scanners() will also return jobs with results.
         scanner_ids = [scanner_id for scanner_id, counts in scanner_counts_map.items()]
-        for scanner_ref in self.additional_scanners():
-            # We _could_ remove this if check, but it'd duplicate some PK's as described above.
-            # Though the outcome of the next filter will be the same, it seems wrong.
-            if scanner_ref.pk not in scanner_ids:
-                scanner_ids.append(scanner_ref.pk)
 
         # Fetch ScannerReference objects
         self.scannerjob_filters = (
@@ -287,8 +286,7 @@ class ReportView(LoginRequiredMixin, ListView):
         # Attach counts from the DocumentReport aggregation
         for scanner in self.scannerjob_filters:
             counts = scanner_counts_map.get(scanner.pk, {})
-            scanner.total = counts.get('total_reports', 0)
-            scanner.filtered_total = counts.get('filtered_reports', 0)
+            scanner.total = counts.get('total', 0)
 
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
@@ -340,11 +338,6 @@ class ReportView(LoginRequiredMixin, ListView):
         # as url param paginate_by=xx
         return self.request.GET.get('paginate_by', self.paginate_by)
 
-    def additional_scanners(self):
-        """This method should be overwritten to return any scanner that should be visible even if
-        there aren't any relevant reports connected to it."""
-        return ScannerReference.objects.none()
-
 
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
@@ -365,14 +358,6 @@ class UserReportView(ReportView):
 
         return context
 
-    def additional_scanners(self):
-        """A user should be able to see any non-withheld scanner,
-        that either scans one of their orgunits, or the entire organization."""
-        return self.org.scanners.filter(only_notify_superadmin=False).filter(
-            Q(org_units__in=self.request.user.account.units.all())
-            | Q(scan_entire_org=True)
-        )
-
 
 class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
@@ -391,10 +376,6 @@ class RemediatorView(ReportView):
                            f"{request.user}: {e}")
         return redirect(reverse_lazy('index'))
 
-    def additional_scanners(self):
-        """A remediator should be able to see any scanner they are an remediator for."""
-        return self.request.user.account.scanners_remediator_for
-
 
 class UndistributedView(PermissionRequiredMixin, ReportView):
     """Presents a superuser with all undistributed unhandled results."""
@@ -403,17 +384,19 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     permission_required = "os2datascanner_report.see_withheld_documentreport"
     template_name = "undistributed_content.html"
 
-    def get_queryset(self):
+    def get_base_queryset(self):
         # This is the only ReportView subclass that doesn't use Aliases to get
         # results, so it doesn't use the Account.get_report() mechanism
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            return DocumentReport.objects.filter(
+            reports = DocumentReport.objects.filter(
                     scanner_job__organization=self.org,
                     only_notify_superadmin=True,
                     number_of_matches__gte=1,
                     resolution_status__isnull=not self.archive)
+
+            return reports
         except Account.DoesNotExist:
             logger.warning(
                     "unexpected error in UndistributedView.get_queryset_base",
