@@ -181,12 +181,12 @@ class MSGraphDriveSource(DerivedSource):
                              f" {self.to_json_object()}")
 
     def filter_last_modified(self, folder, cutoff=None):
-        cutoff_utc = cutoff.astimezone(timezone.utc)
+        ts = cutoff.astimezone(timezone.utc)
         return [
             obj for obj in folder
             if datetime.strptime(obj['lastModifiedDateTime'],
                                  "%Y-%m-%dT%H:%M:%SZ").replace(
-                tzinfo=timezone.utc) >= cutoff_utc
+                tzinfo=timezone.utc) >= ts
         ]
 
     def handles(self, sm, *, rule: Rule | None = None):  # noqa CCR001 Cognitive complexity
