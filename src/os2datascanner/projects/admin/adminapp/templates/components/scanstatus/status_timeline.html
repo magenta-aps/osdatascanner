@@ -62,7 +62,21 @@
                 </li>
               {% endif %}
 
-              {% comment %} TODO: Show number of errors thrown during scan. {% endcomment %}
+              {% if status.coveredaccount_set.exists %}
+                <li>
+                  <p>
+                    {% blocktranslate with num=status.coveredaccount_set.count %}{{ num }} accounts covered by this scan{% endblocktranslate %}
+                  </p>
+                </li>
+              {% endif %}
+
+              {% if status.usererrorlog_set.exists %}
+                <li>
+                  <p>
+                    {% blocktranslate with num=status.usererrorlog_set.count %}{{ num }} errors encountered while scanning{% endblocktranslate %}
+                  </p>
+                </li>
+              {% endif %}
             </ul>
           </div>
         </div>
