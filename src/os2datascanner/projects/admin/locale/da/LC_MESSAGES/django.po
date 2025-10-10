@@ -1055,6 +1055,10 @@ msgid "license plate"
 msgstr "nummerplade"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html
+msgid "credit card"
+msgstr "betalingskort"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Experimental"
 msgstr "Eksperimentel"
 
