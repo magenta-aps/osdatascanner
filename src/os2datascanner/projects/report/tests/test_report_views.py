@@ -653,7 +653,7 @@ class TestUndistributedView:
     def test_undistributedview_with_permission(self, rf, egon_account):
         """A user with the correct permission should be allowed access."""
         egon_account.user.user_permissions.add(Permission.objects.get(
-            codename="see_withheld_documentreport"))
+            codename="view_withheld_results"))
         request = rf.get('/undistributed')
         request.user = egon_account.user
         response = UndistributedView.as_view()(request)
@@ -1104,7 +1104,7 @@ class TestUndistibutedArchiveView:
     def test_undistributedarchiveview_with_permission(self, rf, egon_account):
         """A user with the correct permission should be allowed access."""
         egon_account.user.user_permissions.add(Permission.objects.get(
-            codename="see_withheld_documentreport"))
+            codename="view_withheld_results"))
         request = rf.get('/archive/undistributed')
         request.user = egon_account.user
         response = UndistributedArchiveView.as_view()(request)
@@ -1151,7 +1151,7 @@ class TestDistributeMatchesView:
 
     def test_distribute_matches_with_permission(self, client, egon_account):
         egon_account.user.user_permissions.add(
-            Permission.objects.get(codename="distribute_withheld_documentreport"))
+            Permission.objects.get(codename="distribute_withheld_results"))
         client.force_login(egon_account.user)
         response = client.post(self.url, data={}, **self.headers)
 
@@ -1165,7 +1165,7 @@ class TestDistributeMatchesView:
 
     def test_distribute_matches_no_htmx_header(self, client, egon_account):
         egon_account.user.user_permissions.add(
-            Permission.objects.get(codename="distribute_withheld_documentreport"))
+            Permission.objects.get(codename="distribute_withheld_results"))
         client.force_login(egon_account.user)
         response = client.post(self.url, data={})
 
@@ -1186,7 +1186,7 @@ class TestDistributeMatchesView:
             scanner_job_pk=2,
         )
         egon_account.user.user_permissions.add(
-            Permission.objects.get(codename="distribute_withheld_documentreport"))
+            Permission.objects.get(codename="distribute_withheld_results"))
         client.force_login(egon_account.user)
 
         # Act
@@ -1221,7 +1221,7 @@ class TestDistributeMatchesView:
             scanner_job_pk=3,
         )
         egon_account.user.user_permissions.add(
-            Permission.objects.get(codename="distribute_withheld_documentreport"))
+            Permission.objects.get(codename="distribute_withheld_results"))
         client.force_login(egon_account.user)
 
         # Act

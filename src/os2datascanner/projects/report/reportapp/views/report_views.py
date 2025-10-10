@@ -391,7 +391,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     """Presents a superuser with all undistributed unhandled results."""
 
     type = "undistributed"
-    permission_required = "os2datascanner_report.see_withheld_documentreport"
+    permission_required = "organizations.view_withheld_results"
     template_name = "undistributed_content.html"
 
     def get_base_queryset(self):
@@ -706,7 +706,7 @@ class ShowMoreMatchesView(HTMXEndpointView, DetailView):
 
 class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView):
     model = DocumentReport
-    permission_required = "os2datascanner_report.distribute_withheld_documentreport"
+    permission_required = "organizations.distribute_withheld_results"
 
     def get_queryset(self):
         qs = super().get_queryset()
