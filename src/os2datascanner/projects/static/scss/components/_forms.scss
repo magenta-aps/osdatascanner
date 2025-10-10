@@ -583,44 +583,58 @@
   }
 
   input + label {
-    cursor: pointer;
     padding-left: 1.75em !important;
     margin-top: 0;
   }
 
-  input[type="checkbox"] + label {
-    &::before,
-    &::after {
-      :root {
-        --transition-property: opacity;
+  input[type="checkbox"] {
+    & + label {
+      &::before,
+      &::after {
+        :root {
+          --transition-property: opacity;
+        }
+
+        content: "";
+        display: block;
+        height: 1em;
+        width: 1em;
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-sizing: content-box;
+        background-color: transparent;
+        transition: var(--transition-default);
       }
 
-      content: "";
-      display: block;
-      height: 1em;
-      width: 1em;
-      position: absolute;
-      top: 0;
-      left: 0;
-      box-sizing: content-box;
-      background-color: transparent;
-      cursor: pointer;
-      transition: var(--transition-default);
+      &::before {
+        border: 2px solid rgba(0, 0, 0, 0.4);
+        border-radius: 3px;
+      }
+
+      &::after {
+        background-size: 90% auto;
+        background-position: center;
+        background-repeat: no-repeat;
+        border: 2px solid transparent; // match alignment of ::before element
+        background-image: url("../svg/done.svg");
+        opacity: 0;
+        transition: var(--transition-default);
+      }
     }
 
-    &::before {
-      border: 2px solid rgba(0, 0, 0, 0.4);
-      border-radius: 3px;
+    &:not(:disabled) + label {
+      &::before,
+      &::after {
+        cursor: pointer;
+      }
     }
 
-    &::after {
-      background-size: 90% auto;
-      background-position: center;
-      background-repeat: no-repeat;
-      border: 2px solid transparent; // match alignment of ::before element
-      background-image: url("../svg/done.svg");
-      opacity: 0;
-      transition: var(--transition-default);
+    &:disabled + label {
+      &::before,
+      &::after {
+        cursor: not-allowed;
+      }
     }
   }
 
@@ -908,6 +922,7 @@ input[type="file"]::file-selector-button:hover {
         &:is(h3) {
           font-size: 1rem;
         }
+
         &:is(h4) {
           /* Smaller font for titles of nested sub-groups: */
           font-size: 0.875rem; // 14px
@@ -1240,6 +1255,7 @@ input[type="file"]::file-selector-button:hover {
                 color: var(--color-alert-error-accent);
               }
             }
+
             // Change the style of the text depending on whether the "remove"-button is hovered:
             &:has(.uploaded-file__remove:hover) {
               .uploaded-file__name {
