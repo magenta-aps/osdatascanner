@@ -17,7 +17,7 @@ class SyncedPermission(models.Model):
                 _("Can filter by scannerjob in the leader overview")),
             # Scannerjob list
             ("view_scannerjob_list", _("Can view the scannerjob list in the report module")),
-            ("delete_documentreports", _("Can permanently delete reports in the report module"))
+            ("delete_documentreports", _("Can permanently delete reports in the report module")),
             # Withheld results
             ("view_withheld_results",
                 _("Can view the withheld results tab in the report module")),

@@ -691,6 +691,20 @@ class TestUndistributedView:
 
         assert qs.count() == num
 
+    @pytest.mark.parametrize("has_permission", [True, False])
+    def test_allow_handle_context_value(self, client, egon_account, has_permission):
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="view_withheld_results"))
+        if has_permission:
+            egon_account.user.user_permissions.add(
+                Permission.objects.get(codename="handle_withheld_results"))
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("reports:undistributed"))
+
+        assert response.status_code == 200
+        assert response.context_data["allow_handle"] == has_permission
+
 #     # Helper functions
 
     def remediator_get_queryset(self, rf, account, params=''):

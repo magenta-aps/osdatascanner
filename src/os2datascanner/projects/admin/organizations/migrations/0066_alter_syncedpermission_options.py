@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='syncedpermission',
-            options={'permissions': [('view_sbsys_tab', 'Can view the SBSYS tab in the report module'), ('filter_scannerjob_leader_overview', 'Can filter by scannerjob in the leader overview'), ('view_withheld_results', 'Can view the withheld results tab in the report module'), ('handle_withheld_results', 'Can handle withheld results in the report module'), ('distribute_withheld_results', 'Can distribute withheld results to users in the report module')]},
+            options={'permissions': [('view_sbsys_tab', 'Can view the SBSYS tab in Report'), ('filter_scannerjob_leader_overview', 'Can filter by scannerjob in the leader overview'), ('view_scannerjob_list', 'Can view the scannerjob list in the report module'), ('delete_documentreports', 'Can permanently delete reports in the report module')]},
         ),
     ]
