@@ -57,7 +57,13 @@ class CompoundRule(Rule):
         elif len(components) == 1:
             return components[0]
         else:
-            return cls(*components)
+            args = []
+            for k in components:
+                if isinstance(k, cls):
+                    args.extend(k._components)
+                else:
+                    args.append(k)
+            return cls(*args)
 
     def split(self):
         match self._components:
