@@ -21,6 +21,11 @@
 - Rules can now be configured to hide themselves from display in the mini
   scanner and the report module.
 
+- Load times on various report module result pages have seen speed-ups of up to 10x.
+  - The report module’s result filtering has changed its logical display order and now locks
+    the user’s choice to allow for even more efficient filtering.
+
+
 ### Bugfixes
 
 - Fixed the stale accounts button in the scannerjob overview in the admin module. The button will
