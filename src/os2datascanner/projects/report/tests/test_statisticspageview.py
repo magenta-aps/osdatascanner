@@ -84,12 +84,33 @@ class TestUserStatisticsPageView:
     def test_scannerjobs(
             self,
             egon_account,
+            egon_email_alias,
             scan_olsenbanden_org,
             scan_olsenbanden_org_withheld,
             scan_kun_egon,
             scan_kun_egon_withheld,
             scan_owned_by_olsenbanden,
             rf):
+
+        create_reports_for(egon_email_alias, num=1,
+                           scanner_job_name=scan_kun_egon.scanner_name,
+                           scanner_job_pk=scan_kun_egon.pk)
+        create_reports_for(egon_email_alias, num=1,
+                           scanner_job_name=scan_olsenbanden_org.scanner_name,
+                           scanner_job_pk=scan_olsenbanden_org.pk)
+        create_reports_for(egon_email_alias, num=1,
+                           scanner_job_name=scan_kun_egon_withheld.scanner_name,
+                           scanner_job_pk=scan_kun_egon_withheld.pk,
+                           only_notify_superadmin=scan_kun_egon_withheld.only_notify_superadmin
+                           )
+        create_reports_for(
+            egon_email_alias,
+            num=1,
+            scanner_job_name=scan_olsenbanden_org_withheld.scanner_name,
+            scanner_job_pk=scan_olsenbanden_org_withheld.pk,
+            only_notify_superadmin=scan_olsenbanden_org_withheld.only_notify_superadmin)
+        # Act
+
         # Act
         response = self.get_user_statisticspage_response(rf, egon_account)
         choices = list(response.context_data.get('scannerjobs'))

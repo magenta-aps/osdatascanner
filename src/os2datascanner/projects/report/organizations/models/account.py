@@ -637,11 +637,13 @@ class Account(Core_Account):
         return self.organization.scanners.filter(scanner_pk__in=pks)
 
     def get_scannerjobs_list(self):
+        # DR PK's must be distinct, because one person can have multiple alias relations, to the
+        # same result: Think UPN and Email.
         scanner_counts = (self.get_report(
             Account.ReportType.PERSONAL)
                           .values('scanner_job_id')
                           .order_by()
-                          .annotate(total_reports=Count('pk')
+                          .annotate(total_reports=Count('pk', distinct=True)
                                     )
                           )
 

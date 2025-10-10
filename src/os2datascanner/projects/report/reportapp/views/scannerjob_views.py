@@ -30,7 +30,8 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # We shouldn't need distinct=True here, since pk is already unique
+        # We shouldn't need distinct=True here, since pk is already unique in this context.
+        # (No alias relations involved)
         scanner_counts = self.get_queryset().values('scanner_job_id').order_by().annotate(
             total_reports=Count(
                 'pk')

@@ -194,7 +194,17 @@ class ReportView(LoginRequiredMixin, ListView):
             ]
         )
         if has_delete_permission:
-            match list(set(context["page_obj"].object_list.values_list("source_type", flat=True))):
+            filtered_source_type = self.request.GET.get("source_type", None)
+
+            # If GET param is provided (i.e. filtered by source type) use that
+            if filtered_source_type:
+                source_types = [filtered_source_type]
+            else:
+                # Otherwise, check what's on the page.
+                source_types = list(set(
+                    context["page_obj"].object_list.values_list("source_type", flat=True)))
+
+            match source_types:
                 case s if len(s) > 1:
                     logger.debug(
                         "More than one source type on page. Mass deletion button not applicable.",
