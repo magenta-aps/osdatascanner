@@ -58,8 +58,17 @@ function drawTimelines(snapshotData, pk) {
   }
 }
 
+function getNextStatisticRow(row) {
+  var sibling = row.nextElementSibling;
+  if (sibling.matches(".statistic_row")) {
+    return sibling;
+  } else {
+    return getNextStatisticRow(sibling);
+  }
+}
+
 function showTimeline(row, toggleButton) {
-  let timelinesRow = row.nextElementSibling;
+  let timelinesRow = getNextStatisticRow(row);
   toggleClass(toggleButton, "up");
   let buttonOpen = hasClass(toggleButton, "up");
 
