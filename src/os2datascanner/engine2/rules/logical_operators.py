@@ -25,3 +25,13 @@ def __invert(self):
 Rule.__or__ = Rule.__ror__ = __or
 Rule.__and__ = Rule.__rand__ = __and
 Rule.__invert__ = __invert
+
+
+def make_repr(joiner):
+    def __repr(self):
+        return "(" + joiner.join([repr(c) for c in self._components]) + ")"
+    return __repr
+
+
+logical.AndRule.__repr__ = make_repr(" & ")
+logical.OrRule.__repr__ = make_repr(" | ")
