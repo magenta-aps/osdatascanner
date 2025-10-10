@@ -33,6 +33,7 @@
       <option value="CustomRule_Address">{% trans "address" %}</option>
       <option value="EmailHeader">{% trans "e-mail header" %}</option>
       <option value="DanishLicensePlateRule">{% trans "license plate" %}</option>
+      <option value="CreditCardRule">{% trans "credit card" %}</option>
       <optgroup label="{% trans 'Experimental' %}">
         <!--
         <option value="TurboCPRRule">{% trans "CPR-nr. (Turbo)" %}</option>
@@ -146,8 +147,11 @@
     {% blocktrans trimmed %}
       Note that this rule does not verify its results against a database.
       Therefore, it can't detect custom plates.
-    {% endblocktrans %}</span>
-    <!--
+    {% endblocktrans %}
+  </span>
+  <span id="CreditCardRule"></span>
+
+  <!--
   <span id="TurboCPRRule">
     ({% trans "with" %}
     <label>
@@ -163,7 +167,7 @@
     <span id="TurboHealthRule"></span>
   </span>
 -->
-    <span id="RawRule">
-      <textarea></textarea>
-    </span>
-  </div>
+  <span id="RawRule">
+    <textarea></textarea>
+  </span>
+</div>

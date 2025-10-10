@@ -11,5 +11,6 @@ from . import address  # noqa
 from . import wordlists  # noqa
 from . import dict_lookup  # noqa
 from . import passport  # noqa
+from . import credit_card  # noqa
 from . import external  # noqa
 from . import license_plate  # noqa
