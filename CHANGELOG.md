@@ -81,6 +81,8 @@
 
 - New scannertype for scanning shared drives in Google Drive.
 
+- New rule to scan for credit card numbers.
+
 ### General improvements
 
 - CSV export for DPO statistics now use applied filters.
