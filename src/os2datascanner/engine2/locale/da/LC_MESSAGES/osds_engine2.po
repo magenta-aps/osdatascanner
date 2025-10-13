@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: engine 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-23 12:33+0000\n"
+"POT-Creation-Date: 2025-10-13 15:04+0200\n"
 "PO-Revision-Date: 2025-02-27 14:21+0100\n"
 "Last-Translator: Alexander Faithfull-Murawski <af@magenta.dk>\n"
 "Language-Team: none\n"
@@ -11,6 +11,74 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " contains {value}"
+msgstr " indeholder {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " contains {value} (case-insensitively)"
+msgstr " indeholder {value} (ikke versalfølsomt)"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is equal to {value}"
+msgstr " er lige med {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+msgid " is false"
+msgstr " er falsk"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is found (case-insensitively) in {value}"
+msgstr " findes (ikke versalfølsomt) i {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is found in {value}"
+msgstr " findes i {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is greater than or equal to {value}"
+msgstr " er større end eller lige med {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is greater than {value}"
+msgstr " er større end {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is less than or equal to {value}"
+msgstr " er mindre end eller lige med {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is less than {value}"
+msgstr " er mindre end {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is not equal to {value}"
+msgstr " er ikke lige med {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is not {value}"
+msgstr " er ikke {value}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+msgid " is true"
+msgstr " er sandt"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid " is {value}"
+msgstr " er {value}"
 
 #: locale/../model/msgraph/files.py
 #, python-brace-format
@@ -86,6 +154,15 @@ msgstr "tekst af {file}"
 #, python-brace-format
 msgid "text on {page} of {file}"
 msgstr "tekst på {page} af {file}"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+#, python-brace-format
+msgid "the database field '{db_field}'"
+msgstr "databasefeltet '{db_field}'"
+
+#: locale/../model/_staging/sbsysdb_rule.py
+msgid "the number of days since the last update"
+msgstr "antal dage siden den sidste opdatering"
 
 #: locale/../model/derived/libreoffice.py
 #, python-brace-format

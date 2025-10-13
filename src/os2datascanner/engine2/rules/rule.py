@@ -71,7 +71,7 @@ class Rule(TypePropertyEquality, JSONSerialisable):
     def presentation(self) -> str:
         """Returns a (perhaps localised) human-readable string representing
         this Rule, for use in user interfaces."""
-        return self._name or self.presentation_raw
+        return self._name if self._name is not None else self.presentation_raw
 
     @property
     @abstractmethod

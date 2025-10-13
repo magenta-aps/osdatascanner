@@ -2,8 +2,6 @@ import structlog
 
 from os2datascanner.projects.report.organizations.models import Account
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
-from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
-from django.utils.translation import gettext_lazy as _
 
 logger = structlog.get_logger("reportapp")
 
@@ -48,46 +46,7 @@ def get_deviations(report: DocumentReport) -> list[str]:
             continue
 
         rule = frag.rule
-
-        if rule._name is not None:
-            label = rule._name
-        elif isinstance(rule, SBSYSDBRule):
-            # XXX: move this and its translations to
-            # SBSYSDBRule.presentation_raw
-            format_str = None
-            # normalize both contains and icontains to the same label
-            match rule._op:
-                case rule.Op.EQ:
-                    format_str = _("{field} is {value!r}")
-                case rule.Op.NEQ:
-                    format_str = _("{field} is not {value!r}")
-                case rule.Op.LT:
-                    format_str = _("{field} is less than {value!r}")
-                case rule.Op.LTE:
-                    format_str = _(
-                            "{field} is less than or equal to {value!r}")
-                case rule.Op.GT:
-                    format_str = _("{field} is greater than {value!r}")
-                case rule.Op.GTE:
-                    format_str = _(
-                            "{field} is greater than"
-                            " or equal to {value!r}")
-                case rule.Op.CONTAINS | rule.Op.ICONTAINS:
-                    format_str = _(
-                            "{field} contains {value!r}")
-                case rule.Op.IN | rule.Op.IIN:
-                    format_str = _(
-                            "{field} is one of {value!r}")
-                case e:
-                    raise ValueError(e)
-
-            field_name = rule._field
-            if field_name == "?Age?":
-                field_name = _("number of days since last update")
-
-            label = format_str.format(field=field_name, value=rule._value)
-        else:
-            label = rule.presentation
+        label = str(rule.presentation)
 
         if label and label not in seen:
             seen.add(label)
