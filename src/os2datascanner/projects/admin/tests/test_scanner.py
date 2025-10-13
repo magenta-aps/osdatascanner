@@ -13,9 +13,12 @@ from os2datascanner.engine2.model.msgraph import (
 from os2datascanner.engine2.model.derived import mail
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
+from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
 from os2datascanner.projects.admin.organizations.models import OrganizationalUnit, Alias, Account
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.sbsysdb import (
+    SBSYSDBScanner)
 from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
 
 
@@ -405,6 +408,15 @@ def accounts_with_emails(fritz, günther, hansi):
     return accounts
 
 
+@pytest.fixture
+def sbsysdb_scanner(test_org, basic_rule):
+    return SBSYSDBScanner.objects.create(
+        name=f"SBSYS i {test_org.name}",
+        organization=test_org,
+        rule=basic_rule
+    )
+
+
 @pytest.mark.django_db
 class TestScannerSourcesWithAccounts:
 
@@ -544,3 +556,36 @@ class TestScannerSourcesWithAccounts:
 
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
         assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+
+    def test_sbsys_unusual_ca_handling(
+            self, *,
+            smb_grant, sbsysdb_scanner, nisserne,
+            fritz_upn_alias, günther_upn_alias, hansi_upn_alias):
+        """The unusual way that SBSYSDBScanner creates an Account-aware Source
+        is implemented correctly."""
+        # Arrange
+        sbsysdb_scanner.org_units.add(nisserne)
+        sbsysdb_scanner.grant = smb_grant
+        nisse_upns = {
+            fritz_upn_alias.value,
+            günther_upn_alias.value,
+            hansi_upn_alias.value,
+        }
+
+        # Act
+        spec_template = sbsysdb_scanner._construct_scan_spec_template(
+                None, True)
+        sources = list(
+                sbsysdb_scanner._yield_sources(spec_template, True, None))
+
+        # Assert
+        assert len(sources) == 1
+        match sources[0].rule.split():
+            case (SBSYSDBRule("Behandler.UserPrincipalName",
+                              SBSYSDBRule.Op.IIN,
+                              u), _, _) if set(u) == nisse_upns:
+                pass
+            case k:
+                raise AssertionError(
+                        "expected rule to start with UPN filter SBSYSDBRule,"
+                        f" but got {k}")

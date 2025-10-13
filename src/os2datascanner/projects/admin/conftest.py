@@ -682,6 +682,15 @@ def fritz_email_alias(fritz):
 
 
 @pytest.fixture
+def fritz_upn_alias(fritz):
+    return Alias.objects.create(
+        account=fritz,
+        _alias_type="upn",
+        _value="fritz@the-julekalender.onmicrosoft.com",
+        imported=True)
+
+
+@pytest.fixture
 def fritz_shared_email_alias(fritz):
     return Alias.objects.create(account=fritz, _alias_type="email", _value="all@nisserne.gl")
 
@@ -717,6 +726,15 @@ def günther_email_alias(günther):
 
 
 @pytest.fixture
+def günther_upn_alias(günther):
+    return Alias.objects.create(
+        account=günther,
+        _alias_type="upn",
+        _value="guenther@the-julekalender.onmicrosoft.com",
+        imported=True)
+
+
+@pytest.fixture
 def hansi(test_org, nisserne):
     hansi = Account.objects.create(
         username="hansi",
@@ -733,6 +751,15 @@ def hansi_email_alias(hansi):
         account=hansi,
         _alias_type="email",
         _value="hansi@nisserne.gl",
+        imported=True)
+
+
+@pytest.fixture
+def hansi_upn_alias(hansi):
+    return Alias.objects.create(
+        account=hansi,
+        _alias_type="upn",
+        _value="hansi@the-julekalender.onmicrosoft.com",
         imported=True)
 
 
