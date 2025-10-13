@@ -743,6 +743,13 @@ services:
     ports:
       - 8025:8025
 
+  ai-classifier:
+    image: magentaaps/pii-text-classifier:latest
+    ports:
+      - 1337:1337
+    profiles:
+      - ai
+
 x-disabled:
   processor:
     image: magentaaps/os2datascanner-engine:dev

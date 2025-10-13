@@ -447,7 +447,8 @@ To start a service behind a `profiles` flag, use
 docker-compose --profile api up -d
 ```
 
-The following `profiles` are available: `ldap`, `sso`, `api` and `metric`.
+The following `profiles` are available: `ldap`, `sso`, `api`, `metric` and
+`ai`.
 
 The development config files are stored in `os2datascanner/dev-environment/`
 
@@ -549,6 +550,12 @@ These services are not enabled by default because settings that make sense in
 production ("start this scanner at midnight", "send emails out every day at
 10am", or "synchronise this organisation every day at 3pm") don't normally make
 sense in the development environment.
+
+### `--profile ai`
+
+The `ai` profile starts the `ai-classifier` helper component, which performs
+additional classification on the results of certain special CPR and regex
+matches.
 
 ## Setting up OS2mo-importjob
 
