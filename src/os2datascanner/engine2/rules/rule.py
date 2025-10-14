@@ -63,9 +63,13 @@ class Rule(TypePropertyEquality, JSONSerialisable):
         precedence=RulePrecedence.UNDEFINED,
         standalone=True)
 
-    def __init__(self, *, sensitivity=None, name=None):
+    def __init__(
+            self, *,
+            sensitivity=None, name=None,
+            synthetic: bool = False):
         self._sensitivity = sensitivity
         self._name = name
+        self._synthetic = synthetic
 
     @property
     def presentation(self) -> str:
@@ -82,6 +86,14 @@ class Rule(TypePropertyEquality, JSONSerialisable):
     def sensitivity(self) -> Optional[Sensitivity]:
         """Returns the sensitivity value of this Rule, if one was specified."""
         return self._sensitivity
+
+    @property
+    def synthetic(self) -> bool:
+        """Returns whether or not this Rule is flagged as synthetic.
+
+        Synthetic Rules represent internal tests that should not usually be
+        shown to the user as matches."""
+        return self._synthetic
 
     @property
     @abstractmethod
@@ -153,7 +165,8 @@ class Rule(TypePropertyEquality, JSONSerialisable):
         return {
             "type": self.type_label,
             "sensitivity": self.sensitivity.value if self.sensitivity else None,
-            "name": self._name
+            "name": self._name,
+            "synthetic": self._synthetic
         }
 
     def __str__(self):
@@ -171,6 +184,7 @@ class Rule(TypePropertyEquality, JSONSerialisable):
                             if s not in (cls._Suppress, None)
                             else cls._Suppress),
             "name": obj.get("name", cls._Suppress),
+            "synthetic": obj.get("synthetic", cls._Suppress),
         }
 
 

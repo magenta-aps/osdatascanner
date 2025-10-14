@@ -18,6 +18,9 @@
 
 - CSV export for DPO statistics now use applied filters.
 
+- Rules can now be configured to hide themselves from display in the mini
+  scanner and the report module.
+
 ### Bugfixes
 
 - Fixed the stale accounts button in the scannerjob overview in the admin module. The button will

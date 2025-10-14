@@ -39,6 +39,7 @@ expected_matches = [
         "rule": {
             "type": "regex",
             "sensitivity": None,
+            "synthetic": False,
             "name": "Check for ill-advised kings",
             "expression": "Æthelred the Unready"
         },
@@ -48,6 +49,7 @@ expected_matches = [
         "rule": {
             "type": "regex",
             "sensitivity": Sensitivity.CRITICAL.value,
+            "synthetic": False,
             "name": None,
             "expression": "(Scyld) (?:S.*g)"
         },
