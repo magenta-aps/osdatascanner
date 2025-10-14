@@ -679,3 +679,34 @@ speciellæger.""",
         }, obj_limit=obj_limit)
         assert conclusion
         assert len(matches[0][1]) == match_count
+
+    @pytest.mark.parametrize("rule,simplification", [
+        (
+            AndRule.make("A", AndRule.make("B", "C")),
+            AndRule("A", "B", "C")
+        ),
+        (
+            OrRule.make("A", OrRule.make("B", "C")),
+            OrRule("A", "B", "C")
+        ),
+        (
+            AndRule.make("A", AndRule.make("B", AndRule.make("C", "D"))),
+            AndRule("A", "B", "C", "D")
+        ),
+        (
+            OrRule.make("A", OrRule.make("B", OrRule.make("C", "D"))),
+            OrRule("A", "B", "C", "D")
+        ),
+        (
+            AndRule.make(
+                    AndRule.make(
+                            "A", "B", "C", OrRule.make("D", "E", "F")),
+                    OrRule.make(
+                            "G", "H", "I", AndRule.make("J", "K"),
+                            OrRule("L", "M"))),
+            AndRule("A", "B", "C", OrRule("D", "E", "F"),
+                    OrRule("G", "H", "I", AndRule("J", "K"), "L", "M"))
+        ),
+    ])
+    def test_rule_simplification(self, rule, simplification):
+        assert rule == simplification

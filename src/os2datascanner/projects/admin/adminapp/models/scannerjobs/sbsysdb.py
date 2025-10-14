@@ -2,12 +2,19 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.conf import settings
 
-from os2datascanner.engine2.model._staging import sbsysdb
+from os2datascanner.utils.ref import Counter
+from os2datascanner.engine2.model._staging import sbsysdb, sbsysdb_rule
+from os2datascanner.engine2.rules.logical import AndRule
+from os2datascanner.engine2.pipeline import messages
 from os2datascanner.projects.grants.models import SMBGrant
+
+from ....organizations.models.aliases import AliasType
 from .scanner import Scanner
 
 
 class SBSYSDBScanner(Scanner):
+    _supports_account_annotations = True  # sort of :D
+
     @classmethod
     def get_type(cls):
         return "sbsys-db"
@@ -65,6 +72,36 @@ class SBSYSDBScanner(Scanner):
 
     object_name = pgettext_lazy("unit of scan", "case")
     object_name_plural = pgettext_lazy("unit of scan", "cases")
+
+    def _yield_sources(
+            self, spec_template: messages.ScanSpecMessage, force: bool,
+            source_counter: Counter | None = None):
+        # Normally this method yields one ScanSpecMessage for each
+        # CoveredAccount, but that's not how SBSYS scans work. Instead, we
+        # yield a single scan spec with a tweaked Rule that filters out
+        # everything not associated with a CoveredAccount
+        covered_accs = self.compute_covered_accounts()
+        source, = self.generate_sources()
+
+        print(covered_accs)
+
+        upn_set = set()
+        for acc in covered_accs:
+            upn_set |= set(
+                    a._value
+                    for a in acc.aliases.filter(
+                            _alias_type=AliasType.USER_PRINCIPAL_NAME))
+            print(acc)
+
+        Counter.try_incr(source_counter)
+        yield spec_template._replace(
+                source=source,
+                rule=AndRule.make(
+                        sbsysdb_rule.SBSYSDBRule(
+                                "Behandler.UserPrincipalName",
+                                "iin",
+                                list(upn_set)),
+                        spec_template.rule))
 
     class Meta:
         verbose_name = _("SBSYS database scanner")

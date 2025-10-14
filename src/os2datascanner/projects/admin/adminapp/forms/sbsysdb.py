@@ -25,6 +25,7 @@ class SBSYSDBScannerForm(ScannerForm):
             _("Advanced SBSYS scan settings"),
             ["weblink"]
         ),
+        Groups.SCOPE_SETTINGS,
         (
             _("Scan settings"),
             ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule"]

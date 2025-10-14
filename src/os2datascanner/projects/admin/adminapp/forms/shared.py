@@ -33,6 +33,11 @@ class Groups:
         ["schedule"],
     )
 
+    SCOPE_SETTINGS = (
+        _("Scan scope settings"),
+        ["org_units", "scan_entire_org"],
+    )
+
 
 class ScannerForm(GroupingModelForm):
 

@@ -5,7 +5,8 @@ from ..forms.sbsysdb import SBSYSDBScannerForm
 from ..models.scannerjobs.sbsysdb import SBSYSDBScanner
 from ..models.scannerjobs.scanner import Scanner
 from ...organizations.models import Account, AliasType
-from .scanner_views import ScannerList, ScannerViewType, _FormMixin
+from .scanner_views import (
+        ScannerList, ScannerViewType, ScannerCleanupStaleAccounts, _FormMixin)
 
 
 class SBSYSDBScannerList(ScannerList):
@@ -59,3 +60,8 @@ class SBSYSDBScannerCopyDF(_FormMixin, CreateView):
             "validation_status": Scanner.INVALID,
             "name": new_name
         }
+
+
+class SBSYSDBScannerCleanup(ScannerCleanupStaleAccounts):
+    model = SBSYSDBScanner
+    type = "sbsys-db"

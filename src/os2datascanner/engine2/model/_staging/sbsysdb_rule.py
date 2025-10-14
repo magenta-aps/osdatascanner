@@ -6,6 +6,7 @@ from sqlalchemy.sql.expression import func as sql_func
 from sqlalchemy.types import String
 
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule, Sensitivity
+from os2datascanner.engine2.utilities.i18n import gettext as _
 from os2datascanner.engine2.conversions.types import OutputType
 
 
@@ -91,7 +92,61 @@ class SBSYSDBRule(SimpleRule):
 
     @property
     def presentation_raw(self):
-        return ":D"
+        prefix = '{db_field}'
+
+        rhs_is_db_field = False
+        match self._value:
+            case str() as s if s.startswith("&"):
+                rhs_is_db_field = True
+                value = _("the database field '{db_field}'").format(
+                        db_field=s[1:])
+            case str() as s if s.startswith("\\"):
+                value = repr(s[1:])
+            case v:
+                value = repr(v)
+
+        Op = SBSYSDBRule.Op
+        match (self._op, self._value):
+            case (Op.EQ, True) | (Op.NEQ, False):
+                format_str = prefix + _(" is true")
+            case (Op.EQ, False) | (Op.NEQ, True):
+                format_str = prefix + _(" is false")
+            case (Op.EQ, _) if rhs_is_db_field:
+                format_str = prefix + _(" is equal to {value}")
+            case (Op.EQ, _):
+                format_str = prefix + _(" is {value}")
+
+            case (Op.NEQ, _) if rhs_is_db_field:
+                format_str = prefix + _(" is not equal to {value}")
+            case (Op.NEQ, _):
+                format_str = prefix + _(" is not {value}")
+
+            case (Op.LT, _):
+                format_str = prefix + _(" is less than {value}")
+            case (Op.LTE, _):
+                format_str = prefix + _(" is less than or equal to {value}")
+            case (Op.GT, _):
+                format_str = prefix + _(" is greater than {value}")
+            case (Op.GTE, _):
+                format_str = prefix + _(" is greater than or equal to {value}")
+            case (Op.CONTAINS, _):
+                format_str = prefix + _(" contains {value}")
+            case (Op.ICONTAINS, _):
+                format_str = prefix + _(
+                        " contains {value} (case-insensitively)")
+            case (Op.IN, _):
+                format_str = prefix + _(" is found in {value}")
+            case (Op.IIN, _):
+                format_str = prefix + _(
+                        " is found (case-insensitively) in {value}")
+
+        match self._field:
+            case "?Age?":
+                db_field = _("the number of days since the last update")
+            case _:
+                db_field = self._field
+
+        return format_str.format(db_field=db_field, value=value)
 
     def match(self, db_row):
         match self._value:
