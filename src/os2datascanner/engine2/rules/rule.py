@@ -163,6 +163,16 @@ class Rule(TypePropertyEquality, JSONSerialisable):
         return (f"Rule.from_json_object("
                 f"{json.dumps(self.to_json_object())})")
 
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        s = obj.get("sensitivity", cls._Suppress)
+        return super()._get_constructor_kwargs(obj) | {
+            "sensitivity": (Sensitivity(s)
+                            if s not in (cls._Suppress, None)
+                            else cls._Suppress),
+            "name": obj.get("name", cls._Suppress),
+        }
+
 
 class SimpleRule(Rule):
     """A SimpleRule is a rule that can be evaluated. Splitting it produces the
