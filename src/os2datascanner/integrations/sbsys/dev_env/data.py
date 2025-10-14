@@ -443,15 +443,15 @@ SbSysNetDrift["Sag"] = [
         "Nummer": "14.07.22-K02-3-13",
         "Titel": "Hvor kom navnet fra?",
         "ErBeskyttet": 0,
-        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "BehandlerID": 2,  # Reference to the "Bruger" table
         "Kommentar": "Lars Jensen, 111111-1118, har bedt om en forklaring for"
                      " navnet 'Vejstrand Kommune', nu hvor kommunen ikke er"
                      " i nærheden af en strand.",
         "SagsPartID": 0,
         "SagsStatusID": 8,
-        "CreatedByID": 1,
+        "CreatedByID": 2,
         "Created": datetime(2016, 3, 28),
-        "LastChangedByID": 1,
+        "LastChangedByID": 2,
         "LastChanged": datetime(2016, 3, 31),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
