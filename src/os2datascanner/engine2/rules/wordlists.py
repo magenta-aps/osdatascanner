@@ -2,7 +2,7 @@ import re
 
 from typing import Iterator, Optional
 
-from .rule import Rule, SimpleTextRule, Sensitivity
+from .rule import Rule, SimpleTextRule
 from .datasets.loader import common as common_loader
 from .utilities.properties import RulePrecedence, RuleProperties
 
@@ -27,6 +27,7 @@ def load_words(dataset):
     yield from _flatten(loaded)
 
 
+@Rule.register_class
 class OrderedWordlistRule(SimpleTextRule):
     """
     A OrderedWordlistRule finds matches for a single list of words.
@@ -75,13 +76,12 @@ class OrderedWordlistRule(SimpleTextRule):
                 if str(m.group()).lower() in self._wordlists]
 
     def to_json_object(self) -> dict:
-        return dict(**super().to_json_object(), dataset=self._dataset)
+        return super().to_json_object() | {
+            "dataset": self._dataset,
+        }
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj: dict):
-        return OrderedWordlistRule(
-            dataset=obj["dataset"],
-            sensitivity=Sensitivity.make_from_dict(obj),
-            name=obj["name"] if "name" in obj else None,
-        )
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "dataset": obj["dataset"],
+        }

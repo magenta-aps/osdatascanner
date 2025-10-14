@@ -2,7 +2,7 @@ import requests
 import structlog
 from typing import Iterator, Optional
 
-from .rule import Rule, Sensitivity
+from .rule import Rule
 from .regex import RegexRule
 from .wordlists import OrderedWordlistRule
 from .utilities.properties import RulePrecedence, RuleProperties
@@ -45,6 +45,7 @@ def split_sentences(content):
         yield current_sentence
 
 
+@Rule.register_class
 class ExternallyExecutedRegexRule(RegexRule):
     type_label = "external-regex"
     confidence_cutoff = 0.60
@@ -81,24 +82,20 @@ class ExternallyExecutedRegexRule(RegexRule):
                 }
 
     def to_json_object(self) -> dict:
-        return dict(
-            **super().to_json_object(),
-            endpoint=self.endpoint,
-            censor_token=self.censor_token,
-        )
+        return super().to_json_object() | {
+            "endpoint": self.endpoint,
+            "censor_token": self.censor_token,
+        }
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj: dict):
-        return ExternallyExecutedRegexRule(
-            expression=obj["expression"],
-            endpoint=obj["endpoint"],
-            censor_token=obj["censor_token"],
-            sensitivity=Sensitivity.make_from_dict(obj),
-            name=obj["name"] if "name" in obj else None,
-        )
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "endpoint": obj["endpoint"],
+            "censor_token": obj["censor_token"],
+        }
 
 
+@Rule.register_class
 class ExternallyExecutedWordlistRule(OrderedWordlistRule):
     type_label = "external-wordlist"
     confidence_cutoff = 0.60
@@ -142,19 +139,14 @@ class ExternallyExecutedWordlistRule(OrderedWordlistRule):
                 }
 
     def to_json_object(self) -> dict:
-        return dict(
-            **super().to_json_object(),
-            endpoint=self.endpoint,
-            censor_token=self.censor_token,
-        )
+        return super().to_json_object() | {
+            "endpoint": self.endpoint,
+            "censor_token": self.censor_token,
+        }
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj: dict):
-        return ExternallyExecutedWordlistRule(
-            dataset=obj["dataset"],
-            endpoint=obj["endpoint"],
-            censor_token=obj["censor_token"],
-            sensitivity=Sensitivity.make_from_dict(obj),
-            name=obj["name"] if "name" in obj else None,
-        )
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "endpoint": obj["endpoint"],
+            "censor_token": obj["censor_token"],
+        }

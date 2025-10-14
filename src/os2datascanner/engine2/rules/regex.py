@@ -1,11 +1,12 @@
 import re
 from typing import Iterator, Optional
 
-from .rule import Rule, SimpleTextRule, Sensitivity
+from .rule import Rule, SimpleTextRule
 from .utilities.context import make_context
 from .utilities.properties import RulePrecedence, RuleProperties
 
 
+@Rule.register_class
 class RegexRule(SimpleTextRule):
     type_label = "regex"
     eq_properties = ("_expression",)
@@ -49,13 +50,12 @@ class RegexRule(SimpleTextRule):
                 yield m.span()
 
     def to_json_object(self) -> dict:
-        return dict(**super().to_json_object(), expression=self._expression)
+        return super().to_json_object() | {
+            "expression": self._expression,
+        }
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj: dict):
-        return RegexRule(
-            expression=obj["expression"],
-            sensitivity=Sensitivity.make_from_dict(obj),
-            name=obj["name"] if "name" in obj else None,
-        )
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "expression": obj["expression"],
+        }
