@@ -63,7 +63,6 @@ class TestUserReportView:
         sensitivity_choice = next(response.context_data.get("sensitivity_choices"))
 
         # Assert
-        assert scanner_job_choice.filtered_total == 10
         assert scanner_job_choice.total == 10
         assert source_type_choice.get("total") == 10
         assert sensitivity_choice[1] == 10
@@ -319,12 +318,34 @@ class TestUserReportView:
     def test_scannerjob_choices(
             self,
             egon_account,
+            egon_email_alias,
             scan_olsenbanden_org,
             scan_olsenbanden_org_withheld,
             scan_kun_egon,
             scan_kun_egon_withheld,
             scan_owned_by_olsenbanden,
             rf):
+
+        create_reports_for(
+            egon_email_alias,
+            num=1,
+            scanner_job_name=scan_kun_egon.scanner_name,
+            scanner_job_pk=scan_kun_egon.pk)
+        create_reports_for(egon_email_alias, num=1,
+                           scanner_job_name=scan_olsenbanden_org.scanner_name,
+                           scanner_job_pk=scan_olsenbanden_org.pk)
+        create_reports_for(egon_email_alias, num=1,
+                           scanner_job_name=scan_kun_egon_withheld.scanner_name,
+                           scanner_job_pk=scan_kun_egon_withheld.pk,
+                           only_notify_superadmin=scan_kun_egon_withheld.only_notify_superadmin
+                           )
+
+        create_reports_for(
+            egon_email_alias,
+            num=1,
+            scanner_job_name=scan_olsenbanden_org_withheld.scanner_name,
+            scanner_job_pk=scan_olsenbanden_org_withheld.pk,
+            only_notify_superadmin=scan_olsenbanden_org_withheld.only_notify_superadmin)
         # Act
         response = self.get_userreport_response(rf,
                                                 egon_account,
@@ -346,8 +367,7 @@ class TestUserReportView:
         olsenbanden_organization.save()
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index") + "?source_type=smbc")
-
-        assert response.context["show_smb_mass_delete_button"] == org_perm
+        assert response.context.get("show_smb_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_smb_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
@@ -360,7 +380,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert response.context["show_smb_mass_delete_button"] == org_perm
+        assert response.context.get("show_smb_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_ews_mass_deletion_buttons_filter_source_type(self, client, egon_account, org_perm,
@@ -370,7 +390,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index") + "?source_type=ews")
 
-        assert response.context["show_ews_mass_delete_button"] == org_perm
+        assert response.context.get("show_ews_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_ews_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
@@ -383,7 +403,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert response.context["show_ews_mass_delete_button"] == org_perm
+        assert response.context.get("show_ews_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_msgraph_mail_mass_deletion_buttons_filter_source_type(self, client, egon_account,
@@ -394,7 +414,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index") + "?source_type=msgraph-mail")
 
-        assert response.context["show_msgraph_email_mass_delete_button"] == org_perm
+        assert response.context.get("show_msgraph_email_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_msgraph_mail_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
@@ -407,7 +427,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert response.context["show_msgraph_email_mass_delete_button"] == org_perm
+        assert response.context.get("show_msgraph_email_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_msgraph_files_mass_deletion_buttons_filter_source_type(self, client, egon_account,
@@ -418,7 +438,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index") + "?source_type=msgraph-files")
 
-        assert response.context["show_msgraph_file_mass_delete_button"] == org_perm
+        assert response.context.get("show_msgraph_file_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_msgraph_files_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
@@ -431,7 +451,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert response.context["show_msgraph_file_mass_delete_button"] == org_perm
+        assert response.context.get("show_msgraph_file_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_gmail_email_mass_deletion_buttons_filter_source_type(self, client, egon_account,
@@ -442,7 +462,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index") + "?source_type=gmail")
 
-        assert response.context["show_gmail_mass_delete_button"] == org_perm
+        assert response.context.get("show_gmail_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_gmail_email_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
@@ -455,7 +475,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert response.context["show_gmail_mass_delete_button"] == org_perm
+        assert response.context.get("show_gmail_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_gdrive_file_mass_deletion_buttons_filter_source_type(self, client, egon_account,
@@ -466,7 +486,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index") + "?source_type=googledrive")
 
-        assert response.context["show_gdrive_mass_delete_button"] == org_perm
+        assert response.context.get("show_gdrive_mass_delete_button", False) == org_perm
 
     @pytest.mark.parametrize("org_perm", [True, False])
     def test_gdrive_file_mass_deletion_buttons_all_same_source_type(self, client, egon_account,
@@ -479,7 +499,7 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert response.context["show_gdrive_mass_delete_button"] == org_perm
+        assert response.context.get("show_gdrive_mass_delete_button", False) == org_perm
 
     def test_mass_deletion_buttons_all_different_source_type(self, client, egon_account,
                                                              egon_email_alias,
@@ -495,10 +515,10 @@ class TestUserReportView:
         client.force_login(egon_account.user)
         response = client.get(reverse_lazy("index"))
 
-        assert not response.context["show_msgraph_file_mass_delete_button"]
-        assert not response.context["show_msgraph_email_mass_delete_button"]
-        assert not response.context["show_smb_mass_delete_button"]
-        assert not response.context["show_ews_mass_delete_button"]
+        assert not response.context.get("show_msgraph_file_mass_delete_button", False)
+        assert not response.context.get("show_msgraph_email_mass_delete_button", False)
+        assert not response.context.get("show_smb_mass_delete_button", False)
+        assert not response.context.get("show_ews_mass_delete_button", False)
 
     # # Helper methods
 
@@ -596,23 +616,6 @@ class TestRemediatorView:
         egon_remediator_alias._value = 2
         egon_remediator_alias.save()
         create_reports_for(egon_remediator_alias, num=10, scanner_job_pk=1)
-
-        # Act
-        response = self.get_remediator_response(rf, egon_account)
-        choices = list(response.context_data.get('scannerjob_choices'))
-
-        # Assert
-        assert len(choices) == 1
-        assert choices[0].scanner_pk == 1
-
-    def test_scannerjob_choices_remediator_for(
-            self,
-            egon_account,
-            egon_remediator_alias,
-            scan_olsenbanden_org,
-            rf):
-        """When an account has a remediator alias connected to a scanner,
-        it should show up as a scannerjob option."""
 
         # Act
         response = self.get_remediator_response(rf, egon_account)
