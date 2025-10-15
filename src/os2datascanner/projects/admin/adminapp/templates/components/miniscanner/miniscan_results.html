@@ -23,13 +23,15 @@
       {% if replies %}
         {% for message in replies %}
           {% for fragment in message.matches %}
-            {% for match in fragment.matches %}
-              <tr>
-                <td>{{ message.handle.presentation }}</td>
-                <td>{{ match.match }}</td>
-                <td>{{ match.context }}</td>
-              </tr>
-            {% endfor %}
+            {% if not fragment.rule.synthetic %}
+              {% for match in fragment.matches %}
+                <tr>
+                  <td>{{ message.handle.presentation }}</td>
+                  <td>{{ match.match }}</td>
+                  <td>{{ match.context }}</td>
+                </tr>
+              {% endfor %}
+            {% endif %}
           {% endfor %}
         {% endfor %}
       {% else %}

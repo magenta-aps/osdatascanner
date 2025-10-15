@@ -145,7 +145,8 @@ def merge_renderable_match_fragments(match_fragments: list):
 
     # TODO: Refactor match.html and this. It is a bit hacky and fragile.
     match_fragments = [frag for frag in match_fragments
-                       if frag.rule.type_label in RENDERABLE_RULES
+                       if not frag.rule.synthetic
+                       and frag.rule.type_label in RENDERABLE_RULES
                        and frag.matches]
 
     match match_fragments:
