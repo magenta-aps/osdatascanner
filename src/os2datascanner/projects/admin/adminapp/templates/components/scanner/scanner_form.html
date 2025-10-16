@@ -85,6 +85,24 @@
  }
   </script>
 
+  {% if form.scan_lists %}
+    <script type="text/javascript">
+         listBox = document.getElementById('id_scan_lists');
+         descBox = document.getElementById('id_scan_descriptions');
+
+         listBox.addEventListener('change', ()=>toggleDescriptionCheckBox())
+
+         function toggleDescriptionCheckBox() {
+             descBox.disabled = !listBox.checked
+
+             if (!listBox.checked){
+                 descBox.checked = false
+             }
+         }
+         toggleDescriptionCheckBox()
+    </script>
+  {% endif %}
+
   <!-- Available Employees widget -->
   <!-- <script type="text/javascript" src="{% static 'js/scannerjob/employeeSelector.js' %}"></script> -->
   <script src="{% static 'js/filters/options.js' %}"></script>

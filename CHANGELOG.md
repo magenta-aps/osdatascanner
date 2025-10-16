@@ -12,6 +12,8 @@
 
 - Added missing styling on an error message in the SharePoint scanner form.
 
+- You can no longer choose to scan SharePoint list descriptions without also scanning lists.
+
 ### Bugfixes
 
 - Changed SBSYS datatable header name from "KLE-no." to "case number" to better fit the actual

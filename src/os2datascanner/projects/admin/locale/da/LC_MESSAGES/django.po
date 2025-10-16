@@ -2795,6 +2795,10 @@ msgid "You must choose to scan drives, lists or both!"
 msgstr "Du skal vælge at scanne drev, lister eller begge!"
 
 #: adminapp/views/msgraph_views.py
+msgid "Scanning list descriptions without scanning lists will have no effect."
+msgstr "Scanning af listebeskrivelser uden scanning af lister vil ikke have nogen effekt."
+
+#: adminapp/views/msgraph_views.py
 msgid "You must choose to scan drives, lists, or both!"
 msgstr "Du skal vælge at scanne drev, lister eller begge!"
 
