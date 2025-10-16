@@ -100,7 +100,8 @@ class SBSYSDBScanner(Scanner):
                         sbsysdb_rule.SBSYSDBRule(
                                 "Behandler.UserPrincipalName",
                                 "iin",
-                                list(upn_set)),
+                                list(upn_set),
+                                synthetic=True),
                         spec_template.rule))
 
     class Meta:

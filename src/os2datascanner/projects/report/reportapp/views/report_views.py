@@ -669,7 +669,8 @@ class ShowMoreMatchesView(HTMXEndpointView, DetailView):
         # Serve the fragments associated with the document report
         frags = self.object.matches.matches
         for frag in frags:
-            if frag.rule.type_label in RENDERABLE_RULES:
+            if (not frag.rule.synthetic
+                    and frag.rule.type_label in RENDERABLE_RULES):
                 context['frag'] = frag
 
         # Serve the document report key

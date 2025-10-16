@@ -5,7 +5,7 @@ from functools import partial
 from sqlalchemy.sql.expression import func as sql_func
 from sqlalchemy.types import String
 
-from os2datascanner.engine2.rules.rule import Rule, SimpleRule, Sensitivity
+from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 from os2datascanner.engine2.utilities.i18n import gettext as _
 from os2datascanner.engine2.conversions.types import OutputType
 
@@ -37,6 +37,7 @@ def _in(column, value, case_sensitive=False):
         return column.in_(value)
 
 
+@Rule.register_class
 class SBSYSDBRule(SimpleRule):
     class Op(Enum):
         EQ = ("eq", operator.eq)
@@ -172,13 +173,10 @@ class SBSYSDBRule(SimpleRule):
                     else list(self._value))
         }
 
-    @Rule.json_handler(type_label)
-    @staticmethod
-    def from_json_object(obj):
-        return SBSYSDBRule(
-                obj["field"],
-                obj["operator"],
-                obj["value"],
-
-                sensitivity=Sensitivity.make_from_dict(obj),
-                name=obj.get("name"))
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "field": obj["field"],
+            "op": obj["operator"],
+            "value": obj["value"],
+        }

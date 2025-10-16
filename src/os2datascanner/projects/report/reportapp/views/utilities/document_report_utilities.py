@@ -42,7 +42,7 @@ def get_deviations(report: DocumentReport) -> list[str]:
     out: list[str] = []
 
     for frag in report.matches.matches:
-        if not frag.matches:
+        if frag.rule.synthetic or not frag.matches:
             continue
 
         rule = frag.rule
