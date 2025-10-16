@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-13 14:44+0200\n"
+"POT-Creation-Date: 2025-10-16 14:19+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -651,22 +651,13 @@ msgid "Reset my password"
 msgstr "Nulstil min adgangskode"
 
 #: reportapp/templates/components/reports/filters.html
-msgid "Scan"
-msgstr "Scan"
+#: reportapp/views/statistics_views.py
+msgid "Source Type"
+msgstr "Kildetype"
 
 #: reportapp/templates/components/reports/filters.html
 msgid "Clear"
 msgstr "Ryd"
-
-#: reportapp/templates/components/reports/filters.html
-#: reportapp/templates/dpo_statistics_template.html
-msgid "All scannerjobs"
-msgstr "Alle scannerjobs"
-
-#: reportapp/templates/components/reports/filters.html
-#: reportapp/views/statistics_views.py
-msgid "Source Type"
-msgstr "Kildetype"
 
 #: reportapp/templates/components/reports/filters.html
 msgid "All source types"
@@ -688,6 +679,15 @@ msgstr "Følsomhed"
 #: reportapp/templates/components/reports/filters.html
 msgid "All sensitivities"
 msgstr "Alle følsomheder"
+
+#: reportapp/templates/components/reports/filters.html
+msgid "Scan"
+msgstr "Scan"
+
+#: reportapp/templates/components/reports/filters.html
+#: reportapp/templates/dpo_statistics_template.html
+msgid "All scannerjobs"
+msgstr "Alle scannerjobs"
 
 #: reportapp/templates/components/reports/filters.html
 #, python-format
