@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.3X.X, XX XX 202X
+## Version 3.30.2, 16th October 2025
+
+"Autumn Robot 🍂"
 
 ### New in this release
 
