@@ -1,5 +1,6 @@
 import requests
 import structlog
+import pysbd
 from typing import Iterator, Optional
 
 from .rule import Rule
@@ -33,22 +34,16 @@ def get_prediction(sentence, endpoint) -> [int, float]:
 
 
 def split_sentences(content):
-    delimiters = {'.', '!', '?'}
-    max_sentence_length = 100
-    current_sentence = ""
-    for char in content:
-        current_sentence += char
-        if char in delimiters or len(current_sentence) >= max_sentence_length:
-            yield current_sentence
-            current_sentence = ""
-    if current_sentence:
-        yield current_sentence
+    seg = pysbd.Segmenter(language="da", clean=True)
+
+    for sentence in seg.segment(content):
+        yield sentence
 
 
 @Rule.register_class
 class ExternallyExecutedRegexRule(RegexRule):
     type_label = "external-regex"
-    confidence_cutoff = 0.60
+    confidence_cutoff = 0.40
 
     def __init__(self, expression: str, endpoint: str, censor_token: str, **super_kwargs):
         self.endpoint = endpoint
@@ -98,7 +93,7 @@ class ExternallyExecutedRegexRule(RegexRule):
 @Rule.register_class
 class ExternallyExecutedWordlistRule(OrderedWordlistRule):
     type_label = "external-wordlist"
-    confidence_cutoff = 0.60
+    confidence_cutoff = 0.40
 
     properties = RuleProperties(
         precedence=RulePrecedence.RIGHT,
