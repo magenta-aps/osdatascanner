@@ -21,7 +21,7 @@ USER node
 # NB! Watches for changes, so no automatic exit!
 CMD ["npm", "run", "dev", "--prefix", "static"]
 
-FROM python:3.13.6-bookworm as base
+FROM python:3.13.9-trixie as base
 
 # Force the stdout and stderr streams from python to be unbuffered. See
 # https://docs.python.org/3/using/cmdline.html#cmdoption-u
