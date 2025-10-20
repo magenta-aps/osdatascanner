@@ -107,10 +107,11 @@ class FileResource(TimestampedResource):
     sequence of bytes with a size."""
 
     GENERIC_TYPES = ("application/zip", "application/CDFV2",
-                     "application/x-ole-storage", "text/plain", "text/html",)
+                     "application/x-ole-storage", "text/plain", "text/html",
+                     "application/octet-stream",)
     # The computed types that should be discarded in favour of the guessed
-    # type, which is likely to be more specific. (Not used if the guessed type is
-    # the completely generic value "application/octet-stream").
+    # type, which is likely to be more specific. (Not used if the guessed type
+    # is the completely generic value "application/octet-stream").
 
     def __init__(self, handle, sm):
         super().__init__(handle, sm)
