@@ -14,6 +14,8 @@
 
 - You can no longer choose to scan SharePoint list descriptions without also scanning lists.
 
+- OSdatascanner now runs on the latest stable Python version, 3.13.9.
+
 ### Bugfixes
 
 - Changed SBSYS datatable header name from "KLE-no." to "case number" to better fit the actual
@@ -21,6 +23,7 @@
 
 - The "name" cell in SBSYS result datatables no longer display the case number.
 
+- File scanners can once more correctly associate files with their owners.
 
 ## Version 3.30.2, 16th October 2025
 
