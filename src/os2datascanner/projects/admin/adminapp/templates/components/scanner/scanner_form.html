@@ -624,15 +624,14 @@
                   </div>
                 {% endif %}
 
-                {% if form.scan_drives %}
-                  <div class="checkbox-group form__group {% if form.scan_lists.errors %}has-error{% endif %}">
-                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_drives %}
-                  </div>
-                {% endif %}
-
                 {% if form.scan_lists %}
-                  <div class="checkbox-group form__group {% if form.scan_lists.errors %}has-error{% endif %}">
-                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_lists %}
+                  <div class="input-group form__group {% if form.scan_lists.errors %}has-error{% endif %}">
+                    <div class="checkbox-group form__group">
+                      {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_drives %}
+                    </div>
+                    <div class="checkbox-group form__group">
+                      {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_lists %}
+                    </div>
                   </div>
                 {% endif %}
 
