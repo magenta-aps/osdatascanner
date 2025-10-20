@@ -19,6 +19,8 @@
 - Changed SBSYS datatable header name from "KLE-no." to "case number" to better fit the actual
   content in the cells below.
 
+- The "name" cell in SBSYS result datatables no longer display the case number.
+
 
 ## Version 3.30.2, 16th October 2025
 
