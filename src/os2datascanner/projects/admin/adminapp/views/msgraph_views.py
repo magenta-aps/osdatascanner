@@ -405,6 +405,11 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
         else:
             form.add_error("scan_lists", _("You must choose to scan drives, lists, or both!"))
             return self.form_invalid(form)
+        if data.get('scan_descriptions') and not data.get('scan_lists'):
+            form.add_error(
+                "scan_descriptions",
+                _("Scanning list descriptions without scanning lists will have no effect."))
+            return self.form_invalid(form)
         return super().form_valid(form)
 
 
@@ -433,6 +438,11 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
         data = form.cleaned_data
         if not (data.get("scan_lists") or data.get("scan_drives")):
             form.add_error("scan_lists", _("You must choose to scan drives, lists, or both!"))
+            return self.form_invalid(form)
+        if data.get('scan_descriptions') and not data.get('scan_lists'):
+            form.add_error(
+                "scan_descriptions",
+                _("Scanning list descriptions without scanning lists will have no effect."))
             return self.form_invalid(form)
         return super().form_valid(form)
 
