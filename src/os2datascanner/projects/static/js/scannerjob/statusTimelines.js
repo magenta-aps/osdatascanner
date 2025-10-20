@@ -58,6 +58,18 @@ function drawTimelines(snapshotData, pk) {
   }
 }
 
+function drawPieCharts(bytesData, timeData, pk) {
+  drawPie(bytesData, "bytes_status__" + String(pk), [
+    "#fed149",
+    "#5ca4cd",
+    "#21759c",
+    "#00496e",
+    "#bfe474",
+    "#e47483",
+  ]);
+  drawPie(timeData, "seconds_status__" + String(pk), ["#80ab82", "#a2e774", "#35bd57", "#1b512d", "#7e4672"]);
+}
+
 function getNextStatisticRow(row) {
   var sibling = row.nextElementSibling;
   if (sibling.matches(".statistic_row")) {
@@ -76,6 +88,7 @@ function showTimeline(row, toggleButton) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  window.charts = [];
   htmx.onLoad(function (content) {
     if (hasClass(content, 'page') || hasClass(content, 'content')) {
 
@@ -90,9 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else if (hasClass(content, 'timeline')) {
       let snapshotData = JSON.parse(content.querySelector('#snapshot_data').textContent);
+      let bytesData = JSON.parse(content.querySelector('#bytes_data').textContent);
+      let timeData = JSON.parse(content.querySelector('#time_data').textContent);
       let pk = JSON.parse(content.querySelector('#status_pk').textContent);
 
       drawTimelines(snapshotData, pk);
+      drawPieCharts(bytesData, timeData, pk);
     }
   });
 });

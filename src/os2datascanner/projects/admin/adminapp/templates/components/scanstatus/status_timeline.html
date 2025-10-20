@@ -80,6 +80,50 @@
             </ul>
           </div>
         </div>
+
+        <div class="data-card data-card--bytes">
+          <div class="data-card__label">
+            <span class="title">{% trans "Size scanned" %}</span>
+            <span class="subtitle">{% trans "Total size scanned of different file types" %}</span>
+          </div>
+
+          <div class="data-card__content">
+            <div class="statistics__section__chart-container chart_container status-bytes"
+                 data-chartid="bytes_status__{{ status.pk|unlocalize }}">
+              <canvas class="pie_chart"
+                      id="pie_chart_bytes_status__{{ status.pk|unlocalize }}"
+                      height="150"
+                      width="250"></canvas>
+            </div>
+            <div class="canvas__legend"
+                 data-chartid="distribution-data-sources"
+                 id="pie_legend_bytes_status__{{ status.pk|unlocalize }}"></div>
+
+            {{ bytes_data|json_script:"bytes_data" }}
+          </div>
+        </div>
+
+        <div class="data-card data-card--seconds">
+          <div class="data-card__label">
+            <span class="title">{% trans "Seconds scanned" %}</span>
+            <span class="subtitle">{% trans "Time spent scanning different file types" %}</span>
+          </div>
+
+          <div class="data-card__content">
+            <div class="statistics__section__chart-container chart_container status-seconds"
+                 data-chartid="seconds_status__{{ status.pk|unlocalize }}">
+              <canvas class="pie_chart"
+                      id="pie_chart_seconds_status__{{ status.pk|unlocalize }}"
+                      height="150"
+                      width="250"></canvas>
+            </div>
+            <div class="canvas__legend"
+                 data-chartid="distribution-data-sources"
+                 id="pie_legend_seconds_status__{{ status.pk|unlocalize }}"></div>
+
+            {{ time_data|json_script:"time_data" }}
+          </div>
+        </div>
       </section>
     </div>
 
