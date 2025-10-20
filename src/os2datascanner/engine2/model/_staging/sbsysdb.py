@@ -194,9 +194,9 @@ class SBSYSDBHandles:
         @property
         def presentation_name(self):
             if not self._title:
-                return _("case number {casenr}").format(casenr=self.relative_path)
+                return _("\"see case number\"").format(casenr=self.relative_path)
             else:
-                return _("case \"{title}\" (case number {casenr})").format(
+                return _("case \"{title}\"").format(
                         title=self._title, casenr=self.relative_path)
 
         @property
