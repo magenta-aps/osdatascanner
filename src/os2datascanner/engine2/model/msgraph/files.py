@@ -2,11 +2,15 @@ from io import BytesIO
 from contextlib import contextmanager
 from dateutil.parser import isoparse
 from requests import HTTPError
+from datetime import datetime, timezone
 
 from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror
+from ...rules.rule import Rule
+
+from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
 class MSGraphFilesSource(MSGraphSource):
@@ -176,11 +180,34 @@ class MSGraphDriveSource(DerivedSource):
             raise ValueError("Object didn't contain any driveId or UPN!:"
                              f" {self.to_json_object()}")
 
-    def handles(self, sm):
+    def filter_last_modified(self, folder, cutoff=None):
+        ts = cutoff.astimezone(timezone.utc)
+        return [
+            obj for obj in folder
+            if datetime.strptime(obj['lastModifiedDateTime'],
+                                 "%Y-%m-%dT%H:%M:%SZ").replace(
+                tzinfo=timezone.utc) >= ts
+        ]
+
+    def handles(self, sm, *, rule: Rule | None = None):  # noqa CCR001 Cognitive complexity
         gc: MSGraphSource.GraphCaller = sm.open(self)
+
+        cutoff = None
+        for essential_rule in compute_mss(rule):
+            # (we can't do isinstance() here without making a circular
+            # dependency)
+            if essential_rule.type_label == "last-modified":
+                after = essential_rule.after
+                cutoff = (after if not cutoff else max(cutoff, after))
 
         def _explore_folder(
                 components, folder, parent_weblink=None, is_root=False):
+
+            # Since filtering on lastModifiedDateTime is not supported in MSGraph on this resource
+            # this is the earliest we can filter.
+            if cutoff:
+                folder = self.filter_last_modified(folder, cutoff)
+
             for obj in folder:
                 name = obj["name"]
                 web_url = obj.get("webUrl", None)
@@ -194,15 +221,15 @@ class MSGraphDriveSource(DerivedSource):
                 here = components + ([name] if not is_root else [])
                 if "file" in obj:
                     yield MSGraphFileHandle(
-                            self, "/".join(here),
-                            weblink=web_url, parent_weblink=parent_weblink)
+                        self, "/".join(here),
+                        weblink=web_url, parent_weblink=parent_weblink)
                 elif "folder" in obj:
                     folder_id: str = obj["id"]
                     subfolder = gc.get(
-                            f"{self._drive_path}/items/"
-                            f"{folder_id}/children").json()
+                        f"{self._drive_path}/items/"
+                        f"{folder_id}/children").json()
                     yield from _explore_folder(
-                            here, subfolder["value"], parent_weblink=web_url)
+                        here, subfolder["value"], parent_weblink=web_url)
         root = [gc.get(f"{self._drive_path}/root").json()]
         yield from _explore_folder([], root, is_root=True)
 

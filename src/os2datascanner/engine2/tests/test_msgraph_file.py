@@ -1,4 +1,5 @@
-from ..model.msgraph.files import MSGraphDriveHandle, MSGraphFilesSource
+from ..model.msgraph.files import MSGraphDriveHandle, MSGraphFilesSource, MSGraphDriveSource
+from datetime import datetime, timezone
 
 
 class TestMSGraphDriveHandle:
@@ -37,3 +38,37 @@ class TestMSGraphDriveHandle:
                'user_drives': True, 'client_secret': None}
 
         assert isinstance(MSGraphFilesSource.from_json_object(obj), MSGraphFilesSource)
+
+
+class TestMSGraphDriveSource:
+    def test_last_modified_filer(self):
+        fake_source = MSGraphFilesSource(
+                                    "Not a real client ID value",
+                                    "Not a real tenant ID value",
+                                    "Not a very secret client secret")
+        fake_handle = MSGraphDriveHandle(fake_source,
+                                         "path",
+                                         "Folder",
+                                         "User",
+                                         user_account="Test User"
+                                         )
+
+        fake_drive_source = MSGraphDriveSource(fake_handle)
+        fake_folder = [{
+                          "id": 1,
+                          "lastModifiedDateTime": "1996-06-27T12:25:30Z",
+                          "name": "testfile1"
+                        },
+                       {
+                            "id": 2,
+                            "lastModifiedDateTime": "1997-02-11T12:25:30Z",
+                            "name": "Testfile2"
+                        }]
+
+        cutoff = datetime(1997, 1, 1, 12, 00, 00, tzinfo=timezone.utc)
+
+        filtered_folder = fake_drive_source.filter_last_modified(fake_folder, cutoff)
+
+        assert len(filtered_folder) == 1
+        assert fake_folder != filtered_folder
+        assert filtered_folder[0]['id'] == 2

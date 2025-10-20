@@ -6,7 +6,7 @@
 
 ### New in this release
 
-
+- Office 365 file scanner now supports filtering by "last modified" timestamps for faster scans.
 
 ### General improvements
 
@@ -39,7 +39,7 @@
 
 - SharePoint scanner now supports scanning of list field's descriptions.
 
-- New scannertype for scanning shared drives in Google Drive. 
+- New scannertype for scanning shared drives in Google Drive.
 
 ### General improvements
 
