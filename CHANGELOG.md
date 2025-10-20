@@ -10,7 +10,7 @@
 
 ### General improvements
 
-
+- Added missing styling on an error message in the SharePoint scanner form.
 
 ### Bugfixes
 
