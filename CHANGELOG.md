@@ -1,5 +1,23 @@
 # Changelog
 
+## Version 3.30.x, xxth xxxxber 2025
+
+""
+
+### New in this release
+
+
+
+### General improvements
+
+
+
+### Bugfixes
+
+- Changed SBSYS datatable header name from "KLE-no." to "case number" to better fit the actual
+  content in the cells below.
+
+
 ## Version 3.30.2, 16th October 2025
 
 "Autumn Robot 🍂"

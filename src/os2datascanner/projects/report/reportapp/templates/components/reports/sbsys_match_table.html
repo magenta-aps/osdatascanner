@@ -26,7 +26,7 @@
           <col class="column column--checkbox">
           <col class="column column--flexible">
           <col class="column column--flexible">
-          <col class="column column--kle column--numeral">
+          <col class="column column--case-number">
           <col class="column column--datasource_last_modified">
           {% if "/archive/" in request.path %}<col class="column column--resolution-status">{% endif %}
           <col class="column column--actions">
@@ -59,21 +59,21 @@
             </th>
  
             <th class="column--name">
-              <div class="th__flex-container">{% trans "Name" %}</div>
+              <div class="th__flex-container">{% trans "name"|capfirst %}</div>
             </th>
  
             <th class="column--deviations">
-              <div class="th__flex-container">{% trans "Deviations" %}</div>
+              <div class="th__flex-container">{% trans "deviations"|capfirst %}</div>
             </th>
  
-            <th class="column--kle column--numeral">
-              <div class="th__flex-container">{% trans "KLE-no." %}</div>
+            <th class="column--case-number">
+              <div class="th__flex-container">{% trans "case number"|capfirst %}</div>
             </th>
  
             <th class="column--datasource_last_modified">
               <div class="th__flex-container">
                 <label for="datasource_last_modified-caret">
-                  <span>{% trans "Resource age" %}</span>
+                  <span>{% trans "resource age"|capfirst %}</span>
                 </label>
  
                 <button type="button"
@@ -91,7 +91,7 @@
             {% if "/archive/" in request.path %}
               <th class="column--resolution-status">
                 <div class="th__flex-container">
-                  <label for="status-caret">{% trans "Status" %}</label>
+                  <label for="status-caret">{% trans "status"|capfirst %}</label>
  
                   <button type="button"
                           name="resolution_status"
@@ -107,7 +107,8 @@
             {% endif %}
 
             <th class="column--actions">
-              <span aria-label="{% trans 'Actions' %}" title="{% trans 'Actions' %}">{% trans 'Actions' %}</span>
+              <span aria-label="{% trans 'actions'|capfirst %}"
+                    title="{% trans 'actions'|capfirst %}">{% trans 'actions'|capfirst %}</span>
             </th>
           </tr>
         </thead>

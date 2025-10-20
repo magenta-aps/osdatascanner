@@ -2004,12 +2004,18 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
     }
 
-    &--kle {
+    &--case-number {
       $num_chars_kle: 17ch; // Unsure if this is a reliable solution, but it's a guestimate on the average amount of chars in a KLE-number.
       width: calc(var(--datatable-cell-padding) + #{$num_chars_kle});
 
       @media (min-width: $break-lg) {
         width: calc((var(--datatable-cell-padding) * 1.5) + #{$num_chars_kle});
+      }
+
+      &:is(td) {
+        /* Since the case number is a "code" and always in the same format, this will make it easier to skim over for users. */
+        font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier,
+          monospace;
       }
     }
 
