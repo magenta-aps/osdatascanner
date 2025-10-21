@@ -15,4 +15,7 @@ class SyncedPermission(models.Model):
             # Leader Statistics Page
             ("filter_scannerjob_leader_overview",
                 _("Can filter by scannerjob in the leader overview")),
+            # Scannerjob list
+            ("view_scannerjob_list", _("Can view the scannerjob list in the report module")),
+            ("delete_documentreports", _("Can permanently delete reports in the report module"))
         ]

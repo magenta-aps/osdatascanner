@@ -18,7 +18,7 @@ logger = structlog.get_logger()
 class ScannerjobListView(PermissionRequiredMixin, ListView):
     model = DocumentReport
     template_name = "scannerjobs/scannerjob_list.html"
-    permission_required = 'os2datascanner_report.delete_documentreport'
+    permission_required = 'organizations.view_scannerjob_list'
     context_object_name = "scannerjobs"
 
     def get_queryset(self):
@@ -56,7 +56,7 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
 
 class ScannerjobDeleteView(PermissionRequiredMixin, ListView):
     model = DocumentReport
-    permission_required = 'os2datascanner_report.delete_documentreport'
+    permission_required = 'organizations.delete_documentreports'
 
     def get_queryset(self):
         scanner = get_object_or_404(

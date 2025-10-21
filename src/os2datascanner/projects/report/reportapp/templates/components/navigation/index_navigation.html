@@ -1,7 +1,6 @@
 {% load i18n %}
 {% load handle_extras %}
 
-
 <div class="tabs">
   {% with path=request.resolver_match.namespace name=request.resolver_match.url_name %}
 
@@ -40,7 +39,7 @@
     {% endif %}
 
     {# Scannerjob list #}
-    {% if perms.os2datascanner_report.delete_documentreport and "/archive" not in request.path %}
+    {% if perms.organizations.view_scannerjob_list and "/archive" not in request.path %}
       <a href="{% url "scannerjobs" %}"
          class="tabs__control{% if name == "scannerjobs" %} active{% endif %}"
          id="scannerjobs">{% trans "Scannerjob" %}</a>
