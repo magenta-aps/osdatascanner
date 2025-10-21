@@ -958,7 +958,6 @@ msgstr "Sandsynlighed"
 #: reportapp/templates/remediator_content.html
 #: reportapp/templates/sbsys_content.html
 #: reportapp/templates/sbsys_remediator_content.html
-#: reportapp/templates/scannerjobs/scannerjob_list.html
 #: reportapp/templates/undistributed_content.html
 #: reportapp/templates/user_content.html
 msgid "Results"
@@ -1967,6 +1966,19 @@ msgid "Scannerjobs"
 msgstr "Scannerjob"
 
 #: reportapp/templates/scannerjobs/scannerjob_list.html
+msgid "All results"
+msgstr "Alle resultater"
+
+#: reportapp/templates/scannerjobs/scannerjob_list.html
+msgid "Handled results"
+msgstr "Håndterede resultater"
+
+#: reportapp/templates/scannerjobs/scannerjob_list.html
+#: reportapp/templates/user_statistics_template.html
+msgid "Unhandled results"
+msgstr "Uhåndterede resultater"
+
+#: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Do you really want to delete all reports from this scanner?"
 msgstr ""
 "Er du helt sikker på, at du ønsker at slette alle resultater fra denne "
@@ -2111,10 +2123,6 @@ msgstr "Nye resultater i løbet af uge"
 #: reportapp/templates/user_statistics_template.html
 msgid "Matches handled during week"
 msgstr "Resultater håndteret i løbet af uge"
-
-#: reportapp/templates/user_statistics_template.html
-msgid "Unhandled results"
-msgstr "Uhåndterede resultater"
 
 #: reportapp/templates/user_statistics_template.html
 msgid "Number of unhandled results per scanner job"
