@@ -12,6 +12,8 @@
 
 - New rule to scan for danish license plates
 
+- New rule to scan for credit card numbers.
+
 ### General improvements
 
 - Improve help text on rule field of rule form.
@@ -80,8 +82,6 @@
 - SharePoint scanner now supports scanning of list field's descriptions.
 
 - New scannertype for scanning shared drives in Google Drive.
-
-- New rule to scan for credit card numbers.
 
 ### General improvements
 

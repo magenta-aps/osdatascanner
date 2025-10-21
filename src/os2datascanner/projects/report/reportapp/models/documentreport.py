@@ -30,6 +30,7 @@ from os2datascanner.engine2.rules.external import ExternallyExecutedRegexRule, \
     ExternallyExecutedWordlistRule
 
 from os2datascanner.engine2.rules.license_plate import DanishLicensePlateRule
+from os2datascanner.engine2.rules.credit_card import CreditCardRule
 from .scanner_reference import ScannerReference
 
 logger = structlog.get_logger("reportapp")
@@ -49,6 +50,7 @@ RENDERABLE_RULES = (
     ExternallyExecutedRegexRule.type_label,
     ExternallyExecutedWordlistRule.type_label,
     DanishLicensePlateRule.type_label,
+    CreditCardRule.type_label,
 )
 
 

@@ -1,33 +1,29 @@
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule
 from os2datascanner.engine2.conversions.types import OutputType
+from .utilities.context import make_context
 import re
 
 
 def luhn_algorithm(number: str):
-    """ The luhn algorithm checks if the number could be a credit card number."""
+    """ https://en.wikipedia.org/wiki/Luhn_algorithm """
 
-    if " " in number:
-        number = number.replace(" ", "")
+    number = number.replace(" ", "")
 
-    if "-" in number:
-        number = number.replace("-", "")
+    number = number.replace("-", "")
 
     number_list = [int(num) for num in number]
 
     number_list.reverse()
 
-    not_to_be_doubled = [number_list[i] for i in range(len(number_list)) if i % 2 == 0]
+    total = 0
 
-    doubled_list = [number_list[j] * 2 - 9 if number_list[j] * 2 > 9 else number_list[j] * 2
-                    for j in range(len(number_list)) if j % 2 != 0]
+    for i, num in enumerate(number_list):
+        if i % 2 == 0:
+            total += num
+        else:
+            total += (2 * num - 9) if 2 * num > 9 else num * 2
 
-    total = sum(not_to_be_doubled) + sum(doubled_list)
-
-    if total % 10 == 0:
-        return True
-
-    else:
-        return False
+    return total % 10 == 0
 
 
 class CreditCardRule(SimpleRule):
@@ -37,7 +33,7 @@ class CreditCardRule(SimpleRule):
     def __init__(self):
         super().__init__()
         self._expr = re.compile(
-            r"[0-9]{4}([- ]?[0-9]{4}){3}"
+            r"\d{16}|\d{4}([ -])\d{4}\1\d{4}\1\d{4}"
         )
 
     def match(self, representation):
@@ -47,7 +43,8 @@ class CreditCardRule(SimpleRule):
             num = number.group()
             if luhn_algorithm(num):
                 yield {
-                    "match": num
+                    "match": num,
+                    **make_context(number, representation)
                 }
 
     def to_json_object(self):
