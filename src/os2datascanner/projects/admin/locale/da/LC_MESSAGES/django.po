@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 14:18+0200\n"
+"POT-Creation-Date: 2025-10-21 13:59+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -194,9 +194,7 @@ msgid "Your GraphGrant needs updating!"
 msgstr ""
 
 #: adminapp/management/commands/graphgrant_expiry_check.py
-#, python-brace-format
 msgid ""
-"Your GraphGrant client secret has an expiration date of: {exp_date}! \n"
 "It is important you update it as soon as possible, to avoid functionality "
 "loss! \n"
 msgstr ""
@@ -2247,8 +2245,8 @@ msgstr "afbryd kørende scannerjob"
 #: adminapp/templates/components/scanstatus/scan_status_table.html
 #, python-format
 msgid ""
-"Do you really want to delete the status object for scanner "
-"'%%(scanner_name)s'?"
+"Do you really want to delete the status object for scanner '%%"
+"(scanner_name)s'?"
 msgstr ""
 "Er du sikker på, at du vil slette status for scanner »%%(scanner_name)s«?"
 
@@ -2791,16 +2789,14 @@ msgid "Rule '{rule_name}' created!"
 msgstr "Regel '{rule_name}' oprettet"
 
 #: adminapp/views/msgraph_views.py
-msgid "You must choose to scan drives, lists or both!"
+msgid "You must choose to scan drives, lists, or both!"
 msgstr "Du skal vælge at scanne drev, lister eller begge!"
 
 #: adminapp/views/msgraph_views.py
 msgid "Scanning list descriptions without scanning lists will have no effect."
-msgstr "Scanning af listebeskrivelser uden scanning af lister vil ikke have nogen effekt."
-
-#: adminapp/views/msgraph_views.py
-msgid "You must choose to scan drives, lists, or both!"
-msgstr "Du skal vælge at scanne drev, lister eller begge!"
+msgstr ""
+"Scanning af listebeskrivelser uden scanning af lister vil ikke have nogen "
+"effekt."
 
 #: adminapp/views/msgraph_views.py
 msgid "Unnamed Site"
