@@ -39,7 +39,6 @@ from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
 from .....core_organizational_structure.models.organization import LeaderTabConfigChoices
 from ....utils.view_mixins import CSVExportMixin
-from .report_views import EmptyPagePaginator
 
 
 logger = structlog.get_logger("reportapp")
@@ -574,8 +573,6 @@ class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
 
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     template_name = "leader_statistics_template.html"
-    paginator_class = EmptyPagePaginator
-    paginate_by = 200
     model = Account
     context_object_name = "employees"
 
@@ -610,13 +607,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         qs = self.order_employees(qs)
 
-        self.employee_count = qs.count()
-
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["employee_count"] = self.employee_count
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy

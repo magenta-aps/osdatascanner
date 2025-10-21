@@ -490,13 +490,13 @@ class TestLeaderUnitsStatisticsPageView:
         # Specific OU selection, should contain 3 employees.
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params=f"?org_unit={olsenbanden_ou.pk}")
-        assert response.context_data.get("employee_count") == 3
+        assert response.context_data.get("employees").count() == 3
 
         # view all, should be 4 employees.
         # olsenbanden OU + 1 employee in Harrys Skur.
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params="?view_all=on")
-        assert response.context_data.get("employee_count") == 4
+        assert response.context_data.get("employees").count() == 4
 
     def test_leader_statisticspage_scanner_filter(
                 self,
