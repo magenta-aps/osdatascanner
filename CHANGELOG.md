@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 3.30.x, xxth xxxx xxxx
+
+""
+
+### Bugfixes
+
+- Report ownership is now enforced in the backend when handling reports.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"
