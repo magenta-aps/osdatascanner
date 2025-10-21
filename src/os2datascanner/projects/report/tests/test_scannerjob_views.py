@@ -2,20 +2,27 @@ import pytest
 
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.models import Permission
 
 from .test_utilities import create_reports_for
 from ..reportapp.views.scannerjob_views import ScannerjobListView
 from ..reportapp.models.documentreport import DocumentReport
-from ..reportapp.models.scanner_reference import ScannerReference
 
 
 @pytest.mark.django_db
 class TestScannerjobListView:
 
-    def test_scannerjoblistview_non_superuser(self, egon_account, rf):
-        """A non-superuser can't see the list of scannerjobs."""
+    def test_scannerjoblistview_non_superuser_no_permission(self, egon_account, rf):
+        """A non-superuser without permission can't see the list of scannerjobs."""
         with pytest.raises(PermissionDenied):
             self.get_scannerjoblistview_response(rf, egon_account)
+
+    def test_scannerjoblistview_non_superuser_permission(self, egon_account, rf):
+        """A non-superuser with permission can see the list of scannerjobs."""
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="view_scannerjob_list"))
+        response = self.get_scannerjoblistview_response(rf, egon_account)
+        assert response.status_code == 200
 
     def test_scannerjoblistview_superuser(self, superuser_account, rf):
         """A superuser can see the list of scannerjobs."""
@@ -63,17 +70,25 @@ class TestScannerjobListView:
 
 @pytest.mark.django_db
 class TestScannerjobDeleteView:
-    def test_delete_scannerjobs_non_superuser(self, client, egon_account):
-        """A non-superuser can't delete scannerjobs."""
+    def test_delete_scannerjobs_non_superuser_no_permission(self, client, egon_account,
+                                                            egon_email_alias):
+        """A non-superuser without permission can't delete scannerjobs."""
+        create_reports_for(egon_email_alias, num=10, scanner_job_pk=10)
         response = self.post_scannerjobdeleteview_response(client, egon_account, 10)
         assert response.status_code == 403
 
-    def test_delete_scannerjobs_superuser(self, client, superuser_account):
+    def test_delete_scannerjobs_non_superuser_permission(self, client, egon_account,
+                                                         egon_email_alias):
+        """A non-superuser with permission can delete scannerjobs."""
+        create_reports_for(egon_email_alias, num=10, scanner_job_pk=10)
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="delete_documentreports"))
+        response = self.post_scannerjobdeleteview_response(client, egon_account, 10)
+        assert response.status_code == 302
+
+    def test_delete_scannerjobs_superuser(self, client, superuser_account, egon_email_alias):
         """A superuser can delete scannerjobs."""
-        ScannerReference.objects.create(
-            scanner_pk=10,
-            organization=superuser_account.organization,
-        )
+        create_reports_for(egon_email_alias, num=10, scanner_job_pk=10)
         response = self.post_scannerjobdeleteview_response(client, superuser_account, 10)
         assert response.status_code == 302
 
