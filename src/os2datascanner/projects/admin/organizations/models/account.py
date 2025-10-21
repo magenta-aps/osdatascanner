@@ -45,7 +45,10 @@ class Account(Core_Account, Imported):
         # Don't forget about deleted scanners!
         for pk in scanner_pks:
             if int(pk) not in [int(scanner['pk']) for scanner in scanners]:
-                scanners.append({'name': _(f'Deleted scanner {pk}'), 'pk': pk})
+                scanners.append({
+                    'name': _('Deleted scanner {pk}').format(pk=pk),
+                    'pk': pk
+                })
         return scanners
 
     class Meta(Core_Account.Meta):

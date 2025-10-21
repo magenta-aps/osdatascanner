@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 3.30.x, xxth xxxxber 2025
+## Version 3.30.3, 21st October 2025
 
-""
+"The Third Man"
 
 ### New in this release
 

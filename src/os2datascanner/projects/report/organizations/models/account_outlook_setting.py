@@ -119,7 +119,8 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                 outl_setting.save()
                 logger.info(f"Saved {outl_setting}")
 
-            return _(f"Created {created_category_count} categories!")
+            return _("Created {created_category_count} categories!").format(
+                    created_category_count=created_category_count)
 
     def categorize_existing(self) -> str:  # noqa: CCR001 Too complex
 
@@ -170,7 +171,8 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
                         # The most likely scenario is just that the mail doesn't exist anymore.
                         logger.warning(f"Couldn't categorize email! Got response: {ex.response}")
 
-            return _(f"Successfully categorized {categorized_count} emails!")
+            return _("Successfully categorized {categorized_count} emails!").format(
+                    categorized_count=categorized_count)
 
     def update_colour(self, match_colour, fp_colour) -> str:
         with requests.Session() as session:
@@ -208,7 +210,8 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             OutlookCategory.objects.filter(
                 name=OutlookCategory.OutlookCategoryNames.FALSE_POSITIVE).update(
                 category_colour=fp_colour)
-            return _(f"Updated {updated_category_count} categories!")
+            return _("Updated {updated_category_count} categories!").format(
+                    updated_category_count=updated_category_count)
 
     def delete_categories(self) -> str:
         with requests.Session() as session:
@@ -245,7 +248,8 @@ class AccountOutlookSettingQuerySet(models.QuerySet):
             # Update database
             self.update(categorize_email=False)
             OutlookCategory.objects.filter(account_outlook_setting__in=self).delete()
-            return _(f"Deleted {deleted_category_count} categories!")
+            return _("Deleted {deleted_category_count} categories!").format(
+                    deleted_category_count=deleted_category_count)
 
     def bulk_create(self, objs, **kwargs):
         objects = super().bulk_create(objs, **kwargs)
