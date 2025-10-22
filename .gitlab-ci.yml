@@ -215,7 +215,8 @@ Unit Test Admin Application:
       --junitxml $CI_PROJECT_DIR/admin_unit_tests-junit.xml
       -p no:cacheprovider
       --color=yes
-    - coverage report
+    - coverage report 
+      --omit="**/engine2/**,*/migrations/*,*/tests/*,tests/*"
     - coverage xml -o ${CI_PROJECT_DIR}/admin-coverage.xml
   artifacts:
     paths:
@@ -320,6 +321,7 @@ Unit Test Engine:
       -p no:cacheprovider
       --color=yes
     - coverage report
+      --omit "tests/*"
     - coverage xml -o ${CI_PROJECT_DIR}/engine-coverage.xml
   artifacts:
     paths:
@@ -423,6 +425,7 @@ Unit Test Report Application:
       -p no:cacheprovider
       --color=yes
     - coverage report
+      --omit="**/engine2/**,*/migrations/*,*/tests/*,tests/*"
     - coverage xml -o ${CI_PROJECT_DIR}/report-coverage.xml
   artifacts:
     paths:
