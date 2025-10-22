@@ -623,7 +623,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
         context['show_withheld_column'] = self.request.user.has_perm(
-            "os2datascanner_report.see_withheld_documentreport")
+            "organizations.view_withheld_results")
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
