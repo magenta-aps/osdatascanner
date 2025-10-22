@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 14:22+0200\n"
+"POT-Creation-Date: 2025-10-22 11:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -361,8 +361,16 @@ msgstr "{cls}: {account} ({role}) i {unit}"
 
 #: models/syncedpermission.py
 msgid "Can view the SBSYS tab in Report"
-msgstr "Kan se SBSYS-fanebladene i rapportmodulet"
+msgstr "Må tilgå SBSYS-fanebladene i rapportmodulet"
 
 #: models/syncedpermission.py
 msgid "Can filter by scannerjob in the leader overview"
-msgstr "Kan filtrere på scannerjob i lederoverblikket"
+msgstr "Må filtrere på scannerjob i lederoverblikket"
+
+#: models/syncedpermission.py
+msgid "Can view the scannerjob list in the report module"
+msgstr "Må tilgå scannerjoblisten i rapportmodulet"
+
+#: models/syncedpermission.py
+msgid "Can permanently delete reports in the report module"
+msgstr "Må slette rapporter i rapportmodulet permanent"
