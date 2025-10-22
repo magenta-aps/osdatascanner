@@ -4,6 +4,12 @@
 
 ""
 
+### New in this release
+
+- Permission for accessing the scannerjob list in the report module can now be granted in the admin
+  module. A separate permission for permanently deleting reports from the same list can now also be
+  granted.
+
 ### General improvements
 
 - Improve help text on rule field of rule form.
