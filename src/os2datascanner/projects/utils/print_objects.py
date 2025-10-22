@@ -8,8 +8,11 @@
 from ast import literal_eval
 import sys
 import json
+import uuid
 import yaml
 from pprint import pformat
+from typing import Iterator
+import datetime
 from functools import partial
 
 import argparse
@@ -18,12 +21,32 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.core.exceptions import FieldError
 from django.core.management.base import BaseCommand
-
-
-model_mapping = {model.__name__: model for model in apps.get_models()}
+import recurrence
 
 
 eprint = partial(print, file=sys.stderr)
+
+
+def censor(value):
+    match value:
+        case str() | bytes():
+            return "█" * max(len(value), 8)
+        case list():
+            return [censor(v) for v in value]
+        case dict():
+            return {k: censor(v) for k, v in value.items()}
+        case _:
+            return value
+
+
+def get_all_subclasses(t: type) -> Iterator[type]:
+    for s in t.__subclasses__():
+        yield s
+        yield from get_all_subclasses(s)
+
+
+def get_full_typename(t: type) -> str:
+    return f"{t.__module__}.{t.__qualname__}"
 
 
 def separate(it, criterion) -> list:
@@ -159,7 +182,8 @@ class CollectorActionFactory:
                 values = [values]
             getattr(namespace, self.dest).append(self.prefix + values)
 
-    def make_collector_action(self, *prefix):
+    @classmethod
+    def make_collector_action(cls, *prefix):
         return partial(
                 CollectorActionFactory.Action,
                 prefix=prefix)
@@ -169,38 +193,46 @@ def get_possible_fields(qs: QuerySet) -> list[str]:
     """Returns all of the fields, including annotations, available in the given
     QuerySet."""
     # Trivially adapted from django.db.models.sql.query.Query.names_to_path
-    return sorted([
-            *models.sql.query.get_field_names_from_opts(qs.model._meta),
-            *qs.query.annotation_select,
-            *qs.query._filtered_relations])
+    return sorted(
+            {
+                *models.sql.query.get_field_names_from_opts(qs.model._meta),
+                *qs.query.annotation_select,
+                *qs.query._filtered_relations
+            }, key=lambda n: (len(n), n))
+
+
+def is_suspicious(field: str) -> bool:
+    return any(
+            susword in field
+            for susword in (
+                    "password", "secret", "token", "private",
+                    "_service_account",))
 
 
 class Command(BaseCommand):
     help = __doc__
 
     def add_arguments(self, parser):
-        caf = CollectorActionFactory()
-
         parser.add_argument(
             '--exclude',
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("exclude"),
+            action=CollectorActionFactory.make_collector_action("exclude"),
             help="a Django field lookup to exclude objects")
         parser.add_argument(
             '--filter',
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("filter"),
+            action=CollectorActionFactory.make_collector_action("filter"),
             help="a Django field lookup to filter objects")
         parser.add_argument(
             '--annotate',
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("annotate"),
+            action=CollectorActionFactory.make_collector_action("annotate"),
             help="a Django field lookup describing an annotation to add to the"
                  " query set")
         parser.add_argument(
@@ -208,18 +240,25 @@ class Command(BaseCommand):
             dest="filt_ops",
             metavar="FL",
             type=str,
-            action=caf.make_collector_action("alias"),
+            action=CollectorActionFactory.make_collector_action("alias"),
             help="a Django field lookup describing an alias to add to the"
                  " query set")
 
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             '--field',
             dest="fields",
             metavar="NAME",
             type=str,
             action="append",
             help="a Django field name to include in the output (can be used"
-                 " multiple times; if not used, all fields are included)")
+                 " multiple times)")
+        group.add_argument(
+            '--subclasses',
+            action="store_true",
+            help="convert parent model objects into their descendants before"
+                 " displaying them")
+
         parser.add_argument(
             '--distinct',
             action="store_true",
@@ -306,8 +345,16 @@ class Command(BaseCommand):
     def handle(  # noqa CCR001
             self, *,
             order_by, order_by_desc, limit, offset, model, fields,
-            filt_ops, with_sql, format, distinct, **kwargs):
+            filt_ops, with_sql, format, distinct, subclasses, **kwargs):
         queryset = build_queryset_from(model, (filt_ops or []))
+        model_subclasses = (
+                [c for c in get_all_subclasses(model) if not c._meta.abstract]
+                if subclasses else [])
+        if subclasses and not model_subclasses:
+            print("subclass conversion requested,"
+                  f" but class '{model.__name__}' is not a parent class;"
+                  " exiting")
+            return
 
         queryset = queryset.order_by(
                 order_by
@@ -339,13 +386,25 @@ class Command(BaseCommand):
             # Lightly postprocess the results: obscure passwords and prevent
             # UUIDField objects from being dumped in their unhelpful raw form
             for obj in queryset:
+                if subclasses:
+                    pk = obj[model._meta.pk.name]
+                    for msc in model_subclasses:
+                        if (qs := msc.objects.filter(pk=pk)).exists():
+                            obj.clear()
+                            obj["__actual_type"] = get_full_typename(msc)
+                            obj.update(qs.values().get())
+                            break
+
                 for key, value in obj.items():
-                    key_is_suspicious = (
-                            "password" in key
-                            or "secret" in key
-                            or "token" in key)
-                    if key_is_suspicious and isinstance(value, str):
-                        obj[key] = "█" * min(len(value), 8)
+                    if is_suspicious(key):
+                        obj[key] = censor(value)
+                    elif isinstance(
+                            value,
+                            (uuid.UUID, datetime.date, datetime.datetime,
+                             recurrence.Recurrence,)):
+                        # Types for which we trust str() (with a tag)
+                        type_name = get_full_typename(type(value))
+                        obj[key] = f"{value!s} [{type_name}]"
                     elif not isinstance(
                             value,
                             (int, float, dict, str, list, type(None))):
