@@ -18,6 +18,7 @@ from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
     UserArchiveView, RemediatorArchiveView, UndistributedArchiveView)
+from ..organizations.models import Account
 
 from importlib import reload, import_module
 
@@ -1236,3 +1237,168 @@ class TestDistributeMatchesView:
         assert ScannerReference.objects.get(
             scanner_pk=3).document_reports.filter(
             only_notify_superadmin=True).count() == 5
+
+
+@pytest.mark.django_db
+class TestHandleMatchView:
+
+    htmx_header = {"HTTP_HX-REQUEST": "true",
+                   "content-type": "application/json; charset=UTF-8",
+                   "authorization": "Bearer fake_token"}
+
+    def test_handle_single_report_correct_account(self, egon_account, egon_email_alias, client):
+        create_reports_for(egon_email_alias)
+
+        report = egon_account.get_report(Account.ReportType.RAW).first()
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = egon_account.get_report(Account.ReportType.RAW)
+
+        assert response.status_code == 200
+        assert report not in reports
+
+    def test_handle_single_report_incorrect_account(self, egon_account, benny_email_alias, client):
+        create_reports_for(benny_email_alias)
+        report = benny_email_alias.account.get_report(Account.ReportType.RAW).first()
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = benny_email_alias.account.get_report(Account.ReportType.RAW)
+
+        assert response.status_code == 404
+        assert report in reports
+
+    @pytest.mark.parametrize("status", [choice for choice in DocumentReport.ResolutionChoices])
+    def test_handle_single_report_different_states(self, client, status, egon_account,
+                                                   egon_email_alias):
+        create_reports_for(egon_email_alias)
+        report = egon_account.get_report(Account.ReportType.RAW).first()
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": status}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        report.refresh_from_db()
+        reports = egon_account.get_report(Account.ReportType.RAW)
+
+        assert response.status_code == 200
+        assert report not in reports
+        assert report.resolution_status == status
+
+    def test_revert_single_report(self, client, egon_account, egon_email_alias):
+        create_reports_for(egon_email_alias,
+                           resolution_status=DocumentReport.ResolutionChoices.REMOVED)
+        report = egon_account.get_report(Account.ReportType.RAW, archived=True).first()
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        report.refresh_from_db()
+        reports = egon_account.get_report(Account.ReportType.RAW, archived=True)
+
+        assert response.status_code == 200
+        assert report not in reports
+        assert report.resolution_status is None
+
+    def test_handle_multiple_reports_correct_account(self, client, egon_account, egon_email_alias):
+        create_reports_for(egon_email_alias)
+        drs = egon_account.get_report(Account.ReportType.RAW)[:5]
+
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = egon_account.get_report(Account.ReportType.RAW)
+
+        assert response.status_code == 200
+        assert all([dr not in reports for dr in drs])
+
+    def test_handle_multiple_reports_incorrect_account(self, client, egon_account,
+                                                       benny_email_alias):
+        create_reports_for(benny_email_alias)
+        drs = benny_email_alias.account.get_report(Account.ReportType.RAW)[:5]
+
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = benny_email_alias.account.get_report(Account.ReportType.RAW)
+
+        assert response.status_code == 404
+        assert all([dr in reports for dr in drs])
+
+    @pytest.mark.parametrize("status", [status for status in DocumentReport.ResolutionChoices])
+    def test_handle_multiple_reports_different_status(self, client, status, egon_account,
+                                                      egon_email_alias):
+        create_reports_for(egon_email_alias)
+        drs = egon_account.get_report(Account.ReportType.RAW)[:5]
+
+        url = reverse_lazy("mass-handle")
+        data = {"action": status,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(egon_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        drs = DocumentReport.objects.filter(pk__in=[dr.pk for dr in drs])
+        reports = egon_account.get_report(Account.ReportType.RAW)
+
+        assert response.status_code == 200
+        assert all([dr not in reports for dr in drs])
+        assert all([dr.resolution_status == status for dr in drs])
+
+    def test_handle_withheld_report_superuser(self, client, egon_email_alias, superuser_account):
+        create_reports_for(egon_email_alias, only_notify_superadmin=True)
+        report = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                               resolution_status__isnull=True).first()
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+
+        client.force_login(superuser_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                                resolution_status__isnull=True)
+
+        assert response.status_code == 200
+        assert report not in reports
+
+    def test_handle_multiple_withheld_report_superuser(
+            self, client, egon_email_alias, superuser_account):
+        create_reports_for(egon_email_alias, only_notify_superadmin=True)
+        drs = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)[:5]
+
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(superuser_account.user)
+        response = client.post(url, data=data, **self.htmx_header)
+
+        reports = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                                resolution_status__isnull=True)
+
+        assert response.status_code == 200
+        assert all([dr.pk not in reports for dr in drs])

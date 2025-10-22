@@ -42,26 +42,6 @@ msgid "Contact person"
 msgstr "Kontaktperson"
 
 #: organizations/models/account_outlook_setting.py
-#, python-brace-format
-msgid "Created {created_category_count} categories!"
-msgstr "Oprettede {created_category_count} kategorier!"
-
-#: organizations/models/account_outlook_setting.py
-#, python-brace-format
-msgid "Successfully categorized {categorized_count} emails!"
-msgstr "Kategoriserede {categorized_count} emails succesfuldt!"
-
-#: organizations/models/account_outlook_setting.py
-#, python-brace-format
-msgid "Updated {updated_category_count} categories!"
-msgstr "Opdaterede {updated_category_count} kategorier!"
-
-#: organizations/models/account_outlook_setting.py
-#, python-brace-format
-msgid "Deleted {deleted_category_count} categories!"
-msgstr "Slettede {deleted_category_count} kategorier!"
-
-#: organizations/models/account_outlook_setting.py
 #: reportapp/templates/components/user/outlook_category_settings.html
 msgid "Categorize emails"
 msgstr "Kategorisér emails"
