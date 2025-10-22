@@ -1565,13 +1565,13 @@ msgid "No"
 msgstr "Nej"
 
 #: adminapp/templates/components/rules/customrule_form.html
-#: adminapp/templates/components/rules/regexrule_form.html
 msgid ""
-"A rule consists one or more regular expressions and defines which text "
-"strings are searched in a scannerjob"
+"A rule consists of different building blocks, which each is specialized for "
+"looking for specific things. Blocks can be selected and combined in the rule "
+"builder below."
 msgstr ""
-"En regel består af et eller flere regulære udtryk og definerer hvilke "
-"tekststrenge der søges efter i et scannerjob"
+"En regel består af forskellige elementer, som hver er bygget til at lede efter "
+"noget bestemt. Elementer can vælges og kombineres i regelbyggeren herunder."
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html
 #: adminapp/templates/components/scanner/scan_completed.html
@@ -1601,6 +1601,14 @@ msgstr "scannerjob og"
 #: adminapp/templates/rules.html
 msgid "reports."
 msgstr "rapporter."
+
+#: adminapp/templates/components/rules/regexrule_form.html
+msgid ""
+"A rule consists one or more regular expressions and defines which text "
+"strings are searched in a scannerjob"
+msgstr ""
+"En regel består af et eller flere regulære udtryk og definerer hvilke "
+"tekststrenge der søges efter i et scannerjob"
 
 #: adminapp/templates/components/rules/regexrule_form.html
 msgid "Regular Expression"
@@ -3746,11 +3754,6 @@ msgid ""
 msgstr ""
 "Ingen brugere eller organisatoriske enheder tilgængelige for organisation "
 "{org}; Er du sikker på at dine LDAP indstillinger er korrekte?"
-
-#: organizations/models/account.py
-#, python-brace-format
-msgid "Deleted scanner {pk}"
-msgstr "Slettet scanner {pk}"
 
 #: organizations/models/account.py
 msgid ""

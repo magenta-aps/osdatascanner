@@ -63,7 +63,10 @@
           <fieldset class="form__fieldset">
             <h3>{% trans "Rule" %}</h3>
             <p class="description">
-              {% trans "A rule consists one or more regular expressions and defines which text strings are searched in a scannerjob" %}
+              {% blocktranslate trimmed %}
+                A rule consists of different building blocks, which each is specialized for looking
+                for specific things. Blocks can be selected and combined in the rule builder below.
+              {% endblocktranslate %}
             </p>
 
             <div id="{{ form.rule.auto_id }}_container"

@@ -4,6 +4,10 @@
 
 ""
 
+### General improvements
+
+- Improve help text on rule field of rule form.
+
 ### Bugfixes
 
 - Report ownership is now enforced in the backend when handling reports.
