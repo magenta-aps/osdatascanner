@@ -52,7 +52,7 @@
                         style="display: inline-block">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    {% if perms.organizations.delete_documentreports and scannerjob.count > 0 %}
+                    {% if perms.organizations.delete_documentreports and scannerjob.total > 0 %}
                       <button type="submit"
                               class="button button--icon-button button--transparent-button"
                               onclick="return confirm(`{% trans "Do you really want to delete all reports from this scanner?" %}\n\n{{ scannerjob.scanner_name }}\n\n{% trans "The action cannot be reversed" %}`)"
