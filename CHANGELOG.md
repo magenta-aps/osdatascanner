@@ -23,6 +23,9 @@
 
 - Report ownership is now enforced in the backend when handling reports.
 
+- The scanner engine's explorer stage once again prints a brief summary of
+  each source that it explores.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"
