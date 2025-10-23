@@ -2,15 +2,15 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from io import BytesIO
 from ..rules.rule import Rule
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
+
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.errors import HttpError
 from .core import Source, Handle, FileResource
+from .utilities.utilities import GoogleSource
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 
 
-class GoogleDriveSource(Source):
+class GoogleDriveSource(GoogleSource):
     """Implements Google Drive API using a service account.
     The organization must create a project, a service account, enable G Suite Domain-wide Delegation
      for the service account, download the credentials in .json format
@@ -22,23 +22,11 @@ class GoogleDriveSource(Source):
 
     type_label = "googledrive"
 
-    eq_properties = ("_user_email",)
-
     def __init__(self, google_api_grant, user_email):
-        self.google_api_grant = google_api_grant
-        self._user_email = user_email
+        super().__init__(google_api_grant, user_email, 'drive')
 
-    def _generate_state(self, source_manager):
-        SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-        credentials = service_account.Credentials.from_service_account_info(
-            self.google_api_grant,
-            scopes=SCOPES).with_subject(self._user_email)
-
-        service = build(serviceName='drive', version='v3', credentials=credentials)
-        yield service
-
-        # The Google Drive V3 API query operators can be found at:
-        # https://developers.google.com/workspace/drive/api/guides/search-files
+    # The Google Drive V3 API query operators can be found at:
+    # https://developers.google.com/workspace/drive/api/guides/search-files
     def _generate_query(
             self,
             cutoff: datetime | None = None):
@@ -53,7 +41,6 @@ class GoogleDriveSource(Source):
 
     def handles(self, sm, rule: Rule | None = None):
         service = sm.open(self)
-        page_token = None
 
         cutoff = None
         for essential_rule in compute_mss(rule):
@@ -62,18 +49,18 @@ class GoogleDriveSource(Source):
 
         query = self._generate_query(cutoff)
 
-        while True:
-            files = service.files().list(q=query,
-                                         fields='nextPageToken, files(id, name, mimeType, parents)',
-                                         pageToken=page_token).execute()
-            for file in files.get('files', []):
-                location = self.get_location(file.get('parents')[0], service)
-                yield GoogleDriveHandle(self, file.get('id'),
-                                        name=file.get('name'),
-                                        location=location)
-            page_token = files.get('nextPageToken', None)
-            if page_token is None:
-                break
+        files = self.paginated_get(
+            service=service.files(),
+            collection_name='files',
+            q=query,
+            fields='nextPageToken, files(id, name, mimeType, parents)'
+        )
+
+        for file in files:
+            location = self.get_location(file.get('parents')[0], service)
+            yield GoogleDriveHandle(self, file.get('id'),
+                                    name=file.get('name'),
+                                    location=location)
 
     # Censoring service account file info and user email.
     def censor(self):
@@ -93,13 +80,6 @@ class GoogleDriveSource(Source):
             parent = service.files().get(fileId=parent_id, fields='id, name, parents').execute()
             path = parent.get('name') + '/' + path
         return path
-
-    def to_json_object(self):
-        return dict(
-            **super().to_json_object(),
-            google_api_grant=self.google_api_grant,
-            user_email=self._user_email,
-        )
 
     @staticmethod
     @Source.json_handler(type_label)
