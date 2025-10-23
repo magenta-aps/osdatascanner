@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-23 14:34+0200\n"
+"POT-Creation-Date: 2025-10-23 15:15+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,22 +44,22 @@ msgstr "Kontaktperson"
 #: organizations/models/account_outlook_setting.py
 #, python-brace-format
 msgid "Created {created_category_count} categories!"
-msgstr ""
+msgstr "Oprettede {created_category_count} kategorier!"
 
 #: organizations/models/account_outlook_setting.py
 #, python-brace-format
 msgid "Successfully categorized {categorized_count} emails!"
-msgstr ""
+msgstr "Kategoriserede {categorized_count} emails succesfuldt!"
 
 #: organizations/models/account_outlook_setting.py
 #, python-brace-format
 msgid "Updated {updated_category_count} categories!"
-msgstr ""
+msgstr "Opdaterede {updated_category_count} kategorier!"
 
 #: organizations/models/account_outlook_setting.py
 #, python-brace-format
 msgid "Deleted {deleted_category_count} categories!"
-msgstr ""
+msgstr "Slettede {deleted_category_count} kategorier!"
 
 #: organizations/models/account_outlook_setting.py
 #: reportapp/templates/components/user/outlook_category_settings.html
@@ -1400,19 +1400,16 @@ msgid "Search for employee"
 msgstr "Søg efter medarbejder"
 
 #: reportapp/templates/leader_statistics_template.html
-#| msgid "show all employees"
 msgid "all employees"
 msgstr "alle medarbejdere"
 
 #: reportapp/templates/leader_statistics_template.html
-#| msgid ""
-#| "Display all users for whom you hold a leader position, ignoring unit "
-#| "selection."
 msgid ""
 "Include all users for whom you hold a leader position, ignoring unit "
 "selection."
 msgstr ""
-"Inkludér alle brugere, for hvem du har en ledertilnytning, og ignorér enhedsvalg."
+"Inkludér alle brugere, for hvem du har en ledertilnytning, og ignorér "
+"enhedsvalg."
 
 #: reportapp/templates/leader_statistics_template.html
 msgid "Employee"
