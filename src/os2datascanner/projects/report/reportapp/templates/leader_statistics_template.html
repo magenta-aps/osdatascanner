@@ -27,6 +27,7 @@
       <p class="employee-count-text">
         {% if employees %}
           {{ employees.count }}
+          {% if employees.count >= max_objects %}+{% endif %}
         {% else %}
           0
         {% endif %}
@@ -89,13 +90,13 @@
           <div class="org_filtering">
             <div class="ds-checkbox">
               <label>
-                {% trans "show all employees"|capfirst %}
+                {% trans "all employees"|capfirst %}
                 <input type="checkbox"
                        name="view_all"
                        {% if request.GET.view_all %}checked{% endif %}>
 
                 <span class="help-tooltip"
-                      title="{% blocktrans trimmed %} Display all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
+                      title="{% blocktrans trimmed %} Include all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
                   <i id="help" class="material-symbols">help</i>
                 </span>
 

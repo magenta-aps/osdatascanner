@@ -575,6 +575,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     template_name = "leader_statistics_template.html"
     model = Account
     context_object_name = "employees"
+    max_objects = 200
 
     def get_base_queryset(self, qs):
         """Override this in children classes"""
@@ -607,6 +608,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         qs = self.order_employees(qs)
 
+        if self.max_objects is not None:
+            qs = qs[:self.max_objects]
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -620,6 +624,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
         context['2org_fp_rate'] = 2 * self.org.false_positive_rate
+        context['max_objects'] = self.max_objects
 
         # Determine number of columns from context
         context['num_cols'] = 4 + context['show_retention_column'] + self.request.user.has_perm(
@@ -786,6 +791,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         },
     ]
     exported_filename = 'os2datascanner_leaderpage_statistics'
+    max_objects = None
 
     def order_employees(self, qs):
         # Overriding order_employees of parent class, because it is super slow.
