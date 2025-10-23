@@ -16,6 +16,9 @@
 
 - All google data sources use a common GoogleSource.
 
+- The leader overview no longer loads in employees on at a time.
+  This should decrease loading times.
+
 ### Bugfixes
 
 - Report ownership is now enforced in the backend when handling reports.

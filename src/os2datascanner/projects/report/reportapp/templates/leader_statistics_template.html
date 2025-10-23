@@ -26,7 +26,8 @@
 
       <p class="employee-count-text">
         {% if employees %}
-          {{ employee_count }}
+          {{ employees.count }}
+          {% if employees.count >= max_objects %}+{% endif %}
         {% else %}
           0
         {% endif %}
@@ -89,13 +90,13 @@
           <div class="org_filtering">
             <div class="ds-checkbox">
               <label>
-                {% trans "show all employees"|capfirst %}
+                {% trans "all employees"|capfirst %}
                 <input type="checkbox"
                        name="view_all"
                        {% if request.GET.view_all %}checked{% endif %}>
 
                 <span class="help-tooltip"
-                      title="{% blocktrans trimmed %} Display all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
+                      title="{% blocktrans trimmed %} Include all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
                   <i id="help" class="material-symbols">help</i>
                 </span>
 
@@ -227,15 +228,7 @@
           <tbody>
             {% if employees %}
               {% for employee in employees %}
-                <tr class="soft-load datatablex__row"
-                    hx-get="{% url 'employee' employee.uuid %}"
-                    hx-vals='{"scannerjob": "{{ chosen_scannerjob }}"}'
-                    hx-swap="outerHTML swap:200ms"
-                    hx-target="this"
-                    hx-trigger="revealed"
-                    hx-push-url="false">
-                  <td class="column column--loading" colspan="{{ num_cols }}">{% trans "Loading employee ..." %}</td>
-                </tr>
+                {% include "components/statistics/employee_template.html" with employee=employee chosen_scannerjob=chosen_scannerjob %}
               {% endfor %}
             {% else %}
               <tr class="datatablex__row">

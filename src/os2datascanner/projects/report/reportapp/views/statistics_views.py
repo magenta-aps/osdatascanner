@@ -39,7 +39,6 @@ from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
 from .....core_organizational_structure.models.organization import LeaderTabConfigChoices
 from ....utils.view_mixins import CSVExportMixin
-from .report_views import EmptyPagePaginator
 
 
 logger = structlog.get_logger("reportapp")
@@ -574,10 +573,9 @@ class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
 
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     template_name = "leader_statistics_template.html"
-    paginator_class = EmptyPagePaginator
-    paginate_by = 200
     model = Account
     context_object_name = "employees"
+    max_objects = 200
 
     def get_base_queryset(self, qs):
         """Override this in children classes"""
@@ -606,21 +604,27 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         qs = qs.with_status()
 
+        qs = qs.with_fp_ratio()
+
         qs = self.order_employees(qs)
 
-        self.employee_count = qs.count()
+        if self.max_objects is not None:
+            qs = qs[:self.max_objects]
 
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["employee_count"] = self.employee_count
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
+        context['show_withheld_column'] = self.request.user.has_perm(
+            "os2datascanner_report.see_withheld_documentreport")
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
+        context['2org_fp_rate'] = 2 * self.org.false_positive_rate
+        context['max_objects'] = self.max_objects
 
         # Determine number of columns from context
         context['num_cols'] = 4 + context['show_retention_column'] + self.request.user.has_perm(
@@ -787,6 +791,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         },
     ]
     exported_filename = 'os2datascanner_leaderpage_statistics'
+    max_objects = None
 
     def order_employees(self, qs):
         # Overriding order_employees of parent class, because it is super slow.
@@ -968,37 +973,6 @@ class UserStatisticsPageView(LoginRequiredMixin, DetailView):
             return
         else:
             raise PermissionDenied
-
-
-class EmployeeView(LoginRequiredMixin, DetailView):
-    model = Account
-    context_object_name = "employee"
-    template_name = "components/statistics/employee_template.html"
-
-    def get(self, request, *args, **kwargs):
-        self.org = request.user.account.organization
-        response = super().get(request, *args, **kwargs)
-        return response
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
-                (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
-            sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
-            reports = sr.document_reports.all()
-        else:
-            reports = DocumentReport.objects.all()
-
-        retention_days = self.org.retention_days if self.org.retention_policy else None
-        qs = qs.with_result_stats(reports=reports, retention_policy=retention_days)
-
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['show_retention_column'] = self.org.retention_policy
-        context['scannerjob'] = self.request.GET.get('scannerjob', 'all')
-        return context
 
 
 def sort_by_keys(d: dict) -> dict:

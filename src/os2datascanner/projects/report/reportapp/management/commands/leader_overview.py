@@ -61,7 +61,7 @@ class Command(BaseCommand):
                        acc.get_full_name(),
                        acc.unhandled_results,
                        acc.withheld_results,
-                       acc.status] for acc in accounts]
+                       acc.status_label] for acc in accounts]
 
         if table_rows:
             tt.print(table_rows, style=tt.styles.markdown, header=headers)

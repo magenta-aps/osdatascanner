@@ -20,7 +20,8 @@ from rest_framework import serializers
 from rest_framework.fields import UUIDField
 from django.conf import settings
 from django.db import models
-from django.db.models import Count, Q, Case, When, Value, F, IntegerField, FloatField
+from django.db.models import (Count, Q, Case, When, Value, F, IntegerField, FloatField,
+                              ExpressionWrapper)
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -150,7 +151,7 @@ class AccountQuerySet(models.QuerySet):
         - StatusChoices.BAD if they have no handled matches in the last 3 weeks
           OR if the ratio between handled matches and new matches for the last 3 weeks in below 75%
         - StatusChoices.OK otherwise.
-        This field should contain the same value as the 'match_status' property."""
+        """
         next_monday = timezone.now() + timedelta(weeks=1) - timedelta(
                 days=timezone.now().weekday(),
                 hours=timezone.now().hour,
@@ -190,7 +191,7 @@ class AccountQuerySet(models.QuerySet):
                     _new_count__gt=0,
                     then=(F('_handled_count') * 1.0 / F('_new_count'))
                 ),
-                default=0.0,
+                default=1.0,
                 output_field=FloatField()))
 
         return qs.annotate(handle_status=Case(
@@ -201,6 +202,46 @@ class AccountQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             )
+
+    def with_fp_ratio(self):
+        """
+        Annotates each Account with `fp_ratio` which is the number of false positives
+        divided by the total number of handled reports.
+        """
+        from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+        FP = DocumentReport.ResolutionChoices.FALSE_POSITIVE
+        own_reports = (
+            ~Q(aliases___alias_type=AliasType.REMEDIATOR)
+            & Q(
+                aliases__shared=False,
+                aliases__reports__number_of_matches__gte=1,
+                aliases__reports__only_notify_superadmin=False,
+                aliases__reports__scanner_job__organization=F('organization'),
+            )
+        )
+        qs = self.annotate(
+            _handled=Count(
+                'aliases__reports',
+                filter=own_reports & Q(aliases__reports__resolution_status__isnull=False),
+            ),
+            _fp=Count(
+                'aliases__reports',
+                filter=own_reports & Q(aliases__reports__resolution_status=FP),
+            ),
+        )
+        qs = qs.annotate(
+            fp_ratio=Case(
+                When(
+                    _handled__gt=0,
+                    then=F('_fp') * 1.0 / F('_handled'),
+                ),
+                default=0.0,
+                output_field=FloatField(),
+            )
+        )
+        return qs.annotate(
+            fp_percentage=ExpressionWrapper(F('fp_ratio') * 100, output_field=FloatField())
+        )
 
 
 class AccountManager(models.Manager):
@@ -332,8 +373,12 @@ class Account(Core_Account):
         return os.path.join(settings.MEDIA_ROOT, self._image.url) if self._image else None
 
     @property
-    def status(self):
-        return StatusChoices(self.match_status).label
+    def status_label(self):
+        # Requires calling with_status beforehand
+        if not hasattr(self, 'handle_status'):
+            raise AttributeError("status_label called without using AccountQueryset.with_status",
+                                 name='status_label', obj=self)
+        return StatusChoices(self.handle_status).label
 
     class ReportType(Enum):
         RAW = auto()
@@ -428,23 +473,6 @@ class Account(Core_Account):
     @property
     def handled_matches(self) -> int:
         return self.get_report(Account.ReportType.PERSONAL, True).count()
-
-    @property
-    def match_status(self) -> StatusChoices:
-        matches_by_week = self.count_matches_by_week(weeks=3, exclude_shared=True)
-
-        total_new = 0
-        total_handled = 0
-        for week_obj in matches_by_week:
-            total_new += week_obj["new"]
-            total_handled += week_obj["handled"]
-
-        if matches_by_week[0]["matches"] == 0:
-            return StatusChoices.GOOD
-        elif total_handled == 0 or (total_new != 0 and total_handled/total_new < 0.75):
-            return StatusChoices.BAD
-        else:
-            return StatusChoices.OK
 
     @property
     def false_positive_rate(self) -> float:

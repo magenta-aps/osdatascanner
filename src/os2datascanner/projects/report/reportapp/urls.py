@@ -12,7 +12,7 @@ from .views.api import JSONAPIView
 from .views.statistics_views import (
     LeaderUnitsStatisticsPageView, LeaderStatisticsRedirectView,
     DPOStatisticsPageView, DPOStatisticsCSVView,
-    UserStatisticsPageView, EmployeeView, LeaderAccountsStatisticsPageView,
+    UserStatisticsPageView, LeaderAccountsStatisticsPageView,
     LeaderAccountsStatisticsCSVView, LeaderUnitsStatisticsCSVView)
 from .views.report_views import (
     UserReportView, UserArchiveView,
@@ -106,7 +106,6 @@ urlpatterns = [
     re_path(r'^statistics/dpo/csv/$', DPOStatisticsCSVView.as_view(), name='statistics-dpo-export'),
     path('statistics/user/', UserStatisticsPageView.as_view(), name='statistics-user-me'),
     path('statistics/user/<uuid:pk>', UserStatisticsPageView.as_view(), name='statistics-user-id'),
-    path('statistics/employee/<uuid:pk>', EmployeeView.as_view(), name='employee'),
 
     # Account view
     path('account/<uuid:pk>', AccountView.as_view(), name="account"),
