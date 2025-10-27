@@ -1,0 +1,15 @@
+Hello,
+
+For your information, your GraphGrant client secret for tenant {{ tenant }} has an expiration date of: {{ expiry_date }}!
+
+It is important you update it as soon as possible, to avoid functionality loss!
+
+Access the grant page to see more:
+
+{{ grant_edit_url }}
+
+Kind regards,
+the OSdatascanner system
+{% if institution %}
+(on behalf of {{ institution }})
+{% endif %}

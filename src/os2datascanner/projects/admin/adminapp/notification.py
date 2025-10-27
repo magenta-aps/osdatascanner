@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
 from more_itertools.more import peekable
 
 from .models.scannerjobs.scanner import Scanner, ScanStatus
@@ -151,6 +152,39 @@ class InvalidScannerNotificationEmail(NotificationEmail):
         }
 
         return context
+
+
+class GraphGrantExpiryNotificationEmail(NotificationEmail):
+    """
+    Send a mail to whomever is responsible for the Graph Grant when their secret is about to expire.
+    """
+
+    txt_template_name = "mail/grant_expiry.txt"
+    html_template_name = "mail/grant_expiry.html"
+    subject = _("Your GraphGrant needs to be updated.")
+
+    def __init__(self, grant, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.grant = grant
+
+    def get_users(self):
+        recipients = set(
+            user for user in get_user_model().objects.filter(is_superuser=True) if user.email
+        )
+        recipients.update(
+            admin.user for admin in self.grant.organization.client.administrators.all() if
+            admin.user.email
+        )
+        return recipients
+
+    def create_context(self, user, *args, **kwargs) -> dict:
+        return {
+            "institution": settings.NOTIFICATION_INSTITUTION,
+            "tenant": self.grant.tenant_id,
+            "expiry_date": self.grant.expiry_date,
+            "grant_edit_url": settings.SITE_URL[:-1] + f"/grants/msgraph/{self.grant.uuid}",
+
+        }
 
 
 def get_scanner_time(scan_status: ScanStatus):
