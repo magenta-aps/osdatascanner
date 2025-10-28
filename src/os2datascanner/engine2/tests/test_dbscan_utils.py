@@ -91,7 +91,17 @@ def partyinfo_table(*, metadata, person_table, partytype_table):
 
 
 @pytest.fixture
-def case_table(*, metadata, user_table, partyinfo_table):
+def securityset_table(*, metadata):
+    return Table(
+            "SecuritySet",
+            metadata,
+            Column("ID", UUID, primary_key=True),
+            Column("Name", String(1), nullable=True),
+    )
+
+
+@pytest.fixture
+def case_table(*, metadata, user_table, partyinfo_table, securityset_table):
     return Table(
             "Case",
             metadata,
@@ -100,6 +110,28 @@ def case_table(*, metadata, user_table, partyinfo_table):
             Column("Created", DateTime),
             Column("Assignee", ForeignKey("User.ID"), nullable=True),
             Column("PartyInfo", ForeignKey("PartyInfo.ID")),
+            Column("SecuritySet", ForeignKey("SecuritySet.ID")),
+    )
+
+
+@pytest.fixture
+def securitygroup_table(*, metadata):
+    return Table(
+            "SecurityGroup",
+            metadata,
+            Column("ID", UUID, primary_key=True),
+            Column("Name", String),
+    )
+
+
+@pytest.fixture
+def security_throughtable(*, metadata, securityset_table, securitygroup_table):
+    return Table(
+            "SecuritySet_SecurityGroup",
+            metadata,
+            Column("ID", UUID, primary_key=True),
+            Column("SecuritySetID", ForeignKey("SecuritySet.ID")),
+            Column("SecurityGroupID", ForeignKey("SecurityGroup.ID")),
     )
 
 
@@ -357,3 +389,68 @@ class TestRuleTranslation:
         except AttributeError:
             if not raises:
                 pytest.fail("didn't expect this exception")
+
+    def test_altkey_resolution_complex(
+            self, *,
+            metadata, case_table, security_throughtable):
+        # Arrange
+        rule = dbr.SBSYSDBRule(
+                "SecuritySet.ID as SecuritySet_SecurityGroup"
+                " on SecuritySetID.SecurityGroup.Name",
+                "eq", "Everybody")
+
+        # Act
+        column_labels = {}
+        sql_expr = dbu.convert_rule_to_select(
+                rule,
+                case_table, metadata.tables,
+                select(), column_labels)
+
+        # Assert
+        assert list(column_labels.keys()) == [
+                "SecuritySet.ID as SecuritySet_SecurityGroup"
+                " on SecuritySetID.SecurityGroup.Name"]
+
+        compiled_expr = sql_expr.compile()
+        assert str(compiled_expr) == (
+                'SELECT "SecurityGroup"."Name" \n'
+                'FROM "SecurityGroup", "Case", "SecuritySet", '
+                '"SecuritySet_SecurityGroup" \n'
+                'WHERE "Case"."SecuritySet" = "SecuritySet"."ID" '
+                'AND "SecuritySet"."ID" = "SecuritySet_SecurityGroup"."SecuritySetID" '
+                'AND "SecuritySet_SecurityGroup"."SecurityGroupID" = "SecurityGroup"."ID" '
+                'AND "SecurityGroup"."Name" = :Name_1')
+
+        assert compiled_expr.params == {"Name_1": "Everybody"}
+
+    def test_altkey_resolution_simple(
+            self, *,
+            metadata, case_table, security_throughtable):
+        # Arrange
+        rule = dbr.SBSYSDBRule(
+                "SecuritySet as SecuritySet_SecurityGroup"
+                " on SecuritySetID.SecurityGroup.Name",
+                "eq", "Everybody")
+
+        # Act
+        column_labels = {}
+        sql_expr = dbu.convert_rule_to_select(
+                rule,
+                case_table, metadata.tables,
+                select(), column_labels)
+
+        # Assert
+        assert list(column_labels.keys()) == [
+                "SecuritySet as SecuritySet_SecurityGroup"
+                " on SecuritySetID.SecurityGroup.Name"]
+
+        compiled_expr = sql_expr.compile()
+        assert str(compiled_expr) == (
+                'SELECT "SecurityGroup"."Name" \n'
+                'FROM "SecurityGroup", "Case", '
+                '"SecuritySet_SecurityGroup" \n'
+                'WHERE "Case"."SecuritySet" = "SecuritySet_SecurityGroup"."SecuritySetID" '
+                'AND "SecuritySet_SecurityGroup"."SecurityGroupID" = "SecurityGroup"."ID" '
+                'AND "SecurityGroup"."Name" = :Name_1')
+
+        assert compiled_expr.params == {"Name_1": "Everybody"}
