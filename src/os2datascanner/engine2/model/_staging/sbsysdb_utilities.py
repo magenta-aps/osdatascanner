@@ -5,6 +5,7 @@ from sqlalchemy import (
         Table, Column)
 from sqlalchemy.sql.expression import Select
 
+from os2datascanner.utils.ref import Counter
 from os2datascanner.engine2.rules import logical
 from os2datascanner.engine2.rules.rule import Rule
 
@@ -201,7 +202,8 @@ def convert_rule_to_select(
             *column_labels.values()).where(constraints)
 
 
-def exec_expr(engine, expr: Select, *labels: str):
+def exec_expr(
+        engine, expr: Select, *labels: str, rows: Counter | None = None):
     with engine.begin() as connection:
         logger.debug(
                 "executing SBSYS database query",
@@ -214,3 +216,4 @@ def exec_expr(engine, expr: Select, *labels: str):
                     "yield_per": 2000
                 }):
             yield dict(zip(labels, db_row)) if labels else tuple(db_row)
+            Counter.try_incr(rows)
