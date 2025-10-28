@@ -69,6 +69,7 @@ def message_received_raw(body, channel, source_manager):  # noqa
                 message="Malformed input").to_json_object())
         return
 
+    error_count = 0
     handle_count = 0
     source_count = None
     exception_message = ""
@@ -85,17 +86,18 @@ def message_received_raw(body, channel, source_manager):  # noqa
     if takes_named_arg(handles_method, "rule"):
         extra_kwargs["rule"] = progress.rule
 
-    it = handles_method(source_manager, **extra_kwargs)
+    handle_iterator = scan_spec.source.handles(source_manager, **extra_kwargs)
 
     log = logger.bind(scan_tag=scan_tag)
 
     try:
-        for handle in it:
+        for handle in handle_iterator:
             if isinstance(handle, tuple) and handle[1]:
                 # We were able to construct a Handle for something that
                 # exists, but then something unexpected (that we can tie to
                 # that specific Handle) went wrong. Send a problem message
                 yield from process_exploration_error(scan_spec, *handle)
+                error_count += 1
             elif not scan_spec.source.yields_independent_sources:
                 # This Handle is just a normal reference to a scannable object.
                 # Send it on to be processed
@@ -116,12 +118,11 @@ def message_received_raw(body, channel, source_manager):  # noqa
                 else:
                     log.info("handle excluded", handle=handle)
 
-        log.warning("stopped unexpectedly")
-    except StopIteration:
         # Exploration is complete
         log.info(
                 "finished",
-                handle_count=handle_count, source_count=source_count)
+                error_count=error_count, handle_count=handle_count,
+                source_count=source_count)
     except Exception as e:
         if isinstance(e, ModelException):
             if isinstance(e, UncontactableError):
@@ -146,8 +147,10 @@ def message_received_raw(body, channel, source_manager):  # noqa
                 handle_count=handle_count, source_count=source_count,
                 exc_info=e)
     finally:
-        if hasattr(it, "close"):
-            it.close()
+        # Closing a generator that has already closed is harmless, and it's
+        # good form to clean up
+        if hasattr(handle_iterator, "close"):
+            handle_iterator.close()
         yield ("os2ds_status", messages.StatusMessage(
                 scan_tag=scan_tag,
                 total_objects=handle_count, new_sources=source_count,
