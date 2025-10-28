@@ -36,6 +36,7 @@ match settings.model["sbsysdb"]:
         dp_url = None
 
 
+@Source.register_class
 class SBSYSDBSource(Source):
     type_label = "sbsys-db"
 
@@ -49,7 +50,8 @@ class SBSYSDBSource(Source):
         self._db = db
         self._user = user
         self._password = password
-        self._reflect_tables = reflect_tables
+        self._reflect_tables = (
+                tuple(reflect_tables) if reflect_tables else None)
         self._base_weblink = base_weblink
 
     @property
@@ -139,18 +141,17 @@ class SBSYSDBSource(Source):
             "base_weblink": self._base_weblink
         }
 
-    @Source.json_handler(type_label)
-    @staticmethod
-    def from_json_object(obj):
-        reflect_tables = (
-                tuple(rt)
-                if (rt := obj.get("reflect_tables"))
-                else None)
-        return SBSYSDBSource(
-                obj["server"], obj["port"],
-                obj["db"], obj["user"], obj["password"],
-                reflect_tables=reflect_tables,
-                base_weblink=obj.get("base_weblink"))
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "server": obj["server"],
+            "port": obj["port"],
+            "db": obj["db"],
+            "user": obj["user"],
+            "password": obj["password"],
+            "reflect_tables": obj.get("reflect_tables", cls._Suppress),
+            "base_weblink": obj.get("base_weblink")
+        }
 
 
 class SBSYSDBHandles:
