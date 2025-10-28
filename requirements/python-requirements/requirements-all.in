@@ -54,6 +54,7 @@ sqlalchemy
 xattr
 xlrd
 click
+pysbd
 
 # Lint
 pycodestyle

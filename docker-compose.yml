@@ -747,6 +747,7 @@ services:
     image: magentaaps/pii-text-classifier:latest
     ports:
       - 1337:1337
+    restart: unless-stopped
     profiles:
       - ai
 

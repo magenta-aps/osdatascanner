@@ -1,4 +1,8 @@
-from ..rules.external import ExternallyExecutedRegexRule, ExternallyExecutedWordlistRule
+from ..rules.external import (
+    ExternallyExecutedRegexRule,
+    ExternallyExecutedWordlistRule,
+    split_sentences,
+)
 
 
 def test_ee_regex(requests_mock):
@@ -163,3 +167,21 @@ def test_ee_wordlist_censor_multiple(requests_mock):
     # Assert
     assert len(result) == 1
     assert result[0]['context'] == "Jeg har både <sundhedsterm> og <sundhedsterm>"
+
+
+def test_ee_split_sentences():
+    # Arrange
+    sentences = [
+        "Egon havde en plan kl. 14.30.",
+        "Benny ventede ved Nørrebrogade nr. 112.",
+        "Kjeld blev stoppet af politiet ifm. røveriet."
+    ]
+
+    paragraph = " ".join(sentences)
+
+    # Act
+    result = list(split_sentences(paragraph))
+
+    # Assert
+    assert len(result) == 3
+    assert sentences == result

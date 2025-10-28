@@ -302,6 +302,8 @@ pyparsing==3.0.9
     #   packaging
 pypdf==3.17.0
     # via -r requirements-all.in
+pysbd==0.3.4
+    # via -r requirements-all.in
 pysmbc @ git+https://github.com/magenta-af/pysmbc.git@T2
     # via -r requirements-all.in
 pytest==7.1.3
