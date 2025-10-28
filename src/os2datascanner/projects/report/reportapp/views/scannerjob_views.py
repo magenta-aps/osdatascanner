@@ -2,7 +2,7 @@ import structlog
 from django.db import transaction
 
 from django.views.generic import ListView
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -32,9 +32,11 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         # We shouldn't need distinct=True here, since pk is already unique in this context.
         # (No alias relations involved)
-        scanner_counts = self.get_queryset().values('scanner_job_id').order_by().annotate(
-            total_reports=Count(
-                'pk')
+        scanner_counts = self.get_queryset().values('scanner_job_id'
+                                                    ).order_by().annotate(
+            total_reports=Count('pk'),
+            handled_reports=Count('pk', filter=Q(resolution_status__isnull=False)),
+            unhandled_reports=Count('pk', filter=Q(resolution_status__isnull=True))
         )
         scanner_counts_map = {row['scanner_job_id']: row for row in scanner_counts}
         scanner_ids = [scanner_id for scanner_id, counts in scanner_counts_map.items()]
@@ -44,7 +46,9 @@ class ScannerjobListView(PermissionRequiredMixin, ListView):
 
         for scanner in scanner_refs:
             counts = scanner_counts_map.get(scanner.pk, {})
-            scanner.count = counts.get('total_reports', 0)
+            scanner.total = counts.get('total_reports', 0)
+            scanner.handled = counts.get('handled_reports', 0)
+            scanner.unhandled = counts.get('unhandled_reports', 0)
 
         context["scannerjobs"] = scanner_refs
         return context

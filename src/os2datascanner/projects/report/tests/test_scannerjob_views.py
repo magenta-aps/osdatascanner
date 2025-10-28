@@ -60,6 +60,36 @@ class TestScannerjobListView:
         assert 52 in scanners
         assert 53 not in scanners
 
+    @pytest.mark.parametrize("handled,unhandled", [
+        (1, 0),
+        (10, 0),
+        (0, 1),
+        (0, 10),
+        (10, 10)
+    ])
+    def test_correct_numbers_in_overview(self, rf, superuser_account, handled, unhandled,
+                                         egon_email_alias):
+        create_reports_for(
+            egon_email_alias,
+            num=unhandled,
+        )
+        create_reports_for(
+            egon_email_alias,
+            num=handled,
+            resolution_status=1
+        )
+
+        response = self.get_scannerjoblistview_response(rf, superuser_account)
+
+        scanners = response.context_data["scannerjobs"]
+
+        assert len(scanners) == 1
+        scanner = scanners[0]
+
+        assert scanner.handled == handled
+        assert scanner.unhandled == unhandled
+        assert scanner.total == handled + unhandled
+
     # Helper functions
 
     def get_scannerjoblistview_response(self, rf, account, params='', **kwargs):

@@ -26,6 +26,9 @@
 - The scanner engine's explorer stage once again prints a brief summary of
   each source that it explores.
 
+- Now displays number of handled and unhandled, as well as total, reports in the scannerjob list
+  in the report module.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"

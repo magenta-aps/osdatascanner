@@ -191,7 +191,7 @@
 
     &--matchcount {
       /* Dependency: Report > scannerjob list */
-      width: 5.5rem;
+      width: 60%;
       display: none;
 
       label {
@@ -205,8 +205,6 @@
       }
 
       @media (min-width: $break-lg) {
-        width: 15rem;
-
         label {
           &::after {
             content: none;
@@ -1504,6 +1502,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       .status {
         &__wrapper {
           @include layout-horizontal(0.25rem);
+
           // Notification:
           &[data-status="0"] > .status__icon {
             color: var(--color-notification);
@@ -2023,6 +2022,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       &.expand-row {
         /* Wider width if there's a caret to expand more content for the row. */
         width: 12.25rem; // 196px
+
         &.false-positive {
           width: 14.125rem; // 226px
         }
