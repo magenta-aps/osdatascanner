@@ -47,7 +47,7 @@ function selectOptions(obj, selector) {
     "health_turbo": "TurboHealthRule",
     "email-header": "EmailHeader",
     "passport": "PassportRule",
-    "license_plate": "LicensePlateRule"
+    "license_plate": "DanishLicensePlateRule"
   };
 
   selectElem.value = valueMap[type];
@@ -248,7 +248,7 @@ function makeRule(elem) {
       return {
         "type": "passport"
       };
-    case "LicensePlateRule":
+    case "DanishLicensePlateRule":
       return {
             "type": "license_plate"
       };

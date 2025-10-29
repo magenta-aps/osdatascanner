@@ -29,7 +29,7 @@ from os2datascanner.engine2.rules.passport import PassportRule
 from os2datascanner.engine2.rules.external import ExternallyExecutedRegexRule, \
     ExternallyExecutedWordlistRule
 
-from os2datascanner.engine2.rules.license_plate import LicensePlateRule
+from os2datascanner.engine2.rules.license_plate import DanishLicensePlateRule
 from .scanner_reference import ScannerReference
 
 logger = structlog.get_logger("reportapp")
@@ -48,7 +48,7 @@ RENDERABLE_RULES = (
     SBSYSDBRule.type_label,
     ExternallyExecutedRegexRule.type_label,
     ExternallyExecutedWordlistRule.type_label,
-    LicensePlateRule.type_label,
+    DanishLicensePlateRule.type_label,
 )
 
 

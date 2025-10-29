@@ -4,7 +4,7 @@ from os2datascanner.engine2.conversions.types import OutputType
 from .utilities.context import make_context
 
 
-class LicensePlateRule(SimpleRule):
+class DanishLicensePlateRule(SimpleRule):
 
     operates_on = OutputType.Text
     type_label = "license_plate"
@@ -12,7 +12,7 @@ class LicensePlateRule(SimpleRule):
     def __init__(self):
         super().__init__()
         self._expr = re.compile(
-            r"[A-Z]{2}\s[0-9]{2}\s[0-9]{3}"
+            r"\b([a-zA-Z]{2})(\s\d{2}\s\d{3}|\d{5}|\s\d{5}|\d{2}\s\d{3})\b"
         )
 
     def match(self, representation: str):
@@ -35,4 +35,4 @@ class LicensePlateRule(SimpleRule):
     @Rule.json_handler(type_label)
     @staticmethod
     def from_json_object(obj):
-        return LicensePlateRule()
+        return DanishLicensePlateRule()

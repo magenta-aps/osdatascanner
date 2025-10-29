@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-27 09:17+0100\n"
+"POT-Creation-Date: 2025-10-31 13:50+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1151,6 +1151,14 @@ msgstr "navn på felt"
 msgctxt "verb"
 msgid "matches"
 msgstr "resultater fundet"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html
+msgid ""
+"Note that this rule does not verify its results against a database. "
+"Therefore, it can't detect custom plates."
+msgstr ""
+"Bemærk at denne regel ikke tjekker resultater op mod Motorregistret. Derfor "
+"kan den ikke finde ønskenummerplader. "
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "context check"
@@ -3761,6 +3769,7 @@ msgstr ""
 "{org}; Er du sikker på at dine LDAP indstillinger er korrekte?"
 
 #: organizations/models/account.py
+#, python-brace-format
 msgid "Deleted scanner {pk}"
 msgstr "Slettede scanner {pk}"
 
