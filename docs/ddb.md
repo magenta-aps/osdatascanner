@@ -25,7 +25,7 @@ through a voluntary association, _Brugerklubben SBSYS_ (the SBSYS Users' Club),
 but they contract its development, support and maintenance out to private
 companies. As a result, the ecosystem is a bit of a patchwork: many different
 developers have built different APIs for the bits of the system their own
-extensions care about, but the system as a whole seems not oo have been
+extensions care about, but the system as a whole seems not to have been
 designed with a unified API in mind.
 
 (A REST API for the database, known as the WebAPI, _has_ been retrofitted onto
@@ -97,17 +97,20 @@ with its structure:
 >>> engine = create_engine(
 ...         "mssql+pymssql://admin:password@db-server:1433/SbSysNetDrift")
 >>> metadata_obj = MetaData()
->>> metadata_obj.reflect(bind=engine, only=("Case", "User", "Person",))
+>>> metadata_obj.reflect(
+...          bind=engine,
+...          only=("Case", "User", "Person", "SecuritySetGroupMapping",))
 # a few seconds go by
 >>> metadata_obj.tables.keys()
 dict_keys(['Case', 'PlaceOfEmployment', 'Address', 'CaseType', 'CaseStatus',
            'CaseStateReference', 'User', 'Office', 'CaseParty',
            'CasePartyTypeReference', 'CasePartyRole', 'Person',
-           'CivilRegistryStatus'])
+           'CivilRegistryStatus', 'SecuritySet', 'SecuritySetGroupMapping',
+           'SecurityGroup'])
 ```
 
 The introspection code is smart enough to also include the other tables
-referenced by the three tables we asked for: `User`s have `Address`es and are
+referenced by the four tables we asked for: `User`s have `Address`es and are
 associated with an `Office`, `Person`s also have a home `Address` and have a
 reference to a `CivilRegistryStatus`, and so on.
 
@@ -121,7 +124,7 @@ reference to a `CivilRegistryStatus`, and so on.
 >>> Case = tables["Case"]
 >>> type(Case)
 <class 'sqlalchemy.sql.schema.Table'>
->>> pprint.pprint(list(Case.c)[0:7])
+>>> pprint.pprint(list(Case.c)[0:8])
 [Column('ID', INTEGER(), table=<Case>, primary_key=True, nullable=False,
         server_default=Identity(start=1, increment=1)),
  Column('CaseUUID', UNIQUEIDENTIFIER(), table=<Case>, nullable=False,
@@ -144,7 +147,8 @@ reference to a `CivilRegistryStatus`, and so on.
         server_default=DefaultClause(
                 <sqlalchemy.sql.elements.TextClause object at 0x74b356e04ed0>,
                 for_update=False)),
- ]
+ Column('SecuritySet', INTEGER(), ForeignKey('SecuritySet.ID'), table=<Case>,
+        nullable=True)]
 ```
 
 !!! warning
@@ -318,7 +322,7 @@ depending on the value of the `PartyType` field. Aaargh!
     table, so it didn't. (This is also why we had to explicitly include
     `Person` in the introspection process.)
 
-To deal with that, we added a simple "cast" mechanism to the dot-separated
+To deal with that, we added a simple "cast" keyword, `as`, to the dot-separated
 expression parser. We still need to test the type-specifying field to make sure
 that the key value will be meaningful, but that's not difficult:
 
@@ -339,6 +343,73 @@ that the key value will be meaningful, but that's not difficult:
     something more robust -- for example, two new `PersonID` and `CompanyID`
     fields and a database constraint that requires that precisely one of these
     be set -- this `Rule` would break.
+
+#### ... or with through tables
+
+Even this isn't always enough to capture all of the complexity of the
+underlying database. Let's demonstrate that by writing a rule to find all
+`Case`s that are associated with the `Default Group (All Users)` security
+group.
+
+Cases have an optional `SecuritySet` attribute that points at a `SecuritySet`
+object, which seems like it would be a good start, but this object is a
+contentless placeholder:
+
+```python
+>>> pprint(list(tables["SecuritySet"].c))
+[Column('ID', INTEGER(), table=<SecuritySet>, primary_key=True, nullable=False,
+        server_default=Identity(start=1, increment=1)),
+ Column('Name', VARCHAR(length=1, collation='SQL_Danish_Pref_CP1_CI_AS'),
+        table=<SecuritySet>, nullable=True)]
+```
+
+(Don't get too excited about that `Name` field -- it's optional, it can only
+store a single letter, and the database documentation describes it as "not used
+for anything, but present for historical reasons".)
+
+All of the actual properties we care about -- in this case, the security
+group's name -- are on a separate `SecurityGroup` object, and this time there's
+no foreign key relation that we can walk to get to that object.
+
+```python
+>>> pprint(list(tables["SecurityGroup"].c))
+[Column('ID', INTEGER(), table=<SecurityGroup>, primary_key=True,
+        nullable=False, server_default=Identity(start=1, increment=1)),
+ Column('Name', NVARCHAR(length=100, collation='SQL_Danish_Pref_CP1_CI_AS'),
+        table=<SecurityGroup>, nullable=False),
+ Column('ObjectSid', NVARCHAR(length=50,
+        collation='SQL_Danish_Pref_CP1_CI_AS'), table=<SecurityGroup>)]
+```
+
+The relation between `SecuritySet` and `SecurityGroup` is defined through an
+intermediate `SecuritySetSecurityGroups` table (what Django and some other ORM
+systems call a "through table"), so there _is_ a link, but it's not one we can
+infer from the database object alone.
+
+```python
+>>> pprint.pprint(list(tables["SecuritySetSecurityGroups"].c))
+[Column('ID', INTEGER(), table=<SecuritySetSecurityGroups>, primary_key=True,
+        nullable=False, server_default=Identity(start=1, increment=1)),
+ Column('SecuritySetRef', INTEGER(), ForeignKey('SecuritySet.ID'),
+        table=<SecuritySetSecurityGroups>, nullable=False),
+ Column('SecurityGroupRef', INTEGER(), ForeignKey('SecurityGroup.ID'),
+        table=<SecuritySetSecurityGroups>, nullable=False)]
+```
+
+!!! warning
+    Just like the "soft" foreign keys above, the introspection process didn't
+    detect any references to the intermediate table or to `SecurityGroup`, so
+    we had to explicitly add those as well.
+
+To support this, we added another keyword to the dot-separated expression
+parser, `on`, that lets you match other tables _on something other than their
+primary keys_. With that in hand, we can write the rule we wanted:
+
+```python
+>>> rule = SBSYSDBRule(
+...         "SecuritySetID as SecuritySetSecurityGroups on SecuritySetRef"
+...         ".SecurityGroup.Name", "eq", "Default Group (All Users)")
+```
 
 ### Right-hand references
 
