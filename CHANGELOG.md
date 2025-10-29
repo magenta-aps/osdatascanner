@@ -29,6 +29,10 @@
 - Now displays number of handled and unhandled, as well as total, reports in the scannerjob list
   in the report module.
 
+- Setting the OCR flag on a scanner whose rule does not actually require any
+  OCR to be performed no longer causes the pipeline to perform complex OCR
+  eligibility tests.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"

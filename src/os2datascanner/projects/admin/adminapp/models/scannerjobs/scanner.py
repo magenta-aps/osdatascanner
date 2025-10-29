@@ -332,9 +332,19 @@ class Scanner(models.Model):
                 if last:
                     prerules.append(LastModifiedRule(last))
 
-        if self.do_ocr:
-            # If we're doing OCR, then filter out any images smaller than
-            # 128x32 (or 32x128)
+        # append any model-specific rules. Order matters!
+        # AllRule will evaluate all rules, no matter the outcome of current rule
+        # AndRule will only evaluate next rule, if current rule have match
+        # OrRule will stop evaluating as soon as one rule have match
+        rule = AllRule.make(*self.local_all_rules(), rule)
+        rule = OrRule.make(*self.local_or_rules(), rule)
+        rule = AndRule.make(*self.local_and_rules(), rule)
+
+        if self.do_ocr and any(
+                r.operates_on == OutputType.Text
+                for r in rule.flatten()):
+            # If we're doing OCR (and we have a rule that actually /requires/
+            # text), then filter out any images smaller than 128x32 (or 32x128)
             cr = make_if(
                     HasConversionRule(OutputType.ImageDimensions),
                     DimensionsRule(
@@ -343,14 +353,6 @@ class Scanner(models.Model):
                             min_dim=128),
                     True)
             prerules.append(cr)
-
-        # append any model-specific rules. Order matters!
-        # AllRule will evaluate all rules, no matter the outcome of current rule
-        # AndRule will only evaluate next rule, if current rule have match
-        # OrRule will stop evaluating as soon as one rule have match
-        rule = AllRule.make(*self.local_all_rules(), rule)
-        rule = OrRule.make(*self.local_or_rules(), rule)
-        rule = AndRule.make(*self.local_and_rules(), rule)
 
         # prerules includes: do_ocr, LastModifiedRule
         return AndRule.make(*prerules, rule)
