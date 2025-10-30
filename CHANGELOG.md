@@ -51,6 +51,8 @@
 
 - Fixed gmail scanners showing an error page on successful updates.
 
+- Mass-delete now works no matter how the report tables are paginated.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"
