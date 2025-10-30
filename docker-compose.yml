@@ -49,6 +49,10 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=ub3rStr0nGpassword
       - MSSQL_COLLATION=SQL_Danish_Pref_CP1_CI_AS
+      # Running as SQL Server Express, we "may install and use any number of
+      # copies of the software on any device including third party shared
+      # devices" (see #67217 for details)
+      - MSSQL_PID=Express
     healthcheck:
       test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P ${Sa_Password:-ub3rStr0nGpassword} -Q 'SELECT 1' || exit 1" ]
       interval: 10s
