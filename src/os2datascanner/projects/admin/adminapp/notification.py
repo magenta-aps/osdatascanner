@@ -183,7 +183,6 @@ class GraphGrantExpiryNotificationEmail(NotificationEmail):
             "tenant": self.grant.tenant_id,
             "expiry_date": self.grant.expiry_date,
             "grant_edit_url": settings.SITE_URL[:-1] + f"/grants/msgraph/{self.grant.uuid}",
-
         }
 
 

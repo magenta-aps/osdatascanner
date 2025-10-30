@@ -1,0 +1,15 @@
+Hej,
+
+Til orientering har din Graph secret til tenant {{ tenant }} en udløbsdato af: {{ expiry_date }}!
+
+Det er vigtigt at opdatere dette hurtigtst muligt, for at undgå funktionalitetstab!
+
+Tilgå bevillingssiden for at se mere:
+
+{{ grant_edit_url }}
+
+Med venlig hilsen,
+OSdatascanner-systemet
+{% if institution %}
+(på vegne af {{ institution }})
+{% endif %}

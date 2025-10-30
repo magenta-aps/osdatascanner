@@ -1,5 +1,6 @@
 import datetime
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.adminapp.notification import GraphGrantExpiryNotificationEmail
@@ -9,7 +10,7 @@ def is_expiring_soon(exp_date, today):
     """Determine if the expiry date is soon or overdue."""
     if exp_date:
         days_until_expiry = (exp_date - today).days
-        return exp_date <= today or days_until_expiry <= 7
+        return exp_date <= today or days_until_expiry <= settings.EXPIRATION_WARNING_THRESHOLD
     return False
 
 

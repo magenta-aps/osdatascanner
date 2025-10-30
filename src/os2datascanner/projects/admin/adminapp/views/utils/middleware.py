@@ -2,28 +2,30 @@ import datetime
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
+from django.conf import settings
 from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.utilities import UserWrapper
 
 
 class NotificationMiddleware:
+    """Middleware for sending django messages to any view."""
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
 
-        if request.user.has_perm("grants.change_graphgrant"):
+        if request.user.is_authenticated and request.user.has_perm("grants.change_graphgrant"):
             check_grant_expiration(request)
 
+        response = self.get_response(request)
         return response
 
 
 def is_expiring_soon(exp_date, today):
-    """Determine if the expiry date is soon or overdue."""
     if exp_date:
         days_until_expiry = (exp_date - today).days
-        return exp_date <= today or days_until_expiry <= 7
+        return exp_date <= today or days_until_expiry <= settings.EXPIRATION_WARNING_THRESHOLD
     return False
 
 
@@ -39,9 +41,8 @@ def check_grant_expiration(request):
 
 
 def notify_grant_expiration(request, today, grant):
-    msg = _(
-        f"Don't panic but the secret for: {
-            grant.tenant_id} is about to expire! AHHHH! SAVE YOURSELVES!")
+    msg = _("A Client Secret for Tenant: {tenant} is about to expire!").format(
+        tenant=grant.tenant_id)
 
     session_key = f"{grant.tenant_id}_notification"
 
