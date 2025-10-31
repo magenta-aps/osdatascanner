@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load l10n %}
+{% load utility_tags %}
 
 <td colspan="7"
     id="finished-scan-statistics"
@@ -35,8 +36,8 @@
         </div>
 
         <div class="data-card data-card--scan-summary"
-             id="scan-summary__{{ status.pk }}"
-             {% if updated %} hx-get="{% url "status-timeline" status.pk %}" hx-target="#scan-summary__{{ status.pk }}" hx-select="#scan-summary__{{ status.pk }}" hx-trigger="every 5s" hx-swap="outerHTML" {% endif %}>
+             id="scan-summary__{{ status.pk|unlocalize }}"
+             {% if updated %} hx-get="{% url "status-timeline" status.pk %}" hx-target="#scan-summary__{{ status.pk|unlocalize }}" hx-select="#scan-summary__{{ status.pk|unlocalize }}" hx-trigger="every 5s" hx-swap="outerHTML" {% endif %}>
           <div class="data-card__label">
             <span class="title">{% trans "Summary of scan" %}</span>
           </div>
@@ -79,6 +80,18 @@
                   </p>
                 </li>
               {% endif %}
+
+              <div class="data-card__label">
+                <span class="title">{% trans "Time spent scanning" %}</span>
+              </div>
+
+              <li>
+                {% for time_dict in time_data|slice:"5" %}
+                  <ul>
+                    <p>{{ time_dict.label }}: {{ time_dict.count|format_timespan }}</p>
+                  </ul>
+                {% endfor %}
+              </li>
             </ul>
           </div>
         </div>
