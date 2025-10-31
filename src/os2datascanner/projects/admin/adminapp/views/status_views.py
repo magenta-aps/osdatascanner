@@ -180,6 +180,7 @@ class StatusTimeline(RestrictedDetailView):
         context['time_data'] = [{"label": k, "count": v["time"].total_seconds()} for k, v in
                                 status.data_types().items()]
         context['time_data'].sort(key=lambda d: -d["count"])
+        context['updated'] = self.request.GET.get("updated", False) == "true"
 
         return context
 

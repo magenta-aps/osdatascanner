@@ -34,7 +34,9 @@
           </div>
         </div>
 
-        <div class="data-card data-card--scan-summary">
+        <div class="data-card data-card--scan-summary"
+             id="scan-summary__{{ status.pk }}"
+             {% if updated %} hx-get="{% url "status-timeline" status.pk %}" hx-target="#scan-summary__{{ status.pk }}" hx-select="#scan-summary__{{ status.pk }}" hx-trigger="every 5s" hx-swap="outerHTML" {% endif %}>
           <div class="data-card__label">
             <span class="title">{% trans "Summary of scan" %}</span>
           </div>
