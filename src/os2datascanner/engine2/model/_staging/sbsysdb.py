@@ -19,6 +19,7 @@ from .sbsysdb_rule import SBSYSDBRule  # noqa
 from .sbsysdb_utilities import (
         exec_expr, convert_rule_to_select, resolve_complex_column_names)
 
+from os2datascanner.utils.ref import Counter
 # For communication with a document-proxy instance
 from os2datascanner.utils.oauth2 import mint_cc_token
 from os2datascanner.utils.token_caller import TokenCaller
@@ -36,6 +37,7 @@ match settings.model["sbsysdb"]:
         dp_url = None
 
 
+@Source.register_class
 class SBSYSDBSource(Source):
     type_label = "sbsys-db"
 
@@ -49,7 +51,8 @@ class SBSYSDBSource(Source):
         self._db = db
         self._user = user
         self._password = password
-        self._reflect_tables = reflect_tables
+        self._reflect_tables = (
+                tuple(reflect_tables) if reflect_tables else None)
         self._base_weblink = base_weblink
 
     @property
@@ -95,6 +98,16 @@ class SBSYSDBSource(Source):
         engine, tables, _ = sm.open(self)
         Sag = tables["Sag"]
 
+        # The return value of exec_expr here is a generator of a single
+        # unlabelled 1-tuple, in case you were wondering about that suspicious
+        # ,), syntax
+        (case_count,), = exec_expr(
+                engine, select(sql_func.count("*")).select_from(Sag))
+
+        logger.info(
+                "preparing to execute Sag query",
+                total_case_count=case_count)
+
         constraint, columns = resolve_complex_column_names(
                 Sag, tables, *SBSYSDBSources.Case.required_columns)
         column_labels = dict(
@@ -114,7 +127,9 @@ class SBSYSDBSource(Source):
                             sql_text("day"), Sag.c.LastChanged, sql_func.now())
                 }).where(constraint)  # Include the required_columns constraint
 
-        for db_row in exec_expr(engine, expr, *column_labels.keys()):
+        counter = Counter()
+        for db_row in exec_expr(
+                engine, expr, *column_labels.keys(), rows=counter):
             match (self._base_weblink, db_row):
                 case (str() as wl, {"ID": cid}):
                     weblink = f"{wl}#/sager/{cid}"
@@ -124,6 +139,10 @@ class SBSYSDBSource(Source):
                     self,
                     db_row["Nummer"], db_row["Titel"], weblink,
                     hints={"db_row": db_row})
+
+        logger.info(
+                "Sag query execution completed",
+                case_count=int(counter))
 
     def to_json_object(self):
         return super().to_json_object() | {
@@ -139,18 +158,17 @@ class SBSYSDBSource(Source):
             "base_weblink": self._base_weblink
         }
 
-    @Source.json_handler(type_label)
-    @staticmethod
-    def from_json_object(obj):
-        reflect_tables = (
-                tuple(rt)
-                if (rt := obj.get("reflect_tables"))
-                else None)
-        return SBSYSDBSource(
-                obj["server"], obj["port"],
-                obj["db"], obj["user"], obj["password"],
-                reflect_tables=reflect_tables,
-                base_weblink=obj.get("base_weblink"))
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "server": obj["server"],
+            "port": obj["port"],
+            "db": obj["db"],
+            "user": obj["user"],
+            "password": obj["password"],
+            "reflect_tables": obj.get("reflect_tables", cls._Suppress),
+            "base_weblink": obj.get("base_weblink")
+        }
 
 
 class SBSYSDBHandles:
@@ -354,10 +372,21 @@ class SBSYSDBSources:
             engine, tables, dp = sm.open(self)
             yield SBSYSDBHandles.Field(self, "Kommentar")
 
+            logger.info(
+                    "preparing to execute DokumentRegistrering query",
+                    case_id=self.handle.relative_path)
+
             DokReg = tables["DokumentRegistrering"]
             expr = select(DokReg.c.DokumentID, DokReg.c.Navn).where(
                     DokReg.c.SagID == values["ID"])
 
-            for document_id, name in exec_expr(engine, expr):
+            document_counter = Counter()
+            for document_id, name in exec_expr(
+                    engine, expr, rows=document_counter):
                 yield SBSYSDBHandles.Document(
                         self, str(document_id), name)
+
+            logger.info(
+                    "DokumentRegistrering query execution completed",
+                    case_id=self.handle.relative_path,
+                    registration_count=int(document_counter))

@@ -154,7 +154,7 @@ class GenericRunner(PikaPipelineThread):
 
             case _:
                 # No action needed
-                logger.debug("No priority switch necessary.")
+                logger.trace("No priority switch necessary.")
 
     def _handle_command(self, routing_key, body):
         command = messages.CommandMessage.from_json_object(body)
