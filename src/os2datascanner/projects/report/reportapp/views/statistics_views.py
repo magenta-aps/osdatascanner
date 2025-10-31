@@ -573,7 +573,7 @@ class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
 
 class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
     template_name = "leader_statistics_template.html"
-    model = Account
+    model = Position
     context_object_name = "employees"
     max_objects = 200
 
@@ -582,15 +582,18 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
         return qs
 
     def get_queryset(self):
-        qs = super().get_queryset()
-
+        qs = Position.employees.all().distinct("account")
         qs = self.get_base_queryset(qs)
-
         if search_field := self.request.GET.get('search_field', None):
             qs = qs.filter(
-                Q(first_name__icontains=search_field) |
-                Q(last_name__icontains=search_field) |
-                Q(username__istartswith=search_field))
+                Q(account__first_name__icontains=search_field) |
+                Q(account__last_name__icontains=search_field) |
+                Q(account__username__istartswith=search_field))
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.get_queryset()
 
         if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
                 (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
@@ -600,21 +603,19 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
             reports = DocumentReport.objects.all()
 
         retention_days = self.org.retention_days if self.org.retention_policy else None
-        qs = qs.with_result_stats(reports=reports, retention_policy=retention_days)
 
-        qs = qs.with_status()
+        account_qs = Account.objects.filter(pk__in=qs.values_list("account", flat=True))
 
-        qs = qs.with_fp_ratio()
+        # This might be optimization for nobody, but there's no reason to do further queries
+        # if the account_qs is empty here. It'll add a lot of overhead to display an empty page.
+        if account_qs:
+            account_qs = account_qs.with_result_stats(reports=reports,
+                                                      retention_policy=retention_days)
+            account_qs = account_qs.with_status()
+            account_qs = account_qs.with_fp_ratio()
+            account_qs = self.order_employees(account_qs)
 
-        qs = self.order_employees(qs)
-
-        if self.max_objects is not None:
-            qs = qs[:self.max_objects]
-
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context["employees"] = account_qs[:self.max_objects]
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
@@ -648,7 +649,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
             if order != 'ascending':
                 sort_key = '-'+sort_key
-            qs = qs.order_by(sort_key, 'pk').distinct()
+            qs = qs.order_by(sort_key, 'pk')
 
         return qs
 
@@ -666,7 +667,7 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
 
     def get_base_queryset(self, qs):
         managed_accounts = self.request.user.account.managed_accounts.values_list("pk")
-        qs = qs.filter(pk__in=managed_accounts)
+        qs = Position.objects.filter(account__pk__in=managed_accounts).distinct("account__pk")
         return qs
 
     def get_context_data(self, **kwargs):
@@ -701,16 +702,28 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
 
     def get_base_queryset(self, qs):
         if self.request.GET.get("view_all", False):
-            self.descendant_units = self.user_units.get_descendants(include_self=True)
-            positions = Position.employees.filter(unit__in=self.descendant_units)
-            qs = qs.filter(positions__in=positions).distinct()
+            # Determine what units are "root nodes", we'll only want to call
+            # get_descendants on units that won't be retrieved by get_descendants() on a
+            # "higher" up node.
+            roots = self.user_units.exclude(
+                parent__in=self.user_units.values('pk')
+            )
+
+            if roots.count() == self.user_units.count():
+                # This means the hierarchy is completely flat: Every OU in our qs is a root.
+                # It's cheaper to ask for counts and skip a huge descendants evaluation for
+                # XX amount of root nodes, that we can tell in advance will have none.
+                self.descendant_units = roots
+            else:
+                self.descendant_units = roots.get_descendants(include_self=True)
+
+            qs = qs.filter(unit__in=self.descendant_units)
         elif self.org_unit:
             self.descendant_units = self.org_unit.get_descendants(include_self=True)
-            positions = Position.employees.filter(unit__in=self.descendant_units)
-            qs = qs.filter(positions__in=positions).distinct()
+            qs = qs.filter(unit__in=self.descendant_units)
         else:
             self.descendant_units = OrganizationalUnit.objects.none()
-            qs = Account.objects.none()
+            qs = Position.objects.none()
 
         return qs
 
