@@ -111,6 +111,15 @@ def basic_rule(test_org):
 
 
 @pytest.fixture
+def links_rule(test_org):
+    rule = Rule.objects.create(name="dummy links rule",
+                               description="the weakest link to the past participle",
+                               raw_rule={"type": "links"})
+    rule.organizations.add(test_org)
+    return rule
+
+
+@pytest.fixture
 def disabled_system_rule(test_org):
     rule = Rule.objects.create(name="disabled rule",
                                description="this is a dumb dumb disabled rule",
@@ -156,6 +165,16 @@ def web_scanner(test_org, basic_rule):
         organization=test_org,
         url="http://www.example.com/",
         rule=basic_rule
+    )
+
+
+@pytest.fixture
+def web_scanner_only_dl(test_org, links_rule):
+    return WebScanner.objects.create(
+        name=f"DeadLinksScanner-{test_org.name}",
+        organization=test_org,
+        url="http://www.example.com/",
+        rule=links_rule
     )
 
 

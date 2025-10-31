@@ -14,6 +14,7 @@ from os2datascanner.engine2.model.derived import mail
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
+from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.projects.admin.organizations.models import OrganizationalUnit, Alias, Account
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
@@ -271,6 +272,19 @@ class TestScanners:
 
         assert ScheduledCheckup.objects.count() == 1
         assert ScheduledCheckup.objects.first() == sc
+
+    def test_no_ocr_scanner_construct_rule(self, web_scanner_only_dl):
+        """Scanners shouldn't produce the OCR validity testing rule if their
+        Rule doesn't actually need any OCR to be performed."""
+        # Arrange
+        web_scanner_only_dl.do_ocr = True
+
+        # Act
+        rule = web_scanner_only_dl._construct_rule(force=True)
+
+        # Assert
+        assert not any(r.operates_on == OutputType.ImageDimensions
+                       for r in rule.flatten())
 
     def test_msgraph_mailscanner_construct_rule(self, msgraph_mailscanner):
         # Arrange
