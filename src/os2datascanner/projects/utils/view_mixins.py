@@ -51,10 +51,11 @@ class CSVExportMixin:
         for row in rows:
             yield self.writer.writerow([row[c['name']] for c in self.columns])
 
-    def get_rows(self):
+    def get_rows(self, qs=None):
         """Takes a queryset and returns a list of rows,
         each row containing values for each field in export_fields"""
-        qs = self.get_queryset().order_by('pk')
+        if qs is None:
+            qs = self.get_queryset().order_by('pk')
 
         field_columns = [c for c in self.columns if c['type'] == self.ColumnType.FIELD]
         rows = list(qs.values(*[c['name'] for c in field_columns]))

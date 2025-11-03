@@ -916,7 +916,7 @@ class TestLeaderUnitsStatisticsPageView:
             olsenbanden_ou_positions,
             olsenbanden_organization,
             rf):
-        """When org.retention_policy is False, Old matches should appear as a column."""
+        """When org.retention_policy is False, Old matches should NOT appear as a column."""
         olsenbanden_organization.retention_policy = False
         olsenbanden_organization.save()
         response = self.get_leader_statistics_csv_response(

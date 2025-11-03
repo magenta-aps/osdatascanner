@@ -14,6 +14,8 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
+from abc import abstractmethod, ABC
+
 import structlog
 
 from datetime import date, timedelta
@@ -27,7 +29,7 @@ from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from django.views.generic import TemplateView, DetailView, ListView, RedirectView
+from django.views.generic import TemplateView, DetailView, RedirectView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
@@ -530,7 +532,7 @@ class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
 
         return match_data, source_types, resolution_status, monthly
 
-    def get_rows(self):
+    def get_rows(self, qs=None):
         # Since this isn't a ListView, the data isn't a queryset.
         # So CSVExportMixin.get_rows is overwritten,
         # and instead we unpack get_context_data manually
@@ -571,29 +573,38 @@ class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
             raise PermissionDenied(f"An incorrect setting was found on the organization {org}!")
 
 
-class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
+class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
     template_name = "leader_statistics_template.html"
-    model = Position
-    context_object_name = "employees"
     max_objects = 200
 
-    def get_base_queryset(self, qs):
-        """Override this in children classes"""
-        return qs
+    @abstractmethod
+    def get_account_queryset(self):
+        """Override this in child classes"""
 
-    def get_queryset(self):
-        qs = Position.employees.all().distinct("account")
-        qs = self.get_base_queryset(qs)
-        if search_field := self.request.GET.get('search_field', None):
-            qs = qs.filter(
-                Q(account__first_name__icontains=search_field) |
-                Q(account__last_name__icontains=search_field) |
-                Q(account__username__istartswith=search_field))
+    @staticmethod
+    def annotate_account_queryset(qs, reports=None, retention_days=None):
+
+        # This might be optimization for nobody, but there's no reason to do further queries
+        # if the account_qs is empty here. It'll add a lot of overhead to display an empty page.
+        if qs:
+            qs = qs.with_result_stats(reports=reports,
+                                      retention_policy=retention_days)
+            qs = qs.with_status()
+            qs = qs.with_fp_ratio()
+        else:
+            # Tests require these fields though, so we'll just set them to zero, we really
+            # don't want to attempt any calculations we know will yield nothing.
+            qs = Account.objects.none().annotate(
+                old_results=Value(0),
+                unhandled_results=Value(0),
+                withheld_results=Value(0),
+            )
+
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.get_queryset()
+        qs = self.get_account_queryset()
 
         if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
                 (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
@@ -604,18 +615,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
         retention_days = self.org.retention_days if self.org.retention_policy else None
 
-        account_qs = Account.objects.filter(pk__in=qs.values_list("account", flat=True))
+        qs = self.annotate_account_queryset(qs, reports, retention_days)
+        qs = self.order_employees(qs)
+        context["employees"] = qs[:self.max_objects]
 
-        # This might be optimization for nobody, but there's no reason to do further queries
-        # if the account_qs is empty here. It'll add a lot of overhead to display an empty page.
-        if account_qs:
-            account_qs = account_qs.with_result_stats(reports=reports,
-                                                      retention_policy=retention_days)
-            account_qs = account_qs.with_status()
-            account_qs = account_qs.with_fp_ratio()
-            account_qs = self.order_employees(account_qs)
-
-        context["employees"] = account_qs[:self.max_objects]
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
@@ -665,17 +668,21 @@ class LeaderStatisticsPageView(LoginRequiredMixin, ListView):
 
 class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
 
-    def get_base_queryset(self, qs):
-        managed_accounts = self.request.user.account.managed_accounts.values_list("pk")
-        qs = Position.objects.filter(account__pk__in=managed_accounts).distinct("account__pk")
-        return qs
+    def get_account_queryset(self):
+        account_qs = self.request.user.account.managed_accounts.all()
+        if search_field := self.request.GET.get('search_field', None):
+            account_qs = account_qs.filter(
+                Q(first_name__icontains=search_field) |
+                Q(last_name__icontains=search_field) |
+                Q(username__istartswith=search_field))
+
+        return account_qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["active_tab"] = "accounts"
         context["view_url"] = reverse_lazy("statistics-leader-accounts")
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
-
         scannerjobs = self.org.scanners.filter(
             document_reports__number_of_matches__gte=1,
             document_reports__alias_relations__account__in=context['employees'],
@@ -700,7 +707,20 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
 
 class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
 
-    def get_base_queryset(self, qs):
+    def get_account_queryset(self):
+        qs = Position.employees.all().distinct("account")
+        qs = self.filter_positions(qs)
+
+        if search_field := self.request.GET.get('search_field', None):
+            qs = qs.filter(
+                Q(account__first_name__icontains=search_field) |
+                Q(account__last_name__icontains=search_field) |
+                Q(account__username__istartswith=search_field))
+
+        account_qs = Account.objects.filter(pk__in=qs.values_list("account", flat=True))
+        return account_qs
+
+    def filter_positions(self, qs):
         if self.request.GET.get("view_all", False):
             # Determine what units are "root nodes", we'll only want to call
             # get_descendants on units that won't be retrieved by get_descendants() on a
@@ -835,6 +855,44 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         response = super().get(request, *args, **kwargs)
         return response
 
+    def get_rows(self, qs=None):
+        # Since this isn't a ListView, there's no get_queryset method.
+        # So CSVExportMixin.get_rows is overwritten
+
+        if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
+                (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
+            sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
+            reports = sr.document_reports.all()
+        else:
+            reports = DocumentReport.objects.all()
+
+        retention_days = self.org.retention_days if self.org.retention_policy else None
+        account_qs = self.get_account_queryset()
+        account_qs = LeaderStatisticsPageView.annotate_account_queryset(
+            qs=account_qs, reports=reports, retention_days=retention_days
+        )
+
+        account_qs = self.order_employees(account_qs)
+
+        if hasattr(self, "descendant_units"):
+            # descendant_units is only available (and relevant), when using the
+            # unit based overview - not when it's Account / manager based.
+            account_qs = account_qs.annotate(
+                unit_list=Coalesce(
+                    StringAgg(
+                        'units__name',
+                        delimiter=', ',
+                        ordering='units__name',
+                        output_field=CharField(),
+                        filter=Q(units__in=self.descendant_units),
+                        distinct=True,
+                    ),
+                    Value('')
+                )
+            )
+
+        return super().get_rows(account_qs)
+
 
 class LeaderAccountsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderAccountsStatisticsPageView):
     pass
@@ -883,23 +941,6 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
     def get(self, request, *args, **kwargs):
         self.set_user_units_and_org_unit(request)
         return super().get(request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.annotate(
-            unit_list=Coalesce(
-                StringAgg(
-                    'units__name',
-                    delimiter=', ',
-                    ordering='units__name',
-                    output_field=CharField(),
-                    filter=Q(units__in=self.descendant_units),
-                    distinct=True,
-                ),
-                Value('')
-            )
-        )
-        return qs
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):
