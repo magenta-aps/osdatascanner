@@ -124,7 +124,7 @@ def test_match_with_one_match(valid_card, credit_card_rule):
     # Arrange
 
     # Act
-    expected_outcome = valid_card
+    expected_outcome = valid_card[:4] + "X"*12
     match = credit_card_rule.match(valid_card)
     for actual_outcome in match:
         # Assert
@@ -139,10 +139,10 @@ def test_match_with_multiple_matches(four_matches, credit_card_rule):
 
     # Act
     expected_outcome = [
-        "4242424242424242",
-        "4012888888881881",
-        "4539 1488 0343 6467",
-        "5555555555554444"]
+        "4242XXXXXXXXXXXX",
+        "4012XXXXXXXXXXXX",
+        "4539XXXXXXXXXXXX",
+        "5555XXXXXXXXXXXX"]
     matches = credit_card_rule.match(four_matches)
     actual_outcome = []
 

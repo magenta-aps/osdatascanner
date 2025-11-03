@@ -1,4 +1,5 @@
-from os2datascanner.engine2.rules.rule import Rule, SimpleRule
+from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.conversions.types import OutputType
 from .utilities.context import make_context
 import re
@@ -26,25 +27,27 @@ def luhn_algorithm(number: str):
     return total % 10 == 0
 
 
-class CreditCardRule(SimpleRule):
+class CreditCardRule(RegexRule):
     type_label = "credit_card"
     operates_on = OutputType.Text
 
     def __init__(self):
-        super().__init__()
-        self._expr = re.compile(
-            r"\b\d{16}\b|\b\d{4}([ -])\d{4}\1\d{4}\1\d{4}\b"
-        )
+        super().__init__(expression=r"\b(\d{16})\b|\b(\d{4}[ -]\d{4}[ -]\d{4}[ -]\d{4})\b")
 
     def match(self, representation):
         """ The match function uses the regex from the CreditCardRule __init__ function and the
         luhn_algorithm function to determine if a number could be a credit card number."""
-        for number in re.finditer(self._expr, representation):
+        for number in re.finditer(self._expression, representation):
             num = number.group()
             if luhn_algorithm(num):
                 yield {
-                    "match": num,
-                    **make_context(number, representation)
+                    "match": num[:4] + "X" * 12,
+                    **make_context(number, representation),
+
+                    "sensitivity": (
+                        self.sensitivity.value
+                        if self.sensitivity else None
+                    ),
                 }
 
     def to_json_object(self):
