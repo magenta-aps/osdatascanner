@@ -19,6 +19,9 @@
 - The leader overview no longer loads in employees on at a time.
   This should decrease loading times.
 
+- The result collector has been refactored so that handling of match messages is more similar to
+  the handling of problem messages.
+
 ### Bugfixes
 
 - Report ownership is now enforced in the backend when handling reports.
@@ -32,6 +35,8 @@
 - Setting the OCR flag on a scanner whose rule does not actually require any
   OCR to be performed no longer causes the pipeline to perform complex OCR
   eligibility tests.
+
+- The result collector no longer sets a resolution time when setting a resolution status to null.
 
 ## Version 3.30.3, 21st October 2025
 
