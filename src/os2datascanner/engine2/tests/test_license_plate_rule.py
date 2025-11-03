@@ -19,8 +19,9 @@ from os2datascanner.engine2.rules.license_plate import DanishLicensePlateRule
                                                   ("AB 23 345.", ["AB 23 345"]),
                                                   ("Ab12345", ["Ab12345"]),
                                                   (":AB 12 345", ["AB 12 345"]),
-                                                  (".ba 12 182,", ["ba 12 182"])])
-def test_license_plate(test_input: str, expected: list[str]):
+                                                  (".ba 12 182,", ["ba 12 182"]),
+                                                  ("Min nummerplade er AZ 69 420.", ["AZ 69 420"])])
+def test_danish_license_plate(test_input: str, expected: list[str]):
     rule = DanishLicensePlateRule()
     results = [match_obj["match"] for match_obj in rule.match(test_input)]
     assert results == expected
