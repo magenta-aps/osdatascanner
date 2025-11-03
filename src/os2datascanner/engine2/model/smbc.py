@@ -307,7 +307,7 @@ class SMBCSource(Source):
                 return
 
             path_here: str = '/'.join([h.name for h in chain_here])
-            url_here: str = base_url + "/" + path_here
+            url_here: str = base_url + "/" + quote(path_here)
 
             attrs = self.get_attrs(context, here, url_here)
             if self._skip_super_hidden and self.is_skippable(here.name, attrs):

@@ -42,6 +42,8 @@
 
 - The result collector no longer sets a resolution time when setting a resolution status to null.
 
+- A bug making the explorer skip folders with escaped names have been solved.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"
