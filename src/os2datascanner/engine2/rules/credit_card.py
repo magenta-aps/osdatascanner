@@ -33,7 +33,7 @@ class CreditCardRule(SimpleRule):
     def __init__(self):
         super().__init__()
         self._expr = re.compile(
-            r"\d{16}|\d{4}([ -])\d{4}\1\d{4}\1\d{4}"
+            r"\b\d{16}\b|\b\d{4}([ -])\d{4}\1\d{4}\1\d{4}\b"
         )
 
     def match(self, representation):
