@@ -10,6 +10,8 @@
   module. A separate permission for permanently deleting reports from the same list can now also be
   granted.
 
+- New rule to scan for danish license plates
+
 ### General improvements
 
 - Improve help text on rule field of rule form.

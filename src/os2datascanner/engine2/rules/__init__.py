@@ -12,3 +12,4 @@ from . import wordlists  # noqa
 from . import dict_lookup  # noqa
 from . import passport  # noqa
 from . import external  # noqa
+from . import license_plate  # noqa

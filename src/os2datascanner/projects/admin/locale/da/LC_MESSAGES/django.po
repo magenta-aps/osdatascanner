@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 13:59+0200\n"
+"POT-Creation-Date: 2025-10-31 13:50+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1051,6 +1051,10 @@ msgid "e-mail header"
 msgstr "e-mail header"
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html
+msgid "license plate"
+msgstr "nummerplade"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "Experimental"
 msgstr "Eksperimentel"
 
@@ -1147,6 +1151,14 @@ msgstr "navn på felt"
 msgctxt "verb"
 msgid "matches"
 msgstr "resultater fundet"
+
+#: adminapp/templates/components/admin_widgets/rule_builder.html
+msgid ""
+"Note that this rule does not verify its results against a database. "
+"Therefore, it can't detect custom plates."
+msgstr ""
+"Bemærk at denne regel ikke tjekker resultater op mod Motorregistret. Derfor "
+"kan den ikke finde ønskenummerplader. "
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "context check"
@@ -1570,8 +1582,9 @@ msgid ""
 "looking for specific things. Blocks can be selected and combined in the rule "
 "builder below."
 msgstr ""
-"En regel består af forskellige elementer, som hver er bygget til at lede efter "
-"noget bestemt. Elementer can vælges og kombineres i regelbyggeren herunder."
+"En regel består af forskellige elementer, som hver er bygget til at lede "
+"efter noget bestemt. Elementer kan vælges og kombineres i regelbyggeren "
+"herunder."
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html
 #: adminapp/templates/components/scanner/scan_completed.html
@@ -3754,6 +3767,11 @@ msgid ""
 msgstr ""
 "Ingen brugere eller organisatoriske enheder tilgængelige for organisation "
 "{org}; Er du sikker på at dine LDAP indstillinger er korrekte?"
+
+#: organizations/models/account.py
+#, python-brace-format
+msgid "Deleted scanner {pk}"
+msgstr "Slettede scanner {pk}"
 
 #: organizations/models/account.py
 msgid ""
