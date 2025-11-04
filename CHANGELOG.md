@@ -12,6 +12,8 @@
 
 - New rule to scan for danish license plates
 
+- New rule to scan for credit card numbers.
+
 ### General improvements
 
 - Improve help text on rule field of rule form.

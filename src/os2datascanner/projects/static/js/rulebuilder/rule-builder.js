@@ -21,7 +21,7 @@ function setCheckbox(index, value, selector) {
 
 function setTextbox(id, value, selector) {
   if (value) {
-    selector.querySelector("#"+id).setAttribute("value", value);
+    selector.querySelector("#" + id).setAttribute("value", value);
   }
 }
 
@@ -47,7 +47,8 @@ function selectOptions(obj, selector) {
     "health_turbo": "TurboHealthRule",
     "email-header": "EmailHeader",
     "passport": "PassportRule",
-    "license_plate": "DanishLicensePlateRule"
+    "license_plate": "DanishLicensePlateRule",
+    "credit_card": "CreditCardRule",
   };
 
   selectElem.value = valueMap[type];
@@ -103,7 +104,7 @@ function selectOptions(obj, selector) {
 
 function instantiateTemplate(templateName) {
   let instance = document.getElementById(
-      templateName ? templateName : "blank").cloneNode(true);
+    templateName ? templateName : "blank").cloneNode(true);
   instance.removeAttribute("id");
   instance.setAttribute("data-template-instance", templateName);
   patchHierarchy(instance);
@@ -125,49 +126,49 @@ function switchOut(elem, templateName) {
 
 function patchHierarchy(h) {
   for (let elem
-      of h.getElementsByClassName("rule_selector")) {
+    of h.getElementsByClassName("rule_selector")) {
     elem.addEventListener(
-        "input", _ => switchOut(elem.nextElementSibling, elem.value));
+      "input", _ => switchOut(elem.nextElementSibling, elem.value));
   }
 
   for (let elem of h.getElementsByClassName("inserter")) {
-    elem.addEventListener("click", function(ev) {
+    elem.addEventListener("click", function (ev) {
       let templateName = elem.getAttribute("data-template-name");
       let target = (
-            elem.getAttribute("data-template-insert") || "").split(" ", 2);
+        elem.getAttribute("data-template-insert") || "").split(" ", 2);
       switch (target[0]) {
         case "before-sibling":
           let query = target[1];
           let parent = elem.parentElement;
           let matches = parent.querySelectorAll(query);
           let match = Array.from(matches || []).find(
-              el => el.parentElement === parent);
+            el => el.parentElement === parent);
           if (match) {
             match.insertAdjacentElement(
-                "beforebegin", instantiateTemplate(templateName));
+              "beforebegin", instantiateTemplate(templateName));
           }
           break;
         case "before":  /* fall through */
         default:
           elem.insertAdjacentElement(
-              "beforebegin", instantiateTemplate(templateName));
+            "beforebegin", instantiateTemplate(templateName));
       }
     });
   }
 
   for (let elem of
-      h.getElementsByClassName("destroyer")) {
+    h.getElementsByClassName("destroyer")) {
     elem.addEventListener("click", _ => {
       elem.parentNode.remove();
       let watcher = document.getElementsByClassName("watcher")[0];
-      let {target, functionWindow} = getElements(watcher);
+      let { target, functionWindow } = getElements(watcher);
       watcher.textContent = functionWindow(target);
     });
   }
 
   elements = Array.from(h.getElementsByTagName("*"));
   for (let elem of
-      elements.filter(elem => elem.hasAttribute("data-template"))) {
+    elements.filter(elem => elem.hasAttribute("data-template"))) {
     switchOut(elem, elem.getAttribute("data-template"));
   }
 }
@@ -250,7 +251,7 @@ function makeRule(elem) {
       };
     case "DanishLicensePlateRule":
       return {
-            "type": "license_plate"
+        "type": "license_plate"
       };
 
     case "TurboCPRRule":
@@ -264,6 +265,10 @@ function makeRule(elem) {
       return {
         "type": "health_turbo",
         "dataset": "da_20211018_laegehaandbog_stikord"
+      };
+    case "CreditCardRule":
+      return {
+        "type": "credit_card"
       };
 
     case "RawRule":
@@ -292,16 +297,16 @@ function stringifyRule(elem) {
 
 function getElements(watcher) {
   let selector = watcher.getAttribute("data-selector"),
-      target = document.querySelector(selector),
-      functionId = watcher.getAttribute("data-function"),
-      functionWindow = window[functionId];
-  return {"target": target, "functionWindow": functionWindow};
+    target = document.querySelector(selector),
+    functionId = watcher.getAttribute("data-function"),
+    functionWindow = window[functionId];
+  return { "target": target, "functionWindow": functionWindow };
 }
 
 document.addEventListener("DOMContentLoaded", _ => {
   for (let watcher
-      of document.getElementsByClassName("watcher")) {
-    let {target, functionWindow} = getElements(watcher);
+    of document.getElementsByClassName("watcher")) {
+    let { target, functionWindow } = getElements(watcher);
     target.addEventListener("change", _ => {
       watcher.textContent = functionWindow(target);
     });
