@@ -33,14 +33,19 @@ class Command(BaseCommand):
 
     def handle(
             self, scanners, *,
-            guess, summarise, metadata, max_depth, hints, **kwargs):
+            guess, summarise, metadata, max_depth, hints, censor, **kwargs):
         with SourceManager() as sm:
             for scanner in scanners:
-                for source in scanner.generate_sources():
+                sst = scanner._construct_scan_spec_template(None, force=True)
+                for scan_spec in scanner._yield_sources(sst, None):
                     url_explorer.print_source(
-                            sm, source,
+                            sm, scan_spec.source,
                             guess=guess,
                             summarise=summarise,
                             metadata=metadata,
                             max_depth=max_depth,
-                            hints=hints)
+                            hints=hints,
+                            censor=censor,
+
+                            rule=scan_spec.rule)
+                    print("--")

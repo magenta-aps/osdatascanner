@@ -1,6 +1,15 @@
 # Changelog
 
-## Next release 3.31.1, 17th February 2026
+## Next release, ???
+
+"Still Quite Cold"
+
+### General improvements
+
+- The `explore_scannerjob` management command is now SmartDelta-aware and so
+  will not overreport the number of objects in a `Source`.
+
+## Release 3.31.1, 17th February 2026
 
 "Fastelavns-rice"
 
