@@ -12,7 +12,7 @@ from ...utilities.json import JSONSerialisable
 from ...utilities.equality import TypePropertyEquality
 # from .errors import UnknownSchemeError
 from .import handle as mhandle
-from .utilities import takes_named_arg, SourceManager  # noqa
+from .utilities import SourceManager  # noqa
 
 
 logger = structlog.get_logger("engine2")
@@ -65,13 +65,11 @@ class Source(TypePropertyEquality, JSONSerialisable):
     @abstractmethod
     def handles(
             self, sm: "SourceManager", *,
-            rule=None) -> Iterator["mhandle.Handle"]:
+            rule=None, **kwargs) -> Iterator["mhandle.Handle"]:
         """Yields Handles corresponding to every identifiable leaf node in this
         Source's hierarchy. These Handles are generated in an undefined order.
 
-        (For backwards compatibility, subclasses are not required to define any
-        of the keyword arguments to this function. Callers must use
-        introspection to check whether or not a named argument is available.)
+        Subclasses may optionally support the following keyword arguments:
 
             rule: rule | None
             The Rule for which this Source is being scanned. Sources are
@@ -79,6 +77,8 @@ class Source(TypePropertyEquality, JSONSerialisable):
             example, if its first component is a LastModifiedRule, the
             timestamp of that rule could be used as a pre-filter when selecting
             Handles to yield.
+
+        All keyword arguments not supported by a subclass should be ignored.
 
         Note that this method can yield Handles that correspond to
         identifiable *but non-existent* leaf nodes. These might correspond to,

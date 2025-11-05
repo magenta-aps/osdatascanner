@@ -169,7 +169,7 @@ class LibreOfficeSource(DerivedSource):
                             filter_name, p, backup_filter, outputdir)
                 yield TinyImageFilter.apply(outputdir)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         for name in listdir(sm.open(self)):
             yield LibreOfficeObjectHandle(self, name)
 

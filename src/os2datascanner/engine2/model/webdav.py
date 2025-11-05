@@ -89,7 +89,7 @@ class WebDAVSource(Source):
     def censor(self):
         return self
 
-    def handles(self, sm: SourceManager):
+    def handles(self, sm: SourceManager, **kwargs):
         dav = sm.open(self)
 
         visited = set()

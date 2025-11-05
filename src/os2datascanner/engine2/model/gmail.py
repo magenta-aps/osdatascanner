@@ -48,7 +48,7 @@ class GmailSource(GoogleSource):
 
         return query
 
-    def handles(self, sm, rule: Rule | None = None):
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):
         service = sm.open(self)
         # Call the Gmail API to retrieve all labels
         labels = service.users().labels().list(

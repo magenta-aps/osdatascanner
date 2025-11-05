@@ -17,7 +17,7 @@ from .derived import DerivedSource
 class TarSource(DerivedSource):
     type_label = "tar"
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         tarfile = sm.open(self)
         for f in tarfile.getmembers():
             if f.isfile():

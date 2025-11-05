@@ -44,7 +44,7 @@ class GoogleDriveSource(GoogleSource):
 
         return query
 
-    def handles(self, sm, rule: Rule | None = None):
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):
         service = sm.open(self)
 
         cutoff = None

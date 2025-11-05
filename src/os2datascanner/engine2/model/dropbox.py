@@ -35,7 +35,7 @@ class DropboxSource(Source):
     def censor(self):
         return DropboxSource(self.token)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         dbx = sm.open(self)
         user_account = dbx.users_get_current_account()
 

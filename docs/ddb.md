@@ -61,7 +61,7 @@ class SBSYSDBSource(engine2.core.Source):
         with DatabaseConnection(...) as db:
             yield db.cursor()
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         cursor = sm.open(self)
 
         for case in cursor.select("*", from='Case', batch_size=2000):

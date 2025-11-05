@@ -17,7 +17,7 @@ from .derived import DerivedSource
 class ZipSource(DerivedSource):
     type_label = "zip"
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         zipfile = sm.open(self)
         for i in zipfile.infolist():
             if i.flag_bits & 0x1:

@@ -45,7 +45,7 @@ class MSGraphMailSource(MSGraphSource):
         self._scan_syncissues_folder = scan_syncissues_folder
         self._scan_attachments = scan_attachments
 
-    def handles(self, sm):  # noqa
+    def handles(self, sm, **kwargs):  # noqa
         if self._userlist is None:
             for user in self._list_users(sm):
                 pn = user["userPrincipalName"]  # e.g. dan@contoso.onmicrosoft.com
@@ -218,7 +218,7 @@ class MSGraphMailAccountSource(DerivedSource):
             query += f"&$filter={' and '.join(filters)}"
         return query
 
-    def handles(self, sm, *, rule: Rule | None = None):
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):
         pn = self.handle.relative_path
         ps = engine2_settings.model["msgraph"]["page_size"]
         builder = MailFSBuilder(self, sm, pn)

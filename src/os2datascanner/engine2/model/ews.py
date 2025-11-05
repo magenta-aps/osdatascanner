@@ -189,7 +189,7 @@ class EWSAccountSource(Source):
                 mail for mail in queryset
                 if isinstance(mail, Message) and hasattr(mail, "entry_id"))
 
-    def handles(self, sm) -> Iterator['EWSMailHandle']:
+    def handles(self, sm, **kwargs) -> Iterator['EWSMailHandle']:
         account = sm.open(self)
 
         def relevant_mails(relevant_folders):

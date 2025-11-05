@@ -41,7 +41,7 @@ class MailSource(DerivedSource):
 
         return filename
 
-    def handles(self, sm):  # noqa: CCR001
+    def handles(self, sm, **kwargs):  # noqa: CCR001
         def _process_message(path, part):
             if part.is_multipart():
                 st = part.get_content_subtype()

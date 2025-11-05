@@ -102,7 +102,7 @@ class SBSYSDBSource(Source):
 
     def handles(
             self, sm: SourceManager,
-            *, rule=None) -> Iterable['SBSYSDBHandles.Case']:
+            *, rule=None, **kwargs) -> Iterable['SBSYSDBHandles.Case']:
         engine, tables, _ = sm.open(self)
         Sag = tables["Sag"]
 
@@ -384,7 +384,7 @@ class SBSYSDBSources:
         def _generate_state(self, sm: SourceManager):
             yield sm.open(self.handle.source)
 
-        def handles(self, sm: SourceManager):
+        def handles(self, sm: SourceManager, **kwargs):
             values = self.fetch(sm)
 
             engine, tables, dp = sm.open(self)

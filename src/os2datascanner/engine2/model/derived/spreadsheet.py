@@ -37,7 +37,7 @@ class SpreadsheetSource(DerivedSource):
         with self.handle.follow(sm).make_path() as path:
             yield pd.ExcelFile(path)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         for sheet_name in sm.open(self).sheet_names:
             yield SpreadsheetSheetHandle(self, sheet_name)
 

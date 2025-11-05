@@ -30,7 +30,7 @@ class DataSource(Source):
     def name(self):
         return self._name
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         if self._content:
             yield DataHandle(self, self.name or "file")
         else:

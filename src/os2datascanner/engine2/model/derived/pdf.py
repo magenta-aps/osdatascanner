@@ -47,7 +47,7 @@ class PDFSource(DerivedSource):
             else:
                 yield path
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         pdf = _open_pdf_wrapped(sm.open(self))
         for page_num in range(len(pdf)):
             yield PDFPageHandle(self, str(page_num + 1))
@@ -144,7 +144,7 @@ class PDFPageSource(DerivedSource):
         filtered_data = TinyImageFilter.apply_dict(filtered_data)
         yield filtered_data
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         # The cookie is now a dictionary of in-memory objects
         for p in sm.open(self):
             yield PDFObjectHandle(self, p)

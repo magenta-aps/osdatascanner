@@ -27,7 +27,7 @@ class FilteredSource(DerivedSource):
         """Returns a Python file-like object that wraps the given compressed
         stream. Reading from this object will return decompressed content."""
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         rest, ext = os.path.splitext(self.handle.name)
         yield FilteredHandle(self, rest)
 
