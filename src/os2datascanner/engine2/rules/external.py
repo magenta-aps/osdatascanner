@@ -15,7 +15,7 @@ def get_prediction(sentence, endpoint) -> [int, float]:
     """This helper method takes a `sentence` as a string, and an endpoint that should point
     to an available api. It will then call the api with the given sentence, and return
     - an integer, either 0 or 1, indicating whether or not the sentence is a match
-    - a float, between 0 and 1, indicating the confidence in the reached conclusion."""
+    - a float, between 0 and 1, indicating the confidence that it is a match."""
     try:
         params = {
             'sentence': sentence,
@@ -43,11 +43,16 @@ def split_sentences(content):
 @Rule.register_class
 class ExternallyExecutedRegexRule(RegexRule):
     type_label = "external-regex"
-    confidence_cutoff = 0.40
 
-    def __init__(self, expression: str, endpoint: str, censor_token: str, **super_kwargs):
+    def __init__(self,
+                 expression: str,
+                 endpoint: str,
+                 censor_token: str,
+                 confidence_cutoff: float,
+                 **super_kwargs):
         self.endpoint = endpoint
         self.censor_token = censor_token
+        self.confidence_cutoff = confidence_cutoff
         super().__init__(expression, **super_kwargs)
 
     @property
@@ -68,7 +73,7 @@ class ExternallyExecutedRegexRule(RegexRule):
                 censored_sentence = censored_sentence.replace(m['match'], self.censor_token, 1)
 
             answer, confidence = get_prediction(censored_sentence, self.endpoint)
-            if answer and confidence >= self.confidence_cutoff:
+            if confidence >= self.confidence_cutoff:
                 yield {
                     "match": self.censor_token,
                     "sensitivity": self.sensitivity.value if self.sensitivity else None,
@@ -80,6 +85,7 @@ class ExternallyExecutedRegexRule(RegexRule):
         return super().to_json_object() | {
             "endpoint": self.endpoint,
             "censor_token": self.censor_token,
+            "confidence_cutoff": self.confidence_cutoff,
         }
 
     @classmethod
@@ -87,22 +93,28 @@ class ExternallyExecutedRegexRule(RegexRule):
         return super()._get_constructor_kwargs(obj) | {
             "endpoint": obj["endpoint"],
             "censor_token": obj["censor_token"],
+            "confidence_cutoff": obj.get("confidence_cutoff", 0.40),
         }
 
 
 @Rule.register_class
 class ExternallyExecutedWordlistRule(OrderedWordlistRule):
     type_label = "external-wordlist"
-    confidence_cutoff = 0.40
 
     properties = RuleProperties(
         precedence=RulePrecedence.RIGHT,
         standalone=True,
     )
 
-    def __init__(self, dataset: str, endpoint: str, censor_token: str, **super_kwargs):
+    def __init__(self,
+                 dataset: str,
+                 endpoint: str,
+                 censor_token: str,
+                 confidence_cutoff: float,
+                 **super_kwargs):
         self.endpoint = endpoint
         self.censor_token = censor_token
+        self.confidence_cutoff = confidence_cutoff
         super().__init__(dataset, **super_kwargs)
 
     @property
@@ -125,7 +137,7 @@ class ExternallyExecutedWordlistRule(OrderedWordlistRule):
                 continue
 
             answer, confidence = get_prediction(censored_sentence, self.endpoint)
-            if answer and confidence >= self.confidence_cutoff:
+            if confidence >= self.confidence_cutoff:
                 yield {
                     "match": self.censor_token,
                     "sensitivity": self.sensitivity.value if self.sensitivity else None,
@@ -137,6 +149,7 @@ class ExternallyExecutedWordlistRule(OrderedWordlistRule):
         return super().to_json_object() | {
             "endpoint": self.endpoint,
             "censor_token": self.censor_token,
+            "confidence_cutoff": self.confidence_cutoff,
         }
 
     @classmethod
@@ -144,4 +157,5 @@ class ExternallyExecutedWordlistRule(OrderedWordlistRule):
         return super()._get_constructor_kwargs(obj) | {
             "endpoint": obj["endpoint"],
             "censor_token": obj["censor_token"],
+            "confidence_cutoff": obj.get("confidence_cutoff", 0.40),
         }
