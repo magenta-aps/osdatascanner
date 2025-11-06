@@ -167,7 +167,7 @@ urlpatterns = [
     # General success handler
     re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners|sbsysscanners)/(\d+)/(created)/$',  # noqa
             DialogSuccess.as_view()),
-    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners||googleshareddrivescanners|sbsysscanners)/(\d+)/(saved)/$',  # noqa
+    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners|sbsysscanners)/(\d+)/(saved)/$',  # noqa
             DialogSuccess.as_view()),
     re_path(r'^(rules/regex|rules/cpr)/(\d+)/(created)/$',
             DialogSuccess.as_view()),
