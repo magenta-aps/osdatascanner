@@ -14,6 +14,8 @@
 
 - New rule to scan for credit card numbers.
 
+- Management command: keycloakctl introduced, to help ease Keycloak management from the CLI.
+
 ### General improvements
 
 - Improve help text on rule field of rule form.
