@@ -44,6 +44,8 @@
 
 - A bug making the explorer skip folders with escaped names have been solved.
 
+- Fixed gmail scanners showing an error page on successful updates.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"
