@@ -2,7 +2,7 @@ Hej,
 
 Til orientering har din Graph secret til tenant {{ tenant }} en udløbsdato af: {{ expiry_date }}!
 
-Det er vigtigt at opdatere dette hurtigtst muligt, for at undgå funktionalitetstab!
+Det er vigtigt at opdatere dette hurtigst muligt, for at undgå funktionalitetstab!
 
 Tilgå bevillingssiden for at se mere:
 
