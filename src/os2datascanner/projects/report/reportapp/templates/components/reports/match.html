@@ -11,6 +11,7 @@
                  value="{{ document_report.pk|unlocalize }}"
                  name="table-checkbox"
                  class="datatable-checkbox"
+                 {% if not allow_handle %}disabled{% endif %}
                  data-report-pk="{{ document_report.pk|unlocalize }}" />
           <label for="table-checkbox-{{ document_report.pk|unlocalize }}"
                  aria-label="{% trans 'Select result' %}"
@@ -288,6 +289,7 @@
             <button class="matches-handle expand button button--icon-text-button"
                     type="button"
                     aria-label=""
+                    {% if not allow_handle %}disabled{% endif %}
                     title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
               <i class="material-symbols" aria-hidden="true">archive</i>
               <span>{% trans "Handle" %}</span>
@@ -333,6 +335,7 @@
                       hx-indicator="closest tr"
                       hx-target="closest tr"
                       hx-push-url="false"
+                      {% if not allow_handle %}disabled{% endif %}
                       name="revert-match">
                 <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i>
                 <span>{% trans "Revert" %}</span>
@@ -350,6 +353,7 @@
                       hx-push-url="false"
                       hx-vals='{"action":"0"}'
                       {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
+                      {% if not allow_handle %}disabled{% endif %}
                       name="handle-match">
                 <i class="material-icons text-secondary" aria-hidden="true">archive</i>
                 <span>{% trans "Handle" %}</span>
@@ -368,6 +372,7 @@
                   hx-push-url="false"
                   hx-vals='{"action":"4"}'
                   {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
+                  {% if not allow_handle %}disabled{% endif %}
                   name="handle-match-false-positive">
             <i class="material-symbols" aria-hidden="true">flag</i>
           </button>

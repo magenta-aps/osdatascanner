@@ -268,11 +268,6 @@ class DocumentReport(models.Model):
                 fields=["scanner_job", "path"],
                 name="unique_scanner_pk_and_path")
         ]
-        permissions = [
-            ("see_withheld_documentreport", _("Can see withheld DocumentReports")),
-            ("distribute_withheld_documentreport",
-             _("Can distribute withheld DocumentReports to users"))
-        ]
 
     @property
     def organization(self):

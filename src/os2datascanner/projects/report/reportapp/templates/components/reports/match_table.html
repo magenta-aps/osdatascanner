@@ -59,7 +59,9 @@
           <tr class="datatablex__row column-headings sticky">
             <th class="column column--checkbox">
               <div class="ds-checkbox">
-                <input id="select-all" type="checkbox">
+                <input id="select-all"
+                       type="checkbox"
+                       {% if not allow_handle %}disabled{% endif %}>
                 <label for="select-all"
                        aria-label="{% trans 'Select all results' %}"
                        title="{% trans 'Select all results' %}"></label>

@@ -237,7 +237,7 @@ label + .input {
 
 .matches-handle,
 .revert-handle {
-  &.expand {
+  &.expand:not(:disabled) {
     cursor: default;
 
     & + .dropdown-container {

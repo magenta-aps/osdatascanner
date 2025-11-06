@@ -26,6 +26,9 @@
 - The result collector has been refactored so that handling of match messages is more similar to
   the handling of problem messages.
 
+- Permissions for interacting with withheld results are now controlled through synced permissions
+  from the admin module.
+
 ### Bugfixes
 
 - Report ownership is now enforced in the backend when handling reports.

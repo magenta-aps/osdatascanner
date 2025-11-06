@@ -623,7 +623,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         context['order'] = self.request.GET.get('order', 'ascending')
         context['show_retention_column'] = self.org.retention_policy
         context['show_withheld_column'] = self.request.user.has_perm(
-            "os2datascanner_report.see_withheld_documentreport")
+            "organizations.view_withheld_results")
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
@@ -632,7 +632,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
 
         # Determine number of columns from context
         context['num_cols'] = 4 + context['show_retention_column'] + self.request.user.has_perm(
-            "os2datascanner_report.see_withheld_documentreport")
+            "organizations.view_withheld_results")
 
         return context
 
@@ -689,7 +689,7 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
             document_reports__alias_relations__shared=False,
         ).distinct()
         if not self.request.user.has_perm(
-                "os2datascanner_report.see_withheld_documentreport"):
+                "organizations.view_withheld_results"):
             scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
 
         context['scannerjob_choices'] = scannerjobs
@@ -764,7 +764,7 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
             )
         ).distinct()
         if not self.request.user.has_perm(
-                "os2datascanner_report.see_withheld_documentreport"):
+                "organizations.view_withheld_results"):
             scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
 
         context['scannerjob_choices'] = scannerjobs
@@ -833,7 +833,7 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
 
     def add_conditional_colums(self, request):
         columns = self.columns.copy()
-        if self.request.user.has_perm("os2datascanner_report.see_withheld_documentreport"):
+        if self.request.user.has_perm("organizations.view_withheld_results"):
             columns = columns + [{
                 'name': 'withheld_results',
                 'label': _("Withheld matches"),

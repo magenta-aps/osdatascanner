@@ -158,6 +158,9 @@ class ReportView(LoginRequiredMixin, ListView):
                     reports = reports.order_by(f'-{sort_key}', 'pk')
         return reports
 
+    def _allow_handle(self):
+        return True
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["renderable_rules"] = RENDERABLE_RULES
@@ -254,6 +257,9 @@ class ReportView(LoginRequiredMixin, ListView):
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
         context["retention_days"] = self.org.retention_days
+
+        # Possibility to restrict permission to handle reports
+        context["allow_handle"] = self._allow_handle()
 
         return context
 
@@ -391,7 +397,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     """Presents a superuser with all undistributed unhandled results."""
 
     type = "undistributed"
-    permission_required = "os2datascanner_report.see_withheld_documentreport"
+    permission_required = "organizations.view_withheld_results"
     template_name = "undistributed_content.html"
 
     def get_base_queryset(self):
@@ -426,6 +432,9 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         context["show_drive_delete_button"] = False
         context["show_gdrive_mass_delete_button"] = False
         return context
+
+    def _allow_handle(self):
+        return self.request.user.has_perm("organizations.handle_withheld_results")
 
 
 class SBSYSMixin:
@@ -706,7 +715,7 @@ class ShowMoreMatchesView(HTMXEndpointView, DetailView):
 
 class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView):
     model = DocumentReport
-    permission_required = "os2datascanner_report.distribute_withheld_documentreport"
+    permission_required = "organizations.distribute_withheld_results"
 
     def get_queryset(self):
         qs = super().get_queryset()

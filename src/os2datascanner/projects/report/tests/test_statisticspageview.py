@@ -358,7 +358,7 @@ class TestLeaderAccountsStatisticsPageView:
         benny_account.manager = egon_account
         benny_account.save()
         egon_account.user.user_permissions.add(Permission.objects.get(
-            codename="see_withheld_documentreport"))
+            codename="view_withheld_results"))
 
         response = self.get_leader_statistics_csv_response(rf, egon_account)
         reader = csv.DictReader(line.decode() for line in response.streaming_content)
@@ -993,7 +993,7 @@ class TestLeaderUnitsStatisticsPageView:
         """When a user does have the permission to see withheld results,
         Withheld matches should appear as a column."""
         egon_account.user.user_permissions.add(Permission.objects.get(
-            codename="see_withheld_documentreport"))
+            codename="view_withheld_results"))
 
         response = self.get_leader_statistics_csv_response(rf, egon_account)
         reader = csv.DictReader(line.decode() for line in response.streaming_content)

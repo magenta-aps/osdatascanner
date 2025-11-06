@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 11:57+0200\n"
+"POT-Creation-Date: 2025-10-22 14:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -360,7 +360,7 @@ msgid "{cls}: {account} ({role}) at {unit}"
 msgstr "{cls}: {account} ({role}) i {unit}"
 
 #: models/syncedpermission.py
-msgid "Can view the SBSYS tab in Report"
+msgid "Can view the SBSYS tab in the report module"
 msgstr "Må tilgå SBSYS-fanebladene i rapportmodulet"
 
 #: models/syncedpermission.py
@@ -374,3 +374,15 @@ msgstr "Må tilgå scannerjoblisten i rapportmodulet"
 #: models/syncedpermission.py
 msgid "Can permanently delete reports in the report module"
 msgstr "Må slette rapporter i rapportmodulet permanent"
+
+#: models/syncedpermission.py
+msgid "Can view the withheld results tab in the report module"
+msgstr "Må tilgå fanen med tilbageholdte resultater i rapportmodulet"
+
+#: models/syncedpermission.py
+msgid "Can handle withheld results in the report module"
+msgstr "Må håndtere tilbageholdte resultater i rapportmodulet"
+
+#: models/syncedpermission.py
+msgid "Can distribute withheld results to users in the report module"
+msgstr "Må uddele tilbageholdte resultater i rapportmodulet"

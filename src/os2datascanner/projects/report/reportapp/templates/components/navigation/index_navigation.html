@@ -32,7 +32,7 @@
     {% endif %}
 
     {# Withheld #}
-    {% if perms.os2datascanner_report.see_withheld_documentreport %}
+    {% if perms.organizations.view_withheld_results %}
       <a href="{% if path == "archive" %}{% url "archive:undistributed" %}{% else %}{% url "reports:undistributed" %}{% endif %}"
          class="tabs__control{% if name == "undistributed" %} active{% endif %}"
          id="undistributed">{% trans "Undistributed" %}</a>
