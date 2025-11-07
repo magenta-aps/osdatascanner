@@ -10,7 +10,7 @@ Custom commands must be created in the correct path
 
 More information regarding how to create custom commands, can be found in
 [Django's documentation
-(3.2)](https://docs.djangoproject.com/en/3.2/howto/custom-management-commands/)
+(5.2)](https://docs.djangoproject.com/en/5.2/howto/custom-management-commands/)
 
 
 ## Quick guide to command execution
@@ -150,6 +150,29 @@ of the following arguments:
 Replicates the useful information normally presented on the "scanner status" page of the UI for a
 given ScanStatus object.
 The command takes one argument: The primary key of the ScanStatus object.
+
+
+### `keycloakctl`
+
+Perform various tasks in Keycloak through its API, with the admin module as entry point.
+
+Usage: `keycloakctl <action> --argument`
+
+**Actions**
+
+* `list-realms`: Lists ID and name of available realms in Keycloak
+* `search-users`: Used with `--username`, searches Keycloak users by their usernames.
+* `delete-user`: Used with `--user-id` (Keycloak user ID) deletes that user
+* `recreate-federation`: Deletes Keycloak User federation (if present) and creates a new one based
+on OSdatascanner `LDAPConfig`
+
+All actions but `list-realms`, can be provided a Keyclok realm id (which looks like a name),
+by `--realm-id`. If no realm id is provided, it is assumed that only one OSdatascanner `Realm` is
+present, and then that'll be used.
+
+**OBS**: Do note that deleting Keycloak users (f.e. with`delete-user`) when Keycloak is set up
+with a User federation, may not behave as you expect. The user **will** be deleted, but will
+immediately be re-imported by Keycloak, just with a new id. 
 
 
 ## Report application
