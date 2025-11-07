@@ -42,9 +42,13 @@ def resolve_complex_column_name(
     that was eventually selected.
 
     The traversal logic can follow foreign key relations automatically, but
-    it also supports a cast syntax ("Field as TableName") for pseudo-foreign
-    keys: "Subject as Person.Address", "Subject as Company.RegisteredAddress",
-    "Subject as Animal.Owner as Person.Address" etc."""
+    it also supports two syntactic variants:
+
+    - "Field as TableName" for pseudo-foreign keys:
+      "Subject as Person.Address", "Subject as Company.RegisteredAddress",
+      "Subject as Animal.Owner as Person.Address" etc.; and
+    - "Field as ThroughTable on CaseID" for through tables, where you need to
+      select on something that /isn't/ the other table's primary key."""
     here = start
     *field_path, last = col_name.split(".")
 
@@ -54,15 +58,34 @@ def resolve_complex_column_name(
     links = []
 
     for part in field_path:
+        column = None
         explicit_cast = None
-        if " as " in part:
-            # Some SBSYS columns are "soft" foreign keys: the value of another
-            # field governs what they point at (groan). To support that, we
-            # allow the points-to relation to be set explicitly
-            part, explicit_cast = part.split(" as ", maxsplit=1)
+        other_table_key = None
+
+        match part.split():
+            case [name]:
+                column = name
+            case [name, "as", table]:
+                # Some SBSYS columns are "soft" foreign keys: the value of
+                # another field governs what they point at (groan). To support
+                # that, we allow the points-to relation to be set explicitly
+                column = name
+                explicit_cast = table
+            case [name, "as", table, "on", otherkey]:
+                # Sometimes we have through tables (double groan), so we need
+                # to target something other than the primary key when we select
+                # from another table
+                column = name
+                explicit_cast = table
+                other_table_key = otherkey
+            case [name, "on", otherkey]:
+                column = name
+                other_table_key = name
+            case _:
+                raise SyntaxError(part)
 
         # ... we first select the "BehandlerID" (or "Behandler") column...
-        link_column = get_first_attr(here.c, part + "ID", part)
+        link_column = get_first_attr(here.c, column + "ID", column)
 
         if not explicit_cast:
             # ... then we follow the foreign key to get a reference to the
@@ -73,7 +96,11 @@ def resolve_complex_column_name(
             other_table = all_tables[explicit_cast]
 
         # ... then we (implicitly) join the Bruger table into our query...
-        other_table_pk, = other_table.primary_key
+        if not other_table_key:
+            other_table_pk, = other_table.primary_key
+        else:
+            other_table_pk = get_first_attr(
+                    other_table.c, other_table_key + "ID", other_table_key)
         links.append(link_column == other_table_pk)
         # ... and continue following the chain at Bruger, where we do the
         # same trick again for "Adresse" -> AdresseID -> <table Adresse>

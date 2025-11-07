@@ -319,6 +319,51 @@ SbSysNetDrift["RegionOpslag"] = [
     }
 ]
 
+SbSysNetDrift["SecuritySet"] = [
+    {
+        "ID": 1,
+    },
+    {
+        "ID": 2,
+    },
+]
+
+SbSysNetDrift["Sikkerhedsgruppe"] = [
+    {
+        "ID": 1,
+        "Navn": "Alle brugere",
+        "HierakiMedlemID": 1,
+    },
+    {
+        "ID": 2,
+        "Navn": "Teknik- og Miljøforvaltning",
+        "HierakiMedlemID": 1,
+    },
+    {
+        "ID": 3,
+        "Navn": "Børn- og Ungeforvaltning",
+        "HierakiMedlemID": 1,
+    },
+]
+
+SbSysNetDrift["SecuritySetSikkerhedsgrupper"] = [
+    {
+        "ID": 1,
+        "SecuritySetID": 1,
+        "SikkerhedsgruppeID": 1,
+    },
+    {
+        "ID": 2,
+        "SecuritySetID": 2,
+        "SikkerhedsgruppeID": 2,
+    },
+    {
+        "ID": 3,
+        "SecuritySetID": 2,
+        "SikkerhedsgruppeID": 3,
+    }
+]
+
 _SAG_BASE = {
     "SagIdentity": None,
     "Nummer": None,
@@ -344,7 +389,7 @@ _SAG_BASE = {
     "BeslutningHarDeadline": None,
     "ErSamlesag": None,
     "FagomraadeID": None,
-    "SecuritySetID": None,
+    "SecuritySetID": 1,
     "SagsNummerID": None,
     "LastStatusChange": None,
     "LastStatusChangeComments": None,
@@ -455,6 +500,7 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2016, 3, 31),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
+        "SecuritySetID": 2,
     },
 ]
 

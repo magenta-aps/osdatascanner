@@ -57,7 +57,9 @@ class SBSYSDBSource(Source):
 
     @property
     def reflect_tables(self):
-        return self._reflect_tables or ("Sag", "Person", "DokumentRegistrering",)
+        return self._reflect_tables or (
+                "Sag", "Person", "DokumentRegistrering",
+                "SecuritySetSikkerhedsgrupper",)
 
     def censor(self):
         return SBSYSDBSource(
