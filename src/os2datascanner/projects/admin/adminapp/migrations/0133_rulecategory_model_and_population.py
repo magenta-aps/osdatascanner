@@ -42,6 +42,7 @@ class Migration(migrations.Migration):
             name='categories',
             field=models.ManyToManyField(related_name='rules', to='os2datascanner.RuleCategory', verbose_name='categories'),
         ),
-        migrations.RunPython(populate_rule_categories, reverse_code=migrations.RunPython.noop),
-        migrations.RunPython(assign_category_to_cpr_customrule, reverse_code=migrations.RunPython.noop)
+        # Since #67381 we no longer populate RuleCategories here, but rather in fixtures.
+        # migrations.RunPython(populate_rule_categories, reverse_code=migrations.RunPython.noop),
+        # migrations.RunPython(assign_category_to_cpr_customrule, reverse_code=migrations.RunPython.noop)
     ]
