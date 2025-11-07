@@ -431,14 +431,15 @@ class TestRuleList:
         return response
 
     def test_number_of_system_rules_multiple_orgs(
-            self, test_org, test_org2, system_rule1, superuser, client):
+            self, test_org, test_org2, system_rule1, system_rule2, superuser, client):
         """Implemented based on a bug: System rules would show up once for every
         organization, which it was connected to. We only want each system rule
         to show up once."""
-        test_org2.system_rules.add(system_rule1)
+        test_org.system_rules.add(system_rule1, system_rule2)
+        test_org2.system_rules.add(system_rule1, system_rule2)
 
         response = self.get_rule_list(client, superuser)
 
         assert len(response.context['systemrule_list']) == 2
-        assert response.context['systemrule_list'].order_by("name")[0] != system_rule1
-        assert response.context['systemrule_list'].order_by("name")[1] == system_rule1
+        assert response.context['systemrule_list'].order_by("name")[0] == system_rule1
+        assert response.context['systemrule_list'].order_by("name")[1] == system_rule2

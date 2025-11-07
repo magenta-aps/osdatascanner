@@ -319,8 +319,7 @@ class TestDiagnosticsCommand:
 
         match = re.search(r'Found (\d+) custom rules:', capfd.readouterr()[0])
 
-        # Remember the migration-created CPR rule
-        assert match.group(1) == "3"
+        assert match.group(1) == "2"
 
     # Maybe add a test for rule details ...
 

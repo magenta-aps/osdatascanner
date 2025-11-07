@@ -73,7 +73,7 @@ class TestListViews:
     def test_as_superuser(self, _, path, list_type, superuser, populate_lists):
         qs = listview_get_queryset(superuser, path, list_type)
         if isinstance(list_type, RuleList):
-            assert qs.count() == 4
+            assert qs.count() == 3
         elif isinstance(list_type, OrganizationListView):
             assert qs.count() == 2
         elif isinstance(list_type, StatusOverview):

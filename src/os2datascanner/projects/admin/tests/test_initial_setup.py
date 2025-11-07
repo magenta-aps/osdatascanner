@@ -128,7 +128,7 @@ class TestInitialSetup:
         """When creating cprrule, test whether it's associated with the correct organization."""
 
         # Act
-        self.call_command()
+        self.call_command("--load-cpr-rule")
         rule = Rule.objects.get(name="CPR regel")
 
         # Assert

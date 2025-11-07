@@ -44,7 +44,7 @@ class TestQuickstartDevCommand:
                                   {'name': 'OSdatascanner'}),
                                  (Rule,
                                   {'name': 'CPR regel',
-                                   'description': 'Denne regel finder alle gyldige CPR numre.'}),
+                                   'description': 'Denne regel finder alle gyldige CPR-numre.'}),
                                  (get_user_model(),
                                   {'username': 'dev',
                                      'email': 'dev@example.org',
