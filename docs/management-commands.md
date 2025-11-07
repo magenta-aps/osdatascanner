@@ -58,6 +58,7 @@ The available arguments are:
 * `--client-name <client name>`, sets name of created client
 * `--org-name <organization name>`, sets name of created organization
 * `--password <password>`, sets password for superuser
+* `--load-cpr-rule`, loads the "rules-cpr-da" fixture and adds the loaded system rule to the created organization.
 
 The corresponding command in the Report module needs to be run after this
 to update the created user for use in the Report module.
