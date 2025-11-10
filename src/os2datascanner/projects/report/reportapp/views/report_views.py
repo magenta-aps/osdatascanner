@@ -200,7 +200,7 @@ class ReportView(LoginRequiredMixin, ListView):
             filtered_source_type = self.request.GET.get("source_type", None)
 
             # If GET param is provided (i.e. filtered by source type) use that
-            if filtered_source_type:
+            if filtered_source_type and filtered_source_type != "all":
                 source_types = [filtered_source_type]
             else:
                 # Otherwise, check what's on the page.
