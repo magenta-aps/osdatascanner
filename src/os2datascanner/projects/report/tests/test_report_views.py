@@ -502,6 +502,22 @@ class TestUserReportView:
 
         assert response.context.get("show_gdrive_mass_delete_button", False) == org_perm
 
+    @pytest.mark.parametrize("org_perm", [True, False])
+    def test_mass_delete_button_respects_org_perm_for_source_type_all(self, client, egon_account,
+                                                                      egon_email_alias, org_perm,
+                                                                      olsenbanden_organization):
+        # Arrange:
+        olsenbanden_organization.outlook_delete_email_permission = org_perm
+        olsenbanden_organization.save()
+        create_reports_for(egon_email_alias, source_type="msgraph-mail", num=20)
+
+        # Act:
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("index") + "?source_type=all")
+
+        # Assert:
+        assert response.context.get("show_msgraph_email_mass_delete_button", False) == org_perm
+
     def test_mass_deletion_buttons_all_different_source_type(self, client, egon_account,
                                                              egon_email_alias,
                                                              olsenbanden_organization):
