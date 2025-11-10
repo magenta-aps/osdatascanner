@@ -537,28 +537,70 @@ SbSysNetDrift["SagsPart"] = [
 databases["SbSysNetDriftDokument0000"] = (_dr := {"tables": {}})
 SbSysNetDriftDokument0000 = _dr["tables"]
 
-with open("1111111118.pdf", "rb") as fp:
-    SbSysNetDriftDokument0000["DokumentData"] = [
-        {
-            "ID": 16240,
-            "DokumentID": 1274,
-            "DokumentDataInfoID": 1331,
-            "Data": fp.read()
-        }
-    ]
-    size = fp.tell()
+
+def slurp(path) -> (int, bytes):
+    with open(path, "rb") as fp:
+        content = fp.read()
+        return (fp.tell(), content)
+
+
+original_pdf = slurp("1111111118.pdf")
+mail_body = slurp("mail.html")
+mail_body_alt = slurp("mail.pdf")
+
+
+SbSysNetDriftDokument0000["DokumentData"] = [
+    {
+        "ID": 16240,
+        "DokumentID": 1274,
+        "DokumentDataInfoID": 144_002,
+        "Data": mail_body[1],
+    },
+    {
+        "ID": 16241,
+        "DokumentID": 1274,
+        "DokumentDataInfoID": 144_001,
+        "Data": original_pdf[1],
+    },
+    {
+        "ID": 16242,
+        "DokumentID": 1274,
+        "DokumentDataInfoID": 144_000,
+        "Data": mail_body_alt[1],
+    },
+]
 
 
 SbSysNetDrift["DokumentDataInfo"] = [
     {
-        "ID": 1331,
+        "ID": 144_001,
         "DokumentID": 1274,
         "FileName": "1111111118",
         "FileExtension": ".pdf",
-        "FileSize": size,
-        "DokumentDataType": 6,
-        "DokumentDataInfoType": 2,
-    }
+        "FileSize": original_pdf[0],
+        "DokumentDataType": 6,  # PDF
+        "DokumentDataInfoType": 0,  # Attachment
+    },
+    {
+        "ID": 144_002,
+        "DokumentID": 1274,
+        "FileName": "mail",
+        "FileExtension": ".html",
+        "FileSize": mail_body[0],
+        "DokumentDataType": 10,  # HTML
+        "DokumentDataInfoType": 1,  # Mail body
+    },
+    "flush",
+    {
+        "ID": 144_000,
+        "DokumentID": 1274,
+        "FileName": "mail",
+        "FileExtension": ".pdf",
+        "FileSize": mail_body_alt[0],
+        "DokumentDataType": 6,  # PDF
+        "DokumentDataInfoType": 3,  # Alternate...
+        "AlternateOfID": 144_002,  # ... of the HTML mail body
+    },
 ]
 
 
