@@ -87,7 +87,6 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, client_name, org_name, email, phone, password, username, load_cpr_rule,
                **options):
-        print(load_cpr_rule)
         self.stdout.write(f"Creating Client {client_name}")
         try:
             client = Client.objects.create(name=client_name,
@@ -139,7 +138,7 @@ class Command(BaseCommand):
             call_command("loaddata", "rules-cpr-da")
 
             self.stdout.write("Add Organization to CPR rule...")
-            rule = Rule.objects.get(name="CPR regel")
+            rule = Rule.objects.get(pk=8880100)  # The "CPR regel"
             organization = Organization.objects.first()
             rule.organizations.add(organization)
             self.stdout.write(self.style.SUCCESS(f"{organization} added to CPR rule!"))
