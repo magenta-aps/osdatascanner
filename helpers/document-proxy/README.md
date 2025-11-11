@@ -14,9 +14,9 @@ issue management system widely used in the Danish public sector.
 `document_proxy` is designed to be used as a Docker image, so its configuration
 is driven by a few simple environment variables:
 
-| Variable | Meaning |
-| -------- | ------- |
-| `DP_TOKEN_LIFETIME` | The duration (in seconds) for which an authentication token should be valid |
+| Variable | Default value | Meaning |
+| -------- | ------------- | ------- |
+| `DP_TOKEN_LIFETIME` | 3600 | The duration (in seconds) for which an authentication token should be valid |
 
 Define those in your deployment environment (or, if you just want to try it out
 locally, in `docker-compose.yml`) before starting the system up.
@@ -52,32 +52,85 @@ other endpoints is returned in its `access_token` field.
 (As is customary for the client credentials flow, there's no refresh token;
 once the bearer token expires, just make another request to this endpoint.)
 
+##### Notes for the OSdatascanner test environment
+
+You can use the following command to get a token for the OSdatascanner test
+environment:
+
+```
+curl -X POST http://localhost:8019/sbsys.document/token \
+        --data 'grant_type=client_credentials' \
+        --data 'client_id=sa@SBSYS_DB:1433/SbSysNetDrift' \
+        --data 'client_secret=ub3rStr0nGpassword'
+```
+
+Once you've got a token, remember to pass it to the server on every request:
+
+```
+curl -H "Authorization: Bearer <token>" \
+        http://localhost:8019/sbsys.document/1274
+```
+
 #### `POST /sbsys.document/test_token`
 
 Making a `POST` request to the `/sbsys.document/test_token` endpoint will give
 you a HTTP `200 OK` response if the authentication token is present and valid,
 and a `401 Unauthorized` response if it's not.
 
-#### `HEAD /sbsys.document/<id:int>`
+#### `GET /sbsys.document/<doc_id>`
 
-Making an authorised `HEAD` request to the `/sbsys.document/<int:pk>` endpoint,
-where `pk` is the primary key of a SBSYS `Dokument` object that hasn't been
-deleted, will give you a HTTP `200 OK` response with the following headers set:
+Making an authorised `GET` request to the `/sbsys.document/<doc_id>` URL,
+where `doc_id` is the primary key of a SBSYS `Dokument` object, will give you a
+JSON document listing the files associated with that object:
 
-* `Content-Type`, for the MIME type of the stored document;
-* `Content-Disposition`, for its filename (returned in the `filename=`
-  directive); and
-* `Content-Length`, for its size.
+```json
+{
+    "status": "ok",
+    "values": [
+        {
+            "id": 12345,
+            "name": "document.pdf",
+            "size": 22566,
+            "mime_type": "application/pdf",
 
-If the `Dokument` object exists but its content has been deleted, the response
-will be a HTTP `401 Gone`; if the `Dokument` object doesn't exist then the
-response will be a `404 Not Found`.
+            "alternate_of": null,
+            "is_deleted": false,
 
-#### `GET /sbsys.document/<id:int>`
+            "path": "127/12345",
+            "content_link":
+                    "http://localhost:8019/sbsys.document/127/12345/$value"
+        },
+        ...
+    ]
+}
+```
 
-Making an authorised `GET` request to the `/sbsys.document/<int:pk>` endpoint
-behaves in every way like the `HEAD` request, except that the content of the
-underlying document will also be returned if it's available.
+| Attribute | Type | Meaning |
+| --------- | ---- | ------- |
+| `id` | integer | The primary key of this file in the database |
+| `name` | string | The full name, including the extension, of this file |
+| `size` | integer | The size in bytes of the file |
+| `mime_type` | string | The MIME type of the file, or `application/octet-stream` if we couldn't tell |
+| `alternate_of` | integer or `null` | The (possibly `null`) primary key of another file for which this file is an alternate representation |
+| `is_deleted` | boolean | Whether or not this file still has data in the SBSYS database |
+| `path` | string | The path component that uniquely identifies this file |
+| `content_link` | string | The canonical URL to retrieve the content of the file |
+
+#### `GET /sbsys.document/<doc_id>/<file_id>/$value`
+
+Making an authorised `GET` request to the
+`/sbsys.document/<doc_id>/<file_id>/$value` URL returns the content of the file
+whose ID is `file_id` associated with the SBSYS `Dokument` whose ID is
+`doc_id`.
+
+The `Content-Type` and `Content-Length` response headers give the file's type
+and size respectively.
+
+#### `HEAD /sbsys.document/<doc_id>/<file_id>`
+
+Making an authorised `HEAD` request to the `/sbsys.document/<doc_id>/<file_id>`
+URL returns an empty response body. The `Content-Type` and `Content-Length`
+response headers are filled out as described above.
 
 ## Who's behind this?
 

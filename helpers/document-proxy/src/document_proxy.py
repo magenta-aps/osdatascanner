@@ -2,6 +2,7 @@ from os import getenv
 from time import time
 from flask import Flask, request, Response, make_response
 from parse import parse
+from urllib.parse import urljoin
 from sqlalchemy import select, MetaData, create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.engine import Engine
@@ -135,20 +136,36 @@ def make_response2(*args, **kwargs):
             return make_response(*args)
 
 
-def get_ddi(engine, metadata, document_pk: int):
+def get_ddi(
+        engine,
+        metadata,
+        document_pk: int,
+        ddi_pk: int | None = None):
     DokumentDataInfo = metadata.tables["DokumentDataInfo"]
     DokumentDataTypeOpslag = metadata.tables["DokumentDataTypeOpslag"]
     query = select().add_columns(
+            DokumentDataInfo.c.ID, DokumentDataInfo.c.AlternateOfID,
             DokumentDataInfo.c.FileName, DokumentDataInfo.c.FileExtension,
             DokumentDataInfo.c.FileSize, DokumentDataInfo.c.IsDeleted,
             DokumentDataTypeOpslag.c.Navn)
+
+    if ddi_pk:
+        query = query.where(DokumentDataInfo.c.ID == ddi_pk)
 
     with Session(engine) as session:
         result = session.execute(query.where(
                 DokumentDataInfo.c.DokumentID == document_pk,
                 DokumentDataInfo.c.DokumentDataType == (
                         DokumentDataTypeOpslag.c.ID)))
-        return result.first()
+        match ddi_pk:
+            case None:
+                return [r._asdict() for r in result]
+            case int():
+                rv = result.first()
+                if rv is not None:
+                    return rv._asdict()
+                else:
+                    return None
 
 
 TYPE_NAME_MAPPING = {
@@ -196,38 +213,86 @@ def type_name_label_to_mime_type(
 
 
 @app.route(
-        "/sbsys.document/<int:pk>",
-        methods=["HEAD"])
-def get_metadata(pk: int):
+        "/sbsys.document/<int:doc_id>",
+        methods=["GET"])
+def list_ddis(doc_id):
     if isinstance(error := token_valid(token := get_auth_token()), str):
         return (f"{error} :|", 401)
 
     conn_str = cryptctx.decrypt(token).decode()
     engine, metadata = open_connection(conn_str, DDI_TABLES)
 
-    match get_ddi(engine, metadata, pk):
+    code = 500
+    response = {
+        "status": "error",
+        "message": "unknown error"
+    }
+    headers = {}
+    match get_ddi(engine, metadata, doc_id):
+        case []:
+            code = 404
+            response = {
+                "status": "error",
+                "message": "no document data found"
+            }
+        case [*objects]:
+            code = 200
+            response = {
+                "status": "ok",
+                "values": (v := [])
+            }
+            for obj in objects:
+                v.append({
+                    "id": obj["ID"],
+                    "name": f"{obj['FileName']}{obj['FileExtension']}",
+                    "size": obj["FileSize"],
+                    "mime_type": type_name_label_to_mime_type(
+                        obj["FileExtension"], obj["Navn"]
+                    ),
+
+                    "alternate_of": obj["AlternateOfID"],
+                    "is_deleted": obj["IsDeleted"],
+
+                    "path": (path := f"{doc_id}/{obj['ID']}"),
+                    "content_link": urljoin(
+                            request.host_url,
+                            f"sbsys.document/{path}/$value"),
+                })
+    return make_response((response, code, headers))
+
+
+@app.route(
+        "/sbsys.document/<int:doc_id>/<int:ddi_id>",
+        methods=["HEAD"])
+def get_metadata(doc_id: int, ddi_id: int):
+    if isinstance(error := token_valid(token := get_auth_token()), str):
+        return (f"{error} :|", 401)
+
+    conn_str = cryptctx.decrypt(token).decode()
+
+    engine, metadata = open_connection(conn_str, DDI_TABLES)
+
+    match get_ddi(engine, metadata, doc_id, ddi_id):
         case None:
             return (":|", 404)  # Not Found
-        case (_, _, _, True, _):
+        case {"IsDeleted": True}:
             return (":|", 410)  # Gone
-        case (name, extension, size, False, type_name):
+        case {"FileExtension": extension, "Navn": type_name, "FileSize": size}:
+            mime_type = type_name_label_to_mime_type(extension, type_name)
+
             return make_response2(
                     None, 200,
                     {
-                        "Content-Type": type_name_label_to_mime_type(
-                                extension, type_name),
-                        "Content-Disposition":
-                        "attachment;"
-                        f" filename={name}{extension}",
+                        "Content-Type": mime_type,
                         "Content-Length": str(size)
                     },
                     automatically_set_content_length=False)
 
 
 @app.route(
-        "/sbsys.document/<int:pk>",
+        "/sbsys.document/<int:doc_id>/<int:ddi_id>/$value",
         methods=["GET"])
-def get_content(pk: int):
+def get_content(doc_id: int, ddi_id: int):
     if isinstance(error := token_valid(token := get_auth_token()), str):
         return (f"{error} :|", 401)
 
@@ -235,14 +300,16 @@ def get_content(pk: int):
 
     engine, metadata = open_connection(conn_str, DDI_TABLES)
 
-    match get_ddi(engine, metadata, pk):
+    match get_ddi(engine, metadata, doc_id, ddi_id):
         case None:
             return (":|", 404)  # Not Found
-        case (_, _, _, True, _):
+        case {"IsDeleted": True}:
             return (":|", 410)  # Gone
-        case (name, extension, size, False, type_name):
-            document_group = pk // 25_000
-            doc_conn_str = conn_str + f"Dokument{document_group:04d}"
+        case {"FileExtension": extension, "Navn": type_name}:
+            mime_type = type_name_label_to_mime_type(extension, type_name)
+
+            doc_group = doc_id // 25_000
+            doc_conn_str = conn_str + f"Dokument{doc_group:04d}"
 
             doc_db, doc_md = open_connection(doc_conn_str, ("DokumentData",))
 
@@ -251,17 +318,11 @@ def get_content(pk: int):
 
             with Session(doc_db) as session:
                 content = session.execute(query.where(
-                        DokumentData.c.DokumentID == pk)).first()
+                        DokumentData.c.DokumentID == doc_id,
+                        DokumentData.c.DokumentDataInfoID == ddi_id)).first()
 
             match content:
                 case None:
                     return (";(", 404)  # Not Found
                 case (data,):
-                    return (data, 200, {
-                        "Content-Type": type_name_label_to_mime_type(
-                                extension, type_name),
-                        "Content-Disposition":
-                        "attachment;"
-                        f" filename={name}{extension}",
-                        "Content-Length": str(size)
-                    })
+                    return (data, {"Content-Type": mime_type})
