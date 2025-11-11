@@ -16,7 +16,6 @@ from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.admin.organizations.views import MSGraphGrantRequestView
 from os2datascanner.projects.admin.organizations.models import Organization
 from ..models.msgraph_configuration import MSGraphConfiguration
-from os2datascanner.projects.admin.import_services.utils import start_msgraph_import
 
 
 class MSGraphEditForm(forms.ModelForm):
@@ -147,6 +146,6 @@ class MSGraphImportView(LoginRequiredMixin, DetailView):
         """
         Initiates importation of an organization through MS Graph.
         """
-        start_msgraph_import(self.get_object())
+        self.get_object().start_import()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

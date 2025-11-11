@@ -18,11 +18,6 @@ import structlog
 from django.core.management import BaseCommand
 
 from os2datascanner.projects.admin.import_services.models import ImportService
-from os2datascanner.projects.admin.import_services.models import LDAPConfig
-from os2datascanner.projects.admin.import_services.models import MSGraphConfiguration
-from os2datascanner.projects.admin.import_services.models import OS2moConfiguration
-from os2datascanner.projects.admin.import_services.utils import start_ldap_import, \
-    start_msgraph_import, start_os2mo_import
 from os2datascanner.utils.system_utilities import time_now
 
 """
@@ -46,19 +41,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, force: bool = False, **kwargs):
         for conf in ImportService.objects.select_subclasses().all():
-
-            scheduled_now = self.schedule_check(conf.organization) if not force else force
-
-            if scheduled_now:
-                if isinstance(conf, LDAPConfig):
-                    start_ldap_import(conf)
-                elif isinstance(conf, MSGraphConfiguration):
-                    start_msgraph_import(conf)
-                elif isinstance(conf, OS2moConfiguration):
-                    start_os2mo_import(conf)
-                else:
-                    logger.warning(f"ignoring unknown import service {type(conf).__name__}")
-
+            if force or self.schedule_check(conf.organization):
+                conf.start_import()
             else:
                 logger.info(
                     f"Skipping import service {type(conf).__name__} as it is not scheduled now.")

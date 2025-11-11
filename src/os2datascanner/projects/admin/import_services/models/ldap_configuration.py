@@ -17,10 +17,12 @@ from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
+
 from .exported_mixin import Exported
 from .import_service import ImportService
 from .realm import Realm
 from os2datascanner.projects.grants.models.grant import wrap_encrypted_field
+from os2datascanner.projects.admin.core.models.background_job import JobState
 
 
 logger = structlog.get_logger("import_services")
@@ -297,6 +299,25 @@ class LDAPConfig(Exported, ImportService):
     class Meta:
         verbose_name = _('LDAP configuration')
         verbose_name_plural = _('LDAP configurations')
+
+    def start_import(self):
+        from . import LDAPImportJob
+        from os2datascanner.projects.admin.import_services.utils import _start_import_job
+
+        realm = self.realm
+
+        _start_import_job(
+            importjob_model=LDAPImportJob,
+            lookup_filter={"realm": realm},
+            job_kwargs={"realm": realm},
+            allowed_states=(
+                JobState.FINISHED,
+                JobState.FINISHED_WITH_WARNINGS,
+                JobState.FAILED,
+                JobState.CANCELLED,
+            ),
+            log_name=f"LDAPConfig {self.pk}",
+        )
 
     def get_payload_dict(self):
         full_connection_url = self.connection_protocol + self.connection_url
