@@ -114,9 +114,11 @@ page_size = 100
 timeout = 30
 
 [model.sbsysdb]
-# The URL to a document-proxy service for retrieving document content and
+# The URL to a document-proxy service for retrieving file listings, content and
 # metadata from a SBSYS database
 document_proxy = ""
+# If we find a SBSYS file flagged as an alternate, should we ignore it?
+ignore_alternates = true
 
 [utils.oauth2]
 # The number of seconds to wait for a client credentials response from an OAuth
