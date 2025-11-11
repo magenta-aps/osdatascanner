@@ -53,6 +53,9 @@
 
 - The mass-delete button in the report module is no longer hidden when changing pagination options.
 
+- The `postgres-keycloack` container has been set to use `postgres:16`
+  instead of the latest postgres image.
+
 ## Version 3.30.3, 21st October 2025
 
 "The Third Man"
