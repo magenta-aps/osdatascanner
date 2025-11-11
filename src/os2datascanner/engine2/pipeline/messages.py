@@ -546,3 +546,23 @@ class CommandMessage(NamedTuple):
                 profiling=obj.get("profiling"))
 
     _deep_replace = _deep_replace
+
+
+class CoverageMessage(NamedTuple):
+    """Message for communicating the account coverage of scannerjobs in the report module to the
+    admin module."""
+    coverages: list[dict[str, str]]
+    scanner_id: int
+
+    def to_json_object(self):
+        return {
+            "coverages": self.coverages,
+            "scanner_id": self.scanner_id
+        }
+
+    @staticmethod
+    def from_json_object(obj):
+        return CoverageMessage(
+            coverages=obj["coverages"],
+            scanner_id=obj["scanner_id"]
+        )
