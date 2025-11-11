@@ -39,13 +39,28 @@ class Groups:
     )
 
 
+class RemediatorSelectMultipleWidget(forms.SelectMultiple):
+    """ Select multiple widget with display of universal remediators added"""
+    template_name = "components/admin_widgets/remediator_select_multiple.html"
+
+    def __init__(self, *args, **kwargs):
+        # This is, maybe a little hacky, set in the ScannerForm's __init__
+        self.universal_remediators = None
+        super().__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['universal_remediators'] = self.universal_remediators
+        return context
+
+
 class ScannerForm(GroupingModelForm):
 
     remediators = forms.ModelMultipleChoiceField(
                     label=_("Remediators"),
                     queryset=Account.objects.all(),  # Take org into consideration
                     required=False,
-                    widget=forms.SelectMultiple(attrs={
+                    widget=RemediatorSelectMultipleWidget(attrs={
                         "hx-swap-oob": "true"
                     }))
 
@@ -106,6 +121,16 @@ class ScannerForm(GroupingModelForm):
         self.fields["remediators"].queryset = self.fields["remediators"].queryset.filter(
             organization=self.org).exclude(
                 aliases___alias_type=AliasType.REMEDIATOR.value, aliases___value=0)
+
+        # This might seem a litle hacky - but Django really doesn't want widgets to know
+        # anything about view context data, and as so, this seems like the best option currently
+        # as long as we don't want to take more control over how we render the form.
+        self.fields["remediators"].widget.universal_remediators = Account.objects.filter(
+            Q(organization=self.org)
+            &
+            Q(aliases___alias_type=AliasType.REMEDIATOR)
+            & Q(aliases___value=0)
+        )
 
         # Only allow the user to choose between contacts who are admins for the organization client
         # or superusers
