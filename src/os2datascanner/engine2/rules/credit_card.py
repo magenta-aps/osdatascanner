@@ -37,6 +37,9 @@ class CreditCardRule(RegexRule):
     def match(self, representation):
         """ The match function uses the regex from the CreditCardRule __init__ function and the
         luhn_algorithm function to determine if a number could be a credit card number."""
+        if representation is None:
+            return
+
         for number in re.finditer(self._expression, representation):
             num = number.group()
             if luhn_algorithm(num):
