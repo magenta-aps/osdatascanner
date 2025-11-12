@@ -660,9 +660,13 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
             account_reports = account_reports.union(
                 DocumentReport.objects.filter(only_notify_superadmin=True))
 
-        if account_reports.intersection(reports).count() != reports.count():
-            # At least some of the reports are not accessible by the account. Raise the alarm!
-            raise Http404("At least one of the specified reports not found!")
+        if reports.exclude(pk__in=account_reports.values("pk")):
+            if (not reports.exclude(only_notify_superadmin=True) and
+                    self.request.user.has_perm("organizations.handle_withheld_results")):
+                pass
+
+            else:
+                raise Http404("At least one of the specified reports not found!")
 
         for report in reports:
             report.resolution_status = action
