@@ -219,3 +219,11 @@ def test_lots_of_numbers(lots_of_numbers, credit_card_rule):
     matches = [match for match in credit_card_rule.match(lots_of_numbers)]
 
     assert len(matches) == 0
+
+
+def test_none(lots_of_numbers, credit_card_rule):
+    """None should not produce a match."""
+
+    matches = [match for match in credit_card_rule.match(None)]
+
+    assert len(matches) == 0
