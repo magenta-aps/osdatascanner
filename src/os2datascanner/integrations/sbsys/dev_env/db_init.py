@@ -59,5 +59,13 @@ if __name__ == "__main__":
         with engine.begin() as conn, defer_constraints(conn):
             for table_name, items in tables.items():
                 table = table_map[table_name]
-                print("\t", table.name, "\t", f"{len(items)} rows")
-                result = conn.execute(insert(table), items)
+                batches = []
+                while "flush" in items:
+                    flush_at = items.index("flush")
+                    batches.append(items[:flush_at])
+                    items = items[flush_at + 1:]
+                batches.append(items)
+                print("\t", table.name, "\t", f"{len(batches)} batches")
+                for batch in batches:
+                    result = conn.execute(insert(table), batch)
+                    print("\t", "\t", f"inserted {result.rowcount} rows")

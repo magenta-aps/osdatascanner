@@ -29,12 +29,9 @@ from os2datascanner.engine2.utilities.backoff import WebRetrier
 logger = structlog.get_logger("engine2")
 
 
-# Is a document-proxy instance available?
-match settings.model["sbsysdb"]:
-    case {"document_proxy": url} if url:
-        dp_url = url
-    case _:
-        dp_url = None
+conf = settings.model["sbsysdb"]
+dp_url = conf.get("document_proxy")
+ignore_alt = conf.get("ignore_alternates")
 
 
 @Source.register_class
@@ -294,7 +291,7 @@ class SBSYSDBHandles:
             @contextmanager
             def make_stream(self):
                 _, _, dp = self._get_cookie()
-                response = dp.get(self.handle.relative_path)
+                response = dp.get(self.handle.relative_path + "/$value")
                 with BytesIO(response.content) as io:
                     yield io
 
@@ -326,6 +323,12 @@ class SBSYSDBHandles:
         @property
         def presentation_place(self):
             return str(self.source.handle.presentation_place)
+
+        def guess_type(self):
+            if (type_hint := self.hint("file_info", {}).get("mime_type")):
+                return type_hint
+            else:
+                return super().guess_type()
 
 
 @registry.conversion(OutputType.DatabaseRow, SBSYSDBHandles.Case._DUMMY_MIME)
@@ -379,14 +382,24 @@ class SBSYSDBSources:
                     case_id=self.handle.relative_path)
 
             DokReg = tables["DokumentRegistrering"]
-            expr = select(DokReg.c.DokumentID, DokReg.c.Navn).where(
+            expr = select(DokReg.c.DokumentID).where(
                     DokReg.c.SagID == values["ID"])
 
             document_counter = Counter()
-            for document_id, name in exec_expr(
+            for document_id, in exec_expr(
                     engine, expr, rows=document_counter):
-                yield SBSYSDBHandles.Document(
-                        self, str(document_id), name)
+                r = dp.get(f"{document_id}")
+                for file_info in r.json()["values"]:
+                    if (file_info["alternate_of"] is not None
+                            and ignore_alt):
+                        continue
+
+                    if file_info["is_deleted"]:
+                        continue
+
+                    yield SBSYSDBHandles.Document(
+                            self, file_info["path"], file_info["name"],
+                            hints={"file_info": file_info})
 
             logger.info(
                     "DokumentRegistrering query execution completed",
