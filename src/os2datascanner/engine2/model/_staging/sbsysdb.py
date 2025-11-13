@@ -124,7 +124,7 @@ class SBSYSDBSource(Source):
                     # terms of the unit you request
                     "?Age?": sql_func.datediff(
                             sql_text("day"), Sag.c.LastChanged, sql_func.now())
-                }).where(constraint)  # Include the required_columns constraint
+                }).where(*constraint)  # Include the required_columns constraint
 
         counter = Counter()
         for db_row in exec_expr(

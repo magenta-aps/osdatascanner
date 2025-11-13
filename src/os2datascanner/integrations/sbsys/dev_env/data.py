@@ -326,6 +326,9 @@ SbSysNetDrift["SecuritySet"] = [
     {
         "ID": 2,
     },
+    {
+        "ID": 3,
+    },
 ]
 
 SbSysNetDrift["Sikkerhedsgruppe"] = [
@@ -361,6 +364,11 @@ SbSysNetDrift["SecuritySetSikkerhedsgrupper"] = [
         "ID": 3,
         "SecuritySetID": 2,
         "SikkerhedsgruppeID": 3,
+    },
+    {
+        "ID": 4,
+        "SecuritySetID": 3,
+        "SikkerhedsgruppeID": 2,
     }
 ]
 
@@ -389,7 +397,6 @@ _SAG_BASE = {
     "BeslutningHarDeadline": None,
     "ErSamlesag": None,
     "FagomraadeID": None,
-    "SecuritySetID": 1,
     "SagsNummerID": None,
     "LastStatusChange": None,
     "LastStatusChangeComments": None,
@@ -412,7 +419,6 @@ SbSysNetDrift["Sag"] = [
         "SagIdentity": "2B37AF33-BDFC-4C9B-B332-CAE56310E963",
         "Nummer": "06.13.01-K02-3-13",
         "Titel": "Opsætning af skilte: Skabet til Narnia",
-        "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
         "Kommentar": "Flere borgere er forvirret over, at rådhusets garderobe"
                      " huser en magisk portal til en anden verden -- nogen er"
@@ -427,13 +433,15 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2023, 9, 11),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
+
+        "ErBeskyttet": 1,   # Protected
+        "SecuritySetID": 3,  # Security group "Teknik- og Miljøforvaltning"
     },
     _SAG_BASE | {
         "ID": 1,
         "SagIdentity": "EE5BF8A0-D44F-4780-A76A-6E625EF312DA",
         "Nummer": "07.13.01-K02-3-13",
         "Titel": "Eiffel Tower",
-        "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
         "Kommentar": "En lille fransk kommune har fået kontakt til os og"
                      " spørger, om vi kunne være interesseret i at erhverve et"
@@ -445,13 +453,15 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2022, 9, 11),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
+
+        "ErBeskyttet": 1,       # Protected
+        "SecuritySetID": None,  # Null security group
     },
     _SAG_BASE | {
         "ID": 2,
         "SagIdentity": "5A766711-7E0C-4085-8A8B-158ACE9EE087",
         "Nummer": "05.13.01-K02-3-13",
         "Titel": "Den Grimme Ælling",
-        "ErBeskyttet": 1,
         "BehandlerID": 1,  # Reference to the "Bruger" table
         "Kommentar": "En ikke-menneskelig borger har ansøgt om at få penge"
                      " til plastikkirurgi fra kommunens pulje til borgernes"
@@ -463,13 +473,15 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2022, 9, 11),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
+
+        "ErBeskyttet": 1,   # Protected
+        "SecuritySetID": 1,  # Security group "Alle brugere"
     },
     _SAG_BASE | {
         "ID": 3,
         "SagIdentity": "6DB35330-CDC3-41E9-A498-67127B205BCF",
         "Nummer": "22.13.01-K02-3-13",
         "Titel": "Personfølsomme Informationer",
-        "ErBeskyttet": 0,
         "BehandlerID": 1,  # Reference to the "Bruger" table
         "Kommentar": "Borgeren Rebecca Testsen har bedt os om at opbevare sit"
                      " CPR-nummer på sikker vis.",
@@ -481,13 +493,15 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2015, 4, 22),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
+
+        "ErBeskyttet": 0,   # Not protected
+        "SecuritySetID": 1,  # Security group "Alle brugere"
     },
     _SAG_BASE | {
         "ID": 4,
         "SagIdentity": "D9CA920C-240C-412A-993E-A6B5161DFDEC",
         "Nummer": "14.07.22-K02-3-13",
         "Titel": "Hvor kom navnet fra?",
-        "ErBeskyttet": 0,
         "BehandlerID": 2,  # Reference to the "Bruger" table
         "Kommentar": "Lars Jensen, 111111-1118, har bedt om en forklaring for"
                      " navnet 'Vejstrand Kommune', nu hvor kommunen ikke er"
@@ -500,7 +514,10 @@ SbSysNetDrift["Sag"] = [
         "LastChanged": datetime(2016, 3, 31),
         "AnsaettelsesstedID": 1,
         "ArkivAfklaringStatusID": 1,
-        "SecuritySetID": 2,
+
+        "ErBeskyttet": 0,   # Not protected
+        "SecuritySetID": 2,  # Security groups "Teknik- og Miljøforvaltning"
+                             # and "Børn- og Ungeforvaltning"
     },
 ]
 

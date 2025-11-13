@@ -3,6 +3,7 @@ import structlog
 from sqlalchemy import (
         and_, or_, not_, true, false,
         Table, Column)
+from sqlalchemy.sql.elements import BinaryExpression, OperatorExpression
 from sqlalchemy.sql.expression import Select
 
 from os2datascanner.utils.ref import Counter
@@ -112,7 +113,7 @@ def resolve_complex_column_name(
     # still allowed)
     last_column = get_first_attr(here.c, last, last + "ID")
 
-    return and_(*links), last_column
+    return links, last_column
 
 
 def resolve_complex_column_names(
@@ -120,11 +121,11 @@ def resolve_complex_column_names(
     """Resolves multiple complex column names at once as though by
     resolve_complex_column_name, returning a single unified constraint object
     and a list of the resolved columns."""
-    constraint = true()
+    constraint = []
     columns = []
     for name in col_names:
         c, r = resolve_complex_column_name(start, name, all_tables)
-        constraint = and_(constraint, c)
+        constraint.extend(c)
         columns.append(r)
     return constraint, columns
 
@@ -136,7 +137,7 @@ def _rule_lhs_to_cv(
     # The left-hand side of a SBSYSDBRule expression can be one of two
     # things: either a virtual column or a (perhaps complex) column name. Work
     # out which it is
-    lhs_constraints = true()
+    lhs_constraints = []
     if virtual_columns and lhs in virtual_columns:
         lhs_val = virtual_columns.get(lhs)
     else:
@@ -151,7 +152,7 @@ def _rule_rhs_to_cv(
         table, all_tables):
     # The right-hand side of a SBSYSDBRule expression is either a normal value
     # or (if it's a string starting with "&") a reference to another column
-    rhs_constraints = true()
+    rhs_constraints = []
     match rhs:
         case str() if rhs.startswith("&"):
             rhs = rhs[1:]
@@ -178,7 +179,7 @@ def convert_rule_to_select(
     that you can make a mapping from field names to results by just zipping
     the keys together with a result tuple.)"""
 
-    def rule_to_constraints(r):
+    def rule_to_constraints(r) -> (list[BinaryExpression], OperatorExpression):
         """Recursively converts an OSdatascanner Rule into a SQLAlchemy
         constraint.
 
@@ -187,18 +188,21 @@ def convert_rule_to_select(
         information will eventually be required to turn the constraint into a
         complete Select expression."""
         match r:
-            case logical.AndRule():
-                return and_(
-                        true(),
-                        *(rule_to_constraints(c) for c in r.components))
+            case logical.AndRule() | logical.OrRule():
+                joins = []
+                exprs = []
+                for c in r.components:
+                    join, expr = rule_to_constraints(c)
+                    joins.extend(join)
+                    exprs.append(expr)
 
-            case logical.OrRule():
-                return or_(
-                        false(),
-                        *(rule_to_constraints(c) for c in r.components))
+                return joins, (and_(true(), *exprs)
+                               if isinstance(r, logical.AndRule)
+                               else or_(false(), *exprs))
 
             case logical.NotRule():
-                return not_(rule_to_constraints(r._rule))
+                join, expr = rule_to_constraints(r._rule)
+                return join, not_(expr)
 
             case SBSYSDBRule(lhs, op, rhs):
                 lhs_cn, lhs_constraints, lhs_val = _rule_lhs_to_cv(
@@ -211,22 +215,20 @@ def convert_rule_to_select(
                 if isinstance(rhs_val, Column) and rhs_cn not in column_labels:
                     column_labels[rhs_cn] = rhs_val
 
-                return and_(
-                        lhs_constraints,
-                        rhs_constraints,
+                return (lhs_constraints + rhs_constraints,
                         op.func_db(lhs_val, rhs_val))
 
             case _:
                 # For now, we assume that any other OSdatascanner rule plays no
                 # part in the SQL query
-                return true()
+                return [], true()
 
-    constraints = rule_to_constraints(rule) if rule else true()
+    join, expr = rule_to_constraints(rule)
     # To turn our constraint object into a valid Select expression, we need to
     # make sure we actually select the columns required by the constraints.
     # Luckily rule_to_constraints stashes those away in the column_labels dict
-    return initial_select.add_columns(
-            *column_labels.values()).where(constraints)
+    rv = initial_select.add_columns(*column_labels.values())
+    return rv.where(*join, expr)
 
 
 def exec_expr(

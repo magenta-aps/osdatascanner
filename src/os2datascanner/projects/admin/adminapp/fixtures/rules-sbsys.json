@@ -113,17 +113,20 @@
         "type": "and",
         "components": [
           {
+            "type": "not",
+            "rule": {
+              "type": "sbsys-db-fieldrule",
+              "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
+              "operator": "iin",
+              "value": ["åben for alle", "alle brugere"],
+              "name": ""
+            }
+          },
+          {
             "type": "sbsys-db-fieldrule",
             "field": "ErBeskyttet",
             "operator": "eq",
             "value": false,
-            "name": ""
-          },
-          {
-            "type": "sbsys-db-fieldrule",
-            "field": "SecuritySetID",
-            "operator": "neq",
-            "value": null,
             "name": "Ulåste sager med sikkerhedsgruppe"
           }
         ]
@@ -153,9 +156,9 @@
           },
           {
             "type": "sbsys-db-fieldrule",
-            "field": "SecuritySetID",
-            "operator": "eq",
-            "value": null,
+            "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
+            "operator": "iin",
+            "value": ["åben for alle", "alle brugere"],
             "name": "Låste sager uden sikkerhedsgruppe"
           }
         ]

@@ -1,0 +1,190 @@
+[
+  {
+    "model": "core.client",
+    "pk": "513dcc6f-9ef0-4129-84ca-9afd6d22472a",
+    "fields": {
+      "name": "Vejstrand Kommune",
+      "contact_email": "it@vstkom.internal",
+      "contact_phone": "12345678",
+      "features": 2,
+      "scans": 0,
+      "explorer_delta_queue": "os2ds_scan_specs",
+      "explorer_full_queue": "os2ds_scan_specs",
+      "conversion_delta_queue": "os2ds_conversions",
+      "conversion_full_queue": "os2ds_conversions"
+    }
+  },
+  {
+    "model": "organizations.organization",
+    "pk": "b5ef85f3-99f8-43ac-8520-5a862235b668",
+    "fields": {
+      "name": "Vejstrand Kommune",
+      "contact_email": null,
+      "contact_phone": null,
+      "email_notification_schedule": "RRULE:FREQ=WEEKLY;BYDAY=FR",
+      "dtstart": "2025-10-14",
+      "email_header_banner": "",
+      "retention_policy": false,
+      "retention_days": 30,
+      "outlook_delete_email_permission": true,
+      "outlook_categorize_email_permission": "NON",
+      "onedrive_delete_permission": true,
+      "smb_delete_permission": true,
+      "exchange_delete_permission": true,
+      "gmail_delete_permission": true,
+      "gdrive_delete_permission": true,
+      "leadertab_access": "M",
+      "dpotab_access": "D",
+      "sbsystab_access": "P",
+      "leadertab_config": "UNI",
+      "prioritize_graphgrant": false,
+      "show_support_button": false,
+      "support_contact_method": "NO",
+      "support_name": "IT",
+      "support_value": "",
+      "dpo_contact_method": "NO",
+      "dpo_name": "",
+      "dpo_value": "",
+      "client": "513dcc6f-9ef0-4129-84ca-9afd6d22472a",
+      "slug": "vejstrand",
+      "synchronization_time": "17:00:00",
+      "system_rules": [
+        1,
+        9990104
+      ]
+    }
+  },
+  {
+    "model": "organizations.account",
+    "pk": "1f318d6c-c30e-4eab-b679-108bbb416781",
+    "fields": {
+      "username": "BL",
+      "first_name": "Bruce",
+      "last_name": "Lee",
+      "email": "bruce@kungfu.org",
+      "organization": "b5ef85f3-99f8-43ac-8520-5a862235b668",
+      "manager": null,
+      "is_universal_dpo": false,
+      "is_superuser": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null,
+      "permissions": [
+        67
+      ]
+    }
+  },
+  {
+    "model": "organizations.account",
+    "pk": "899a0bf6-ac3f-44b2-990e-ed68123338bb",
+    "fields": {
+      "username": "JK",
+      "first_name": "Jan",
+      "last_name": "Kowalski",
+      "email": "jkowalski@vstkom.internal",
+      "organization": "b5ef85f3-99f8-43ac-8520-5a862235b668",
+      "manager": null,
+      "is_universal_dpo": false,
+      "is_superuser": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null,
+      "permissions": [
+        67
+      ]
+    }
+  },
+  {
+    "model": "organizations.position",
+    "pk": 1,
+    "fields": {
+      "account": "899a0bf6-ac3f-44b2-990e-ed68123338bb",
+      "unit": "94deac75-0952-494f-9e4d-0ac31d8552a2",
+      "role": "employee",
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null
+    }
+  },
+  {
+    "model": "organizations.position",
+    "pk": 2,
+    "fields": {
+      "account": "1f318d6c-c30e-4eab-b679-108bbb416781",
+      "unit": "d815489d-b8c6-4267-846f-2ee82dcbbb0e",
+      "role": "employee",
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null
+    }
+  },
+  {
+    "model": "organizations.organizationalunit",
+    "pk": "94deac75-0952-494f-9e4d-0ac31d8552a2",
+    "fields": {
+      "name": "Kommunale polakker",
+      "parent": null,
+      "organization": "b5ef85f3-99f8-43ac-8520-5a862235b668",
+      "hidden": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 2,
+      "level": 0
+    }
+  },
+  {
+    "model": "organizations.organizationalunit",
+    "pk": "d815489d-b8c6-4267-846f-2ee82dcbbb0e",
+    "fields": {
+      "name": "Kommunale ninjaer",
+      "parent": null,
+      "organization": "b5ef85f3-99f8-43ac-8520-5a862235b668",
+      "hidden": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 1,
+      "level": 0
+    }
+  },
+  {
+    "model": "organizations.alias",
+    "pk": "3659d29b-597e-4c91-8fcc-b84d95b6fcf4",
+    "fields": {
+      "account": "899a0bf6-ac3f-44b2-990e-ed68123338bb",
+      "_alias_type": "upn",
+      "_value": "jkowalski@vstkom.internal",
+      "shared": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null
+    }
+  },
+  {
+    "model": "organizations.alias",
+    "pk": "6cebd8ca-caa0-439b-b8aa-08e484e3bacd",
+    "fields": {
+      "account": "1f318d6c-c30e-4eab-b679-108bbb416781",
+      "_alias_type": "upn",
+      "_value": "bruce@kungfu.org",
+      "shared": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null
+    }
+  }
+]
+

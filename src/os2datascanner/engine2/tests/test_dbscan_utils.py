@@ -252,6 +252,50 @@ class TestRuleTranslation:
 
         assert compiled_expr.params["Name_1"] == "Municipal Headquarters"
 
+    def test_complex_name_translation_str_neg(self, *, metadata, case_table):
+        """Negating an OSdatascanner rule that uses the equal-to operator
+        produces the same SQL as a non-negated rule that uses the not-equal
+        operator."""
+        # Arrange
+        rule1 = ~dbr.SBSYSDBRule(
+                "Assignee.Office.Name",
+                dbr.SBSYSDBRule.Op.EQ,
+                "Municipal Headquarters")
+        rule2 = dbr.SBSYSDBRule(
+                "Assignee.Office.Name",
+                dbr.SBSYSDBRule.Op.NEQ,
+                "Municipal Headquarters")
+
+        # Act
+        column_labels1 = {}
+        sql_expr1 = dbu.convert_rule_to_select(
+                rule1,
+                case_table, metadata.tables,
+                select(), column_labels1)
+        column_labels2 = {}
+        sql_expr2 = dbu.convert_rule_to_select(
+                rule2,
+                case_table, metadata.tables,
+                select(), column_labels2)
+
+        # Assert
+        assert (list(column_labels1.keys())
+                == list(column_labels2.keys())
+                == ["Assignee.Office.Name"])
+
+        compiled_expr1 = sql_expr1.compile()
+        compiled_expr2 = sql_expr2.compile()
+        assert str(compiled_expr1) == str(compiled_expr2) == (
+                'SELECT "Location"."Name" \n'
+                'FROM "Location", "Case", "User" \n'
+                'WHERE "Case"."Assignee" = "User"."ID" '
+                'AND "User"."Office" = "Location"."ID" '
+                'AND "Location"."Name" != :Name_1')
+
+        assert (compiled_expr1.params["Name_1"]
+                == compiled_expr2.params["Name_1"]
+                == "Municipal Headquarters")
+
     def test_complex_name_cast_translation(self, *, metadata, partyinfo_table):
         """SQL translation of complex names that also encode typing information
         (of the form <FIELD> as OtherTable.<OTHERTABLE_FIELD> <OP> <VALUE>) is
@@ -278,8 +322,8 @@ class TestRuleTranslation:
                 'SELECT "PartyType"."Name", "Person"."Name" AS "Name_1" \n'
                 'FROM "PartyType", "Person", "PartyInfo" \n'
                 'WHERE "PartyInfo"."PartyType" = "PartyType"."ID" '
-                'AND "PartyType"."Name" = :Name_2 '
                 'AND "PartyInfo"."PartyID" = "Person"."ID" '
+                'AND "PartyType"."Name" = :Name_2 '
                 'AND "Person"."Name" = :Name_3')
 
         assert compiled_expr.params["Name_2"] == 'Person'
