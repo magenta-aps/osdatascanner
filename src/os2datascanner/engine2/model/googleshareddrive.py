@@ -177,7 +177,10 @@ class GoogleSharedDriveSource(GoogleSource):
     @staticmethod
     @Source.json_handler(type_label)
     def from_json_object(obj):
-        return GoogleSharedDriveSource(obj["google_api_grant"], obj["user_email"])
+        return GoogleSharedDriveSource(obj["google_api_grant"],
+                                       # Backwards compatibility: google_admin_account is historic
+                                       (obj.get("user_email") or obj.get("google_admin_account"))
+                                       )
 
 
 class GoogleSharedDriveResource(FileResource):
