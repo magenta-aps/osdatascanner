@@ -4,6 +4,11 @@ The files in this folder define objects that can be loaded into the
 OSdatascanner administration system's database using the `loaddata`
 management command.
 
+| Fixture | Test? | Prod? | Contents |
+| ------- | ----- | ----- | -------- |
+| `rules-sbsys` | ✅ | ✅ | | Our collection of SBSYS rules we update and maintain |
+| `org-sbsys` | ✅ | ❎ | A test organisation for SBSYS rules |
+
 ## Reserved primary keys
 
 The following ranges of primary keys are set aside for use by particular files
