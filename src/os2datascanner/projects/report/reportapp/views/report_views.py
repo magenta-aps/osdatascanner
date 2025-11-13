@@ -602,7 +602,9 @@ class HandleMatchView(HTMXEndpointView, DetailView):
 
         # Include withheld reports if the user has permission to handle those.
         # TODO: Check for permission here instead of superuser status.
-        if self.request.user.is_superuser:
+        if (self.request.user.is_superuser or
+                self.request.user.has_perm("organizations.handle_withheld_results")):
+
             qs |= DocumentReport.objects.filter(only_notify_superadmin=True).distinct()
 
         return qs
@@ -660,11 +662,14 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
             account_reports = account_reports.union(
                 DocumentReport.objects.filter(only_notify_superadmin=True))
 
+        # Exclude all reports we already know "belongs" to the account
         if reports.exclude(pk__in=account_reports.values("pk")):
+            # If all reports left after exclusion are withheld, and the user has permission to
+            # handle them, pass this branch.
             if (not reports.exclude(only_notify_superadmin=True) and
                     self.request.user.has_perm("organizations.handle_withheld_results")):
                 pass
-
+            # Otherwise, confuse the enemy with a 404.
             else:
                 raise Http404("At least one of the specified reports not found!")
 
