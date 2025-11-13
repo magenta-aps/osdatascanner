@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 3.30.x, xxth xxxx xxxx
+## Version 3.30.4, 13th November 2025
 
-""
+"Science/Visions"
 
 ### New in this release
 
