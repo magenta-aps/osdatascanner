@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-23 15:15+0200\n"
+"POT-Creation-Date: 2025-11-13 14:27+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -299,14 +299,6 @@ msgstr "begrundelse"
 #: reportapp/models/documentreport.py
 msgid "document reports"
 msgstr "dokument rapporter"
-
-#: reportapp/models/documentreport.py
-msgid "Can see withheld DocumentReports"
-msgstr "Kan se tilbageholdte DokumentRapporter"
-
-#: reportapp/models/documentreport.py
-msgid "Can distribute withheld DocumentReports to users"
-msgstr "Kan uddele tilbageholdte DokumentRapporter til brugere"
 
 #: reportapp/templates/400.html
 msgid "Bad Request"
@@ -2486,6 +2478,3 @@ msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
-
-#~ msgid "Loading employee ..."
-#~ msgstr "Indlæser medarbejder ..."

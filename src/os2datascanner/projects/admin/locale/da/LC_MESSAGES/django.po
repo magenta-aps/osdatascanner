@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-31 13:50+0100\n"
+"POT-Creation-Date: 2025-11-13 14:28+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1017,6 +1017,20 @@ msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 #: adminapp/templates/500.html
 msgid "go to the front page"
 msgstr "gå til forsiden"
+
+#: adminapp/templates/components/admin_widgets/remediator_select_multiple.html
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid "Universal remediators"
+msgstr "Universelle opryddere"
+
+#: adminapp/templates/components/admin_widgets/remediator_select_multiple.html
+#: adminapp/templates/components/scanner/scanner_form.html
+msgid ""
+"Universal remediators are automatically assigned as remediators for all "
+"scanner jobs."
+msgstr ""
+"Universelle opryddere er automatisk tildelt oprydderrollen for alle "
+"scannerjobs."
 
 #: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "all of"
@@ -2105,18 +2119,6 @@ msgid ""
 msgstr ""
 "Hvis nogle matches fra scannerjobbet ikke kan tildeles en bestemt bruger, "
 "vil oprydderne få vist resultatet i deres rapportmodul i stedet for."
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid "Universal remediators"
-msgstr "Universelle opryddere"
-
-#: adminapp/templates/components/scanner/scanner_form.html
-msgid ""
-"Universal remediators are automatically assigned as remediators for all "
-"scanner jobs."
-msgstr ""
-"Universelle opryddere er automatisk tildelt oprydderrollen for alle "
-"scannerjobs."
 
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Schedule scan"
