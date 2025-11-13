@@ -601,11 +601,10 @@ class HandleMatchView(HTMXEndpointView, DetailView):
             self.account.get_report(Account.ReportType.RAW, archived=True)
 
         # Include withheld reports if the user has permission to handle those.
-        # TODO: Check for permission here instead of superuser status.
-        if (self.request.user.is_superuser or
-                self.request.user.has_perm("organizations.handle_withheld_results")):
-
-            qs |= DocumentReport.objects.filter(only_notify_superadmin=True).distinct()
+        if self.request.user.has_perm("organizations.handle_withheld_results"):
+            qs |= DocumentReport.objects.filter(
+                only_notify_superadmin=True,
+                scanner_job__organization=self.account.organization).distinct()
 
         return qs
 
@@ -655,18 +654,12 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
         # Make sure all reports belong to the account -- otherwise raise 404 error
         account_reports = self.account.get_report(Account.ReportType.RAW)
 
-        # Include all withheld reports in the queryset of account reports if the user has permission
-        # to handle those.
-        # TODO: Check for permission here instead of superuser status
-        if self.request.user.is_superuser:
-            account_reports = account_reports.union(
-                DocumentReport.objects.filter(only_notify_superadmin=True))
-
         # Exclude all reports we already know "belongs" to the account
         if reports.exclude(pk__in=account_reports.values("pk")):
             # If all reports left after exclusion are withheld, and the user has permission to
             # handle them, pass this branch.
-            if (not reports.exclude(only_notify_superadmin=True) and
+            if (not reports.exclude(only_notify_superadmin=True,
+                                    scanner_job__organization=self.account.organization) and
                     self.request.user.has_perm("organizations.handle_withheld_results")):
                 pass
             # Otherwise, confuse the enemy with a 404.
