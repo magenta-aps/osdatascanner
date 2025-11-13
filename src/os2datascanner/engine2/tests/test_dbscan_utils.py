@@ -322,8 +322,8 @@ class TestRuleTranslation:
                 'SELECT "PartyType"."Name", "Person"."Name" AS "Name_1" \n'
                 'FROM "PartyType", "Person", "PartyInfo" \n'
                 'WHERE "PartyInfo"."PartyType" = "PartyType"."ID" '
-                'AND "PartyType"."Name" = :Name_2 '
                 'AND "PartyInfo"."PartyID" = "Person"."ID" '
+                'AND "PartyType"."Name" = :Name_2 '
                 'AND "Person"."Name" = :Name_3')
 
         assert compiled_expr.params["Name_2"] == 'Person'
