@@ -1,10 +1,13 @@
 import datetime
+
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
-from django.conf import settings
 from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.utilities import UserWrapper
+from os2datascanner.projects.admin.adminapp.utils import is_expiring_soon
 
 
 class NotificationMiddleware:
@@ -16,17 +19,12 @@ class NotificationMiddleware:
     def __call__(self, request):
 
         if request.user.is_authenticated and request.user.has_perm("grants.change_graphgrant"):
-            check_grant_expiration(request)
+            # Skip middleware for HTMX requests
+            if not request.headers.get('HX-Request'):
+                check_grant_expiration(request)
 
         response = self.get_response(request)
         return response
-
-
-def is_expiring_soon(exp_date, today):
-    if exp_date:
-        days_until_expiry = (exp_date - today).days
-        return exp_date <= today or days_until_expiry <= settings.EXPIRATION_WARNING_THRESHOLD
-    return False
 
 
 def check_grant_expiration(request):
@@ -44,26 +42,42 @@ def notify_grant_expiration(request, today, grant):
     msg = _("A Client Secret for Tenant: {tenant} is about to expire!").format(
         tenant=grant.tenant_id)
 
-    session_key = f"{grant.tenant_id}_notification"
+    notifications = request.session.get('notifications', {})
 
-    # Check if user has already been notified of this grant this session.
-    if last_notification := request.session.get(session_key):
-        ts = datetime.date.fromisoformat(last_notification)
+    # Check if user has already been notified of this grant.
+    if msg in notifications:
+        ts = datetime.date.fromisoformat(notifications[msg])
+        # Only show the message once a day.
+        if (today - ts).days <= 1:
+            # User was notified recently, don't show again
+            return
 
-        # Only show the message once every 24h
-        if (today - ts).days >= 1:
-            messages.add_message(
-                request,
-                messages.WARNING,
-                msg,
-                extra_tags="manual_close"
-            )
-            request.session[session_key] = today.isoformat()
-    else:
-        messages.add_message(
-            request,
-            messages.WARNING,
-            msg,
-            extra_tags="manual_close"
-        )
-        request.session[session_key] = today.isoformat()
+    # Check if message is already queued.
+    storage = messages.get_messages(request)
+    existing_messages = [m.message for m in storage]
+    storage.used = False
+
+    if msg in existing_messages:
+        # Message is already queued, nothing to do.
+        return
+
+    messages.add_message(
+        request,
+        messages.WARNING,
+        msg,
+        extra_tags="manual_close track_notification"
+    )
+
+
+@require_POST
+def track_notification(request):
+    message = request.POST.get('message')
+
+    notifications = request.session.get('notifications', {})
+
+    # Register timestamp when user interacts with message.
+    notifications[message] = datetime.date.today().isoformat()
+    request.session['notifications'] = notifications
+    request.session.modified = True
+
+    return JsonResponse({'status': 'ok'})

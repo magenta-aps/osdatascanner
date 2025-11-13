@@ -27,6 +27,7 @@ from os2datascanner.projects.shared.views import CustomPasswordResetView
 from os2datascanner.projects.admin import settings
 
 from .views.api import JSONAPIView
+from .views.utils.middleware import track_notification
 from .views.views import GuideView, DialogSuccess
 
 import inspect
@@ -157,6 +158,8 @@ urlpatterns = [
                 template_name='components/password/password_reset_complete.html',
             ),
             name='password_reset_complete'),
+
+    path('track_notification/', track_notification, name='track_notification'),
 
     # User handlers
     path("users/me", MyUserView.as_view(), name="my-user"),

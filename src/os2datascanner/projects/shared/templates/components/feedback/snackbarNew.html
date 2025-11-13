@@ -1,7 +1,6 @@
 {# Snackbar for popup messages - Using oob swap, to support django messages #}
 {% load static %}
 
-
 <div class="snackbar__container" hx-swap-oob="afterbegin" id="snackbar">
   {% for message in messages %}
     <div class="snackbar snackbar--{{ message.tags }}">
@@ -23,7 +22,7 @@
 
         <button type="button"
                 class="close-modal button button--modal-close snackbar__close-button"
-                onclick="closeNewSnackBar(this)"
+                {% if 'track_notification' in message.tags %} hx-post="{% url 'track_notification' %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-swap="none" hx-vals='{"message": "{{ message }}" }' {% comment %} The delay is required for the hx to fire. An alternative could be hx-on but our htmx version seems to be too old.{% endcomment %} onclick="setTimeout(() => closeNewSnackBar(this), 100)" {% else %} onclick="closeNewSnackBar(this)" {% endif %}
                 title="Close">
           <span class="material-icons">close</span>
         </button>

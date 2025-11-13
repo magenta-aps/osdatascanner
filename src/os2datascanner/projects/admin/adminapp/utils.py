@@ -16,6 +16,7 @@
 from typing import NamedTuple
 
 from django.utils import timezone
+from django.conf import settings
 
 from ..organizations.publish import publish_events
 from ....utils.system_utilities import time_now
@@ -155,3 +156,11 @@ class CoverageMessage(NamedTuple):
         return CoverageMessage(
             coverages=obj["coverages"]
         )
+
+
+def is_expiring_soon(exp_date, today):
+    """Determine if the expiry date is soon or overdue."""
+    if exp_date:
+        days_until_expiry = (exp_date - today).days
+        return exp_date <= today or days_until_expiry <= settings.EXPIRATION_WARNING_THRESHOLD
+    return False

@@ -7,6 +7,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from more_itertools.more import peekable
 
 from .models.scannerjobs.scanner import Scanner, ScanStatus
@@ -182,7 +183,9 @@ class GraphGrantExpiryNotificationEmail(NotificationEmail):
             "institution": settings.NOTIFICATION_INSTITUTION,
             "tenant": self.grant.tenant_id,
             "expiry_date": self.grant.expiry_date,
-            "grant_edit_url": settings.SITE_URL[:-1] + f"/grants/msgraph/{self.grant.uuid}",
+            "grant_edit_url": settings.SITE_URL[:-1] +
+            reverse('msgraphgrant-update',
+                    kwargs={'pk': self.grant.uuid}),
         }
 
 
