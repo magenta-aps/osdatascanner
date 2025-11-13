@@ -1432,3 +1432,129 @@ class TestHandleMatchView:
 
         assert response.status_code == 200
         assert all([dr.pk not in reports for dr in drs])
+
+    def test_handle_withheld_report_not_allowed(self, client, egon_email_alias, egon_account):
+        # Arrange
+        create_reports_for(egon_email_alias, only_notify_superadmin=True, num=1)
+        report = DocumentReport.objects.get(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(url, data=data, **self.htmx_header)
+
+        # Assert
+        assert response.status_code == 404
+
+    def test_handle_multiple_withheld_report_not_allowed(
+            self, client, egon_email_alias, egon_account):
+        # Arrange
+        create_reports_for(egon_email_alias, only_notify_superadmin=True, num=2)
+        drs = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)
+
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(url, data=data, **self.htmx_header)
+
+        # Assert
+        assert response.status_code == 404
+
+    def test_handle_own_withheld_with_permission(self, client, egon_email_alias, egon_account):
+        # Arrange
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="handle_withheld_results"))
+
+        create_reports_for(egon_email_alias, only_notify_superadmin=True, num=1)
+        report = DocumentReport.objects.get(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(url, data=data, **self.htmx_header)
+
+        # Assert
+        assert response.status_code == 200
+        report.refresh_from_db()
+        assert report.resolution_status == DocumentReport.ResolutionChoices.REMOVED
+
+    def test_handle_multiple_own_withheld_with_permission(
+            self, client, egon_email_alias, egon_account):
+
+        # Arrange
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="handle_withheld_results"))
+
+        create_reports_for(egon_email_alias, only_notify_superadmin=True, num=1)
+
+        drs = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(url, data=data, **self.htmx_header)
+
+        # Assert
+        assert response.status_code == 200
+        assert all([dr.resolution_status == DocumentReport.ResolutionChoices.REMOVED
+                    for dr in DocumentReport.objects.all()])
+
+    def test_handle_other_withheld_with_permission(self, client, benny_email_alias, egon_account):
+        # Arrange
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="handle_withheld_results"))
+
+        create_reports_for(benny_email_alias, only_notify_superadmin=True, num=1)
+        report = DocumentReport.objects.get(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)
+
+        url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED}
+
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(url, data=data, **self.htmx_header)
+
+        # Assert
+        assert response.status_code == 200
+        report.refresh_from_db()
+        assert report.resolution_status == DocumentReport.ResolutionChoices.REMOVED
+
+    def test_handle_multiple_other_withheld_with_permission(self, client,
+                                                            benny_email_alias, egon_account):
+        # Arrange
+        egon_account.user.user_permissions.add(Permission.objects.get(
+            codename="handle_withheld_results"))
+
+        create_reports_for(benny_email_alias, only_notify_superadmin=True, num=2)
+
+        drs = DocumentReport.objects.filter(only_notify_superadmin=True,
+                                            resolution_status__isnull=True)
+        url = reverse_lazy("mass-handle")
+        data = {"action": DocumentReport.ResolutionChoices.REMOVED,
+                "table-checkbox": [dr.pk for dr in drs]}
+
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(url, data=data, **self.htmx_header)
+
+        # Assert
+        assert response.status_code == 200
+        assert all([dr.resolution_status == DocumentReport.ResolutionChoices.REMOVED
+                    for dr in DocumentReport.objects.all()])
