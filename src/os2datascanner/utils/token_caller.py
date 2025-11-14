@@ -29,6 +29,10 @@ class TokenCaller:
     tokens."""
     _common_session: requests.Session = requests.session()
 
+    @classmethod
+    def null_token_creator(cls):
+        return None
+
     def __init__(
             self,
             token_creator: Callable[[], str],
@@ -52,9 +56,9 @@ class TokenCaller:
                     tail.lstrip("/"))
 
     def _make_headers(self, base: dict[str, str]):
-        return (base or {}) | {
+        return (base or {}) | ({
             "authorization": "Bearer {0}".format(self._token),
-        }
+        } if self._token else {})
 
     @raw_request_decorator
     def _request(self, method, tail: str, **kwargs) -> requests.Response:

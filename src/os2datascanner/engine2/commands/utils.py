@@ -9,6 +9,7 @@ from os2datascanner.engine2.model.dropbox import DropboxSource
 from os2datascanner.engine2.model.data import DataSource, unpack_data_url
 from os2datascanner.engine2.model.file import FilesystemSource
 from os2datascanner.engine2.model.http import WebSource
+from os2datascanner.engine2.model.webdav import WebDAVSource
 
 
 class DemoSourceUtility:
@@ -69,6 +70,9 @@ class DemoSourceUtility:
 
             case ("http" | "https", _, _, _, _):
                 return WebSource(url, extended_hints=True)
+
+            case ("webdav", netloc, path, _, _):
+                return WebDAVSource("http://" + netloc + path)
 
             case ("sbsys", server, database, query, _):
                 from os2datascanner.engine2.model._staging import sbsysdb
