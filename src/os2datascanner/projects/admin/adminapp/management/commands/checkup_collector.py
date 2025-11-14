@@ -94,8 +94,7 @@ def checkup_message_received_raw(body):
     elif "coverages" in body:  # CoverageMessage
         message = messages.CoverageMessage.from_json_object(body)
         coverages = message.coverages
-        scanner_id = message.scanner_id
-        recreate_account_coverage(scanner_id, coverages)
+        recreate_account_coverage(coverages)
         return
 
     if not scan_tag or not handle:
@@ -216,33 +215,43 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                 handle=handle.presentation)
 
 
-def recreate_account_coverage(scanner_id: int, coverages: list[dict[str, str]]):
+def recreate_account_coverage(coverages: list[dict[str, str]]):
     for obj in coverages:
+
+        try:
+            scanner = Scanner.objects.get(pk=obj["scanner_id"])
+        except Scanner.DoesNotExist:
+            logger.warning("Could not recreate account coverage: Scanner not found",
+                           account_uuid=obj["account"],
+                           scanner_id=obj["scanner_id"],
+                           scan_time=obj["time"])
+            return
+
         try:
             account = Account.objects.get(uuid=obj["account"])
         except Account.DoesNotExist:
             logger.warning("Could not recreate account coverage: Account not found",
                            account_uuid=obj["account"],
-                           scanner_id=scanner_id,
+                           scanner_id=obj["scanner_id"],
                            scan_time=obj["time"])
             return
 
         try:
-            status = ScanStatus.objects.get(scanner_id=scanner_id, scan_tag__time=obj["time"])
+            status = ScanStatus.objects.get(scanner=scanner, scan_tag__time=obj["time"])
         except ScanStatus.DoesNotExist:
             logger.warning("Could not recreate account coverage: ScanStatus not found",
-                           scanner_id=scanner_id,
+                           scanner_id=obj["scanner_id"],
                            scan_time=obj["time"],
                            account_uuid=obj["account"])
             return
 
         logger.info("Creating CoveredAccount",
-                    scanner_id=scanner_id,
+                    scanner_id=obj["scanner_id"],
                     scan_time=obj["time"],
                     account_uuid=obj["account"])
 
         CoveredAccount.objects.get_or_create(
-            scanner_id=scanner_id,
+            scanner=scanner,
             scan_status=status,
             account=account)
 
