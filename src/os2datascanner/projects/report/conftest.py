@@ -1,5 +1,7 @@
 import pytest
 
+from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
+
 from os2datascanner.projects.report.organizations.models.account import Account
 from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
 from os2datascanner.projects.report.organizations.models.organization import Organization
@@ -10,6 +12,25 @@ from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.core_organizational_structure.models.organization import LeaderTabConfigChoices
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
+
+
+@pytest.fixture
+def enqueued_messages(monkeypatch):
+    """When enqueueing to a PikaPipelineThread, instead just put messages into a list
+    and return that."""
+
+    enqueued_messages = []
+
+    def mock_enqueue_message(self, queue, message, **kwargs):
+        enqueued_messages.append((queue, message))
+
+    monkeypatch.setattr(PikaPipelineThread, "start", lambda self: None)
+    monkeypatch.setattr(PikaPipelineThread, "enqueue_message", mock_enqueue_message)
+    monkeypatch.setattr(PikaPipelineThread, "synchronise", lambda self: None)
+    monkeypatch.setattr(PikaPipelineThread, "enqueue_stop", lambda self: None)
+    monkeypatch.setattr(PikaPipelineThread, "join", lambda self: None)
+
+    return enqueued_messages
 
 
 @pytest.fixture

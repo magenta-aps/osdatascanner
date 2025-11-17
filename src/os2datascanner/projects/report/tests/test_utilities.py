@@ -304,7 +304,8 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                        only_notify_superadmin=False,
                        created_at=None,
                        matched=True,
-                       problem=False):
+                       problem=False,
+                       scan_time=timezone.now()):
     pks = []
     for i in range(num):
         if problem == 1:
@@ -341,7 +342,8 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
             raw_matches=raw_matches_json_matched if matched else None,
             resolution_status=resolution_status,
             only_notify_superadmin=only_notify_superadmin,
-            raw_problem=problem_message)
+            raw_problem=problem_message,
+            scan_time=scan_time)
         pks.append(dr.pk)
     if created_at:
         DocumentReport.objects.filter(pk__in=pks).update(created_timestamp=created_at)
