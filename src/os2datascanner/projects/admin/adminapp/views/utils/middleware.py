@@ -34,7 +34,7 @@ def check_grant_expiration(request):
 
     today = datetime.date.today()
     for grant in grants:
-        if is_expiring_soon(grant.expiry_date, today):
+        if is_expiring_soon(grant.expiry_date, today) and request.user in grant.contacts.iterator():
             notify_grant_expiration(request, today, grant)
 
 

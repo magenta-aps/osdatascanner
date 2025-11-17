@@ -6,7 +6,6 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from more_itertools.more import peekable
 
@@ -169,14 +168,12 @@ class GraphGrantExpiryNotificationEmail(NotificationEmail):
         self.grant = grant
 
     def get_users(self):
-        recipients = set(
-            user for user in get_user_model().objects.filter(is_superuser=True) if user.email
-        )
-        recipients.update(
-            admin.user for admin in self.grant.organization.client.administrators.all() if
-            admin.user.email
-        )
-        return recipients
+        for user in self.grant.contacts.iterator():
+            if user.email:
+                yield user
+            else:
+                logger.info("No email found for user while trying to notify of grant "
+                            "expiration. No email notification sent!", for_user=user)
 
     def create_context(self, user, *args, **kwargs) -> dict:
         return {

@@ -3,6 +3,8 @@ import base64
 from urllib.parse import urlencode
 
 from django import forms
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
+from os2datascanner.projects.admin.organizations.models import Organization
 from requests import HTTPError
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
@@ -101,7 +104,7 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
 class MSGraphGrantForm(forms.ModelForm):
     class Meta:
         model = GraphGrant
-        exclude = ("__all__")
+        exclude = ("__all__", 'last_email_date')
 
     _client_secret = AutoEncryptedField(
         required=False,
@@ -115,7 +118,13 @@ class MSGraphGrantForm(forms.ModelForm):
         required=False, label=_("Expiry date"),
     )
 
-    field_order = ["organization", "app_id", "tenant_id", "_client_secret", "expiry_date"]
+    field_order = [
+        "organization",
+        "app_id",
+        "tenant_id",
+        "_client_secret",
+        "expiry_date",
+        "contacts"]
 
     def clean__client_secret(self):
         return choose_field_value(
@@ -123,9 +132,19 @@ class MSGraphGrantForm(forms.ModelForm):
               self.instance._client_secret)
 
     def __init__(self, *args, **kwargs):
+        selected_org = kwargs.pop('selected_org', None)
         super().__init__(*args, **kwargs)
         self.fields["_client_secret"].initial = "dummy"
         self.fields["expiry_date"].initial = self.instance.expiry_date
+        self.fields["contacts"].queryset = get_user_model().objects.filter(
+            Q(administrator_for__client=selected_org.client) |
+            Q(groups__permissions__codename="view_client") |
+            Q(user_permissions__codename="view_client") |
+            Q(is_superuser=True)
+        ).distinct()
+
+        if self.instance.pk:
+            self.fields["contacts"].initial = self.instance.contacts
 
         self.fields["organization"].disabled = True
         self.fields["tenant_id"].disabled = True
@@ -193,6 +212,17 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        user = UserWrapper(self.request.user)
+        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+
+        kwargs['selected_org'] = orgs.filter(pk=self.request.GET.get("organization")).first() or \
+            orgs.first()
+
+        return kwargs
+
     def get_form(self, form_class=None):
         # TODO: Maybe allow edits of app & tenant id in general, then this override can be removed.
         form = super().get_form(form_class)
@@ -256,6 +286,18 @@ class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
     permission_required = "grants.change_graphgrant"
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        user = UserWrapper(self.request.user)
+        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
+
+        kwargs['selected_org'] = self.get_object().organization or \
+            orgs.filter(pk=self.request.GET.get("organization")).first() or \
+            orgs.first()
+
+        return kwargs
 
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"

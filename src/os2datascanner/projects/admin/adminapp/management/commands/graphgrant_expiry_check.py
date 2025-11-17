@@ -1,5 +1,6 @@
 import datetime
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.adminapp.notification import GraphGrantExpiryNotificationEmail
@@ -12,5 +13,11 @@ class Command(BaseCommand):
 
         for graph_grant in GraphGrant.objects.all():
             exp_date = graph_grant.expiry
-            if is_expiring_soon(exp_date, today):
-                GraphGrantExpiryNotificationEmail(graph_grant).notify()
+            days_since_last_email = (today - graph_grant.last_email_date).days
+            if (is_expiring_soon(exp_date, today) and
+                    days_since_last_email >= settings.EXPIRATION_WARNING_THRESHOLD):
+                try:
+                    GraphGrantExpiryNotificationEmail(graph_grant).notify()
+                finally:
+                    graph_grant.last_email_date = today
+                    graph_grant.save()
