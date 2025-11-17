@@ -1,7 +1,7 @@
 """Returns the account coverage of a given scan based on existing DocumentReports."""
 
 from django.core.management.base import BaseCommand
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
@@ -39,13 +39,17 @@ class Command(BaseCommand):
         else:
             reports = DocumentReport.objects.filter(scanner_job__organization=org)
 
-        reports = DocumentReport.objects.filter(
+        reports = reports.filter(
                 # We don't want reports from scanners which don't use CoveredAccounts.
-                scanner_job__org_units__isnull=False,
+                Q(scanner_job__org_units__isnull=False) |
+                Q(scanner_job__scan_entire_org=True)
+            ).filter(
                 alias_relations__account__isnull=False
             ).exclude(
                 alias_relations___alias_type=AliasType.REMEDIATOR,
-            ).values(
+            )
+
+        reports = reports.values(
                 "scanner_job__scanner_pk",
                 "alias_relations__account",
                 "scan_time"
@@ -57,23 +61,26 @@ class Command(BaseCommand):
                         "scanner_id": obj["scanner_job__scanner_pk"]
                     } for obj in reports]
 
-        message = CoverageMessage(
-            coverages=coverages
-        )
+        if coverages:
+            message = CoverageMessage(
+                coverages=coverages
+            )
 
-        ppt = PikaPipelineThread(write=["os2ds_checkups"])
-        ppt.start()
+            ppt = PikaPipelineThread(write=["os2ds_checkups"])
+            ppt.start()
 
-        ppt.enqueue_message(
-            "os2ds_checkups", message.to_json_object()
-        )
+            ppt.enqueue_message(
+                "os2ds_checkups", message.to_json_object()
+            )
 
-        print(
-                "Enqueued messages, waiting for"
-                " RabbitMQ thread to finish sending them...")
+            print(
+                    "Enqueued messages, waiting for"
+                    " RabbitMQ thread to finish sending them...")
 
-        ppt.synchronise()
-        ppt.enqueue_stop()
-        ppt.join()
+            ppt.synchronise()
+            ppt.enqueue_stop()
+            ppt.join()
 
-        print("RabbitMQ thread finished. All done!")
+            print("RabbitMQ thread finished. All done!")
+        else:
+            print("Nothing to recreate, no messages enqueued.")
