@@ -4,6 +4,7 @@ from os2datascanner.projects.admin.import_services.models import LDAPConfig
 from ..models import Account, OrganizationalUnit, Alias, Position
 from ..models.aliases import AliasType
 from .. import keycloak_actions
+from ...adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
 
 from os2datascanner.utils.ldap import RDN, LDAPNode
 
@@ -809,3 +810,24 @@ class TestKeycloakImport:
 
         assert Position.managers.filter(
             account=account, unit=unit).exists() is False, "manager not removed"
+
+    def test_change_ou(self, TEST_CORP, test_org, basic_scanner, basic_scanstatus):
+        """When a user is moved between ou's, they should still be imported as the same user.
+        They shouldn't be deleted and recreated, as this also deletes CoveredAccounts etc."""
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        ted = Account.objects.get(first_name="Ted")
+        CoveredAccount.objects.create(
+            account=ted,
+            scanner=basic_scanner,
+            scan_status=basic_scanstatus,
+        )
+
+        for tester in TEST_CORP:
+            if tester.get("firstName") == "Ted":
+                tester["attributes"]["LDAP_ENTRY_DN"] = ["CN=Ted Testsen,OU=TheUCorp,O=Test Corp."]
+
+        self.perform_ou_import(TEST_CORP, test_org)
+        ted = Account.objects.get(first_name="Ted")
+
+        assert CoveredAccount.objects.filter(account=ted).exists()
