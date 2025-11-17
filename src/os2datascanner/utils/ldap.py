@@ -126,6 +126,17 @@ class RDN(NamedTuple):
                         if s))
 
     @staticmethod
+    def valid_dn(dn: str) -> bool:
+        """Checks that a given string is a valid distinguished name."""
+        if not dn:
+            return False
+        try:
+            RDN.dn_to_sequence(dn)
+            return True
+        except BaseException:
+            return False
+
+    @staticmethod
     def sequence_to_dn(rdns: Sequence['RDN'], codec: str = "utf-8") -> str:
         """Converts a sequence of relative distinguished names into a string
         representation."""

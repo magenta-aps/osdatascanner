@@ -13,6 +13,7 @@
 #
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVector
@@ -28,6 +29,12 @@ from .broadcasted_mixin import Broadcasted
 class Account(Core_Account, Imported):
     """ Core logic lives in the core_organizational_structure app.
         Additional specific logic can be implemented here. """
+
+    distinguished_name = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('imported LDAP distinguished name'),
+    )
 
     def get_remediator_scanners(self):
         """Returns a list of dicts of all scanners, which the user is
