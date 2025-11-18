@@ -138,3 +138,20 @@ class CleanProblemMessage(CleanMessage):
             time=time_now(),
             publisher=publisher)
         publish_events([message])
+
+
+class CoverageMessage(NamedTuple):
+    """Message for communicating the account coverage of scannerjobs in the report module to the
+    admin module."""
+    coverages: list[dict[str, str]]
+
+    def to_json_object(self):
+        return {
+            "coverages": self.coverages
+        }
+
+    @staticmethod
+    def from_json_object(obj):
+        return CoverageMessage(
+            coverages=obj["coverages"]
+        )

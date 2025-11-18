@@ -29,6 +29,7 @@ def enqueued_messages(monkeypatch):
     monkeypatch.setattr(PikaPipelineThread, "synchronise", lambda self: None)
     monkeypatch.setattr(PikaPipelineThread, "enqueue_stop", lambda self: None)
     monkeypatch.setattr(PikaPipelineThread, "join", lambda self: None)
+    monkeypatch.setattr(PikaPipelineThread, "run", lambda self: None)
 
     return enqueued_messages
 

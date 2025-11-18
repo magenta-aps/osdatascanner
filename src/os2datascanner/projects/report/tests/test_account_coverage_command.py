@@ -6,6 +6,7 @@ from django.core.management import call_command
 
 from .test_utilities import create_reports_for
 from ..organizations.models.organization import Organization
+from ..reportapp.models.scanner_reference import ScannerReference
 
 
 @pytest.mark.django_db
@@ -118,7 +119,6 @@ class TestAccountCoverageCommand:
                            scanner_job_name=scan_marvel.scanner_name,
                            scan_time=datetime(1996, 3, 20))
 
-        # We don't need to provide an organization, since only one exists in the DB
         call_command("account_coverage", organization=olsenbanden_organization.uuid)
 
         assert len(enqueued_messages) == 1
@@ -185,7 +185,7 @@ class TestAccountCoverageCommand:
     def test_command_invalid_scanner_argument(self, olsenbanden_organization):
         """Calling the command with the scanner argument with a primary key, for which no
         ScannerReference object exists, an exception should be raised."""
-        with pytest.raises(AssertionError):
+        with pytest.raises(ScannerReference.DoesNotExist):
             call_command("account_coverage", scanner=1337)
 
     def test_command_invalid_organization_argument(self, olsenbanden_organization):

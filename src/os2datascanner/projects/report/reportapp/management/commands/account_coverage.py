@@ -1,13 +1,13 @@
 """Returns the account coverage of a given scan based on existing DocumentReports."""
 
 from django.core.management.base import BaseCommand
-from django.db.models import Count, Q
+from django.db.models import Q
 
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 from os2datascanner.projects.report.organizations.models.aliases import AliasType
 from os2datascanner.projects.report.organizations.models.organization import Organization
-from os2datascanner.engine2.pipeline.messages import CoverageMessage
+from os2datascanner.projects.admin.adminapp.utils import CoverageMessage
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 
@@ -34,8 +34,8 @@ class Command(BaseCommand):
             org = Organization.objects.get()
 
         if scanner:
-            assert ScannerReference.objects.filter(scanner_pk=scanner, organization=org).exists()
-            reports = DocumentReport.objects.filter(scanner_job__scanner_pk=scanner)
+            scan_ref = ScannerReference.objects.get(scanner_pk=scanner, organization=org)
+            reports = DocumentReport.objects.filter(scanner_job=scan_ref)
         else:
             reports = DocumentReport.objects.filter(scanner_job__organization=org)
 
@@ -53,9 +53,11 @@ class Command(BaseCommand):
                 "scanner_job__scanner_pk",
                 "alias_relations__account",
                 "scan_time"
-                ).order_by("scan_time").annotate(count=Count("scan_time"))
+                ).distinct().order_by("scan_time")
 
         coverages = [{
+                        # The queryset has been converted to a dict, so the
+                        # "alias_relations__account" value here is a UUID, not an Account.
                         "account": str(obj["alias_relations__account"]),
                         "time": obj["scan_time"].astimezone(tz=None).isoformat(),
                         "scanner_id": obj["scanner_job__scanner_pk"]
@@ -67,7 +69,6 @@ class Command(BaseCommand):
             )
 
             ppt = PikaPipelineThread(write=["os2ds_checkups"])
-            ppt.start()
 
             ppt.enqueue_message(
                 "os2ds_checkups", message.to_json_object()
@@ -77,9 +78,8 @@ class Command(BaseCommand):
                     "Enqueued messages, waiting for"
                     " RabbitMQ thread to finish sending them...")
 
-            ppt.synchronise()
             ppt.enqueue_stop()
-            ppt.join()
+            ppt.run()
 
             print("RabbitMQ thread finished. All done!")
         else:
