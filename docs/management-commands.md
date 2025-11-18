@@ -296,3 +296,17 @@ of the following arguments:
 * "Organization"
 * "DocumentReport"
 * "Problem"
+
+### `account_coverage`
+
+This command figures out which account has been scanned by which scanner at
+which time and delivers that information to the checkup_collector. The
+checkup_collector will then recreate CoveredAccounts for those combinations
+of accounts and scanners at those scan-times.
+
+In an environment with multiple organizations, the command must be supplied
+with an organization uuid using the `--organization` argument.
+
+Additionally, the command can be supplied with the primary key of a scanner
+in the admin module using the `--scanner` argument. Then, only CoveredAccounts
+for that scanner will be created.
