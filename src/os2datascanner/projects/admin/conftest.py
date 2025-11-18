@@ -2,7 +2,7 @@ import pytest
 import json
 
 from uuid import UUID
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -555,6 +555,18 @@ def basic_scanstatus(basic_scanner):
         scanner=basic_scanner,
         scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
         total_sources=1)
+
+
+@pytest.fixture
+def basic_scanstatus_old(basic_scanner):
+    ss = ScanStatus.objects.create(
+        scanner=basic_scanner,
+        scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
+        total_sources=1)
+
+    ss.scan_tag["time"] = datetime(1996, 3, 20).astimezone(tz=None).isoformat()
+    ss.save()
+    return ss
 
 
 @pytest.fixture
