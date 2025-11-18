@@ -4,6 +4,7 @@ from os2datascanner.projects.admin.import_services.models import LDAPConfig
 from ..models import Account, OrganizationalUnit, Alias, Position
 from .. import keycloak_actions
 from ...adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
+from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
 
 
 @pytest.fixture
@@ -562,3 +563,8 @@ class TestKeycloakImport:
 
         # Assert
         assert ted.imported_id == ted_dict['attributes']['LDAP_ID'][0]
+
+    def test_error_on_no_import(self, test_org):
+        """When nothing is imported, an error should be raised"""
+        with pytest.raises(LDAPNothingImportedWarning):
+            self.perform_ou_import([], test_org)
