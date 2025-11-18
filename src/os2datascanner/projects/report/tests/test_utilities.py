@@ -304,7 +304,9 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                        only_notify_superadmin=False,
                        created_at=None,
                        matched=True,
-                       problem=False):
+                       problem=False,
+                       scan_time=timezone.now(),
+                       offset: int = 0):
     pks = []
     for i in range(num):
         if problem == 1:
@@ -325,13 +327,13 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
         )
 
         dr = DocumentReport.objects.create(
-            name=f"Report-{source_type}-{i}{'-matched' if matched else ''}",
+            name=f"Report-{source_type}-{i+offset}{'-matched' if matched else ''}",
             owner=alias._value,
             scanner_job=scanner,
             sensitivity=sensitivity,
             datasource_last_modified=datasource_last_modified,
             source_type=source_type,
-            path=(f"report-{i}-{scanner_job_pk}-{alias.account.username}"
+            path=(f"report-{i+offset}-{scanner_job_pk}-{alias.account.username}"
                   f"-{'matched' if matched else 'unmatched'}-{alias._alias_type}"
                   f":{alias._value}-s{sensitivity}-dlm{datasource_last_modified}"
                   f"-st{source_type}"
@@ -341,7 +343,8 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
             raw_matches=raw_matches_json_matched if matched else None,
             resolution_status=resolution_status,
             only_notify_superadmin=only_notify_superadmin,
-            raw_problem=problem_message)
+            raw_problem=problem_message,
+            scan_time=scan_time)
         pks.append(dr.pk)
     if created_at:
         DocumentReport.objects.filter(pk__in=pks).update(created_timestamp=created_at)

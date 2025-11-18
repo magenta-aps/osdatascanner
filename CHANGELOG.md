@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 3.30.5, 18th November 2025
+
+"Long Live the Mayor"
+
+### New in this release
+
+- New `account_coverage` management command in the report module. This command tries to recreate
+  CoveredAccounts in the admin module based on DocumentReports in the report module.
+
 ## Version 3.30.4, 13th November 2025
 
 "Science/Visions"

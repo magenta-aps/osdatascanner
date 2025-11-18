@@ -2,28 +2,8 @@ import pytest
 
 from django.core.management import call_command
 
-from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
-
-
-@pytest.fixture
-def enqueued_messages(monkeypatch):
-    """When enqueueing to a PikaPipelineThread, instead just put messages into a list
-    and return that."""
-
-    enqueued_messages = []
-
-    def mock_enqueue_message(self, queue, message, **kwargs):
-        enqueued_messages.append((queue, message))
-
-    monkeypatch.setattr(PikaPipelineThread, "start", lambda self: None)
-    monkeypatch.setattr(PikaPipelineThread, "enqueue_message", mock_enqueue_message)
-    monkeypatch.setattr(PikaPipelineThread, "synchronise", lambda self: None)
-    monkeypatch.setattr(PikaPipelineThread, "enqueue_stop", lambda self: None)
-    monkeypatch.setattr(PikaPipelineThread, "join", lambda self: None)
-
-    return enqueued_messages
 
 
 @pytest.mark.django_db

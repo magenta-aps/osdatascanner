@@ -33,6 +33,9 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers i
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScheduledCheckup)
 from ...models.usererrorlog import UserErrorLog
+from ...models.scannerjobs.scanner_helpers import CoveredAccount
+from ....organizations.models.account import Account
+from ...utils import CoverageMessage
 
 logger = structlog.get_logger("checkup_collector")
 SUMMARY = Summary("os2datascanner_checkup_collector_admin",
@@ -89,6 +92,11 @@ def checkup_message_received_raw(body):
         handle = matches.handle
         scan_tag = matches.scan_spec.scan_tag
         scan_tag_raw = body["scan_spec"]["scan_tag"]
+    elif "coverages" in body:  # CoverageMessage
+        message = CoverageMessage.from_json_object(body)
+        coverages = message.coverages
+        recreate_account_coverage(coverages)
+        return
 
     if not scan_tag or not handle:
         return
@@ -206,6 +214,55 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
         logger.debug(
                 "Not interesting, doing nothing",
                 handle=handle.presentation)
+
+
+def recreate_account_coverage(coverages: list[dict[str, str]]):
+    for obj in coverages:
+
+        try:
+            scanner = Scanner.objects.get(pk=obj["scanner_id"])
+        except Scanner.DoesNotExist:
+            logger.warning("Could not recreate account coverage: Scanner not found",
+                           account_uuid=obj["account"],
+                           scanner_id=obj["scanner_id"],
+                           scan_time=obj["time"])
+            continue
+
+        try:
+            account = Account.objects.get(uuid=obj["account"])
+        except Account.DoesNotExist:
+            logger.warning("Could not recreate account coverage: Account not found",
+                           account_uuid=obj["account"],
+                           scanner_id=obj["scanner_id"],
+                           scan_time=obj["time"])
+            continue
+
+        try:
+            status = ScanStatus.objects.get(scanner=scanner, scan_tag__time=obj["time"])
+        except ScanStatus.DoesNotExist:
+            logger.warning("Could not recreate account coverage: ScanStatus not found",
+                           scanner_id=obj["scanner_id"],
+                           scan_time=obj["time"],
+                           account_uuid=obj["account"])
+            continue
+
+        # Make sure all objects are from the same organization
+        if account.organization != scanner.organization:
+            logger.warning("Could not recreate account coverage: Organization mismatch",
+                           account=account,
+                           scanner=scanner,
+                           status=status)
+            continue
+
+        logger.info("Creating CoveredAccount",
+                    scanner_id=obj["scanner_id"],
+                    scan_time=obj["time"],
+                    account_uuid=obj["account"])
+
+        CoveredAccount.objects.get_or_create(
+            scanner=scanner,
+            scan_status=status,
+            account=account)
 
 
 class CheckupCollectorRunner(PikaPipelineThread):
