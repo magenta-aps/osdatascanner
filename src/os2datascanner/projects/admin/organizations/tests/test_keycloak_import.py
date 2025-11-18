@@ -540,3 +540,25 @@ class TestKeycloakImport:
         ted = Account.objects.get(first_name="Ted")
 
         assert CoveredAccount.objects.filter(account=ted).exists()
+
+    def test_deprecated_imported_id(self, TEST_CORP, test_org):
+        """After migration organizations 0068, users that were imported with keycloak had their
+        distinguished name (which was previously used as imported id) moved to the new field
+        disinguished_name.
+        When importing a user that doesn't match any Account on imported_id,
+        check if any Account matches on dn. If it does, correctly set its imported id."""
+        # Arrange
+        ted_dict = TEST_CORP[0]
+        ted = Account.objects.create(
+            organization=test_org,
+            imported_id=None,
+            imported=True,
+            distinguished_name=ted_dict['attributes']['LDAP_ENTRY_DN'][0],
+        )
+
+        # Act
+        self.perform_ou_import(TEST_CORP, test_org)
+        ted.refresh_from_db()
+
+        # Assert
+        assert ted.imported_id == ted_dict['attributes']['LDAP_ID'][0]
