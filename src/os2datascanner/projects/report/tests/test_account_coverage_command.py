@@ -193,3 +193,33 @@ class TestAccountCoverageCommand:
         Organization object exists, an exception should be raised."""
         with pytest.raises(Organization.DoesNotExist):
             call_command("account_coverage", organization=uuid.uuid4())
+
+    def test_command_multiple_timestamps(self, egon_email_alias, scan_olsenbanden_org,
+                                         enqueued_messages):
+        """When reports from the same scanner for the same account exist with different scan times,
+        we should enqueue a message with coverage for both timestamps."""
+        time1 = datetime(1996, 3, 20)
+        time2 = datetime(2000, 12, 1)
+        create_reports_for(egon_email_alias,
+                           scanner_job_pk=scan_olsenbanden_org.scanner_pk,
+                           scanner_job_name=scan_olsenbanden_org.scanner_name,
+                           scan_time=time1)
+        create_reports_for(egon_email_alias,
+                           scanner_job_pk=scan_olsenbanden_org.scanner_pk,
+                           scanner_job_name=scan_olsenbanden_org.scanner_name,
+                           scan_time=time2,
+                           offset=10)
+
+        # We don't need to provide an organization, since only one exists in the DB
+        call_command("account_coverage")
+
+        assert len(enqueued_messages) == 1
+        coverages = enqueued_messages[0][1]["coverages"]
+        assert len(coverages) == 2
+
+        assert coverages[0] != coverages[1]
+
+        for message, timestamp in zip(coverages, [time1, time2]):
+            assert message["account"] == str(egon_email_alias.account.uuid)
+            assert message["time"] == timestamp.astimezone(tz=None).isoformat()
+            assert message["scanner_id"] == scan_olsenbanden_org.scanner_pk
