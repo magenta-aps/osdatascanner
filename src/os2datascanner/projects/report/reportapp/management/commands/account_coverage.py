@@ -49,19 +49,35 @@ class Command(BaseCommand):
                 alias_relations___alias_type=AliasType.REMEDIATOR,
             )
 
-        reports = reports.values(
+        st_reports = reports.values(
                 "scanner_job__scanner_pk",
                 "alias_relations__account",
                 "scan_time"
                 ).distinct().order_by("scan_time")
 
-        coverages = [{
+        rstt_reports = reports.values(
+                "scanner_job__scanner_pk",
+                "alias_relations__account",
+                "raw_scan_tag__time"
+                ).distinct().order_by("raw_scan_tag__time")
+
+        st_coverages = [{
                         # The queryset has been converted to a dict, so the
                         # "alias_relations__account" value here is a UUID, not an Account.
                         "account": str(obj["alias_relations__account"]),
                         "time": obj["scan_time"].astimezone(tz=None).isoformat(),
                         "scanner_id": obj["scanner_job__scanner_pk"]
-                    } for obj in reports]
+                        } for obj in st_reports]
+
+        rstt_coverages = [{
+                        # The queryset has been converted to a dict, so the
+                        # "alias_relations__account" value here is a UUID, not an Account.
+                        "account": str(obj["alias_relations__account"]),
+                        "time": obj["raw_scan_tag__time"],
+                        "scanner_id": obj["scanner_job__scanner_pk"]
+                        } for obj in rstt_reports]
+
+        coverages = st_coverages + rstt_coverages
 
         if coverages:
             message = CoverageMessage(
