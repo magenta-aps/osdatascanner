@@ -8,9 +8,9 @@ To get a development environment to run, follow these steps:
 
          git clone git@git.magenta.dk:os2datascanner/os2datascanner.git
          cd os2datascanner
-         source build_env.sh # exports git variables for build arguments
-         docker-compose pull # pre-fetches images to avoid building locally
-         docker-compose up -d
+         source build_env.sh # exports git variables for build arguments (not required)
+         docker compose pull # pre-fetches images to avoid building locally
+         docker compose up -d
 
     You can now reach the following services on their respective ports:
 
@@ -20,11 +20,11 @@ To get a development environment to run, follow these steps:
 
 2. Create users and other initial setup with the [quickstart
    commands](../management-commands). The commands will describe what they
-   do in more detail, but in short they create users named "dev" with the
-   password "dev" and setup a scan source.
+   do in more detail, but in short they create a user named "dev" with the
+   password "dev" and set up a few scan sources.
 
-         docker-compose exec admin django-admin quickstart_dev
-         docker-compose exec report django-admin quickstart_dev
+         docker compose exec admin django-admin quickstart_dev
+         docker compose exec report django-admin quickstart_dev
 
 3.  Start a scan:
 
@@ -53,7 +53,7 @@ To get a development environment to run, follow these steps:
 
 During development, we mount our local editable files into the docker
 containers which means they are owned by the local user, and **not** the user
-running inside the container. Thus any processes running inside the container,
+running inside the container. Thus, any processes running inside the container,
 like management commands, will not be allowed to create or update files in the
 mounted locations.
 
@@ -66,10 +66,18 @@ permissions recursively down through the file structure from the location
 The above is necessary whenever a process needs write permissions, but should
 always be done for the following locations:
 
-- `code/src/os2datascanner/projects/admin/locale/`
-- `code/src/os2datascanner/projects/admin/adminapp/migrations/`
-- `code/src/os2datascanner/projects/report/locale/`
-- `code/src/os2datascanner/projects/report/reportapp/migrations/`
+- `src/os2datascanner/projects/*/*/migrations/`
+- `src/os2datascanner/projects/*/locale/`
+- `src/os2datascanner/core_organizational_structure/locale/`
+- `src/os2datascanner/engine2/locale`
+
+Depending on what you do, you may also need:
+
+- `src/os2datascanner/projects/admin/*/templates/`
+- `src/os2datascanner/projects/report/*/templates/`
+- `src/os2datascanner/projects/shared/templates/`
+- `src/os2datascanner/projects/report/media/*/`
+- `dev-environment/uploads/`
 
 If you want the `django-admin shell_plus` commands to record command-line
 history (which you probably do in the development environment), you should also
@@ -78,6 +86,9 @@ run `chmod -R o+w` for the following locations:
 - `dev-environment/admin/ipython/`
 - `dev-environment/report/ipython/`
 
+As a developer, it can be a good idea to create and store a shell script or create an alias
+that performs this task for you, as it can become tedious when working with migrations and/or
+translations.
 
 **NB!** Git will only save executable permissions, which means that granting
 other users write permissions on your local setup, will not compromise
@@ -103,23 +114,29 @@ CI pipeline, which also produces a code coverage report for each test-suite.
 During development, the test can be run using the relevant Docker image for
 each module. As some of the tests are integration tests that require auxiliary
 services - such as access to a database and/or message queue - we recommend
-using the development docker-compose set-up to run the tests, as this takes
+using the development `docker compose` set-up to run the tests, as this takes
 care of the required settings and bindings.
 
-To run the test-suites using docker-compose and PyTest:
+To run the test-suites using docker compose and PyTest:
 ```bash
-docker-compose run admin pytest /code/src/os2datascanner/projects/admin
-docker-compose run explorer pytest --color=yes /code/src/os2datascanner/engine2/tests
-docker-compose run report pytest /code/src/os2datascanner/projects/report/tests
+docker compose run admin pytest /code/src/os2datascanner/projects/admin
+docker compose run explorer pytest --color=yes /code/src/os2datascanner/engine2/tests
+docker compose run report pytest /code/src/os2datascanner/projects/report/tests
 ```
+
+**Hints**:
+
+- You can disable warnings using the flag `--disable-warnings`
+- Run a specific test in provided file by using flag `-k <test_name>`
+
 
 The admin and report projects can also be run with django test:
 ```bash
-docker-compose run admin python -m django test os2datascanner.projects.admin.tests
-docker-compose run report python -m django test os2datascanner.projects.report.tests
+docker compose run admin python -m django test os2datascanner.projects.admin.tests
+docker compose run report python -m django test os2datascanner.projects.report.tests
 ```
 
-Please note that the engine tests can be run using any of the five pipeline
+Please note that the engine tests can be run using any of the pipeline
 services as the basis, but a specific one is provided above for easy reference.
 
 ### Mutation testing
@@ -156,7 +173,7 @@ with `pytest` due to the `pytest-benchmark` fixture.
 
 To run the benchmarks execute the following command:
 ```bash
-docker-compose run explorer pytest --color=yes --benchmark-only /code/src/os2datascanner/engine2/tests/benchmarks
+docker compose run explorer pytest --color=yes --benchmark-only /code/src/os2datascanner/engine2/tests/benchmarks
 ```
 
 ## Translations (i18n)
@@ -164,7 +181,7 @@ docker-compose run explorer pytest --color=yes --benchmark-only /code/src/os2dat
 When the applications are already `up` and running as described above, you can
 recompile the translations with the command:
 
-    docker-compose exec (report|admin) django-admin compilemessages
+    docker compose exec (report|admin) django-admin compilemessages
 
 Refreshing the page, you should see your new translations.
 
@@ -176,15 +193,15 @@ Refreshing the page, you should see your new translations.
 To access a shell on any container based on the OS2datascanner module
 images, run
 
-    docker-compose {exec|run} <container name> bash
+    docker compose {exec|run} <container name> bash
 
 
 ### Printing Stacktraces
 
 A stacktrace is printed to `stderr` if pipeline components receive `SIGUSR1`.
-The scan continues without interuption.
+The scan continues without interruption.
 
-The components must be startet using `run_stage`
+The components must be started using `run_stage`
 
 Running the engine locally,
 
@@ -194,14 +211,14 @@ Running the engine locally,
 Running the engine in Docker, using the namespace sharing between localhost and
 docker
 
-    docker top os2datascanner_worker_1 # get the `<pid>`of the python process
+    docker top os2datascanner-worker-1 # get the `<pid>`of the python process
     kill -USR1 `<pid>`
-    docker logs os2datascanner_worker_1
+    docker logs os2datascanner-worker-1
 
 
 ### Removing messages from the queue
 
-If a malformed message get published to the queue, the `pipeline_collector`s or
+If a malformed message get published to the queue, one of the`*_collector`s or
 engine components might crash when trying to parse the message.
 
 And since messages are only removed from the queue after parsing succeeded and
@@ -211,7 +228,7 @@ does not clear the queues), you might end up in a crash-loop.
 There are two ways to clear the queues.
 1. use the web-interface to `RabbitMQ`, as described in [step 4 in TL;DR:](## TL;DR:),
    to `Purge Messages`
-2. or from the CLI: `docker-compose exec queue rabbitmqctl purge_queue os2ds_scan_specs`
+2. or from the CLI: `docker compose exec queue rabbitmqctl purge_queue os2ds_scan_specs`
 
 
 ### IDE Debugging
@@ -298,9 +315,9 @@ The complete list of steps to get it up and running are the following:
    in the top right corner. You should be able to follow the flow of data
    through the code, inspect variables and objects and step through the code.
 
-## docker-compose
+## docker compose
 
-You can use `docker-compose` to start the OS2datascanner system and its runtime
+You can use `docker compose` to start the OSdatascanner system and its runtime
 dependencies (PostgreSQL and RabbitMQ).
 
 A `docker-compose.yml` for development is included in the repository. It
@@ -308,54 +325,74 @@ specifies the settings to start and connect all required services.
 
 ### Services
 
-The main services for OS2datascanner are:
+The main services for OSdatascanner are:
 
--   `admin_frontend`: Only needed in development.
-
-    Watches the frontend files and provides support for rebuilding the
-    frontend easily during the development process.
-
--   `admin`: Reachable on: http://localhost:8020
+- `admin`: Reachable on: http://localhost:8020
 
     Runs the django application that provides the administration
     interface for defining and managing organisations, rules, scans etc.
 
--   `explorer`: Runs the **explorer** stage of the engine.
+- `checkup_collector`: Runs the **collector** service that saves `ScheduledCheckup` objects 
+to the admin database.
 
--   `processor`: Runs the **processor** stage of the engine.
+    These are objects `Scanner`s need to revisit on their next run.
 
--   `matcher`: Runs the **matcher** stage of the engine.
+- `status_collector`: Runs the **collector** service that saves `ScanStatus`, `ScanStatusSnapshot`
+and`MIMETypeProcessStat` objects.
 
--   `tagger`: Runs the **tagger** stage of the engine.
+    These are objects that relate to the progress of a `Scanner` run.
 
--   `exporter`: Runs the **exporter** stage of the engine.
+- `explorer`: Runs the **explorer** stage of the engine.
 
--   `report_frontend`: Only needed in development.
+- `worker`: Runs the **worker** stage of the engine, which includes:
+     - `processor`
+     - `matcher`
+     - `tagger`
+   
+     These _can_ be run separately, but are most commonly used bundled as a `worker`.
 
-    Watches the frontend files and provides support for rebuilding the
-    frontend easily during the development process.
+- `exporter`: Runs the **exporter** stage of the engine.
 
--   `report`: Reachable on: http://localhost:8040
+- `report`: Reachable on: http://localhost:8040
 
     Runs the django application that provides the interface for
     accessing and handling reported matches.
 
--   `report_collector`: Runs the **collector** service that saves match
-    results to the database of the report module.
+- `event_collector`: Runs the **collector** service that saves events sent from the admin module.
 
-These depend on some auxillary services:
+    An event is an update or deletion of one or more model objects. F.e. `Organization`, `Account`
+    or others.
+
+- `result_collector`: Runs the **collector** service that saves match 
+results to the database of the report module.
+
+    Depending on configuration, it can also write to the RabbitMQ queue: `os2ds_email_tags`, 
+    which is read by the optional`email_tagger`
+
+
+- `email_tagger`: Optional service/required only for labelling of O365 emails.
+    
+    Reads from RabbitMQ `os2ds_email_tags` queue and labels O365 emails in Outlook.
+
+These depend on some auxiliary services:
 
 -   `db`: Runs a postgres database server based on [the official postgres
     docker image](https://hub.docker.com/_/postgres/).
 
--   `queue`: Runs a RabbitMQ message queue server based on [the official
+- `admin_migrate`: Responsible for applying database migrations from 
+everything in the "admin" project.
+
+- `report_migrate`: Responsible for applying database migrations from 
+everything in the "report" project.
+
+- `queue`: Runs a RabbitMQ message queue server based on [the official
     RabbitMQ docker image](https://hub.docker.com/_/rabbitmq/) , including a
     plugin providing a web interface for monitoring (and managing) queues and
     users.
 
     The web interface can be reached on: http://localhost:8030
 
--   `samba`: a Samba service that serves up some test files in a shared folder
+- `samba`: a Samba service that serves up some test files in a shared folder
     called `e2test`. This can be useful to test the file scanner.
 
     The Samba server is available as `samba:139` inside the Docker environment
@@ -365,31 +402,33 @@ These depend on some auxillary services:
     The Samba server doesn't require a workgroup name, but it does require a
     username (`os2`) and password (`swordfish`).
 
-    Thus from the host: `smbclient -p 8139 -U os2%swordfish //localhost/e2test`
+    Thus, from the host: `smbclient -p 8139 -U os2%swordfish //localhost/e2test`
 
--   `nginx`: a webserver that exposes the same folder as `samba`.
+- `nginx`: a webserver that exposes the same folder as `samba`.
 
--   `datasynth`: a webserver that generates websites based on url configuration.
+-   `mailhog`: a SMTP-server for testing purposes.
+
+    Web interface available at `http://localhost:8025/`.
+
+
+- `datasynth` **(Not maintained)**: a webserver that generates websites based on url configuration.
+
     If you want to use a customized websource for testing, you can also go to:
     `http://0.0.0.0:5010/websource` and add query parameters to define your websource.
-    the site will respond with a reference to a web site which is randomly generated.
+    the site will respond with a reference to a website which is randomly generated.
     the parameters allowed are: size (in bytes), sub_files, seed,
     matches( ie. `matches={"match":amount}`), and depth. The generated sources are
     available to the host by replacing `datasynth` with `localhost` or `0.0.0.0`.
 
-Note: Due to limitations in the way datasynth is configured to generate data, 
-scanning a datasynth web-source with sitemap can lead to more matches than expected.
-
-A generated web-source can contain matches scattered throughout subfiles(links to other pages/files), 
-but the generated sitemap currently cannot take into account how many matches are located at the root/index page. 
-This means that when scanning with a sitemap, datascanner will find all the matches on the landing page and all the matches created
-with the sitemap, leading to more matches found than configured in the source params.
-So when creating tests with datasynth using a sitemap keep this in mind. The easy
-workaround is to not count matches found on the landing page. (landing_page.matches + sitemap.matches)
-
-
--   `mailhog`: a SMTP-server for testing purposes.
-    web interface available at `http://localhost:8025/`.
+    **Note**: Due to limitations in the way datasynth is configured to generate data, 
+    scanning a datasynth web-source with sitemap can lead to more matches than expected.
+    
+    A generated web-source can contain matches scattered throughout subfiles(links to other pages/files), 
+    but the generated sitemap currently cannot take into account how many matches are located at the root/index page. 
+    This means that when scanning with a sitemap, datascanner will find all the matches on the landing page and all the matches created
+    with the sitemap, leading to more matches found than configured in the source params.
+    So when creating tests with datasynth using a sitemap keep this in mind. The easy
+    workaround is to not count matches found on the landing page. (landing_page.matches + sitemap.matches)
 
 ### Connecting to the host
 
@@ -405,46 +444,24 @@ virtual Docker networks. By default, these are all given addresses in the range
 command, for example, you might do something like this to allow all connections
 from that range:
 
-    `ufw allow from 172.0.0.0/8 to any`
-
-### Using header exchanges and `queue_suffix` for parallel execution
-
-A **worker** process can either be "owned" by an organisation or serve all organisations.
-Having **worker** processes that are owned by different organisations, allows the engine
-to run multiple scanner jobs in parallel (one pr. organisation). To use this feature,
-you can either start a **worker** with the `--queue-suffix` flag:
-
-```sh
-python3 run_stage.py worker --queue-suffix <name_of_organisation>
-```
-
-OR set the `QUEUE_SUFFIX` environment variable like this (inherits from host):
-
-```sh
-# in bash
-export QUEUE_SUFFIX = '<name_of_organisation>'
-docker-compose up -d --build worker
-```
-
-Note that, if all workers belong to organisation A and you start a scanner job belonging
-to organisation B, then no data will be scanned as no workers are available.
+    ufw allow from 172.0.0.0/8 to any
 
 ### profiles
 
 The `docker-compose.yml` use `--profiles` which requires version
-`docker-compose > 1.28`.
+`docker compose > 1.28`.
 
 To start the core components(`engine`, `report`- and `admin` interface, `db`
 and `queue`) of datascanner, use
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 To start a service behind a `profiles` flag, use
 
 ```sh
-docker-compose --profile api up -d
+docker compose --profile api up -d
 ```
 
 The following `profiles` are available: `ldap`, `sso`, `api`, `metric` and
@@ -578,7 +595,7 @@ functionality. To test functionality, it is required to clone the Git-repository
     
 3. Run the container with:
     ```
-    docker-compose up --build
+    docker compose up --build
     ```
 
 4. Go to http://localhost:5000/auth/admin/master/console/#/mo/clients
@@ -591,7 +608,7 @@ functionality. To test functionality, it is required to clone the Git-repository
 11. Start the OS2datascanner-project. Use the "--build" flag to let the updated 
 dev-settings.toml-file take effect.
     ```
-    docker-compose up --build
+    docker compose up --build
     ```
 
 12. Go to http://localhost:8020/admin/core/client/
@@ -602,7 +619,7 @@ You can now perform an OS2mo-import from the organizations-page, http://localhos
 
 `Note:` If you would like to run a larger fixture than the default "Kolding kommune"-fixture, start by emptying the databases in both containers with the command:
 
-    docker-compose down -v --remove-orphans
+    docker compose down -v --remove-orphans
 
 Repeat previous command on both containers until you no longer receive errors on either of the projects, like:
 
@@ -633,15 +650,15 @@ you'll need to complete the following steps:
 
 3. Provide OSdatascanner with Application Details:  
     After setting up the Azure Application and assigning the required permissions, 
-    you'll need to update OSdatascanner with the application's details.
+    you'll need to create a `GraphGrant` in OSdatascanner with the application's details.
 
-    Open the *dev-settings.toml* file for both the admin and report folders.
+    Open the admin module and locate the "Grants" section in the side menu.
+    (`localhost:8020/organizations/grants/`) 
 
-    Locate the section labeled [msgraph] and insert the following values from your
-    Azure Application:
+    Create an **MSGraph Grant** and insert the following values from your Azure Application:
 
-    * Application ID (Client ID)
-    * Directory ID (Tenant ID)
+    * App ID (Client ID)
+    * Tenant ID
     * Client Secret
 
 ## Linting and static analysis
@@ -672,26 +689,26 @@ check https://jshint.com/docs/options/ for a list of all options/rules jshint
 uses.
 
 linting for specific lines or rules can be done with /* jshint -<error-code> */,
-however a developer should write the reson for disabling a specific rule.
+however a developer should write the reason for disabling a specific rule.
 
 
 Python: Linting checks are done for python as well, the test are based on PEP 8 standards
-implemented through flake8 and bugbear. Furthermore there are static code analyzers that 
+implemented through flake8 and bugbear. Furthermore, there are static code analyzers that 
 evaluate the commited code based on three complexity metrics:
 
-Cognitive complexcity: a metric for how readable a piece of code is. this can be reduced
+Cognitive complexity: a metric for how readable a piece of code is. this can be reduced
 by reducing nested loops and if -statements.
 
 Cyclomatic complexity: a fancy way of saying how many paths your code can take, it helps us 
 see how testable a piece of code is. Commonly a good cyclomatic number for a method would
 be less than 15, when it reaches 16-30 this is normally a sign that the code is not easy 
-to test and it should be considered reducing its complexity. 30 to 50 should be stricly 
+to test, and it should be considered reducing its complexity. 30 to 50 should be strictly 
 prohibited.
 Above 75 is an indicator for each change may trigger a 'bad fix'.
 https://betterembsw.blogspot.com/2014/06/avoid-high-cyclomatic-complexity.html
 
 
-Expressive complexcity: a way to measure how complex individual statements are. Ideally they 
+Expressive complexity: a way to measure how complex individual statements are. Ideally they 
 should not have a value higher than 7.
 
 Linting can be checked locally by installing:
