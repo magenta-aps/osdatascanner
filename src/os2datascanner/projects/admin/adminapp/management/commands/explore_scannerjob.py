@@ -30,13 +30,19 @@ class Command(BaseCommand):
                 metavar="PK",
                 nargs="+")
         url_explorer.add_control_arguments(parser)
+        parser.add_argument(
+                "-F", "--full",
+                dest="full",
+                action="store_true",
+                help="Don't use SmartDelta to filter irrelevant handles out.")
 
     def handle(
             self, scanners, *,
-            guess, summarise, metadata, max_depth, hints, censor, **kwargs):
+            guess, summarise, metadata, max_depth, hints, censor, full,
+            **kwargs):
         with SourceManager() as sm:
             for scanner in scanners:
-                sst = scanner._construct_scan_spec_template(None, force=True)
+                sst = scanner._construct_scan_spec_template(None, force=full)
                 for scan_spec in scanner._yield_sources(sst, None):
                     url_explorer.print_source(
                             sm, scan_spec.source,
@@ -47,5 +53,5 @@ class Command(BaseCommand):
                             hints=hints,
                             censor=censor,
 
-                            rule=scan_spec.rule)
+                            rule=scan_spec.rule if not full else None)
                     print("--")
