@@ -798,3 +798,22 @@ class TestPipelineCollector:
                 message.to_json_object()))
 
         assert DocumentReport.objects.count() == dr
+
+    def test_match_with_too_long_name_goes_well_on_create_and_update(self,
+                                                                     match_with_a_very_long_name):
+        # Arrange: Done through fixtures
+
+        # Act
+        # First time it'll be create(), which calls save().
+        create_match = record_match(match_with_a_very_long_name)
+
+        assert len(create_match.name) == 256
+        assert len(create_match.sort_key) == 256
+
+        # Call the same logic again, with the same match, should result in an update().
+        update_match = record_match(match_with_a_very_long_name)
+
+        assert len(update_match.name) == 256
+        assert len(update_match.sort_key) == 256
+        assert create_match.name == update_match.name
+        assert create_match.sort_key == update_match.sort_key

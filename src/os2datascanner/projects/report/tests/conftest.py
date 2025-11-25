@@ -81,6 +81,34 @@ def common_handle():
 
 
 @pytest.fixture
+def handle_with_a_very_long_name():
+    return FilesystemHandle(
+        FilesystemSource("/mnt/fs01.magenta.dk/brugere/af/en/gruppe/dedikerede/olsen/banden/fans/"
+                         "men/vi/ser/også/feks/matador/af/og/til"),
+        "OSdatascanner/Dokumenter/Og/Vedtægter/"
+        "Og/Jeg/Skal/Komme/Efter/Dig/Hvor/Er/Her/Meget/Data/"
+        "Er/Du/Øm/I/Musefingeren/Endnu/Spørgsmålstegn/"
+        "fiktivt_filnavn_"
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.txt")
+
+
+@pytest.fixture
+def match_with_a_very_long_name(common_scan_spec, scan_tag0,
+                                handle_with_a_very_long_name, common_rule):
+    return messages.MatchesMessage(
+        scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
+        handle=handle_with_a_very_long_name,
+        matched=True,
+        matches=[
+            messages.MatchFragment(
+                rule=common_rule,
+                matches=[{"dummy": "match object"}])
+        ])
+
+
+@pytest.fixture
 def common_scan_spec(common_handle, common_rule):
     return messages.ScanSpecMessage(
         scan_tag=None,  # placeholder
