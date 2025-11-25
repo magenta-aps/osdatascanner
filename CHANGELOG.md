@@ -1,5 +1,16 @@
 # Changelog
 
+
+## Version ??, ??
+
+"??"
+
+### Bugfixes
+
+- Corrected an issue where result_collector would crash when updating DocumentReport objects with
+  very long names.
+
+  
 ## Version 3.30.5, 18th November 2025
 
 "Long Live the Mayor"

@@ -1,4 +1,6 @@
 import json
+import re
+
 import pytest
 import random
 import hashlib
@@ -799,21 +801,33 @@ class TestPipelineCollector:
 
         assert DocumentReport.objects.count() == dr
 
-    def test_match_with_too_long_name_goes_well_on_create_and_update(self,
-                                                                     match_with_a_very_long_name):
+    def test_match_with_long_name_goes_well_on_create_and_update(self,
+                                                                 match_with_a_very_long_name):
         # Arrange: Done through fixtures
 
         # Act
         # First time it'll be create(), which calls save().
         create_match = record_match(match_with_a_very_long_name)
-
-        assert len(create_match.name) == 256
-        assert len(create_match.sort_key) == 256
+        assert len(create_match.sort_key) == 519
 
         # Call the same logic again, with the same match, should result in an update().
         update_match = record_match(match_with_a_very_long_name)
 
-        assert len(update_match.name) == 256
-        assert len(update_match.sort_key) == 256
-        assert create_match.name == update_match.name
+        assert len(update_match.sort_key) == 519
         assert create_match.sort_key == update_match.sort_key
+
+        expected_presentation = """
+        /mnt/fs01.magenta.dk/brugere/af/en/
+        gruppe/dedikerede/olsen/banden/fans/men/vi/ser/også/feks/matador/af/og/til/OSdatascanner/
+        Dokumenter/Og/Vedtægter/Og/Jeg/Skal/Komme/Efter/Dig/Hvor/Er/Her/Meget/Data/Er/Du/Øm/I/
+        Musefingeren/Endnu/Spørgsmålstegn/
+        fiktivt_filnavn_
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.txt
+        """
+
+        # Just one report should exist, with the above presentation.
+        # It's formatted for readability, but we need to compare without newlines etc.
+        assert DocumentReport.objects.get().presentation == re.sub(r"\s+",
+                                                                   "", expected_presentation)

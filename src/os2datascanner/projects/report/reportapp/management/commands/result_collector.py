@@ -322,7 +322,6 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 scan_time=scan_tag.time,
                 raw_scan_tag=prepare_json_object(scan_tag.to_json_object()),
                 source_type=source.type_label,
-                name=prepare_json_object(message.handle.presentation_name),
                 sort_key=prepare_json_object(message.handle.sort_key),
                 sensitivity=message.sensitivity.value,
                 probability=message.probability,
@@ -347,7 +346,6 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 scan_time=scan_tag.time,
                 raw_scan_tag=prepare_json_object(scan_tag.to_json_object()),
                 source_type=source.type_label,
-                name=prepare_json_object(message.handle.presentation_name),
                 sort_key=prepare_json_object(message.handle.sort_key),
                 sensitivity=message.sensitivity.value,
                 probability=message.probability,
@@ -523,8 +521,6 @@ def handle_problem_message(scan_tag, result):
                             scan_tag.to_json_object()),
 
                     source_type=source.type_label,
-                    name=prepare_json_object(
-                            handle.presentation_name) if handle else "",
                     sort_key=prepare_json_object(
                             handle.sort_key if handle else "(source)"),
                     raw_problem=prepare_json_object(result),
