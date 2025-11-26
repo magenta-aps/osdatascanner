@@ -327,7 +327,6 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
         )
 
         dr = DocumentReport.objects.create(
-            name=f"Report-{source_type}-{i+offset}{'-matched' if matched else ''}",
             owner=alias._value,
             scanner_job=scanner,
             sensitivity=sensitivity,

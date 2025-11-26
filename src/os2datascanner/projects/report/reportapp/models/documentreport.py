@@ -87,12 +87,8 @@ class DocumentReport(models.Model):
 
     # sort results from a Source. It does not make sense to sort across Sources
     sort_key = models.CharField(
-        max_length=256, verbose_name=_("sort key"), db_index=True, default=""
+        verbose_name=_("sort key"), db_index=True, default=""
     )
-
-    # the name of the specific resource a handle points to. The equivalent of a #
-    # filename
-    name = models.CharField(max_length=256, verbose_name=_("name"), default="")
 
     source_type = models.CharField(max_length=2000,
                                    verbose_name=_("source type"), db_index=True)
@@ -125,10 +121,10 @@ class DocumentReport(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.presentation
 
     def __repr__(self):
-        return f"<{self.__class__.__name__}: {self.name} ({self.pk})>"
+        return f"<{self.__class__.__name__}: {self.presentation} ({self.pk})>"
 
     @cached_property
     def scan_tag(self):
@@ -228,20 +224,7 @@ class DocumentReport(models.Model):
         if not self.pk:
             self.created_timestamp = time_now()
 
-        # ensure model field constrains
-        if len(old_name := self.name) > 256:
-            self.name = self.name[:256]
-        if len(old_sort_key := self.sort_key) > 256:
-            self.sort_key = self.sort_key[:256]
-
         super().save(*args, **kwargs)
-
-        # log after save, so self returns the Object pk.
-        if len(old_name) > 256:
-            logger.info("truncated name before saving", report=self, name=old_name)
-        if len(old_sort_key) > 256:
-            logger.info("truncated sort_key before saving", report=self,
-                        sort_key=self.sort_key)
 
     class Meta:
         verbose_name_plural = _("document reports")

@@ -97,7 +97,6 @@ class ReportView(LoginRequiredMixin, ListView):
         reports = self.apply_get_param_filters(self.request, self.org, reports)
 
         return reports.only(
-            "name",
             "resolution_status",
             "resolution_time",
             "last_opened_time",

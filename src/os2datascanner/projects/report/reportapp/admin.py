@@ -73,7 +73,7 @@ class DocumentReportAdmin(admin.ModelAdmin):
                                 "_changelist"))
 
     list_display = (
-        'name',
+        'presentation',
         'number_of_matches',
         'scanner_job',
         'aliases',
