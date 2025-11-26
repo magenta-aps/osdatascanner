@@ -8,6 +8,7 @@ from ..models import AccountOutlookSetting, OutlookCategory
 from ..models.account_outlook_setting import AccountOutlookSettingQuerySet
 from ..models.organization import Organization, OutlookCategorizeChoices
 from ..models.account import Account
+from ...reportapp.views.utilities.msgraph_utilities import outlook_settings_from_owner
 
 
 class MockGraphCaller:
@@ -326,3 +327,26 @@ class TestAccountOutlookSetting:
         assert AccountOutlookSetting.objects.filter(
             account__organization=self.organization_org_level,
             categorize_email=True).count() == 0
+
+    def test_accounts_with_duplicate_emails_does_nothing(self,
+                                                         mock_graphcaller):
+
+        # Create an AccountOutlookSetting object
+        AccountOutlookSetting.objects.create(account=self.base_account)
+        # Create another account, with the same email as the other user
+        # .. will also create an AccountOutlookSetting obj.
+        Account.objects.bulk_create(
+            [
+                Account(
+                    username="todd",
+                    first_name="Todd",
+                    last_name="Rodriguez",
+                    email=self.base_account.email,
+                    organization=self.organization_org_level
+
+                )
+            ]
+        )
+
+        assert not outlook_settings_from_owner(
+            self.base_account.email)
