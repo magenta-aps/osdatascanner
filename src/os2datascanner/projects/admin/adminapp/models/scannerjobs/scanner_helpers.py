@@ -32,15 +32,21 @@ class ScheduledCheckup(models.Model):
     objects that are later removed."""
 
     handle_representation = models.JSONField(verbose_name="Reference")
-    # The handle to test again.
-    interested_before = models.DateTimeField(null=True)
-    # The Last-Modified cutoff date to attach to the test.
+    """The (censored) Handle to revisit."""
+
+    interested_after = models.DateTimeField(null=True)
+    """The Last-Modified cutoff date to attach to the test."""
+
     scanner = models.ForeignKey('Scanner', related_name="checkups",
                                 verbose_name=_('connected scanner job'),
                                 on_delete=models.CASCADE)
-    # The scanner job that produced this handle.
+    """The scanner job that produced this Handle."""
 
+    # This field has a length of 256 for (bad) historic reasons. The thing we
+    # store in it nowadays is a 64-byte SHA-512 hash
     path = models.CharField(max_length=256, verbose_name=_('path'))
+    """A hashed form of the censored Handle. (Also the form used by the report
+    module to uniquely identify a scanned object.)"""
 
     @property
     def handle(self) -> Handle:

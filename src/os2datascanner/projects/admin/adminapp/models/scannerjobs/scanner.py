@@ -505,9 +505,9 @@ class Scanner(models.Model):
                 continue
 
             # XXX: we could be adding LastModifiedRule twice
-            ib = reminder.interested_before
+            cutoff = reminder.interested_after
             rule_here = AndRule.make(
-                    LastModifiedRule(ib) if ib and not force else True,
+                    LastModifiedRule(cutoff) if cutoff and not force else True,
                     spec_template.rule)
             Counter.try_incr(checkup_counter)
             yield conv_template._deep_replace(

@@ -157,7 +157,7 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                             "LM/no change, updating timestamp",
                             handle=handle.presentation)
                     locked_qs.update(
-                            interested_before=scan_time)
+                            interested_after=scan_time)
                 else:
                     # This object has been changed and no longer has any
                     # matches. Hooray! Forget about it
@@ -172,7 +172,7 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                         "Changed, new matches, updating timestamp",
                         handle=handle.presentation)
                 locked_qs.update(
-                        interested_before=scan_time)
+                        interested_after=scan_time)
         elif problem:
             if problem.missing:
                 # Permanent error, so this object has been deleted. Forget
@@ -204,7 +204,7 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                 # pipeline for that
                 defaults={
                     "handle_representation": handle.to_json_object(),
-                    "interested_before": scan_time
+                    "interested_after": scan_time
                 })
         if problem and not problem.missing:
             # For problems, we also create a UserErrorLog object to alert
