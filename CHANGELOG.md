@@ -1,14 +1,17 @@
 # Changelog
 
 
-## Version ??, ??
+## Version 3.30.6, 26th November 2025
 
-"??"
+"Keep Collecting"
 
 ### Bugfixes
 
 - Corrected an issue where result_collector would crash when updating DocumentReport objects with
   very long names.
+
+- Corrected an issue where result_collector would crash when email categorizing is enabled
+  and multiple Accounts have the same email.
 
   
 ## Version 3.30.5, 18th November 2025

@@ -24,6 +24,10 @@ def outlook_settings_from_owner(owner: str):
     except AccountOutlookSetting.DoesNotExist:
         logger.warning(f"Could not find AccountOutlookSetting for owner {owner}")
         return None
+    except AccountOutlookSetting.MultipleObjectsReturned:
+        logger.warning("Multiple AccountOutlookSetting found for owner! "
+                       "Likely two Accounts with the same email.", owner=owner)
+        return None
 
 
 def check_msgraph_grant(org) -> GraphGrant | PermissionDenied:
