@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='graphgrant',
             name='last_email_date',
-            field=models.DateField(default=datetime.date.today(), verbose_name='last email date'),
+            field=models.DateField(default=datetime.date.today, verbose_name='last email date'),
         ),
     ]

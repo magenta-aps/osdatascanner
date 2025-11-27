@@ -44,7 +44,7 @@ class GraphGrant(Grant):
     )
 
     last_email_date = models.DateField(
-        default=date.today(),
+        default=date.today,
         verbose_name=_("last email date")
     )
 

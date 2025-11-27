@@ -29,8 +29,7 @@ class NotificationMiddleware:
 
 def check_grant_expiration(request):
     grants = GraphGrant.objects.filter(UserWrapper(
-                request.user).make_org_Q(
-                org_path="organization"))
+                request.user).make_org_Q())
 
     today = datetime.date.today()
     for grant in grants:
@@ -39,7 +38,7 @@ def check_grant_expiration(request):
 
 
 def notify_grant_expiration(request, today, grant):
-    msg = _("A Client Secret for Tenant: {tenant} is about to expire!").format(
+    msg = _("Microsoft Graph-grant for Tenant: {tenant} is about to expire!").format(
         tenant=grant.tenant_id)
 
     notifications = request.session.get('notifications', {})

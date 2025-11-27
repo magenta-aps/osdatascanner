@@ -104,7 +104,7 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
 class MSGraphGrantForm(forms.ModelForm):
     class Meta:
         model = GraphGrant
-        exclude = ("__all__", 'last_email_date')
+        exclude = ('last_email_date',)
 
     _client_secret = AutoEncryptedField(
         required=False,
@@ -132,11 +132,12 @@ class MSGraphGrantForm(forms.ModelForm):
               self.instance._client_secret)
 
     def __init__(self, *args, **kwargs):
-        selected_org = kwargs.pop('selected_org', None)
+        selected_org = kwargs.pop('selected_org', Organization.objects.first())
         super().__init__(*args, **kwargs)
         self.fields["_client_secret"].initial = "dummy"
         self.fields["expiry_date"].initial = self.instance.expiry_date
         self.fields["contacts"].queryset = get_user_model().objects.filter(
+            # ?? What the h e c k decides what client an org has
             Q(administrator_for__client=selected_org.client) |
             Q(groups__permissions__codename="view_client") |
             Q(user_permissions__codename="view_client") |
@@ -156,7 +157,7 @@ class MSGraphGrantScannerForm(MSGraphGrantForm):
     """ Form for use in Scanner Create/Update. """
     class Meta:
         model = GraphGrant
-        fields = ('__all__')
+        exclude = ('last_email_date',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
