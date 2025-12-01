@@ -310,3 +310,7 @@ with an organization uuid using the `--organization` argument.
 Additionally, the command can be supplied with the primary key of a scanner
 in the admin module using the `--scanner` argument. Then, only CoveredAccounts
 for that scanner will be created.
+
+The command will look at both the "scan_time" field and the "time" value
+of the "raw_scan_tag" json field of the DocumentReports in the report
+module to determine scan times for different scanners and accounts.
