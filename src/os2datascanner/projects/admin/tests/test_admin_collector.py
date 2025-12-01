@@ -57,6 +57,7 @@ class TestPipelineCollector:
                         handle=positive_corrupt_match_message.handle,
                         matches=positive_corrupt_match_message,
                         problem=None,
+                        skipped=False,
                         scan_time=positive_corrupt_match_message.scan_spec.scan_tag.time,
                         scanner=None,
                         ss=None)
