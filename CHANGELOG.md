@@ -17,6 +17,10 @@
 - Only show error message count on scanstatus overview, if the user has permission/access to the
   error log tab.
 
+- Submitting a `ScheduledCheckup` object to the pipeline as part of a
+  subsequent scan no longer puts multiple `LastModifiedRule`s into that
+  object's rule.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
