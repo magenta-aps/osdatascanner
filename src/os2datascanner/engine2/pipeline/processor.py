@@ -9,6 +9,11 @@ from . import messages
 logger = structlog.get_logger("processor")
 
 
+SKIPPED = object()
+"""A singleton returned by do_conversion when the scanner job's configuration
+has blocked an otherwise supported conversion from taking place."""
+
+
 def check(source_manager, handle):
     """
     Runs Resource.check() on the top-level Handle behind a given Handle.
@@ -106,7 +111,10 @@ def do_conversion(resource, conversion, retrier, source_manager):
                 # mt is a simple wildcard ("image/*") that matches the
                 # computed MIME type of this file.
                 # If that, or mt matches the computed MIME type of this file exactly then ...
-                return None  # ... skip conversion
+                logger.info(
+                        "skipping conversion due to scanner config",
+                        handle=conversion.handle, conversion_type=required)
+                return SKIPPED  # ... skip conversion
 
     # If we have an appropriate conversion registered, go ahead.
     if conversion_exists(resource, required):
@@ -131,6 +139,15 @@ def do_conversion(resource, conversion, retrier, source_manager):
 
 
 def emit_representation(conversion, representation):
+    if representation is SKIPPED:
+        yield (
+            "os2ds_checkups",
+            messages.ContentSkippedMessage(
+                    scan_tag=conversion.scan_spec.scan_tag,
+                    handle=conversion.handle).to_json_object()
+        )
+        return
+
     required = conversion.progress.rule.split()[0].operates_on
 
     # If the conversion also produced other values at the same
