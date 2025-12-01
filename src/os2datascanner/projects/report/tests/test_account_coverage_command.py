@@ -19,7 +19,7 @@ class TestAccountCoverageCommand:
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_kun_egon.scanner_pk,
                            scanner_job_name=scan_kun_egon.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
 
         # We don't need to provide an organization, since only one exists in the DB
         call_command("account_coverage")
@@ -39,7 +39,7 @@ class TestAccountCoverageCommand:
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_olsenbanden_org.scanner_pk,
                            scanner_job_name=scan_olsenbanden_org.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
 
         # We don't need to provide an organization, since only one exists in the DB
         call_command("account_coverage")
@@ -84,7 +84,7 @@ class TestAccountCoverageCommand:
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_olsenbanden_org_withheld.scanner_pk,
                            scanner_job_name=scan_olsenbanden_org_withheld.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
 
         # We don't need to provide an organization, since only one exists in the DB
         call_command("account_coverage")
@@ -113,11 +113,11 @@ class TestAccountCoverageCommand:
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_olsenbanden_org.scanner_pk,
                            scanner_job_name=scan_olsenbanden_org.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
         create_reports_for(hulk_email_alias,
                            scanner_job_pk=scan_marvel.scanner_pk,
                            scanner_job_name=scan_marvel.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
 
         call_command("account_coverage", organization=olsenbanden_organization.uuid)
 
@@ -135,11 +135,11 @@ class TestAccountCoverageCommand:
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_kun_egon.scanner_pk,
                            scanner_job_name=scan_kun_egon.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_olsenbanden_org.scanner_pk,
                            scanner_job_name=scan_olsenbanden_org.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
 
         # We don't need to provide an organization, since only one exists in the DB
         call_command("account_coverage")
@@ -164,11 +164,11 @@ class TestAccountCoverageCommand:
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_kun_egon.scanner_pk,
                            scanner_job_name=scan_kun_egon.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_olsenbanden_org.scanner_pk,
                            scanner_job_name=scan_olsenbanden_org.scanner_name,
-                           scan_time=datetime(1996, 3, 20))
+                           scan_time=datetime(1996, 3, 20).astimezone(tz=None))
 
         # We don't need to provide an organization, since only one exists in the DB
         call_command("account_coverage", scanner=scan_olsenbanden_org.scanner_pk)
@@ -198,8 +198,8 @@ class TestAccountCoverageCommand:
                                          enqueued_messages):
         """When reports from the same scanner for the same account exist with different scan times,
         we should enqueue a message with coverage for both timestamps."""
-        time1 = datetime(1996, 3, 20)
-        time2 = datetime(2000, 12, 1)
+        time1 = datetime(1996, 3, 20).astimezone(tz=None)
+        time2 = datetime(2000, 12, 1).astimezone(tz=None)
         create_reports_for(egon_email_alias,
                            scanner_job_pk=scan_olsenbanden_org.scanner_pk,
                            scanner_job_name=scan_olsenbanden_org.scanner_name,
@@ -221,5 +221,29 @@ class TestAccountCoverageCommand:
 
         for message, timestamp in zip(coverages, [time1, time2]):
             assert message["account"] == str(egon_email_alias.account.uuid)
-            assert message["time"] == timestamp.astimezone(tz=None).isoformat()
+            assert message["time"] == timestamp.isoformat()
+            assert message["scanner_id"] == scan_olsenbanden_org.scanner_pk
+
+    def test_command_scan_tag_scan_time_diff(self, egon_email_alias, scan_olsenbanden_org,
+                                             enqueued_messages):
+        time1 = datetime(1996, 3, 20).astimezone(tz=None)
+        time2 = datetime(2000, 1, 1).astimezone(tz=None)
+
+        create_reports_for(egon_email_alias,
+                           scanner_job_pk=scan_olsenbanden_org.scanner_pk,
+                           scanner_job_name=scan_olsenbanden_org.scanner_name,
+                           scan_time=time2,
+                           scan_tag_time=time1)
+
+        # We don't need to provide an organization, since only one exists in the DB
+        call_command("account_coverage")
+
+        coverages = enqueued_messages[0][1]["coverages"]
+
+        assert len(coverages) == 2
+
+        # The "scan_time" value is present first in the coverages list -- here equal to time2
+        for message, time in zip(coverages, [time2, time1]):
+            assert message["account"] == str(egon_email_alias.account.uuid)
+            assert message["time"] == time.isoformat()
             assert message["scanner_id"] == scan_olsenbanden_org.scanner_pk

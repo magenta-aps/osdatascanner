@@ -2,6 +2,9 @@ import json
 
 from django.utils import timezone
 
+from os2datascanner.engine2.pipeline.messages import (
+    ScanTagFragment, ScannerFragment, OrganisationFragment)
+
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 from os2datascanner.projects.report.reportapp.utils import create_alias_and_match_relations
@@ -306,6 +309,7 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                        matched=True,
                        problem=False,
                        scan_time=timezone.now(),
+                       scan_tag_time=None,
                        offset: int = 0):
     pks = []
     for i in range(num):
@@ -326,6 +330,15 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
             }
         )
 
+        org_frag = OrganisationFragment(name=org.name, uuid=org.uuid)
+        scan_frag = ScannerFragment(name=scanner.scanner_name, pk=scanner.scanner_pk)
+        scan_tag = ScanTagFragment(
+          user=alias.account.username,
+          scanner=scan_frag,
+          organisation=org_frag,
+          time=scan_tag_time or scan_time
+        )
+
         dr = DocumentReport.objects.create(
             owner=alias._value,
             scanner_job=scanner,
@@ -343,6 +356,7 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
             resolution_status=resolution_status,
             only_notify_superadmin=only_notify_superadmin,
             raw_problem=problem_message,
+            raw_scan_tag=scan_tag.to_json_object(),
             scan_time=scan_time)
         pks.append(dr.pk)
     if created_at:

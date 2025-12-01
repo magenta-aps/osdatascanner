@@ -1,7 +1,9 @@
 """Returns the account coverage of a given scan based on existing DocumentReports."""
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q
+from django.db.models import Q, F, DateTimeField
+from django.db.models.functions import Cast
+from django.db.models.fields.json import KeyTextTransform
 
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
@@ -49,10 +51,15 @@ class Command(BaseCommand):
                 alias_relations___alias_type=AliasType.REMEDIATOR,
             )
 
-        st_reports = reports.values(
-                "scanner_job__scanner_pk",
-                "alias_relations__account",
-                "scan_time"
+        st_reports = reports.annotate(
+                    scan_tag_time_str=KeyTextTransform("time", "raw_scan_tag"),
+                    scan_tag_time=Cast("scan_tag_time_str", DateTimeField()),
+                ).exclude(
+                    scan_time=F("scan_tag_time")
+                ).values(
+                    "scanner_job__scanner_pk",
+                    "alias_relations__account",
+                    "scan_time"
                 ).distinct().order_by("scan_time")
 
         rstt_reports = reports.values(
