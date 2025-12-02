@@ -31,7 +31,7 @@ class LDAPImportJob(BackgroundJob):
         return "Import Job"
 
     def run(self):
-        from ...organizations.keycloak_actions import perform_import
+        from ...organizations.keycloak_actions import KeycloakImporter
 
         self.status = "Building LDAP hierarchy..."
         self.save()
@@ -51,7 +51,7 @@ class LDAPImportJob(BackgroundJob):
                 self.save()
 
         try:
-            perform_import(self.realm, progress_callback=_callback)
+            KeycloakImporter(self.realm, progress_callback=_callback).perform_import()
         except LDAPNothingImportedWarning as w:
             self.exec_state = JobState.FINISHED_WITH_WARNINGS
             self.status = w

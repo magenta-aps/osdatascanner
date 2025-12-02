@@ -17,6 +17,7 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=Ted Testsen,OU=Testers,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df074a"],
             "memberOf": [
                 "CN=Group 2,O=Test Corp."
             ]
@@ -31,6 +32,7 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=Todd Testsen,OU=Testers,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df074b"],
             "memberOf": [
                 "CN=Group 1,O=Test Corp.",
                 "CN=Group A,O=Test Corp."
@@ -46,6 +48,7 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=Thad Testsen,OU=Testers,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df074c"],
             "memberOf": [
                 "CN=Group A,O=Test Corp."
             ]
@@ -58,6 +61,7 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=root,OU=Testers,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df074d"],
             "memberOf": [
                 "CN=Group A,O=Test Corp."
             ]
@@ -68,6 +72,7 @@ TEST_CORP = [
             "LDAP_ENTRY_DN": [
                 "CN=secret_backdoor,OU=Testers,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df074e"],
             "memberOf": [
                 "CN=Group A,O=Test Corp."
             ]
@@ -86,6 +91,7 @@ TEST_CORP_TWO = [
             "LDAP_ENTRY_DN": [
                 "CN=Ursula Testsen,OU=TheUCorp,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df0740"],
             "memberOf": [
                 "CN=Group 1,O=Test Corp.",
                 "CN=Group 2,O=Test Corp."
@@ -102,6 +108,7 @@ TEST_CORP_TWO = [
             "LDAP_ENTRY_DN": [
                 "CN=Ulrich Testsen,OU=TheUCorp,O=Test Corp."
             ],
+            "LDAP_ID": ["144a7466-cbf4-4532-96b8-6d4109df0741"],
             "memberOf": [
                 "CN=Group 1,O=Test Corp.",
                 "CN=Group 2,O=Test Corp."
@@ -110,6 +117,13 @@ TEST_CORP_TWO = [
     },
 
 ]
+
+
+@pytest.fixture
+def importer(test_org):
+    imp = keycloak_actions.KeycloakImporter(None)
+    imp.org = test_org
+    return imp
 
 
 @pytest.mark.django_db
@@ -132,11 +146,11 @@ class TestDeprecatedKeycloakImportTest:
                                          search_scope=1,
                                          )
 
-    def test_ou_import(self, test_org):
+    def test_ou_import(self, importer):
         """It should be possible to import users into an LDAP OU-based hierarchy
         from Keycloak's JSON output."""
-        keycloak_actions.perform_import_raw(
-            test_org, TEST_CORP,
+        importer.perform_import_raw(
+            TEST_CORP,
             keycloak_actions.keycloak_dn_selector
         )
 
@@ -146,11 +160,11 @@ class TestDeprecatedKeycloakImportTest:
             account = Account.objects.get(uuid=tester["id"])
             assert tester["username"] == account.username, "user import failure"
 
-    def test_group_import(self, test_org):
+    def test_group_import(self, importer):
         """It should be possible to import users into a group-based hierarchy
         from Keycloak's JSON output."""
-        keycloak_actions.perform_import_raw(
-            test_org, TEST_CORP,
+        importer.perform_import_raw(
+            TEST_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
@@ -163,15 +177,15 @@ class TestDeprecatedKeycloakImportTest:
             for group in tester.get("attributes", {}).get("memberOf", []):
                 assert account.units.filter(imported_id=group).exists()
 
-    def test_removal(self, test_org):
+    def test_removal(self, importer):
         """Removing a user from Keycloak's JSON output should also remove that
         user from the database."""
-        self.test_ou_import(test_org)
+        self.test_ou_import(importer)
 
         thads = list(Account.objects.filter(first_name="Thad"))
 
-        keycloak_actions.perform_import_raw(
-            test_org,
+        importer.reset()
+        importer.perform_import_raw(
             [t for t in TEST_CORP if t.get("firstName") != "Thad"],
             keycloak_actions.keycloak_dn_selector
         )
@@ -180,10 +194,10 @@ class TestDeprecatedKeycloakImportTest:
             with pytest.raises(Account.DoesNotExist):
                 thad.refresh_from_db()
 
-    def test_group_change_ou(self, test_org):
+    def test_group_change_ou(self, importer):
         """Changing the LDAP DN of a user in a group-based hierarchy should
         change their properties without affecting their positions."""
-        self.test_group_import(test_org)
+        self.test_group_import(importer)
 
         todds = list(Account.objects.filter(first_name="Todd"))
 
@@ -194,18 +208,19 @@ class TestDeprecatedKeycloakImportTest:
                     f"CN=Todd {tester['lastName']},OU=Experimenters,O=Test Corp."
                 ]
 
-        keycloak_actions.perform_import_raw(
-            test_org, NEW_CORP,
+        importer.reset()
+        importer.perform_import_raw(
+            NEW_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
         for todd in todds:
             todd.refresh_from_db()
-            assert "OU=Experimenters" in todd.imported_id
+            assert "OU=Experimenters" in todd.distinguished_name
 
-    def test_change_group(self, test_org):
+    def test_change_group(self, importer):
         """It should be possible to move a user from one group to another."""
-        self.test_group_import(test_org)
+        self.test_group_import(importer)
 
         teds = list(Account.objects.filter(first_name="Ted"))
 
@@ -219,8 +234,9 @@ class TestDeprecatedKeycloakImportTest:
             if tester.get("firstName") == "Ted":
                 tester["attributes"]["memberOf"] = ["CN=Group 1,O=Test Corp."]
 
-        keycloak_actions.perform_import_raw(
-            test_org, NEW_CORP,
+        importer.reset()
+        importer.perform_import_raw(
+            NEW_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
@@ -230,10 +246,10 @@ class TestDeprecatedKeycloakImportTest:
             with pytest.raises(OrganizationalUnit.DoesNotExist):
                 ted.units.get(imported_id="CN=Group 2,O=Test Corp.")
 
-    def test_remove_ou(self, test_org):
+    def test_remove_ou(self, importer):
         """Removing every user from a group or organisational unit should
         remove its representation in the database."""
-        self.test_group_import(test_org)
+        self.test_group_import(importer)
 
         OrganizationalUnit.objects.get(imported_id="CN=Group 2,O=Test Corp.")
 
@@ -244,29 +260,30 @@ class TestDeprecatedKeycloakImportTest:
             except ValueError:
                 pass
 
-        keycloak_actions.perform_import_raw(
-            test_org, NEW_CORP,
+        importer.reset()
+        importer.perform_import_raw(
+            NEW_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
         with pytest.raises(OrganizationalUnit.DoesNotExist):
             OrganizationalUnit.objects.get(imported_id="CN=Group 2,O=Test Corp.")
 
-    def test_import_user_in_multiple_groups_should_only_get_one_email_alias(self, test_org):
+    def test_import_user_in_multiple_groups_should_only_get_one_email_alias(self, importer):
         """ A user can be a memberOf multiple groups, but it is still only one
         user, and should result in only one email-alias (given that the user
         has an email attribute)"""
-        keycloak_actions.perform_import_raw(
-            test_org, TEST_CORP_TWO,
+        importer.perform_import_raw(
+            TEST_CORP_TWO,
             keycloak_actions.keycloak_group_dn_selector
         )
 
         ursula_aliases = Alias.objects.filter(_value="ursulas@brevdue.dk")
         assert ursula_aliases.count() == 1
 
-    def test_delete_user_relation_to_group(self, test_org):
-        keycloak_actions.perform_import_raw(
-            test_org, TEST_CORP_TWO,
+    def test_delete_user_relation_to_group(self, importer):
+        importer.perform_import_raw(
+            TEST_CORP_TWO,
             keycloak_actions.keycloak_group_dn_selector
         )
 
@@ -279,8 +296,9 @@ class TestDeprecatedKeycloakImportTest:
         NEW_CORP[0]["attributes"]["memberOf"] = ["CN=Group 2,O=Test Corp."]
 
         # Import again
-        keycloak_actions.perform_import_raw(
-            test_org, NEW_CORP,
+        importer.reset()
+        importer.perform_import_raw(
+            NEW_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
@@ -294,8 +312,9 @@ class TestDeprecatedKeycloakImportTest:
         del NEW_CORP[1]
 
         # Import again
-        keycloak_actions.perform_import_raw(
-            test_org, NEW_CORP,
+        importer.reset()
+        importer.perform_import_raw(
+            NEW_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
@@ -304,10 +323,10 @@ class TestDeprecatedKeycloakImportTest:
         assert not OrganizationalUnit.objects.filter(
             imported_id="CN=Group 1,O=Test Corp.").exists()
 
-    def test_property_update(self, test_org):
+    def test_property_update(self, test_org, importer):
         """Changing a user's name should update the corresponding properties in
         the database."""
-        self.test_ou_import(test_org)
+        self.test_ou_import(importer)
 
         for acc in Account.objects.filter(organization=test_org):
             assert acc.first_name != "Tadeusz"
@@ -319,8 +338,9 @@ class TestDeprecatedKeycloakImportTest:
             tester["firstName"] = "Tadeusz"
             tester["lastName"] = "Soplica"
 
-        keycloak_actions.perform_import_raw(
-            test_org, NEW_CORP,
+        importer.reset()
+        importer.perform_import_raw(
+            NEW_CORP,
             keycloak_actions.keycloak_group_dn_selector
         )
 
