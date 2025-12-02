@@ -1,5 +1,13 @@
 # Changelog
 
+## Version ???, ???
+
+### General improvements
+
+- When importing organizational data using keycloak, the distinguished names of users are no longer
+  used to populate the `imported_id` field. Instead the LDAP entry uuid is used, since this value
+  doesn't change when moving a user from one organizational unit to another in AD.
+
 
 ## Version 3.30.6, 26th November 2025
 
