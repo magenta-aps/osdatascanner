@@ -203,6 +203,7 @@ class CustomRuleUpdate(RuleUpdate):
     model = Rule
     fields = ['name', 'description', 'sensitivity', 'organization']
     template_name = "components/rules/customrule_form.html"
+    edit = True
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
