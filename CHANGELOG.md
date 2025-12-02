@@ -8,6 +8,9 @@
   used to populate the `imported_id` field. Instead the LDAP entry uuid is used, since this value
   doesn't change when moving a user from one organizational unit to another in AD.
 
+### Bugfixes
+
+- Corrected rule edit page wrongly displaying "Create new rule"
 
 ## Version 3.30.6, 26th November 2025
 
