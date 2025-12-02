@@ -51,6 +51,11 @@ class Command(BaseCommand):
                 alias_relations___alias_type=AliasType.REMEDIATOR,
             )
 
+        if any(["msgraph-files" in dr.source_type for dr in reports]):
+            self.stdout.write(self.style.WARNING("Some document reports stem from MSGraph file "
+                                                 "scans! Make sure you cleanup stale accounts in "
+                                                 "the admin module!"))
+
         st_reports = reports.annotate(
                     scan_tag_time_str=KeyTextTransform("time", "raw_scan_tag"),
                     scan_tag_time=Cast("scan_tag_time_str", DateTimeField()),
@@ -97,13 +102,13 @@ class Command(BaseCommand):
                 "os2ds_checkups", message.to_json_object()
             )
 
-            print(
+            self.stdout.write(
                     "Enqueued messages, waiting for"
                     " RabbitMQ thread to finish sending them...")
 
             ppt.enqueue_stop()
             ppt.run()
 
-            print("RabbitMQ thread finished. All done!")
+            self.stdout.write("RabbitMQ thread finished. All done!")
         else:
-            print("Nothing to recreate, no messages enqueued.")
+            self.stdout.write("Nothing to recreate, no messages enqueued.")
