@@ -333,5 +333,37 @@
         5
       ]
     }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990109,
+    "fields": {
+      "name": "(SBSYS) Sager hvor part er fraflyttet kommune",
+      "organization": null,
+      "description": "SBSYS-sager med sagspart, men hvor sagsparten er flyttet fra kommunen.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.PartType.Navn",
+            "operator": "eq",
+            "value": "Person",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsPart.Part as Person.KommuneID",
+            "operator": "neq",
+            "value": "&KommuneID",
+            "name": "Sager hvor part er fraflyttet kommune"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
   }
 ]
