@@ -377,5 +377,57 @@
         5
       ]
     }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990110,
+    "fields": {
+      "name": "(SBSYS) Sager med KLE der bør låses",
+      "organization": null,
+      "description": "Der er fundet sager, der bør være låst, da de indeholder bestemte KLE-numre.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "or",
+            "components": [
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "ErBeskyttet",
+                "operator": "eq",
+                "value": false,
+                "name": ""
+              },
+              {
+                "type": "sbsys-db-fieldrule",
+                "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
+                "operator": "iin",
+                "value": [
+                  "åben for alle",
+                  "alle brugere"
+                ],
+                "name": ""
+              }
+            ]
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsNummer.EmnePlanNummer.Nummer",
+            "operator": "in",
+            "value": [
+              "27.25.12",
+              "27.29.25",
+              "34.25.00"
+            ],
+            "name": "Sager med KLE der bør låses"
+          }
+        ]
+      },
+      "categories": [
+        5
+      ]
+    }
   }
 ]
+

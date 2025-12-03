@@ -519,6 +519,26 @@ SbSysNetDrift["Sag"] = [
         "SecuritySetID": 2,  # Security groups "Teknik- og Miljøforvaltning"
                              # and "Børn- og Ungeforvaltning"
     },
+    _SAG_BASE | {
+        "ID": 5,
+        "SagIdentity": "AA99F8A0-B44A-1234-A38A-6E625EF377FF",
+        "Nummer": "29.70.00-K02-3-13",
+        "Titel": "Cyborg i ungdomskriminalitetsnævnet",
+        "BehandlerID": 1,  # Reference to the "Bruger" table
+        "Kommentar": "Vi kan lige så godt være på forkant,"
+                     "hvorfor vi skal tage stilling til, om cyborgs må gå til tandlæge,",
+        "SagsStatusID": 5,
+        "SagsNummerID": 1,
+        "CreatedByID": 1,
+        "Created": datetime(2025, 9, 11),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2025, 9, 11),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+
+        "ErBeskyttet": 0,       # Not Protected
+        "SecuritySetID": 1,  # security group
+    },
 ]
 
 SbSysNetDrift["Person"] = [
@@ -548,6 +568,50 @@ SbSysNetDrift["SagsPart"] = [
         "Oprettet": datetime(2020, 1, 1),
     }
 ]
+
+SbSysNetDrift["SagsNummer"] = [
+    {
+        "ID": 1,
+        "EmnePlanID": 1,  # Reference to EmnePlan table
+        "EmnePlanNummerID": 1,  # Reference to EmnePlanNummer table
+        "SekvensNummer": 1,
+        "Aarstal": 2025,
+
+    }
+]
+
+
+SbSysNetDrift["EmnePlan"] = [
+    # TODO: Made up values: don't have grounds for picking more relevant data
+    {
+        "ID": 1,
+        "Navn": "Digitalisering",
+        "AnvendDelforloeb": 0,
+        "NummerFormat": "blah",
+        "NummerFormatUdenFacet": "blah",
+        "RequireFacet": 0,
+        "AllowChangingNummer": 0,
+        "EmnePlanNummerType": 0,
+        "StandardSagsTitel": "blah",
+        "NySagBeskyttes": 0,
+        "TilladOprettlseUdFraudgaaetNummer": 0,
+        "BrugLavesteNiveau": 0
+
+    }
+]
+
+
+SbSysNetDrift["EmnePlanNummer"] = [
+    # TODO: Made up values (the KLE is real), don't have grounds for picking more relevant data
+    {
+        "ID": 1,
+        "EmnePlanID": 1,
+        # Forelæggelse af sager for ungdomskriminalitetsnævnet
+        "Nummer": "27.29.25",
+        "Navn": "Forelæggelse af sager for ungdomskriminalitetsnævnet",
+    }
+]
+
 
 # --
 
