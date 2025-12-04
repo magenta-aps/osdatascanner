@@ -337,36 +337,22 @@ class KeycloakImporter:
         try:
             alias = Alias.objects.get(
                 imported=True,
-                imported_id=iid,
                 account=account,
                 _alias_type=alias_type,
             )
         except Alias.DoesNotExist:
-            try:
-                alias = Alias.objects.get(
-                    imported=True,
-                    imported_id=account.distinguished_name + suffix,
-                    account=account,
-                    _alias_type=alias_type,
-                )
-                logger.warning(
-                    "Found imported alias with deprecated imported_id.\n",
-                    alias=alias,
-                )
-                alias.imported_id = iid
-                self.to_update.append((alias, ('imported_id',)))
-            except Alias.DoesNotExist:
-                alias = Alias(
-                    imported_id=iid,
-                    account=account,
-                    _alias_type=alias_type,
-                    _value=value,
-                )
-                self.to_add.append(alias)
-                return
+            alias = Alias(
+                account=account,
+                _alias_type=alias_type,
+            )
+            self.to_add.append(alias)
+
         if alias._value != value:
             alias._value = value
-            self.to_update.append((alias, ('value',)))
+            self.to_update.append((alias, ('_value',)))
+        if alias.imported_id != iid:
+            alias.imported_id = iid
+            self.to_update.append((alias, ('imported_id',)))
 
     def traverse_node(
             self,
