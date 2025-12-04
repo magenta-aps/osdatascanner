@@ -10,6 +10,7 @@ from .models.aliases import AliasType
 from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.core_organizational_structure.models.position import Role
+from django.db.models import Q
 
 logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
@@ -153,7 +154,8 @@ class KeycloakImporter:
     def perform_import_raw(self, user_iter, dn_selector, do_manager_import=False):  # noqa: CCR001
         root_node = LDAPNode.from_iterator(user_iter, name_selector=dn_selector)
 
-        self.traverse_node(root_node, None, [])
+        for child in root_node.children:
+            self.traverse_node(child, None, [])
 
         if not self.iids:
             no_users_warning = _(
@@ -217,7 +219,7 @@ class KeycloakImporter:
         local object (if any) is to be updated, a new one is to be created or no actions.
         Returns an OrganizationalUnit object."""
         dn = RDN.sequence_to_dn(path)
-        name = path[-1].value if path else ""
+        name = path[-1].value
         self.iids.add(dn)
 
         try:
@@ -269,32 +271,35 @@ class KeycloakImporter:
         email = node.properties.get("email", "")
         dn = node.properties["attributes"]["LDAP_ENTRY_DN"][0]
 
-        try:
-            account = Account.objects.get(
+        base_filter = Q(organization=self.org, imported=True)
+        query_methods = (
+            # Standard identifying method:
+            # Find the Account with the expected imported_id.
+            Q(imported_id=imported_id),
+
+            # Deprecated method:
+            # Find an Account with matching dn, and no imported_id
+            # (see organization migration 0068).
+            Q(imported_id__isnull=True, distinguished_name=dn),
+
+            # Backup method:
+            # The above method fails for users that have been moved in AD between
+            # last pre-migration import and first post-migration import.
+            # But if the user has persisted in keycloak we might be able to use their keycloak id
+            # to identify the coresponding account object.
+            Q(uuid=node.properties["id"]),
+        )
+        for q in query_methods:
+            qs = Account.objects.filter(base_filter & q)
+            if qs.exists():
+                account = qs.first()
+                break
+        else:
+            account = Account(
                 organization=self.org,
-                imported=True,
-                imported_id=imported_id,
+                uuid=node.properties["id"],
             )
-        except Account.DoesNotExist:
-            try:
-                account = Account.objects.get(
-                    organization=self.org,
-                    imported=True,
-                    imported_id__isnull=True,
-                    distinguished_name=dn,
-                )
-                logger.warning(
-                    "Found imported account without imported_id, but matching dn.\n"
-                    "Assuming it was imported using dn, which is now deprecated.",
-                    account=account,
-                )
-            except Account.DoesNotExist:
-                account = Account(
-                    organization=self.org,
-                    imported_id=imported_id,
-                    uuid=node.properties["id"],
-                )
-                self.to_add.append(account)
+            self.to_add.append(account)
 
         for attr_name, expected in (
                 ("imported_id", imported_id),
@@ -320,7 +325,7 @@ class KeycloakImporter:
         # match block for that, but you only get to match one case...)
         match node.properties:
             case {"attributes": {"userPrincipalName": [upn]}}:
-                self.evaluate_alias(account, upn, AliasType.UPN)
+                self.evaluate_alias(account, upn, AliasType.USER_PRINCIPAL_NAME)
 
         self.iids.add(imported_id)
         self.accounts[imported_id] = account
@@ -333,36 +338,22 @@ class KeycloakImporter:
         try:
             alias = Alias.objects.get(
                 imported=True,
-                imported_id=iid,
                 account=account,
                 _alias_type=alias_type,
             )
         except Alias.DoesNotExist:
-            try:
-                alias = Alias.objects.get(
-                    imported=True,
-                    imported_id=account.distinguished_name + suffix,
-                    account=account,
-                    _alias_type=alias_type,
-                )
-                logger.warning(
-                    "Found imported alias with deprecated imported_id.\n",
-                    alias=alias,
-                )
-                alias.imported_id = iid
-                self.to_update.append((alias, ('imported_id',)))
-            except Alias.DoesNotExist:
-                alias = Alias(
-                    imported_id=iid,
-                    account=account,
-                    _alias_type=alias_type,
-                    _value=value,
-                )
-                self.to_add.append(alias)
-                return
+            alias = Alias(
+                account=account,
+                _alias_type=alias_type,
+            )
+            self.to_add.append(alias)
+
         if alias._value != value:
             alias._value = value
-            self.to_update.append((alias, ('value',)))
+            self.to_update.append((alias, ('_value',)))
+        if alias.imported_id != iid:
+            alias.imported_id = iid
+            self.to_update.append((alias, ('imported_id',)))
 
     def traverse_node(
             self,
@@ -370,12 +361,10 @@ class KeycloakImporter:
             parent: Optional[OrganizationalUnit],
             path: Sequence[RDN]):
         if node.children:
-            if node.label:
-                path += node.label
+            path += node.label
             org_unit = self.evaluate_org_unit_node(node, parent, path)
             for child in node.children:
                 self.traverse_node(child, org_unit, path)
-            if node.label:
-                path.pop()
+            path.pop()
         else:
             self.evaluate_account_node(node, parent)

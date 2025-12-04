@@ -15,6 +15,7 @@ def TEST_CORP():
             "username": "ted@test.invalid",
             "firstName": "Ted",
             "lastName": "Testsen",
+            "email": "ted@test.invalid",
             "attributes": {
                 "LDAP_ENTRY_DN": [
                     "CN=Ted Testsen,OU=Testers,O=Test Corp."
@@ -568,3 +569,78 @@ class TestKeycloakImport:
         """When nothing is imported, an error should be raised"""
         with pytest.raises(LDAPNothingImportedWarning):
             self.perform_ou_import([], test_org)
+
+    def test_account_moved_after_migration_but_before_reimport(self, TEST_CORP, test_org):
+        """If a user has been moved after applying migration organizations_0068, but before
+        reimporting, the import shouldn't break.
+        If they haven't been removed from keycloak, it is possible to figure out the connection,
+        between previous account and newly imported user, through the keycloak id that we save
+        in `uuid`."""
+        # Arrange
+        ted_dict = TEST_CORP[0]
+        ted = Account.objects.create(
+            organization=test_org,
+            imported_id=None,
+            imported=True,
+            distinguished_name="CN=Ted Testsen,OU=TheUCorp,O=Test Corp.",
+            uuid=ted_dict['id'],
+        )
+
+        # Act
+        self.perform_ou_import(TEST_CORP, test_org)
+        ted.refresh_from_db()
+
+        # Assert
+        assert ted.imported_id == ted_dict['attributes']['LDAP_ID'][0]
+
+    def test_account_moved_after_migration_and_deleted_from_keycloak(self, TEST_CORP, test_org):
+        """If a user has been moved after applying migration organizations_0068, but before
+        reimporting, the import shouldn't break.
+        If they have been removed and recreated in keycloak in the meantime, we have no (stable)
+        way of identifying the matchin account object, so we have no other option than to
+        delete the old account and create a new one."""
+        # Arrange
+        ted_dict = TEST_CORP[0]
+        Account.objects.create(
+            organization=test_org,
+            imported_id=None,
+            imported=True,
+            distinguished_name="CN=Ted Testsen,OU=TheUCorp,O=Test Corp.",
+        )
+
+        # Act
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert
+        assert Account.objects.filter(username=ted_dict['username']).exists()
+
+    def test_account_moved_after_migration_alias(self, TEST_CORP, test_org):
+        """If a user has been moved after applying migration organizations_0068, but before
+        reimporting, the import shouldn't break. Even if they have an alias."""
+        # Arrange
+        ted_dict = TEST_CORP[0]
+        ted = Account.objects.create(
+            organization=test_org,
+            imported_id=None,
+            imported=True,
+            distinguished_name="CN=Ted Testsen,OU=TheUCorp,O=Test Corp.",
+            uuid=ted_dict['id'],
+        )
+        Alias.objects.create(
+            account=ted,
+            imported=True,
+            imported_id=ted.distinguished_name +
+            keycloak_actions.ALIAS_TYPE_IMPORTED_ID_SUFFIX['email'],
+            _alias_type="email",
+            _value=ted_dict["email"],
+            )
+
+        # Act
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert
+        assert Alias.objects.filter(
+            account=Account.objects.get(username=ted_dict["username"]),
+            _alias_type="email",
+            _value=ted_dict["email"],
+        ).exists()
