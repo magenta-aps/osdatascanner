@@ -154,7 +154,8 @@ class KeycloakImporter:
     def perform_import_raw(self, user_iter, dn_selector, do_manager_import=False):  # noqa: CCR001
         root_node = LDAPNode.from_iterator(user_iter, name_selector=dn_selector)
 
-        self.traverse_node(root_node, None, [])
+        for child in root_node.children:
+            self.traverse_node(child, None, [])
 
         if not self.iids:
             no_users_warning = _(
@@ -218,7 +219,7 @@ class KeycloakImporter:
         local object (if any) is to be updated, a new one is to be created or no actions.
         Returns an OrganizationalUnit object."""
         dn = RDN.sequence_to_dn(path)
-        name = path[-1].value if path else ""
+        name = path[-1].value
         self.iids.add(dn)
 
         try:
@@ -360,12 +361,10 @@ class KeycloakImporter:
             parent: Optional[OrganizationalUnit],
             path: Sequence[RDN]):
         if node.children:
-            if node.label:
-                path += node.label
+            path += node.label
             org_unit = self.evaluate_org_unit_node(node, parent, path)
             for child in node.children:
                 self.traverse_node(child, org_unit, path)
-            if node.label:
-                path.pop()
+            path.pop()
         else:
             self.evaluate_account_node(node, parent)
