@@ -10,6 +10,7 @@ from .models.aliases import AliasType
 from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.core_organizational_structure.models.position import Role
+from django.db.models import Q
 
 logger = structlog.get_logger("admin_organizations")
 # TODO: Place somewhere reusable, or find a smarter way to ID aliases imported_id..
@@ -269,32 +270,35 @@ class KeycloakImporter:
         email = node.properties.get("email", "")
         dn = node.properties["attributes"]["LDAP_ENTRY_DN"][0]
 
-        try:
-            account = Account.objects.get(
+        base_filter = Q(organization=self.org, imported=True)
+        query_methods = (
+            # Standard identifying method:
+            # Find the Account with the expected imported_id.
+            Q(imported_id=imported_id),
+
+            # Deprecated method:
+            # Find an Account with matching dn, and no imported_id
+            # (see organization migration 0068).
+            Q(imported_id__isnull=True, distinguished_name=dn),
+
+            # Backup method:
+            # The above method fails for users that have been moved in AD between
+            # last pre-migration import and first post-migration import.
+            # But if the user has persisted in keycloak we might be able to use their keycloak id
+            # to identify the coresponding account object.
+            Q(uuid=node.properties["id"]),
+        )
+        for q in query_methods:
+            qs = Account.objects.filter(base_filter & q)
+            if qs.exists():
+                account = qs.first()
+                break
+        else:
+            account = Account(
                 organization=self.org,
-                imported=True,
-                imported_id=imported_id,
+                uuid=node.properties["id"],
             )
-        except Account.DoesNotExist:
-            try:
-                account = Account.objects.get(
-                    organization=self.org,
-                    imported=True,
-                    imported_id__isnull=True,
-                    distinguished_name=dn,
-                )
-                logger.warning(
-                    "Found imported account without imported_id, but matching dn.\n"
-                    "Assuming it was imported using dn, which is now deprecated.",
-                    account=account,
-                )
-            except Account.DoesNotExist:
-                account = Account(
-                    organization=self.org,
-                    imported_id=imported_id,
-                    uuid=node.properties["id"],
-                )
-                self.to_add.append(account)
+            self.to_add.append(account)
 
         for attr_name, expected in (
                 ("imported_id", imported_id),
@@ -320,7 +324,7 @@ class KeycloakImporter:
         # match block for that, but you only get to match one case...)
         match node.properties:
             case {"attributes": {"userPrincipalName": [upn]}}:
-                self.evaluate_alias(account, upn, AliasType.UPN)
+                self.evaluate_alias(account, upn, AliasType.USER_PRINCIPAL_NAME)
 
         self.iids.add(imported_id)
         self.accounts[imported_id] = account
