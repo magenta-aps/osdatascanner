@@ -1,6 +1,8 @@
 # Changelog
 
-## Version ???, ???
+## Version 3.30.7, 5th December 2025
+
+"Reliz Navidad"
 
 ### General improvements
 

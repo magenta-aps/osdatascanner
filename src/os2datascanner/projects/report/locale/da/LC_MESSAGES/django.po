@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 14:27+0100\n"
+"POT-Creation-Date: 2025-12-05 08:12+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -191,7 +191,6 @@ msgid "false positive"
 msgstr "falsk positiv"
 
 #: organizations/models/account_outlook_setting.py
-#: reportapp/models/documentreport.py
 #: reportapp/templates/components/reports/match_table.html
 #: reportapp/templates/components/reports/sbsys_match_table.html
 msgid "name"
