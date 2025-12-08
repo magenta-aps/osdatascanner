@@ -98,11 +98,14 @@ class TestAccountCoverageCommand:
         assert message[0]["scanner_id"] == scan_olsenbanden_org_withheld.scanner_pk
 
     def test_command_multiple_organizations_no_argument(self, olsenbanden_organization,
-                                                        marvel_organization):
+                                                        marvel_organization, enqueued_messages,
+                                                        capfd):
         """Calling the command without an organization argument when multiple are present should
-        raise an exception."""
-        with pytest.raises(Organization.MultipleObjectsReturned):
-            call_command("account_coverage")
+        not do anything, and instead print an error."""
+        call_command("account_coverage")
+        assert "Multiple Organizations exist, '--organization' argument is required." \
+            in capfd.readouterr().err
+        assert enqueued_messages == []
 
     def test_command_multiple_organizations(self, olsenbanden_organization,
                                             marvel_organization, egon_email_alias,

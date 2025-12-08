@@ -33,7 +33,13 @@ class Command(BaseCommand):
             org = Organization.objects.get(uuid=organization)
         else:
             # If there is only one organization, grab that. Else fail
-            org = Organization.objects.get()
+            try:
+                org = Organization.objects.get()
+            except Organization.MultipleObjectsReturned:
+                self.stderr.write(
+                    self.style.ERROR(
+                        "Multiple Organizations exist, '--organization' argument is required."))
+                return
 
         if scanner:
             scan_ref = ScannerReference.objects.get(scanner_pk=scanner, organization=org)
