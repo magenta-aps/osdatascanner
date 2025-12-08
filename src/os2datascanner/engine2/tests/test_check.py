@@ -117,15 +117,19 @@ class CheckTests(unittest.TestCase):
         """Check that a mail in a deleted EWS mailbox is itself correctly
         treated as deleted."""
         mail = EWSMailHandle(
-                EWSAccountSource(
-                        domain="cloudy.example",
-                        server=CLOUD,
-                        admin_user="cloudministrator",
-                        admin_password="littlefluffy",
-                        user="claude"),
-                "SW5ib3hJRA==.TWVzc2dJRA==",
-                "Re: Castles in the sky",
-                "Inbox", "0000012345")
+            EWSAccountSource(
+                domain="cloudy.example",
+                server=CLOUD,
+                admin_user="cloudministrator",
+                admin_password="littlefluffy",
+                user="claude"
+            ),
+            "SW5ib3hJRA==.TWVzc2dJRA==",
+            "Re: Castles in the sky",
+            "Inbox",
+            "0000012345",
+            "https://outlook.office365.com/owa/?ItemID=abc",
+        )
 
         def _failer(*args, **kwargs):
             raise ErrorNonExistentMailbox("user@test.example")
