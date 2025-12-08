@@ -1,5 +1,11 @@
 # Changelog
 
+## Version ???, ???
+
+### General improvements
+
+- The 'open' button for results from an Exchange Scanner now support arbitrary webmail clients.
+
 ## Version 3.30.7, 5th December 2025
 
 "Reliz Navidad"

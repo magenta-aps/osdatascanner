@@ -84,7 +84,8 @@ example_handles = [
                                     user="claude"),
                             "SW5ib3hJRA==.TWVzc2dJRA==",
                             "Re: Castles in the sky",
-                            "Inbox", "0000012345")),
+                            "Inbox", "0000012345",
+                            "https://outlook.office365.com/owa/?ItemID=abc")),
             "1/pictograph.jpeg",
             "image/jpeg"),
     PDFObjectHandle(

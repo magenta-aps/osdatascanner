@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import Iterator
+from typing import Iterator, Optional
 from urllib.parse import urlsplit, quote
 from contextlib import contextmanager
 from exchangelib import (
@@ -189,13 +189,17 @@ class EWSAccountSource(Source):
 
         def relevant_mails(relevant_folders):
             for folder in relevant_folders:
-                for mail in self._relevant_mails(folder, "id", "subject"):
+                for mail in self._relevant_mails(
+                        folder, "id", "subject", "web_client_read_form_query_string"):
+                    wcs = mail.web_client_read_form_query_string
                     yield EWSMailHandle(
                         self,
                         "{0}.{1}".format(folder.id, mail.id),
                         mail.subject or "(no subject)",
                         folder.name,
-                        mail.entry_id.hex())
+                        mail.entry_id.hex(),
+                        wcs if wcs.startswith(("http://", "https://",)) else None,
+                    )
 
         yield from relevant_mails(self._relevant_folders(account))
 
@@ -321,11 +325,13 @@ class EWSMailHandle(Handle):
         mail_subject: str,
         folder_name: str,
         entry_id: int,
+        web_link: Optional[str],
     ):
         super().__init__(source, path)
         self._mail_subject = mail_subject
         self._folder_name = folder_name
         self._entry_id = entry_id
+        self._web_link = web_link
 
     @property
     def presentation_name(self):
@@ -337,10 +343,9 @@ class EWSMailHandle(Handle):
 
     @property
     def presentation_url(self):
-        # There appears to be no way to extract a webmail URL from an arbitrary
-        # EWS server (and why should there be?), so at present we only support
-        # web links to Office 365 mails
-        if self.source._server == OFFICE_365_ENDPOINT:
+        if self._web_link:
+            return self._web_link
+        elif self.source._server == OFFICE_365_ENDPOINT:
             message_id = self.relative_path.split(".", maxsplit=1)[1]
             return _make_o365_deeplink(message_id)
         elif self._entry_id:
@@ -368,12 +373,17 @@ class EWSMailHandle(Handle):
             mail_subject=self._mail_subject,
             folder_name=self._folder_name,
             entry_id=self._entry_id,
+            web_link=self._web_link,
         )
 
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
-        return EWSMailHandle(Source.from_json_object(
-            obj["source"]),
-            obj["path"], obj["mail_subject"],
-            obj.get("folder_name"), obj.get("entry_id"))
+        return EWSMailHandle(
+            Source.from_json_object(obj["source"]),
+            obj["path"],
+            obj["mail_subject"],
+            obj.get("folder_name"),
+            obj.get("entry_id"),
+            obj.get("web_link"),
+        )

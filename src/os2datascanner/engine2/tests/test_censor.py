@@ -31,13 +31,17 @@ class TestCensor:
     def test_ews_censoring(self):
         handle = EWSMailHandle(
             EWSAccountSource(
-                    "internet.invalid",
-                    "mail.internet.invalid",
-                    "administrator", "h4ckme",
-                    "secretary"),
+                "internet.invalid",
+                "mail.internet.invalid",
+                "administrator", "h4ckme",
+                "secretary"
+            ),
             "notavalidfolderid.notavalidmailid",
             "Re: Re: Re: You may already have won! (was Fwd: Spam)",
-            "Inbox", "notavalidentryid")
+            "Inbox",
+            "notavalidentryid",
+            "https://outlook.office365.com/owa/?ItemID=abc",
+        )
 
         censored_handle = handle.censor()
 
