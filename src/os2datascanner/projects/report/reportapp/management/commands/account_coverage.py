@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 alias_relations___alias_type=AliasType.REMEDIATOR,
             )
 
-        if any(["msgraph-files" in dr.source_type for dr in reports]):
+        if reports.filter(source_type="msgraph-files").exists():
             self.stdout.write(self.style.WARNING("Some document reports stem from MSGraph file "
                                                  "scans! Make sure you cleanup stale accounts in "
                                                  "the admin module!"))
