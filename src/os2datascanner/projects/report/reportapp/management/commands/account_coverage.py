@@ -85,7 +85,7 @@ class Command(BaseCommand):
                         "account": str(obj["alias_relations__account"]),
                         "time": obj["scan_time"].astimezone(tz=None).isoformat(),
                         "scanner_id": obj["scanner_job__scanner_pk"]
-                        } for obj in st_reports]
+                        } for obj in st_reports.iterator()]
 
         rstt_coverages = [{
                         # The queryset has been converted to a dict, so the
@@ -93,7 +93,7 @@ class Command(BaseCommand):
                         "account": str(obj["alias_relations__account"]),
                         "time": obj["raw_scan_tag__time"],
                         "scanner_id": obj["scanner_job__scanner_pk"]
-                        } for obj in rstt_reports]
+                        } for obj in rstt_reports.iterator()]
 
         coverages = st_coverages + rstt_coverages
 
