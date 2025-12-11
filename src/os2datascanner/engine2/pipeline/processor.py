@@ -63,6 +63,9 @@ def message_received_raw(body, channel, source_manager, *, _check=True):
 
     try:
         if _check and not tr.run(check, source_manager, conversion.handle):
+            logger.info(
+                    "resource missing",
+                    handle=str(conversion.handle))
             yield from generate_missing_resource_messages(conversion)
             # stop the generator immediately
             return
@@ -113,7 +116,8 @@ def do_conversion(resource, conversion, retrier, source_manager):
                 # If that, or mt matches the computed MIME type of this file exactly then ...
                 logger.info(
                         "skipping conversion due to scanner config",
-                        handle=conversion.handle, conversion_type=required)
+                        handle=str(conversion.handle),
+                        conversion_type=required)
                 return SKIPPED  # ... skip conversion
 
     # If we have an appropriate conversion registered, go ahead.
@@ -127,10 +131,9 @@ def do_conversion(resource, conversion, retrier, source_manager):
             if conversion_exists(resource := handle.follow(source_manager), required):
                 logger.info(
                          "hierarchy rewound for conversion",
-                         original_handle=conversion.handle,
-                         rewound_handle=handle,
-                         output_type=required
-                )
+                         original_handle=str(conversion.handle),
+                         rewound_handle=str(handle),
+                         conversion_type=required)
                 return retrier.run(convert, resource, required)
 
         # There wasn't any in the parent hierarchy. Let it run, raise a KeyError and be handled
@@ -162,7 +165,11 @@ def emit_representation(conversion, representation):
     else:
         dv = {required.value: representation}
 
-    logger.info(f"Required representation for {conversion.handle} is {required}")
+    logger.info(
+            "emitting representation",
+            handle=str(conversion.handle),
+            conversion_type=required,
+            representation=encode_dict(dv))
     yield (
         "os2ds_representations",
         messages.RepresentationMessage(
