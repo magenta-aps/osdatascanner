@@ -9,9 +9,7 @@ from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource
 from ..file import FilesystemResource
 from .derived import DerivedSource
-from .utilities.extraction import (should_skip_images,
-                                   MD5DeduplicationFilter,
-                                   TinyImageFilter)
+from .utilities.extraction import (MD5DeduplicationFilter, TinyImageFilter)
 from .utilities.ghostscript import gs_convert
 
 
@@ -123,14 +121,14 @@ class PDFPageSource(DerivedSource):
                     timeout=engine2_settings.subprocess["timeout"],
                     check=True, isolate_tmp=True)
 
-            if not should_skip_images(sm.configuration):
-                run_custom(
-                    [
-                            "pdfimages", "-q", "-png", "-j", "-f", page, "-l", page,
-                            path, "{0}/image".format(outputdir)
-                    ],
-                    timeout=engine2_settings.subprocess["timeout"],
-                    check=True, isolate_tmp=True)
+            run_custom(
+                [
+                        "pdfimages", "-q", "-png", "-j",
+                        "-f", page, "-l", page,
+                        path, "{0}/image".format(outputdir)
+                ],
+                timeout=engine2_settings.subprocess["timeout"],
+                check=True, isolate_tmp=True)
 
             yield TinyImageFilter.apply(
                     MD5DeduplicationFilter.apply(outputdir))
