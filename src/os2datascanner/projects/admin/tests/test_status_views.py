@@ -59,3 +59,23 @@ class TestStatusViews:
         assert response.status_code == 302
         basic_scanstatus.refresh_from_db()
         assert basic_scanstatus.cancelled
+
+    def test_status_timeline_context_data_format(self, client, superuser, scanstatus_with_process):
+        client.force_login(superuser)
+        response = client.get(reverse_lazy("status-timeline",
+                                           kwargs={"pk": scanstatus_with_process.pk}))
+
+        bytes_data = response.context_data["bytes_data"]
+        time_data = response.context_data["time_data"]
+
+        process_stats = scanstatus_with_process.process_stats.all()
+
+        assert len(bytes_data) == len(time_data) == process_stats.count()
+
+        for obj in bytes_data:
+            ps = process_stats.get(mime_type=obj["label"])
+            assert ps.total_size == obj["count"]
+
+        for obj in time_data:
+            ps = process_stats.get(mime_type=obj["label"])
+            assert ps.total_time.total_seconds() == obj["count"]
