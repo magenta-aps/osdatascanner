@@ -310,3 +310,22 @@ with an organization uuid using the `--organization` argument.
 Additionally, the command can be supplied with the primary key of a scanner
 in the admin module using the `--scanner` argument. Then, only CoveredAccounts
 for that scanner will be created.
+
+The command will look at both the "scan_time" field and the "time" value
+of the "raw_scan_tag" json field of the DocumentReports in the report
+module to determine scan times for different scanners and accounts.
+
+#### Limitations
+
+This tool can only recreate CoveredAccounts based on the information available
+on DocumentReports in the report module. If an account does not have any
+associated results in the report module for example, no CoveredAccounts will
+be recreated for them in the admin module, even if they are covered by the scan.
+
+The MSGraphFileScanner can scan based on both organizational units (OneDrive)
+and Sharepoint. Normally, CoveredAccounts would only be created for the accounts
+covered by the scanner through the related organizational units when executing
+the scan. However, the tool is not able to distinguish results stemming from
+OneDrive or Sharepoint, and will create CoveredAccounts not only for the
+accounts covered through the related organizational units, but also for the
+accounts with results from Sharepoint.

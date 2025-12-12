@@ -1,7 +1,9 @@
 """Returns the account coverage of a given scan based on existing DocumentReports."""
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q
+from django.db.models import Q, F, DateTimeField
+from django.db.models.functions import Cast
+from django.db.models.fields.json import KeyTextTransform
 
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
@@ -31,7 +33,13 @@ class Command(BaseCommand):
             org = Organization.objects.get(uuid=organization)
         else:
             # If there is only one organization, grab that. Else fail
-            org = Organization.objects.get()
+            try:
+                org = Organization.objects.get()
+            except Organization.MultipleObjectsReturned:
+                self.stderr.write(
+                    self.style.ERROR(
+                        "Multiple Organizations exist, '--organization' argument is required."))
+                return
 
         if scanner:
             scan_ref = ScannerReference.objects.get(scanner_pk=scanner, organization=org)
@@ -49,19 +57,45 @@ class Command(BaseCommand):
                 alias_relations___alias_type=AliasType.REMEDIATOR,
             )
 
-        reports = reports.values(
-                "scanner_job__scanner_pk",
-                "alias_relations__account",
-                "scan_time"
+        if reports.filter(source_type="msgraph-files").exists():
+            self.stdout.write(self.style.WARNING("Some document reports stem from MSGraph file "
+                                                 "scans! Make sure you cleanup stale accounts in "
+                                                 "the admin module!"))
+
+        st_reports = reports.annotate(
+                    scan_tag_time_str=KeyTextTransform("time", "raw_scan_tag"),
+                    scan_tag_time=Cast("scan_tag_time_str", DateTimeField()),
+                ).exclude(
+                    scan_time=F("scan_tag_time")
+                ).values(
+                    "scanner_job__scanner_pk",
+                    "alias_relations__account",
+                    "scan_time"
                 ).distinct().order_by("scan_time")
 
-        coverages = [{
+        rstt_reports = reports.values(
+                "scanner_job__scanner_pk",
+                "alias_relations__account",
+                "raw_scan_tag__time"
+                ).distinct().order_by("raw_scan_tag__time")
+
+        st_coverages = [{
                         # The queryset has been converted to a dict, so the
                         # "alias_relations__account" value here is a UUID, not an Account.
                         "account": str(obj["alias_relations__account"]),
                         "time": obj["scan_time"].astimezone(tz=None).isoformat(),
                         "scanner_id": obj["scanner_job__scanner_pk"]
-                    } for obj in reports]
+                        } for obj in st_reports.iterator()]
+
+        rstt_coverages = [{
+                        # The queryset has been converted to a dict, so the
+                        # "alias_relations__account" value here is a UUID, not an Account.
+                        "account": str(obj["alias_relations__account"]),
+                        "time": obj["raw_scan_tag__time"],
+                        "scanner_id": obj["scanner_job__scanner_pk"]
+                        } for obj in rstt_reports.iterator()]
+
+        coverages = st_coverages + rstt_coverages
 
         if coverages:
             message = CoverageMessage(
@@ -74,13 +108,13 @@ class Command(BaseCommand):
                 "os2ds_checkups", message.to_json_object()
             )
 
-            print(
+            self.stdout.write(
                     "Enqueued messages, waiting for"
                     " RabbitMQ thread to finish sending them...")
 
             ppt.enqueue_stop()
             ppt.run()
 
-            print("RabbitMQ thread finished. All done!")
+            self.stdout.write("RabbitMQ thread finished. All done!")
         else:
-            print("Nothing to recreate, no messages enqueued.")
+            self.stdout.write("Nothing to recreate, no messages enqueued.")
