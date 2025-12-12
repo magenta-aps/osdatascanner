@@ -330,6 +330,12 @@ class MatchesMessage(NamedTuple):
     matched: bool
     matches: Sequence[MatchFragment]
 
+    @staticmethod
+    def test(obj) -> bool:
+        return all(
+                attr in obj
+                for attr in ("scan_spec", "handle", "matched", "matches"))
+
     @property
     def sensitivity(self):  # noqa: CCR001, too high cognitive complexity
         """Computes the overall sensitivity of the matches contained in this
@@ -582,6 +588,10 @@ class CommandMessage(NamedTuple):
             "log_level": self.log_level,
             "profiling": self.profiling
         }
+
+    @staticmethod
+    def test(obj) -> bool:
+        return "abort" in obj
 
     @staticmethod
     def from_json_object(obj):

@@ -3,6 +3,7 @@ import os.path
 from pathlib import Path
 from datetime import datetime
 from dateutil.tz import gettz
+from tempfile import TemporaryDirectory
 from functools import cached_property
 from contextlib import contextmanager
 
@@ -75,6 +76,15 @@ class FilesystemSource(Source):
     @Source.json_handler(type_label)
     def from_json_object(obj):
         return FilesystemSource(path=obj["path"])
+
+    @classmethod
+    @contextmanager
+    def make_tmp_folder(cls) -> ('FilesystemSource', Path):
+        """Creates a new temporary folder for the duration of the context, and
+        returns both a FilesystemSource and a pathlib.Path pointing to it.
+        Useful if you need to write a test that mutates the underlying data."""
+        with TemporaryDirectory() as d:
+            yield (FilesystemSource(str(d)), Path(d))
 
 
 stat_attributes = (
