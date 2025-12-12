@@ -6,6 +6,9 @@
 
 - The 'open' button for results from an Exchange Scanner now support arbitrary webmail clients.
 
+- The `account_coverage` management command now recreates CoveredAccount objects based on both
+  the start_time and raw_scan_tag__time values of all DocumentReports.
+
 ## Version 3.30.7, 5th December 2025
 
 "Reliz Navidad"
