@@ -1,11 +1,13 @@
 {% extends 'components/common/base.html' %}
-{% load l10n %}
-{% load i18n %}
-{% load tz %}
+{% load l10n i18n tz static %}
 
 {% block scripts %}
   {{ block.super }}
   <script type="text/javascript" src="/jsi18n/"></script>
+  <script src="{% static '3rdparty/chart-4.0.1.min.js' %}"></script>
+  <script src="{% static '3rdparty/chartjs-plugin-datalabels.min.js' %}"></script>
+  <script src="{% static 'js/charts/pieCharts.js' %}"></script>
+  <script src="{% static 'js/scannerjob/statusTimelines.js' %}"></script>
 {% endblock %}
 
 {% block body %}

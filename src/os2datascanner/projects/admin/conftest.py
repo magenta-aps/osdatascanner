@@ -28,7 +28,7 @@ from os2datascanner.projects.admin.organizations.models import (
 from os2datascanner.projects.admin.core.models import Administrator, Client
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
-        ScanStatus, ScheduledCheckup)
+        ScanStatus, ScheduledCheckup, MIMETypeProcessStat)
 from os2datascanner.projects.admin.adminapp.models.usererrorlog import UserErrorLog
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner import (
@@ -567,6 +567,25 @@ def basic_scanstatus_old(basic_scanner):
     ss.scan_tag["time"] = datetime(1996, 3, 20).astimezone(tz=None).isoformat()
     ss.save()
     return ss
+
+
+@pytest.fixture
+def scanstatus_with_process(basic_scanstatus):
+    MIMETypeProcessStat.objects.create(
+        scan_status=basic_scanstatus,
+        mime_type="Very real file type",
+        total_size=5000,
+        total_time=timedelta(seconds=5),
+        object_count=500
+    )
+    MIMETypeProcessStat.objects.create(
+        scan_status=basic_scanstatus,
+        mime_type="Another indeed real file type",
+        total_size=20000,
+        total_time=timedelta(seconds=7),
+        object_count=200
+    )
+    return basic_scanstatus
 
 
 @pytest.fixture

@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load l10n %}
+{% load utility_tags %}
 
 <td colspan="7"
     id="finished-scan-statistics"
@@ -34,7 +35,9 @@
           </div>
         </div>
 
-        <div class="data-card data-card--scan-summary">
+        <div class="data-card data-card--scan-summary"
+             id="scan-summary__{{ status.pk|unlocalize }}"
+             {% if updated %} hx-get="{% url "status-timeline" status.pk %}" hx-target="#scan-summary__{{ status.pk|unlocalize }}" hx-select="#scan-summary__{{ status.pk|unlocalize }}" hx-trigger="every 5s" hx-swap="outerHTML" {% endif %}>
           <div class="data-card__label">
             <span class="title">{% trans "Summary of scan" %}</span>
           </div>
@@ -62,8 +65,78 @@
                 </li>
               {% endif %}
 
-              {% comment %} TODO: Show number of errors thrown during scan. {% endcomment %}
+              {% if status.coveredaccount_set.exists %}
+                <li>
+                  <p>
+                    {% blocktranslate with num=status.coveredaccount_set.count %}{{ num }} accounts covered by this scan{% endblocktranslate %}
+                  </p>
+                </li>
+              {% endif %}
+
+              {% if status.usererrorlog_set.exists %}
+                <li>
+                  <p>
+                    {% blocktranslate with num=status.usererrorlog_set.count %}{{ num }} errors encountered while scanning{% endblocktranslate %}
+                  </p>
+                </li>
+              {% endif %}
+
+              <div class="data-card__label">
+                <span class="title">{% trans "Time spent scanning" %}</span>
+              </div>
+
+              <li>
+                {% for time_dict in time_data|slice:"5" %}
+                  <ul>
+                    <p>{{ time_dict.label }}: {{ time_dict.count|format_timespan }}</p>
+                  </ul>
+                {% endfor %}
+              </li>
             </ul>
+          </div>
+        </div>
+
+        <div class="data-card data-card--bytes">
+          <div class="data-card__label">
+            <span class="title">{% trans "Size scanned" %}</span>
+            <span class="subtitle">{% trans "Total size scanned of different file types" %}</span>
+          </div>
+
+          <div class="data-card__content">
+            <div class="statistics__section__chart-container chart_container status-bytes"
+                 data-chartid="bytes_status__{{ status.pk|unlocalize }}">
+              <canvas class="pie_chart"
+                      id="pie_chart_bytes_status__{{ status.pk|unlocalize }}"
+                      height="150"
+                      width="250"></canvas>
+            </div>
+            <div class="canvas__legend"
+                 data-chartid="distribution-data-sources"
+                 id="pie_legend_bytes_status__{{ status.pk|unlocalize }}"></div>
+
+            {{ bytes_data|json_script:"bytes_data" }}
+          </div>
+        </div>
+
+        <div class="data-card data-card--seconds">
+          <div class="data-card__label">
+            <span class="title">{% trans "Seconds scanned" %}</span>
+            <span class="subtitle">{% trans "Time spent scanning different file types" %}</span>
+          </div>
+
+          <div class="data-card__content">
+            <div class="statistics__section__chart-container chart_container status-seconds"
+                 data-chartid="seconds_status__{{ status.pk|unlocalize }}">
+              <canvas class="pie_chart"
+                      id="pie_chart_seconds_status__{{ status.pk|unlocalize }}"
+                      height="150"
+                      width="250"></canvas>
+            </div>
+            <div class="canvas__legend"
+                 data-chartid="distribution-data-sources"
+                 id="pie_legend_seconds_status__{{ status.pk|unlocalize }}"></div>
+
+            {{ time_data|json_script:"time_data" }}
           </div>
         </div>
       </section>

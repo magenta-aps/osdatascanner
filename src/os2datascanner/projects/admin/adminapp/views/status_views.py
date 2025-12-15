@@ -174,6 +174,13 @@ class StatusTimeline(RestrictedDetailView):
 
         status = context['status']
         context['snapshot_data'] = status.timeline()
+        context['bytes_data'] = [{"label": k, "count": v["size"]} for k, v in
+                                 status.data_types().items()]
+        context['bytes_data'].sort(key=lambda d: -d["count"])
+        context['time_data'] = [{"label": k, "count": v["time"].total_seconds()} for k, v in
+                                status.data_types().items()]
+        context['time_data'].sort(key=lambda d: -d["count"])
+        context['updated'] = self.request.GET.get("updated", False) == "true"
 
         return context
 
