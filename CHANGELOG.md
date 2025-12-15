@@ -2,6 +2,13 @@
 
 ## Version ???, ???
 
+### New in this release
+
+- More useful information is now shown on scanner status pages, including the number of accounts
+  covered by the scan, the number of errors encountered while scanning, an overview of time spent
+  scanning different source types, as well as two pie charts presenting the time spent scanning
+  and size distribution of different source types in the scan.
+
 ### General improvements
 
 - The 'open' button for results from an Exchange Scanner now support arbitrary webmail clients.
