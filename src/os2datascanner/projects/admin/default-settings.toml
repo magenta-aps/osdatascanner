@@ -87,15 +87,6 @@ OS2MO_REQUEST_TIMEOUT = 120
 # 2.0 token provider before concluding that something has gone wrong
 OAUTH2_TOKEN_TIMEOUT = 180
 
-# [sbsys]
-# Using oauth with grant type client_credentials.
-# These settings must be provided to later retrieve a token
-# to then make API calls.
-SBSYS_CLIENT_ID = ""
-SBSYS_CLIENT_SECRET = ""
-SBSYS_TOKEN_URL = ""
-# API url should be pasted ending with "api/"
-SBSYS_API_URL = ""
 
 # [test]
 TEST_RUNNER = "xmlrunner.extra.djangotestrunner.XMLTestRunner"

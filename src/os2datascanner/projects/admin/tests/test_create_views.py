@@ -10,7 +10,6 @@ all_scanner_create_urls = [
         reverse_lazy('dropboxscanner_add'),
         reverse_lazy('googledrivescanner_add'),
         reverse_lazy('gmailscanner_add'),
-        reverse_lazy('sbsysscanner_add'),
         reverse_lazy('msgraphcalendarscanner_add'),
         reverse_lazy('msgraphfilescanner_add'),
         reverse_lazy('msgraphmailscanner_add'),

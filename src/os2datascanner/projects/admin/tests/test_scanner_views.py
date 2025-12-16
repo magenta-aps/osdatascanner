@@ -176,19 +176,19 @@ class TestRevalidationScannerViews:
 class TestScannerViewsMethods:
 
     @pytest.mark.parametrize('enabled_scanners', [
-        (False, False, False, False, False, False, False, False, False, False, False),
-        (True, False, False, False, False, False, False, False, False, False, False),
-        (False, True, False, False, False, False, False, False, False, False, False),
-        (False, False, True, False, False, False, False, False, False, False, False),
-        (False, False, False, True, False, False, False, False, False, False, False),
-        (False, False, False, False, True, False, False, False, False, False, False),
-        (False, False, False, False, False, True, False, False, False, False, False),
-        (False, False, False, False, False, False, True, False, False, False, False),
-        (False, False, False, False, False, False, False, True, False, False, False),
-        (False, False, False, False, False, False, False, False, True, False, False),
-        (False, False, False, False, False, False, False, False, False, True, False),
-        (False, False, False, False, False, False, False, False, False, False, True),
-        (True, True, True, True, True, True, True, True, True, True, True),
+        (False, False, False, False, False, False, False, False, False, False),
+        (True, False, False, False, False, False, False, False, False, False),
+        (False, True, False, False, False, False, False, False, False, False),
+        (False, False, True, False, False, False, False, False, False, False),
+        (False, False, False, True, False, False, False, False, False, False),
+        (False, False, False, False, True, False, False, False, False, False),
+        (False, False, False, False, False, True, False, False, False, False),
+        (False, False, False, False, False, False, True, False, False, False),
+        (False, False, False, False, False, False, False, True, False, False),
+        (False, False, False, False, False, False, False, False, True, False),
+        (False, False, False, False, False, False, False, False, False, True),
+        (False, False, False, False, False, False, False, False, False, False),
+        (True, True, True, True, True, True, True, True, True, True),
     ])
     def test_scanner_tabs_context(self, client, user_admin, enabled_scanners, settings,
                                   monkeypatch):
@@ -203,12 +203,11 @@ class TestScannerViewsMethods:
         from os2datascanner.projects.admin.adminapp.views.gmailscanner_views import GmailScanner
         from os2datascanner.projects.admin.adminapp.views.googledrivescanner_views import (
             GoogleDriveScanner)
-        from os2datascanner.projects.admin.adminapp.views.sbsysscanner_views import SbsysScanner
 
         models = [
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
-            GmailScanner, GoogleDriveScanner, SbsysScanner
+            GmailScanner, GoogleDriveScanner
         ]
 
         for scanner_model, enabled in zip(models, enabled_scanners):
@@ -383,31 +382,31 @@ class TestScannerViewsPossibleRules:
 class TestIndexView:
 
     @pytest.mark.parametrize('enabled_scanners', [
-        (False, False, False, False, False, False, False, False, False, False, False),
-        (True, False, False, False, False, False, False, False, False, False, False),
-        (False, True, False, False, False, False, False, False, False, False, False),
-        (False, False, True, False, False, False, False, False, False, False, False),
-        (False, False, False, True, False, False, False, False, False, False, False),
-        (False, False, False, False, True, False, False, False, False, False, False),
-        (False, False, False, False, False, True, False, False, False, False, False),
-        (False, False, False, False, False, False, True, False, False, False, False),
-        (False, False, False, False, False, False, False, True, False, False, False),
-        (False, False, False, False, False, False, False, False, True, False, False),
-        (False, False, False, False, False, False, False, False, False, True, False),
-        (False, False, False, False, False, False, False, False, False, False, True),
-        (True, True, True, True, True, True, True, True, True, True, True),
+        (False, False, False, False, False, False, False, False, False, False),
+        (True, False, False, False, False, False, False, False, False, False),
+        (False, True, False, False, False, False, False, False, False, False),
+        (False, False, True, False, False, False, False, False, False, False),
+        (False, False, False, True, False, False, False, False, False, False),
+        (False, False, False, False, True, False, False, False, False, False),
+        (False, False, False, False, False, True, False, False, False, False),
+        (False, False, False, False, False, False, True, False, False, False),
+        (False, False, False, False, False, False, False, True, False, False),
+        (False, False, False, False, False, False, False, False, True, False),
+        (False, False, False, False, False, False, False, False, False, True),
+        (False, False, False, False, False, False, False, False, False, False),
+        (True, True, True, True, True, True, True, True, True, True),
     ])
     def test_indexview_redirect(self, enabled_scanners, client, user_admin, settings, monkeypatch):
         # We need to import the scanner models from the view files to mock their methods
         from os2datascanner.projects.admin.adminapp.views.views import (
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner, GmailScanner,
-            GoogleDriveScanner, SbsysScanner)
+            GoogleDriveScanner)
 
         models = [
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphCalendarScanner, MSGraphTeamsFileScanner, MSGraphSharepointScanner,
-            GmailScanner, GoogleDriveScanner, SbsysScanner
+            GmailScanner, GoogleDriveScanner
         ]
 
         def first_setting_index(settings):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-05 08:12+0100\n"
+"POT-Creation-Date: 2025-12-16 13:47+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -568,13 +568,11 @@ msgid "A service account with access to the SQL Server instance."
 msgstr "En servicekonto med adgang til SQL Server-instansen."
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-#: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
 msgid "case"
 msgstr "sag"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-#: adminapp/models/scannerjobs/sbsysscanner.py
 msgctxt "unit of scan"
 msgid "cases"
 msgstr "sager"
@@ -586,10 +584,6 @@ msgstr "SBSYS-databasescanner"
 #: adminapp/models/scannerjobs/sbsysdb.py
 msgid "SBSYS database scanners"
 msgstr "SBSYS-databasescannere"
-
-#: adminapp/models/scannerjobs/sbsysscanner.py
-msgid "SBSYS scanner"
-msgstr "SBSYS-scanner"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "contacts"
@@ -1243,7 +1237,6 @@ msgstr "Rediger scannerjob"
 
 #: adminapp/templates/components/common/breadcrumb.html
 #: adminapp/templates/components/scanner/scanner_form.html
-#: adminapp/templates/components/scanner/scanner_no_client_credentials.html
 msgid "Create new scannerjob"
 msgstr "Opret nyt scannerjob"
 
@@ -1878,6 +1871,7 @@ msgid "scannerjob"
 msgstr "scannerjob"
 
 #: adminapp/templates/components/scanner/scan_completed.html
+#: adminapp/templates/components/scanstatus/scan_status_table.html
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
@@ -2140,15 +2134,6 @@ msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 msgid "Search for scanner"
 msgstr "Søg efter scanner"
 
-#: adminapp/templates/components/scanner/scanner_no_client_credentials.html
-msgid ""
-"To use this data source, credentials for SBSYS must be set up in "
-"OSdatascanner. These credentials are not currently in the system."
-msgstr ""
-"For at benytte denne datakilde skal der opsættes credentials til SBSYS i "
-"OSdatascanner. Disse credentials findes på nuværende tidspunkt ikke i "
-"systemet."
-
 #: adminapp/templates/components/scanner/scanner_run.html
 msgid "Success"
 msgstr "Succes"
@@ -2315,6 +2300,36 @@ msgstr "nye %(onp)s scannet"
 #, python-format
 msgid "All %(onp)s scanned"
 msgstr "Alle %(onp)s scannet"
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+#, python-format
+msgid "%(num)s accounts covered by this scan"
+msgstr ""
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+#, python-format
+msgid "%(num)s errors encountered while scanning"
+msgstr ""
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+msgid "Time spent scanning"
+msgstr ""
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+msgid "Size scanned"
+msgstr ""
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+msgid "Total size scanned of different file types"
+msgstr ""
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+msgid "Seconds scanned"
+msgstr ""
+
+#: adminapp/templates/components/scanstatus/status_timeline.html
+msgid "Time spent scanning different file types"
+msgstr ""
 
 #: adminapp/templates/components/user/login.html
 msgid "Login"
