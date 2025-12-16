@@ -37,7 +37,6 @@ class GoogleWorkspaceImportJob(BackgroundJob):
 
     def _fetch_and_map_ous(self, client):  # noqa Cognitive complexity is too high
         """Fetch OUs from Google and map to model instances."""
-
         from ...organizations.models import OrganizationalUnit
 
         self.status = "Fetching organizational units..."
@@ -105,3 +104,135 @@ class GoogleWorkspaceImportJob(BackgroundJob):
 
         logger.info("Mapped OUs", total=len(ou_map), new=len(to_add), updated=len(to_update))
         return (to_add, to_update, ou_map, imported_ids, parent_map), raw_ous
+
+    def _fetch_and_map_users(self, client):
+        """Fetch users from Google and map to model instances."""
+        from ...organizations.models import Account
+
+        self.status = "Fetching users..."
+        self.save(update_fields=["status"])
+
+        # Fetch directly
+        raw_users = list(client.list_users())
+
+        # Map inline
+        to_create = []
+        to_update = []
+        account_map = {}
+        all_imported_ids = set()
+
+        # Bulk fetch existing accounts
+        primaries = [u["primaryEmail"] for u in raw_users if u.get("primaryEmail")]
+        existing_accounts = Account.objects.filter(
+            organization=self.organization,
+            username__in=primaries,
+        )
+        existing_by_username = {acc.username: acc for acc in existing_accounts}
+
+        # Process each user
+        for user in raw_users:
+            primary = user.get("primaryEmail")
+            if not primary:
+                continue
+
+            given_name = user.get("name", {}).get("givenName", "")
+            family_name = user.get("name", {}).get("familyName", "")
+            imported_id = f"google-user:{primary}"
+
+            existing = existing_by_username.get(primary)
+            if existing:
+                existing.email = primary
+                existing.first_name = given_name or ""
+                existing.last_name = family_name or ""
+                existing.imported = True
+                existing.imported_id = imported_id
+                existing.last_import = time_now()
+                existing.last_import_requested = time_now()
+
+                to_update.append((existing, ['email', 'first_name', 'last_name',
+                                             'imported', 'imported_id',
+                                             'last_import', 'last_import_requested']))
+                account_map[primary] = existing
+            else:
+                acc_obj = Account(
+                    username=primary,
+                    email=primary,
+                    first_name=given_name or "",
+                    last_name=family_name or "",
+                    organization=self.organization,
+                    imported_id=imported_id,
+                    imported=True,
+                )
+                to_create.append(acc_obj)
+                account_map[primary] = acc_obj
+
+            all_imported_ids.add(imported_id)
+
+        return (to_create, to_update, account_map, all_imported_ids), raw_users
+
+    def _create_user_aliases(self, users, account_map):
+        from ...organizations.models.aliases import Alias, AliasType
+
+        aliases = []
+        imported_ids = set()
+
+        for user in users:
+            primary = user.get("primaryEmail")
+            if not primary:
+                continue
+
+            account = account_map.get(primary)
+            if not account:
+                continue
+
+            for alias_email in user.get("aliases", []):
+                if not alias_email:
+                    continue
+
+                imported_id = f"google-alias:{primary}:{alias_email}"
+
+                alias = Alias(
+                    account=account,
+                    _alias_type=AliasType.EMAIL,
+                    _value=alias_email,
+                    imported_id=imported_id,
+                )
+                aliases.append(alias)
+                imported_ids.add(imported_id)
+
+        return aliases, imported_ids
+
+    def _create_ou_positions(self, users, account_map, ou_map):
+        from ...organizations.models import Position
+
+        positions = []
+        imported_ids = set()
+
+        for user in users:
+            primary = user.get("primaryEmail")
+            if not primary:
+                continue
+
+            account = account_map.get(primary)
+            if not account:
+                continue
+
+            ou_path = user.get("orgUnitPath")
+            if not ou_path:
+                continue
+
+            # Find OU via path
+            for imported_id, ou in ou_map.items():
+                if getattr(ou, "path", None) == ou_path:
+                    pos_imported_id = f"google-position:{primary}:{imported_id}"
+
+                    pos = Position(
+                        account=account,
+                        unit=ou,
+                        imported_id=pos_imported_id,
+                    )
+                    positions.append(pos)
+                    imported_ids.add(pos_imported_id)
+                    break
+
+        return positions, imported_ids
