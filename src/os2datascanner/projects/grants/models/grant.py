@@ -62,9 +62,16 @@ class Grant(models.Model):
         abstract = False
 
     @receiver(post_save)
-    def post_save_grant_extra(sender, instance, *args, **kwargs):
+    def post_save_grant_extra(sender, instance, raw=False, *args, **kwargs):
         if not isinstance(instance, Grant):
             # This is not a grant. Exit
+            return
+
+        if raw:
+            # True if the model is saved exactly as presented (i.e. when loading a fixture).
+            # One should not query/modify other records in the database as the database might not
+            # be in a consistent state yet - And we'd like to be able to load Grants in fixtures.
+            # https://docs.djangoproject.com/en/5.2/ref/signals/#post-save
             return
 
         # This tells us if we are in the admin or report module.
