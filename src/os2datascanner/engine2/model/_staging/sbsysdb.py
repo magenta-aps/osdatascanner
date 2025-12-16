@@ -56,7 +56,8 @@ class SBSYSDBSource(Source):
     def reflect_tables(self):
         return self._reflect_tables or (
                 "Sag", "Person", "DokumentRegistrering",
-                "SecuritySetSikkerhedsgrupper",)
+                "SecuritySetSikkerhedsgrupper", "KladdeRegistrering",
+                "KladdePartDokument")
 
     def censor(self):
         return SBSYSDBSource(
@@ -298,13 +299,15 @@ class SBSYSDBHandles:
         type_label = "sbsys-db-document"
         resource_type = _Resource
 
-        def __init__(self, source, relative_path, name, **kwargs):
+        def __init__(self, source, relative_path, name, draft=False, **kwargs):
             super().__init__(source, relative_path, **kwargs)
             self._name = name
+            self._draft = draft
 
         def to_json_object(self):
             return super().to_json_object() | {
-                "name": self._name
+                "name": self._name,
+                "draft": self._draft,
             }
 
         @staticmethod
@@ -313,7 +316,9 @@ class SBSYSDBHandles:
             return SBSYSDBHandles.Document(
                     SBSYSDBSources.Case.from_json_object(obj["source"]),
                     obj["path"],
-                    name=obj["name"])
+                    name=obj["name"],
+                    draft=obj.get("draft", False)
+            )
 
         @property
         def presentation_name(self):
@@ -382,24 +387,45 @@ class SBSYSDBSources:
                     case_id=self.handle.relative_path)
 
             DokReg = tables["DokumentRegistrering"]
-            expr = select(DokReg.c.DokumentID).where(
+            DraftReg = tables["KladdeRegistrering"]
+            DraftPartDoc = tables["KladdePartDokument"]
+
+            doc_expr = select(DokReg.c.DokumentID).where(
                     DokReg.c.SagID == values["ID"])
 
+            draft_expr = select(DraftPartDoc.c.DokumentID).select_from(
+                DraftPartDoc.join(
+                    DraftReg,
+                    DraftPartDoc.c.KladdeID == DraftReg.c.KladdeID
+                )
+            ).where(
+                DraftReg.c.SagID == values["ID"]
+            )
+
+            # (Document expression, draft)
+            doc_sources = [
+                (doc_expr, False),
+                (draft_expr, True),
+            ]
+
             document_counter = Counter()
-            for document_id, in exec_expr(
-                    engine, expr, rows=document_counter):
-                r = dp.get(f"{document_id}")
-                for file_info in r.json()["values"]:
-                    if (file_info["alternate_of"] is not None
-                            and ignore_alt):
-                        continue
+            # TODO 68433: should we do something with the IsCheckedOut flag?
+            for expr, is_draft in doc_sources:
+                for document_id, in exec_expr(
+                        engine, expr, rows=document_counter):
+                    r = dp.get(f"{document_id}")
+                    for file_info in r.json()["values"]:
+                        if (file_info["alternate_of"] is not None
+                                and ignore_alt):
+                            continue
 
-                    if file_info["is_deleted"]:
-                        continue
+                        if file_info["is_deleted"]:
+                            continue
 
-                    yield SBSYSDBHandles.Document(
-                            self, file_info["path"], file_info["name"],
-                            hints={"file_info": file_info})
+                        yield SBSYSDBHandles.Document(
+                                self, file_info["path"], file_info["name"],
+                                draft=is_draft,
+                                hints={"file_info": file_info})
 
             logger.info(
                     "DokumentRegistrering query execution completed",
