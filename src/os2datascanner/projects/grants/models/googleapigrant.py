@@ -47,6 +47,13 @@ class GoogleApiGrant(Grant):
     def account_name(self):
         return json.loads(self.service_account).get("client_email").split("@")[0]
 
+    @property
+    def service_account_dict(self):
+        try:
+            return json.loads(self.service_account)
+        except json.JSONDecodeError:
+            raise ValidationError(_("Invalid service account"))
+
     def validate_service_account(self):
         try:
             service_account = json.loads(self.service_account)

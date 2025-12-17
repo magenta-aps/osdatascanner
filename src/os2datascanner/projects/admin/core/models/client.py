@@ -50,6 +50,7 @@ class Feature(ModelChoiceFlag):
     IMPORT_SERVICES = (1 << 2, _('import services'))
     IMPORT_SERVICES_MS_GRAPH = (1 << 3, _('import services (MS Graph)'))
     IMPORT_SERVICES_OS2MO = (1 << 4, _('import services (OS2mo)'))
+    IMPORT_SERVICES_GOOGLE_WORKSPACE = (1 << 5, _('import services (Google Workspace)'))
 
 
 class Client(models.Model):

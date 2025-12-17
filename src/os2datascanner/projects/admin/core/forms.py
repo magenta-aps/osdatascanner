@@ -66,7 +66,8 @@ class ClientAdminForm(forms.ModelForm):
                 selected_sum,
                 Feature.IMPORT_SERVICES,
                 Feature.IMPORT_SERVICES_MS_GRAPH,
-                Feature.IMPORT_SERVICES_OS2MO) > 1:
+                Feature.IMPORT_SERVICES_OS2MO,
+                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE) > 1:
             raise ValidationError(_("Only one type of import service can be active at a time."))
 
         # Clean old import services if settings have changed
