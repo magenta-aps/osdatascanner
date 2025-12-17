@@ -12,14 +12,21 @@
 # sector open source network <https://os2.eu/>.
 #
 
+import structlog
+
 from django.db import models
+from django.db.models.signals import pre_save
 from django.utils.translation import gettext_lazy as _
+from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
 
 from .sensitivity_level import Sensitivity
 
 from os2datascanner.engine2.rules.rule import Rule as E2Rule
 from os2datascanner.engine2.rules.rule import Sensitivity as E2Sensitivity
+
+
+logger = structlog.get_logger("adminapp")
 
 
 class RuleCategory(models.Model):
@@ -119,3 +126,38 @@ class Rule(models.Model):
 
     def make_engine2_sensitivity(self) -> E2Sensitivity:
         return _sensitivity_mapping[self.sensitivity]
+
+    @receiver(pre_save)
+    def patch_references(sender, instance, *args, **kwargs):
+        """Resolves any references present in the JSON representation of this
+        Rule before it is saved.
+
+        A reference is a dictionary containing a {"!ref": ?pk} key-value pair,
+        where ?pk is an integer primary key of another Rule object. This pair
+        will be deleted and replaced with the JSON representation of the Rule
+        identified by ?pk.
+
+        (Note that other keys in the reference dictionary will be preserved,
+        and will overwrite keys in the other Rule's JSON representation.)
+
+        A reference dictionary referring to a Rule not present in the database
+        will cause a Django Rule.DoesNotExist exception to be raised."""
+        if not isinstance(instance, Rule):
+            return
+
+        def do_patch_refs(o):
+            match o:
+                case {"!ref": identifier, **rest}:
+                    logger.info(
+                            "resolving Rule cross-reference",
+                            instance=instance,
+                            referenced_pk=identifier)
+                    return Rule.objects.get(pk=identifier).raw_rule | rest
+                case list():
+                    return [do_patch_refs(el) for el in o]
+                case dict():
+                    return {key: do_patch_refs(val) for key, val in o.items()}
+                case _:
+                    return o
+
+        instance.raw_rule = do_patch_refs(instance.raw_rule)
