@@ -1,3 +1,5 @@
+import pytest
+
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.regex import RegexRule
 
@@ -5,6 +7,59 @@ from ..adminapp.models.rules import Rule, Sensitivity
 
 
 class TestRules:
+    @pytest.mark.django_db
+    def test_rule_reference_resolution(self):
+        """Rule references are resolved at object save time and are not saved
+        to the database."""
+        # Arrange
+        raw1 = {
+            "type": "or",
+            "components": [
+                {
+                    "type": "regex",
+                    "expression": "Samus Aran"
+                },
+                {
+                    "type": "regex",
+                    "expression": "Ridley"
+                }
+            ]
+        }
+        r1 = Rule(
+                name="Hello",
+                description="This is an Elite Space Pirate."
+                            "\nElite Space Pirate description 3.",
+                sensitivity=Sensitivity.OK,
+                raw_rule=raw1)
+        r1.save()
+
+        raw2 = {
+            "type": "and",
+            "components": [
+                {"!ref": r1.pk},
+                {"type": "cpr"}
+            ]
+        }
+        r2 = Rule(
+                name="Goodbye",
+                description="Something",
+                sensitivity=Sensitivity.CRITICAL,
+                raw_rule=raw2)
+
+        assert r2.raw_rule == raw2
+
+        # Act
+        r2.save()
+
+        # Assert
+        assert r2.raw_rule == {
+            "type": "and",
+            "components": [
+                raw1,
+                {"type": "cpr"}
+            ]
+        }
+
     def test_regexrule_translation(self):
         names = ("Jason", "Timothy", "Davina", "Kristi",)
 
