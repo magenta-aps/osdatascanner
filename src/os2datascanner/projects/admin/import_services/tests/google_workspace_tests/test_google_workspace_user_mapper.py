@@ -130,12 +130,26 @@ class TestGoogleWorkspaceUserMapper:
             "user@test.com": make_account
         }
 
+        raw_ous = [
+            {
+                "orgUniId": "root-id",
+                "orgUnitPath": "/Root",
+                "name": "Root"
+            },
+            {
+                "orgUnitId": "sub-id",
+                "orgUnitPath": "/Root/Sub",
+                "name": "Sub"
+            }
+        ]
+
         # Act
         ou_map = {
             "google-ou:root-id": root,
             "google-ou:sub-id": sub
         }
-        positions, _ = make_job._create_ou_positions(user_data, account_map, ou_map)
+
+        positions, _ = make_job._create_ou_positions(user_data, account_map, ou_map, raw_ous)
 
         # Assert
         assert len(positions) == 1
@@ -148,15 +162,28 @@ class TestGoogleWorkspaceUserMapper:
         # Arrange
         user_data = [{
             "primaryEmail": "user@test.com",
-            "orgUnitId": "non-existent-id"
+            "orgUnitPath": "/non/existent/path"
         }]
 
+        raw_ous = [
+            {
+                "orgUniId": "root-id",
+                "orgUnitPath": "/Root",
+                "name": "Root"
+            },
+            {
+                "orgUnitId": "sub-id",
+                "orgUnitPath": "/Root/Sub",
+                "name": "Sub"
+            }
+        ]
+
+        # Act
         account_map = {
             "user@test.com": make_account
         }
 
-        # Act
-        positions, _ = make_job._create_ou_positions(user_data, account_map, {})
+        positions, _ = make_job._create_ou_positions(user_data, account_map, {}, raw_ous)
 
         # Assert
         assert positions == []
