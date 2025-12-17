@@ -3,7 +3,7 @@ from .models import (LDAPConfig, MSGraphConfiguration,
                      OS2moConfiguration, Realm,
                      KeycloakClient, IdentityProvider,
                      IdPMappers, AuthenticationFlow,
-                     FlowExecution)
+                     FlowExecution, GoogleWorkspaceConfig)
 
 
 # Register your models here.
@@ -39,3 +39,14 @@ admin.site.register(IdentityProvider)
 admin.site.register(IdPMappers)
 admin.site.register(AuthenticationFlow)
 admin.site.register(FlowExecution)
+
+
+@admin.register(GoogleWorkspaceConfig)
+class GoogleWorkspaceConfigAdmin(admin.ModelAdmin):
+    list_display = ("display_pk", "grant", "delegated_admin_email")
+    fields = ("grant", "delegated_admin_email")
+
+    def display_pk(self, obj):
+        return str(obj.pk)
+
+    display_pk.short_description = "PK"
