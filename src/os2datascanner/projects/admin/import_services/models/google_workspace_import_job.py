@@ -44,19 +44,29 @@ class GoogleWorkspaceImportJob(BackgroundJob):
         Imports organizational units, users, positions, and aliases.
         """
         from ...organizations.models.organizational_unit import OrganizationalUnit
+        from ...organizations.models import Account
 
         # Initialize and authenticate
         self.status = "Authenticating with Google Workspace..."
         self.save(update_fields=["status"])
         client = self._initialize_client()
+        try:
+            # Fetch and map OUs
+            (ou_to_add, ou_to_update, ou_map, ou_imported_ids, parent_map), raw_ous = \
+                self._fetch_and_map_ous(client)
 
-        # Fetch and map OUs
-        (ou_to_add, ou_to_update, ou_map, ou_imported_ids, parent_map), raw_ous = \
-            self._fetch_and_map_ous(client)
-
-        # Fetch and map users
-        (new_users, users_to_update, account_map, user_imported_ids), raw_users = \
-            self._fetch_and_map_users(client)
+            # Fetch and map users
+            (new_users, users_to_update, account_map, user_imported_ids), raw_users = \
+                self._fetch_and_map_users(client)
+        except Exception as e:
+            logger.error(
+                "Google Workspace import failed during fetch phase",
+                organization=str(self.organization),
+                error=str(e),
+            )
+            self.status = "Import failed while fetching data from Google"
+            self.save(update_fields=["status"])
+            raise
 
         # Combine all imported IDs
         all_imported_ids = ou_imported_ids | user_imported_ids
@@ -74,22 +84,27 @@ class GoogleWorkspaceImportJob(BackgroundJob):
         # Rebuild MPTT tree after creating OUs
         OrganizationalUnit.objects.rebuild()
 
-        # PHASE 2: Set OU parent relationships
-        self.status = "Processing organizational unit hierarchies..."
+        # PHASE 2: Set OU parent relationships + save positions and aliases
+        self.status = "Processing relationships and memberships..."
         self.save(update_fields=["status"])
 
-        self._set_ou_parent_relationships(parent_map, all_imported_ids)
-
-        # Refresh OU map from database (now all have PKs)
+        # Refresh maps from database (now all have PKs)
         saved_ous = OrganizationalUnit.objects.filter(
             organization=self.organization,
             imported_id__in=list(ou_map.keys())
         )
         ou_map = {ou.imported_id: ou for ou in saved_ous}
 
-        # PHASE 3: Save positions and aliases
-        position_stats = self._save_positions_and_aliases(
-            raw_users, account_map, ou_map, raw_ous, all_imported_ids
+        saved_usernames = list(account_map.keys())
+        saved_accounts = Account.objects.filter(
+            organization=self.organization,
+            username__in=saved_usernames
+        )
+        account_map = {acc.username: acc for acc in saved_accounts}
+
+        # Combine phase 2 + 3 into ONE prepare_and_publish call
+        position_stats = self._set_relationships_and_save_positions_aliases(
+            parent_map, raw_users, account_map, ou_map, raw_ous, all_imported_ids
         )
 
         self.status = "Import complete."
@@ -137,7 +152,6 @@ class GoogleWorkspaceImportJob(BackgroundJob):
         parent_map = {}
 
         # Build index
-        ou_index = {ou['orgUnitId']: ou for ou in raw_ous}
         imported_id_list = [f"google-ou:{ou['orgUnitId']}" for ou in raw_ous]
         imported_ids.update(imported_id_list)
 
@@ -179,8 +193,9 @@ class GoogleWorkspaceImportJob(BackgroundJob):
 
             # Track parent relationships
             parent_raw_id = ou_data.get("parentOrgUnitId")
-            if parent_raw_id and parent_raw_id in ou_index:
-                parent_map[imported_id] = f"google-ou:{parent_raw_id}"
+            if parent_raw_id:
+                parent_imported_id = f"google-ou:{parent_raw_id}"
+                parent_map[imported_id] = parent_imported_id
             else:
                 parent_map[imported_id] = None
 
@@ -277,95 +292,57 @@ class GoogleWorkspaceImportJob(BackgroundJob):
             to_delete=[],
         )
 
-    def _set_ou_parent_relationships(self, parent_map, all_imported_ids):  # noqa
+    def _set_relationships_and_save_positions_aliases(self, parent_map, raw_users, account_map, ou_map, raw_ous, all_imported_ids):  # noqa - Cognitive complexity is too high
         """
-        Phase 2: Set parent relationships for OUs and save using prepare_and_publish.
+        Phase 2 (combined): Set OU parent relationships AND save positions/aliases.
+        This reduces message count by combining operations into ONE prepare_and_publish call.
         """
         from ...organizations.models.organizational_unit import OrganizationalUnit
+        from ...organizations.models import Position, Alias
         from ...organizations.utils import prepare_and_publish
 
-        # Get ALL imported_ids involved in parent relationships
+        # Part 1: Prepare OU parent updates
         all_ou_ids = set(parent_map.keys())
         all_ou_ids.update(v for v in parent_map.values() if v is not None)
 
-        # Query for these OUs from database (they now have PKs after Phase 1)
         saved_ous = OrganizationalUnit.objects.filter(
             organization=self.organization,
             imported_id__in=all_ou_ids
         )
-        ou_map = {ou.imported_id: ou for ou in saved_ous}
+        ou_map_for_parents = {ou.imported_id: ou for ou in saved_ous}
 
         logger.info("Phase 2: Processing parent relationships",
-                    ous_found=len(ou_map), relationships=len(parent_map))
+                    ous_found=len(ou_map_for_parents), relationships=len(parent_map))
 
-        # Set parent for each OU
         ous_to_update = []
         for child_id, parent_id in parent_map.items():
-            child = ou_map.get(child_id)
+            child = ou_map_for_parents.get(child_id)
             if not child:
                 logger.warning("Child OU not in database", child_id=child_id)
                 continue
 
             if parent_id is None:
-                # Root OU
                 if child.parent is not None:
                     child.parent = None
                     ous_to_update.append((child, ("parent",)))
             else:
-                parent = ou_map.get(parent_id)
+                parent = ou_map_for_parents.get(parent_id)
                 if parent:
                     if child.parent != parent:
                         child.parent = parent
                         ous_to_update.append((child, ("parent",)))
                 else:
-                    # Parent not found - make it root
                     if child.parent is not None:
                         child.parent = None
                         ous_to_update.append((child, ("parent",)))
                         logger.warning("Parent not found, setting as root",
                                        child=child.name, parent_id=parent_id)
 
-        if ous_to_update:
-            logger.info("Updating parent relationships", count=len(ous_to_update))
-            prepare_and_publish(
-                org=self.organization,
-                all_uuids=all_imported_ids,
-                to_add=[],
-                to_update=ous_to_update,
-                to_delete=[],
-            )
-            # Rebuild MPTT after setting parents
-            OrganizationalUnit.objects.rebuild()
-        else:
-            logger.info("No OU parent relationships need updating")
-
-    def _save_positions_and_aliases(
-            self,
-            raw_users,
-            account_map,
-            ou_map,
-            raw_ous,
-            all_imported_ids):
-        """Phase 3: Create and save positions and aliases."""
-        from ...organizations.utils import prepare_and_publish
-        from ...organizations.models import Account, Position, Alias
-
-        # Refresh account_map with saved instances (now have PKs)
-        saved_usernames = list(account_map.keys())
-        saved_accounts = Account.objects.filter(
-            organization=self.organization,
-            username__in=saved_usernames
-        )
-        account_map = {acc.username: acc for acc in saved_accounts}
-
-        # Create user aliases
-        self.status = "Processing user aliases..."
+        # Part 2: Create positions and aliases
+        self.status = "Processing positions and aliases..."
         self.save(update_fields=["status"])
+
         user_aliases, alias_imported_ids = self._create_user_aliases(raw_users, account_map)
-
-        # Create OU positions
-        self.status = "Processing organizational unit memberships..."
-        self.save(update_fields=["status"])
         ou_positions, position_imported_ids = self._create_ou_positions(
             raw_users, account_map, ou_map, raw_ous
         )
@@ -373,11 +350,10 @@ class GoogleWorkspaceImportJob(BackgroundJob):
         # Update all_imported_ids
         all_imported_ids = all_imported_ids | position_imported_ids | alias_imported_ids
 
-        # Collect all imported_ids
+        # Fetch existing positions/aliases
         all_position_ids = [p.imported_id for p in ou_positions]
         all_alias_ids = [a.imported_id for a in user_aliases]
 
-        # Fetch existing instances (with PKs)
         existing_positions = Position.objects.filter(
             account__organization=self.organization,
             imported_id__in=all_position_ids
@@ -387,17 +363,14 @@ class GoogleWorkspaceImportJob(BackgroundJob):
             imported_id__in=all_alias_ids
         )
 
-        # Create lookup maps
         existing_position_map = {p.imported_id: p for p in existing_positions}
         existing_alias_map = {a.imported_id: a for a in existing_aliases}
 
-        # Split into new vs update
+        # Split positions/aliases into new vs update
         new_positions = [
             p for p in ou_positions
             if p.imported_id not in existing_position_map
         ]
-
-        # For updates, use the existing instances (with PKs) from the database
         positions_to_update = [
             (existing_position_map[p.imported_id], ("unit", "account"))
             for p in ou_positions
@@ -408,28 +381,30 @@ class GoogleWorkspaceImportJob(BackgroundJob):
             a for a in user_aliases
             if a.imported_id not in existing_alias_map
         ]
-
         aliases_to_update = [
             (existing_alias_map[a.imported_id], ("_value", "_alias_type"))
             for a in user_aliases
             if a.imported_id in existing_alias_map
         ]
 
-        # Log counts
-        logger.info("Phase 3: Saving positions and aliases",
+        # Combine ALL updates into ONE prepare_and_publish call
+        logger.info("Phase 2 (combined): Saving all updates",
+                    ou_parents=len(ous_to_update),
                     new_positions=len(new_positions),
                     updated_positions=len(positions_to_update),
                     new_aliases=len(new_aliases),
                     updated_aliases=len(aliases_to_update))
 
-        # Save using prepare_and_publish
         prepare_and_publish(
             org=self.organization,
             all_uuids=all_imported_ids,
             to_add=new_positions + new_aliases,
-            to_update=positions_to_update + aliases_to_update,
+            to_update=ous_to_update + positions_to_update + aliases_to_update,
             to_delete=[],
         )
+
+        # Rebuild MPTT after parent updates
+        OrganizationalUnit.objects.rebuild()
 
         return {
             "ou_positions": len(ou_positions),
