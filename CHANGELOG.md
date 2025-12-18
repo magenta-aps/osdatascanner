@@ -9,6 +9,11 @@
   scanning different source types, as well as two pie charts presenting the time spent scanning
   and size distribution of different source types in the scan.
 
+- Backend support for the WebDAV protocol:
+
+  - The OSdatascanner scanner engine can now list and scan files in a WebDAV
+    file share.
+
 ### General improvements
 
 - The 'open' button for results from an Exchange Scanner now support arbitrary webmail clients.

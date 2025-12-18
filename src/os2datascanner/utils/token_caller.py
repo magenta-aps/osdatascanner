@@ -8,19 +8,15 @@ from os2datascanner.engine2.utilities.backoff import WebRetrier
 
 def raw_request_decorator(fn):
     @functools.wraps(fn)
-    def _wrapper(self, *args, _retry=False, **kwargs):
+    def _wrapper(self, *args, check=True, **kwargs):
         response = fn(self, *args, **kwargs)
-        try:
-            response.raise_for_status()
-            return response
-        except requests.exceptions.HTTPError as ex:
-            # If _retry, it means we have a status code 401 but are trying a second time.
-            # It should've succeeded the first time, so we raise an exc to avoid a potential
-            # endless loop
-            if ex.response.status_code != 401 or _retry:
-                raise ex
+        if response.status_code == 401:
+            # Mint a new token and try again
             self._token = self._token_creator()
-            return _wrapper(self, *args, _retry=True, **kwargs)
+            response = fn(self, *args, **kwargs)
+        if check:
+            response.raise_for_status()
+        return response
 
     return _wrapper
 
@@ -33,6 +29,10 @@ class TokenCaller:
     tokens."""
     _common_session: requests.Session = requests.session()
 
+    @classmethod
+    def null_token_creator(cls):
+        return None
+
     def __init__(
             self,
             token_creator: Callable[[], str],
@@ -40,23 +40,31 @@ class TokenCaller:
             session=None):
         self._token_creator = token_creator
         self._token = token_creator()
-
         self._base_url = base_url
 
         self._session = session or self._common_session
 
         self.extra_kwargs = dict()
 
+    def join(self, tail: str):
+        if not tail:
+            return self._base_url
+        else:
+            return urljoin(
+                    self._base_url
+                    + ("/" if not self._base_url.endswith("/") else ""),
+                    tail.lstrip("/"))
+
     def _make_headers(self, base: dict[str, str]):
-        return (base or {}) | {
+        return (base or {}) | ({
             "authorization": "Bearer {0}".format(self._token),
-        }
+        } if self._token else {})
 
     @raw_request_decorator
     def _request(self, method, tail: str, **kwargs) -> requests.Response:
         kwargs["headers"] = self._make_headers(kwargs.get("headers"))
         return WebRetrier().run(
-                method, urljoin(self._base_url + "/", tail.lstrip("/")),
+                method, self.join(tail),
                 **(self.extra_kwargs | kwargs))
 
     def get(self, tail: str, **kwargs) -> requests.Response:
