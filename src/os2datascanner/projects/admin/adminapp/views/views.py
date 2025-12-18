@@ -28,7 +28,6 @@ from ..models.scannerjobs.dropboxscanner import DropboxScanner
 from ..models.scannerjobs.exchangescanner import ExchangeScanner
 from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.gmail import GmailScanner
-from ..models.scannerjobs.sbsysscanner import SbsysScanner
 from ..models.scannerjobs.msgraph import (
     MSGraphFileScanner,
     MSGraphMailScanner,
@@ -196,7 +195,6 @@ class DialogSuccess(TemplateView):
         'googledrivescanners': GoogleDriveScanner,
         'googleshareddrivescanners': GoogleSharedDriveScanner,
         'gmailscanners': GmailScanner,
-        'sbsysscanners': SbsysScanner,
     }
 
     def get_context_data(self, **kwargs):
@@ -228,8 +226,7 @@ class IndexView(LoginRequiredMixin, RedirectView):
             (MSGraphFileScanner, reverse_lazy("msgraphfilescanners")),
             (MSGraphCalendarScanner, reverse_lazy("msgraphcalendarscanners")),
             (MSGraphTeamsFileScanner, reverse_lazy("msgraphteamsfilescanners")),
-            (MSGraphSharepointScanner, reverse_lazy("msgraphsharepointscanners")),
-            (SbsysScanner, reverse_lazy("sbsysscanners"))
+            (MSGraphSharepointScanner, reverse_lazy("msgraphsharepointscanners"))
         ]
 
         for model, url in model_and_url_list:

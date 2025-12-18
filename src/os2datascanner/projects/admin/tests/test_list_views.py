@@ -20,7 +20,6 @@ all_scanner_list_urls = [
         reverse_lazy('dropboxscanners'),
         reverse_lazy('googledrivescanners'),
         reverse_lazy('gmailscanners'),
-        reverse_lazy('sbsysscanners'),
         reverse_lazy('msgraphcalendarscanners'),
         reverse_lazy('msgraphfilescanners'),
         reverse_lazy('msgraphmailscanners'),

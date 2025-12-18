@@ -43,7 +43,6 @@ from ..models.scannerjobs.exchangescanner import ExchangeScanner
 from ..models.scannerjobs.msgraph import (MSGraphFileScanner, MSGraphMailScanner,
                                           MSGraphCalendarScanner, MSGraphTeamsFileScanner,
                                           MSGraphSharepointScanner)
-from ..models.scannerjobs.sbsysscanner import SbsysScanner
 from ..models.scannerjobs.gmail import GmailScanner
 from ..models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from ..models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScanner
@@ -89,7 +88,7 @@ class ScannerList(RestrictedListView):
         scanner_models = [
             WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphTeamsFileScanner, MSGraphCalendarScanner, MSGraphSharepointScanner,
-            GoogleDriveScanner, GoogleSharedDriveScanner, GmailScanner, SbsysScanner
+            GoogleDriveScanner, GoogleSharedDriveScanner, GmailScanner
         ]
 
         context["scanner_tabs"] = [scanner for scanner in scanner_models if scanner.enabled()]

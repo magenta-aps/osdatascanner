@@ -31,7 +31,7 @@ from .views.views import GuideView, DialogSuccess
 
 import inspect
 from .views import (exchangescanner_views, filescanner_views, dropboxscanner_views,
-                    googledrivescanner_views, gmailscanner_views, sbsysscanner_views,
+                    googledrivescanner_views, gmailscanner_views,
                     webscanner_views, msgraph_views, sbsysdb as sbsysdb_views,
                     googleshareddrivescanner_views)
 from .views.views import IndexView
@@ -62,7 +62,6 @@ from .models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScann
 from .models.scannerjobs.msgraph import (MSGraphMailScanner, MSGraphFileScanner,
                                          MSGraphCalendarScanner, MSGraphTeamsFileScanner,
                                          MSGraphSharepointScanner)
-from .models.scannerjobs.sbsysscanner import SbsysScanner
 from .models.scannerjobs.webscanner import WebScanner
 from .models.scannerjobs.sbsysdb import SBSYSDBScanner
 from .models.scannerjobs.scanner import Scanner
@@ -165,9 +164,9 @@ urlpatterns = [
     path("users/<int:pk>/edit", UserUpdateView.as_view(), name="user-edit"),
 
     # General success handler
-    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners|sbsysscanners)/(\d+)/(created)/$',  # noqa
+    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners)/(\d+)/(created)/$',  # noqa
             DialogSuccess.as_view()),
-    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners|sbsysscanners)/(\d+)/(saved)/$',  # noqa
+    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners)/(\d+)/(saved)/$',  # noqa
             DialogSuccess.as_view()),
     re_path(r'^(rules/regex|rules/cpr)/(\d+)/(created)/$',
             DialogSuccess.as_view()),
@@ -204,7 +203,6 @@ for module in [exchangescanner_views,
                googledrivescanner_views,
                googleshareddrivescanner_views,
                gmailscanner_views,
-               sbsysscanner_views,
                webscanner_views,
                msgraph_views,
                sbsysdb_views]:
@@ -266,7 +264,6 @@ for model in [
         MSGraphCalendarScanner,
         MSGraphTeamsFileScanner,
         MSGraphSharepointScanner,
-        SbsysScanner,
         WebScanner,
         SBSYSDBScanner]:
 
