@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 23:53+0100\n"
+"POT-Creation-Date: 2026-01-20 11:14+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -234,8 +234,11 @@ msgstr "MSGraph bevilling"
 
 #: adminapp/models/MSGraphSharePointSite.py adminapp/models/apikey.py
 #: adminapp/models/rules.py adminapp/models/scannerjobs/scanner.py
-#: adminapp/models/usererrorlog.py import_services/models/msgraph_import_job.py
+#: adminapp/models/usererrorlog.py
+#: import_services/models/google_workspace_import_job.py
+#: import_services/models/msgraph_import_job.py
 #: import_services/models/os2mo_import_job.py import_services/models/realm.py
+#: import_services/templates/import_services/googleworkspace_edit.html
 msgid "organization"
 msgstr "organisation"
 
@@ -2181,8 +2184,11 @@ msgid "scanner overview — size"
 msgstr "scanneroverblik — størrelse"
 
 #: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
-msgid "overview of the proportion each file type represents of the total number of scanned files"
-msgstr "oversigt over fordelingen af filtyper i det samlede antal scannede filer"
+msgid ""
+"overview of the proportion each file type represents of the total number of "
+"scanned files"
+msgstr ""
+"oversigt over fordelingen af filtyper i det samlede antal scannede filer"
 
 #: adminapp/templates/components/scanstatus/remove_error.html
 #: adminapp/templates/components/scanstatus/resolve_status.html
@@ -2904,8 +2910,8 @@ msgstr "Scannerjob"
 
 #: adminapp/views/utils/middleware.py
 #, python-brace-format
-msgid "A Client Secret for Tenant: {tenant} is about to expire!"
-msgstr "En Client Secret til Tenant: {tenant} er ved at udløbe!"
+msgid "Microsoft Graph-grant for Tenant: {tenant} is about to expire!"
+msgstr "En Microsoft Graph bevilling til Tenant: {tenant} er ved at udløbe!"
 
 #: adminapp/views/validators.py
 #, python-format
@@ -3109,6 +3115,10 @@ msgid "import services (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
 #: core/models/client.py
+msgid "import services (Google Workspace)"
+msgstr "importtjenester (Google Workspace)"
+
+#: core/models/client.py
 msgid "client ID"
 msgstr "kunde-ID"
 
@@ -3144,6 +3154,33 @@ msgstr "senest exporteret med success"
 #: import_services/models/exported_mixin.py
 msgid "marked for deletion at"
 msgstr "markeret til sletning kl"
+
+#: import_services/models/google_workspace_configuration.py
+#: import_services/models/google_workspace_import_job.py
+#: organizations/templates/organizations/grants_list.html
+msgid "Google API Grant"
+msgstr "Google API bevilling"
+
+#: import_services/models/google_workspace_configuration.py
+msgid "Delegated admin email"
+msgstr "Admin email"
+
+#: import_services/models/google_workspace_configuration.py
+msgid "Admin user to impersonate when accessing Workspace APIs"
+msgstr "Admin bruger der skal imiteres for at tilgå Workspace API'er"
+
+#: import_services/models/google_workspace_configuration.py
+#: import_services/templates/import_services/googleworkspace_edit.html
+msgid "Google Workspace configuration"
+msgstr "Google Workspace konfiguration"
+
+#: import_services/models/google_workspace_configuration.py
+msgid "Google Workspace configurations"
+msgstr "Google Workspace konfigurationer"
+
+#: import_services/models/google_workspace_import_job.py
+msgid "Delegated admin email used for this run"
+msgstr "Admin email for dette import"
 
 #: import_services/models/import_service.py
 msgid "organization UUID"
@@ -3603,6 +3640,14 @@ msgid ""
 msgstr ""
 "Tidsforskel, i sekunder, som er tolereret ved validering af identity "
 "provider tokens."
+
+#: import_services/templates/import_services/googleworkspace_edit.html
+msgid "configure Google Workspace"
+msgstr "konfigurér Google Workspace"
+
+#: import_services/templates/import_services/googleworkspace_edit.html
+msgid "save Google Workspace configuration"
+msgstr "gem Google Workspace konfiguration"
 
 #: import_services/templates/import_services/ldap_edit.html
 #: organizations/templates/sso/sso_edit.html
@@ -4112,10 +4157,6 @@ msgid "SMB Grant"
 msgstr "SMB bevilling"
 
 #: organizations/templates/organizations/grants_list.html
-msgid "Google API Grant"
-msgstr "Google API bevilling"
-
-#: organizations/templates/organizations/grants_list.html
 msgid "type"
 msgstr "type"
 
@@ -4168,6 +4209,10 @@ msgid "import service (OS2mo)"
 msgstr "importtjenester (OS2mo)"
 
 #: organizations/templates/organizations/org_table.html
+msgid "import service (Google Workspace)"
+msgstr "importtjeneste (Google Workspace)"
+
+#: organizations/templates/organizations/org_table.html
 msgid "Edit LDAP configuration"
 msgstr "Redigér LDAP-konfiguration"
 
@@ -4190,6 +4235,10 @@ msgstr "Tilføj Microsoft Graph-konfiguration"
 #: organizations/templates/organizations/org_table.html
 msgid "Edit Microsoft Graph configuration"
 msgstr "Redigér Microsoft Graph-konfiguration"
+
+#: organizations/templates/organizations/org_table.html
+msgid "Edit Google Workspace configuration"
+msgstr "Redigér Google Workspace konfiguration"
 
 #: organizations/templates/organizations/org_table.html
 msgid "View organizational units."
