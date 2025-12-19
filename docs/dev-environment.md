@@ -19,12 +19,7 @@ To get a development environment to run, follow these steps:
     - Report module: http://localhost:8040
 
 2. Create users and other initial setup with the [quickstart
-   commands](../management-commands). The commands will describe what they
-   do in more detail, but in short they create a user named "dev" with the
-   password "dev" and set up a few scan sources.
-
-         docker compose exec admin django-admin quickstart_dev
-         docker compose exec report django-admin quickstart_dev
+   commands](#quickstart-commands-for-test-data).
 
 3.  Start a scan:
 
@@ -47,6 +42,62 @@ To get a development environment to run, follow these steps:
 
     1.  Log into the report module with the newly created superuser at
         http://localhost:8040
+
+## Quickstart Commands for Test Data
+
+To quickly populate your development environment with test data, you can use the provided `quickstart` management commands. Here is the recommended flow:
+
+### 1. Start the Project with the LDAP Profile
+
+For testing organizational imports, you need to start the OpenLDAP server. Use the `--profile ldap` flag with `docker compose`:
+
+```sh
+docker compose --profile ldap up -d
+```
+
+This starts all the standard services and additionally runs the OpenLDAP service. The LDAP server is automatically prepopulated with data from `dev-environment/openldap/01-corporation.ldif`. 
+This file sets up a sample corporation with a hierarchical structure, including:
+- A top-level "Organization"
+- **113** Organizational Units (OUs) across 5 regions (e.g., NorthAmerica, Europe)
+- A total of **501** user objects distributed throughout the hierarchy. (When importing, you'll have 502, because of "dev")
+
+### 2. Run Initial Setup
+
+Next, run the `quickstart_dev` command for both the `admin` and `report` services. This command creates a superuser (`dev`/`dev`), a client, an organization, and other necessary baseline objects.
+
+```sh
+docker compose exec admin django-admin quickstart_dev
+docker compose exec report django-admin quickstart_dev
+```
+
+### 3. Set Up the LDAP Import Job
+
+Now, run the `quickstart_import_job` command. This command configures the connection between OSdatascanner and the running OpenLDAP service.
+
+```sh
+docker compose exec admin django-admin quickstart_import_job
+```
+
+This will:
+- Enable the necessary import features on the default client.
+- Create an `LDAPConfig` object for the default organization, pointing to the test LDAP server (`ldap-server:389`).
+- Configure the connection in the external Keycloak service, making the import job ready to run.
+
+You can now navigate to the "Organizations" page in the admin UI (`http://localhost:8020/organizations/`) and start the import.
+
+### 4. Generate Test Scan Results
+
+Finally, to populate the report module with scan results, use the `quickstart_test_data` command.
+
+```sh
+# Generate 1000 reports for the universal remediator
+docker compose exec report django-admin quickstart_test_data 1000
+
+# Or, generate 50 reports for a specific, existing user
+docker compose exec report django-admin quickstart_test_data 50 --username someuser
+```
+
+This command is optimized to generate a large number of `DocumentReport` objects quickly.
 
 
 ## Missing permissions in development environment
@@ -190,7 +241,7 @@ Refreshing the page, you should see your new translations.
 
 ### Shell access
 
-To access a shell on any container based on the OS2datascanner module
+To access a shell on any container based on the OSdatascanner module
 images, run
 
     docker compose {exec|run} <container name> bash
@@ -492,13 +543,13 @@ In `dev-settings.toml` appropriate settings for the **KEYCLOAK_BASE_URL**, **KEY
 **KEYCLOAK_CLIENT_SECRET** are set.
 
 The purpose of the Keycloak instance is to use its User Federation support. When an LDAP configuration is set in
-OS2datascanner, we create a "User Federation" in Keycloak which imports data from e.g. Active Directory. 
+OSdatascanner, we create a "User Federation" in Keycloak which imports data from e.g. Active Directory. 
 Finally, we import this data to Django.
 
 
 #### Setting up OpenLDAP
 
-OS2datascanner's development environment incorporates the OpenLDAP server,
+OSdatascanner's development environment incorporates the OpenLDAP server,
 which should be used to work with the system's organisational import
 functionality. Setting up OpenLDAP is a little complicated, though; even though
 the "L" stands for "lightweight", LDAP is an old technology that doesn't *feel*
@@ -576,7 +627,7 @@ matches.
 
 ## Setting up OS2mo-importjob
 
-OS2datascanner's development environment incorporates OS2mo organisational import
+OSdatascanner's development environment incorporates OS2mo organisational import
 functionality. To test functionality, it is required to clone the Git-repository.
 
 1. Clone the repo and start the OS2mo-project
@@ -603,9 +654,9 @@ functionality. To test functionality, it is required to clone the Git-repository
 6. Select the client "dipex"
 7. Go to tab "Credentials"
 8. Copy the "Secret". You can regenerate a new secret here as well
-9. Open the dev-settings.toml file in the OS2datascanner-project and scroll down to "[os2mo]"  
+9. Open the dev-settings.toml file in the OSdatascanner-project and scroll down to "[os2mo]"  
 10. Change OS2MO_CLIENT_ID to "dipex" and OS2MO _CLIENT_SECRET to the secret
-11. Start the OS2datascanner-project. Use the "--build" flag to let the updated 
+11. Start the OSdatascanner-project. Use the "--build" flag to let the updated 
 dev-settings.toml-file take effect.
     ```
     docker compose up --build
