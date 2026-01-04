@@ -1,0 +1,25 @@
+{% extends "components/containers/cards/card__layout-circle-charts.html" %}
+
+{% load i18n l10n %}
+
+{% block card_title %}
+  {% trans "scanner overview — size"|capfirst %}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% trans "overview of the proportion each file type represents of the total number of scanned files"|capfirst %}
+{% endblock %}
+
+{% block circle_chart_canvas %}
+  <div class="canvas__wrapper"
+       data-chartid="bytes_status__{{ status.pk|unlocalize }}">
+    <canvas id="pie_chart_bytes_status__{{ status.pk|unlocalize }}"></canvas>
+  </div>
+{% endblock %}
+
+{% block circle_chart_legend %}
+  <div class="canvas__legend"
+       data-chartid="distribution-data-sources"
+       id="pie_legend_bytes_status__{{ status.pk|unlocalize }}"></div>
+  {{ bytes_data|json_script:"bytes_data" }}
+{% endblock %}
