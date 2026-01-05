@@ -2184,7 +2184,7 @@ msgstr "sekunder brugt på at scanne forskellige filtyper"
 
 #: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
 msgid "scanner overview — size"
-msgstr "scanneroverblik — filtyper"
+msgstr "scanneroverblik — størrelse"
 
 #: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
 msgid "overview of the proportion each file type represents of the total number of scanned files"
