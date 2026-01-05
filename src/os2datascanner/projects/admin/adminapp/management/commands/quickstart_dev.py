@@ -3,6 +3,7 @@ import sys
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 from django.db import transaction
 from recurrence import Recurrence
 
@@ -36,7 +37,7 @@ def get_default_org_and_cprrule():
 
     cpr = Rule.objects.filter(
         name="CPR regel",
-        description="Denne regel finder alle gyldige CPR numre.",
+        description="Denne regel finder alle gyldige CPR-numre.",
         ).first()
 
     return default_org, cpr
@@ -52,7 +53,7 @@ class Command(BaseCommand):
     help = __doc__
 
     @transaction.atomic
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: CCR001 (Cognitive complexity)
         if not settings.DEBUG or settings.PRODUCTION:
             self.stdout.write(self.style.NOTICE("Aborting! This may not be a developer machine."))
             sys.exit(1)
@@ -96,6 +97,9 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Superuser dev/dev already exists!")
 
+        self.stdout.write("Loading CPR rule fixture")
+        call_command("loaddata", "rules-cpr-da")
+
         self.stdout.write("Creating & synchronizing corresponding dev Account")
         org, cpr = get_default_org_and_cprrule()
         print("org:", org)
@@ -111,8 +115,9 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Account for dev already exists!")
 
-        self.stdout.write("Connecting CPR rule to organization ...")
-        org.system_rules.add(cpr)
+        if cpr:
+            self.stdout.write("Connecting CPR rule to organization ...")
+            org.system_rules.add(cpr)
 
         alias, c2 = Alias.objects.get_or_create(
             account=account,
@@ -125,42 +130,44 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Remediator alias for account dev already exists!")
 
-        self.stdout.write("Creating file scanner for samba share")
-        recurrence = Recurrence()
-        share, created = FileScanner.objects.get_or_create(
-            name=smb_name,
-            unc=smb_unc,
-            do_ocr=True,
-            validation_status=True,
-            do_last_modified_check=False,
-            organization=org,
-            schedule=recurrence,
-            rule=cpr
-        )
-        if created:
-            smb_grant = SMBGrant(username=smb_user, password=smb_password, organization=org)
-            smb_grant.save()
-            share.smb_grant = smb_grant
-            share.save()
-            self.stdout.write(self.style.SUCCESS("Samba share file scanner created successfully!"))
-        else:
-            self.stdout.write("Samba share file scanner already exists!")
+        if cpr:
+            self.stdout.write("Creating file scanner for samba share")
+            recurrence = Recurrence()
+            share, created = FileScanner.objects.get_or_create(
+                name=smb_name,
+                unc=smb_unc,
+                do_ocr=True,
+                validation_status=True,
+                do_last_modified_check=False,
+                organization=org,
+                schedule=recurrence,
+                rule=cpr
+            )
+            if created:
+                smb_grant = SMBGrant(username=smb_user, password=smb_password, organization=org)
+                smb_grant.save()
+                share.smb_grant = smb_grant
+                share.save()
+                self.stdout.write(self.style.SUCCESS(
+                    "Samba share file scanner created successfully!"))
+            else:
+                self.stdout.write("Samba share file scanner already exists!")
 
-        self.stdout.write("Creating webscanner for local nginx")
-        webscanner, created = WebScanner.objects.get_or_create(
-            name=web_name,
-            url=web_url,
-            validation_status=True,
-            do_last_modified_check=False,
-            organization=org,
-            schedule=recurrence,
-            download_sitemap=False,
-            rule=cpr
-        )
-        if created:
-            self.stdout.write(self.style.SUCCESS("Webscanner created successfully!"))
-        else:
-            self.stdout.write("Webscanner already exists!")
+            self.stdout.write("Creating webscanner for local nginx")
+            webscanner, created = WebScanner.objects.get_or_create(
+                name=web_name,
+                url=web_url,
+                validation_status=True,
+                do_last_modified_check=False,
+                organization=org,
+                schedule=recurrence,
+                download_sitemap=False,
+                rule=cpr
+            )
+            if created:
+                self.stdout.write(self.style.SUCCESS("Webscanner created successfully!"))
+            else:
+                self.stdout.write("Webscanner already exists!")
 
         self.stdout.write(self.style.SUCCESS(
             "Done! Remember to run the same cmd in the Report module"))

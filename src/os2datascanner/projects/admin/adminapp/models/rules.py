@@ -41,13 +41,6 @@ class RuleCategory(models.Model):
         verbose_name=_("name"),
         unique=True)
 
-    @classmethod
-    def populate(cls):
-        existing = cls.objects.values_list("name", flat=True)
-        for category in cls.CategoryNames.choices:
-            if category not in existing:
-                cls.objects.create(name=category)
-
     def __str__(self):
         return self.get_name_display()
 

@@ -1,0 +1,38 @@
+[
+    {
+        "model": "os2datascanner.rulecategory",
+        "pk": 1001,
+        "fields": {
+            "name": "danish"
+        }
+    },
+    {
+        "model": "os2datascanner.rulecategory",
+        "pk": 1002,
+        "fields": {
+            "name": "number_id"
+        }
+    },
+    {
+        "model": "os2datascanner.rule",
+        "pk": 8880100,
+        "fields": {
+            "name": "CPR regel",
+            "organization": null,
+            "description": "Denne regel finder alle gyldige CPR-numre.",
+            "sensitivity": 3,
+            "raw_rule": {
+                "type": "cpr",
+                "modulus_11": true,
+                "ignore_irrelevant": true,
+                "examine_context": true,
+                "exceptions": "",
+                "surrounding_exceptions": ""
+            },
+            "categories": [
+                1001,
+                1002
+            ]
+        }
+    }
+]

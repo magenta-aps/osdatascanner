@@ -75,7 +75,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            create_default_cprrule_and_organization,
-            reverse_code=undo_creation_of_cpr_as_customrule)
+        # Since #67381 we no longer create the CPR rule here, but rather through fixture loading.
+        # migrations.RunPython(
+        #     create_default_cprrule_and_organization,
+        #     reverse_code=undo_creation_of_cpr_as_customrule)
     ]

@@ -14,6 +14,9 @@
   - The OSdatascanner scanner engine can now list and scan files in a WebDAV
     file share.
 
+- The Danish CPR rule is no longer created in migration, but must now be loaded in from a fixture
+  with `django-admin loaddata rules-cpr-da`.
+
 ### General improvements
 
 - The 'open' button for results from an Exchange Scanner now support arbitrary webmail clients.

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 from django.db import IntegrityError, transaction
 
 from ....core.models.client import Client
@@ -77,9 +78,15 @@ class Command(BaseCommand):
             help="Username for the superuser",
             default="os",
         )
+        parser.add_argument(
+            "--load-cpr-rule",
+            help="Also loads in the CPR rule fixture",
+            action="store_true"
+        )
 
     @transaction.atomic
-    def handle(self, *args, client_name, org_name, email, phone, password, username, **options):
+    def handle(self, *args, client_name, org_name, email, phone, password, username, load_cpr_rule,
+               **options):
         self.stdout.write(f"Creating Client {client_name}")
         try:
             client = Client.objects.create(name=client_name,
@@ -126,11 +133,15 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Sent Organization and Account create message!:"))
         self.stdout.write(f"{creation_dict}")
 
-        self.stdout.write("Add Organization to CPR rule...")
-        rule = Rule.objects.get(name="CPR regel")
-        organization = Organization.objects.first()
-        rule.organizations.add(organization)
-        self.stdout.write(self.style.SUCCESS(f"{organization} added to CPR rule!"))
+        if load_cpr_rule:
+            self.stdout.write("Load CPR rule fixture...")
+            call_command("loaddata", "rules-cpr-da")
+
+            self.stdout.write("Add Organization to CPR rule...")
+            rule = Rule.objects.get(pk=8880100)  # The "CPR regel"
+            organization = Organization.objects.first()
+            rule.organizations.add(organization)
+            self.stdout.write(self.style.SUCCESS(f"{organization} added to CPR rule!"))
 
         self.stdout.write(self.style.SUCCESS(
             "Done! Run initial_setup in the Report module to create superuser there"))
