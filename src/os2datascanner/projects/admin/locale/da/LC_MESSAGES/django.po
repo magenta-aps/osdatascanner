@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-16 13:47+0100\n"
+"POT-Creation-Date: 2026-01-04 23:53+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2174,6 +2174,22 @@ msgstr "Kunne ikke åbne datakilden:"
 msgid "Could not communicate with the scanner engine:"
 msgstr "Kunne ikke kommunikere med scannermotoren:"
 
+#: adminapp/templates/components/scanstatus/mimetype-duration_pie-chart.html
+msgid "scanner overview — time"
+msgstr "scanneroverblik — tid"
+
+#: adminapp/templates/components/scanstatus/mimetype-duration_pie-chart.html
+msgid "seconds spent scanning different file types"
+msgstr "sekunder brugt på at scanne forskellige filtyper"
+
+#: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
+msgid "scanner overview — size"
+msgstr "scanneroverblik — størrelse"
+
+#: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
+msgid "overview of the proportion each file type represents of the total number of scanned files"
+msgstr "oversigt over fordelingen af filtyper i det samlede antal scannede filer"
+
 #: adminapp/templates/components/scanstatus/remove_error.html
 #: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "Remove selected scan data"
@@ -2312,24 +2328,8 @@ msgid "%(num)s errors encountered while scanning"
 msgstr ""
 
 #: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Time spent scanning"
-msgstr ""
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Size scanned"
-msgstr ""
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Total size scanned of different file types"
-msgstr ""
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Seconds scanned"
-msgstr ""
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Time spent scanning different file types"
-msgstr ""
+msgid "scan time top 5:"
+msgstr "scanningstid top 5:"
 
 #: adminapp/templates/components/user/login.html
 msgid "Login"

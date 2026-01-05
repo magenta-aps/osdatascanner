@@ -65,9 +65,15 @@ function drawPieCharts(bytesData, timeData, pk) {
     "#21759c",
     "#00496e",
     "#bfe474",
-    "#e47483",
+    "#e47483"
   ]);
-  drawPie(timeData, "seconds_status__" + String(pk), ["#80ab82", "#a2e774", "#35bd57", "#1b512d", "#7e4672"]);
+  drawPie(timeData, "seconds_status__" + String(pk), [
+    "#80ab82", 
+    "#a2e774", 
+    "#35bd57", 
+    "#1b512d", 
+    "#7e4672"
+  ]);
 }
 
 function getNextStatisticRow(row) {

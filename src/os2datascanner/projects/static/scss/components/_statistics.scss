@@ -962,6 +962,15 @@ table .overview_wrapper {
 /***** OPTIMISING HOW WE STYLE STATISTICS RELATED LAYOUTS *****/
 
 .statistics {
+  @mixin card-grid-layout($card-min-width) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax($card-min-width, 1fr));
+    align-items: stretch;
+    gap: $card-spacing;
+  }
+
+  $card-spacing: 1.5rem; // Leaving this out here to make it available for the rest of statistics layouts. It'll make sense later, I promise.
+
   &--finished-scans {
     /* NOTE: Since there's an ongoing optimising happening for the DPO overview page, this needs to
     be a little "double nested" class-wise to avoid merge issues. */
@@ -982,36 +991,45 @@ table .overview_wrapper {
       }
 
       &__body {
+        @include layout-vertical(2rem);
+
         .statistics__section {
-          display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          grid-template-rows: auto;
-          gap: 2rem;
+          .mimetype-piecharts {
+            @include card-grid-layout(40rem);
+            // NOTE: This might need adjustment after we make UI friendly MIMEtype mapping.
+
+            .canvas-legend__label {
+              line-break: anywhere; // Temporary until we make UI friendly MIMEtype mapping.
+            }
+          }
+
+          .timeline-summary {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto;
+            gap: $card-spacing;
+          }
+
+          .card {
+            @include spacing-reset;
+            border-radius: var(--border-radius-l);
+
+            &__label {
+              .title {
+                font-size: 1rem;
+              }
+            }
+          }
 
           .data-card {
+            gap: 12px;
+
             /* Grid layout - start */
             &--timeline,
             &--scan-summary {
               grid-column: span 12;
             }
 
-            @media (min-width: 1024px) {
-              &--timeline {
-                grid-column: span 8;
-              }
-
-              &--scan-summary {
-                grid-column: span 4;
-              }
-            }
-
-            @media (min-width: 1200px) {
-              &--timeline,
-              &--scan-summary {
-                grid-column: span 12;
-              }
-            }
-
             @media (min-width: 1440px) {
               &--timeline {
                 grid-column: span 8;
@@ -1021,23 +1039,18 @@ table .overview_wrapper {
                 grid-column: span 4;
               }
             }
-
             /* Grid layout - end */
 
             &--scan-summary {
-              height: fit-content;
-              width: fit-content;
+              height: 100%;
             }
 
-            @media (min-width: 1440px) {
-              &--scan-summary {
-                width: 100%;
-                /* NOTE: Allows the summary card to take up the full width of it's grid column
-                span. It just looks nicer on larger screens. */
-              }
+            hr {
+              color: var(--color-border-neutral);
             }
 
             &__content {
+              @include layout-vertical(1.25rem);
               height: fit-content;
 
               ul,
@@ -1047,18 +1060,20 @@ table .overview_wrapper {
               }
 
               ul {
+                @include layout-vertical(0.5rem);
                 list-style: none;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
+              }
+
+              .data-card__section {
+                @include layout-vertical(0.75rem);
+
+                &__title {
+                  font-weight: 600;
+                }
               }
             }
           }
         }
-      }
-
-      &__footer {
-        // Empty
       }
     }
   }
@@ -1084,25 +1099,8 @@ table .overview_wrapper {
     // Empty
   }
 
+  &--finished-scans,
   &--dpo {
-    @include spacing-reset;
-
-    $card-spacing: 1.5rem; // Leaving this out here to make it available for the rest of statistics layouts. It'll make sense later, I promise.
-
-    @mixin card-grid-layout($card-min-width) {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax($card-min-width, 1fr));
-      align-items: stretch;
-      gap: $card-spacing;
-    }
-
-    @include layout-vertical(2.5rem);
-    margin: 1.5rem 1rem;
-
-    @media (min-width: $break-lg) {
-      margin: 2.5rem 0 0;
-    }
-
     .chart {
       &--circle,
       &--doughnut,
@@ -1114,6 +1112,7 @@ table .overview_wrapper {
         .canvas {
           &__wrapper {
             justify-self: end;
+            align-self: center;
 
             $pie-size: clamp(200px, 40cqw, 300px);
             // 40cqw = 40% of the width of the container.
@@ -1152,7 +1151,20 @@ table .overview_wrapper {
           }
         }
       }
+    }
+  }
 
+  &--dpo {
+    @include spacing-reset;
+
+    @include layout-vertical(2.5rem);
+    margin: 1.5rem 1rem;
+
+    @media (min-width: $break-lg) {
+      margin: 2.5rem 0 0;
+    }
+
+    .chart {
       &--line,
       &--bar {
         .canvas__wrapper {
