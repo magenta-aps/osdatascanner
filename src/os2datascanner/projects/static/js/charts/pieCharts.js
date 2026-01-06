@@ -100,7 +100,11 @@ function drawPie(data, ctxName, colors) {
     : [gettext("No Data")];
   const values = totalValue ? filteredData.map((obj) => obj.count) : [1];
 
-  const colorPredicate = (color, index) => Object.values(data)[index].count;
+  const colorPredicate = (color, index) => {
+    const entry = Object.values(data)[index];
+    return entry && entry.count > 0;
+  };
+
   const chartColors = totalValue ? colors.filter(colorPredicate) : ["#e0e0e0"]; // Determine the chart colors based on available data
 
   const pieChartCtx = document
