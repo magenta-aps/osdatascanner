@@ -566,13 +566,12 @@ ekstremiteterne. Han selv tilføjer, at han har ondt i albuen. Der er også
 indledende tegn på AUTOIMMUNT POLYGLANDULÆRT SYNDROM. Henvist til
 speciellæger.""",
             ({
-                "match": "akut",
-                "offset": 212,
+                "match": "Sygehus",
+                "offset": 78,
                 "context": (
-                    "0-18\n\n"
-                    "Ifølge analyseresultater lider patienten af akut arteriel "
-                    "insufficiens i alle\n"
-                    "ekstremiteterne. Han"
+                    "FØLSOMT MATERIALE UNDER TAVSHEDSPLIGT\n\n"
+                    "Nordstrand Sygehus\nStrandvej 17\n9999 Vejstrand\n\n"
+                    "Patient: Jens Testse"
                     ),
                 "context_offset": 50
             }, {
