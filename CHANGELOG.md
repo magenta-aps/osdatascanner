@@ -19,6 +19,8 @@
 
 ### General improvements
 
+- Health-related keyword list updated to improve the health rule.
+
 - The 'open' button for results from an Exchange Scanner now support arbitrary webmail clients.
 
 - The `account_coverage` management command now recreates CoveredAccount objects based on both
