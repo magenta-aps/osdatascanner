@@ -1,6 +1,8 @@
 # Changelog
 
-## Version ???, ???
+## Version 3.30.8, 7th January 2026
+
+"A Cauld and Frosty Mornin"
 
 ### New in this release
 
