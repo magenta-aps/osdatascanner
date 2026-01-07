@@ -1,5 +1,14 @@
 # Changelog
 
+## Next release
+
+"Mystery Zone"
+
+## General improvements
+
+- Rules can now incorporate other Rules by reference, making it possible to
+  write pre-defined rules in a modular and extensible way.
+
 ## Version 3.30.8, 7th January 2026
 
 "A Cauld and Frosty Mornin"
@@ -54,7 +63,6 @@
 - Corrected an issue where result_collector would crash when email categorizing is enabled
   and multiple Accounts have the same email.
 
-  
 ## Version 3.30.5, 18th November 2025
 
 "Long Live the Mayor"

@@ -14,7 +14,7 @@ management command.
 The following ranges of primary keys are set aside for use by particular files
 in this folder:
 
-* `os2datascanner.Rule`, primary keys 9990100 to 9990199 inclusive
+* `os2datascanner.Rule`, primary keys 9990100 to 9990299 inclusive
 
   Reserved for `rules-sbsys.json`.
 * `os2datascanner.Rule`, primary key 8880100

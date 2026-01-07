@@ -1,6 +1,23 @@
 [
   {
     "model": "os2datascanner.rule",
+    "pk": 9990200,
+    "fields": {
+      "name": "(SBSYS) Default security group fragment",
+      "organization": null,
+      "description": "(SBSYS) Default security group fragment",
+      "sensitivity": 0,
+      "raw_rule": {
+        "type": "sbsys-db-fieldrule",
+        "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
+        "operator": "iin",
+        "value": ["åben for alle", "alle brugere"],
+        "name": ""
+      }
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
     "pk": 9990100,
     "fields": {
       "name": "(SBSYS) Sager der muligvis kan afsluttes",
@@ -115,11 +132,7 @@
           {
             "type": "not",
             "rule": {
-              "type": "sbsys-db-fieldrule",
-              "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
-              "operator": "iin",
-              "value": ["åben for alle", "alle brugere"],
-              "name": ""
+              "!ref": 9990200
             }
           },
           {
@@ -155,10 +168,7 @@
             "name": ""
           },
           {
-            "type": "sbsys-db-fieldrule",
-            "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
-            "operator": "iin",
-            "value": ["åben for alle", "alle brugere"],
+            "!ref": 9990200,
             "name": "Låste sager uden sikkerhedsgruppe"
           }
         ]
@@ -327,11 +337,7 @@
                 "name": ""
               },
               {
-                "type": "sbsys-db-fieldrule",
-                "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
-                "operator": "iin",
-                "value": ["åben for alle", "alle brugere"],
-                "name": ""
+                "!ref": 9990200
               }
             ]
           },
@@ -400,14 +406,7 @@
                 "name": ""
               },
               {
-                "type": "sbsys-db-fieldrule",
-                "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
-                "operator": "iin",
-                "value": [
-                  "åben for alle",
-                  "alle brugere"
-                ],
-                "name": ""
+                "!ref": "9990200"
               }
             ]
           },
