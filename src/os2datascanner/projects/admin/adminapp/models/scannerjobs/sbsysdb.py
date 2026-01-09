@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django.conf import settings
+import structlog
 
 from os2datascanner.utils.ref import Counter
 from os2datascanner.engine2.model._staging import sbsysdb, sbsysdb_rule
@@ -10,6 +11,9 @@ from os2datascanner.projects.grants.models import SMBGrant
 
 from ....organizations.models.aliases import AliasType
 from .scanner import Scanner
+
+
+logger = structlog.get_logger("adminapp")
 
 
 class SBSYSDBScanner(Scanner):
@@ -83,15 +87,22 @@ class SBSYSDBScanner(Scanner):
         covered_accs = self.compute_covered_accounts()
         source, = self.generate_sources()
 
-        print(covered_accs)
-
         upn_set = set()
         for acc in covered_accs:
-            upn_set |= set(
-                    a._value
-                    for a in acc.aliases.filter(
-                            _alias_type=AliasType.USER_PRINCIPAL_NAME))
-            print(acc)
+            acc_upns = {a._value
+                        for a in acc.aliases.filter(
+                                _alias_type=AliasType.USER_PRINCIPAL_NAME)}
+            logger.debug(
+                    "computed UPN set for account",
+                    scanner=self, account=acc, upn_set=acc_upns)
+            upn_set |= acc_upns
+        if not upn_set:
+            # No UPNs to scan, so don't emit a Source at all. Failing early is
+            # better than submitting a broken scan
+            logger.error(
+                    "final UPN set is empty, not creating a Source",
+                    scanner=self)
+            return
 
         Counter.try_incr(source_counter)
         yield spec_template._replace(

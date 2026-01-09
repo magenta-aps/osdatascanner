@@ -4,7 +4,7 @@
 
 "Mystery Zone"
 
-## General improvements
+### General improvements
 
 - Rules can now incorporate other Rules by reference, making it possible to
   write pre-defined rules in a modular and extensible way.
