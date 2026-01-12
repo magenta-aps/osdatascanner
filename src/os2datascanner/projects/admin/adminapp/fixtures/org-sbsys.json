@@ -49,7 +49,6 @@
       "slug": "vejstrand",
       "synchronization_time": "17:00:00",
       "system_rules": [
-        1,
         9990104
       ]
     }
@@ -185,6 +184,27 @@
       "last_import_requested": null,
       "last_import": null
     }
+  },
+  {
+    "model":"grants.grant",
+    "pk":"f7dca87c-8de8-4c78-a18d-a9cd90d49208",
+    "fields":{
+       "organization":"b5ef85f3-99f8-43ac-8520-5a862235b668",
+       "last_updated":"2025-12-16T10:35:45.872Z"
+    }
+  },
+  {
+   "model":"grants.smbgrant",
+   "pk":"f7dca87c-8de8-4c78-a18d-a9cd90d49208",
+   "fields":{
+      "username":"sa",
+      "_password":[
+         "b90c3289c0218c04f4435bbe2e8e7485",
+         "c991af220c5b6ffe1e72bec6a3da85ba5949"
+      ],
+      "domain":""
+   }
   }
+
 ]
 
