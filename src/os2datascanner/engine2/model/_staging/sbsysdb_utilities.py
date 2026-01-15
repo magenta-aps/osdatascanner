@@ -233,7 +233,7 @@ def convert_rule_to_select(
 
 def exec_expr(
         engine, expr: Select, *labels: str, rows: Counter | None = None):
-    with engine.begin() as connection:
+    with engine.connect() as connection, connection.begin():
         logger.debug(
                 "executing SBSYS database query",
                 query=str(expr), params=expr.compile().params)
