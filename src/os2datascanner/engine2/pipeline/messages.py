@@ -330,6 +330,12 @@ class MatchesMessage(NamedTuple):
     matched: bool
     matches: Sequence[MatchFragment]
 
+    @staticmethod
+    def test(obj) -> bool:
+        return all(
+                attr in obj
+                for attr in ("scan_spec", "handle", "matched", "matches"))
+
     @property
     def sensitivity(self):  # noqa: CCR001, too high cognitive complexity
         """Computes the overall sensitivity of the matches contained in this
@@ -504,6 +510,53 @@ class StatusMessage(NamedTuple):
     _deep_replace = _deep_replace
 
 
+def check_metadata_dict(cls_metadata, obj_metadata):
+    for key, expected_value in cls_metadata.items():
+        obj_value = obj_metadata.get(key)
+        if obj_value != expected_value:
+            raise ValueError(
+                    f"metadata field {key!r}:"
+                    f" expected {expected_value!r}, but got {obj_value!r}")
+
+
+class ContentSkippedMessage(NamedTuple):
+    """A ContentSkippedMessage is emitted by the pipeline's processor stage if
+    the configuration of a scanner job has prohibited the content of an object
+    from being scanned."""
+
+    METADATA = {
+        "domain": "os2datascanner.engine2.pipeline.messages",
+        "type": "ContentSkippedMessage"
+    }
+
+    scan_tag: ScanTagFragment
+    handle: Handle
+
+    def to_json_object(self):
+        return {
+            "scan_tag": self.scan_tag.to_json_object(),
+            "handle": self.handle.to_json_object(),
+
+            "__metadata": self.METADATA
+        }
+
+    @staticmethod
+    def test(obj) -> bool:
+        try:
+            check_metadata_dict(
+                    ContentSkippedMessage.METADATA, obj.get("__metadata", {}))
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def from_json_object(obj):
+        check_metadata_dict(ContentSkippedMessage.METADATA, obj["__metadata"])
+        return ContentSkippedMessage(
+                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
+                handle=Handle.from_json_object(obj["handle"]))
+
+
 class CommandMessage(NamedTuple):
     """A CommandMessage is an order from the administration system. As they may
     modify the treatment of other messages, they should be processed as soon as
@@ -535,6 +588,10 @@ class CommandMessage(NamedTuple):
             "log_level": self.log_level,
             "profiling": self.profiling
         }
+
+    @staticmethod
+    def test(obj) -> bool:
+        return "abort" in obj
 
     @staticmethod
     def from_json_object(obj):

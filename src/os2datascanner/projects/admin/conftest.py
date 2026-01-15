@@ -183,7 +183,7 @@ def ws_page_1(web_scanner):
     wh = WebHandle(WebSource("http://www.example.com"), "IIS/Page1.aspx")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_before=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=-100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)
@@ -195,7 +195,7 @@ def ws_page_2(web_scanner):
     wh = WebHandle(WebSource("http://www.example.com"), "cgi-bin/page2.pl")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_before=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=-100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)
@@ -207,7 +207,7 @@ def ws_page_3(web_scanner):
     wh = WebHandle(WebSource("http://www.example.com"), "ph-admin/page3.php")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_before=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=-100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)
@@ -221,7 +221,7 @@ def ws_irrelevant_page(web_scanner):
     wh = WebHandle(WebSource("http://www.example.net"), "COB-BIN/HPAGE.CBL")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_before=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=-100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)

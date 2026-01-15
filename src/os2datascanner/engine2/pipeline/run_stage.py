@@ -199,7 +199,10 @@ class GenericRunner(PikaPipelineThread):
             else:
                 yield from self._handle_content(routing_key, body)
 
-    def after_message(self, routing_key, body):
+    def after_message(self, routing_key, body, *, ex=None):
+        if ex:  # Rejected messages don't count towards the quota
+            return
+
         # Check to see if we've met our quota and should restart
         self._count += 1
         if self._limit is not None and self._count >= self._limit:
