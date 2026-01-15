@@ -13,11 +13,11 @@ class Command(BaseCommand):
 
         for graph_grant in GraphGrant.objects.all():
             exp_date = graph_grant.expiry
-            days_since_last_email = (today - graph_grant.last_email_date).days
+            days_since_last_email = (
+                today - graph_grant.last_email_date).days\
+                if graph_grant.last_email_date else float('inf')
             if (is_expiring_soon(exp_date, today) and
                     days_since_last_email >= settings.EXPIRATION_WARNING_THRESHOLD):
-                try:
-                    GraphGrantExpiryNotificationEmail(graph_grant).notify()
-                finally:
-                    graph_grant.last_email_date = today
-                    graph_grant.save()
+                GraphGrantExpiryNotificationEmail(graph_grant).notify()
+                graph_grant.last_email_date = today
+                graph_grant.save()

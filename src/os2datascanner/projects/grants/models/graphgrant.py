@@ -1,4 +1,3 @@
-from datetime import date
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
@@ -44,7 +43,8 @@ class GraphGrant(Grant):
     )
 
     last_email_date = models.DateField(
-        default=date.today,
+        blank=True,
+        null=True,
         verbose_name=_("last email date")
     )
 

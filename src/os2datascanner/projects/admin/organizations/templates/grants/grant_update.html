@@ -1,5 +1,22 @@
 {% extends 'components/common/base.html' %}
 {% load i18n %}
+{% load static %}
+
+{% block extra_head_html %}
+  <link href="{% static '3rdparty/select2/select2-4.0.13.min.css' %}"
+        rel="stylesheet" />
+{% endblock extra_head_html %}
+
+{% block jquery_script %}
+  <script src="{% static '3rdparty/select2/select2-4.0.13.min.js' %}"></script>
+  <script type="text/javascript">
+    (function ($) {
+      $(document).ready(function () {
+        $('.contacts_select2').select2();
+      });
+    })(jQuery);
+  </script>
+{% endblock jquery_script %}
 
 {% block body %}
   {% include "components/common/header.html" %}
@@ -39,7 +56,20 @@
                 {% endblock form_extras %}
 
                 {% comment %} This is a little dirty special case handling. {% endcomment %}
-                {% if not field.name == "expiry_date" %}{{ field }}{% endif %}
+                {% if field.name == 'contacts' %}
+                  <div class="dropdown">
+                    <select multiple
+                            name="{{ field.name }}"
+                            id="{{ field.auto_id }}"
+                            class="contacts_select2">
+                      {% for value, label in field.field.choices %}
+                        <option value="{{ value }}" {% if value in field.value %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                {% elif not field.name == "expiry_date" %}
+                  {{ field }}
+                {% endif %}
 
                 {% if field.errors %}{{ field.errors }}{% endif %}
 
