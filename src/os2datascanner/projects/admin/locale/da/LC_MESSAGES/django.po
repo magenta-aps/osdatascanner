@@ -189,16 +189,6 @@ msgstr "Sitemap-URL forventet men mangler"
 msgid "Error parsing sitemap: {0}"
 msgstr "Fejl i læsning a sitemap: {0}"
 
-#: adminapp/management/commands/graphgrant_expiry_check.py
-msgid "Your GraphGrant needs updating!"
-msgstr ""
-
-#: adminapp/management/commands/graphgrant_expiry_check.py
-msgid ""
-"It is important you update it as soon as possible, to avoid functionality "
-"loss! \n"
-msgstr ""
-
 #: adminapp/management/commands/start_scan.py
 msgid "the primary key of the scanner job to start"
 msgstr "primærnøglen på det scannerjob, der skal startes"
@@ -959,6 +949,10 @@ msgstr "Dit OSdatascanner-job er kørt færdigt."
 #: adminapp/notification.py
 msgid "OSdatascanner could not execute the scan."
 msgstr "Et OSdatascanner job kunne ikke startes."
+
+#: adminapp/notification.py
+msgid "Your GraphGrant needs to be updated."
+msgstr "Din MSGraph Bevilling skal opdateres."
 
 #: adminapp/templates/403.html adminapp/templates/404.html
 msgid "Page not found"
@@ -2907,6 +2901,11 @@ msgstr "Scan tidspunkt"
 #: adminapp/views/user_error_log_views.py
 msgid "Scanner job"
 msgstr "Scannerjob"
+
+#: adminapp/views/utils/middleware.py
+#, python-brace-format
+msgid "A Client Secret for Tenant: {tenant} is about to expire!"
+msgstr "En Client Secret til Tenant: {tenant} er ved at udløbe!"
 
 #: adminapp/views/validators.py
 #, python-format

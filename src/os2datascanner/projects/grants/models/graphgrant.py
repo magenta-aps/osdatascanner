@@ -1,4 +1,6 @@
 from uuid import uuid4
+
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -32,6 +34,19 @@ class GraphGrant(Grant):
 
     _client_secret = models.JSONField(verbose_name=_("client secret"))
     client_secret = wrap_encrypted_field("_client_secret")
+
+    contacts = models.ManyToManyField(
+        get_user_model(),
+        related_name="contact_for_grant",
+        blank=True,
+        verbose_name=_("contacts"),
+    )
+
+    last_email_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name=_("last email date")
+    )
 
     def make_token(self):
         return make_token(

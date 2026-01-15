@@ -101,7 +101,14 @@ class GraphGrantForm(forms.ModelForm):
 
 @admin.register(GraphGrant)
 class GraphGrantAdmin(admin.ModelAdmin):
-    fields = ["organization", "app_id", "tenant_id", "_client_secret"]
+    fields = [
+        "organization",
+        "app_id",
+        "tenant_id",
+        "_client_secret",
+        "contacts",
+        "last_email_date"]
+
     form = GraphGrantForm
 
     def get_changeform_initial_data(self, request):

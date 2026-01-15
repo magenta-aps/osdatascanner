@@ -155,6 +155,8 @@ MIDDLEWARE = [
     # Needed to allow iframe when starting scannerjob
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_prometheus.middleware.PrometheusAfterMiddleware",
+    # Custom middleware for sending global notifications
+    'os2datascanner.projects.admin.adminapp.views.utils.middleware.NotificationMiddleware'
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -183,6 +185,7 @@ SETTINGS_EXPORT = [
     'MINISCAN_FILE_SIZE_LIMIT',
     'MANUAL_PAGE',
     'MSGRAPH_EWS_AUTH',
+    'EXPIRATION_WARNING_THRESHOLD',
 ]
 
 # [internationalization]
@@ -211,6 +214,8 @@ EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = false
 EMAIL_PORT = 25
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# How close (in days) should a grant be to expiration before an email notification is sent.
+EXPIRATION_WARNING_THRESHOLD = 7
 
 # [scans]
 ENABLE_FILESCAN = false

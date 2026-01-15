@@ -323,7 +323,8 @@ def msgraph_grant(test_org):
         organization=test_org,
         app_id="12345678-1234-1234-1234-123456789012",
         tenant_id="12345678-1234-1234-1234-123456789012",
-        _client_secret="placeholder"
+        # placeholder hash
+        _client_secret=['30918f3d230a29623221698c4f9ec7cc', 'b89d66399a6c187e55f97a']
     )
     grant.client_secret = "A very secret secret"
     grant.save()

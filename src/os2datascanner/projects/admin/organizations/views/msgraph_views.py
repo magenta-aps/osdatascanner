@@ -3,6 +3,8 @@ import base64
 from urllib.parse import urlencode
 
 from django import forms
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
+from os2datascanner.projects.admin.organizations.models import Organization
 from requests import HTTPError
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
@@ -101,7 +104,7 @@ class MSGraphGrantReceptionView(LoginRequiredMixin, View):
 class MSGraphGrantForm(forms.ModelForm):
     class Meta:
         model = GraphGrant
-        exclude = ("__all__")
+        exclude = ('last_email_date',)
 
     _client_secret = AutoEncryptedField(
         required=False,
@@ -115,7 +118,13 @@ class MSGraphGrantForm(forms.ModelForm):
         required=False, label=_("Expiry date"),
     )
 
-    field_order = ["organization", "app_id", "tenant_id", "_client_secret", "expiry_date"]
+    field_order = [
+        "organization",
+        "app_id",
+        "tenant_id",
+        "_client_secret",
+        "expiry_date",
+        "contacts"]
 
     def clean__client_secret(self):
         return choose_field_value(
@@ -124,8 +133,22 @@ class MSGraphGrantForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        org_pk = kwargs.get('initial', {}).get('organization')
+        # To we need the org object to access the client but the kwargs only contain the pk
+        org = Organization.objects.filter(pk=org_pk).first() or self.instance.organization
+
         self.fields["_client_secret"].initial = "dummy"
         self.fields["expiry_date"].initial = self.instance.expiry_date
+        self.fields["contacts"].queryset = get_user_model().objects.filter(
+            Q(administrator_for__client=org.client) |
+            Q(groups__permissions__codename="view_client") |
+            Q(user_permissions__codename="view_client") |
+            Q(is_superuser=True)
+        ).distinct()
+
+        if self.instance.pk:
+            self.fields["contacts"].initial = self.instance.contacts
 
         self.fields["organization"].disabled = True
         self.fields["tenant_id"].disabled = True
@@ -137,7 +160,7 @@ class MSGraphGrantScannerForm(MSGraphGrantForm):
     """ Form for use in Scanner Create/Update. """
     class Meta:
         model = GraphGrant
-        fields = ('__all__')
+        exclude = ('last_email_date',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
