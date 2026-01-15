@@ -132,13 +132,16 @@ class MSGraphGrantForm(forms.ModelForm):
               self.instance._client_secret)
 
     def __init__(self, *args, **kwargs):
-        selected_org = kwargs.pop('selected_org', Organization.objects.first())
         super().__init__(*args, **kwargs)
+
+        org_pk = kwargs.get('initial', {}).get('organization')
+        # To we need the org object to access the client but the kwargs only contain the pk
+        org = Organization.objects.filter(pk=org_pk).first() or self.instance.organization
+
         self.fields["_client_secret"].initial = "dummy"
         self.fields["expiry_date"].initial = self.instance.expiry_date
         self.fields["contacts"].queryset = get_user_model().objects.filter(
-            # ?? What the h e c k decides what client an org has
-            Q(administrator_for__client=selected_org.client) |
+            Q(administrator_for__client=org.client) |
             Q(groups__permissions__codename="view_client") |
             Q(user_permissions__codename="view_client") |
             Q(is_superuser=True)
@@ -213,17 +216,6 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-
-        user = UserWrapper(self.request.user)
-        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
-
-        kwargs['selected_org'] = orgs.filter(pk=self.request.GET.get("organization")).first() or \
-            orgs.first()
-
-        return kwargs
-
     def get_form(self, form_class=None):
         # TODO: Maybe allow edits of app & tenant id in general, then this override can be removed.
         form = super().get_form(form_class)
@@ -287,18 +279,6 @@ class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
     permission_required = "grants.change_graphgrant"
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-
-        user = UserWrapper(self.request.user)
-        orgs = Organization.objects.filter(user.make_org_Q("uuid"))
-
-        kwargs['selected_org'] = self.get_object().organization or \
-            orgs.filter(pk=self.request.GET.get("organization")).first() or \
-            orgs.first()
-
-        return kwargs
 
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"

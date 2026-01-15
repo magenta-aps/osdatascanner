@@ -78,21 +78,6 @@ class GraphGrant(Grant):
                                          ).exclude(pk=self.pk).exists():
                 raise ValidationError(_("A grant for this tenant already exists."))
 
-    def save(self, *args, **kwargs):
-        if self.pk:
-            # To prevent a situation where an invalid secret encoding will prevent saving.
-            try:
-                old_secret = GraphGrant.objects.get(pk=self.pk).client_secret
-            except ValueError:
-                old_secret = None
-
-            if old_secret != self.client_secret:
-                self.last_email_date = date.today()
-        else:
-            self.last_email_date = date.today()
-
-        super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = "Microsoft Graph"
 
