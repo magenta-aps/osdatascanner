@@ -9,6 +9,11 @@
 - Rules can now incorporate other Rules by reference, making it possible to
   write pre-defined rules in a modular and extensible way.
 
+### Bugfixes
+
+- The bundled TLS certificate store has been updated, which should result in
+  many fewer TLS/SSL errors.
+
 ## Version 3.30.8, 7th January 2026
 
 "A Cauld and Frosty Mornin"

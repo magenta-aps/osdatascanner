@@ -24,6 +24,7 @@ termplotlib
 termtables
 
 # Engine
+certifi>=2026.1.4  # Keep updated for newer CA certificates
 chardet
 defusedxml
 dropbox>=10.3.0
