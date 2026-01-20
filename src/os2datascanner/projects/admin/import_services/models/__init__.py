@@ -9,3 +9,5 @@ from .import_service import ImportService  # noqa
 from .ldap_import_job import LDAPImportJob  # noqa
 from .msgraph_import_job import MSGraphImportJob  # noqa
 from .os2mo_import_job import OS2moImportJob  # noqa
+from .google_workspace_configuration import GoogleWorkspaceConfig  # noqa
+from .google_workspace_import_job import GoogleWorkspaceImportJob  # noqa

@@ -43,6 +43,8 @@
               <th class="column column--import">{% trans "import service (Microsoft Graph)"|capfirst %}</th>
             {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
               <th class="column column--import">{% trans "import service (OS2mo)"|capfirst %}</th>
+            {% elif FEATURES.IMPORT_SERVICES_GOOGLE_WORKSPACE in client.enabled_features %}
+              <th class="column column--import">{% trans "import service (Google Workspace)"|capfirst %}</th>
             {% endif %}
             {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in client.enabled_features %}
               <th class="column column--actions">{% trans "Actions" %}</th>
@@ -198,6 +200,44 @@
                           <div class="flex">
                             {% if organization.msimportjobs %}
                               {% include "components/background_job.html" with job=organization.msimportjobs.first %}
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                {% elif FEATURES.IMPORT_SERVICES_GOOGLE_WORKSPACE in client.enabled_features %}
+                  <td id="import_column__{{ organization.slug }}" class="column--import">
+                    <div class="flex">
+                      <div class="button-group">
+                        {% if not organization.importservice %}
+                          <a href="{% url 'add-googleworkspace' org_id=organization.pk %}"
+                             id="button-add-googleworkspace-configuration"
+                             aria-label="{% trans 'Edit Google Workspace configuration' %}"
+                             title="{% trans 'Edit Google Workspace configuration' %}"
+                             class="button button--outline-button button--icon-button">
+                            <i id="library_add_check" class="material-icons">library_add_check</i>
+                          </a>
+                        {% else %}
+                          <a href="{% url 'edit-googleworkspace' pk=organization.pk %}"
+                             id="button-add-googleworkspace-configuration"
+                             aria-label="{% trans 'Edit Google Workspace configuration' %}"
+                             title="{% trans 'Edit Google Workspace configuration' %}"
+                             class="button button--outline-button button--icon-button">
+                            <i id="library_add_check" class="material-icons">library_add_check</i>
+                          </a>
+                          <button type="button"
+                                  aria-label="{% trans 'sync'|capfirst %}"
+                                  title="{% trans 'sync'|capfirst %}"
+                                  class="btn-text button button--outline-button button--text-button"
+                                  data-sync-for="{{ organization.pk }}"
+                                  hx-post="{% url 'import-googleworkspace' pk=organization.pk %}"
+                                  hx-trigger="click"
+                                  hx-target=".organizations-overview"
+                                  hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
+                          <div class="flex">
+                            {% if organization.googleworkspaceimportjobs %}
+                              {% include "components/background_job.html" with job=organization.googleworkspaceimportjobs.first %}
                             {% endif %}
                           </div>
                         {% endif %}

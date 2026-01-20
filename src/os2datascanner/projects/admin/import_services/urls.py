@@ -39,4 +39,13 @@ urlpatterns = [
      path('os2mo-organization/import/<uuid:pk>',
           views.OS2moImportView.as_view(),
           name='import-os2mo'),
+     path('googleworkspace-organization/add/<uuid:org_id>/',
+          views.GoogleWorkspaceAddView.as_view(),
+          name='add-googleworkspace'),
+     path('googleworkspace-organization/edit/<uuid:pk>',
+          views.GoogleWorkspaceUpdateView.as_view(),
+          name='edit-googleworkspace'),
+     path('googleworkspace-organization/import/<uuid:pk>',
+          views.GoogleWorkspaceImportView.as_view(),
+          name='import-googleworkspace'),
 ]
