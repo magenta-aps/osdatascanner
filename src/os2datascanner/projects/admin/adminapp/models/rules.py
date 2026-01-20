@@ -16,6 +16,8 @@ import structlog
 
 from django.db import models
 from django.db.models.signals import pre_save
+# We cannot lazily evaluate translations in this file, because we are defining some translations
+# in a static dictionary, and that will break the "name" property of RuleCategory
 from django.utils.translation import gettext as _
 from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
