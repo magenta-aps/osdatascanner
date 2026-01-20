@@ -1251,7 +1251,7 @@ msgstr "Vælg et scannerjob for at starte et analyse-scan eller se analyse"
 #: adminapp/templates/components/navigation/navigation.html
 #: adminapp/templates/components/scanner/scan_completed.html
 #: adminapp/templates/components/scanner/scanner_list_base.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Scannerjob"
 msgstr "Scannerjob"
 
@@ -1497,7 +1497,7 @@ msgid "Removed scanners"
 msgstr "Fjernede scannere"
 
 #: adminapp/templates/components/navigation/scanner_tabs.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 #: adminapp/templates/scan_status.html
 msgid "Scans in progress"
 msgstr "Igangværende scanninger"
@@ -1624,7 +1624,7 @@ msgstr ""
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 #: adminapp/templates/error_log.html
 #: organizations/templates/organizations/org_table.html
 msgid "Delete"
@@ -1794,7 +1794,7 @@ msgstr "Sidste scan"
 
 #: adminapp/templates/components/scanner/removed_scanners_table.html
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 #: organizations/templates/organizations/grants_list.html
 #: organizations/templates/organizations/org_table.html
 msgid "Actions"
@@ -1842,7 +1842,7 @@ msgid "Results"
 msgstr "Resultater"
 
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Status"
 msgstr "Status"
 
@@ -1861,7 +1861,7 @@ msgid "Select result"
 msgstr "Vælg resultater"
 
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
 msgid "%(obj)s %(onp)s scanned"
 msgstr "%(obj)s %(onp)s scannet"
@@ -1896,7 +1896,7 @@ msgid "scannerjob"
 msgstr "scannerjob"
 
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
@@ -2199,17 +2199,41 @@ msgstr "Kunne ikke åbne datakilden:"
 msgid "Could not communicate with the scanner engine:"
 msgstr "Kunne ikke kommunikere med scannermotoren:"
 
-#: adminapp/templates/components/scanstatus/mimetype-duration_pie-chart.html
-msgid "scanner overview — time"
-msgstr "scanneroverblik — tid"
+#: adminapp/templates/components/scanstatus/card_mimetype_size--piechart.html
+msgid "file type distribution"
+msgstr "fordeling af filtyper"
 
-#: adminapp/templates/components/scanstatus/mimetype-duration_pie-chart.html
-msgid "seconds spent scanning different file types"
-msgstr "sekunder brugt på at scanne forskellige filtyper"
+#: adminapp/templates/components/scanstatus/card_mimetype_size--piechart.html
+msgid "percentage of scanned files by type"
+msgstr "procentvis fordeling af scannede filer efter filtype"
 
-#: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
-msgid "scanner overview — size"
-msgstr "scanneroverblik — størrelse"
+#: adminapp/templates/components/scanstatus/card_mimetype_time--piechart.html
+msgid "time by file type"
+msgstr "tidsforbrug pr. filtype"
+
+#: adminapp/templates/components/scanstatus/card_mimetype_time--piechart.html
+msgid "share of total scanning time for each file type"
+msgstr "andel af den samlede scanningstid for hver filtype"
+
+#: adminapp/templates/components/scanstatus/card_ranking--mimetype_time.html
+msgid "top time by file type"
+msgstr "filtyper med størst tidsforbrug"
+
+#: adminapp/templates/components/scanstatus/card_ranking--mimetype_time.html
+msgid "top 5 file types by total scanning time"
+msgstr "top 5 filtyper efter samlet scanningstid"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "scan summary"
+msgstr "overblik"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "key outcomes and coverage of the scan"
+msgstr "vigtigste resultater og omfang af scanningen"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "Objects detected for the first time in this run."
+msgstr "Objekter, der blev registreret for første gang i denne kørsel."
 
 #: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
 msgid ""
@@ -2249,56 +2273,60 @@ msgstr ""
 "Du er ved at slette den valgte data. Denne handling kan ikke fortrydes. Er "
 "du sikker?"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--statistics.html
+msgid "Statistic for"
+msgstr "Statistik for"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Phase"
 msgstr "Fase"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Indexing data ..."
 msgstr "Indekserer data ..."
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Scanning data (still indexing) ..."
 msgstr "Scanner data (indekserer fortsat) ..."
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Scanning data ..."
 msgstr "Scanner data ..."
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "No objects to scan"
 msgstr "Ingen objekter at scanne"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Scan failed"
 msgstr "Scan fejlet"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Building index"
 msgstr "Opbygger indeks"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
 msgid "%(obj)s out of %(total)s %(onp)s scanned"
 msgstr "%(obj)s ud af %(total)s %(onp)s scannet"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Estimated finished"
 msgstr "Forventes afsluttet"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "The sources do not contain any scannable objects"
 msgstr "Datakilden indeholder ikke nogle objekter"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "An error occured during this scan"
 msgstr "Der skete en fejl under dette scan"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "cancel running scanner job"
 msgstr "afbryd kørende scannerjob"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
 msgid ""
 "Do you really want to delete the status object for scanner '%%"
@@ -2306,58 +2334,13 @@ msgid ""
 msgstr ""
 "Er du sikker på, at du vil slette status for scanner »%%(scanner_name)s«?"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "status for running scanner"
 msgstr "status for kørende scanner"
 
-#: adminapp/templates/components/scanstatus/scan_status_table.html
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "no ongoing scans"
 msgstr "der er ingen igangværende scanninger"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Statistic for"
-msgstr "Statistik for"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Timeline"
-msgstr "Tidslinje"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Progress of the scan from start to finish"
-msgstr "Scannets udvikling fra start til slut"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "Summary of scan"
-msgstr "Opsummering af scan"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-#, python-format
-msgid "known %(onp)s skipped due to no change"
-msgstr "kendte %(onp)s sprunget over grundet ingen ændring"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-#, python-format
-msgid "new %(onp)s scanned"
-msgstr "nye %(onp)s scannet"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-#, python-format
-msgid "All %(onp)s scanned"
-msgstr "Alle %(onp)s scannet"
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-#, python-format
-msgid "%(num)s accounts covered by this scan"
-msgstr ""
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-#, python-format
-msgid "%(num)s errors encountered while scanning"
-msgstr ""
-
-#: adminapp/templates/components/scanstatus/status_timeline.html
-msgid "scan time top 5:"
-msgstr "scanningstid top 5:"
 
 #: adminapp/templates/components/user/login.html
 msgid "Login"
