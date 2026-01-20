@@ -1,0 +1,67 @@
+{# card_summary.html #}
+
+{% extends "components/containers/cards/card--statistics.html" %}
+
+{% load i18n l10n %}
+
+{% block card_title %}
+  {% trans "scan summary"|capfirst %}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% trans "key outcomes and coverage of the scan"|capfirst %}
+{% endblock %}
+
+{% block card_body %}
+  <div class="card__body__wrapper--list">
+    <ul>
+      {% if status.skipped_by_last_modified %}
+        <li title="{% trans "Objects detected for the first time in this run." %}">
+          <i class="material-symbols" id="task_alt">task_alt</i>
+ 
+          <p>
+            {{ status.new_objects }} {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}new {{ onp }} were scanned{% endblocktranslate %}
+          </p>
+        </li>
+
+        <li title="{% trans "Skipped because no changes were detected since the last run." %}">
+          <div class="custom-icon__wrapper">
+            <i class="material-symbols" id="step_over">step_over</i>
+          </div>
+
+          <p>
+            {{ status.skipped_by_last_modified }} {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}known {{ onp }} skipped{% endblocktranslate %}
+          </p>
+        </li>
+      {% else %}
+        <li title="{% trans "All detected objects were scanned in this run." %}">
+          <i class="material-symbols" id="task_alt">task_alt</i>
+
+          <p>
+            {% blocktranslate with onp=status.scanner.as_subclass.object_name_plural %}All {{ onp }} scanned{% endblocktranslate %}
+          </p>
+        </li>
+      {% endif %}
+ 
+      {% if status.coveredaccount_set.exists %}
+        <li title="{% trans "Accounts that were within the scope of this run." %}">
+          <i class="material-symbols" id="frame_person">frame_person</i>
+
+          <p>
+            {% blocktranslate with num=status.coveredaccount_set.count %}{{ num }} accounts included in this run{% endblocktranslate %}
+          </p>
+        </li>
+      {% endif %}
+ 
+      {% if status.usererrorlog_set.exists %}
+        <li title="{% trans "See the error messages tab for details." %}">
+          <i class="material-symbols" id="chat_error">chat_error</i>
+
+          <p>
+            {% blocktranslate with num=status.usererrorlog_set.count %}{{ num }} errors encountered during this run{% endblocktranslate %}
+          </p>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+{% endblock %}
