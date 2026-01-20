@@ -1,19 +1,5 @@
 [
     {
-        "model": "os2datascanner.rulecategory",
-        "pk": 1001,
-        "fields": {
-            "name": "danish"
-        }
-    },
-    {
-        "model": "os2datascanner.rulecategory",
-        "pk": 1002,
-        "fields": {
-            "name": "number_id"
-        }
-    },
-    {
         "model": "os2datascanner.rule",
         "pk": 8880100,
         "fields": {
@@ -30,8 +16,8 @@
                 "surrounding_exceptions": ""
             },
             "categories": [
-                1001,
-                1002
+                "number_id",
+                "danish"
             ]
         }
     }
