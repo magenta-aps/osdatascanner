@@ -82,7 +82,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -114,7 +114,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -145,7 +145,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -174,7 +174,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -194,7 +194,7 @@
         "name": "Mine aktuelle sager"
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -233,7 +233,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -272,7 +272,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -304,7 +304,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -348,7 +348,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -380,7 +380,7 @@
         ]
       },
       "categories": [
-        5
+        1001
       ]
     }
   },
@@ -424,7 +424,27 @@
         ]
       },
       "categories": [
-        5
+        1001
+      ]
+    }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990111,
+    "fields": {
+      "name": "(SBSYS) Sager oprettet uden sagsskabelon",
+      "organization": null,
+      "description": "SBSYS sager som er oprettet uden sagsskabelon.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "sbsys-db-fieldrule",
+        "field": "SkabelonID",
+        "operator": "eq",
+        "value": null,
+        "name": "Sager oprettet uden sagsskabelon"
+      },
+      "categories": [
+        1001
       ]
     }
   }
