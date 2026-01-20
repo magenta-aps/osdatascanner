@@ -29,7 +29,7 @@ from os2datascanner.engine2.rules.rule import Sensitivity as E2Sensitivity
 logger = structlog.get_logger("adminapp")
 
 
-class NewRuleCategory(models.Model):
+class RuleCategory(models.Model):
 
     name_desc_map = {
         # Properties of the target scanned for
@@ -116,9 +116,9 @@ class Rule(models.Model):
         verbose_name=_("Rule"),
         null=True, blank=True)
 
-    new_categories = models.ManyToManyField(
-        NewRuleCategory,
-        verbose_name=_("new_categories"),
+    categories = models.ManyToManyField(
+        RuleCategory,
+        verbose_name=_("categories"),
         related_name="rules"
     )
 

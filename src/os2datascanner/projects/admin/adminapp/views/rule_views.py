@@ -31,7 +31,7 @@ from .views import RestrictedListView, RestrictedCreateView, \
 from .validators import customrule_validator
 from ..models.scannerjobs.scanner import Scanner
 from ..models.sensitivity_level import Sensitivity
-from ..models.rules import Rule, NewRuleCategory
+from ..models.rules import Rule, RuleCategory
 from ...utilities import UserWrapper
 
 
@@ -45,7 +45,7 @@ class RuleList(RestrictedListView):
     def get_system_rules(self, organization):
         system_rules = Rule.objects.filter(organization__isnull=True)
         if selected_categories_pks := self.request.GET.getlist("categories"):
-            unselected_categories = NewRuleCategory.objects.exclude(pk__in=selected_categories_pks)
+            unselected_categories = RuleCategory.objects.exclude(pk__in=selected_categories_pks)
 
             system_rules = system_rules.exclude(categories__in=unselected_categories)
 
@@ -71,9 +71,9 @@ class RuleList(RestrictedListView):
         else:
             selected_org = organizations.first()
 
-        context["categories"] = NewRuleCategory.objects.all()
+        context["categories"] = RuleCategory.objects.all()
         context["selected_categories"] = self.request.GET.getlist(
-            "categories") or NewRuleCategory.objects.all()
+            "categories") or RuleCategory.objects.all()
 
         context["sensitivity"] = Sensitivity
         context["systemrule_list"] = self.get_system_rules(selected_org)
