@@ -1,13 +1,15 @@
+{# card_mimetype_time--piechart.html #}
+
 {% extends "components/containers/cards/card__layout-circle-charts.html" %}
 
 {% load i18n l10n %}
 
 {% block card_title %}
-  {% trans "scanner overview — time"|capfirst %}
+  {% trans "time by file type"|capfirst %}
 {% endblock %}
 
 {% block card_subtitle %}
-  {% trans "seconds spent scanning different file types"|capfirst %}
+  {% trans "share of total scanning time for each file type"|capfirst %}
 {% endblock %}
 
 {% block circle_chart_canvas %}
