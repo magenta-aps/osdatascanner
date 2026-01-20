@@ -40,6 +40,7 @@ PyNaCl
 pydantic
 pydantic-settings
 pymssql
+pymupdf
 pypdf
 pysmbc@git+https://github.com/magenta-af/pysmbc.git@T2
 pytest

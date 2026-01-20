@@ -1,6 +1,7 @@
 """Utilities for extraction based on configuration dictionaries."""
 
 from abc import ABC, abstractmethod
+import io
 from pathlib import Path
 from hashlib import md5
 from PIL import Image
@@ -25,6 +26,12 @@ class Filter(ABC):
     @abstractmethod
     def apply(self, tmpdir: str) -> str:
         """Filters the content of the specified temporary folder before
+        returning it."""
+        pass
+
+    @abstractmethod
+    def apply_dict(self, data_dict: dict) -> dict:
+        """Filters a dictionary of in-memory objects (filename: bytes) before
         returning it."""
         pass
 
@@ -66,6 +73,21 @@ class DeduplicationFilter(Filter):
 
         return tmpdir
 
+    def apply_dict(self, data_dict):
+        """
+        Removes duplicate objects from an in-memory dictionary if their
+        hash values match.
+        """
+        hashes_seen = set()
+        deduplicated_dict = {}
+        for filename, content in data_dict.items():
+            hash_val = self._checksum(content).hexdigest()
+            if hash_val not in hashes_seen:
+                hashes_seen.add(hash_val)
+                deduplicated_dict[filename] = content
+
+        return deduplicated_dict
+
 
 MD5DeduplicationFilter = DeduplicationFilter(checksum=md5)
 
@@ -94,6 +116,26 @@ class ImageSizeFilter(Filter):
                 image.unlink()
 
         return tmpdir
+
+    def apply_dict(self, data_dict):
+        """
+        Removes images from an in-memory dictionary that are too small.
+        """
+        filtered_dict = {}
+        for filename, content in data_dict.items():
+            # Only attempt to filter files with common image extensions
+            if Path(filename).suffix.lower() in ['.png', '.jpg', '.jpeg', '.gif', '.bmp']:
+                try:
+                    img = Image.open(io.BytesIO(content))
+                    if not self._image_too_small(img):
+                        filtered_dict[filename] = content
+                except Exception:
+                    # If it's not a valid image, keep it?
+                    filtered_dict[filename] = content
+            else:
+                # Keep non-image files
+                filtered_dict[filename] = content
+        return filtered_dict
 
 
 TinyImageFilter = ImageSizeFilter(8, 8)

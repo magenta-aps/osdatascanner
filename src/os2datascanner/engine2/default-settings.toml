@@ -20,6 +20,11 @@ LANGUAGES = ["da"]
 # (required for some on-premises Exchange scans)
 FORCE_LEGACY_OPENSSL_PROVIDER = true
 
+# Should we preprocess PDF files before scanning them?
+# Uses pymupdf's ez_save with clean=True (corresponds to mutools clean -sc)
+[pdf]
+PREPROCESS_PDF = true
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"

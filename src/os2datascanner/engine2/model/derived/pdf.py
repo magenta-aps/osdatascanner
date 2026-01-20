@@ -1,31 +1,27 @@
-from os import listdir
-import pypdf
+import io
+import mimetypes
 import string
 from tempfile import TemporaryDirectory
-
-from ....utils.system_utilities import run_custom
+import pymupdf
 from ... import settings as engine2_settings
 from ...utilities.i18n import gettext as _
-from ..core import Handle, Source, Resource
-from ..file import FilesystemResource
+from ..core import Handle, Resource, Source
 from .derived import DerivedSource
 from .utilities.extraction import (should_skip_images,
                                    MD5DeduplicationFilter,
                                    TinyImageFilter)
-from .utilities.ghostscript import gs_convert
-
 
 PAGE_TYPE = "application/x.os2datascanner.pdf-page"
 WHITESPACE_PLUS = string.whitespace + "\0"
 
 
 def _open_pdf_wrapped(obj):
-    reader = pypdf.PdfReader(obj)
-    if reader.is_encrypted:
+    pdf = pymupdf.open(obj)
+    if pdf.is_encrypted:
         # Some PDFs are "encrypted" with an empty password: give that a shot...
-        if reader.decrypt("") == 0:  # the document has a real password
-            raise pypdf.errors.PdfReadError("File cannot be decrypted")
-    return reader
+        if pdf.authenticate("") == 0:
+            raise RuntimeError("Failed to decrypt PDF")
+    return pdf
 
 
 @Source.mime_handler("application/pdf")
@@ -36,25 +32,29 @@ class PDFSource(DerivedSource):
         with self.handle.follow(sm).make_path() as path:
             # Explicitly download the file here for the sake of PDFPageSource,
             # which needs a local filesystem path to pass to pdftohtml
-            if engine2_settings.ghostscript["enabled"]:
-                yield from gs_convert(path)
+            if engine2_settings.pdf["PREPROCESS_PDF"]:
+                with TemporaryDirectory() as outputdir:
+                    converted_path = "{0}/ez_save.pdf".format(outputdir)
+                    pdf = pymupdf.open(path)
+                    pdf.ez_save(converted_path, clean=True)
+                    pdf.close()
+                    yield converted_path
             else:
                 yield path
 
     def handles(self, sm):
-        reader = _open_pdf_wrapped(sm.open(self))
-        for i in range(1, len(reader.pages) + 1 if reader else 0):
-            yield PDFPageHandle(self, str(i))
+        pdf = _open_pdf_wrapped(sm.open(self))
+        for page_num in range(len(pdf)):
+            yield PDFPageHandle(self, str(page_num))
 
 
 class PDFPageResource(Resource):
     def _generate_metadata(self):
-        with self.handle.source.handle.follow(self._sm).make_stream() as fp:
-            reader = _open_pdf_wrapped(fp)
-            # Some PDF authoring tools helpfully stick null bytes into the
-            # author field. Make sure we remove these
-            author = reader.metadata.get("/Author", "").strip(WHITESPACE_PLUS)
-
+        pdf = _open_pdf_wrapped(self._sm.open(self.handle.source))
+        # Some PDF authoring tools helpfully stick null bytes into the
+        # author field. Make sure we remove these
+        author = pdf.metadata.get("author", "").strip(WHITESPACE_PLUS)
+        pdf.close()
         if author:
             yield "pdf-author", str(author)
 
@@ -62,7 +62,7 @@ class PDFPageResource(Resource):
         page = int(self.handle.relative_path)
         with self.handle.source._make_stream(self._sm) as fp:
             reader = _open_pdf_wrapped(fp)
-            return page in range(1, len(reader.pages) + 1 if reader else 0)
+            return 0 <= page < len(reader)
 
     def compute_type(self):
         return PAGE_TYPE
@@ -75,7 +75,7 @@ class PDFPageHandle(Handle):
 
     @property
     def presentation_name(self):
-        return _("page {page_nr}").format(page_nr=self.relative_path)
+        return _("page {page_nr}").format(page_nr=int(self.relative_path) + 1)
 
     @property
     def presentation_place(self):
@@ -103,54 +103,77 @@ class PDFPageSource(DerivedSource):
     type_label = "pdf-page"
     derived_from = PDFPageHandle
 
+    # TODO: Determine "searchable" pdf's. I.e. scanned pages with an already OCRed text layer
+    # underneath, and avoid double-working that.
+
     def _generate_state(self, sm):
-        # As we produce FilesystemResources, we need to produce a cookie of the
-        # same format as FilesystemSource: a filesystem directory in which to
-        # interpret relative paths
-        page = self.handle.relative_path
-        path = sm.open(self.handle.source)
-        with TemporaryDirectory() as outputdir:
-            # Run pdftotext and pdfimages separately instead of running
-            # pdftohtml. Not having to parse HTML is a big performance win by
-            # itself, but what's even better is that pdfimages doesn't produce
-            # uncountably many texture images for embedded vector graphics
-            run_custom(
-                    [
-                            "pdftotext", "-q", "-nopgbrk", "-eol", "unix",
-                            "-f", page, "-l", page, path,
-                            "{0}/page.txt".format(outputdir)
-                    ],
-                    timeout=engine2_settings.subprocess["timeout"],
-                    check=True, isolate_tmp=True)
+        # produces a dictionary mapping virtual filenames to their
+        # byte content. This avoids writing temporary files to disk.
+        page = int(self.handle.relative_path) - 1
+        pdf = pymupdf.open(sm.open(self.handle.source))
+        extracted_data = {}
+        pdf_page = pdf[page]
 
-            if not should_skip_images(sm.configuration):
-                run_custom(
-                    [
-                            "pdfimages", "-q", "-png", "-j", "-f", page, "-l", page,
-                            path, "{0}/image".format(outputdir)
-                    ],
-                    timeout=engine2_settings.subprocess["timeout"],
-                    check=True, isolate_tmp=True)
+        # 1. Extract text into memory
+        text = pdf_page.get_text("text")
+        if text:
+            extracted_data["page.txt"] = text.encode("utf-8")
 
-            yield TinyImageFilter.apply(
-                    MD5DeduplicationFilter.apply(outputdir))
+        if not should_skip_images(sm.configuration):
+            # 2. Extract images into memory
+            for img_index, img_info in enumerate(pdf_page.get_images(full=True)):
+                xref = img_info[0]
+                base_image = pdf.extract_image(xref)
+                if not base_image:
+                    continue
+
+                image_bytes = base_image["image"]
+                image_ext = base_image["ext"]
+                image_filename = f"image-{img_index + 1}.{image_ext}"
+                extracted_data[image_filename] = image_bytes
+
+        pdf.close()
+
+        # Apply filters to the in-memory data before yielding
+        filtered_data = MD5DeduplicationFilter.apply_dict(extracted_data)
+        filtered_data = TinyImageFilter.apply_dict(filtered_data)
+        yield filtered_data
 
     def handles(self, sm):
-        for p in listdir(sm.open(self)):
+        # The cookie is now a dictionary of in-memory objects
+        for p in sm.open(self):
             yield PDFObjectHandle(self, p)
 
 
-class PDFObjectResource(FilesystemResource):
+class PDFObjectResource(Resource):
     def _generate_metadata(self):
         # Suppress the superclass implementation of this method -- generated
         # files have no interesting metadata
         yield from ()
+
+    def check(self) -> bool:
+        """Check if the object exists in the parent source's in-memory dict."""
+        content_dict = self._sm.open(self.handle.source)
+        return self.handle.relative_path in content_dict
+
+    def compute_type(self):
+        """Guess the MIME type from the object's filename."""
+        # Fallback to octet-stream for unknown types
+        mime, _ = mimetypes.guess_type(self.handle.name)
+        return mime or "application/octet-stream"
 
     def get_last_modified(self):
         page_source: PDFPageSource = self.handle.source
         document_source: PDFSource = page_source.handle.source
         res = document_source.handle.follow(self._sm)
         return res.get_last_modified()
+
+    def make_stream(self):
+        """
+        Return a file-like object for the in-memory content.
+        """
+        content_dict = self._sm.open(self.handle.source)
+        return io.BytesIO(content_dict[self.handle.relative_path])
 
 
 @Handle.stock_json_handler("pdf-object")
@@ -162,11 +185,17 @@ class PDFObjectHandle(Handle):
     def sort_key(self):
         return self.source.handle.sort_key
 
+    def guess_type(self):
+        """Guess the MIME type from the object's filename."""
+        mime, _ = mimetypes.guess_type(self.name)
+        return mime or "application/octet-stream"
+
     @property
     def presentation_name(self):
         mime = self.guess_type()
         page = str(self.source.handle.presentation_name)
         container = self.source.handle.source.handle.presentation_name
+
         if mime.startswith("text/"):
             return _("text on {page} of {file}").format(
                     page=page, file=container)
