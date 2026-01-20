@@ -16,7 +16,7 @@ import structlog
 
 from django.db import models
 from django.db.models.signals import pre_save
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
 
@@ -29,27 +29,50 @@ from os2datascanner.engine2.rules.rule import Sensitivity as E2Sensitivity
 logger = structlog.get_logger("adminapp")
 
 
-class RuleCategory(models.Model):
-    """Category for categorizing rules. For sorting purposes."""
+class NewRuleCategory(models.Model):
 
-    class CategoryNames(models.TextChoices):
+    name_desc_map = {
         # Properties of the target scanned for
-        NUMBER_ID = "number_id", _("number ID")
-        NAMES = "names", _("names")
-        ADDRESSES = "addresses", _("addresses")
-        SICK_LEAVE = "sick_leave", _("sick leave")
+        "number_id": {
+            "name": _("number ID"),
+            "description": _("Bla bla bla")
+        },
+        "names": {
+            "name": _("names"),
+            "description": _("Names names names")
+        },
+        "addresses": {
+            "name": _("addresses"),
+            "description": _("Where are you from??")
+        },
+        "sick_leave": {
+            "name": _("sick leave"),
+            "description": _("Messages about sick leave")
+        },
+        # Languages
+        "danish": {
+            "name": _("Danish"),
+            "description": _("Sources in Danish")
+        }
+    }
 
-        # Language
-        DANISH = "danish", _("Danish")
-
-    name = models.CharField(
+    identifier = models.CharField(
         max_length=256,
-        choices=CategoryNames.choices,
-        verbose_name=_("name"),
-        unique=True)
+        verbose_name=_("identifier"),
+        primary_key=True,
+        choices=[(k, v["name"]) for k, v in name_desc_map.items()]
+    )
+
+    @property
+    def name(self):
+        return self.name_desc_map[self.identifier]["name"]
+
+    @property
+    def description(self):
+        return self.name_desc_map[self.identifier]["description"]
 
     def __str__(self):
-        return self.get_name_display()
+        return self.name
 
 
 _sensitivity_mapping = {
@@ -93,10 +116,11 @@ class Rule(models.Model):
         verbose_name=_("Rule"),
         null=True, blank=True)
 
-    categories = models.ManyToManyField(
-        RuleCategory,
-        verbose_name=_("categories"),
-        related_name="rules")
+    new_categories = models.ManyToManyField(
+        NewRuleCategory,
+        verbose_name=_("new_categories"),
+        related_name="rules"
+    )
 
     @property
     def display_name(self):

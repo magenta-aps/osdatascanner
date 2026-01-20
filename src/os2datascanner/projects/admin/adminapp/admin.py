@@ -21,7 +21,7 @@ from django.utils.translation import gettext_lazy as _
 from .models.apikey import APIKey
 from .models.scannerjobs.scanner_helpers import CoveredAccount, MIMETypeProcessStat
 from .models.usererrorlog import UserErrorLog
-from .models.rules import Rule, RuleCategory
+from .models.rules import Rule, NewRuleCategory
 from .models.scannerjobs.scanner import (ScanStatus,
                                          ScheduledCheckup,
                                          ScanStatusSnapshot)
@@ -86,10 +86,10 @@ class CustomRuleForm(forms.ModelForm):
 class CustomRuleAdmin(admin.ModelAdmin):
     form = CustomRuleForm
 
-    filter_horizontal = ('categories',)
+    filter_horizontal = ('new_categories',)
 
 
-@admin.register(RuleCategory)
+@admin.register(NewRuleCategory)
 class RuleCategoryAdmin(admin.ModelAdmin):
     pass
 
