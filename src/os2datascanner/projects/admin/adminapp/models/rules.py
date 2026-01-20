@@ -35,24 +35,24 @@ class RuleCategory(models.Model):
         # Properties of the target scanned for
         "number_id": {
             "name": _("number ID"),
-            "description": _("Bla bla bla")
+            "description": _("Rules for finding identification numbers.")
         },
         "names": {
             "name": _("names"),
-            "description": _("Names names names")
+            "description": _("Rules for finding human names.")
         },
         "addresses": {
             "name": _("addresses"),
-            "description": _("Where are you from??")
+            "description": _("Rules for finding physical addresses.")
         },
         "sick_leave": {
             "name": _("sick leave"),
-            "description": _("Messages about sick leave")
+            "description": _("Rules for finding messages about sick leave.")
         },
         # Languages
         "danish": {
             "name": _("Danish"),
-            "description": _("Sources in Danish")
+            "description": _("Rules searching for Danish words or sentences.")
         }
     }
 
