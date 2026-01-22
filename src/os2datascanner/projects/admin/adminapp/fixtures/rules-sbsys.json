@@ -447,6 +447,37 @@
         1001
       ]
     }
+  },
+  {
+    "model": "os2datascanner.rule",
+    "pk": 9990112,
+    "fields": {
+      "name": "(SBSYS) Aktive sager uden behandler",
+      "organization": null,
+      "description": "SBSYS-sager som er 'Aktive', men som ikke har en aktiv behandler.",
+      "sensitivity": 3,
+      "raw_rule": {
+        "type": "and",
+        "components": [
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "SagsStatus.Navn",
+            "operator": "eq",
+            "value": "Aktiv",
+            "name": ""
+          },
+          {
+            "type": "sbsys-db-fieldrule",
+            "field": "Behandler.Status",
+            "operator": "eq",
+            "value": "0",
+            "name": "Aktive sager uden behandler"
+          }
+        ]
+      },
+      "categories": [
+        1001
+      ]
+    }
   }
 ]
-
