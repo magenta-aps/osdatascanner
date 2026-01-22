@@ -1,5 +1,17 @@
 [
     {
+        "model": "os2datascanner.rulecategory",
+        "fields": {
+            "identifier": "number_id"
+        }
+    },
+    {
+        "model": "os2datascanner.rulecategory",
+        "fields": {
+            "identifier": "danish"
+        }
+    },
+    {
         "model": "os2datascanner.rule",
         "pk": 8880100,
         "fields": {
