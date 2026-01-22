@@ -1,3 +1,5 @@
+{# report_content--remediator.html #}
+
 {% extends "index.html" %}
 
 {% load i18n l10n %}
@@ -17,11 +19,11 @@
   {% if not user.account.is_remediator %}
     {% include "error_pages/remediator-error-page.html" %}
   {% else %}
-    {% include "components/reports/filters.html" %}
+    {% include "components/report_table/report_table--filters.html" %}
     {% if page_obj.paginator.count == 0 %}
       <p class="no-results">{% trans "No results were found" %}</p>
     {% else %}
-      {% include "components/reports/sbsys_match_table.html" %}
+      {% include "components/report_table/report_table.html" %}
     {% endif %}
   {% endif %}
 {% endblock content %}

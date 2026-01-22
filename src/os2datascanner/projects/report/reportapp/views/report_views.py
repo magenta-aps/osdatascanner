@@ -357,7 +357,7 @@ class ReportView(LoginRequiredMixin, ListView):
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
     type = "personal"
-    template_name = "user_content.html"
+    template_name = "report_content--personal.html"
 
     @property
     def report_type(self):
@@ -378,7 +378,7 @@ class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
 
     type = "remediator"
-    template_name = "remediator_content.html"
+    template_name = "report_content--remediator.html"
     report_type = Account.ReportType.REMEDIATOR
 
     def dispatch(self, request, *args, **kwargs):
@@ -397,7 +397,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
 
     type = "undistributed"
     permission_required = "organizations.view_withheld_results"
-    template_name = "undistributed_content.html"
+    template_name = "report_content--undistributed.html"
 
     def get_base_queryset(self):
         # This is the only ReportView subclass that doesn't use Aliases to get
@@ -509,7 +509,7 @@ class SBSYSPersonalView(SBSYSMixin, ReportView):
     """Presents the user with their personal unhandled SBSYS results."""
 
     type = "sbsys-personal"
-    template_name = "sbsys_content.html"
+    template_name = "report_content--personal_sbsys.html"
     report_type = Account.ReportType.PERSONAL_AND_SHARED
 
 
@@ -517,7 +517,7 @@ class SBSYSRemediatorView(SBSYSMixin, RemediatorView):
     """Presents a remediator with relevant unhandled SBSYS results."""
 
     type = "sbsys-remediator"
-    template_name = "sbsys_remediator_content.html"
+    template_name = "report_content--remediator_sbsys.html"
     report_type = Account.ReportType.REMEDIATOR
 
 
@@ -690,7 +690,7 @@ class OpenMatchView(HTMXEndpointView, DetailView):
 
 
 class ShowMoreMatchesView(HTMXEndpointView, DetailView):
-    template_name = "components/reports/show_more_matches.html"
+    template_name = "components/report_table/report_table--row_expanded.html"
     model = DocumentReport
 
     def get_context_data(self, **kwargs):

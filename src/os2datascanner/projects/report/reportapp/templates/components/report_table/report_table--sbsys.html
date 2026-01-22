@@ -1,5 +1,7 @@
-{% load handle_extras %}
+{# report_table--sbsys.html #}
+
 {% load i18n %}
+{% load handle_extras %}
 
 <form id="table_checkboxes">
   <div class="datatablex__card-container no-side-scroll"
@@ -16,7 +18,7 @@
        hx-indicator="#report-page-indicator">
 
     <div class="datatablex__wrapper no-side-scroll">
-
+ 
       <table class="datatablex results-table no-side-scroll">
         {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
         sidescroll on this specific table. This should be refactored if we find, that we don't want
@@ -25,75 +27,57 @@
         <colgroup>
           <col class="column column--checkbox">
           <col class="column column--flexible">
-          <col class="column column--flexible column--numeral">
-          <col class="column column--datasource_last_modified">
-          <col class="column column--source">
           <col class="column column--flexible">
+          <col class="column column--case-number">
+          <col class="column column--datasource_last_modified">
           {% if "/archive/" in request.path %}<col class="column column--resolution-status">{% endif %}
-          <col class="column column--actions expand-row false-positive">
+          <col class="column column--actions">
         </colgroup>
-
+ 
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
-            <th colspan="{% if '/archive' in request.path %}8{% else %}7{% endif %}">
+            <th colspan="{% if '/archive' in request.path %}7{% else %}6{% endif %}">
               <div class="table-toolbar">
-                {% include "components/reports/handle_match.html" %}
+                {% include "components/report_table/report_table--toolbar.html" %}
 
-                <div class="table-toolbar__content-right">
-                  <button type="button" class="toggle probability-toggle" aria-pressed="false">
-                    {% trans 'Show match probability' %}
-                  </button>
-
-                  <button type="button"
-                          class="matches-expand-all button button--caret-button button--icon-text-button"
-                          aria-label="{% trans 'Show/hide all matches' %}"
-                          title="{% trans 'Show/hide all matches' %}">
-                    {% trans "Show/hide all matches" %}
-                    <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
-                  </button>
-                </div>
+                {% comment %}
+                  TODO: Remove the dropdown options for SBSYS results. 
+                  Users can only "close" their SBSYS cases, so "handle" is the only option needed.
+                {% endcomment %}
+ 
+                <div class="table-toolbar__content-right">{% comment %} Empty {% endcomment %}</div>
               </div>
             </th>
           </tr>
-
+ 
           <tr class="datatablex__row column-headings sticky">
-            <th class="column column--checkbox">
+            <th class="column--checkbox">
               <div class="ds-checkbox">
-                <input id="select-all"
-                       type="checkbox"
-                       {% if not allow_handle %}disabled{% endif %}>
+                <input id="select-all" type="checkbox">
                 <label for="select-all"
                        aria-label="{% trans 'Select all results' %}"
                        title="{% trans 'Select all results' %}"></label>
               </div>
             </th>
-
-            <th class="column column--name">
-              <div class="th__flex-container">{% trans "Name" %}</div>
+ 
+            <th class="column--name">
+              <div class="th__flex-container">{% trans "name"|capfirst %}</div>
             </th>
-
-            <th class="column column--matchcount column--numeral">
-              <div class="th__flex-container">
-                <label class="th-label" for="matches-caret">
-                  <span>{% trans "Matches" %}</span>
-                </label>
-                <button type="button"
-                        name="number_of_matches"
-                        aria-label="{% trans 'Sort table by' %} {% trans 'Matches'|lower %}"
-                        title="{% trans 'Sort table by' %} {% trans 'Matches'|lower %}"
-                        id="matches-caret"
-                        class="order-by button button--caret-button{% if order_by == 'number_of_matches' and order == 'descending' %} up{% endif %}"
-                        value="{% if order_by == 'number_of_matches' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                  <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
-                </button>
-              </div>
+ 
+            <th class="column--deviations">
+              <div class="th__flex-container">{% trans "deviations"|capfirst %}</div>
             </th>
-
-            <th class="column column--datasource_last_modified">
+ 
+            <th class="column--case-number">
+              <div class="th__flex-container">{% trans "case number"|capfirst %}</div>
+            </th>
+ 
+            <th class="column--datasource_last_modified">
               <div class="th__flex-container">
-                <label class="th-label" for="datasource_last_modified-caret">
-                  <span>{% trans "Resource age" %}</span>
+                <label for="datasource_last_modified-caret">
+                  <span>{% trans "resource age"|capfirst %}</span>
                 </label>
+ 
                 <button type="button"
                         name="datasource_last_modified"
                         aria-label="{% trans 'Sort table by' %} {% trans 'Resource age'|lower %}"
@@ -105,33 +89,12 @@
                 </button>
               </div>
             </th>
-
-            <th class="column column--source column--attribute">
-              <div class="th__flex-container">{% trans "Source" %}</div>
-            </th>
-
-            <th class="column column--path">
-              <div class="th__flex-container">
-                <label class="th-label" for="path-caret">{% trans "Path" %}</label>
-                {% comment %}We use a click event handler on this button to
-                submit the form defined in filters.html{% endcomment %}
-                <button type="button"
-                        name="sort_key"
-                        aria-label="{% trans 'Sort table by' %} {% trans 'Path'|lower %} {% trans 'name'|lower %}"
-                        title="{% trans 'Sort table by' %} {% trans 'Path'|lower %} {% trans 'name'|lower %}"
-                        id="path-caret"
-                        class="order-by button button--caret-button{% if order_by == 'sort_key' and order == 'descending' %} up{% endif %}"
-                        value="{% if order_by == 'sort_key' and order == 'descending' %}ascending{% else %}descending{% endif %}">
-                  <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
-                </button>
-              </div>
-            </th>
-
+ 
             {% if "/archive/" in request.path %}
-              <th class="column column--resolution-status">
+              <th class="column--resolution-status">
                 <div class="th__flex-container">
-                  <label class="th-label" for="status-caret">{% trans "Status" %}</label>
-
+                  <label for="status-caret">{% trans "status"|capfirst %}</label>
+ 
                   <button type="button"
                           name="resolution_status"
                           aria-label="{% trans 'Sort table by' %} {% trans 'Status'|lower %}"
@@ -145,34 +108,31 @@
               </th>
             {% endif %}
 
-            <th class="column column--actions">
-              <span aria-label="{% trans 'Actions' %}" title="{% trans 'Actions' %}">{% trans 'Actions' %}</span>
+            <th class="column--actions">
+              <span aria-label="{% trans 'actions'|capfirst %}"
+                    title="{% trans 'actions'|capfirst %}">{% trans 'actions'|capfirst %}</span>
             </th>
           </tr>
         </thead>
-
+ 
         <tbody>
           {% for document_report in document_reports %}
-            {% include "components/reports/match.html" %}
-          {% empty %}
-            <tr class="datatablex__row">
-              <td colspan="10" class="datatable__column--nodata">{% trans "No results were found" %}</td>
-            </tr>
+            {% include "components/report_table/report_table--row_sbsys.html" %}
           {% endfor %}
         </tbody>
-
+ 
         <tfoot>
           {% if '/archive/' in request.path %}
-            {% with colspan=8 %}
+            {% with colspan=7 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% else %}
-            {% with colspan=7 %}
+            {% with colspan=6 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% endif %}
         </tfoot>
-
+ 
       </table>
     </div>
   </div>
