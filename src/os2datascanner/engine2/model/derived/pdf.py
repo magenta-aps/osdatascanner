@@ -45,7 +45,7 @@ class PDFSource(DerivedSource):
     def handles(self, sm):
         pdf = _open_pdf_wrapped(sm.open(self))
         for page_num in range(len(pdf)):
-            yield PDFPageHandle(self, str(page_num))
+            yield PDFPageHandle(self, str(page_num + 1))
 
 
 class PDFPageResource(Resource):
@@ -62,7 +62,7 @@ class PDFPageResource(Resource):
         page = int(self.handle.relative_path)
         with self.handle.source._make_stream(self._sm) as fp:
             reader = _open_pdf_wrapped(fp)
-            return 0 <= page < len(reader)
+            return 0 < page <= len(reader)
 
     def compute_type(self):
         return PAGE_TYPE
@@ -75,7 +75,7 @@ class PDFPageHandle(Handle):
 
     @property
     def presentation_name(self):
-        return _("page {page_nr}").format(page_nr=int(self.relative_path) + 1)
+        return _("page {page_nr}").format(page_nr=int(self.relative_path))
 
     @property
     def presentation_place(self):
