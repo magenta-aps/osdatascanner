@@ -118,6 +118,10 @@
         <tbody>
           {% for document_report in document_reports %}
             {% include "components/report_table/report_table--row_sbsys.html" %}
+          {% empty %}
+            <tr class="datatablex__row">
+              <td colspan="10" class="datatable__column--nodata">{% trans "No results were found" %}</td>
+            </tr>
           {% endfor %}
         </tbody>
  

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-05 08:12+0100\n"
+"POT-Creation-Date: 2026-01-22 15:35+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -191,8 +191,8 @@ msgid "false positive"
 msgstr "falsk positiv"
 
 #: organizations/models/account_outlook_setting.py
-#: reportapp/templates/components/report_table/report_table.html
 #: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
 msgid "name"
 msgstr "navn"
 
@@ -506,6 +506,10 @@ msgid "Undistributed"
 msgstr "Tilbageholdt"
 
 #: reportapp/templates/components/navigation/index_navigation.html
+msgid "Undistributed - SBSYS"
+msgstr "Tilbageholdt - SBSYS"
+
+#: reportapp/templates/components/navigation/index_navigation.html
 msgid "Scannerjob"
 msgstr "Scannerjob"
 
@@ -690,92 +694,6 @@ msgstr "Inkludér resultater, der er under %(retention_days)s dage gamle"
 msgid "Include results from shared mailboxes"
 msgstr "Inkludér resultater fra fælles mailbokse"
 
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "handle matches"
-msgstr "håndtér matches"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-#: reportapp/templates/components/report_table/report_table--row.html
-#: reportapp/templates/components/report_table/report_table--row_sbsys.html
-msgid ""
-"OSdatascanner will not delete results from the system that was scanned. "
-"Marking a result as handled will only remove the result from OSdatascanner."
-msgstr ""
-"OSdatascanner sletter ikke resultater fra systemet der blev scannet. "
-"Resultatet markeres udelukkende som håndteret i OSdatascanner."
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "Mark as handled"
-msgstr "Markér som håndterede"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-#: reportapp/templates/components/report_table/report_table--row.html
-#: reportapp/templates/components/report_table/report_table--row_sbsys.html
-msgid ""
-"You are about to handle this result. This action does not change the file, "
-"that the result is about. Please do not handle a result before action has "
-"been manually taken to the file."
-msgstr ""
-"Du er ved at håndtere det markerede resultat. Denne handling ændrer ikke på "
-"filen, som resultatet handler om. Håndtér venligst ikke et resultat, før du "
-"manuelt har gjort noget ved filen."
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-#: reportapp/templates/components/report_table/report_table--row.html
-#: reportapp/templates/components/report_table/report_table--row_sbsys.html
-msgid "Revert"
-msgstr "Fortryd"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid ""
-"You are about to handle the marked results. This action does not change the "
-"files, that the results are about. Please do not handle a result before "
-"action has been manually taken to the file."
-msgstr ""
-"Du er ved at håndtere de markerede resultater. Denne handling ændrer ikke på "
-"filerne, som resultaterne handler om. Håndtér venligst ikke et resultat, før "
-"du manuelt har gjort noget ved filen."
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "Mark as unhandled"
-msgstr "Markér som uhåndterede"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "emails"
-msgstr "emails"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "the mailbox"
-msgstr "mailboksen"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "files"
-msgstr "filer"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "the online drive"
-msgstr "online drevet"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "the shared drive"
-msgstr "fællesdrevet"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "the Exchange server"
-msgstr "Exchangeserveren"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "gmail"
-msgstr "gmail"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "the Google drive"
-msgstr "Google drevet"
-
-#: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "selected"
-msgstr "valgt"
-
 #: reportapp/templates/components/report_table/report_table--mass_delete.html
 #, python-format
 msgid "Deletes checked %(source_type)s from %(source)s"
@@ -912,8 +830,36 @@ msgstr "Kopiér link"
 
 #: reportapp/templates/components/report_table/report_table--row.html
 #: reportapp/templates/components/report_table/report_table--row_sbsys.html
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid ""
+"OSdatascanner will not delete results from the system that was scanned. "
+"Marking a result as handled will only remove the result from OSdatascanner."
+msgstr ""
+"OSdatascanner sletter ikke resultater fra systemet der blev scannet. "
+"Resultatet markeres udelukkende som håndteret i OSdatascanner."
+
+#: reportapp/templates/components/report_table/report_table--row.html
+#: reportapp/templates/components/report_table/report_table--row_sbsys.html
 msgid "Handle"
 msgstr "Håndtér"
+
+#: reportapp/templates/components/report_table/report_table--row.html
+#: reportapp/templates/components/report_table/report_table--row_sbsys.html
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid ""
+"You are about to handle this result. This action does not change the file, "
+"that the result is about. Please do not handle a result before action has "
+"been manually taken to the file."
+msgstr ""
+"Du er ved at håndtere det markerede resultat. Denne handling ændrer ikke på "
+"filen, som resultatet handler om. Håndtér venligst ikke et resultat, før du "
+"manuelt har gjort noget ved filen."
+
+#: reportapp/templates/components/report_table/report_table--row.html
+#: reportapp/templates/components/report_table/report_table--row_sbsys.html
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "Revert"
+msgstr "Fortryd"
 
 #: reportapp/templates/components/report_table/report_table--row.html
 msgid ""
@@ -943,80 +889,9 @@ msgstr "Kontekst"
 msgid "Probability"
 msgstr "Sandsynlighed"
 
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/components/report_table/report_table--sbsys.html
-#: reportapp/templates/leader_statistics_template.html
-#: reportapp/templates/report_content--remediator.html
-#: reportapp/templates/report_content--personal_sbsys.html
-#: reportapp/templates/report_content--remediator_sbsys.html
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--personal.html
-msgid "Results"
-msgstr "Resultater"
-
-#: reportapp/templates/components/report_table/report_table.html
-msgid "Show match probability"
-msgstr "Vis sandsynlighed"
-
-#: reportapp/templates/components/report_table/report_table.html
-msgid "Show/hide all matches"
-msgstr "Vis/skjul alle matches"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/components/report_table/report_table--sbsys.html
-msgid "Select all results"
-msgstr "Vælg alle resultater"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/scannerjobs/scannerjob_list.html
-#: reportapp/templates/user.html
-msgid "Name"
-msgstr "Navn"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/views/statistics_views.py
-msgid "Matches"
-msgstr "Matches"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/components/report_table/report_table--sbsys.html
-msgid "Sort table by"
-msgstr "Sortér tabel efter"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/components/report_table/report_table--sbsys.html
-msgid "Resource age"
-msgstr "Kildealder"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/scannerjobs/scannerjob_list.html
-msgid "Source"
-msgstr "Kilde"
-
-#: reportapp/templates/components/report_table/report_table.html
-msgid "Path"
-msgstr "Sti"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/components/report_table/report_table--sbsys.html
-#: reportapp/templates/leader_statistics_template.html
-#: reportapp/templates/manual.html reportapp/views/statistics_views.py
-msgid "Status"
-msgstr "Status"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/leader_statistics_template.html
-#: reportapp/templates/scannerjobs/scannerjob_list.html
-msgid "Actions"
-msgstr "Handlinger"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/report_content--remediator.html
-#: reportapp/templates/report_content--personal_sbsys.html
-#: reportapp/templates/report_content--remediator_sbsys.html
-#: reportapp/templates/report_content--undistributed.html
-msgid "No results were found"
-msgstr "Der er ingen resultater"
+#: reportapp/templates/components/report_table/report_table--row_expanded.html
+msgid "Show more matches"
+msgstr "Vis flere matches"
 
 #: reportapp/templates/components/report_table/report_table--row_sbsys.html
 msgid "Click here to open this case in SBSYS"
@@ -1032,6 +907,23 @@ msgstr ""
 "Fortryd håndteringsstatus og returnér dette resultat til resultatoverblikket"
 
 #: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/templates/leader_statistics_template.html
+#: reportapp/templates/report_content--personal.html
+#: reportapp/templates/report_content--personal_sbsys.html
+#: reportapp/templates/report_content--remediator.html
+#: reportapp/templates/report_content--remediator_sbsys.html
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "Results"
+msgstr "Resultater"
+
+#: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Select all results"
+msgstr "Vælg alle resultater"
+
+#: reportapp/templates/components/report_table/report_table--sbsys.html
 msgid "deviations"
 msgstr "afvigelser"
 
@@ -1044,16 +936,130 @@ msgid "resource age"
 msgstr "kildealder"
 
 #: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Sort table by"
+msgstr "Sortér tabel efter"
+
+#: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Resource age"
+msgstr "Kildealder"
+
+#: reportapp/templates/components/report_table/report_table--sbsys.html
 msgid "status"
 msgstr "status"
+
+#: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/templates/leader_statistics_template.html
+#: reportapp/templates/manual.html reportapp/views/statistics_views.py
+msgid "Status"
+msgstr "Status"
 
 #: reportapp/templates/components/report_table/report_table--sbsys.html
 msgid "actions"
 msgstr "handlinger"
 
-#: reportapp/templates/components/report_table/report_table--row_expanded.html
-msgid "Show more matches"
-msgstr "Vis flere matches"
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "handle matches"
+msgstr "håndtér matches"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "Mark as handled"
+msgstr "Markér som håndterede"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid ""
+"You are about to handle the marked results. This action does not change the "
+"files, that the results are about. Please do not handle a result before "
+"action has been manually taken to the file."
+msgstr ""
+"Du er ved at håndtere de markerede resultater. Denne handling ændrer ikke på "
+"filerne, som resultaterne handler om. Håndtér venligst ikke et resultat, før "
+"du manuelt har gjort noget ved filen."
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "Mark as unhandled"
+msgstr "Markér som uhåndterede"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "emails"
+msgstr "emails"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "the mailbox"
+msgstr "mailboksen"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "files"
+msgstr "filer"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "the online drive"
+msgstr "online drevet"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "the shared drive"
+msgstr "fællesdrevet"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "the Exchange server"
+msgstr "Exchangeserveren"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "gmail"
+msgstr "gmail"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "the Google drive"
+msgstr "Google drevet"
+
+#: reportapp/templates/components/report_table/report_table--toolbar.html
+msgid "selected"
+msgstr "valgt"
+
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Show match probability"
+msgstr "Vis sandsynlighed"
+
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Show/hide all matches"
+msgstr "Vis/skjul alle matches"
+
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/templates/scannerjobs/scannerjob_list.html
+#: reportapp/templates/user.html
+msgid "Name"
+msgstr "Navn"
+
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/views/statistics_views.py
+msgid "Matches"
+msgstr "Matches"
+
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/templates/scannerjobs/scannerjob_list.html
+msgid "Source"
+msgstr "Kilde"
+
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Path"
+msgstr "Sti"
+
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/templates/leader_statistics_template.html
+#: reportapp/templates/scannerjobs/scannerjob_list.html
+msgid "Actions"
+msgstr "Handlinger"
+
+#: reportapp/templates/components/report_table/report_table.html
+#: reportapp/templates/report_content--personal_sbsys.html
+#: reportapp/templates/report_content--remediator.html
+#: reportapp/templates/report_content--remediator_sbsys.html
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "No results were found"
+msgstr "Der er ingen resultater"
 
 #: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
 msgid "distribution of results"
@@ -1944,13 +1950,43 @@ msgstr ""
 "tidligere matchede emails, skal du bruge \"Kategorisér\"-funktionen på din "
 "<a href=\"%(my-account)s\">profilside</a>."
 
-#: reportapp/templates/report_content--remediator.html
+#: reportapp/templates/report_content--personal.html
 #: reportapp/templates/report_content--personal_sbsys.html
+#: reportapp/templates/report_content--remediator.html
 #: reportapp/templates/report_content--remediator_sbsys.html
 #: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--personal.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
 msgid "results"
 msgstr "resultater"
+
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "Distribute matches to users from"
+msgstr "Uddel matches til brugere fra"
+
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "Search Scannerjob"
+msgstr "Søg scannerjob"
+
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "Distribute"
+msgstr "Uddel"
+
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "matches"
+msgstr "matches"
+
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid ""
+"Are you sure you want to distribute matches to the users? This action cannot "
+"be reverted."
+msgstr ""
+"Er du sikker på, at du vil dele matches ud til brugerne? Denne handling kan "
+"ikke fortrydes."
 
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Scannerjobs"
@@ -1986,30 +2022,6 @@ msgstr "Slet resultater fra scannerjob"
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "No scanner jobs found."
 msgstr "Ingen scannerjob fundet."
-
-#: reportapp/templates/report_content--undistributed.html
-msgid "Distribute matches to users from"
-msgstr "Uddel matches til brugere fra"
-
-#: reportapp/templates/report_content--undistributed.html
-msgid "Search Scannerjob"
-msgstr "Søg scannerjob"
-
-#: reportapp/templates/report_content--undistributed.html
-msgid "Distribute"
-msgstr "Uddel"
-
-#: reportapp/templates/report_content--undistributed.html
-msgid "matches"
-msgstr "matches"
-
-#: reportapp/templates/report_content--undistributed.html
-msgid ""
-"Are you sure you want to distribute matches to the users? This action cannot "
-"be reverted."
-msgstr ""
-"Er du sikker på, at du vil dele matches ud til brugerne? Denne handling kan "
-"ikke fortrydes."
 
 #: reportapp/templates/user.html
 msgid "Account"

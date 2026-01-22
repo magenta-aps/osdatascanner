@@ -73,23 +73,21 @@ class ReportView(LoginRequiredMixin, ListView):
     filter_types: list[str] = []
     exclude_types: list[str] = ["sbsys-db"]
 
+    def apply_source_type_filters(self, reports):
+        if self.filter_types:
+            reports = reports.filter(source_type__in=self.filter_types)
+        if self.exclude_types:
+            reports = reports.exclude(source_type__in=self.exclude_types)
+        return reports
+
     def get_base_queryset(self):
         try:
             acct = self.request.user.account
             self.org = acct.organization
             reports = acct.get_report(self.report_type, self.archive)
-
-            if self.filter_types:
-                reports = reports.filter(source_type__in=self.filter_types)
-            if self.exclude_types:
-                reports = reports.exclude(source_type__in=self.exclude_types)
-
-            return reports
-
+            return self.apply_source_type_filters(reports)
         except Account.DoesNotExist:
-            logger.warning(
-                    "unexpected error in ReportView.get_queryset_base",
-                    exc_info=True)
+            logger.warning("unexpected error in ReportView.get_queryset_base", exc_info=True)
             return DocumentReport.objects.none()
 
     def get_queryset(self):
@@ -405,17 +403,18 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            reports = DocumentReport.objects.filter(
-                    scanner_job__organization=self.org,
-                    only_notify_superadmin=True,
-                    number_of_matches__gte=1,
-                    resolution_status__isnull=not self.archive)
 
-            return reports
+            reports = DocumentReport.objects.filter(
+                scanner_job__organization=self.org,
+                only_notify_superadmin=True,
+                number_of_matches__gte=1,
+                resolution_status__isnull=not self.archive,
+            )
+
+            return self.apply_source_type_filters(reports)
+
         except Account.DoesNotExist:
-            logger.warning(
-                    "unexpected error in UndistributedView.get_queryset_base",
-                    exc_info=True)
+            logger.warning("unexpected error in UndistributedView.get_queryset_base", exc_info=True)
             return DocumentReport.objects.none()
 
     def get_context_data(self, **kwargs):
@@ -521,6 +520,14 @@ class SBSYSRemediatorView(SBSYSMixin, RemediatorView):
     report_type = Account.ReportType.REMEDIATOR
 
 
+class SBSYSUndistributedView(SBSYSMixin, UndistributedView):
+    """Presents a superuser with all undistributed unhandled SBSYS results."""
+
+    type = "sbsys-undistributed"
+    template_name = "report_content--undistributed_sbsys.html"
+    permission_required = "organizations.view_withheld_results"
+
+
 class ArchiveMixin:
     """This mixin is able to overwrite some logic on children of the ReportView-
     class, most notably changing the queryset to query for handled results
@@ -569,6 +576,10 @@ class SBSYSPersonalArchiveView(ArchiveMixin, SBSYSPersonalView):
 
 class SBSYSRemediatorArchiveView(ArchiveMixin, SBSYSRemediatorView):
     """Presents the remediator with all relevant handled SBSYS results."""
+
+
+class SBSYSUndistributedArchiveView(ArchiveMixin, SBSYSUndistributedView):
+    """Presents a superuser with all undistributed handled SBSYS results."""
 
 
 class HTMXEndpointView(LoginRequiredMixin, View):
