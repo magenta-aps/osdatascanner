@@ -221,8 +221,13 @@ class TestUserReportView:
             num_old,
             rf,
             egon_account,
-            egon_email_alias):
+            egon_email_alias,
+            olsenbanden_organization):
         # Arrange
+        # Enable retention policy
+        olsenbanden_organization.retention_policy = True
+        olsenbanden_organization.retention_days = 30
+        olsenbanden_organization.save()
         params = '?retention=false'
         create_reports_for(egon_email_alias, num=num_new, datasource_last_modified=time_now())
         create_reports_for(
@@ -295,13 +300,9 @@ class TestUserReportView:
             num_old,
             rf,
             egon_account,
-            egon_email_alias,
-            olsenbanden_organization):
+            egon_email_alias):
         # Arrange
-        # Disable retention policy
-        olsenbanden_organization.retention_policy = False
-        olsenbanden_organization.save()
-        params = '?retention=false'
+        # Retention_policy is set to false by default
         create_reports_for(egon_email_alias, num=num_new, datasource_last_modified=time_now())
         create_reports_for(
             egon_email_alias,
@@ -311,7 +312,7 @@ class TestUserReportView:
                 days=31))
 
         # Act
-        qs = self.userreport_get_queryset(rf, egon_account, params=params)
+        qs = self.userreport_get_queryset(rf, egon_account)
 
         # Assert
         assert qs.count() == num_old + num_new
@@ -923,8 +924,13 @@ class TestUserArchiveView:
             num_old,
             rf,
             egon_account,
-            egon_email_alias):
+            egon_email_alias,
+            olsenbanden_organization):
         # Arrange
+        # Enable retention policy
+        olsenbanden_organization.retention_policy = True
+        olsenbanden_organization.retention_days = 30
+        olsenbanden_organization.save()
         params = '?retention=false'
         create_reports_for(
             egon_email_alias,
