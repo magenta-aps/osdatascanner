@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-23 13:14+0100\n"
+"POT-Creation-Date: 2026-01-26 11:22+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2224,23 +2224,90 @@ msgid "top 5 file types by total scanning time"
 msgstr "top 5 filtyper efter samlet scanningstid"
 
 #: adminapp/templates/components/scanstatus/card_summary.html
-msgid "scan summary"
-msgstr "overblik"
+msgid "scan coverage"
+msgstr "omfang"
 
 #: adminapp/templates/components/scanstatus/card_summary.html
-msgid "key outcomes and coverage of the scan"
-msgstr "vigtigste resultater og omfang af scanningen"
+msgid "summary of scan coverage"
+msgstr "opsummering af scannets omfang"
 
 #: adminapp/templates/components/scanstatus/card_summary.html
-msgid "Objects detected for the first time in this run."
-msgstr "Objekter, der blev registreret for første gang i denne kørsel."
+msgid "Objects detected for the first time by this scan."
+msgstr "Objekter registreret for første gang under scanningen."
 
-#: adminapp/templates/components/scanstatus/mimetype-size_pie-chart.html
-msgid ""
-"overview of the proportion each file type represents of the total number of "
-"scanned files"
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "No new %(onp)s found"
+msgstr "Ingen nye %(onp)s fundet"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "1 new %(on)s found and scanned"
+msgstr "1 ny %(on)s fundet og scannet"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "%(num)s new %(onp)s found and scanned"
+msgstr "%(num)s nye %(onp)s fundet og scannet"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "Skipped due to no changes detected since the previous scan."
 msgstr ""
-"oversigt over fordelingen af filtyper i det samlede antal scannede filer"
+"Sprunget over, fordi der ikke blev registreret ændringer siden forrige "
+"scanning."
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "1 known %(on)s skipped"
+msgstr "1 kendt %(on)s sprunget over"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "%(num)s known %(onp)s skipped"
+msgstr "%(num)s kendt %(onp)s sprunget over"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "All detected objects were scanned."
+msgstr "Alle registrerede objekter blev scannet."
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "All %(onp)s scanned"
+msgstr "Alle %(onp)s scannet"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "The number of accounts that were within the scope of this scan."
+msgstr "Antallet af konti inden for scanningens omfang."
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "1 account included in this scan"
+msgstr "1 konto omfattet af scanningen"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "%(num)s accounts included in this scan"
+msgstr "%(num)s konti omfattet af scanningen"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "To see more details, go to the error messages tab."
+msgstr "For at se flere detaljer, gå til fanen med fejlbeskeder."
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+msgid "1 error encountered during this scan"
+msgstr "1 fejl registreret under scanningen"
+
+#: adminapp/templates/components/scanstatus/card_summary.html
+#, python-format
+msgid "%(num)s errors encountered during this scan"
+msgstr "%(num)s fejl registreret under scanningen"
+
+#: adminapp/templates/components/scanstatus/card_timeline--linechart.html
+msgid "the scan progress timeline"
+msgstr "tidslinje for scanningsforløbet"
+
+#: adminapp/templates/components/scanstatus/card_timeline--linechart.html
+msgid "percentage completion over time"
+msgstr "procentvis færdiggørelse over tid"
 
 #: adminapp/templates/components/scanstatus/remove_error.html
 #: adminapp/templates/components/scanstatus/resolve_status.html
@@ -4573,3 +4640,28 @@ msgstr "Udløbsdato"
 #: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
+
+#~ msgid "scan summary"
+#~ msgstr "oversigt"
+
+#~ msgid "key outcomes and coverage of the scan"
+#~ msgstr "vigtigste resultater og omfang af scanningen"
+
+#, fuzzy, python-format
+#~| msgid "%(num)s errors encountered during this scan"
+#~ msgid ""
+#~ "\n"
+#~ "              %(num)s error encountered during this scan\n"
+#~ "            "
+#~ msgid_plural ""
+#~ "\n"
+#~ "              %(num)s errors encountered during this scan\n"
+#~ "            "
+#~ msgstr[0] "%(num)s fejl registreret under scanningen"
+#~ msgstr[1] "%(num)s fejl registreret under scanningen"
+
+#~ msgid ""
+#~ "overview of the proportion each file type represents of the total number "
+#~ "of scanned files"
+#~ msgstr ""
+#~ "oversigt over fordelingen af filtyper i det samlede antal scannede filer"
