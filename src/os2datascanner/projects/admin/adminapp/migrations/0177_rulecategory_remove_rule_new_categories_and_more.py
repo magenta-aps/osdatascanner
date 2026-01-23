@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='rule',
             name='categories',
-            field=models.ManyToManyField(related_name='rules', to='os2datascanner.rulecategory', verbose_name='kategorier'),
+            field=models.ManyToManyField(related_name='rules', to='os2datascanner.rulecategory', verbose_name='categories'),
         ),
         migrations.RunPython(move_to_final_category_model, move_to_intermediary_category_model),
         migrations.RemoveField(
@@ -54,31 +54,5 @@ class Migration(migrations.Migration):
         ),
         migrations.DeleteModel(
             name='NewRuleCategory',
-        ),
-        # These fields are altered because we are no longer lazily evaluating translations in rules.py
-        migrations.AlterField(
-            model_name='rule',
-            name='description',
-            field=models.TextField(verbose_name='beskrivelse'),
-        ),
-        migrations.AlterField(
-            model_name='rule',
-            name='name',
-            field=models.CharField(max_length=256, unique=True, verbose_name='navn'),
-        ),
-        migrations.AlterField(
-            model_name='rule',
-            name='organization',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='rules', to='organizations.organization', verbose_name='organisation'),
-        ),
-        migrations.AlterField(
-            model_name='rule',
-            name='raw_rule',
-            field=models.JSONField(blank=True, null=True, verbose_name='Regel'),
-        ),
-        migrations.AlterField(
-            model_name='rule',
-            name='sensitivity',
-            field=models.IntegerField(choices=[(3, 'Critical'), (2, 'Problem'), (1, 'Warning'), (0, 'Notification')], default=2, verbose_name='følsomhed'),
-        ),
+        )
     ]

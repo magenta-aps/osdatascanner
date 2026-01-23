@@ -18,7 +18,8 @@ from django.db import models
 from django.db.models.signals import pre_save
 # We cannot lazily evaluate translations in this file, because we are defining some translations
 # in a static dictionary, and that will break the "name" property of RuleCategory
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
 
@@ -36,30 +37,30 @@ class RuleCategory(models.Model):
     name_desc_map = {
         # Properties of the target scanned for
         "number_id": {
-            "name": _("number ID"),
-            "description": _("Rules for finding identification numbers.")
+            "name": gettext("number ID"),
+            "description": gettext("Rules for finding identification numbers.")
         },
         "names": {
-            "name": _("names"),
-            "description": _("Rules for finding human names.")
+            "name": gettext("names"),
+            "description": gettext("Rules for finding human names.")
         },
         "addresses": {
-            "name": _("addresses"),
-            "description": _("Rules for finding physical addresses.")
+            "name": gettext("addresses"),
+            "description": gettext("Rules for finding physical addresses.")
         },
         "sick_leave": {
-            "name": _("sick leave"),
-            "description": _("Rules for finding messages about sick leave.")
+            "name": gettext("sick leave"),
+            "description": gettext("Rules for finding messages about sick leave.")
         },
         # Languages
         "danish": {
-            "name": _("Danish"),
-            "description": _("Rules searching for Danish words or sentences.")
+            "name": gettext("Danish"),
+            "description": gettext("Rules searching for Danish words or sentences.")
         },
         # Misc
         -1: {
             "name": None,
-            "description": _("No description available for this category.")
+            "description": gettext("No description available for this category.")
         }
     }
 
