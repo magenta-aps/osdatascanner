@@ -1,13 +1,48 @@
+import json
 from datetime import timedelta
 
 import pytest
 
 from os2datascanner.projects.admin.core.models.background_job import JobState
+from os2datascanner.projects.grants.models import GoogleApiGrant
 from .test_ldap_configuration import ldap_conf  # noqa F811, fixture
 from os2datascanner.utils.system_utilities import time_now
 
 from ..models import LDAPImportJob, MSGraphConfiguration, MSGraphImportJob, \
-    OS2moConfiguration, OS2moImportJob
+    OS2moConfiguration, OS2moImportJob, GoogleWorkspaceConfig, GoogleWorkspaceImportJob
+
+
+@pytest.fixture
+def google_api_grant(test_org):
+    service_account_info = {
+        "type": "service_account",
+        "project_id": "test-project",
+        "private_key_id": "12345",
+        "private_key": "-----BEGIN PRIVATE KEY-----\\nprivate_key\\n-----END PRIVATE KEY-----\\n",
+        "client_email": "test@test-project.iam.gserviceaccount.com",
+        "client_id": "123456789",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509"
+                                "/test%40test-project.iam.gserviceaccount.com"
+    }
+    grant = GoogleApiGrant.objects.create(
+        organization=test_org,
+        _service_account=json.dumps(service_account_info)
+    )
+    return grant
+
+
+@pytest.fixture
+def google_workspace_conf(test_org, google_api_grant):
+    config = GoogleWorkspaceConfig.objects.create(
+        organization=test_org,
+        grant=google_api_grant,
+        delegated_admin_email="admin@test.com",
+        last_modified=time_now()
+    )
+    return config
 
 
 @pytest.fixture
@@ -27,6 +62,19 @@ def os2mo_conf(test_org):
         last_modified=time_now()
     )
     return config
+
+
+@pytest.fixture
+def google_workspace_import_running_23hrs_5min(google_workspace_conf, test_org):
+    job = GoogleWorkspaceImportJob(
+        organization=test_org,
+        grant=google_workspace_conf.grant,
+        delegated_admin_email=google_workspace_conf.delegated_admin_email,
+        _exec_state=JobState.RUNNING.value,
+    )
+    job.save()
+    job.created_at = time_now() - timedelta(hours=23, minutes=5)
+    job.save(update_fields=['created_at'])
 
 
 @pytest.fixture
@@ -63,6 +111,15 @@ def os2mo_import_running_23hrs_5min(os2mo_conf, test_org):
 
 
 @pytest.fixture
+def google_workspace_import_job(google_workspace_conf, test_org):
+    return GoogleWorkspaceImportJob.objects.create(
+        organization=test_org,
+        grant=google_workspace_conf.grant,
+        delegated_admin_email=google_workspace_conf.delegated_admin_email,
+    )
+
+
+@pytest.fixture
 def msgraph_import_job(msgraph_conf, test_org):
     return MSGraphImportJob.objects.create(
         organization=test_org,
@@ -89,6 +146,7 @@ class TestStartImport:
         ("ldap_conf", LDAPImportJob),
         ("msgraph_conf", MSGraphImportJob),
         ("os2mo_conf", OS2moImportJob),
+        ("google_workspace_conf", GoogleWorkspaceImportJob),
     ])
     def test_start_import_creates_backgroundjob(self, request, config, import_job):
         # Arrange
@@ -104,12 +162,17 @@ class TestStartImport:
         ("ldap_conf", LDAPImportJob),
         ("msgraph_conf", MSGraphImportJob),
         ("os2mo_conf", OS2moImportJob),
+        ("google_workspace_conf", GoogleWorkspaceImportJob),
     ])
-    def test_new_import_starts_if_stuck_in_running_over_23_hrs(self, request, config, import_job,
-                                                               msgraph_import_running_23hrs_5min,
-                                                               ldap_import_running_23hrs_5min,
-                                                               os2mo_import_running_23hrs_5min
-                                                               ):
+    def test_new_import_starts_if_stuck_in_running_over_23_hrs(
+            self,
+            request,
+            config,
+            import_job,
+            msgraph_import_running_23hrs_5min,
+            ldap_import_running_23hrs_5min,
+            os2mo_import_running_23hrs_5min,
+            google_workspace_import_running_23hrs_5min):
         # Arrange
         conf = request.getfixturevalue(config)
 
@@ -158,13 +221,24 @@ class TestStartImport:
                         JobState.CANCELLED,
                     ],
             ),
+            (
+                    "google_workspace_conf",
+                    GoogleWorkspaceImportJob,
+                    [
+                        JobState.FINISHED,
+                        JobState.FAILED,
+                        JobState.CANCELLED,
+                        JobState.FINISHED_WITH_WARNINGS,
+                    ],
+            ),
         ],
     )
     def test_can_start_new_job_when_existing_is_in_allowed_state(self, request, config, import_job,
                                                                  allowed_states,
                                                                  msgraph_import_job,
                                                                  ldap_import_job,
-                                                                 os2mo_import_job):
+                                                                 os2mo_import_job,
+                                                                 google_workspace_import_job):
         # Arrange
         conf = request.getfixturevalue(config)
 
@@ -217,13 +291,23 @@ class TestStartImport:
                         JobState.FINISHED_WITH_WARNINGS
                     ],
             ),
+            (
+                    "google_workspace_conf",
+                    GoogleWorkspaceImportJob,
+                    [
+                        JobState.WAITING,
+                        JobState.RUNNING,
+                        JobState.CANCELLING,
+                    ],
+            ),
         ],
     )
     def test_cant_start_new_job_when_in_disallowed_state(self, request, config, import_job,
                                                          disallowed_states,
                                                          msgraph_import_job,
                                                          ldap_import_job,
-                                                         os2mo_import_job):
+                                                         os2mo_import_job,
+                                                         google_workspace_import_job):
         # Arrange
         conf = request.getfixturevalue(config)
 

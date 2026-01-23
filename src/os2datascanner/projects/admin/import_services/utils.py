@@ -23,7 +23,6 @@ from django.conf import settings
 from os2datascanner.projects.admin.core.models.background_job import JobState
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.admin.adminapp.utils import CleanAccountMessage
-from .models.google_workspace_configuration import GoogleWorkspaceConfig
 from os2datascanner.utils.system_utilities import time_now
 
 logger = structlog.get_logger("import_services")
@@ -126,40 +125,3 @@ def post_import_cleanup() -> None:
                     account_id__in=acc_dict["uuids"]).delete()
 
         logger.info("Post import cleanup message sent to report module!")
-
-
-def start_google_import(config: GoogleWorkspaceConfig):
-    """
-    Google Workspace Import Job start utility.
-    Only allow job creation if no current job is running for this config.
-    """
-    from ..core.models.background_job import JobState
-    from .models.google_workspace_import_job import GoogleWorkspaceImportJob
-
-    org = config.organization
-
-    try:
-        latest_importjob = GoogleWorkspaceImportJob.objects.filter(
-            organization=org,
-            grant=config.grant
-        ).latest("created_at")
-
-        if latest_importjob.exec_state in (
-                JobState.FINISHED,
-                JobState.FAILED,
-                JobState.CANCELLED,
-                JobState.FINISHED_WITH_WARNINGS,
-        ):
-            GoogleWorkspaceImportJob.objects.create(
-                organization=org,
-                grant=config.grant,
-                delegated_admin_email=config.delegated_admin_email,
-            )
-        else:
-            logger.info(f"Google Workspace import already in progress for config {config.pk}")
-    except GoogleWorkspaceImportJob.DoesNotExist:
-        GoogleWorkspaceImportJob.objects.create(
-            organization=org,
-            grant=config.grant,
-            delegated_admin_email=config.delegated_admin_email,
-        )

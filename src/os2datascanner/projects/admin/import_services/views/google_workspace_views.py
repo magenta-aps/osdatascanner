@@ -13,7 +13,6 @@ from django.utils import timezone
 from ...organizations.models import Organization
 from ..models.google_workspace_configuration import GoogleWorkspaceConfig
 from ...utilities import UserWrapper
-from ..utils import start_google_import
 
 
 class GoogleWorkspaceEditForm(forms.ModelForm):
@@ -102,7 +101,7 @@ class GoogleWorkspaceImportView(View):
 
         try:
             # Create and start the import job
-            start_google_import(config)
+            config.start_import()
             messages.success(request, "Google Workspace import job created")
         except Exception as e:
             print(f"[ERROR] Failed to create import job: {e}")
