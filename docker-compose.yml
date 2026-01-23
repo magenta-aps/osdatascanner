@@ -677,7 +677,9 @@ services:
       - sso
 
   ldap-server:
-    image: osixia/openldap
+    build:
+      context: .
+      dockerfile: docker/openldap/Dockerfile
     environment:
       LDAP_ADMIN_PASSWORD: testMAG
       LDAP_BASE_DN: dc=magenta,dc=test
@@ -808,3 +810,4 @@ volumes:
   knr-postgres-keycloak-volume:
   ldap_data:
   ldap_config:
+  open_ldap:
