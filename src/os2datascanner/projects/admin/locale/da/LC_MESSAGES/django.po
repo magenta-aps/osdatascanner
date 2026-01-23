@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 11:14+0100\n"
+"POT-Creation-Date: 2026-01-23 13:14+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -263,21 +263,49 @@ msgid "number ID"
 msgstr "identifikationsnummer"
 
 #: adminapp/models/rules.py
+msgid "Rules for finding identification numbers."
+msgstr "Regler til at finde identifikationsnumre."
+
+#: adminapp/models/rules.py
 #: adminapp/templates/components/admin_widgets/rule_builder.html
 msgid "names"
 msgstr "personnavne"
+
+#: adminapp/models/rules.py
+msgid "Rules for finding human names."
+msgstr "Regler til at finde personnavne."
 
 #: adminapp/models/rules.py
 msgid "addresses"
 msgstr "adresser"
 
 #: adminapp/models/rules.py
+msgid "Rules for finding physical addresses."
+msgstr "Regler til at finde fysiske adresser."
+
+#: adminapp/models/rules.py
 msgid "sick leave"
 msgstr "sygemelding"
 
 #: adminapp/models/rules.py
+msgid "Rules for finding messages about sick leave."
+msgstr "Regler til at finde beskeder om sygemelding."
+
+#: adminapp/models/rules.py
 msgid "Danish"
 msgstr "dansk"
+
+#: adminapp/models/rules.py
+msgid "Rules searching for Danish words or sentences."
+msgstr "Regler til at finde danske ord og sætninger."
+
+#: adminapp/models/rules.py
+msgid "No description available for this category."
+msgstr "Ingen beskrivelse tilgængelig for denne kategori."
+
+#: adminapp/models/rules.py
+msgid "identifier"
+msgstr "identifikator"
 
 #: adminapp/models/rules.py adminapp/models/scannerjobs/scanner.py
 #: adminapp/templates/rules.html adminapp/templates/system_rules.html
