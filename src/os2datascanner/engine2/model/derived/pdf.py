@@ -12,7 +12,8 @@ from .utilities.extraction import (should_skip_images,
                                    TinyImageFilter)
 
 PAGE_TYPE = "application/x.os2datascanner.pdf-page"
-WHITESPACE_PLUS = string.whitespace + "\0"
+# Pymupdf replaces nullbytes with "\udcc0\udc80"
+WHITESPACE_PLUS = string.whitespace + "\udcc0\udc80"
 
 
 def _open_pdf_wrapped(obj):
@@ -31,7 +32,6 @@ class PDFSource(DerivedSource):
     def _generate_state(self, sm):
         with self.handle.follow(sm).make_path() as path:
             # Explicitly download the file here for the sake of PDFPageSource,
-            # which needs a local filesystem path to pass to pdftohtml
             if engine2_settings.pdf["PREPROCESS_PDF"]:
                 with TemporaryDirectory() as outputdir:
                     converted_path = "{0}/ez_save.pdf".format(outputdir)

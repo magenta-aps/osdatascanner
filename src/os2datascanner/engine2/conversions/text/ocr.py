@@ -28,6 +28,10 @@ def tesseract_pymupdf(image_bytes, filetype=None):
         if pix.colorspace.n < 3:  # n=1 for grayscale, n=3 for RGB, n=4 for RGBA
             pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
 
+        # Tesseract also can't handle an alpha channel - remove if needed.
+        if pix.alpha:
+            pix = pymupdf.Pixmap(pix, 0)
+
         # Create a 1-page PDF in memory with an OCR text layer
         ocr_pdf_bytes = pix.pdfocr_tobytes(
             language="dan+eng"
