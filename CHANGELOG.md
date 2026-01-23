@@ -10,6 +10,8 @@
   which also serves as the primary key. This makes it much easier to add and maintain categories
   in rule fixtures.
 
+- Added a tab on Report/Archive to display withheld SBSYS results.
+
 ### General improvements
 
 - Rules can now incorporate other Rules by reference, making it possible to
@@ -17,6 +19,8 @@
 
 - If an ImportJob has been running for over 23 hours, it'll now automatically be cancelled and a
   new one created on the import schedule.
+
+- SBSYS-related results won't show up on the regular "withheld" tab anymore.
 
 ### Bugfixes
 

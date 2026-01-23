@@ -1,3 +1,5 @@
+{# report_table--row.html #}
+
 {% load i18n l10n humanize admin_urls handle_extras %}
 {% with type=document_report.matches.handle|find_type_label %}
 
@@ -403,7 +405,7 @@
           <tbody>
             {% with document_report.pk as pk %}
               {% with None as interval %}
-                {% include "components/reports/show_more_matches.html" %}
+                {% include "components/report_table/report_table--row_expanded.html" %}
               {% endwith %}
             {% endwith %}
           </tbody>

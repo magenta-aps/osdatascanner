@@ -1,6 +1,7 @@
+{# report_table--row_expanded.html #}
+
 {% load handle_extras %}
-{% load i18n %}
-{% load l10n %}
+{% load i18n l10n %}
 
 {% with frag.matches|between:interval as matches %}
   {% for match in matches %}
@@ -12,7 +13,7 @@
       {% endif %}
 
       <td class="matches-list__column matches-list__column--probability" hidden>
-        {% include "components/reports/probability.html" %}
+        {% include "components/report_table/report_table--probability.html" %}
       </td>
     </tr>
   {% endfor %}

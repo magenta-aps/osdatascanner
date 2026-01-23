@@ -1,7 +1,8 @@
+{# report_content--undistributed.html #}
+
 {% extends "index.html" %}
 
-{% load i18n %}
-{% load l10n %}
+{% load i18n l10n %}
 
 {% block content-header %}
   <h1 class="page-title">{% trans "Results" %}</h1>
@@ -46,10 +47,6 @@
 {% endblock content-header %}
 
 {% block content %}
-  {% include "components/reports/filters.html" %}
-  {% if page_obj.paginator.count == 0 %}
-    <p class="no-results">{% trans "No results were found" %}</p>
-  {% else %}
-    {% include "components/reports/match_table.html" %}
-  {% endif %}
+  {% include "components/report_table/report_table--filters.html" %}
+  {% include "components/report_table/report_table.html" %}
 {% endblock content %}

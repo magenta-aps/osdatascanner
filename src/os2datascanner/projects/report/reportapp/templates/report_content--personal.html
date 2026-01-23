@@ -1,3 +1,5 @@
+{# report_content--personal.html #}
+
 {% extends "index.html" %}
 
 {% load i18n l10n %}
@@ -8,11 +10,6 @@
 {% endblock content-header %}
 
 {% block content %}
-  {% include "components/reports/filters.html" %}
- 
-  {% if page_obj.paginator.count == 0 %}
-    <p class="no-results">{% trans "No results were found" %}</p>
-  {% else %}
-    {% include "components/reports/sbsys_match_table.html" %}
-  {% endif %}
+  {% include "components/report_table/report_table--filters.html" %}
+  {% include "components/report_table/report_table.html" %}
 {% endblock content %}

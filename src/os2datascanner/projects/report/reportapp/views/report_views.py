@@ -73,23 +73,21 @@ class ReportView(LoginRequiredMixin, ListView):
     filter_types: list[str] = []
     exclude_types: list[str] = ["sbsys-db"]
 
+    def apply_source_type_filters(self, reports):
+        if self.filter_types:
+            reports = reports.filter(source_type__in=self.filter_types)
+        if self.exclude_types:
+            reports = reports.exclude(source_type__in=self.exclude_types)
+        return reports
+
     def get_base_queryset(self):
         try:
             acct = self.request.user.account
             self.org = acct.organization
             reports = acct.get_report(self.report_type, self.archive)
-
-            if self.filter_types:
-                reports = reports.filter(source_type__in=self.filter_types)
-            if self.exclude_types:
-                reports = reports.exclude(source_type__in=self.exclude_types)
-
-            return reports
-
+            return self.apply_source_type_filters(reports)
         except Account.DoesNotExist:
-            logger.warning(
-                    "unexpected error in ReportView.get_queryset_base",
-                    exc_info=True)
+            logger.warning("unexpected error in ReportView.get_queryset_base", exc_info=True)
             return DocumentReport.objects.none()
 
     def get_queryset(self):
@@ -357,7 +355,7 @@ class ReportView(LoginRequiredMixin, ListView):
 class UserReportView(ReportView):
     """Presents the user with their personal unhandled results."""
     type = "personal"
-    template_name = "user_content.html"
+    template_name = "report_content--personal.html"
 
     @property
     def report_type(self):
@@ -378,7 +376,7 @@ class RemediatorView(ReportView):
     """Presents a remediator with relevant unhandled results."""
 
     type = "remediator"
-    template_name = "remediator_content.html"
+    template_name = "report_content--remediator.html"
     report_type = Account.ReportType.REMEDIATOR
 
     def dispatch(self, request, *args, **kwargs):
@@ -397,7 +395,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
 
     type = "undistributed"
     permission_required = "organizations.view_withheld_results"
-    template_name = "undistributed_content.html"
+    template_name = "report_content--undistributed.html"
 
     def get_base_queryset(self):
         # This is the only ReportView subclass that doesn't use Aliases to get
@@ -405,17 +403,18 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            reports = DocumentReport.objects.filter(
-                    scanner_job__organization=self.org,
-                    only_notify_superadmin=True,
-                    number_of_matches__gte=1,
-                    resolution_status__isnull=not self.archive)
 
-            return reports
+            reports = DocumentReport.objects.filter(
+                scanner_job__organization=self.org,
+                only_notify_superadmin=True,
+                number_of_matches__gte=1,
+                resolution_status__isnull=not self.archive,
+            )
+
+            return self.apply_source_type_filters(reports)
+
         except Account.DoesNotExist:
-            logger.warning(
-                    "unexpected error in UndistributedView.get_queryset_base",
-                    exc_info=True)
+            logger.warning("unexpected error in UndistributedView.get_queryset_base", exc_info=True)
             return DocumentReport.objects.none()
 
     def get_context_data(self, **kwargs):
@@ -509,7 +508,7 @@ class SBSYSPersonalView(SBSYSMixin, ReportView):
     """Presents the user with their personal unhandled SBSYS results."""
 
     type = "sbsys-personal"
-    template_name = "sbsys_content.html"
+    template_name = "report_content--personal_sbsys.html"
     report_type = Account.ReportType.PERSONAL_AND_SHARED
 
 
@@ -517,8 +516,16 @@ class SBSYSRemediatorView(SBSYSMixin, RemediatorView):
     """Presents a remediator with relevant unhandled SBSYS results."""
 
     type = "sbsys-remediator"
-    template_name = "sbsys_remediator_content.html"
+    template_name = "report_content--remediator_sbsys.html"
     report_type = Account.ReportType.REMEDIATOR
+
+
+class SBSYSUndistributedView(SBSYSMixin, UndistributedView):
+    """Presents a superuser with all undistributed unhandled SBSYS results."""
+
+    type = "sbsys-undistributed"
+    template_name = "report_content--undistributed_sbsys.html"
+    permission_required = "organizations.view_withheld_results"
 
 
 class ArchiveMixin:
@@ -569,6 +576,10 @@ class SBSYSPersonalArchiveView(ArchiveMixin, SBSYSPersonalView):
 
 class SBSYSRemediatorArchiveView(ArchiveMixin, SBSYSRemediatorView):
     """Presents the remediator with all relevant handled SBSYS results."""
+
+
+class SBSYSUndistributedArchiveView(ArchiveMixin, SBSYSUndistributedView):
+    """Presents a superuser with all undistributed handled SBSYS results."""
 
 
 class HTMXEndpointView(LoginRequiredMixin, View):
@@ -690,7 +701,7 @@ class OpenMatchView(HTMXEndpointView, DetailView):
 
 
 class ShowMoreMatchesView(HTMXEndpointView, DetailView):
-    template_name = "components/reports/show_more_matches.html"
+    template_name = "components/report_table/report_table--row_expanded.html"
     model = DocumentReport
 
     def get_context_data(self, **kwargs):

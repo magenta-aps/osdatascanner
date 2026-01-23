@@ -1,3 +1,5 @@
+{# report_table--toolbar.html #}
+
 {% load i18n l10n %}
 
 <div class="table-toolbar__content-left">
@@ -61,32 +63,32 @@
   {% if show_msgraph_email_mass_delete_button %}
     {% blocktranslate asvar source_type %}emails{% endblocktranslate %}
     {% blocktranslate asvar source %}the mailbox{% endblocktranslate %}
-    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-mail" %}
+    {% include "components/report_table/report_table--mass_delete.html" with source_type=source_type source=source url_name="mass-delete-mail" %}
   {% endif %}
   {% if show_msgraph_file_mass_delete_button %}
     {% blocktranslate asvar source_type %}files{% endblocktranslate %}
     {% blocktranslate asvar source %}the online drive{% endblocktranslate %}
-    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-file" %}
+    {% include "components/report_table/report_table--mass_delete.html" with source_type=source_type source=source url_name="mass-delete-file" %}
   {% endif %}
   {% if show_smb_mass_delete_button %}
     {% blocktranslate asvar source_type %}files{% endblocktranslate %}
     {% blocktranslate asvar source %}the shared drive{% endblocktranslate %}
-    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-smb-file" %}
+    {% include "components/report_table/report_table--mass_delete.html" with source_type=source_type source=source url_name="mass-delete-smb-file" %}
   {% endif %}
   {% if show_ews_mass_delete_button %}
     {% blocktranslate asvar source_type %}emails{% endblocktranslate %}
     {% blocktranslate asvar source %}the Exchange server{% endblocktranslate %}
-    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-ews-mail" %}
+    {% include "components/report_table/report_table--mass_delete.html" with source_type=source_type source=source url_name="mass-delete-ews-mail" %}
   {% endif %}
   {% if show_gmail_mass_delete_button %}
     {% blocktranslate asvar source_type %}emails{% endblocktranslate %}
     {% blocktranslate asvar source %}gmail{% endblocktranslate %}
-    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-gmail" %}
+    {% include "components/report_table/report_table--mass_delete.html" with source_type=source_type source=source url_name="mass-delete-gmail" %}
   {% endif %}
   {% if show_gdrive_mass_delete_button %}
     {% blocktranslate asvar source_type %}files{% endblocktranslate %}
     {% blocktranslate asvar source %}the Google drive{% endblocktranslate %}
-    {% include "components/reports/mass_deletion_button.html" with source_type=source_type source=source url_name="mass-delete-gdrive" %}
+    {% include "components/report_table/report_table--mass_delete.html" with source_type=source_type source=source url_name="mass-delete-gdrive" %}
   {% endif %}
 
   <span class="selected-cb">

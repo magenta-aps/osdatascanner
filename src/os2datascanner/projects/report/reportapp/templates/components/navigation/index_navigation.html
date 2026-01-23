@@ -1,3 +1,5 @@
+{# index_navigation.html #}
+
 {% load i18n %}
 {% load handle_extras %}
 
@@ -28,7 +30,6 @@
            class="tabs__control{% if name == "sbsys-remediator" %} active{% endif %}"
            id="sbsys-remediator">{% trans "Remediator - SBSYS" %}</a>
       {% endif %}
-
     {% endif %}
 
     {# Withheld #}
@@ -36,6 +37,14 @@
       <a href="{% if path == "archive" %}{% url "archive:undistributed" %}{% else %}{% url "reports:undistributed" %}{% endif %}"
          class="tabs__control{% if name == "undistributed" %} active{% endif %}"
          id="undistributed">{% trans "Undistributed" %}</a>
+
+      {% if user.account.sbsystab_access %}
+        {# Withheld - SBSYS #}
+        <a href="{% if path == "archive" %}{% url "archive:sbsys-undistributed" %}{% else %}{% url "reports:sbsys-undistributed" %}{% endif %}"
+           class="tabs__control{% if name == "sbsys-undistributed" %} active{% endif %}"
+           id="sbsys-undistributed">{% trans "Undistributed - SBSYS" %}</a>
+      {% endif %}
+ 
     {% endif %}
 
     {# Scannerjob list #}

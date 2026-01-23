@@ -19,7 +19,8 @@ from .views.report_views import (
     RemediatorView, RemediatorArchiveView,
     UndistributedView, UndistributedArchiveView,
     SBSYSPersonalView, SBSYSPersonalArchiveView,
-    SBSYSRemediatorView, SBSYSRemediatorArchiveView)
+    SBSYSRemediatorView, SBSYSRemediatorArchiveView,
+    SBSYSUndistributedView, SBSYSUndistributedArchiveView)
 from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
 from .views.manual_views import ManualMainView
@@ -28,11 +29,12 @@ from os2datascanner.projects.shared.views import CustomPasswordResetView
 
 reports_patterns = [
     # Pages related to unhandled reports:
-    path("personal/",         UserReportView.as_view(),      name="personal"),
-    path("remediator/",       RemediatorView.as_view(),      name="remediator"),
-    path("undistributed/",    UndistributedView.as_view(),   name="undistributed"),
-    path("sbsys-personal/",   SBSYSPersonalView.as_view(),   name="sbsys-personal"),
-    path("sbsys-remediator/", SBSYSRemediatorView.as_view(), name="sbsys-remediator"),
+    path("personal/",            UserReportView.as_view(),         name="personal"),
+    path("remediator/",          RemediatorView.as_view(),         name="remediator"),
+    path("undistributed/",       UndistributedView.as_view(),      name="undistributed"),
+    path("sbsys-personal/",      SBSYSPersonalView.as_view(),      name="sbsys-personal"),
+    path("sbsys-remediator/",    SBSYSRemediatorView.as_view(),    name="sbsys-remediator"),
+    path("sbsys-undistributed/", SBSYSUndistributedView.as_view(), name="sbsys-undistributed"),
 ]
 
 archive_patterns = [
@@ -42,6 +44,11 @@ archive_patterns = [
     path("undistributed/",    UndistributedArchiveView.as_view(),   name="undistributed"),
     path("sbsys-personal/",   SBSYSPersonalArchiveView.as_view(),   name="sbsys-personal"),
     path("sbsys-remediator/", SBSYSRemediatorArchiveView.as_view(), name="sbsys-remediator"),
+    path(
+        "sbsys-undistributed/",
+        SBSYSUndistributedArchiveView.as_view(),
+        name="sbsys-undistributed"
+    ),
 ]
 
 urlpatterns = [
