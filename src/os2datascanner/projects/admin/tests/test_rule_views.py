@@ -21,14 +21,14 @@ def rule_data(test_org):
 @pytest.fixture
 def name_category():
     return RuleCategory.objects.get_or_create(
-        name="name"
+        identifier="names"
     )[0]
 
 
 @pytest.fixture
 def address_category():
     return RuleCategory.objects.get_or_create(
-        name="address"
+        identifier="addresses"
     )[0]
 
 

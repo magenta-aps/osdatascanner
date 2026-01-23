@@ -4,6 +4,12 @@
 
 "Mystery Zone"
 
+### New in this release
+
+- Complete refactor of the `RuleCategory` model. The model now only contains an identifier string,
+  which also serves as the primary key. This makes it much easier to add and maintain categories
+  in rule fixtures.
+
 ### General improvements
 
 - Rules can now incorporate other Rules by reference, making it possible to

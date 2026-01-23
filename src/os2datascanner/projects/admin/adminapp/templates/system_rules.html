@@ -47,9 +47,9 @@
               <div class="form-widget__input-wrapper">
                 <select id="categories_select2" name="categories" multiple>
                   {% for category in categories %}
-                    <option value="{{ category.pk|unlocalize }}"
+                    <option value="{{ category.identifier }}"
                             {% if category in selected_categories %}selected{% endif %}>
-                      {{ category.get_name_display|capfirst }}
+                      {{ category.name|capfirst }}
                     </option>
                   {% endfor %}
                 </select>

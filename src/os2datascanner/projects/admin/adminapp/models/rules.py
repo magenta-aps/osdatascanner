@@ -16,6 +16,9 @@ import structlog
 
 from django.db import models
 from django.db.models.signals import pre_save
+# We cannot lazily evaluate translations in this file, because we are defining some translations
+# in a static dictionary, and that will break the "name" property of RuleCategory
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
@@ -30,26 +33,59 @@ logger = structlog.get_logger("adminapp")
 
 
 class RuleCategory(models.Model):
-    """Category for categorizing rules. For sorting purposes."""
 
-    class CategoryNames(models.TextChoices):
+    name_desc_map = {
         # Properties of the target scanned for
-        NUMBER_ID = "number_id", _("number ID")
-        NAMES = "names", _("names")
-        ADDRESSES = "addresses", _("addresses")
-        SICK_LEAVE = "sick_leave", _("sick leave")
+        "number_id": {
+            "name": gettext("number ID"),
+            "description": gettext("Rules for finding identification numbers.")
+        },
+        "names": {
+            "name": gettext("names"),
+            "description": gettext("Rules for finding human names.")
+        },
+        "addresses": {
+            "name": gettext("addresses"),
+            "description": gettext("Rules for finding physical addresses.")
+        },
+        "sick_leave": {
+            "name": gettext("sick leave"),
+            "description": gettext("Rules for finding messages about sick leave.")
+        },
+        # Languages
+        "danish": {
+            "name": gettext("Danish"),
+            "description": gettext("Rules searching for Danish words or sentences.")
+        },
+        # Misc
+        -1: {
+            "name": None,
+            "description": gettext("No description available for this category.")
+        }
+    }
 
-        # Language
-        DANISH = "danish", _("Danish")
-
-    name = models.CharField(
+    identifier = models.CharField(
         max_length=256,
-        choices=CategoryNames.choices,
-        verbose_name=_("name"),
-        unique=True)
+        verbose_name=_("identifier"),
+        primary_key=True
+    )
+
+    @property
+    def _map(self):
+        return (self.name_desc_map[self.identifier]
+                if self.identifier in self.name_desc_map
+                else self.name_desc_map[-1])
+
+    @property
+    def name(self):
+        return self._map["name"] if self._map["name"] else self.identifier
+
+    @property
+    def description(self):
+        return self._map["description"]
 
     def __str__(self):
-        return self.get_name_display()
+        return self.name
 
 
 _sensitivity_mapping = {
@@ -96,7 +132,8 @@ class Rule(models.Model):
     categories = models.ManyToManyField(
         RuleCategory,
         verbose_name=_("categories"),
-        related_name="rules")
+        related_name="rules"
+    )
 
     @property
     def display_name(self):
