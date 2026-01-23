@@ -55,23 +55,33 @@ class RuleCategory(models.Model):
         "danish": {
             "name": _("Danish"),
             "description": _("Rules searching for Danish words or sentences.")
+        },
+        # Misc
+        -1: {
+            "name": None,
+            "description": _("No description available for this category.")
         }
     }
 
     identifier = models.CharField(
         max_length=256,
         verbose_name=_("identifier"),
-        primary_key=True,
-        choices=[(k, v["name"]) for k, v in name_desc_map.items()]
+        primary_key=True
     )
 
     @property
+    def _map(self):
+        return (self.name_desc_map[self.identifier]
+                if self.identifier in self.name_desc_map
+                else self.name_desc_map[-1])
+
+    @property
     def name(self):
-        return self.name_desc_map[self.identifier]["name"]
+        return self._map["name"] if self._map["name"] else self.identifier
 
     @property
     def description(self):
-        return self.name_desc_map[self.identifier]["description"]
+        return self._map["description"]
 
     def __str__(self):
         return self.name

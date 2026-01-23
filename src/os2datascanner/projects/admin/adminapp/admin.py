@@ -91,7 +91,7 @@ class CustomRuleAdmin(admin.ModelAdmin):
 
 @admin.register(RuleCategory)
 class RuleCategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("name", "description")
 
 
 @admin.register(WebScanner)

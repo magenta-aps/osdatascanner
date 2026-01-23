@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RuleCategory',
             fields=[
-                ('identifier', models.CharField(choices=[('number_id', 'identifikationsnummer'), ('names', 'personnavne'), ('addresses', 'adresser'), ('sick_leave', 'sygemelding'), ('danish', 'dansk')], max_length=256, primary_key=True, serialize=False, verbose_name='identifier')),
+                ('identifier', models.CharField(max_length=256, primary_key=True, serialize=False, verbose_name='identifier')),
             ],
         ),
         migrations.AddField(
