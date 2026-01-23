@@ -7,11 +7,13 @@
 # WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 # for the specific language governing rights and limitations under the
 # License.
-
+import structlog
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from model_utils.managers import InheritanceManager
+
+logger = structlog.get_logger("import_services")
 
 
 class ImportService(models.Model):
@@ -41,6 +43,13 @@ class ImportService(models.Model):
         verbose_name=_('hide new units on import'),
         help_text=_("hide new organizational units by default"),
     )
+
+    def start_import(self):
+        """Method for providing source-config specific details to _start_import_job,
+         which will create a new import job if possible. """
+        logger.warning("start_import() not implemented on model!"
+                       "Perhaps you're looking for a subclass?", model=type(self).__name__
+                       )
 
     class Meta:
         verbose_name = _('import service')

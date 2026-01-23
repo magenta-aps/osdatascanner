@@ -14,109 +14,73 @@
 #
 # The code is currently governed by OS2 the Danish community of open
 # source municipalities ( https://os2.eu/ )
+from datetime import timedelta
 
 import structlog
 
-from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 from os2datascanner.projects.admin.core.models.background_job import JobState
-from os2datascanner.projects.admin.import_services.models import (LDAPConfig,
-                                                                  Realm,
-                                                                  LDAPImportJob,
-                                                                  MSGraphImportJob,
-                                                                  OS2moImportJob)
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.admin.adminapp.utils import CleanAccountMessage
-from .models.msgraph_configuration import MSGraphConfiguration
-from .models.os2mo_configuration import OS2moConfiguration
-from .models.google_workspace_configuration import GoogleWorkspaceConfig
-
+from os2datascanner.utils.system_utilities import time_now
 
 logger = structlog.get_logger("import_services")
 
 
-def start_ldap_import(ldap_conf: LDAPConfig):
+def _start_import_job(
+    importjob_model,
+    lookup_filter: dict,
+    job_kwargs: dict,
+    allowed_states: tuple,
+    log_name: str,
+):
     """
-    LDAP import jobs are allowed to be created if latest import job has finished.
-    """
-    # if no organization return 404
-    realm = get_object_or_404(Realm, organization_id=ldap_conf.pk)
+    Internal helper for ImportService.start_import() methods.
+    Given conditions, checks if a new import job should be started and does so accordingly.
 
-    # get latest import job
-    latest_importjob = realm.importjobs.first()
-    if not latest_importjob \
-            or latest_importjob.exec_state == JobState.FINISHED \
-            or latest_importjob.exec_state == JobState.FAILED \
-            or latest_importjob.exec_state == JobState.CANCELLED \
-            or latest_importjob.exec_state == JobState.FINISHED_WITH_WARNINGS:
-        LDAPImportJob.objects.create(
-            realm=realm
-        )
-        logger.info(f"Import job created for LDAPConfig {ldap_conf.pk}")
-    else:
-        logger.info("LDAP import is not possible right now for "
-                    f"LDAPConfig {ldap_conf.pk}")
-
-
-def start_msgraph_import(msgraph_conf: MSGraphConfiguration):
-    """
-    MS Graph Import Job start utility. MS Graph Import Jobs can only be
-    created if no other jobs are running.
+    :param importjob_model: The importjob model, f.e. MSGraphImportJob.
+    :param lookup_filter: Constraint for importjob_model lookup, f.e. realm for LDAPImportJob.
+    :param job_kwargs: Additional kwargs to pass to importjob_model, needed to create a new one.
+    :param allowed_states: Allowed states for previous job to be in for a new job to be created.
+    :param log_name: Usually configuration object name and primary key - for logging statements.
     """
 
     try:
-        latest_importjob = MSGraphImportJob.objects.filter(
-            grant=msgraph_conf.grant
-        ).latest('created_at')
+        latest_job = importjob_model.objects.filter(**lookup_filter).latest("created_at")
+        now = time_now()
 
-        if latest_importjob.exec_state == JobState.FINISHED \
-                or latest_importjob.exec_state == JobState.FAILED \
-                or latest_importjob.exec_state == JobState.CANCELLED:
-            MSGraphImportJob.objects.create(
-                grant=msgraph_conf.grant,
-                organization=msgraph_conf.organization,
+        # No import job should run a day - but it _can_ happen, that a job gets stuck in "RUNNING"
+        # for various reasons. For a margin of error to be allowed, limit on "RUNNING"
+        # is set to be 23 hours.
+        if latest_job.exec_state == JobState.RUNNING:
+            if latest_job.created_at < now - timedelta(hours=23):
+                latest_job.exec_state = JobState.CANCELLED
+                latest_job.save(update_fields=["_exec_state"])
+                logger.warning(
+                    "Previous RUNNING job was older than 23h and was cancelled",
+                    config=log_name,
+                )
+                importjob_model.objects.create(**job_kwargs)
+                logger.info("Import job created for", config=log_name)
+                return
+
+            logger.info(
+                "Import not possible: latest job is still RUNNING",
+                config=log_name
             )
-            logger.info(f"Import job created for MSGraphConfiguration {msgraph_conf.pk}")
+            return
 
+        if latest_job.exec_state in allowed_states:
+            importjob_model.objects.create(**job_kwargs)
+            logger.info("Import job created for", config=log_name)
         else:
-            logger.info("MS Graph import is not possible right now for "
-                        f"MSGraphConfiguration {msgraph_conf.pk}")
+            logger.info("Import is not possible right now, due to exec_state of the last job.",
+                        config=log_name, exec_state=latest_job.exec_state)
 
-    except MSGraphImportJob.DoesNotExist:
-        MSGraphImportJob.objects.create(
-            grant=msgraph_conf.grant,
-            organization=msgraph_conf.organization,
-        )
-        logger.info(f"Import job created for MSGraphConfiguration {msgraph_conf.pk}")
-
-
-def start_os2mo_import(os2mo_conf: OS2moConfiguration):
-    """
-    OS2mo Import Job start utility. OS2mo Import Jobs can only be
-    created if no other jobs are running.
-    """
-
-    try:
-        latest_importjob = OS2moImportJob.objects.filter(
-            organization=os2mo_conf.organization
-        ).latest('created_at')
-
-        if latest_importjob.exec_state == JobState.RUNNING or \
-                latest_importjob.exec_state == JobState.WAITING:
-            logger.info("OS2mo import is not possible right now for "
-                        f"OS2mo import {os2mo_conf.pk}")
-        else:
-            OS2moImportJob.objects.create(
-                organization=os2mo_conf.organization,
-            )
-            logger.info(f"Import job created for OS2moConfiguration {os2mo_conf.pk}")
-
-    except OS2moImportJob.DoesNotExist:
-        OS2moImportJob.objects.create(
-            organization=os2mo_conf.organization,
-        )
-        logger.info(f"Import job created for OS2moConfiguration {os2mo_conf.pk}")
+    except importjob_model.DoesNotExist:
+        importjob_model.objects.create(**job_kwargs)
+        logger.info("Import job created for", config=log_name)
 
 
 def construct_dict_from_scanners_stale_accounts() -> dict:
@@ -161,40 +125,3 @@ def post_import_cleanup() -> None:
                     account_id__in=acc_dict["uuids"]).delete()
 
         logger.info("Post import cleanup message sent to report module!")
-
-
-def start_google_import(config: GoogleWorkspaceConfig):
-    """
-    Google Workspace Import Job start utility.
-    Only allow job creation if no current job is running for this config.
-    """
-    from ..core.models.background_job import JobState
-    from .models.google_workspace_import_job import GoogleWorkspaceImportJob
-
-    org = config.organization
-
-    try:
-        latest_importjob = GoogleWorkspaceImportJob.objects.filter(
-            organization=org,
-            grant=config.grant
-        ).latest("created_at")
-
-        if latest_importjob.exec_state in (
-                JobState.FINISHED,
-                JobState.FAILED,
-                JobState.CANCELLED,
-                JobState.FINISHED_WITH_WARNINGS,
-        ):
-            GoogleWorkspaceImportJob.objects.create(
-                organization=org,
-                grant=config.grant,
-                delegated_admin_email=config.delegated_admin_email,
-            )
-        else:
-            logger.info(f"Google Workspace import already in progress for config {config.pk}")
-    except GoogleWorkspaceImportJob.DoesNotExist:
-        GoogleWorkspaceImportJob.objects.create(
-            organization=org,
-            grant=config.grant,
-            delegated_admin_email=config.delegated_admin_email,
-        )

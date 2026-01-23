@@ -12,7 +12,6 @@ from os2datascanner.projects.admin.import_services.keycloak_services import (
     request_create_component, create_realm, request_update_component)
 from os2datascanner.projects.admin.organizations.models import Organization
 from os2datascanner.projects.admin.import_services.models import LDAPConfig, Realm
-from os2datascanner.projects.admin.import_services.utils import start_ldap_import
 from os2datascanner.projects.admin.import_services.models.ldap_configuration import (
         LDAPUsernameAttributeMapper, LDAPSIDMapper,
         LDAPFirstNameAttributeMapper, LDAPGroupFilterMapper,
@@ -271,7 +270,7 @@ class LDAPImportView(LoginRequiredMixin, DetailView):
         """
         Handle a get request to the LDAPImportView.
         """
-        start_ldap_import(self.get_object())
+        self.get_object().start_import()
 
         # redirect back to organizations
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

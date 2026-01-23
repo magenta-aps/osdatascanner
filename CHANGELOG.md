@@ -15,6 +15,9 @@
 - Rules can now incorporate other Rules by reference, making it possible to
   write pre-defined rules in a modular and extensible way.
 
+- If an ImportJob has been running for over 23 hours, it'll now automatically be cancelled and a
+  new one created on the import schedule.
+
 ### Bugfixes
 
 - The bundled TLS certificate store has been updated, which should result in

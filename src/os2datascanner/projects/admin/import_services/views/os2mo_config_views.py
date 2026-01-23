@@ -17,7 +17,6 @@ from django.views.generic.detail import DetailView
 
 from os2datascanner.projects.admin.organizations.models import Organization
 from ..models.os2mo_configuration import OS2moConfiguration
-from os2datascanner.projects.admin.import_services.utils import start_os2mo_import
 
 
 class OS2moEditForm(forms.ModelForm):
@@ -123,6 +122,6 @@ class OS2moImportView(LoginRequiredMixin, DetailView):
         """
         Initiates importation of an organization through OS2mo.
         """
-        start_os2mo_import(self.get_object())
+        self.get_object().start_import()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
