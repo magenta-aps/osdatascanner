@@ -1,0 +1,46 @@
+{% load i18n l10n utility_tags %}
+
+<td colspan="7"
+    id="finished-scan-statistics"
+    class="statistics statistics--scanstatus timeline">
+  <div class="statistics__wrapper">
+    <div class="statistics__header">
+      <h1 class="statistics__header__title">
+        {% trans "Statistic for" %}
+        <span class="scannerjob-name">{{ status.scanner.name }}</span>
+      </h1>
+    </div>
+
+    <div class="statistics__body">
+      <section class="statistics__section statistics__section--primary-overview">
+        <div class="section__body">
+          <div class="section__region section__region--timeline">
+            {# Timeline for scan development #}
+            {% include "components/scanstatus/card_timeline--linechart.html" %}
+          </div>
+ 
+          <div class="section__region section__region--overview">
+            {# Summary of scan info #}
+            {% include "components/scanstatus/card_summary.html" %}
+ 
+            {# Top 5 MIMEtypes by scan time #}
+            {% include "components/scanstatus/card_ranking--mimetype_time.html" %}
+          </div>
+        </div>
+
+      </section>
+
+      <section class="statistics__section statistics__section--secondary-overview">
+        <div class="section__body section__body--mimetype">
+          {# MIMEtype scanned sizes — pie chart #}
+          {% include "components/scanstatus/card_mimetype_size--piechart.html" %}
+ 
+          {# MIMEtype scanned durations — pie chart #}
+          {% include "components/scanstatus/card_mimetype_time--piechart.html" %}
+        </div>
+      </section>
+    </div>
+
+    <div class="statistics__footer"></div>
+  </div>
+</td>

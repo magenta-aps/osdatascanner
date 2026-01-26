@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-22 13:09+0200\n"
+"POT-Creation-Date: 2026-01-20 14:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -265,19 +265,27 @@ msgstr "måneder"
 msgid "weeks"
 msgstr "uger"
 
-#: dist/js/recurrence_widget/recurrence.js js/recurrence_widget/recurrence.js
+#: dist/js/recurrence_widget/recurrence.js
+#: dist/js/scannerjob/statusTimelines.js js/recurrence_widget/recurrence.js
+#: js/scannerjob/statusTimelines.js
 msgid "days"
 msgstr "dage"
 
-#: dist/js/recurrence_widget/recurrence.js js/recurrence_widget/recurrence.js
+#: dist/js/recurrence_widget/recurrence.js
+#: dist/js/scannerjob/statusTimelines.js js/recurrence_widget/recurrence.js
+#: js/scannerjob/statusTimelines.js
 msgid "hours"
 msgstr "timer"
 
-#: dist/js/recurrence_widget/recurrence.js js/recurrence_widget/recurrence.js
+#: dist/js/recurrence_widget/recurrence.js
+#: dist/js/scannerjob/statusTimelines.js js/recurrence_widget/recurrence.js
+#: js/scannerjob/statusTimelines.js
 msgid "minutes"
 msgstr "minutter"
 
-#: dist/js/recurrence_widget/recurrence.js js/recurrence_widget/recurrence.js
+#: dist/js/recurrence_widget/recurrence.js
+#: dist/js/scannerjob/statusTimelines.js js/recurrence_widget/recurrence.js
+#: js/scannerjob/statusTimelines.js
 msgid "seconds"
 msgstr "sekunder"
 
@@ -593,8 +601,8 @@ msgid "Clear selected"
 msgstr "Ryd valgte"
 
 #: dist/js/scannerjob/statusTimelines.js js/scannerjob/statusTimelines.js
-msgid "Seconds since start of scan"
-msgstr "Sekunder siden scannet startede"
+msgid "%(unit)s since start of scan"
+msgstr "%(unit)s siden scanstart"
 
 #: dist/js/scannerjob/statusTimelines.js js/scannerjob/statusTimelines.js
 #, javascript-format

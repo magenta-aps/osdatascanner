@@ -1,15 +1,37 @@
-/************************************************/
-/************************************************/
-/***** UNIVERSAL STYLES USED IN DATASCANNER *****/
-/************************************************/
-/************************************************/
+/***********************/
+/***** SCSS MIXINS *****/
+/***********************/
 
-/***** WHAT IS A MIXIN? *****/
-// A mixin is a reusable code block where we can define a given style once, and then use it via @include [mixin-name] whereever it's needed.
+/*** HOW TO USE ***/
+/*
+  - Mixins are reusable layout shortcuts.
+  - Use them when the same layout pattern appears in multiple places.
+  - If styling is one-off or component-specific, keep it local instead.
 
-/***** WHAT'S THE CRITERIA FOR A MIXIN TO LIVE HERE? *****/
-// It's already used/duplicated accross multiple stylesheets.
-// It's "generic" enough to be reused accross multiple stylesheets in the future.
+  BASIC USAGE:
+    @include mixin-name;
+    @include mixin-name(argument);
+
+  USING @content:
+    Some mixins accept an optional content block.
+    Anything inside the { ... } is injected at the @content position
+    inside the mixin.
+
+    Example:
+      @include layout-horizontal(0.5rem) {
+        justify-content: space-between;
+      }
+
+    This applies the base layout, then adds/overrides rules locally.
+
+  IMPORTANT:
+    - Base layout rules come first; @content is applied after them.
+    - Use @content for small layout tweaks, not full component styling.
+    - "Nuclear" mixins (e.g. spacing-reset) are DEV-ONLY and should be
+      used with care.
+*/
+
+/*** LAYOUT MIXINS ***/
 
 @mixin layout-vertical($gap: null) {
   display: flex;
@@ -18,29 +40,52 @@
   @if $gap {
     gap: $gap;
   }
-  @content;
 
-  /* What does this do? */
+  @if content-exists() {
+    @content;
+  }
+
+  /* NOTES */
   // Instant vertical flex layout without any fuss.
   // Applies a gap between elements if given any when included.
-  // The "@content" tag makes it possible to apply extra context relevant styles if needed (fx "justify-content: center;").
+  // The "@content" tag makes it possible to apply extra context-relevant styles if needed (e.g. "justify-content: center;").
 }
 
 @mixin layout-horizontal($gap: null) {
   display: flex;
   flex-direction: row;
   align-items: center;
+
   @if $gap {
     gap: $gap;
   }
-  @content;
 
-  /* What does this do? */
+  @if content-exists() {
+    @content;
+  }
+
+  /* NOTES */
   // Instant horizontal flex layout without any fuss.
-  // Items are center-aligned per default. (Can be overwritten if needed).
+  // Items are center-aligned by default. (Can be overwritten if needed).
   // Applies a gap between elements if given any when included.
-  // The "@content" tag makes it possible to apply extra context relevant styles if needed (fx "justify-content: space-between;").
+  // The "@content" tag makes it possible to apply extra context-relevant styles if needed (e.g. "justify-content: space-between;").
 }
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @if content-exists() {
+    @content;
+  }
+
+  /* NOTES */
+  // Centers content of a given container both horizontally and vertically.
+  // Works without fuss 98.5% of the time — as long as the container has a height (or content defines it).
+}
+
+/*** DEV-ONLY MIXINS ***/
 
 @mixin spacing-reset {
   * {
@@ -48,11 +93,8 @@
     padding: 0;
   }
 
-  /* What does this do? */
-  // Removes all predefined margin and padding values all and any children inside this container for full control over layout.
-  // If you use this, then make sure to include this at the top and before adding any other styling for your css selector - otherwise you risk overwriting all your previous margin/padding based styles.
+  /* NOTES */
+  // DEV-ONLY: Nukes margin/padding on *all descendants* for full control over layout.
+  // If you use this, include it at the top (before any other styling for that element) — otherwise you risk wiping out your own margin/padding styles.
+  // Avoid keeping it in production unless you're fully comfortable with the potential consequences.
 }
-
-/***** TODO: *****/
-// Move any "flex-center-magic" based ones into this.
-// Go through every single preexisting mixin and assess if it's something that could be recycled.

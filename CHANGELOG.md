@@ -22,6 +22,10 @@
 
 - SBSYS-related results won't show up on the regular "withheld" tab anymore.
 
+- The card elements on the scan status overview now has:
+  - Better/more robust layout.
+  - Fitting titles + subtitles.
+
 ### Bugfixes
 
 - The bundled TLS certificate store has been updated, which should result in

@@ -1,0 +1,99 @@
+/***** settings/_chart-colors.scss *****/
+// - Defines the global chart colour palette.
+// - Usage: use CSS vars (--color-*) in components.
+// - Variants: darker | dark | base | light | lighter
+
+$color-palette: (
+  green: (
+    darker: #2d5e50,
+    dark: #3c7e6b,
+    base: #4b9d86,
+    light: #6fb19e,
+    lighter: #93c4b6,
+  ),
+  turquoise: (
+    darker: #2c6d76,
+    dark: #3b919e,
+    base: #4ab5c5,
+    light: #6ec4d1,
+    lighter: #92d3dc,
+  ),
+  osds-blue: (
+    darker: #14465e,
+    dark: #1a5e7d,
+    base: #21759c,
+    light: #4d91b0,
+    lighter: #7aacc4,
+  ),
+  blue: (
+    darker: #233f6c,
+    dark: #2e5490,
+    base: #3a69b4,
+    light: #6187c3,
+    lighter: #89a5d2,
+  ),
+  purple: (
+    darker: #3b2f5a,
+    dark: #4e3f78,
+    base: #624f96,
+    light: #8172ab,
+    lighter: #a195c0,
+  ),
+  mauve: (
+    darker: #5a2f53,
+    dark: #783f6f,
+    base: #964f8b,
+    light: #ab72a2,
+    lighter: #c095b9,
+  ),
+  red: (
+    darker: #882f2f,
+    dark: #b53f3e,
+    base: #e24f4e,
+    light: #e87271,
+    lighter: #ee9595,
+  ),
+  orange: (
+    darker: #8d4b2a,
+    dark: #bc6438,
+    base: #eb7d46,
+    light: #ef976b,
+    lighter: #f3b190,
+  ),
+  yellow: (
+    darker: #987d2c,
+    dark: #cba73a,
+    base: #fed149,
+    light: #feda6d,
+    lighter: #fee392,
+  ),
+);
+
+@function chart-color($name, $variant: base) {
+  $group: map-get($color-palette, $name);
+
+  @if $group == null {
+    @error "“#{$name}” is not a valid chart colour. Available colours: #{map-keys($color-palette)}";
+  }
+
+  $value: map-get($group, $variant);
+
+  @if $value == null {
+    @error "“#{$variant}” is not a valid variant for #{$name}. Available variants: #{map-keys($group)}";
+  }
+
+  @return $value;
+}
+
+:root {
+  @each $name, $variants in $color-palette {
+    @each $variant, $value in $variants {
+      --chart-color-#{$name}#{if($variant == base, '', '-' + $variant)}: #{$value};
+    }
+  }
+
+  /***** Example computed css vars: *****/
+  // --chart-color-green: #4B9D86;
+  // --chart-color-green-dark: #3C7E6B;
+  // --chart-color-green-lighter: #93C4B6;
+}

@@ -1,0 +1,26 @@
+{# card_timeline--linechart.html #}
+
+{% extends "components/containers/cards/card--statistics.html" %}
+
+{% load i18n l10n utility_tags %}
+
+{% block card_title %}
+  {% trans "the scan progress timeline"|capfirst %}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% trans "percentage completion over time"|capfirst %}
+{% endblock %}
+
+{% block card_body %}
+  <div class="chart chart--line"
+       data-chartid="timeline_status__{{ status.pk|unlocalize }}">
+    <div class="canvas__wrapper">
+      <canvas class="line_chart canvas_size"
+              id="line_chart_status__{{ status.pk|unlocalize }}"></canvas>
+    </div>
+  </div>
+
+  {{ snapshot_data|json_script:"snapshot_data" }}
+  {{ status.pk|json_script:"status_pk" }}
+{% endblock %}

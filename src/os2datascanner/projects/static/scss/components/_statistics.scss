@@ -961,254 +961,285 @@ table .overview_wrapper {
 
 /***** OPTIMISING HOW WE STYLE STATISTICS RELATED LAYOUTS *****/
 
+/*** Tokens/helpers ***/
+$statistics-card-spacing: 1.5rem;
+
+@mixin statistics-card-grid($card-min-width) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($card-min-width, 1fr));
+  align-items: stretch;
+  gap: $statistics-card-spacing;
+}
+
+@mixin statistics-chart-pie($max: 300px) {
+  $bullet-size: 0.75rem;
+  $text-size: 1rem;
+
+  // --pie-size controls the rendered pie canvas size.
+  // 40cqw = 40% of the container’s inline size.
+  --pie-size: clamp(200px, 40cqw, #{$max});
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  .canvas__wrapper {
+    justify-self: end;
+    align-self: center;
+    height: var(--pie-size);
+    width: var(--pie-size);
+  }
+
+  .canvas__legend {
+    align-self: center;
+  }
+
+  .canvas-legend {
+    @include layout-vertical(1rem);
+
+    &__item {
+      @include layout-horizontal(0.25rem);
+      list-style: none;
+    }
+
+    &__bullet {
+      font-size: $bullet-size;
+      width: $bullet-size;
+      height: $bullet-size;
+    }
+
+    &__label {
+      font-size: $text-size;
+      line-height: 1;
+    }
+  }
+}
+
+/*** Base block styles (.statistics) ***/
 .statistics {
-  @mixin card-grid-layout($card-min-width) {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax($card-min-width, 1fr));
-    align-items: stretch;
-    gap: $card-spacing;
+  &__section {
+    @include layout-vertical(1.5rem);
+  }
+}
+
+/*** Variants/modifiers ***/
+.statistics--scanstatus {
+  .statistics__header__title:is(h1) {
+    font-size: medium;
   }
 
-  $card-spacing: 1.5rem; // Leaving this out here to make it available for the rest of statistics layouts. It'll make sense later, I promise.
+  .statistics__body {
+    @include layout-vertical(1.5rem);
 
-  &--finished-scans {
-    /* NOTE: Since there's an ongoing optimising happening for the DPO overview page, this needs to
-    be a little "double nested" class-wise to avoid merge issues. */
+    /* MIMEtype grid */
+    .section__body--mimetype {
+      // TEMP: until UI-friendly MIMEtype mapping.
+      @include statistics-card-grid(40rem);
 
-    /* TODO: remove potential repeat styling after the DPO overview is done. */
+      .canvas-legend__label {
+        line-break: anywhere; // TEMP: until UI-friendly MIMEtype mapping.
+      }
+    }
 
-    .statistics {
-      &__wrapper {
-        // Empty
+    /* Overview region grid */
+    .section__region--overview {
+      // TEMP: until UI-friendly MIMEtype mapping.
+      @include statistics-card-grid(25rem);
+    }
+  }
+
+  /* Cards (scanstatus only) */
+  .card {
+    @include spacing-reset; // Intentional: card owns all inner spacing; no browser defaults inside.
+    border-radius: var(--border-radius-l);
+
+    &__label .title {
+      font-size: 1rem;
+    }
+
+    /* List-style card body */
+    &__body__wrapper--list {
+      $box-theme: var(--color-primary-light);
+      $box-border: color-mix(in srgb, $box-theme 35%, transparent);
+      $box-bg: color-mix(in srgb, $box-theme 10%, transparent);
+
+      @include layout-vertical(1.25rem);
+
+      margin-top: -0.5rem; // Counters the standard header/body gap for card components without affecting other cards globally.
+      padding: 1.25rem;
+
+      background-color: $box-bg;
+      border: 1px solid $box-border;
+      border-radius: var(--border-radius-m);
+
+      ul,
+      ol {
+        @include layout-vertical(1rem);
       }
 
-      &__header {
-        &__title {
-          &:is(h1) {
-            font-size: medium;
-          }
+      ul {
+        list-style: none;
+        li {
+          @include layout-horizontal(0.5rem);
         }
       }
 
-      &__body {
-        @include layout-vertical(2rem);
+      ol li {
+        margin-left: 1rem; // Align with ul>li elements.
 
-        .statistics__section {
-          .mimetype-piecharts {
-            @include card-grid-layout(40rem);
-            // NOTE: This might need adjustment after we make UI friendly MIMEtype mapping.
+        p {
+          padding-left: 0.125rem; // 2px
+          line-break: anywhere; // TEMP: until UI-friendly MIMEtype mapping.
+        }
+      }
 
-            .canvas-legend__label {
-              line-break: anywhere; // Temporary until we make UI friendly MIMEtype mapping.
-            }
-          }
+      /* Icon alignment styles */
+      .custom-icon__wrapper {
+        // Balances this particular icon visually with the other icons in the same area.
+        @include flex-center;
 
-          .timeline-summary {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            grid-template-rows: auto;
-            gap: $card-spacing;
-          }
+        $icon-container-size: 1.5rem; // 24px — our standard icon size.
+        height: $icon-container-size;
+        width: $icon-container-size;
+        overflow: hidden;
 
-          .card {
-            @include spacing-reset;
-            border-radius: var(--border-radius-l);
+        #step_over {
+          // Needs a larger visual size to match perceived weight of the others.
+          text-align: left;
 
-            &__label {
-              .title {
-                font-size: 1rem;
-              }
-            }
-          }
+          $icon-size: 1.75rem; // 28px.
+          font-size: $icon-size;
+          height: $icon-size;
+          width: $icon-size;
 
-          .data-card {
-            gap: 12px;
+          font-variation-settings:
+            "FILL" 1,
+            "wght" 400,
+            "GRAD" 0,
+            "opsz" 48;
+        }
+      }
 
-            /* Grid layout - start */
-            &--timeline,
-            &--scan-summary {
-              grid-column: span 12;
-            }
+      .material-symbols {
+        color: var(--color-primary-dark);
 
-            @media (min-width: 1440px) {
-              &--timeline {
-                grid-column: span 8;
-              }
-
-              &--scan-summary {
-                grid-column: span 4;
-              }
-            }
-            /* Grid layout - end */
-
-            &--scan-summary {
-              height: 100%;
-            }
-
-            hr {
-              color: var(--color-border-neutral);
-            }
-
-            &__content {
-              @include layout-vertical(1.25rem);
-              height: fit-content;
-
-              ul,
-              li,
-              p {
-                margin: 0;
-              }
-
-              ul {
-                @include layout-vertical(0.5rem);
-                list-style: none;
-              }
-
-              .data-card__section {
-                @include layout-vertical(0.75rem);
-
-                &__title {
-                  font-weight: 600;
-                }
-              }
-            }
-          }
+        &#chat_error {
+          // Would overpower the others if left "filled", so it's changed to "outlined".
+          font-variation-settings:
+            "FILL" 0,
+            "wght" 400,
+            "GRAD" 0,
+            "opsz" 24;
         }
       }
     }
   }
 
-  /* NOTE: The following is just to be ready for future additions. */
-  &__wrapper {
-    // Empty
-  }
-
-  &__header {
-    // Empty
-
-    &__title {
-      // Empty
+  /* Charts */
+  .chart {
+    &--circle,
+    &--doughnut,
+    &--pie {
+      @include statistics-chart-pie(260px);
     }
-  }
 
-  &__body {
-    // Empty
-  }
-
-  &__footer {
-    // Empty
-  }
-
-  &--finished-scans,
-  &--dpo {
-    .chart {
-      &--circle,
-      &--doughnut,
-      &--pie {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-
-        .canvas {
-          &__wrapper {
-            justify-self: end;
-            align-self: center;
-
-            $pie-size: clamp(200px, 40cqw, 300px);
-            // 40cqw = 40% of the width of the container.
-            // Making the clamp equal to:
-            // min-size: 200px, prefered-size: 40% of container, max-size: 300px.
-            height: $pie-size;
-            width: $pie-size;
-          }
-
-          &__legend {
-            align-self: center;
-
-            .canvas-legend {
-              @include layout-vertical(1rem);
-
-              $bullet-size: 0.75rem;
-              $text-size: 1rem;
-
-              &__item {
-                @include layout-horizontal(0.25rem);
-
-                list-style: none;
-              }
-
-              &__bullet {
-                font-size: $bullet-size;
-                width: $bullet-size;
-                height: $bullet-size;
-              }
-
-              &__label {
-                font-size: $text-size;
-                line-height: 1;
-              }
-            }
-          }
-        }
+    &--line,
+    &--bar {
+      .canvas__wrapper {
+        width: 100%;
+        height: 300px;
       }
     }
   }
 
-  &--dpo {
-    @include spacing-reset;
-
-    @include layout-vertical(2.5rem);
-    margin: 1.5rem 1rem;
-
-    @media (min-width: $break-lg) {
-      margin: 2.5rem 0 0;
+  /* --- Wide screen layout adjustments --- */
+  @media (min-width: 1800px) {
+    /* Section layout */
+    .statistics__section--primary-overview .section__body {
+      @include layout-horizontal(1.5rem);
     }
 
-    .chart {
-      &--line,
-      &--bar {
-        .canvas__wrapper {
-          width: 100%;
-          height: 25rem; // 400px
+    /* Region behaviour */
+    .section__body .section__region--timeline {
+      flex-grow: 2;
+      align-self: stretch;
 
-          @media (min-width: $break-xl) {
-            height: 30rem; // 480px
+      .card {
+        height: 100%;
+
+        &__body,
+        .chart {
+          flex-grow: 2;
+
+          .canvas__wrapper {
+            min-height: 100%;
           }
         }
       }
     }
 
-    .statistics__section {
-      .circle-charts {
-        // The pie and doughnut charts in DPO.
-        @include card-grid-layout(25rem);
-      }
+    .section__body .section__region--overview {
+      @include layout-vertical(1.5rem);
+      flex-grow: 1;
+    }
+  }
+}
 
-      .development-overview {
-        // The bar/line charts in DPO.
-        @include layout-vertical($card-spacing);
-      }
+.statistics--dpo {
+  @include spacing-reset;
+  @include layout-vertical(2.5rem);
 
-      .hidden {
-        /* Hides the pie chart that's not selected. */
-        &.subtitle {
-          display: none;
+  margin: 1.5rem 1rem;
+
+  @media (min-width: $break-lg) {
+    margin: 2.5rem 0 0;
+  }
+
+  .chart {
+    &--circle,
+    &--doughnut,
+    &--pie {
+      @include statistics-chart-pie(300px);
+    }
+
+    &--line,
+    &--bar {
+      .canvas__wrapper {
+        width: 100%;
+        height: 25rem; // 400px
+
+        @media (min-width: $break-xl) {
+          height: 30rem; // 480px
         }
-
-        &.canvas {
-          &__wrapper,
-          &__legend {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1000;
-            opacity: 0;
-            pointer-events: none;
-
-            /* NOTE: We can't use "display:none;" on this object, because it makes chart.js upset. */
-          }
-        }
       }
+    }
+  }
+
+  .statistics__section {
+    .circle-charts {
+      // The pie and doughnut charts in DPO.
+      @include statistics-card-grid(25rem);
+    }
+
+    .development-overview {
+      // The bar/line charts in DPO.
+      @include layout-vertical($statistics-card-spacing);
+    }
+
+    // *** Hidden states for unselected pie chart ***
+    .hidden.subtitle {
+      display: none;
+    }
+
+    .hidden.canvas__wrapper,
+    .hidden.canvas__legend {
+      // NOTE: We can't use "display:none;" on this object, because it makes chart.js upset.
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1000;
+      opacity: 0;
+      pointer-events: none;
     }
   }
 }

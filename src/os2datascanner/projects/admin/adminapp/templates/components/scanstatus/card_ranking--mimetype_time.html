@@ -1,0 +1,28 @@
+{# card_ranking--mimetype_time.html #}
+
+{% extends "components/containers/cards/card--statistics.html" %}
+
+{% load i18n l10n utility_tags %}
+
+{% block card_title %}
+  {% trans "top time by file type"|capfirst %}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% trans "top 5 file types by total scanning time"|capfirst %}
+{% endblock %}
+
+{% block card_body %}
+  <div class="card__body__wrapper--list"
+       id="scan-summary__{{ status.pk|unlocalize }}"
+       {% if updated %} hx-get="{% url "status-timeline" status.pk %}" hx-target="#scan-summary__{{ status.pk|unlocalize }}" hx-select="#scan-summary__{{ status.pk|unlocalize }}" hx-trigger="every 5s" hx-swap="outerHTML" {% endif %}>
+
+    <ol>
+      {% for time_dict in time_data|slice:"5" %}
+        <li>
+          <p>{{ time_dict.label }}: {{ time_dict.count|format_timespan }}</p>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+{% endblock %}

@@ -65,7 +65,7 @@ class StatusOverview(StatusBase):
             if htmx_trigger == "status_tabs_poll":
                 return "components/navigation/scanner_tabs.html"
             elif htmx_trigger == "status_table_poll":
-                return "components/scanstatus/scan_status_table.html"
+                return "components/scanstatus/scan_status--table.html"
         else:
             return "scan_status.html"
 
@@ -162,7 +162,7 @@ class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusComp
 
 class StatusTimeline(RestrictedDetailView):
     model = ScanStatus
-    template_name = "components/scanstatus/status_timeline.html"
+    template_name = "components/scanstatus/scan_status--statistics.html"
     context_object_name = "status"
     fields = "__all__"
 
