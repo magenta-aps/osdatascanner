@@ -20,6 +20,3 @@ in this folder:
 * `os2datascanner.Rule`, primary key 8880100
 
   Reserved for `rules-cpr-da.json`
-* `os2datascanner.RuleCategory`, primary keys 1001 and 1002
-
-  Reserved for `rules-cpr-da.json`

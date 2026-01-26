@@ -52,6 +52,11 @@ class RuleCategory(models.Model):
             "name": gettext("sick leave"),
             "description": gettext("Rules for finding messages about sick leave.")
         },
+        # Scanner types
+        "sbsys": {
+            "name": gettext("SBSYS"),
+            "description": gettext("Rules specifically for SBSYS sources.")
+        },
         # Languages
         "danish": {
             "name": gettext("Danish"),
