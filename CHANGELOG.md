@@ -26,6 +26,8 @@
   - Better/more robust layout.
   - Fitting titles + subtitles.
 
+- SBSYS rule category supported with name and description.
+
 ### Bugfixes
 
 - The bundled TLS certificate store has been updated, which should result in
