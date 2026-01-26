@@ -1,5 +1,17 @@
 [
   {
+    "model": "os2datascanner.rulecategory",
+    "fields": {
+      "identifier": "sbsys"
+    }
+  },
+  {
+    "model": "os2datascanner.rulecategory",
+    "fields": {
+      "identifier": "danish"
+    }
+  },
+  {
     "model": "os2datascanner.rule",
     "pk": 9990200,
     "fields": {
@@ -11,7 +23,10 @@
         "type": "sbsys-db-fieldrule",
         "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
         "operator": "iin",
-        "value": ["åben for alle", "alle brugere"],
+        "value": [
+          "åben for alle",
+          "alle brugere"
+        ],
         "name": ""
       }
     }
@@ -82,7 +97,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -114,7 +130,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -145,7 +162,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -174,7 +192,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -194,7 +213,8 @@
         "name": "Mine aktuelle sager"
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -233,7 +253,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -272,7 +293,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -304,7 +326,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -348,7 +371,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -380,7 +404,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -424,7 +449,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -444,7 +470,8 @@
         "name": "Sager oprettet uden sagsskabelon"
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   },
@@ -476,7 +503,8 @@
         ]
       },
       "categories": [
-        1001
+        "danish",
+        "sbsys"
       ]
     }
   }
