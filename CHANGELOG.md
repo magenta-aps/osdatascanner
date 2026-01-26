@@ -60,6 +60,9 @@
 
 - Added a tab on Report/Archive to display withheld SBSYS results.
 
+- Connected sbsys-db scanners with the Admin module, so that it's now possible for users 
+  to view/create/edit that scannerjob type via the UI.
+
 ### General improvements
 
 - Rules can now incorporate other Rules by reference, making it possible to
