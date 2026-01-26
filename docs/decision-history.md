@@ -69,11 +69,11 @@ between all 10-digit numbers, and the numbers identified as CPR-numbers.
 All found numbers are then divided into bins, and each bin can then *allow* 
 its contained numbers to register as a match, based on a few rules:
 
-1. The number of valid CPR-numbers in the bin make up at least 15% of all 
+1. The number of valid CPR-numbers in the bin make up at least 25% of all
 numbers in the bin.
 
 2. The number of valid CPR-numbers in at least one neighbouring bin make up at 
-least 15% of the numbers in that bin.
+least 25% of the numbers in that bin.
 
 If both of these requirements are not met, the valid CPR-numbers in those bins 
 are not considered further.
@@ -87,7 +87,13 @@ amounts of *invalid* numbers, we assume all 10-digit numbers are not
 CPR-numbers. If the file contains a local high density of valid numbers, those 
 will still be considered further.
 
-The cutoff value of 15% is set to be considerably higher than the random 
+The number of bins is set to N / (3 * log N), where N is the total number of cpr-like
+numbers in a given object.
+With a cutoff value at 25%, and assuming the probability of a random 10-digit number being a valid cpr
+is 0.4%, and assuming the numbers are equally distributed between the bins,
+this ensures that the probability of getting any false positive is less than 0.1%.
+
+The cutoff value of 25% is set to be considerably higher than the random
 chance that a 10-digit number will be a valid CPR-number: 3.72%. This number 
 is calculated purely from the restrictions on the first 4 digits, and does not 
 take into account modulus-11 or similar.
@@ -164,6 +170,14 @@ number candidate if it was adjacent to a mixed-case word, on the assumption
 that mixed-case words might indicate a procedurally generated string. Many
 ordinary names violate this assumption, however, so we have removed this
 constraint.
+
+--
+
+Up to and including version 3.30.8, the cutoff value for the bin check was 15%.
+This was then updated to 25%.
+While expected percentage of valid cpr-numbers in a list of random 10 digit numbers,
+is less than 0.4%, this update was done on the basis of a customer provided file
+of "P-numre", where many of the pages included between 16% and 20% valid cpr-numbers.
 
 #### Exceptions
 
