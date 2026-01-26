@@ -1,6 +1,6 @@
 from typing import Union, Tuple
 from datetime import date
-from math import ceil
+from math import ceil, log, floor
 from itertools import chain
 from re import Match
 
@@ -107,10 +107,10 @@ def modulus11_check_raw(cpr: str) -> bool:
     return sum([int(c) * v for c, v in zip(cpr, _mod_11_table)]) % 11 == 0
 
 
-def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0.15):
-    """Takes a list of cpr-looking numbers and accepted cpr-numbers,
-    and divides them into 40 "bins" based on position in the scanned object.
-    Each bin is only accepted if more than 15% of numbers in it, is also accepted cpr-numbers,
+def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=None, cutoff=0.25):
+    """Takes a list of N cpr-looking numbers and a subset accepted cpr-numbers,
+    and divides them into N / (3 * log N) "bins" based on their position in the scanned object.
+    Each bin is only accepted if more than 25% of numbers in it, are also accepted cpr-numbers,
     and at least one neighboring bin is accepted.
     cprs should be a sub-array of numbers.
     Returns a list of cpr-numbers that are in an accepted bin."""
@@ -127,6 +127,10 @@ def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0
 
     if not numbers or not cprs:
         return []
+
+    if num_bins is None:
+        N = len(numbers)
+        num_bins = max(1, floor(N / log(N) / 3)) if N > 1 else 1
 
     content_start_pos = numbers[0].start(0)
     content_end_pos = numbers[-1].end(0)
@@ -154,7 +158,6 @@ def cpr_bin_check(numbers: list[Match], cprs: list[Match], num_bins=40, cutoff=0
         # A bin without numbers, or with a cpr/number ratio higher than cutoff is accepted
         bin_accepted[bin_ind] = (bin_number_count == 0 or
                                  len(bin_cprs) / bin_number_count >= cutoff)
-
         # We now know if bin_ind is above the cutoff,
         # so now we can determine if bin_ind-1 should be accepted.
         bin_accepted[bin_ind-1] = (bin_accepted[bin_ind-1] and
