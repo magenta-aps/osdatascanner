@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-22 15:35+0100\n"
+"POT-Creation-Date: 2026-01-27 13:35+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -960,6 +960,11 @@ msgstr "Status"
 msgid "actions"
 msgstr "handlinger"
 
+#: reportapp/templates/components/report_table/report_table--sbsys.html
+#: reportapp/templates/components/report_table/report_table.html
+msgid "No results were found"
+msgstr "Der er ingen resultater"
+
 #: reportapp/templates/components/report_table/report_table--toolbar.html
 msgid "handle matches"
 msgstr "håndtér matches"
@@ -1051,15 +1056,6 @@ msgstr "Sti"
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Actions"
 msgstr "Handlinger"
-
-#: reportapp/templates/components/report_table/report_table.html
-#: reportapp/templates/report_content--personal_sbsys.html
-#: reportapp/templates/report_content--remediator.html
-#: reportapp/templates/report_content--remediator_sbsys.html
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--undistributed_sbsys.html
-msgid "No results were found"
-msgstr "Der er ingen resultater"
 
 #: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
 msgid "distribution of results"
