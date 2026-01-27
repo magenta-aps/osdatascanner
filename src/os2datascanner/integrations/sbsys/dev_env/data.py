@@ -612,6 +612,44 @@ SbSysNetDrift["EmnePlanNummer"] = [
     }
 ]
 
+# KLADDE
+
+SbSysNetDrift["Kladde"] = [
+    {
+        "ID": 1,
+        "FileName": "Kladde udgave af fil",
+        "FileExtension": ".pdf",
+        "CurrentVersion": 1,
+        "Navn": "Kladde vedrørende personfølsomme informationer",
+        "KeepCheckedOut": 0,
+        "KladdeFletteStrategi": 1,  # Some ENUM value
+        "KladdeRedigeringGenoptaget": 0,
+        "DeletedState": 0,
+        "IndexingStatus": 0,
+
+    }
+]
+
+SbSysNetDrift["KladdeRegistrering"] = [
+    {
+        "ID": 1,
+        "SagID": 3,
+        "KladdeID": 1,
+        "ErBeskyttet": 0,
+        "RegistreretAfID": 1,  # Reference to person who created it
+        "Registreret": datetime(2025, 12, 16),
+        "Navn": "Kladde vedrørende personfølsomme informationer",
+        "DeletedState": 0,
+    }
+]
+
+SbSysNetDrift["KladdePartDokument"] = [
+    {
+        "ID": 1,
+        "KladdeID": 1,
+        "DokumentID": 1337
+    }
+]
 
 # --
 
@@ -628,6 +666,8 @@ def slurp(path) -> (int, bytes):
 original_pdf = slurp("1111111118.pdf")
 mail_body = slurp("mail.html")
 mail_body_alt = slurp("mail.pdf")
+
+kladde_pdf = slurp("Kladde udgave af fil.pdf")
 
 
 SbSysNetDriftDokument0000["DokumentData"] = [
@@ -648,6 +688,12 @@ SbSysNetDriftDokument0000["DokumentData"] = [
         "DokumentID": 1274,
         "DokumentDataInfoID": 144_000,
         "Data": mail_body_alt[1],
+    },
+    {
+        "ID": 16243,
+        "DokumentID": 1337,
+        "DokumentDataInfoID": 144_003,
+        "Data": kladde_pdf[1],
     },
 ]
 
@@ -682,6 +728,17 @@ SbSysNetDrift["DokumentDataInfo"] = [
         "DokumentDataInfoType": 3,  # Alternate...
         "AlternateOfID": 144_002,  # ... of the HTML mail body
     },
+    {
+        "ID": 144_003,
+        "DokumentID": 1337,
+        "FileName": "Kladde udgave af fil",
+        "FileExtension": ".pdf",
+        "FileSize": kladde_pdf[0],
+        "DokumentDataType": 6,  # PDF
+        "DokumentDataInfoType": 0,  # Attachment
+        "AlternateOfID": None,
+    },
+
 ]
 
 
@@ -693,6 +750,14 @@ SbSysNetDrift["Dokument"] = [
         "Oprettet": datetime(2015, 4, 22),
         "DokumentType": 0,
         "Navn": "1111111118.pdf",
+    },
+    {
+        "ID": 1337,
+        "DokumentArtID": 9,
+        "OprettetAfID": 1,
+        "Oprettet": datetime(2025, 12, 16),
+        "DokumentType": 0,
+        "Navn": "Kladde udgave af fil.pdf",
     }
 ]
 
