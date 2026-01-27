@@ -79,7 +79,10 @@ class SBSYSDBSource(Source):
         engine = create_engine(
                 "mssql+pymssql://"
                 f"{self._user}:{self._password}"
-                f"@{self._server}:{self._port}/{self._db}")
+                f"@{self._server}:{self._port}/{self._db}",
+                # This Engine gets cached, so make sure it aggressively checks
+                # for connection validity
+                pool_pre_ping=True)
 
         if dp_url:
             dp_caller = TokenCaller(
