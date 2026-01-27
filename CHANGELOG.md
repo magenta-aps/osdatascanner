@@ -1,6 +1,6 @@
 # Changelog
 
-## Next release
+## Version 3.31.0, 27th January 2026
 
 "Mystery Zone"
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: engine 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 11:38+0100\n"
+"POT-Creation-Date: 2026-01-27 13:36+0100\n"
 "PO-Revision-Date: 2025-02-27 14:21+0100\n"
 "Last-Translator: Alexander Faithfull-Murawski <af@magenta.dk>\n"
 "Language-Team: none\n"
@@ -103,6 +103,11 @@ msgstr "Beskrivelse i liste \"{list_name}\""
 #, python-brace-format
 msgid "List \"{list_name}\" (on site {site_name})"
 msgstr "Liste \"{list_name}\" (på websted {site_name})"
+
+#: src/os2datascanner/engine2/locale/../model/webdav.py
+#, python-brace-format
+msgid "WebDAV folder '{folder}'"
+msgstr "WebDAV-mappe '{folder}'"
 
 #: src/os2datascanner/engine2/locale/../model/derived/mail.py
 #, python-brace-format
