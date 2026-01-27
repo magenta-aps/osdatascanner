@@ -12,4 +12,4 @@
 
 */15 * * * * ./manage.py cron
 0 * * * * ./manage.py synchronize_organization
-0 8 * * * ./manage.py graph_grant_expiry_check
+0 8 * * * ./manage.py graphgrant_expiry_check
