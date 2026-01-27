@@ -6,6 +6,18 @@ from hashlib import md5
 from PIL import Image
 
 
+def should_skip_images(configuration: dict) -> bool:
+    """
+    Checks if the 'image/*' mime type is in 'skip_mime_types' for a
+    configuration dict.
+    """
+    if configuration:
+        if skip_types := configuration.get("skip_mime_types"):
+            return "image/*" in skip_types
+
+    return False
+
+
 class Filter(ABC):
     """A Filter postprocesses the output directory of an external tool to make
     it more suitable for OS2datascanner."""

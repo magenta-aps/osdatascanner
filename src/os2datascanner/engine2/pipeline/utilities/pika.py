@@ -206,8 +206,6 @@ class SynchronisationTimeoutError(RuntimeError):
 class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
     """Runs a Pika session in a background thread."""
 
-    timeout = 30.0
-
     def __init__(self, *args, exclusive=False, **kwargs):
         super().__init__()
         PikaPipelineRunner.__init__(self, *args, **kwargs)
@@ -342,18 +340,10 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         The default implementation of this method does nothing."""
         yield from []
 
-    def after_timeout(self):
-        """Performs an action of some kind after the await_message() method
-        times out before a message was available.
-
-        The default implementation of this method does nothing."""
-
-    def after_message(
-            self, routing_key, body,
-            *, ex: RejectMessage | None = None):
+    def after_message(self, routing_key, body):
         """Performs an action of some kind after the given message has been
-        processed and an acknowledgement has been enqueued. If the message was
-        rejected, then the rejection exception is provided.
+        processed and an acknowledgement has been enqueued. (Note that this
+        function will not be called when a message is rejected.)
 
         The default implementation of this method does nothing."""
 
@@ -477,9 +467,8 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
 
         try:
             while running and self.is_alive():
-                method, properties, body = self.await_message(self.timeout)
+                method, properties, body = self.await_message(timeout=30.0)
                 if method == properties == body is None:
-                    self.after_timeout()
                     continue
                 try:
                     key = method.routing_key
@@ -499,7 +488,6 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                     self.after_message(key, dbd)
                 except RejectMessage as ex:
                     self.enqueue_reject(method.delivery_tag, requeue=ex.requeue)
-                    self.after_message(key, dbd, ex=ex)
         finally:
             self.enqueue_stop()
             self.join()

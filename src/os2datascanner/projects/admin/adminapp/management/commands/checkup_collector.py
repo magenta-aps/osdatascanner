@@ -27,7 +27,6 @@ from os2datascanner.utils import debug
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
-from os2datascanner.engine2.utilities.datetime import NOT_SCANNED_DT
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
     cancel_scan_tag_messages, )
 
@@ -78,31 +77,20 @@ def create_usererrorlog(
 
 
 def checkup_message_received_raw(body):
-    logger.info(
-            "raw checkup message received", body=body)
-    msg_obj = None
-
     handle = None
     scan_tag = None
     scan_tag_raw = None
     matches = None
     problem = None
-    skipped = None
-
-    if messages.ContentSkippedMessage.test(body):  # Content skipped message
-        msg_obj = skipped = messages.ContentSkippedMessage.from_json_object(body)
-        handle = msg_obj.handle
-        scan_tag = msg_obj.scan_tag
-        scan_tag_raw = body["scan_tag"]
-    elif "message" in body:  # Problem message
-        msg_obj = problem = messages.ProblemMessage.from_json_object(body)
-        handle = msg_obj.handle
-        scan_tag = msg_obj.scan_tag
+    if "message" in body:  # Problem message
+        problem = messages.ProblemMessage.from_json_object(body)
+        handle = problem.handle
+        scan_tag = problem.scan_tag
         scan_tag_raw = body["scan_tag"]
     elif "matches" in body:  # Matches message
-        msg_obj = matches = messages.MatchesMessage.from_json_object(body)
-        handle = msg_obj.handle
-        scan_tag = msg_obj.scan_spec.scan_tag
+        matches = messages.MatchesMessage.from_json_object(body)
+        handle = matches.handle
+        scan_tag = matches.scan_spec.scan_tag
         scan_tag_raw = body["scan_spec"]["scan_tag"]
     elif "coverages" in body:  # CoverageMessage
         message = CoverageMessage.from_json_object(body)
@@ -127,8 +115,6 @@ def checkup_message_received_raw(body):
         return
 
     scan_time = scan_tag.time
-    if isinstance(msg_obj, messages.ContentSkippedMessage):
-        scan_time = NOT_SCANNED_DT
 
     # Some Handles carry a dict of hints: pieces of extra information uncovered
     # during exploration that can be used to speed Resource functions up (and
@@ -141,13 +127,13 @@ def checkup_message_received_raw(body):
         here = here.source.handle
 
     update_scheduled_checkup(
-            handle.censor(), matches, problem, skipped, scan_time, scanner, ss)
+            handle.censor(), matches, problem, scan_time, scanner, ss)
 
     yield from []
 
 
 def update_scheduled_checkup(  # noqa: CCR001 E501
-        handle, matches, problem, skipped, scan_time, scanner, ss: ScanStatus):
+        handle, matches, problem, scan_time, scanner, ss: ScanStatus):
     locked_qs = ScheduledCheckup.objects.select_for_update(
         of=('self',)
     ).filter(
@@ -201,20 +187,13 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                 # about changes between the last match and this error
                 logger.debug("Problem, transient, doing nothing",
                              handle=handle.presentation)
-        elif skipped:
-            logger.debug("Handle skipped, (re?)marking as interesting",
-                         handle=handle.presentation)
-            locked_qs.update(
-                    interested_after=NOT_SCANNED_DT)
 
     elif ((matches and matches.matched)
-            or (problem and not problem.missing)
-            or skipped):
+            or (problem and not problem.missing)):
         logger.debug(
                 "Interesting, creating", handle=str(handle))
-        # An object with a transient problem, with real matches, or that we
-        # never scanned in the first place is an object we'll want to check up
-        # on again later
+        # An object with a transient problem or with real matches is an
+        # object we'll want to check up on again later
         ScheduledCheckup.objects.update_or_create(
                 path=handle.crunch(hash=True),
                 scanner=scanner,

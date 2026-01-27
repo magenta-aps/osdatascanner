@@ -33,10 +33,3 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 def unparse_datetime(d: datetime.datetime) -> str:
     return make_datetime_aware(d).strftime(DATE_FORMAT)
-
-
-# Since you ask, this is one second before the day the first digital computer
-# (ENIAC) was first used in production
-NOT_SCANNED_DT: datetime.datetime = parse_datetime("1945-12-09T23:59:59-05:00")
-"""A special tag timestamp used to indicate that an object's content (as
-opposed to its metadata) has not been scanned by OSdatascanner."""
