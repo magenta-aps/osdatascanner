@@ -101,7 +101,7 @@ class TestCPRRule:
         assert self.simplify_matches(
                 CPRRule(blacklist=blacklist).match(text)) == []
         assert self.simplify_matches(
-                CPRRule().match(text)) == potential
+                CPRRule(blacklist=[]).match(text)) == potential
 
     @pytest.mark.parametrize(
             "text,whitelist,potential",

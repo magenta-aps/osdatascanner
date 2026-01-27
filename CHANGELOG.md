@@ -28,6 +28,8 @@
 
 - SBSYS rule category supported with name and description.
 
+- `fakturanr.` has been added to the cpr rules blacklist
+
 ### Bugfixes
 
 - The bundled TLS certificate store has been updated, which should result in
