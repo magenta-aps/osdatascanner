@@ -478,10 +478,6 @@ class Scanner(models.Model):
         longer covered by one of this scanner's Sources, unless the dry_run
         flag is set)."""
 
-        # We need to know that our LastModifiedRule will be the only one used
-        # here, so reconstruct the scanner rule without one
-        base_rule = self._construct_rule(force=True)
-
         uncensor_map = self._make_remap_dict(self.generate_sources())
 
         conv_template = messages.ConversionMessage(
@@ -508,10 +504,11 @@ class Scanner(models.Model):
                     reminder.delete()
                 continue
 
+            # XXX: we could be adding LastModifiedRule twice
             cutoff = reminder.interested_after
             rule_here = AndRule.make(
                     LastModifiedRule(cutoff) if cutoff and not force else True,
-                    base_rule)
+                    spec_template.rule)
             Counter.try_incr(checkup_counter)
             yield conv_template._deep_replace(
                     scan_spec__source=rh.source,

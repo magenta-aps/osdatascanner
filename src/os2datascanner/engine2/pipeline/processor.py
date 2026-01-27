@@ -9,11 +9,6 @@ from . import messages
 logger = structlog.get_logger("processor")
 
 
-SKIPPED = object()
-"""A singleton returned by do_conversion when the scanner job's configuration
-has blocked an otherwise supported conversion from taking place."""
-
-
 def check(source_manager, handle):
     """
     Runs Resource.check() on the top-level Handle behind a given Handle.
@@ -63,9 +58,6 @@ def message_received_raw(body, channel, source_manager, *, _check=True):
 
     try:
         if _check and not tr.run(check, source_manager, conversion.handle):
-            logger.info(
-                    "resource missing",
-                    handle=str(conversion.handle))
             yield from generate_missing_resource_messages(conversion)
             # stop the generator immediately
             return
@@ -114,11 +106,7 @@ def do_conversion(resource, conversion, retrier, source_manager):
                 # mt is a simple wildcard ("image/*") that matches the
                 # computed MIME type of this file.
                 # If that, or mt matches the computed MIME type of this file exactly then ...
-                logger.info(
-                        "skipping conversion due to scanner config",
-                        handle=str(conversion.handle),
-                        conversion_type=required)
-                return SKIPPED  # ... skip conversion
+                return None  # ... skip conversion
 
     # If we have an appropriate conversion registered, go ahead.
     if conversion_exists(resource, required):
@@ -131,9 +119,10 @@ def do_conversion(resource, conversion, retrier, source_manager):
             if conversion_exists(resource := handle.follow(source_manager), required):
                 logger.info(
                          "hierarchy rewound for conversion",
-                         original_handle=str(conversion.handle),
-                         rewound_handle=str(handle),
-                         conversion_type=required)
+                         original_handle=conversion.handle,
+                         rewound_handle=handle,
+                         output_type=required
+                )
                 return retrier.run(convert, resource, required)
 
         # There wasn't any in the parent hierarchy. Let it run, raise a KeyError and be handled
@@ -142,15 +131,6 @@ def do_conversion(resource, conversion, retrier, source_manager):
 
 
 def emit_representation(conversion, representation):
-    if representation is SKIPPED:
-        yield (
-            "os2ds_checkups",
-            messages.ContentSkippedMessage(
-                    scan_tag=conversion.scan_spec.scan_tag,
-                    handle=conversion.handle).to_json_object()
-        )
-        return
-
     required = conversion.progress.rule.split()[0].operates_on
 
     # If the conversion also produced other values at the same
@@ -165,11 +145,7 @@ def emit_representation(conversion, representation):
     else:
         dv = {required.value: representation}
 
-    logger.info(
-            "emitting representation",
-            handle=str(conversion.handle),
-            conversion_type=required,
-            representation=encode_dict(dv))
+    logger.info(f"Required representation for {conversion.handle} is {required}")
     yield (
         "os2ds_representations",
         messages.RepresentationMessage(
