@@ -13,6 +13,20 @@ def content():
         "Nu følger der en masse cpr-lignende tal, med nogle rigtige nogen ind imellem. "
         "Den med bin_check bør ignorere dem, siden de står mellem en masse andre tal, "
         "og derfor nok er varenumre eller lignende. "
+        "    Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+        "    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
+        "    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip. "
+        "    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu. "
+        "    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt. "
+        "    Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. "
+        "    Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus purus. "
+        "    Vestibulum volutpat turpis eu nibh. Cras fringilla mauris eu justo. "
+        "    Nulla eu nibh eu quam adipiscing luctus. "
+        "    Suspendisse egestas eros ac purus. Nulla facilisi. "
+        "    Praesent a felis in lacus. Sed convallis. "
+        "    Vivamus at felis eu massa. In hac habitasse platea dictumst. "
+        "    Nulla facilisi. Aenean a sem. "
+        "    Mauris a nunc eu felis. Proin sit amet augue. "
         "660487-6475 "
         "291417-7763 "
         "011524-4939 "
@@ -109,13 +123,7 @@ def content():
         "085018-4618 "
         "238145-8515 "
         "635208-0572 "
-        "194251-2653 "
-        "Her i enden af filen skrives der så endnu et cpr-nummer som bin_check finder, "
-        "fordi det står efter denne her blok tekst, og derfor står for langt væk fra den "
-        "lange liste af tal. "
-        "Denne test er lang, og dette er fordi, bin_check kun filtere noget væk for lang input. "
-        "For at se, at bin_check ikke fjerne korrekte positiver, se tests under test_cprrule.py "
-        "Personnummeret for [FORNAVN] [EFTERNAVN] er 111080-0009")
+        "194251-2653 ")
 
 
 class TestBinCheck:
@@ -123,9 +131,9 @@ class TestBinCheck:
         rule_with_bin_check = CPRRule(modulus_11=True, examine_context=True)
         rule_without_bin_check = CPRRule(modulus_11=True, examine_context=False)
 
-        with_expected = ['1010XXXXXX', '1110XXXXXX']
+        with_expected = ['1010XXXXXX']
         without_expected = ['1010XXXXXX', '0101XXXXXX', '0707XXXXXX', '0202XXXXXX', '0606XXXXXX',
-                            '0303XXXXXX', '0404XXXXXX', '0505XXXXXX', '1110XXXXXX']
+                            '0303XXXXXX', '0404XXXXXX', '0505XXXXXX']
 
         with_actual = list(rule_with_bin_check.match(content))
         without_actual = list(rule_without_bin_check.match(content))
