@@ -625,6 +625,28 @@ class TestPipelineCollector:
 
         assert DocumentReport.objects.count() == 1
 
+    def test_problem_fixed_with_negative_match(self, transient_handle_error, negative_match):
+        """ If an object previously had a problem that is now fixed,
+        and the object doesn't have any matches,
+        then there isn't a reason to keep a document report around. """
+
+        record_problem(transient_handle_error)
+        record_match(negative_match)
+
+        assert DocumentReport.objects.count() == 0
+
+    def test_problem_fixed_with_positive_match(self, transient_handle_error, positive_match):
+        """ If an object previously had a problem that is now fixed, and the object has matches,
+        then we should get a document report with matches and no problems. """
+
+        record_problem(transient_handle_error)
+        record_match(positive_match)
+
+        assert DocumentReport.objects.count() == 1
+        dr = DocumentReport.objects.all().first()
+        assert dr.raw_matches is not None
+        assert dr.raw_problem is None
+
     def test_reqeued_match_with_existing_false_positive_report(
             self, positive_match, positive_match_keep_fp, positive_match_dont_keep_fp):
         """If a report has been handled as false positive, receiving the same
