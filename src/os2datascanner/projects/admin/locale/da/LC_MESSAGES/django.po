@@ -4372,7 +4372,7 @@ msgid ""
 "specific number of days of age. This affects the report tab and the leader "
 "overview in the report module."
 msgstr ""
-"Tillad resultater at blive udfiltreret, hvis de stammer fra kilder ældre end "
+"Tillad resultater at blive udfiltreret, hvis de stammer fra kilder yngre end "
 "et angivet antal dage. Dette har indflydelse på rapportfanen og "
 "lederoverblikket i rapportmodulet."
 

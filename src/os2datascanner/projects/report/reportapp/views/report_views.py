@@ -110,6 +110,13 @@ class ReportView(LoginRequiredMixin, ListView):
         to request.GET parameters. """
 
         sort_key, order = None, None
+
+        if org.retention_policy:
+            include_in_retention = request.GET.get("retention", "false")
+            if include_in_retention == "false":
+                older_than_ret_pol = time_now() - timedelta(days=org.retention_days)
+                reports = reports.filter(datasource_last_modified__lte=older_than_ret_pol)
+
         # Filtering logic - and stores sort_key and order, if present, for the ordering logic.
         for key, value in request.GET.items():
             if value == "all":  # skip no-op filters early.
@@ -131,12 +138,6 @@ class ReportView(LoginRequiredMixin, ListView):
                 case "source_type":
                     reports = reports.filter(
                         source_type=value)
-                case "retention":
-                    if org.retention_policy and value == "false":
-                        older_than_ret_pol = time_now() - timedelta(
-                            days=org.retention_days)
-                        reports = reports.filter(
-                            datasource_last_modified__lte=older_than_ret_pol)
                 case _:
                     # Unknown param
                     pass
@@ -304,7 +305,7 @@ class ReportView(LoginRequiredMixin, ListView):
         context['scannerjob_choices'] = self.scannerjob_filters
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
 
-        context['retention'] = self.request.GET.get('retention', 'true')
+        context['retention'] = self.request.GET.get('retention', 'false')
 
         sensitivities = self.object_list.values(
                 'sensitivity').annotate(

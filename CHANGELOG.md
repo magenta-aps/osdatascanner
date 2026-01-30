@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+### General improvements
+
+- The report module now filters out results, from sources newer than the configured retention period,
+  by default when a retention policy is enabled.  
+
 ## Version 3.31.0, 27th January 2026
 
 "Mystery Zone"
