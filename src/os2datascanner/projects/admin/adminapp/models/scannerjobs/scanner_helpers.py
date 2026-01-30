@@ -9,6 +9,7 @@ from django.db.models import F, Q
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.contrib.auth.models import User
@@ -437,7 +438,7 @@ mime_to_file_map = {
     "application/json": _("JSON file"),
     "application/msonenote": _("OneNote"),
     "application/msword": _("Word document (.doc)"),
-    "application/octet-stream": _("other"),
+    "application/octet-stream": pgettext_lazy("General use", "other"),
     "application/vnd.ms-excel": _("Excel workbook (.xls)"),
     "application/vnd.ms-excel.addin.macroEnabled.12": _("Excel add-in (.xlam)"),
     "application/vnd.ms-excel.sheet.binary.macroEnabled.12": _("Excel binary workbook (.xlsb)"),
@@ -492,6 +493,7 @@ mime_to_file_map = {
         "Word template (.dotm)"),
     "application/pdf": _("PDF file"),
     "application/xml": _("XML file"),
+    "application/xml-sitemap": _("XML sitemap"),
     "application/zip": _("ZIP file"),
     "image/gif": _("GIF image"),
     "image/jpeg": _("JPEG image"),
@@ -537,7 +539,7 @@ class MIMETypeProcessStat(models.Model):
 
     @property
     def file_type(self):
-        return mime_to_file_map[self.mime_type]
+        return mime_to_file_map.get(self.mime_type, self.mime_type)
 
     class Meta:
         constraints = [

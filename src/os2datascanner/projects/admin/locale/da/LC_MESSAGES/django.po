@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-26 12:59+0100\n"
+"POT-Creation-Date: 2026-02-02 09:36+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -820,6 +820,235 @@ msgstr "scanstatus snapshot"
 #: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "scan status snapshots"
 msgstr "scanstatus snapshot"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "javascript file"
+msgstr "javascript-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "JSON file"
+msgstr "JSON-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OneNote"
+msgstr "OneNote"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Word document (.doc)"
+msgstr "Word-dokument (.doc)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgctxt "General use"
+msgid "other"
+msgstr "andet"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel workbook (.xls)"
+msgstr "Excel-projektmappe (.xls)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel add-in (.xlam)"
+msgstr "Excel-tilføjelsesprogram (.xlam)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel binary workbook (.xlsb)"
+msgstr "binær Excel-projektmappe (.xlsb)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel macro-enabled workbook (.xlsm)"
+msgstr "makroaktiveret Excel-projektmappe (.xlsm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel macro-enabled template (.xltm)"
+msgstr "makroaktiveret Excel-skabelon (.xltm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint add-in (.ppam)"
+msgstr "PowerPoint-tilføjelsesprogram (.ppam)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint macro-enabled presentation (.pptm)"
+msgstr "makroaktiveret PowerPoint-præsentation (.pptm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint macro-enabled slide (.sldm)"
+msgstr "makroaktiveret PowerPoint-dias (.sldm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint macro-enabled slide show (.ppsm)"
+msgstr "makroaktiveret PowerPoint-diasshow (.ppsm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint macro-enabled template (.potm)"
+msgstr "makroaktiveret PowerPoint-skabelon (.potm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Word macro-enabled document (.docm)"
+msgstr "makroaktiveret Word-dokument (.docm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument database (.odb)"
+msgstr "OpenDocument-database (.odb)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument chart (.odc)"
+msgstr "OpenDocument-diagram (.odc)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument chart template (.otc)"
+msgstr "OpenDocument-diagramskabelon (.otc)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument drawing (.odg)"
+msgstr "OpenDocument-tegning (.odg)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument drawing template (.otg)"
+msgstr "OpenDocument-tegningskabelon (.otg)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument formula (.odf)"
+msgstr "OpenDocument-formular (.odf)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument formula template (.otf)"
+msgstr "OpenDocument-formularskabelon (.otf)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument image (.odi)"
+msgstr "OpenDocument-billede (odi)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument image template (.oti)"
+msgstr "OpenDocument-billedeskabelon (oti)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument presentation (.odp)"
+msgstr "OpenDocument-præsentation (.odp)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument presentation template (.otp)"
+msgstr "OpenDocument-præsentationskabelon (.otp)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument spreadsheet (.ods)"
+msgstr "OpenDocument-regneark (.ods)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument spreadsheet template (.ots)"
+msgstr "OpenDocument-regnearkskabelon (.ots)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument text file (.odt)"
+msgstr "OpenDocument-tekstfil (.odt)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument master file (.odm)"
+msgstr "OpenDocument-mesterfil (.odm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument text template (.ott)"
+msgstr "OpenDocument-tekstskabelon (.ott)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "OpenDocument web page template (.oth)"
+msgstr "OpenDocument-websideskabelon (.oth)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint presentation (.pptx)"
+msgstr "PowerPoint-præsentation (.pptx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint slide (.sldx)"
+msgstr "PowerPoint-dias (.sldx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint slide show (.ppsx)"
+msgstr "PowerPoint-diasshow (.ppsx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PowerPoint template (.potx)"
+msgstr "PowerPoint-skabelon (.potx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel workbook (.xlsx)"
+msgstr "Excel-projektmappe (.xslx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Excel template (.xltx)"
+msgstr "Excel-skabelon (.xltx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Word document (.docx)"
+msgstr "Word-dokument (.docx)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Word template (.dotm)"
+msgstr "Word-skabelon (.dotm)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PDF file"
+msgstr "PDF-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "XML file"
+msgstr "XML-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "XML sitemap"
+msgstr "XML-sitemap"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "ZIP file"
+msgstr "ZIP-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "GIF image"
+msgstr "GIF-billede"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "JPEG image"
+msgstr "JPEG-billede"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "JPG image"
+msgstr "JPG-billede"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "PNG image"
+msgstr "PNG-billede"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "SVG image"
+msgstr "SVG-billede"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "WEPB image"
+msgstr "WEPB-billede"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "icon (.ico)"
+msgstr "ikon (.ico)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "email message"
+msgstr "mailbesked"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "CSS file"
+msgstr "CSS-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "CSV file"
+msgstr "CSV-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "HTML file"
+msgstr "HTML-fil"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "text file"
+msgstr "tekstfil"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "MIME type"
@@ -3327,6 +3556,7 @@ msgid "Active Directory"
 msgstr "Active Directory"
 
 #: import_services/models/ldap_configuration.py
+msgctxt "Regarding LDAP providers"
 msgid "other"
 msgstr "anden leverandør"
 
