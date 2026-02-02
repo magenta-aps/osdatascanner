@@ -1,4 +1,7 @@
+from collections.abc import Generator
 import structlog
+
+from os2datascanner.engine2.model.core.utilities import SourceManager
 
 from ..conversions.types import decode_dict
 from ...utils.replace_regions import replace_regions
@@ -74,8 +77,9 @@ def postprocess_match(
     return (rule, matches)
 
 
-def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 too high cognitive complexity
-    message = messages.RepresentationMessage.from_json_object(body)
+def message_received(  # noqa: CCR001,E501 too high cognitive complexity
+        message: messages.RepresentationMessage,
+        sm: SourceManager) -> Generator[messages.SerialisableMessage]:
     representations = decode_dict(message.representations)
     rule = message.progress.rule
     logger.debug(f"{message.handle} with rules [{rule.presentation}] "
@@ -91,20 +95,19 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
         # Convoluted way of checking if we _did not_ match on LastModifiedRule,
         # meaning that we won't be scanning its content again.
         if not conclusion and isinstance(new_matches[0][0], LastModifiedRule):
-            yield ("os2ds_status", messages.StatusMessage(
+            yield messages.StatusMessage(
                 scan_tag=message.scan_spec.scan_tag,
-                skipped_by_last_modified=1).to_json_object())
+                skipped_by_last_modified=1)
 
     except Exception as e:
         exception_message = "Matching error"
         exception_message += ". {0}: ".format(type(e).__name__)
         exception_message += ", ".join([str(a) for a in e.args])
         logger.warning(exception_message)
-        for problems_q in ("os2ds_problems", "os2ds_checkups",):
-            yield (problems_q, messages.ProblemMessage(
-                    scan_tag=message.scan_spec.scan_tag,
-                    source=None, handle=message.handle,
-                    message=exception_message).to_json_object())
+        yield messages.ProblemMessage(
+                scan_tag=message.scan_spec.scan_tag,
+                source=None, handle=message.handle,
+                message=exception_message)
         return
 
     final_matches = message.progress.matches
@@ -133,19 +136,16 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
             censored_handle._item_name = censor_context(censored_handle._item_name, rules)
             message._replace(handle=censored_handle)
 
-        for matches_q in ("os2ds_matches", "os2ds_checkups",):
-            yield (matches_q,
-                   messages.MatchesMessage(
-                       message.scan_spec, message.handle,
-                       matched=conclusion,
-                       matches=final_matches).to_json_object())
+        yield messages.MatchesMessage(
+                message.scan_spec, message.handle,
+                matched=conclusion,
+                matches=final_matches)
 
         # Only trigger metadata scanning if the match succeeded
         if conclusion:
-            yield ("os2ds_handles",
-                   messages.HandleMessage(
-                            message.scan_spec.scan_tag,
-                            message.handle).to_json_object())
+            yield messages.HandleMessage(
+                    message.scan_spec.scan_tag,
+                    message.handle)
     else:
         new_rep = conclusion.split()[0].operates_on
         # We need a new representation to continue
@@ -153,12 +153,34 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001,E501 to
                 f"{message.handle} needs"
                 f" new representation: [{new_rep}].")
 
-        yield (message.scan_spec.conversion_queue,
-               messages.ConversionMessage(
-                            message.scan_spec, message.handle,
-                            message.progress._replace(
-                                    rule=conclusion,
-                                    matches=final_matches)).to_json_object())
+        yield messages.ConversionMessage(
+                message.scan_spec, message.handle,
+                messages.deep_replace(
+                        message.progress,
+                        rule=conclusion,
+                        matches=final_matches))
+
+
+def message_received_raw(body, channel, source_manager):
+    for m in message_received(
+            message := messages.RepresentationMessage.from_json_object(body),
+            source_manager):
+        queues: list[str]
+        if isinstance(m, messages.StatusMessage):
+            queues = ["os2ds_status"]
+        elif isinstance(m, messages.ProblemMessage):
+            queues = ["os2ds_problems", "os2ds_checkups"]
+        elif isinstance(m, messages.MatchesMessage):
+            queues = ["os2ds_matches", "os2ds_checkups"]
+        elif isinstance(m, messages.HandleMessage):
+            queues = ["os2ds_handles"]
+        elif isinstance(m, messages.ConversionMessage):
+            queues = [message.scan_spec.conversion_queue]
+        else:
+            raise TypeError(type(m))
+        json_form = m.to_json_object()
+        for q in queues:
+            yield (q, json_form)
 
 
 if __name__ == "__main__":
