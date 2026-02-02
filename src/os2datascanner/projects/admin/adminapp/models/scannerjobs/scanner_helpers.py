@@ -369,7 +369,8 @@ class ScanStatus(AbstractScanStatus):
             where "x" denoted the time since scan start time in seconds and "y" denotes the
             percentage of all objects scanned at the given time."""
         snapshot_data = []
-        for snapshot in ScanStatusSnapshot.objects.filter(scan_status=self).iterator():
+        for snapshot in ScanStatusSnapshot.objects.filter(
+                scan_status=self).order_by('time_stamp').iterator():
             seconds_since_start = (snapshot.time_stamp - self.start_time).total_seconds()
             # Calculating a new fraction, due to early versions of
             # snapshots not knowing the total number of objects.

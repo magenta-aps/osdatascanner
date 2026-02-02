@@ -1,14 +1,14 @@
 /* exported drawTimelines */
 
 function getTimeUnit(maxSeconds) {
-  if (maxSeconds >= 86400) {
-    return { unitKey: "days", factor: 86400 };
+  if (maxSeconds >= 172800) {
+    return { unitKey: "days", factor: 172800 };
   }
-  if (maxSeconds >= 3600) {
-    return { unitKey: "hours", factor: 3600 };
+  if (maxSeconds >= 7200) {
+    return { unitKey: "hours", factor: 7200 };
   }
-  if (maxSeconds >= 60) {
-    return { unitKey: "minutes", factor: 60 };
+  if (maxSeconds >= 120) {
+    return { unitKey: "minutes", factor: 120 };
   }
   return { unitKey: "seconds", factor: 1 };
 }
