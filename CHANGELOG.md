@@ -6,7 +6,7 @@
 
 ### New in this release
 
-- 
+- Scanned file types are now presented in a human-readable way, instead of using MIME types.
 
 ### General improvements
 
