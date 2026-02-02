@@ -1,11 +1,22 @@
 # Changelog
 
-## Next release
+## Next release 3.31.1, 17th February 2026
+
+"Fastelavns-rice"
+
+### New in this release
+
+- 
 
 ### General improvements
 
 - The report module now filters out results, from sources newer than the configured retention period,
   by default when a retention policy is enabled.  
+
+### Bugfixes
+
+- Fixed an issue where line charts could render with visual loops when scan snapshot data was 
+  received out of order in setups with multiple status collectors.
 
 ## Version 3.31.0, 27th January 2026
 
