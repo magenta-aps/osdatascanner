@@ -9,6 +9,7 @@ from django.db.models import F, Q
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.contrib.auth.models import User
@@ -382,7 +383,7 @@ class ScanStatus(AbstractScanStatus):
         """Return a dict of size and time spent scanning different MIME types covered by scan."""
         stats = {}
         for stat in self.process_stats.iterator():
-            stats[stat.mime_type] = {"size": stat.total_size, "time": stat.total_time}
+            stats[stat.file_type] = {"size": stat.total_size, "time": stat.total_time}
         return stats
 
 
@@ -432,6 +433,85 @@ class CoveredAccount(models.Model):
         get_latest_by = "scan_status__scan_tag__time"
 
 
+mime_to_file_map = {
+    "application/javascript": _("javascript file"),
+    "application/json": _("JSON file"),
+    "application/msonenote": _("OneNote"),
+    "application/msword": _("Word document (.doc)"),
+    "application/octet-stream": pgettext_lazy("General use", "other"),
+    "application/vnd.ms-excel": _("Excel workbook (.xls)"),
+    "application/vnd.ms-excel.addin.macroEnabled.12": _("Excel add-in (.xlam)"),
+    "application/vnd.ms-excel.sheet.binary.macroEnabled.12": _("Excel binary workbook (.xlsb)"),
+    "application/vnd.ms-excel.sheet.macroEnabled.12": _("Excel macro-enabled workbook (.xlsm)"),
+    "application/vnd.ms-excel.template.macroEnabled.12": _("Excel macro-enabled template (.xltm)"),
+    "application/vnd.ms-powerpoint.addin.macroEnabled.12": _("PowerPoint add-in (.ppam)"),
+    "application/vnd.ms-powerpoint.presentation.macroEnabled.12": _(
+        "PowerPoint macro-enabled presentation (.pptm)"),
+    "application/vnd.ms-powerpoint.slide.macroEnabled.12": _(
+        "PowerPoint macro-enabled slide (.sldm)"),
+    "application/vnd.ms-powerpoint.slideshow.macroEnabled.12": _(
+        "PowerPoint macro-enabled slide show (.ppsm)"),
+    "application/vnd.ms-powerpoint.template.macroEnabled.12": _(
+        "PowerPoint macro-enabled template (.potm)"),
+    "application/vnd.ms-word.document.macroEnabled.12": _("Word macro-enabled document (.docm)"),
+    "application/vnd.oasis.opendocument.base": _("OpenDocument database (.odb)"),
+    "application/vnd.oasis.opendocument.chart": _("OpenDocument chart (.odc)"),
+    "application/vnd.oasis.opendocument.chart-template": _("OpenDocument chart template (.otc)"),
+    "application/vnd.oasis.opendocument.graphics": _("OpenDocument drawing (.odg)"),
+    "application/vnd.oasis.opendocument.graphics-template": _(
+        "OpenDocument drawing template (.otg)"),
+    "application/vnd.oasis.opendocument.formula": _("OpenDocument formula (.odf)"),
+    "application/vnd.oasis.opendocument.formula-template": _(
+        "OpenDocument formula template (.otf)"),
+    "application/vnd.oasis.opendocument.image": _("OpenDocument image (.odi)"),
+    "application/vnd.oasis.opendocument.image-template": _("OpenDocument image template (.oti)"),
+    "application/vnd.oasis.opendocument.presentation": _("OpenDocument presentation (.odp)"),
+    "application/vnd.oasis.opendocument.presentation-template": _(
+        "OpenDocument presentation template (.otp)"),
+    "application/vnd.oasis.opendocument.spreadsheet": _("OpenDocument spreadsheet (.ods)"),
+    "application/vnd.oasis.opendocument.spreadsheet-template": _(
+        "OpenDocument spreadsheet template (.ots)"),
+    "application/vnd.oasis.opendocument.text": _("OpenDocument text file (.odt)"),
+    "application/vnd.oasis.opendocument.text-master": _("OpenDocument master file (.odm)"),
+    "application/vnd.oasis.opendocument.text-template": _("OpenDocument text template (.ott)"),
+    "application/vnd.oasis.opendocument.text-web": _("OpenDocument web page template (.oth)"),
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": _(
+        "PowerPoint presentation (.pptx)"),
+    "application/vnd.openxmlformats-officedocument.presentationml.slide": _(
+        "PowerPoint slide (.sldx)"),
+    "application/vnd.openxmlformats-officedocument.presentationml.slideshow": _(
+        "PowerPoint slide show (.ppsx)"),
+    "application/vnd.openxmlformats-officedocument.presentationml.template": _(
+        "PowerPoint template (.potx)"),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": _(
+        "Excel workbook (.xlsx)"),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template": _(
+        "Excel template (.xltx)"),
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": _(
+        "Word document (.docx)"),
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.template": _(
+        "Word template (.dotm)"),
+    "application/pdf": _("PDF file"),
+    "application/xml": _("XML file"),
+    "application/xml-sitemap": _("XML sitemap"),
+    "application/zip": _("ZIP file"),
+    "image/gif": _("GIF image"),
+    "image/jpeg": _("JPEG image"),
+    "image/jpg": _("JPG image"),
+    "image/png": _("PNG image"),
+    "image/svg+xml": _("SVG image"),
+    "image/webp": _("WEPB image"),
+    "image/x-icon": _("icon (.ico)"),
+    "message/rfc822": _("email message"),
+    "text/css": _("CSS file"),
+    "text/csv": _("CSV file"),
+    "text/html": _("HTML file"),
+    "text/javascript": _("javascript file"),
+    "text/plain": _("text file"),
+    "text/xml": _("XML file"),
+}
+
+
 class MIMETypeProcessStat(models.Model):
     scan_status = models.ForeignKey(
         ScanStatus,
@@ -456,6 +536,10 @@ class MIMETypeProcessStat(models.Model):
     object_count = models.PositiveIntegerField(
         default=0,
     )
+
+    @property
+    def file_type(self):
+        return mime_to_file_map.get(self.mime_type, self.mime_type)
 
     class Meta:
         constraints = [

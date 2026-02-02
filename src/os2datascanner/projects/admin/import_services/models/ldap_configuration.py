@@ -16,6 +16,7 @@ import structlog
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 
 from .exported_mixin import Exported
@@ -120,7 +121,7 @@ class LDAPConfig(Exported, ImportService):
         max_length=32,
         choices=[
             ('ad', _('Active Directory')),
-            ('other', _('other').capitalize()),
+            ('other', pgettext_lazy('Regarding LDAP providers', 'other').capitalize()),
         ],
         verbose_name=_('vendor'),
     )
