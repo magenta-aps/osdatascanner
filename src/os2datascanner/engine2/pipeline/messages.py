@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import uuid
 from uuid import UUID
 import random
-from typing import Optional, Sequence, NamedTuple
+from typing import Optional, Self, Sequence, NamedTuple, Protocol, TypeVar
 from datetime import datetime
 from dateutil import tz
 import warnings
@@ -11,17 +13,28 @@ from ..model.core import Handle, Source
 from ..rules.rule import Rule, SimpleRule, Sensitivity
 
 
-def _deep_replace(self, **kwargs):
+class SerialisableMessage(Protocol):
+    def to_json_object(self) -> dict:
+        ...
+
+    @classmethod
+    def from_json_object(cls, obj: dict) -> Self:
+        ...
+
+
+N = TypeVar("N", bound=NamedTuple)
+
+
+def deep_replace(p: N, **kwargs) -> N:
     """As NamedTuple._replace, but supports deeply nested field replacement
     using Django-like syntax ("tuple1__subtuple__field")."""
-    p = self
     for name, value in kwargs.items():
         name = name.split("__")
         if len(name) > 1:
             head, tail = name[0], name[1:]
             fragment = getattr(p, head)
             p = p._replace(**{
-                head: fragment._deep_replace(**{
+                head: deep_replace(fragment, **{
                     "__".join(tail): value
                 })
             })
@@ -41,12 +54,10 @@ class MatchFragment(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> MatchFragment:
         return MatchFragment(
                 rule=Rule.from_json_object(obj["rule"]),
                 matches=obj["matches"])
-
-    _deep_replace = _deep_replace
 
 
 class ProgressFragment(NamedTuple):
@@ -60,13 +71,11 @@ class ProgressFragment(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> ProgressFragment:
         return ProgressFragment(
                 rule=Rule.from_json_object(obj["rule"]),
                 matches=[MatchFragment.from_json_object(mf)
                          for mf in obj["matches"]])
-
-    _deep_replace = _deep_replace
 
 
 class ScannerFragment(NamedTuple):
@@ -84,13 +93,11 @@ class ScannerFragment(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> ScannerFragment:
         return ScannerFragment(
             pk=obj["pk"], name=obj["name"],
             test=obj.get("test", False),
             keep_fp=obj.get("keep_fp", False))
-
-    _deep_replace = _deep_replace
 
 
 class OrganisationFragment(NamedTuple):
@@ -104,7 +111,7 @@ class OrganisationFragment(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> OrganisationFragment:
         try:
             return OrganisationFragment(
                     name=obj["name"], uuid=UUID(obj["uuid"]))
@@ -112,8 +119,6 @@ class OrganisationFragment(NamedTuple):
             # Organisation fragments created between versions 3.3.3 and 3.6.0
             # inclusive were just names
             return OrganisationFragment(name=obj, uuid=None)
-
-    _deep_replace = _deep_replace
 
 
 class ScanTagFragment(NamedTuple):
@@ -151,8 +156,9 @@ class ScanTagFragment(NamedTuple):
                 ))
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict | str) -> ScanTagFragment:
         try:
+            assert isinstance(obj, dict)
             return ScanTagFragment(
                     time=parse_datetime(obj["time"]),
                     user=obj["user"],  # can be None, must be present
@@ -161,6 +167,7 @@ class ScanTagFragment(NamedTuple):
                             obj["organisation"]))
         except KeyError:
             warnings.warn("trying to decode unrecognised scan tag object")
+            assert isinstance(obj, dict)
             time = obj.get("time")
             user = obj.get("user")
             scanner = obj.get("scanner")
@@ -175,11 +182,10 @@ class ScanTagFragment(NamedTuple):
         except TypeError:
             # Scan tags created between versions 3.0.0 and 3.3.2 inclusive were
             # just simple timestamps
+            assert isinstance(obj, str)
             return ScanTagFragment(
                     time=parse_datetime(obj),
                     user=None, scanner=None, organisation=None)
-
-    _deep_replace = _deep_replace
 
 
 class ScanSpecMessage(NamedTuple):
@@ -208,7 +214,7 @@ class ScanSpecMessage(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> ScanSpecMessage:
         # The progress fragment is only present when a scan spec is based on a
         # derived source and so already contains scan progress information
         progress_fragment = obj.get("progress")
@@ -233,8 +239,6 @@ class ScanSpecMessage(NamedTuple):
                 conversion_queue=obj.get("conversion_queue", "os2ds_conversions")
         )
 
-    _deep_replace = _deep_replace
-
 
 class ConversionMessage(NamedTuple):
     scan_spec: ScanSpecMessage
@@ -249,13 +253,11 @@ class ConversionMessage(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> ConversionMessage:
         return ConversionMessage(
                 scan_spec=ScanSpecMessage.from_json_object(obj["scan_spec"]),
                 handle=Handle.from_json_object(obj["handle"]),
                 progress=ProgressFragment.from_json_object(obj["progress"]))
-
-    _deep_replace = _deep_replace
 
 
 class RepresentationMessage(NamedTuple):
@@ -273,14 +275,12 @@ class RepresentationMessage(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> RepresentationMessage:
         return RepresentationMessage(
                 scan_spec=ScanSpecMessage.from_json_object(obj["scan_spec"]),
                 handle=Handle.from_json_object(obj["handle"]),
                 progress=ProgressFragment.from_json_object(obj["progress"]),
                 representations=obj["representations"])
-
-    _deep_replace = _deep_replace
 
 
 class HandleMessage(NamedTuple):
@@ -294,12 +294,10 @@ class HandleMessage(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> HandleMessage:
         return HandleMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]))
-
-    _deep_replace = _deep_replace
 
 
 class MetadataMessage(NamedTuple):
@@ -315,13 +313,11 @@ class MetadataMessage(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj):
+    def from_json_object(cls, obj: dict) -> MetadataMessage:
         return MetadataMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]),
                 metadata=obj["metadata"])
-
-    _deep_replace = _deep_replace
 
 
 class MatchesMessage(NamedTuple):
@@ -401,8 +397,8 @@ class MatchesMessage(NamedTuple):
                     return 0
         return max([_cmp(frag) for frag in self.matches])
 
-    @staticmethod
-    def from_json_object(obj):
+    @classmethod
+    def from_json_object(cls, obj: dict) -> MatchesMessage:
         # WARNING! Migration 0052 in the report app is dependent on this method.
         # Alter with care!
         return MatchesMessage(
@@ -411,8 +407,6 @@ class MatchesMessage(NamedTuple):
                 matched=obj["matched"],
                 matches=[MatchFragment.from_json_object(mf)
                          for mf in obj["matches"]])
-
-    _deep_replace = _deep_replace
 
 
 class ProblemMessage(NamedTuple):
@@ -436,8 +430,8 @@ class ProblemMessage(NamedTuple):
             "irrelevant": self.irrelevant
         }
 
-    @staticmethod
-    def from_json_object(obj):
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ProblemMessage:
         source = obj.get("source")
         handle = obj.get("handle")
         return ProblemMessage(
@@ -447,8 +441,6 @@ class ProblemMessage(NamedTuple):
                 message=obj["message"],
                 missing=obj.get("missing", False),
                 irrelevant=obj.get("irrelevant", False))
-
-    _deep_replace = _deep_replace
 
 
 class StatusMessage(NamedTuple):
@@ -487,8 +479,8 @@ class StatusMessage(NamedTuple):
             "process_time_worker": self.process_time_worker,
         }
 
-    @staticmethod
-    def from_json_object(obj):
+    @classmethod
+    def from_json_object(cls, obj: dict) -> StatusMessage:
         return StatusMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 message=obj.get("message"),
@@ -500,8 +492,6 @@ class StatusMessage(NamedTuple):
                 object_size=obj.get("object_size"),
                 object_type=obj.get("object_type"),
                 process_time_worker=obj.get("process_time_worker"))
-
-    _deep_replace = _deep_replace
 
 
 def check_metadata_dict(cls_metadata, obj_metadata):
@@ -543,8 +533,8 @@ class ContentSkippedMessage(NamedTuple):
         except ValueError:
             return False
 
-    @staticmethod
-    def from_json_object(obj):
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ContentSkippedMessage:
         check_metadata_dict(ContentSkippedMessage.METADATA, obj["__metadata"])
         return ContentSkippedMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
@@ -583,13 +573,11 @@ class CommandMessage(NamedTuple):
             "profiling": self.profiling
         }
 
-    @staticmethod
-    def from_json_object(obj):
+    @classmethod
+    def from_json_object(cls, obj: dict) -> CommandMessage:
         abort = obj.get("abort")
         return CommandMessage(
                 abort=ScanTagFragment.from_json_object(abort)
                 if abort else None,
                 log_level=obj.get("log_level"),
                 profiling=obj.get("profiling"))
-
-    _deep_replace = _deep_replace

@@ -130,10 +130,18 @@ class TestMatchDistribution:
         """Results received after organisational information has been created
         are correctly assigned to the relevant accounts."""
         create_botanists(danish_botanists_organization)
-        record_match(lucky_match_message._deep_replace(
-                scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid))
-        record_metadata(caro_metadata_message._deep_replace(
-                scan_tag__organisation__uuid=danish_botanists_organization.uuid))
+        record_match(
+            messages.deep_replace(
+                lucky_match_message,
+                scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid
+            )
+        )
+        record_metadata(
+            messages.deep_replace(
+                caro_metadata_message,
+                scan_tag__organisation__uuid=danish_botanists_organization.uuid
+            )
+        )
 
         assert DocumentReport.objects.count() == 1
 
@@ -150,10 +158,18 @@ class TestMatchDistribution:
             caro_metadata_message):
         """Results received before organisational information are correctly
         assigned to the relevant accounts upon their creation."""
-        record_match(lucky_match_message._deep_replace(
-                scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid))
-        record_metadata(caro_metadata_message._deep_replace(
-                scan_tag__organisation__uuid=danish_botanists_organization.uuid))
+        record_match(
+            messages.deep_replace(
+                lucky_match_message,
+                scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid
+            )
+        )
+        record_metadata(
+            messages.deep_replace(
+                caro_metadata_message,
+                scan_tag__organisation__uuid=danish_botanists_organization.uuid
+            )
+        )
         create_botanists(danish_botanists_organization)
 
         assert DocumentReport.objects.count() == 1

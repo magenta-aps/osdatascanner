@@ -3,6 +3,8 @@ import pytest
 from django.db import transaction
 from django.db.utils import DataError
 
+from os2datascanner.engine2.pipeline import messages
+
 from ..adminapp.management.commands import checkup_collector
 from ..adminapp.management.commands.checkup_collector import (
     create_usererrorlog, checkup_message_received_raw)
@@ -85,7 +87,8 @@ class TestPipelineCollector:
     def test_hints_removed(self, positive_web_match_message, basic_scanner):
         """Hints should be removed from a WebHandle when one is received by the
         checkup collector."""
-        positive_web_match_message = positive_web_match_message._deep_replace(
+        positive_web_match_message = messages.deep_replace(
+                positive_web_match_message,
                 scan_spec__scan_tag__scanner__pk=basic_scanner.pk)
         ScanStatus.objects.create(
                 scanner=basic_scanner,
@@ -104,7 +107,8 @@ class TestPipelineCollector:
         """A message with an outdated scan tag format should still be able to
         create ScheduledCheckup objects, as long as the corresponding
         ScanStatus still exists."""
-        pwmm = positive_web_match_message._deep_replace(
+        pwmm = messages.deep_replace(
+                positive_web_match_message,
                 scan_spec__scan_tag__scanner__pk=basic_scanner.pk)
         pwmm_json = pwmm.to_json_object()
 
