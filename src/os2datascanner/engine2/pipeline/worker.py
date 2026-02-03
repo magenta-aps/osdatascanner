@@ -1,10 +1,13 @@
+from collections.abc import Generator
 import structlog
 
+from os2datascanner.engine2.model.core.utilities import SourceManager
+
 from ..utilities.backoff import TimeoutRetrier
-from .explorer import message_received_raw as explorer_handler
-from .processor import message_received_raw as processor_handler
-from .matcher import message_received_raw as matcher_handler
-from .tagger import message_received_raw as tagger_handler
+from .explorer import message_received as explorer_handler
+from .processor import message_received as processor_handler
+from .matcher import message_received as matcher_handler
+from .tagger import message_received as tagger_handler
 from . import messages
 import time
 
@@ -38,78 +41,60 @@ def determine_channel(scan_spec, for_type: str) -> str:
         logger.warning("Asked to determine channel for unknown type", for_type=for_type)
 
 
-def explore(sm, msg, *, check=True):
-    """ Worker-internal explorer, channels are pseudo-queues, i.e. not RabbitMQ """
-    for channel, message in explorer_handler(msg, "os2ds_scan_specs", sm):
-        # Determine channels
-        conversion_channel = "os2ds_conversions"
-        explorer_channel = "os2ds_scan_specs"
-        if scan_spec := message.get("scan_spec"):
-            conversion_channel = determine_channel(scan_spec, "conversion")
-            explorer_channel = determine_channel(scan_spec, "explorer")
-
-        # Routing
-        if channel == conversion_channel:
-            yield from process(sm, message, check=check)
-        elif channel == explorer_channel:
+def explore(
+        sm: SourceManager, msg: messages.ScanSpecMessage,
+        *, check=True) -> Generator[messages.SerialisableMessage]:
+    for m in explorer_handler(msg, sm):
+        if isinstance(m, messages.ConversionMessage):
+            yield from process(sm, m, check=check)
+        elif isinstance(m, messages.ScanSpecMessage):
             # Huh? Surely a standalone explorer should have handled this
             logger.warning("worker exploring unexpected nested Source")
-            yield from explore(sm, message, check=check)
-        elif channel == "os2ds_status":
+            yield from explore(sm, m, check=check)
+        elif isinstance(m, messages.StatusMessage):
             # Explorer status messages are not interesting in the worker
             # context
             pass
         else:
-            yield channel, message
+            yield m
 
 
-def process(sm, msg, *, check=True):
-    """ Worker-internal processor, channels are pseudo-queues, i.e. not RabbitMQ """
-    for channel, message in processor_handler(
-            msg, "os2ds_conversions", sm, _check=check):
-
-        # Determine channel
-        explorer_channel = "os2ds_scan_specs"
-        if scan_spec := message.get("scan_spec"):
-            explorer_channel = determine_channel(scan_spec, "explorer")
-
-        if channel == "os2ds_representations":
+def process(
+        sm: SourceManager, msg: messages.ConversionMessage,
+        *, check=True) -> Generator[messages.SerialisableMessage]:
+    for m in processor_handler(msg, sm, _check=check):
+        if isinstance(m, messages.RepresentationMessage):
             # Processing this object has produced a request for a new
             # conversion; there's no need to call Resource.check() a second
             # time
-            yield from match(sm, message, check=False)
-        elif channel == explorer_channel:
+            yield from match(sm, m, check=False)
+        elif isinstance(m, messages.ScanSpecMessage):
             # Processing this object has given us a new source to scan. Make
             # sure we don't call Resource.check() on the objects under it
-            yield from explore(sm, message, check=False)
+            yield from explore(sm, m, check=False)
         else:
-            yield channel, message
+            yield m
 
 
 total_matches = 0
 
 
-def match(sm, msg, *, check=True):
-    """ Worker-internal matcher, channels are pseudo-queues, i.e. not RabbitMQ """
-    for channel, message in matcher_handler(msg, "os2ds_representations", sm):
-        # Determine channel
-        conversion_channel = "os2ds_conversions"
-        if scan_spec := message.get("scan_spec"):
-            conversion_channel = determine_channel(scan_spec, "conversion")
-
-        if channel == "os2ds_handles":
+def match(
+        sm: SourceManager, msg: messages.RepresentationMessage,
+        *, check=True) -> Generator[messages.SerialisableMessage]:
+    for m in matcher_handler(msg, sm):
+        if isinstance(m, messages.HandleMessage):
             global total_matches
             total_matches += 1
-            yield from tag(sm, message)
-        elif channel == conversion_channel:
-            yield from process(sm, message, check=check)
+            yield from tag(sm, m)
+        elif isinstance(m, messages.ConversionMessage):
+            yield from process(sm, m, check=check)
         else:
-            yield channel, message
+            yield m
 
 
 def tag(sm, msg):
-    """ Worker-internal tagger, channels are pseudo-queues, i.e. not RabbitMQ """
-    yield from tagger_handler(msg, "os2ds_handles", sm)
+    yield from tagger_handler(msg, sm)
 
 
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 too high cognitive complexity
@@ -118,18 +103,28 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
     process_time_start = time.perf_counter()
 
+    message = messages.ConversionMessage.from_json_object(body)
+
     try:
-        for channel, message in process(source_manager, body):
-            if channel in WRITES_QUEUES:
-                yield (channel, message)
+        for m in process(source_manager, message):
+            queues: list[str]
+            if isinstance(m, messages.ProblemMessage):
+                queues = ["os2ds_checkups", "os2ds_problems"]
+            elif isinstance(m, messages.MatchesMessage):
+                queues = ["os2ds_checkups", "os2ds_matches"]
+            elif isinstance(m, messages.MetadataMessage):
+                queues = ["os2ds_metadata"]
+            elif isinstance(m, messages.StatusMessage):
+                queues = ["os2ds_status"]
             else:
-                logger.error(f"unexpected message to queue {channel}")
+                raise TypeError(type(m))
+            json_form = m.to_json_object()
+            for q in queues:
+                yield (q, json_form)
     finally:
         process_time_total = time.perf_counter() - process_time_start
 
-        message = messages.ConversionMessage.from_json_object(body)
         object_size = 0
-
         computed_type = "application/octet-stream"
         try:
             resource = message.handle.follow(source_manager)

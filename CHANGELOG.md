@@ -11,7 +11,11 @@
 ### General improvements
 
 - The report module now filters out results, from sources newer than the configured retention period,
-  by default when a retention policy is enabled.  
+  by default when a retention policy is enabled.
+
+- Pipeline components now have an alternative interface that skips the
+  serialisation and deserialisation process, and the scanner engine uses
+  these where possible to reduce overhead.
 
 - Introduced PyMuPDF to replace pypdf, pdftotxt, pdfimages and ghostscript.
   - Scanning PDF files now almost exclusively occur in memory, only generating one temporary file 
