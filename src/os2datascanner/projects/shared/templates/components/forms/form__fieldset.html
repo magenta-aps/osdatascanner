@@ -54,10 +54,12 @@
 
             {% else %}
 
-              <label for="{{ bf.id_for_label }}" class="form-widget__label">
-                {{ bf.label }}
-                {% if bf.field.required %}<span>*</span>{% endif %}
-              </label>
+              {% if bf.label %}
+                <label for="{{ bf.id_for_label }}" class="form-widget__label">
+                  {{ bf.label }}
+                  {% if bf.field.required %}<span>*</span>{% endif %}
+                </label>
+              {% endif %}
  
               <div class="form-widget__input-wrapper">
                 {{ bf }}

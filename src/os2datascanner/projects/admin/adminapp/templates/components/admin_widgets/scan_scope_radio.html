@@ -1,0 +1,24 @@
+{# scan_scope_radio.html #}
+
+{% load i18n static %}
+
+<div {% if widget.attrs.id %}id="{{ widget.attrs.id }}"{% endif %}
+     class="scan-scope__wrapper">
+  {% for group_name, group_choices, group_index in widget.optgroups %}
+    {% for option in group_choices %}
+      <div class="scan-scope__option scan-scope__option--{{ option.value }}">
+        {% include option.template_name with widget=option %}
+
+        {% if option.value == "select" and org_units %}
+          <div class="scan-scope__nested">
+            {{ org_units }}
+ 
+            {% if org_units.help_text %}<span class="form__help-text">{{ org_units.help_text }}</span>{% endif %}
+ 
+            {% if org_units.errors %}{{ org_units.errors }}{% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% endfor %}
+</div>

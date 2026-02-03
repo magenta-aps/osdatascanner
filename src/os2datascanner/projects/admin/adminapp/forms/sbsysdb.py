@@ -19,16 +19,24 @@ class SBSYSDBScannerForm(ScannerForm):
         Groups.GENERAL_SETTINGS,
         (
             _("SBSYS database connection settings"),
-            ["db_server", "db_port", "db_name", "grant"]
-        ),
-        (
-            _("Advanced SBSYS scan settings"),
-            ["weblink"]
+            [
+                "db_server",
+                "db_port",
+                "db_name",
+                "grant",
+                (
+                    _("Advanced SBSYS scan settings"),
+                    ["weblink"]
+                ),
+            ]
         ),
         Groups.SCOPE_SETTINGS,
         (
             _("Scan settings"),
-            ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule"]
+            [
+                "do_last_modified_check",
+                "do_ocr",
+                "rule"]
         ),
         Groups.ADVANCED_RESULT_SETTINGS,
         Groups.SCHEDULED_EXECUTION_SETTINGS,

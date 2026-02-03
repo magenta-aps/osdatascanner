@@ -1126,10 +1126,15 @@ input[type="file"]::file-selector-button:hover {
             &:has(.select2-selection__choice__remove:hover) {
               color: var(--color-alert-error-accent);
               background-color: var(--color-alert-error) !important;
-              font-weight: 600;
             }
           }
         }
+      }
+
+      &.select2-container--disabled,
+      &.select2-container--disabled * {
+        cursor: not-allowed;
+        opacity: 0.75;
       }
     }
 
@@ -1282,6 +1287,25 @@ input[type="file"]::file-selector-button:hover {
             font-style: italic;
           }
         }
+      }
+
+      &__wrapper--radio {
+        @include layout-horizontal(0.25rem);
+      }
+    }
+
+    .scan-scope {
+      &__wrapper {
+        @include layout-vertical(1.5rem);
+        width: 100%;
+      }
+
+      &__option {
+        @include layout-vertical(0.5rem);
+      }
+
+      &__nested {
+        margin-left: 19px; // Aligns the select field with the radio label.
       }
     }
 

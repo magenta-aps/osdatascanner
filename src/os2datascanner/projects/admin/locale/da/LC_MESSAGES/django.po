@@ -126,6 +126,18 @@ msgid "Scan scope settings"
 msgstr "Indstillinger for scanomfang"
 
 #: adminapp/forms/shared.py
+msgid "Scan scope"
+msgstr "Scanomfang"
+
+#: adminapp/forms/shared.py
+msgid "Scan all accounts in organization"
+msgstr "Scan alle konti i organisationen"
+
+#: adminapp/forms/shared.py
+msgid "Select organizational units to scan"
+msgstr "Vælg organisatoriske enheder til scanning"
+
+#: adminapp/forms/shared.py
 #: adminapp/templates/components/scanner/scanner_form.html
 msgid "Remediators"
 msgstr "Opryddere"
