@@ -1,10 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 
 from ..models.scannerjobs.sbsysdb import SBSYSDBScanner
-from .shared import Groups, ScannerForm
+from .shared import Groups, ScannerForm, ScanScopeMixin
 
 
-class SBSYSDBScannerForm(ScannerForm):
+class SBSYSDBScannerForm(ScanScopeMixin, ScannerForm):
 
     placeholders = {
         "weblink": _("e.g. https://sbsip.vstkom.internal/a-sag/"),
@@ -30,13 +30,14 @@ class SBSYSDBScannerForm(ScannerForm):
                 ),
             ]
         ),
-        Groups.SCOPE_SETTINGS,
         (
             _("Scan settings"),
             [
                 "do_last_modified_check",
                 "do_ocr",
-                "rule"]
+                "rule",
+                Groups.SCOPE_SETTINGS,
+            ]
         ),
         Groups.ADVANCED_RESULT_SETTINGS,
         Groups.SCHEDULED_EXECUTION_SETTINGS,

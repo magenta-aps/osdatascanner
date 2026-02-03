@@ -122,12 +122,8 @@ msgid "Scheduled execution settings"
 msgstr "Indstillinger for planlagte kørsler"
 
 #: adminapp/forms/shared.py
-msgid "Scan scope settings"
-msgstr "Indstillinger for scanomfang"
-
-#: adminapp/forms/shared.py
 msgid "Scan scope"
-msgstr "Scanomfang"
+msgstr "Scanningsområde"
 
 #: adminapp/forms/shared.py
 msgid "Scan all accounts in organization"
@@ -4908,6 +4904,9 @@ msgstr "Navnet er allerede i brug."
 
 #~ msgid "top 5 file types by total scanning time"
 #~ msgstr "top 5 filtyper efter samlet scanningstid"
+
+#~ msgid "Scan scope settings"
+#~ msgstr "Indstillinger for scanomfang"
 
 #~ msgid "scan summary"
 #~ msgstr "oversigt"

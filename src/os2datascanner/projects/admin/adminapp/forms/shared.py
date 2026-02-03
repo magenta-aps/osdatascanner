@@ -34,22 +34,9 @@ class Groups:
     )
 
     SCOPE_SETTINGS = (
-        _("Scan scope settings"),
+        _("Scan scope"),
         ["scan_scope_mode"],
     )
-
-
-class ScanScopeRadioWidget(forms.RadioSelect):
-    template_name = "components/admin_widgets/scan_scope_radio.html"
-
-    def __init__(self, *args, **kwargs):
-        self.org_units_bound_field = None
-        super().__init__(*args, **kwargs)
-
-    def get_context(self, name, value, attrs):
-        ctx = super().get_context(name, value, attrs)
-        ctx["org_units"] = self.org_units_bound_field
-        return ctx
 
 
 class RemediatorSelectMultipleWidget(forms.SelectMultiple):
@@ -67,10 +54,32 @@ class RemediatorSelectMultipleWidget(forms.SelectMultiple):
         return context
 
 
-class ScannerForm(GroupingModelForm):
-    # UI-only field: controls scan scope in the UI; mapped to scan_entire_org during validation.
+class ScanScopeMixin(forms.Form):
+    """
+    Opt-in mixin for scanners that support OU scoping.
+
+    Features:
+      - Radio-based UI for scope selection
+      - Nested rendering of org_units
+      - Mapping scan_scope_mode -> scan_entire_org
+    """
+
+    class ScanScopeRadioWidget(forms.RadioSelect):
+        template_name = "components/admin_widgets/scan_scope_radio.html"
+
+        def __init__(self, *args, **kwargs):
+            # BoundField for org_units is injected by the mixin
+            # so the widget template can render it inline.
+            self.org_units_bound_field = None
+            super().__init__(*args, **kwargs)
+
+        def get_context(self, name, value, attrs):
+            ctx = super().get_context(name, value, attrs)
+            ctx["org_units"] = self.org_units_bound_field
+            return ctx
+
     scan_scope_mode = forms.ChoiceField(
-        label=_("Scan scope"),
+        label="",  # Group legend is used instead of field label.
         choices=(
             ("all", _("Scan all accounts in organization")),
             ("select", _("Select organizational units to scan")),
@@ -79,6 +88,42 @@ class ScannerForm(GroupingModelForm):
         required=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._setup_scan_scope()
+
+    def _setup_scan_scope(self):
+        # Bound POST data takes precedence over instance/initial state.
+        if self.is_bound:
+            mode = self.data.get("scan_scope_mode")
+        else:
+            # Derive initial mode from legacy scan_entire_org.
+            scan_entire = self.initial.get("scan_entire_org")
+            if scan_entire is None:
+                scan_entire = getattr(self.instance, "scan_entire_org", None)
+            mode = "all" if scan_entire else "select"
+
+        self.fields["scan_scope_mode"].initial = mode
+
+        # Hide legacy checkbox — value is controlled via radio UI.
+        if "scan_entire_org" in self.fields:
+            self.fields["scan_entire_org"].widget = forms.HiddenInput()
+
+        # Inject BoundField so widget template can render org_units inline.
+        if "org_units" in self.fields:
+            self.fields["scan_scope_mode"].widget.org_units_bound_field = self["org_units"]
+
+    field_order = ["scan_scope_mode", "scan_entire_org"]
+
+    def clean_scan_entire_org(self):
+        mode = self.cleaned_data.get("scan_scope_mode")
+
+        if mode:
+            return mode == "all"
+        return self.cleaned_data.get("scan_entire_org")
+
+
+class ScannerForm(GroupingModelForm):
     remediators = forms.ModelMultipleChoiceField(
                     label=_("Remediators"),
                     queryset=Account.objects.all(),  # Take org into consideration
@@ -183,32 +228,3 @@ class ScannerForm(GroupingModelForm):
         if not self.user.has_perm("os2datascanner.can_validate"):
             self.fields["validation_status"].disabled = True
             self.fields["validation_status"].required = False
-
-        # Set initial scan_scope_mode from bound POST data or existing scan_entire_org state.
-        if self.is_bound:
-            mode = self.data.get("scan_scope_mode")
-        else:
-            scan_entire = self.initial.get("scan_entire_org")
-            if scan_entire is None and getattr(self.instance, "scan_entire_org", None) is not None:
-                scan_entire = self.instance.scan_entire_org
-            mode = "all" if scan_entire else "select"
-
-        self.fields["scan_scope_mode"].initial = mode
-
-        # Omit top-level field label (fieldset legend + per-option labels are enough for this).
-        self.fields["scan_scope_mode"].label = ""
-
-        # Keep scan_entire_org as a hidden field; value is controlled by scan_scope_mode.
-        if "scan_entire_org" in self.fields:
-            self.fields["scan_entire_org"].widget = forms.HiddenInput()
-
-        # Provide org_units BoundField to the widget so it can render it under the "select" radio.
-        if "org_units" in self.fields:
-            self.fields["scan_scope_mode"].widget.org_units_bound_field = self["org_units"]
-
-    def clean_scan_scope_mode(self):
-        # Map UI choice to the scan_entire_org boolean.
-        mode = self.cleaned_data["scan_scope_mode"]
-        if "scan_entire_org" in self.fields:
-            self.cleaned_data["scan_entire_org"] = (mode == "all")
-        return mode
