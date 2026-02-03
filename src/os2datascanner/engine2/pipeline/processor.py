@@ -1,5 +1,9 @@
+from collections.abc import Generator
+from typing import Any
 import structlog
 from urllib.error import HTTPError
+
+from os2datascanner.engine2.model.core.utilities import SourceManager
 from .. import settings
 from ..model.core import Source
 from ..utilities.backoff import TimeoutRetrier
@@ -47,49 +51,57 @@ def format_exception_message(ex: Exception, conversion: messages.ConversionMessa
     return exception_message
 
 
-def message_received_raw(body, channel, source_manager, *, _check=True):
-    """ Reads from the python-internal conversions channel"""
-
-    conversion = messages.ConversionMessage.from_json_object(body)
+def message_received(
+        conversion: messages.ConversionMessage,
+        sm: SourceManager,
+        *,
+        _check: bool = True) -> Generator[messages.SerialisableMessage]:
     tr = TimeoutRetrier(
         seconds=settings.pipeline["op_timeout"],
         max_tries=settings.pipeline["op_tries"]
     )
 
     try:
-        if _check and not tr.run(check, source_manager, conversion.handle):
-            yield from generate_missing_resource_messages(conversion)
+        if _check and not tr.run(check, sm, conversion.handle):
+            yield messages.ProblemMessage(
+                    scan_tag=conversion.scan_spec.scan_tag,
+                    source=None,
+                    handle=conversion.handle,
+                    missing=True,
+                    message="Resource check failed")
             # stop the generator immediately
             return
 
         if conversion.handle not in conversion.scan_spec.source:
             return  # handle points outside original scan_spec source, do nothing.
 
-        resource = conversion.handle.follow(source_manager)
-        representation = do_conversion(resource, conversion, tr, source_manager)
+        resource = conversion.handle.follow(sm)
+        representation = do_conversion(resource, conversion, tr, sm)
 
         yield from emit_representation(conversion, representation)
 
     except KeyError:
-        yield from handle_conversion_key_error(conversion, source_manager)
+        yield from handle_conversion_key_error(conversion, sm)
     except Exception as e:
         yield from handle_conversion_exception(conversion, e)
 
 
-def generate_missing_resource_messages(conversion):
-    # The resource is missing (and we're in a context where we care).
-    # Generate a problem message and a checkup.
-    for problems_q in ("os2ds_problems", "os2ds_checkups"):
-        yield (
-            problems_q,
-            messages.ProblemMessage(
-                scan_tag=conversion.scan_spec.scan_tag,
-                source=None,
-                handle=conversion.handle,
-                missing=True,
-                message="Resource check failed"
-            ).to_json_object()
-        )
+def message_received_raw(body, channel, source_manager, *, _check=True):
+    for m in message_received(
+            messages.ConversionMessage.from_json_object(body),
+            source_manager, _check=_check):
+        queues: list[str]
+        if isinstance(m, messages.ProblemMessage):
+            queues = ["os2ds_problems", "os2ds_checkups"]
+        elif isinstance(m, messages.RepresentationMessage):
+            queues = ["os2ds_representations"]
+        elif isinstance(m, messages.ScanSpecMessage):
+            queues = ["os2ds_scan_specs"]
+        else:
+            raise TypeError(type(m))
+        json_form = m.to_json_object()
+        for q in queues:
+            yield (q, json_form)
 
 
 def do_conversion(resource, conversion, retrier, source_manager):
@@ -130,7 +142,8 @@ def do_conversion(resource, conversion, retrier, source_manager):
         return retrier.run(convert, resource, required)
 
 
-def emit_representation(conversion, representation):
+def emit_representation(
+        conversion: messages.ConversionMessage, representation: Any):
     required = conversion.progress.rule.split()[0].operates_on
 
     # If the conversion also produced other values at the same
@@ -146,60 +159,44 @@ def emit_representation(conversion, representation):
         dv = {required.value: representation}
 
     logger.info(f"Required representation for {conversion.handle} is {required}")
-    yield (
-        "os2ds_representations",
-        messages.RepresentationMessage(
+    yield messages.RepresentationMessage(
             conversion.scan_spec,
             conversion.handle,
             conversion.progress,
-            encode_dict(dv)
-        ).to_json_object()
-    )
+            encode_dict(dv))
 
 
-def handle_conversion_key_error(conversion, source_manager):
+def handle_conversion_key_error(
+        conversion: messages.ConversionMessage, source_manager: SourceManager):
     try:
         derived_source = Source.from_handle(conversion.handle, source_manager)
         if derived_source:
-            new_scan_spec = conversion.scan_spec._replace(
-                source=derived_source,
-                progress=conversion.progress
-            )
-            yield (
-                "os2ds_scan_specs",
-                new_scan_spec.to_json_object()
-            )
+            yield conversion.scan_spec._replace(
+                    source=derived_source,
+                    progress=conversion.progress)
         else:
             # If we can't recurse any deeper, then produce an empty conversion
             # so that the matcher stage has something to work with
             # (XXX: is this always the right approach?)
-            yield (
-                "os2ds_representations",
-                messages.RepresentationMessage(
+            yield messages.RepresentationMessage(
                     conversion.scan_spec,
                     conversion.handle,
                     conversion.progress,
-                    {conversion.progress.rule.split()[0].operates_on.value: None}
-                ).to_json_object()
-            )
+                    {conversion.progress.rule.split()[0].operates_on.value: None})
     except Exception as e:
         yield from handle_conversion_exception(conversion, e)
 
 
-def handle_conversion_exception(conversion, exception):
+def handle_conversion_exception(
+        conversion: messages.ConversionMessage, exception: Exception):
     exception_message = format_exception_message(exception, conversion)
     logger.warning(exception_message, exc_info=exception)
 
-    for problems_q in ("os2ds_problems", "os2ds_checkups"):
-        yield (
-            problems_q,
-            messages.ProblemMessage(
-                scan_tag=conversion.scan_spec.scan_tag,
-                source=None,
-                handle=conversion.handle,
-                message=exception_message
-            ).to_json_object()
-        )
+    yield messages.ProblemMessage(
+            scan_tag=conversion.scan_spec.scan_tag,
+            source=None,
+            handle=conversion.handle,
+            message=exception_message)
 
 
 if __name__ == "__main__":
