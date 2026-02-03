@@ -5,11 +5,15 @@
 {% load i18n l10n utility_tags %}
 
 {% block card_title %}
-  {% trans "top time by file type"|capfirst %}
+  {% trans "top 5 CPU time by file type"|capfirst %}
 {% endblock %}
 
 {% block card_subtitle %}
-  {% trans "top 5 file types by total scanning time"|capfirst %}
+  {% blocktranslate trimmed %}
+        CPU time spent processing specific file types.
+        Note that OSdatascanner may run multiple parallel scanner processes, so
+        these times cannot be directly compared to the total scan time.
+  {% endblocktranslate %}
 {% endblock %}
 
 {% block card_body %}

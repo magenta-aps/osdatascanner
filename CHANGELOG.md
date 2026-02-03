@@ -23,6 +23,16 @@
 - Fixed an issue where line charts could render with visual loops when scan snapshot data was 
   received out of order in setups with multiple status collectors.
 
+- Worker processes now count "idle" time / time spent in subprocessed spawned
+ when reporting process time, making MIMETypeProcessStat more accurate of where time was spent.
+
+- Clarified ScanStatus "time by filetype" section by explicitly declaring it is measured CPU time,
+ with a note of likely multiprocessing and to not compare it to total scanner run time.
+
+- ScanStatus timeline graph now excludes datapoints with less than 1 object scanned, to be in line
+ with presented scanner finish time.
+
+
 ## Version 3.31.0, 27th January 2026
 
 "Mystery Zone"

@@ -116,7 +116,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
     global total_matches
     total_matches = 0
 
-    process_time_start = time.process_time()
+    process_time_start = time.perf_counter()
 
     try:
         for channel, message in process(source_manager, body):
@@ -125,7 +125,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
             else:
                 logger.error(f"unexpected message to queue {channel}")
     finally:
-        process_time_total = time.process_time() - process_time_start
+        process_time_total = time.perf_counter() - process_time_start
 
         message = messages.ConversionMessage.from_json_object(body)
         object_size = 0
