@@ -20,6 +20,11 @@ LANGUAGES = ["da"]
 # (required for some on-premises Exchange scans)
 FORCE_LEGACY_OPENSSL_PROVIDER = true
 
+# Should we preprocess PDF files before scanning them?
+# Uses pymupdf's ez_save with clean=True (corresponds to mutools clean -sc)
+[pdf]
+PREPROCESS_PDF = true
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "localhost"
@@ -38,22 +43,6 @@ AMQP_VHOST = "/"
 [subprocess]
 # The maximum runtime allowed for an external tool (in seconds)
 timeout = 45
-# The maximum runtime allowed for GhostScript to compress a pdf.
-ghostscript_timeout = 500
-
-[ghostscript]
-# Whether or not to preprocess PDF files with Ghostscript
-enabled = false
-# Maximum allowed processing time for GhostScript in seconds.
-timeout = 500
-# The base set of PDF parameters to GhostScript (see its "VectorDevices.html"
-# documentation for more options)
-pdf_profile = "/default"
-# The basic arguments to be given to the Ghostscript interpreter. Adjust these
-# values at your own risk; OS2datascanner may take some of them for granted
-_base_arguments = ["-sDEVICE=pdfwrite", "-dCompatibilityLevel=1.7", "-dNOPAUSE", "-dBATCH"]
-# Extra arguments to be appended to the Ghostscript command line, if any
-extra_args = []
 
 [tesseract]
 # Extra arguments to be added to the Tesseract command line, if any

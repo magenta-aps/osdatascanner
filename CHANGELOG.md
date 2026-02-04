@@ -13,6 +13,11 @@
 - The report module now filters out results, from sources newer than the configured retention period,
   by default when a retention policy is enabled.  
 
+- Introduced PyMuPDF to replace pypdf, pdftotxt, pdfimages and ghostscript.
+  - Scanning PDF files now almost exclusively occur in memory, only generating one temporary file 
+    pr. document for optimization purposes.
+  - Significant speed improvement on text extraction
+
 ### Bugfixes
 
 - Fixed an issue where line charts could render with visual loops when scan snapshot data was 
