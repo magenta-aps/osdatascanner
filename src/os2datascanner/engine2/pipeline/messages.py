@@ -111,18 +111,21 @@ class OrganisationFragment(NamedTuple):
         }
 
     @classmethod
-    def from_json_object(cls, obj: dict) -> OrganisationFragment:
-        try:
+    def from_json_object(cls, obj: dict | str) -> OrganisationFragment:
+        if isinstance(obj, dict):
             return OrganisationFragment(
-                    name=obj["name"], uuid=UUID(obj["uuid"]))
-        except TypeError:
+                    name=obj["name"],
+                    uuid=UUID(uv) if (uv := obj["uuid"]) else None)
+        elif isinstance(obj, str):
             # Organisation fragments created between versions 3.3.3 and 3.6.0
             # inclusive were just names
             return OrganisationFragment(name=obj, uuid=None)
+        else:
+            raise TypeError
 
 
 class ScanTagFragment(NamedTuple):
-    time: datetime
+    time: Optional[datetime]
     user: Optional[str]
     scanner: Optional[ScannerFragment]
     organisation: Optional[OrganisationFragment]
@@ -130,7 +133,7 @@ class ScanTagFragment(NamedTuple):
 
     def to_json_object(self):
         return {
-            "time": self.time.isoformat(),
+            "time": self.time.isoformat() if self.time else None,
             "user": self.user,
             "scanner": self.scanner.to_json_object() if self.scanner else None,
             "organisation": (self.organisation.to_json_object()
@@ -158,16 +161,25 @@ class ScanTagFragment(NamedTuple):
     @classmethod
     def from_json_object(cls, obj: dict | str) -> ScanTagFragment:
         try:
-            assert isinstance(obj, dict)
-            return ScanTagFragment(
-                    time=parse_datetime(obj["time"]),
-                    user=obj["user"],  # can be None, must be present
-                    scanner=ScannerFragment.from_json_object(obj["scanner"]),
-                    organisation=OrganisationFragment.from_json_object(
-                            obj["organisation"]))
+            if isinstance(obj, dict):
+                return ScanTagFragment(
+                        time=parse_datetime(obj["time"]),
+                        user=obj["user"],  # can be None, must be present
+                        scanner=ScannerFragment.from_json_object(obj["scanner"]),
+                        organisation=OrganisationFragment.from_json_object(
+                                obj["organisation"]))
+            elif isinstance(obj, str):
+                # Scan tags created between versions 3.0.0 and 3.3.2 inclusive
+                # were just simple timestamps
+                return ScanTagFragment(
+                        time=parse_datetime(obj),
+                        user=None, scanner=None, organisation=None)
+            else:
+                raise TypeError
         except KeyError:
             warnings.warn("trying to decode unrecognised scan tag object")
-            assert isinstance(obj, dict)
+            if not isinstance(obj, dict):
+                raise TypeError
             time = obj.get("time")
             user = obj.get("user")
             scanner = obj.get("scanner")
@@ -179,13 +191,6 @@ class ScanTagFragment(NamedTuple):
                             scanner) if scanner else None,
                     organisation=OrganisationFragment.from_json_object(
                             organisation) if organisation else None)
-        except TypeError:
-            # Scan tags created between versions 3.0.0 and 3.3.2 inclusive were
-            # just simple timestamps
-            assert isinstance(obj, str)
-            return ScanTagFragment(
-                    time=parse_datetime(obj),
-                    user=None, scanner=None, organisation=None)
 
 
 class ScanSpecMessage(NamedTuple):
@@ -193,8 +198,8 @@ class ScanSpecMessage(NamedTuple):
     source: Source
     rule: Rule
     configuration: dict
-    progress: ProgressFragment
-    filter_rule: Rule
+    progress: Optional[ProgressFragment]
+    filter_rule: Optional[Rule]
     explorer_queue: str = "os2ds_scan_specs"  # os2ds_scan_specs compatability fallback.
     conversion_queue: str = "os2ds_conversions"  # compatability fallback.
 
@@ -483,8 +488,8 @@ class StatusMessage(NamedTuple):
     def from_json_object(cls, obj: dict) -> StatusMessage:
         return StatusMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
-                message=obj.get("message"),
-                status_is_error=obj.get("status_is_error"),
+                message=obj.get("message", ""),
+                status_is_error=obj.get("status_is_error", False),
                 total_objects=obj.get("total_objects"),
                 new_sources=obj.get("new_sources"),
                 matches_found=obj.get("matches_found"),
