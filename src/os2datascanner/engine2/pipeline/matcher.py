@@ -6,6 +6,7 @@ from os2datascanner.engine2.model.core.utilities import SourceManager
 from ..conversions.types import decode_dict
 from ...utils.replace_regions import replace_regions
 from . import messages
+from .utilities.stage import dispatch
 from .. import settings
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.rules.rule import Rule, SimpleRule
@@ -162,25 +163,14 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
 
 
 def message_received_raw(body, channel, source_manager):
-    for m in message_received(
-            message := messages.RepresentationMessage.from_json_object(body),
-            source_manager):
-        queues: list[str]
-        if isinstance(m, messages.StatusMessage):
-            queues = ["os2ds_status"]
-        elif isinstance(m, messages.ProblemMessage):
-            queues = ["os2ds_problems", "os2ds_checkups"]
-        elif isinstance(m, messages.MatchesMessage):
-            queues = ["os2ds_matches", "os2ds_checkups"]
-        elif isinstance(m, messages.HandleMessage):
-            queues = ["os2ds_handles"]
-        elif isinstance(m, messages.ConversionMessage):
-            queues = [message.scan_spec.conversion_queue]
-        else:
-            raise TypeError(type(m))
-        json_form = m.to_json_object()
-        for q in queues:
-            yield (q, json_form)
+    message = messages.RepresentationMessage.from_json_object(body)
+    yield from dispatch(
+            message_received(message, source_manager),
+            (messages.StatusMessage, ["os2ds_status"]),
+            (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]),
+            (messages.MatchesMessage, ["os2ds_matches", "os2ds_checkups"]),
+            (messages.HandleMessage, ["os2ds_handles"]),
+            (messages.ConversionMessage, [message.scan_spec.conversion_queue]))
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import structlog
 from os2datascanner.engine2.model.core.utilities import SourceManager
 
 from ..utilities.backoff import TimeoutRetrier
+from .utilities.stage import dispatch
 from .explorer import message_received as explorer_handler
 from .processor import message_received as processor_handler
 from .matcher import message_received as matcher_handler
@@ -106,21 +107,12 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
     message = messages.ConversionMessage.from_json_object(body)
 
     try:
-        for m in process(source_manager, message):
-            queues: list[str]
-            if isinstance(m, messages.ProblemMessage):
-                queues = ["os2ds_checkups", "os2ds_problems"]
-            elif isinstance(m, messages.MatchesMessage):
-                queues = ["os2ds_checkups", "os2ds_matches"]
-            elif isinstance(m, messages.MetadataMessage):
-                queues = ["os2ds_metadata"]
-            elif isinstance(m, messages.StatusMessage):
-                queues = ["os2ds_status"]
-            else:
-                raise TypeError(type(m))
-            json_form = m.to_json_object()
-            for q in queues:
-                yield (q, json_form)
+        yield from dispatch(
+                process(source_manager, message),
+                (messages.ProblemMessage, ["os2ds_checkups", "os2ds_problems"]),
+                (messages.MatchesMessage, ["os2ds_checkups", "os2ds_matches"]),
+                (messages.MetadataMessage, ["os2ds_metadata"]),
+                (messages.StatusMessage, ["os2ds_status"]))
     finally:
         process_time_total = time.perf_counter() - process_time_start
 

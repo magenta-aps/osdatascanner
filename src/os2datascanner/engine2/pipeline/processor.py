@@ -4,6 +4,7 @@ import structlog
 from urllib.error import HTTPError
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
+from .utilities.stage import dispatch
 from .. import settings
 from ..model.core import Source
 from ..utilities.backoff import TimeoutRetrier
@@ -87,21 +88,13 @@ def message_received(
 
 
 def message_received_raw(body, channel, source_manager, *, _check=True):
-    for m in message_received(
-            messages.ConversionMessage.from_json_object(body),
-            source_manager, _check=_check):
-        queues: list[str]
-        if isinstance(m, messages.ProblemMessage):
-            queues = ["os2ds_problems", "os2ds_checkups"]
-        elif isinstance(m, messages.RepresentationMessage):
-            queues = ["os2ds_representations"]
-        elif isinstance(m, messages.ScanSpecMessage):
-            queues = ["os2ds_scan_specs"]
-        else:
-            raise TypeError(type(m))
-        json_form = m.to_json_object()
-        for q in queues:
-            yield (q, json_form)
+    yield from dispatch(
+            message_received(
+                    messages.ConversionMessage.from_json_object(body),
+                    source_manager, _check=_check),
+            (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]),
+            (messages.RepresentationMessage, ["os2ds_representations"]),
+            (messages.ScanSpecMessage, ["os2ds_scan_specs"]))
 
 
 def do_conversion(resource, conversion, retrier, source_manager):

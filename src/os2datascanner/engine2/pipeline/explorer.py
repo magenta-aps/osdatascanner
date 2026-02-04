@@ -9,6 +9,7 @@ from ..model.core.errors import (ModelException,
                                  UnauthorisedError,
                                  UnavailableError)
 from . import messages
+from .utilities.stage import dispatch
 from .utilities.filtering import is_handle_relevant
 
 logger = structlog.get_logger("explorer")
@@ -155,24 +156,12 @@ def message_received_raw(body, channel, source_manager):
                 message="Malformed input").to_json_object())
         return
 
-    for m in message_received(scan_spec, source_manager):
-        queues: list[str]
-        if isinstance(m, messages.StatusMessage):
-            queues = ["os2ds_status"]
-        elif isinstance(m, messages.ScanSpecMessage):
-            queues = [scan_spec.explorer_queue]
-        elif isinstance(m, messages.ConversionMessage):
-            queues = [scan_spec.conversion_queue]
-        elif isinstance(m, messages.ProblemMessage):
-            # We send problem messages to os2ds_problems to create or update a
-            # DocumentReport about the problem, and to os2ds_checkups to create a
-            # UserErrorLog object.
-            queues = ["os2ds_problems", "os2ds_checkups"]
-        else:
-            raise TypeError(type(m))
-        json_form = m.to_json_object()
-        for q in queues:
-            yield (q, json_form)
+    yield from dispatch(
+            message_received(scan_spec, source_manager),
+            (messages.StatusMessage, ["os2ds_status"]),
+            (messages.ScanSpecMessage, [scan_spec.explorer_queue]),
+            (messages.ConversionMessage, [scan_spec.conversion_queue]),
+            (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]))
 
 
 if __name__ == "__main__":

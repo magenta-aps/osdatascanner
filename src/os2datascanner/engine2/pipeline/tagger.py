@@ -4,6 +4,7 @@ from os2datascanner.engine2.model.core.utilities import SourceManager
 from .. import settings
 from ..utilities.backoff import TimeoutRetrier
 from . import messages
+from .utilities.stage import dispatch
 
 
 def message_received(
@@ -29,18 +30,12 @@ def message_received(
 
 
 def message_received_raw(body, channel, source_manager):
-    for m in message_received(
-            messages.HandleMessage.from_json_object(body),
-            source_manager):
-        queue: str | None
-        if isinstance(m, messages.MetadataMessage):
-            queue = "os2ds_metadata"
-        elif isinstance(m, messages.ProblemMessage):
-            queue = "os2ds_problems"
-        else:
-            raise TypeError(type(m))
-        if queue:
-            yield (queue, m.to_json_object())
+    yield from dispatch(
+            message_received(
+                    messages.HandleMessage.from_json_object(body),
+                    source_manager),
+            (messages.MetadataMessage, ["os2ds_metadata"]),
+            (messages.ProblemMessage, ["os2ds_problems"]))
 
 
 if __name__ == "__main__":
