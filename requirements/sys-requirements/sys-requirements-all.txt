@@ -19,11 +19,9 @@ gettext
 # Engine
 tesseract-ocr
 tesseract-ocr-dan
-pdftohtml
 imagemagick
 cifs-utils
 libsmbclient-dev
-ghostscript
 fonts-droid-fallback
 fonts-noto
 libreoffice-nogui
