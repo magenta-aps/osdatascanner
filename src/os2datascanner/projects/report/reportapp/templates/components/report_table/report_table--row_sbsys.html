@@ -80,10 +80,12 @@
       <td class="column--case-number">
         <div class="matches_container">
           <div class="matches">
-            <span class="datatable-numeral click-to-copy"
-                  title="{% trans 'Click to copy to clipboard' %}">
-              <span>{{ document_report.kle_number }}</span>
-            </span>
+            <button type="button"
+                    class="button button--transparent-button click-to-copy"
+                    aria-label="{% trans "Click to copy the case number to the clipboard" %}"
+                    title="{% trans "Click to copy to clipboard" %}">
+              <span class="datatable-numeral">{{ document_report.kle_number }}</span>
+            </button>
           </div>
         </div>
       </td>

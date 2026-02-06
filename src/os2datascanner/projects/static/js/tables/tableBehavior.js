@@ -349,13 +349,11 @@ function copyToClipboard(el) {
     const text = el.innerText;
     navigator.clipboard.writeText(text).then(
       function () {
-        el.classList.add("copied");
-        setTimeout(function () {
-          el.classList.remove("copied");
-        }, 100);
+        showSnackBar("Copied to clipboard", "success");
       },
       function (err) {
         console.error("Could not copy text: ", err);
+        showSnackBar("Could not copy text", "error");
       }
     );
   }
