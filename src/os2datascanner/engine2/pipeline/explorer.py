@@ -141,33 +141,47 @@ def message_received(  # noqa: CCR001
 
 
 def message_received_raw(body, channel, source_manager):
-    try:
-        scan_tag = messages.ScanTagFragment.from_json_object(body["scan_tag"])
-    except KeyError:
+    if "scan_tag" not in body:
         # Scan specifications with no scan tag are simply invalid and should be
-        # dropped
+        # dropped (... and shouldn't have been produced since 2020)
         return
+    # Store the scan_tag separately so we can use it as a scan identifier even
+    # if the ScanSpecMessage factory fails
+    scan_tag = messages.ScanTagFragment.from_json_object(body["scan_tag"])
 
+    problem: messages.ProblemMessage | None = None
     try:
         scan_spec = messages.ScanSpecMessage.from_json_object(body)
-    except UnknownSchemeError as ex:
-        yield ("os2ds_problems", messages.ProblemMessage(
-                scan_tag=scan_tag, source=None, handle=None,
-                message=("Unknown scheme '{0}'".format(
-                        ex.args[0]))).to_json_object())
-        return
-    except (KeyError, DeserialisationError):
-        yield ("os2ds_problems", messages.ProblemMessage(
-                scan_tag=scan_tag, source=None, handle=None,
-                message="Malformed input").to_json_object())
-        return
 
-    yield from dispatch(
+        yield from dispatch(
             message_received(scan_spec, source_manager),
             (messages.StatusMessage, ["os2ds_status"]),
             (messages.ScanSpecMessage, [scan_spec.explorer_queue]),
             (messages.ConversionMessage, [scan_spec.conversion_queue]),
             (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]))
+        return
+    except UnknownSchemeError as ex:
+        scheme, = ex.args
+        problem = messages.ProblemMessage(
+                scan_tag=scan_tag,
+                source=None, handle=None,
+                message=f"Unknown scheme '{scheme}'")
+    except DeserialisationError as ex:
+        type_, field = ex.args
+        problem = messages.ProblemMessage(
+                scan_tag=scan_tag,
+                source=None, handle=None,
+                message=f"{type_}: missing field '{field}'")
+    except Exception:
+        problem = messages.ProblemMessage(
+                scan_tag=scan_tag,
+                source=None, handle=None,
+                message="Unexpected error")
+
+    if problem:
+        json_form = problem.to_json_object()
+        for queue in ["os2ds_problems", "os2ds_checkups"]:
+            yield (queue, json_form)
 
 
 if __name__ == "__main__":

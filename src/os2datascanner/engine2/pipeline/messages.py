@@ -10,6 +10,7 @@ import warnings
 
 from ..utilities.datetime import parse_datetime
 from ..model.core import Handle, Source
+from ..model.core.errors import DeserialisationError
 from ..rules.rule import Rule, SimpleRule, Sensitivity
 
 
@@ -20,6 +21,13 @@ class SerialisableMessage(Protocol):
     @classmethod
     def from_json_object(cls, obj: dict) -> Self:
         ...
+
+
+def require_fields(
+        cls: type, d: dict[str, Any], *fields: str) -> None:
+    for f in fields:
+        if f not in d:
+            raise DeserialisationError(cls.__name__, f)
 
 
 N = TypeVar("N", bound=NamedTuple)
@@ -57,6 +65,7 @@ class MatchFragment(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> MatchFragment:
+        require_fields(cls, obj, "rule", "matches")
         return MatchFragment(
                 rule=Rule.from_json_object(obj["rule"]),
                 matches=obj["matches"])
@@ -77,6 +86,7 @@ class ProgressFragment(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ProgressFragment:
+        require_fields(cls, obj, "rule", "matches")
         return ProgressFragment(
                 rule=Rule.from_json_object(obj["rule"]),
                 matches=[MatchFragment.from_json_object(mf)
@@ -102,6 +112,7 @@ class ScannerFragment(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ScannerFragment:
+        require_fields(cls, obj, "pk", "name")
         return ScannerFragment(
             pk=obj["pk"], name=obj["name"],
             test=obj.get("test", False),
@@ -122,6 +133,7 @@ class OrganisationFragment(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict | str) -> OrganisationFragment:
+        # can't use require_fields here
         if isinstance(obj, dict):
             return OrganisationFragment(
                     name=obj["name"],
@@ -183,6 +195,7 @@ class ScanTagFragment(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict | str) -> ScanTagFragment:
+        # can't use require_fields here
         try:
             if isinstance(obj, dict):
                 return ScanTagFragment(
@@ -286,6 +299,7 @@ class ScanSpecMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ScanSpecMessage:
+        require_fields(cls, obj, "scan_tag", "source", "rule")
         # The progress fragment is only present when a scan spec is based on a
         # derived source and so already contains scan progress information
         progress_fragment = obj.get("progress")
@@ -341,6 +355,7 @@ class ConversionMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ConversionMessage:
+        require_fields(cls, obj, "scan_spec", "handle", "progress")
         return ConversionMessage(
                 scan_spec=ScanSpecMessage.from_json_object(obj["scan_spec"]),
                 handle=Handle.from_json_object(obj["handle"]),
@@ -377,6 +392,8 @@ class RepresentationMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> RepresentationMessage:
+        require_fields(
+                cls, obj, "scan_spec", "handle", "progress", "representations")
         return RepresentationMessage(
                 scan_spec=ScanSpecMessage.from_json_object(obj["scan_spec"]),
                 handle=Handle.from_json_object(obj["handle"]),
@@ -403,6 +420,7 @@ class HandleMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> HandleMessage:
+        require_fields(cls, obj, "scan_tag", "handle")
         return HandleMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]))
@@ -433,6 +451,7 @@ class MetadataMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> MetadataMessage:
+        require_fields(cls, obj, "scan_tag", "handle", "metadata")
         return MetadataMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]),
@@ -533,6 +552,7 @@ class MatchesMessage(NamedTuple):
     def from_json_object(cls, obj: dict) -> MatchesMessage:
         # WARNING! Migration 0052 in the report app is dependent on this method.
         # Alter with care!
+        require_fields(cls, obj, "scan_spec", "handle", "matched", "matches")
         return MatchesMessage(
                 scan_spec=ScanSpecMessage.from_json_object(obj["scan_spec"]),
                 handle=Handle.from_json_object(obj["handle"]),
@@ -581,6 +601,7 @@ class ProblemMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ProblemMessage:
+        require_fields(cls, obj, "scan_tag", "message")
         source = obj.get("source")
         handle = obj.get("handle")
         return ProblemMessage(
@@ -655,6 +676,7 @@ class StatusMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> StatusMessage:
+        require_fields(cls, obj, "scan_tag")
         return StatusMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 message=obj.get("message", ""),
@@ -752,6 +774,7 @@ class CommandMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> CommandMessage:
+        require_fields(cls, obj, "abort")
         abort = obj.get("abort")
         return CommandMessage(
                 abort=ScanTagFragment.from_json_object(abort)
