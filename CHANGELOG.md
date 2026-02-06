@@ -8,6 +8,8 @@
 
 - Scanned file types are now presented in a human-readable way, instead of using MIME types.
 
+- Case numbers in SBSYS results can now be copied by clicking them.
+
 ### General improvements
 
 - The report module now filters out results, from sources newer than the configured retention period,

@@ -80,7 +80,10 @@
       <td class="column--case-number">
         <div class="matches_container">
           <div class="matches">
-            <span class="datatable-numeral">{{ document_report.kle_number }}</span>
+            <span class="datatable-numeral click-to-copy"
+                  title="{% trans 'Click to copy to clipboard' %}">
+              <span>{{ document_report.kle_number }}</span>
+            </span>
           </div>
         </div>
       </td>
