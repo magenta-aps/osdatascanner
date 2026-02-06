@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-02 09:36+0100\n"
+"POT-Creation-Date: 2026-02-03 13:00+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2453,12 +2453,18 @@ msgid "share of total scanning time for each file type"
 msgstr "andel af den samlede scanningstid for hver filtype"
 
 #: adminapp/templates/components/scanstatus/card_ranking--mimetype_time.html
-msgid "top time by file type"
-msgstr "filtyper med størst tidsforbrug"
+msgid "top 5 CPU time by file type"
+msgstr "top 5 CPU-tid efter filtype"
 
 #: adminapp/templates/components/scanstatus/card_ranking--mimetype_time.html
-msgid "top 5 file types by total scanning time"
-msgstr "top 5 filtyper efter samlet scanningstid"
+msgid ""
+"CPU time spent processing specific file types. Note that OSdatascanner may "
+"run multiple parallel scanner processes, so these times cannot be directly "
+"compared to the total scan time."
+msgstr ""
+"CPU-tid brugt på at behandle specifikke filtyper. "
+"Bemærk, at OSdatascanner kan køre flere parallelle scannerprocesser, hvilket betyder, at "
+"disse tider ikke kan sammenlignes direkte med den samlede scanningstid."
 
 #: adminapp/templates/components/scanstatus/card_summary.html
 msgid "scan coverage"
@@ -4878,6 +4884,9 @@ msgstr "Udløbsdato"
 #: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
+
+#~ msgid "top 5 file types by total scanning time"
+#~ msgstr "top 5 filtyper efter samlet scanningstid"
 
 #~ msgid "scan summary"
 #~ msgstr "oversigt"
