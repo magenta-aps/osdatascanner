@@ -48,9 +48,15 @@ def message_received(  # noqa: CCR001
     exception_message = ""
 
     if message.progress:
+        # This is an internal message from a processor, informing us that some
+        # part of the rule has already been evaluated. Move that part out of
+        # the ScanSpecMessage; we'll attach it to the ConversionMessages we
+        # produce
         progress = message.progress
         message = message._replace(progress=None)
     else:
+        # This is a fresh Source with no rule execution done so far. Make a
+        # blank ProgressFragment to attach to the ConversionMessages we produce
         progress = messages.ProgressFragment(
                 rule=message.rule, matches=[])
 
