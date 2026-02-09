@@ -33,7 +33,7 @@ from os2datascanner.utils.system_utilities import time_now
 from prometheus_client import Summary, start_http_server
 
 
-from ...models.documentreport import DocumentReport
+from ...models.documentreport import DocumentReport, count_matches
 from ...models.scanner_reference import ScannerReference
 from ...utils import prepare_json_object
 from ....organizations.models import AccountOutlookSetting
@@ -328,6 +328,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 raw_matches=prepare_json_object(sort_matches_by_probability(result)),
                 resolution_status=resolution_status,
                 resolution_time=resolution_time,
+                number_of_matches=count_matches(message),
             )
             prev.refresh_from_db()
             return prev
