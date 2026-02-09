@@ -368,8 +368,8 @@ class Scanner(models.Model):
     def _construct_scan_spec_template(self, user, force: bool) -> (
             messages.ScanSpecMessage):
         """Builds a scan specification template for this scanner. This template
-        has no associated Source, so make sure you put one in with the _replace
-        or _deep_replace methods before trying to scan with it."""
+        has no associated Source, so make sure you put one in with _replace or
+        messages.deep_replace before trying to scan with it."""
 
         # Determine if we're running full or delta scan & set explorer and conversion queue
         # accordingly
@@ -510,7 +510,8 @@ class Scanner(models.Model):
                     LastModifiedRule(cutoff) if cutoff and not force else True,
                     spec_template.rule)
             Counter.try_incr(checkup_counter)
-            yield conv_template._deep_replace(
+            yield messages.deep_replace(
+                    conv_template,
                     scan_spec__source=rh.source,
                     handle=rh,
                     progress__rule=rule_here)

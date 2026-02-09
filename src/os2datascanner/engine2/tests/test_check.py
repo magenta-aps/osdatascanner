@@ -66,7 +66,8 @@ class CheckTests(unittest.TestCase):
         with SourceManager() as sm:
             with self.subTest(
                     "Extant objects are processed"):
-                message = template._deep_replace(
+                message = messages.deep_replace(
+                        template,
                         handle=model.DummyHandle(
                                 dummy, 0, hints={"exists": True}))
                 replies = list(
@@ -82,7 +83,8 @@ class CheckTests(unittest.TestCase):
 
             with self.subTest(
                     "Deleted files are not processed"):
-                message = template._deep_replace(
+                message = messages.deep_replace(
+                        template,
                         handle=model.DummyHandle(
                                 dummy, 0, hints={"exists": False}))
                 match list(
@@ -99,7 +101,8 @@ class CheckTests(unittest.TestCase):
             with self.subTest(
                     "Transiently unavailable files are not treated"
                     " as though they had been deleted"):
-                message = template._deep_replace(
+                message = messages.deep_replace(
+                        template,
                         handle=model.DummyHandle(
                                 dummy, 0, hints={"exists": None}))
                 match list(

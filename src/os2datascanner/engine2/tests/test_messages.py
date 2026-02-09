@@ -10,8 +10,6 @@ class SampleTuple(NamedTuple):
     field3: bool
     field4: object = None
 
-    _deep_replace = messages._deep_replace
-
 
 class TestMessage:
     def test_deep_replacement(self):
@@ -29,21 +27,21 @@ class TestMessage:
                                 field3=None)))
 
         # Test simple replacement
-        assert a._deep_replace(field1="Hi").field1 == "Hi"
+        assert messages.deep_replace(a, field1="Hi").field1 == "Hi"
         # Test 1-level deep replacement
-        assert a._deep_replace(field4__field1="Bye").field4.field1 == "Bye"
+        assert messages.deep_replace(a, field4__field1="Bye").field4.field1 == "Bye"
         # Test deeper replacement
-        assert a._deep_replace(
-            field4__field4__field3="FileNotFound").field4.field4.field3 == "FileNotFound"
+        assert messages.deep_replace(
+            a, field4__field4__field3="FileNotFound").field4.field4.field3 == "FileNotFound"
         # Test multiple replacements at different levels
-        b = a._deep_replace(
-                field1="Goddag",
-                field2=7-9-13,
-                field3="Sandt",
-                field4__field1="Farvel",
-                field4__field2=117,
-                field4__field3="Falsk",
-                field4__field4=None)
+        b = messages.deep_replace(a,
+                                  field1="Goddag",
+                                  field2=7-9-13,
+                                  field3="Sandt",
+                                  field4__field1="Farvel",
+                                  field4__field2=117,
+                                  field4__field3="Falsk",
+                                  field4__field4=None)
         assert b == SampleTuple(
                         field1="Goddag",
                         field2=-15,

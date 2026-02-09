@@ -102,17 +102,13 @@ def mini_scan(scan_item, rule):
                 progress=messages.ProgressFragment(
                     rule=rule,
                     matches=[]),
-                ).to_json_object()
+            )
 
-            for channel, message_ in worker.process(SourceManager(), conv):
-                if channel in ("os2ds_matches",):
-                    message = messages.MatchesMessage.from_json_object(
-                        message_)
-
-                    if not message.matched:
-                        continue
-
-                    yield message
+            yield from (
+                    message
+                    for message in worker.process(SourceManager(), conv)
+                    if isinstance(message, messages.MatchesMessage)
+                    and message.matched)
         else:
             logger.warning(
                     "miniscanner rejected too large object",
