@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: engine 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-27 13:36+0100\n"
+"POT-Creation-Date: 2026-02-09 12:46+0100\n"
 "PO-Revision-Date: 2025-02-27 14:21+0100\n"
 "Last-Translator: Alexander Faithfull-Murawski <af@magenta.dk>\n"
 "Language-Team: none\n"
@@ -99,10 +99,35 @@ msgstr "mappen \"{folder}\" af mailkontoen {mail_account}"
 msgid "Description in list \"{list_name}\""
 msgstr "Beskrivelse i liste \"{list_name}\""
 
+#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#, python-brace-format
+msgid ""
+"Exploration error: authenticated successfully against {server}, but source "
+"not found"
+msgstr ""
+"Fejl i udforskningen: autentificering imod {server} lykkedes, men kilden "
+"fandtes alligevel ikke"
+
+#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#, python-brace-format
+msgid "Exploration error: could not communicate with the server at {server}"
+msgstr "Fejl i udforskningen: kunne ikke komme i kontakt med serveren {server}"
+
+#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#, python-brace-format
+msgid "Exploration error: no valid authentication for server {server}"
+msgstr ""
+"Fejl i udforskningen: autentificering imod serveren {server} mislykkedes"
+
 #: src/os2datascanner/engine2/locale/../model/msgraph/lists.py
 #, python-brace-format
 msgid "List \"{list_name}\" (on site {site_name})"
 msgstr "Liste \"{list_name}\" (på websted {site_name})"
+
+#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#, python-brace-format
+msgid "Unknown exploration error of type {type}"
+msgstr "Ukendt udforskningsfejl af typen {type}"
 
 #: src/os2datascanner/engine2/locale/../model/webdav.py
 #, python-brace-format

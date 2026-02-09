@@ -98,8 +98,9 @@ def checkup_message_received_raw(body):
         recreate_account_coverage(coverages)
         return
 
-    if not scan_tag or not handle:
+    if not scan_tag:
         return
+
     try:
         scanner = Scanner.objects.get(pk=scan_tag.scanner.pk)
         ss = ScanStatus.objects.get(scan_tag=scan_tag_raw, cancelled=False)
@@ -112,6 +113,13 @@ def checkup_message_received_raw(body):
         # This means that there is no corresponding ScanStatus object.
         # Likely, this means that the scan has been cancelled. Tell processes to throwaway messages.
         cancel_scan_tag_messages(scan_tag.to_json_object())
+        return
+
+    if not handle:
+        if problem and problem.source:
+            # XXX: it might also be nice to set ScanStatus.message and
+            # .message_is_error in this case, but that might mean lock fighting
+            create_usererrorlog(problem, ss)
         return
 
     scan_time = scan_tag.time

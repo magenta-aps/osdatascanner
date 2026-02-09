@@ -2,6 +2,7 @@ from collections.abc import Generator
 import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
+from os2datascanner.engine2.utilities.i18n import gettext as _
 from ..model.core import (
         Source, takes_named_arg, UnknownSchemeError, DeserialisationError)
 from ..model.core.errors import (ModelException,
@@ -107,23 +108,28 @@ def message_received(  # noqa: CCR001
                 error_count=error_count, handle_count=handle_count,
                 source_count=source_count)
     except Exception as e:
+        exp_args = {
+            "type": type(e).__name__,
+        }
+        exp_fmt = _("Unknown exploration error of type {type}")
         if isinstance(e, ModelException):
+            exp_args["server"] = e.server
             if isinstance(e, UncontactableError):
-                exception_message = ("Exploration error: could not communicate with the server "
-                                     "at {e.server}")
+                exp_fmt = _(
+                        "Exploration error: could not communicate with the"
+                        " server at {server}")
             if isinstance(e, UnauthorisedError):
-                exception_message = ("Exploration error: server won't receive authentication "
-                                     "at {e.server}")
+                exp_fmt = _(
+                        "Exploration error: no valid authentication for server"
+                        " {server}")
             if isinstance(e, UnavailableError):
-                exception_message = ("Exploration error: server receives and authenticates, "
-                                     "but desired source not found at {e.server}")
-        else:
-            exception_message = "Exploration error. {0}: ".format(type(e).__name__)
-            exception_message += ", ".join([str(a) for a in e.args])
+                exp_fmt = _(
+                        "Exploration error: authenticated successfully against"
+                        " {server}, but source not found")
 
         yield messages.ProblemMessage(
                 scan_tag=message.scan_tag, source=message.source, handle=None,
-                message=exception_message)
+                message=exp_fmt.format(**exp_args))
         log.warning(
                 "finished unsuccessfully",
                 handle_count=handle_count, source_count=source_count,
@@ -158,7 +164,11 @@ def message_received_raw(body, channel, source_manager):
             (messages.StatusMessage, ["os2ds_status"]),
             (messages.ScanSpecMessage, [scan_spec.explorer_queue]),
             (messages.ConversionMessage, [scan_spec.conversion_queue]),
-            (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]))
+            # Top-level exploration problems should go to the admin system so
+            # they can become a UserErrorLog, and are for historical and
+            # compatibility reasons also sent to the report module, although
+            # this makes much less sense
+            (messages.ProblemMessage, ["os2ds_checkups", "os2ds_problems"]))
         return
     except UnknownSchemeError as ex:
         scheme, = ex.args
