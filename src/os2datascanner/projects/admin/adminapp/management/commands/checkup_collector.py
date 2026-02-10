@@ -4,6 +4,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from typing import Any
 import structlog
 
 from django.db import transaction
@@ -13,6 +14,7 @@ from django.core.management.base import BaseCommand
 from prometheus_client import Summary, start_http_server
 
 from os2datascanner.utils import debug
+from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
@@ -66,28 +68,36 @@ def create_usererrorlog(
 
 
 def checkup_message_received_raw(body):
-    handle = None
-    scan_tag = None
-    scan_tag_raw = None
-    matches = None
-    problem = None
-    if "message" in body:  # Problem message
-        problem = messages.ProblemMessage.from_json_object(body)
-        handle = problem.handle
-        scan_tag = problem.scan_tag
-        scan_tag_raw = body["scan_tag"]
-    elif "matches" in body:  # Matches message
-        matches = messages.MatchesMessage.from_json_object(body)
-        handle = matches.handle
-        scan_tag = matches.scan_spec.scan_tag
-        scan_tag_raw = body["scan_spec"]["scan_tag"]
-    elif "coverages" in body:  # CoverageMessage
-        message = CoverageMessage.from_json_object(body)
-        coverages = message.coverages
-        recreate_account_coverage(coverages)
+    logger.info(
+            "raw checkup message received", body=body)
+
+    if "coverages" in body:  # CoverageMessage
+        recreate_account_coverage(
+                CoverageMessage.from_json_object(body).coverages)
         return
 
-    if not scan_tag:
+    handle: Handle | None = None
+    scan_tag: messages.ScanTagFragment | None = None
+    scan_tag_raw: dict[str, Any] | None = None
+    message: (messages.ProblemMessage
+              | messages.MatchesMessage
+              | messages.ContentMissingMessage)
+    if "message" in body:  # Problem message
+        message = messages.ProblemMessage.from_json_object(body)
+        handle = message.handle
+        scan_tag = message.scan_tag
+        scan_tag_raw = body["scan_tag"]
+    elif "matches" in body:  # Matches message
+        message = messages.MatchesMessage.from_json_object(body)
+        handle = message.handle
+        scan_tag = message.scan_spec.scan_tag
+        scan_tag_raw = body["scan_spec"]["scan_tag"]
+    elif messages.ContentMissingMessage.test(body):
+        message = messages.ContentMissingMessage.from_json_object(body)
+        handle = message.handle
+        scan_tag = message.scan_tag
+        scan_tag_raw = body["scan_tag"]
+    else:
         return
 
     try:
@@ -105,10 +115,10 @@ def checkup_message_received_raw(body):
         return
 
     if not handle:
-        if problem and problem.source:
+        if isinstance(message, messages.ProblemMessage) and message.source:
             # XXX: it might also be nice to set ScanStatus.message and
             # .message_is_error in this case, but that might mean lock fighting
-            create_usererrorlog(problem, ss)
+            create_usererrorlog(message, ss)
         return
 
     scan_time = scan_tag.time
@@ -118,19 +128,17 @@ def checkup_message_received_raw(body):
     # to provide extra presentation information). But this information may be
     # stale if we hold onto it until the next scan, so we need to clear it
     # before storing it
-    here = handle
-    while here:
+    for here in handle.walk_up():
         here.clear_hints()
-        here = here.source.handle
 
     update_scheduled_checkup(
-            handle.censor(), matches, problem, scan_time, scanner, ss)
+            handle.censor(), message, scan_time, scanner, ss)
 
     yield from []
 
 
 def update_scheduled_checkup(  # noqa: CCR001 E501
-        handle, matches, problem, scan_time, scanner, ss: ScanStatus):
+        handle, message, scan_time, scanner, ss: ScanStatus):
     locked_qs = ScheduledCheckup.objects.select_for_update(
         of=('self',)
     ).filter(
@@ -142,10 +150,10 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
     if locked_qs:
         # There was already a checkup object in the database. Let's take a
         # look at it
-        if matches:
-            if not matches.matched:
-                if (len(matches.matches) == 1
-                        and isinstance(matches.matches[0].rule,
+        if isinstance(message, messages.MatchesMessage):
+            if not message.matched:
+                if (len(message.matches) == 1
+                        and isinstance(message.matches[0].rule,
                                        LastModifiedRule)):
                     # This object hasn't changed since the last scan.
                     # Update the checkup timestamp so we remember to check
@@ -170,23 +178,21 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                         handle=handle.presentation)
                 locked_qs.update(
                         interested_after=scan_time)
-        elif problem:
-            if problem.missing:
-                # Permanent error, so this object has been deleted. Forget
-                # about it
-                logger.debug(
-                        "Problem, deleted, deleting",
-                        handle=handle.presentation)
-                locked_qs.delete()
-            else:
-                # Transient error -- do nothing. In particular, don't
-                # update the checkup timestamp; we don't want to forget
-                # about changes between the last match and this error
-                logger.debug("Problem, transient, doing nothing",
-                             handle=handle.presentation)
+        elif isinstance(message, messages.ContentMissingMessage):
+            logger.debug(
+                    "Problem, deleted, deleting",
+                    handle=handle.presentation)
+            locked_qs.delete()
+        elif isinstance(message, messages.ProblemMessage):
+            # Transient error -- do nothing. In particular, don't update the
+            # checkup timestamp; we don't want to forget about changes between
+            # the last match and this error
+            logger.debug(
+                    "Problem, transient, doing nothing",
+                    handle=handle.presentation)
 
-    elif ((matches and matches.matched)
-            or (problem and not problem.missing)):
+    elif ((isinstance(message, messages.MatchesMessage) and message.matched)
+          or isinstance(message, messages.ProblemMessage)):
         logger.debug(
                 "Interesting, creating", handle=str(handle))
         # An object with a transient problem or with real matches is an
@@ -203,10 +209,10 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                     "handle_representation": handle.to_json_object(),
                     "interested_after": scan_time
                 })
-        if problem and not problem.missing:
+        if isinstance(message, messages.ProblemMessage):
             # For problems, we also create a UserErrorLog object to alert
             # the user that something did not go as expected.
-            create_usererrorlog(problem, ss)
+            create_usererrorlog(message, ss)
     else:
         logger.debug(
                 "Not interesting, doing nothing",
@@ -290,7 +296,7 @@ class CheckupCollectorRunner(PikaPipelineThread):
 
 class Command(BaseCommand):
     """Command for starting a pipeline collector process."""
-    help = __doc__
+    help: str = __doc__
 
     def handle(self, *args, **options):
         debug.register_debug_signal()

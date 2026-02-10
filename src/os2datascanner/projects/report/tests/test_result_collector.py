@@ -201,12 +201,9 @@ def negative_match(common_scan_spec, scan_tag1, common_handle, common_rule):
 
 @pytest.fixture
 def deletion(scan_tag1, common_handle):
-    return messages.ProblemMessage(
-        scan_tag=scan_tag1,
-        source=None,
-        handle=common_handle,
-        message="There was a file here. It's gone now.",
-        missing=True)
+    return messages.ContentMissingMessage(
+            scan_tag=scan_tag1,
+            handle=common_handle)
 
 
 @pytest.fixture

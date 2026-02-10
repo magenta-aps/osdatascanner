@@ -118,6 +118,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
         yield from dispatch(
                 process(source_manager, message),
                 (messages.ProblemMessage, ["os2ds_checkups", "os2ds_problems"]),
+                (messages.ContentMissingMessage, ["os2ds_checkups", "os2ds_problems"]),
+                # (messages.ContentSkippedMessage, ["os2ds_checkups", "os2ds_problems"]),
                 (messages.MatchesMessage, ["os2ds_checkups", "os2ds_matches"]),
                 (messages.MetadataMessage, ["os2ds_metadata"]),
                 (messages.StatusMessage, ["os2ds_status"]))

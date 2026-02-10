@@ -69,12 +69,9 @@ def message_received(
 
     try:
         if _check and not tr.run(check, sm, conversion.handle):
-            yield messages.ProblemMessage(
+            yield messages.ContentMissingMessage(
                     scan_tag=conversion.scan_spec.scan_tag,
-                    source=None,
-                    handle=conversion.handle,
-                    missing=True,
-                    message="Resource check failed")
+                    handle=conversion.handle)
             # stop the generator immediately
             return
 
@@ -98,6 +95,8 @@ def message_received_raw(body, channel, source_manager, *, _check=True):
                     messages.ConversionMessage.from_json_object(body),
                     source_manager, _check=_check),
             (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]),
+            (messages.ContentMissingMessage, ["os2ds_checkups", "os2ds_problems"]),
+            # (messages.ContentSkippedMessage, ["os2ds_checkups", "os2ds_problems"]),
             (messages.RepresentationMessage, ["os2ds_representations"]),
             (messages.ScanSpecMessage, ["os2ds_scan_specs"]))
 

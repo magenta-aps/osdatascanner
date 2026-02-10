@@ -80,3 +80,26 @@ class TestMessage:
         })
         assert stf.organisation == messages.OrganisationFragment(
             name="Vejstrand Kommune", uuid=None)
+
+    def test_problem_missing_compat(self):
+        """Old-fashioned ContentMissingMessages (based on ProblemMessage) can
+        be parsed."""
+        # Arrange
+        jf = {
+            "scan_tag": messages.ScanTagFragment.make_dummy().to_json_object(),
+            "handle": {
+                "type": "file",
+                "source": {
+                    "type": "file",
+                    "path": "/home/af",
+                },
+                "path": "path/to/document.txt",
+            },
+            "missing": True,
+            "message": "It's gone, boss"
+        }
+        # Act
+        mo = messages.ProblemMessage.from_json_object(jf)
+        # Assert
+        assert isinstance(mo, messages.ContentMissingMessage)
+        assert mo.handle.relative_path == "path/to/document.txt"

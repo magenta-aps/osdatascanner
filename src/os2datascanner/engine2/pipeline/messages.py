@@ -12,11 +12,15 @@ from typing import Any, Optional, Self, Sequence, NamedTuple, Protocol, TypeVar
 from datetime import datetime
 from dateutil import tz
 import warnings
+import structlog
 
 from ..utilities.datetime import parse_datetime
 from ..model.core import Handle, Source
 from ..model.core.errors import DeserialisationError
 from ..rules.rule import Rule, SimpleRule, Sensitivity
+
+
+logger = structlog.get_logger("engine2")
 
 
 class SerialisableMessage(Protocol):
@@ -587,9 +591,6 @@ class ProblemMessage(NamedTuple):
     message: str
     """A short description of the error."""
 
-    missing: bool = False
-    """Whether or not the object has been deleted."""
-
     irrelevant: bool = False
     """Whether or not the object is still relevant to the scan. (Set by the
     admin module if a user is removed from the set of covered accounts.)"""
@@ -600,22 +601,31 @@ class ProblemMessage(NamedTuple):
             "source": self.source.to_json_object() if self.source else None,
             "handle": self.handle.to_json_object() if self.handle else None,
             "message": self.message,
-            "missing": self.missing,
             "irrelevant": self.irrelevant
         }
 
     @classmethod
-    def from_json_object(cls, obj: dict) -> ProblemMessage:
+    def from_json_object(
+            cls, obj: dict) -> ProblemMessage | ContentMissingMessage:
         require_fields(cls, obj, "scan_tag", "message")
+        scan_tag = ScanTagFragment.from_json_object(obj["scan_tag"])
         source = obj.get("source")
         handle = obj.get("handle")
-        return ProblemMessage(
-                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
-                source=Source.from_json_object(source) if source else None,
-                handle=Handle.from_json_object(handle) if handle else None,
-                message=obj["message"],
-                missing=obj.get("missing", False),
-                irrelevant=obj.get("irrelevant", False))
+        if obj.get("missing") is True:
+            logger.warning(
+                    "converting deprecated ProblemMessage(missing=True) to"
+                    " modern ContentMissingMessage",
+                    scan_tag=scan_tag)
+            return ContentMissingMessage(
+                    scan_tag=scan_tag,
+                    handle=Handle.from_json_object(handle))
+        else:
+            return ProblemMessage(
+                    scan_tag=scan_tag,
+                    source=Source.from_json_object(source) if source else None,
+                    handle=Handle.from_json_object(handle) if handle else None,
+                    message=obj["message"],
+                    irrelevant=obj.get("irrelevant", False))
 
 
 class StatusMessage(NamedTuple):
@@ -711,6 +721,52 @@ def check_metadata_dict(cls_metadata, obj_metadata):
                     f" expected {expected_value!r}, but got {obj_value!r}")
 
 
+class ContentMissingMessage(NamedTuple):
+    """A ContentMissingMessage is emitted by the pipeline's processor stage (to
+    both the admin and report modules) if an object with an associated
+    conversion task could not be found.
+
+    This situation was once represented by a ProblemMessage(missing=True)
+    object; this is now deprecated, and the ProblemMessage.from_json_object()
+    function will automatically convert such messages to instances of this
+    class."""
+
+    METADATA = {
+        "domain": "os2datascanner.engine2.pipeline.messages",
+        "type": "ContentMissingMesage"
+    }
+
+    scan_tag: ScanTagFragment
+    """The identifier of this scan."""
+
+    handle: Handle
+    """A reference to the missing object."""
+
+    def to_json_object(self):
+        return {
+            "scan_tag": self.scan_tag.to_json_object(),
+            "handle": self.handle.to_json_object(),
+
+            "__metadata": self.METADATA
+        }
+
+    @staticmethod
+    def test(obj) -> bool:
+        try:
+            check_metadata_dict(
+                    ContentMissingMessage.METADATA, obj.get("__metadata", {}))
+            return True
+        except ValueError:
+            return False
+
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ContentMissingMessage:
+        check_metadata_dict(cls.METADATA, obj["__metadata"])
+        return ContentMissingMessage(
+                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
+                handle=Handle.from_json_object(obj["handle"]))
+
+
 class ContentSkippedMessage(NamedTuple):
     """A ContentSkippedMessage is emitted by the pipeline's processor stage if
     the configuration of a scanner job has prohibited the content of an object
@@ -746,7 +802,7 @@ class ContentSkippedMessage(NamedTuple):
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ContentSkippedMessage:
-        check_metadata_dict(ContentSkippedMessage.METADATA, obj["__metadata"])
+        check_metadata_dict(cls.METADATA, obj["__metadata"])
         return ContentSkippedMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]))
