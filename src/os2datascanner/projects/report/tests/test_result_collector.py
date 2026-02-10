@@ -831,3 +831,19 @@ class TestPipelineCollector:
         # It's formatted for readability, but we need to compare without newlines etc.
         assert DocumentReport.objects.get().presentation == re.sub(r"\s+",
                                                                    "", expected_presentation)
+
+    def test_number_of_matches_set_if_metadata_message_comes_first(self, smb_metadata_3b,
+                                                                   smb_match_3):
+        """It's possible that the result collector gets a metadata message before a match message.
+            In such cases, it's important that number_of_matches is updates accordingly too,
+            otherwise the result won't be visible.
+        """
+
+        # Arrange
+        record_metadata(smb_metadata_3b)
+        record_match(smb_match_3)
+
+        # Act
+        dr = DocumentReport.objects.get()
+        assert dr.number_of_matches == 1
+        assert dr.owner == "jens@example.invalid"

@@ -36,6 +36,8 @@
 - ScanStatus timeline graph now excludes datapoints with less than 1 object scanned, to be in line
  with presented scanner finish time.
 
+- Corrected an issue where DocumentReport.number_of_matches would not be set if result collector
+  received a MetadataMessage before MatchesMessage.
 
 ## Version 3.31.0, 27th January 2026
 
