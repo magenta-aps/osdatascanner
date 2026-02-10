@@ -116,5 +116,5 @@ class SBSYSDBScanner(Scanner):
                         spec_template.rule))
 
     class Meta:
-        verbose_name = _("SBSYS database scanner")
-        verbose_name_plural = _("SBSYS database scanners")
+        verbose_name = _("SBSYS scanner")
+        verbose_name_plural = _("SBSYS scanners")
