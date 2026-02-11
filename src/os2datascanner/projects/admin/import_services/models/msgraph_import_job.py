@@ -29,6 +29,11 @@ class MSGraphImportJob(BackgroundJob):
         related_name='msimportjobs'
     )
 
+    exclude_guests = models.BooleanField(
+        default=False,
+        help_text=_("Should guest users (#EXT#) be excluded from the import?")
+    )
+
     handled = models.IntegerField(null=True, blank=True)
     to_handle = models.IntegerField(null=True, blank=True)
 
@@ -55,8 +60,8 @@ class MSGraphImportJob(BackgroundJob):
         # MSGraph allows constructing select statements as a query parameter, this is a
         # specification of the fields we're interested in.
         graph_select = "?$select="
-        graph_select_params = "id, displayName, givenName, surname, " \
-                              "mail, userPrincipalName, onPremisesSecurityIdentifier"
+        graph_select_params = ("id,displayName,givenName,surname,mail,userPrincipalName,"
+                               "onPremisesSecurityIdentifier,userType")
 
         hierarchy = list()
         group_info = dict()
@@ -93,6 +98,9 @@ class MSGraphImportJob(BackgroundJob):
                             })
 
                         if member['@odata.type'] == data_type_user:
+                            if self.exclude_guests and member.get("userType") == "Guest":
+                                continue
+
                             member_id = member.get("id")
                             userinfo = gc.get(
                                 f'/users/{member_id}/?$expand=manager($select=id, '

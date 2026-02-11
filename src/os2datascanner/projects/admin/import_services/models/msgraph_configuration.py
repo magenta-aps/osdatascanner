@@ -11,6 +11,12 @@ from os2datascanner.projects.admin.core.models.background_job import JobState
 class MSGraphConfiguration(Exported, ImportService):
     grant = models.ForeignKey(GraphGrant, null=True, on_delete=models.SET_NULL)
 
+    exclude_guests = models.BooleanField(
+        default=False,
+        verbose_name=_("exclude guest users"),
+        help_text=_("Should guest users (#EXT#) be excluded from the import?")
+    )
+
     class Meta:
         verbose_name = _("MSGraph configuration")
         verbose_name_plural = _("MSGraph configurations")
@@ -25,6 +31,7 @@ class MSGraphConfiguration(Exported, ImportService):
             job_kwargs={
                 "grant": self.grant,
                 "organization": self.organization,
+                "exclude_guests": self.exclude_guests,
             },
             allowed_states=(
                 JobState.FINISHED,
