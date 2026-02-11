@@ -124,7 +124,8 @@ class SBSYSDBScanner(Scanner):
                     synthetic=True))
 
         Counter.try_incr(source_counter)
-        yield spec_template._replace(
+        yield messages.replace(
+                spec_template,
                 source=source,
                 rule=AndRule.make(
                         *user_filter_rule,

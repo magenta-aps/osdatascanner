@@ -607,22 +607,17 @@ class ProblemMessage:
     message: str
     """A short description of the error."""
 
-    irrelevant: bool = False
-    """Whether or not the object is still relevant to the scan. (Set by the
-    admin module if a user is removed from the set of covered accounts.)"""
-
     def to_json_object(self):
         return {
             "scan_tag": self.scan_tag.to_json_object(),
             "source": self.source.to_json_object() if self.source else None,
             "handle": self.handle.to_json_object() if self.handle else None,
             "message": self.message,
-            "irrelevant": self.irrelevant
         }
 
     @classmethod
     def from_json_object(
-            cls, obj: dict) -> ProblemMessage | ContentMissingMessage:
+            cls, obj: dict) -> ProblemMessage | ContentMissingMessage | ContentIrrelevantMessage:
         require_fields(cls, obj, "scan_tag", "message")
         scan_tag = ScanTagFragment.from_json_object(obj["scan_tag"])
         source = obj.get("source")
@@ -635,13 +630,19 @@ class ProblemMessage:
             return ContentMissingMessage(
                     scan_tag=scan_tag,
                     handle=Handle.from_json_object(handle))
+        elif obj.get("irrelevant") is True:
+            logger.warning(
+                    "converting deprecated ProblemMessage(irrelevant=True) to"
+                    " modern ContentIrrelevantMessage")
+            return ContentIrrelevantMessage(
+                    scan_tag=scan_tag,
+                    handle=Handle.from_json_object(handle))
         else:
             return ProblemMessage(
                     scan_tag=scan_tag,
                     source=Source.from_json_object(source) if source else None,
                     handle=Handle.from_json_object(handle) if handle else None,
-                    message=obj["message"],
-                    irrelevant=obj.get("irrelevant", False))
+                    message=obj["message"])
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -733,9 +734,53 @@ def check_metadata_dict(cls_metadata, obj_metadata):
     for key, expected_value in cls_metadata.items():
         obj_value = obj_metadata.get(key)
         if obj_value != expected_value:
-            raise ValueError(
+            raise DeserialisationError(
                     f"metadata field {key!r}:"
                     f" expected {expected_value!r}, but got {obj_value!r}")
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ContentIrrelevantMessage(_PointsAtHandle):
+    """A ContentIrrelevantMessage is emitted by the admin system when a
+    ScheduledCheckup is no longer relevant to a scan, for example because a
+    user has been removed from the set of covered accounts.
+
+    This information was once represented by a ProblemMessage(irrelevant=True)
+    object; this is now deprecated, and the ProblemMessage.from_json_object()
+    function will automatically convert such messages to instances of this
+    class.
+
+    Normally messages that are not emitted by the pipeline should not appear in
+    this file. See, for example, os2datascanner.projects.admin.adminapp.utils,
+    which defines a number of cleanup messages transmitted directly from the
+    admin module to the report module. This class exists to preserve backwards
+    compatibility with the ProblemMessage representation."""
+
+    METADATA = dict(domain="os2datascanner.engine2.pipeline.messages",
+                    type="ContentIrrelevantMessage")
+
+    def to_json_object(self):
+        return {
+            "scan_tag": self.scan_tag.to_json_object(),
+            "handle": self.handle.to_json_object(),
+
+            "__metadata": self.METADATA,
+        }
+
+    @classmethod
+    def test(cls, obj) -> bool:
+        try:
+            check_metadata_dict(cls.METADATA, obj.get("__metadata", {}))
+            return True
+        except DeserialisationError:
+            return False
+
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ContentIrrelevantMessage:
+        check_metadata_dict(cls.METADATA, obj["__metadata"])
+        return ContentIrrelevantMessage(
+                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
+                handle=Handle.from_json_object(obj["handle"]))
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -768,7 +813,7 @@ class ContentMissingMessage(_PointsAtHandle):
             check_metadata_dict(
                     ContentMissingMessage.METADATA, obj.get("__metadata", {}))
             return True
-        except ValueError:
+        except DeserialisationError:
             return False
 
     @classmethod
@@ -804,7 +849,7 @@ class ContentSkippedMessage(_PointsAtHandle):
             check_metadata_dict(
                     ContentSkippedMessage.METADATA, obj.get("__metadata", {}))
             return True
-        except ValueError:
+        except DeserialisationError:
             return False
 
     @classmethod
@@ -813,6 +858,11 @@ class ContentSkippedMessage(_PointsAtHandle):
         return ContentSkippedMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]))
+
+
+Issue = (ProblemMessage | ContentIrrelevantMessage
+         | ContentMissingMessage | ContentSkippedMessage)
+"""Convenience union of all types that represent issues or problems."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

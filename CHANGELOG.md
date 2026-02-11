@@ -10,6 +10,10 @@
 
 - The development environment now uses keycloak 26.6.0, which allows for realm renaming.
 
+- The pipeline's `ProblemMessage` class has been drastically simplified, and
+  new message classes have been introduced to represent missing and
+  irrelevant objects.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.

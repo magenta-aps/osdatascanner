@@ -79,7 +79,7 @@ def checkup_message_received_raw(body):
     handle: Handle | None = None
     scan_tag: messages.ScanTagFragment | None = None
     scan_tag_raw: dict[str, Any] | None = None
-    message: (messages.ProblemMessage
+    message: (messages.Issue
               | messages.MatchesMessage
               | messages.ContentMissingMessage)
     if "message" in body:  # Problem message
@@ -98,6 +98,9 @@ def checkup_message_received_raw(body):
         scan_tag = message.scan_tag
         scan_tag_raw = body["scan_tag"]
     else:
+        # Note that we don't need to handle ContentIrrelevantMessage here; the
+        # admin module emits this message for the report module's benefit and
+        # then deletes the checkup directly without going through the collector
         return
 
     try:

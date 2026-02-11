@@ -80,8 +80,7 @@ class TestScanStartup:
 
         match list(web_scanner._yield_checkups(template, True, False)):
             case [messages.ConversionMessage(handle=ws_page_1.handle),
-                  messages.ProblemMessage(handle=ws_irrelevant_page.handle,
-                                          irrelevant=True)]:
+                  messages.ContentIrrelevantMessage(handle=ws_irrelevant_page.handle)]:
                 pass
             case c:
                 pytest.fail(

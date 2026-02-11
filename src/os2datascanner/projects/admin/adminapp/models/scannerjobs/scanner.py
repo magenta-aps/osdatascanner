@@ -500,12 +500,9 @@ class Scanner(models.Model):
                 # (for example, an account that's been removed from the scan).
                 # Let the report module know about it...
                 Counter.try_incr(problem_counter)
-                yield messages.ProblemMessage(
+                yield messages.ContentIrrelevantMessage(
                        scan_tag=spec_template.scan_tag,
-                       handle=rh,
-                       source=rh.source,
-                       irrelevant=True,
-                       message="No longer relevant")
+                       handle=rh)
                 # ... and then delete the checkup
                 if not dry_run:
                     reminder.delete()
@@ -603,7 +600,8 @@ class Scanner(models.Model):
                         queue = spec_template.explorer_queue
                     case messages.ConversionMessage():
                         queue = spec_template.conversion_queue
-                    case messages.ProblemMessage():
+                    case (messages.ProblemMessage()
+                          | messages.ContentIrrelevantMessage()):
                         queue = "os2ds_problems"
                     case _:
                         queue = None

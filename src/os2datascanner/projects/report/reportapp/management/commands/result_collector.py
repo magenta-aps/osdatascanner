@@ -21,6 +21,8 @@ from os2datascanner.projects.report.organizations.models import Alias, AliasType
 from os2datascanner.utils.system_utilities import time_now
 from prometheus_client import Summary, start_http_server
 
+from os2datascanner.engine2.model.core.errors import DeserialisationError
+
 
 from ...models.documentreport import DocumentReport, count_matches
 from ...models.scanner_reference import ScannerReference
@@ -402,9 +404,26 @@ def sort_matches_by_probability(body):
 
 def handle_problem_message(scan_tag, result):
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
-    problem = messages.ProblemMessage.from_json_object(result)
-    obj = (problem.handle if problem.handle else problem.source)
-    path = obj.crunch(hash=True)
+    obj: Handle | Source | None
+    issue: messages.Issue
+
+    for type in (messages.ProblemMessage,
+                 messages.ContentMissingMessage,
+                 messages.ContentIrrelevantMessage,
+                 messages.ContentSkippedMessage):
+        try:
+            issue = type.from_json_object(result)
+            obj = issue.handle or getattr(issue, "source", None)
+            break
+        except DeserialisationError:
+            continue
+    else:
+        logger.error(
+                "unrecognised problem message",
+                message=result)
+        return
+
+    path = obj.crunch(hash=True) if obj else None
 
     org = get_org_from_scantag(scan_tag)
     if not org:
@@ -425,16 +444,16 @@ def handle_problem_message(scan_tag, result):
             path=path, scanner_job=scanner).
             order_by("-scan_time").first())
 
-    handle = problem.handle if problem.handle else None
+    handle = issue.handle if issue.handle else None
     presentation = str(handle) if handle else "(source)"
 
-    match (previous_report, problem):
-        case (None, messages.ProblemMessage(missing=True)):
+    match (previous_report, issue):
+        case (None, messages.ContentMissingMessage()):
             # We've received a report that a resource is missing, but we have
             # nothing associated with it. Nothing to do
             logger.debug("Problem message of no relevance. Throwing away.")
             pass
-        case (DocumentReport() as prev, messages.ProblemMessage(missing=True))\
+        case (DocumentReport() as prev, messages.ContentMissingMessage()) \
                 if prev.number_of_matches == 0:
             # A resource for which we only have a previous problem report has
             # been deleted. No need to keep the report.
@@ -445,7 +464,7 @@ def handle_problem_message(scan_tag, result):
                 msgtype="problem",
             )
             prev.delete()
-        case (DocumentReport() as prev, messages.ProblemMessage(missing=True)) \
+        case (DocumentReport() as prev, messages.ContentMissingMessage()) \
                 if not prev.resolution_status:
             # A resource for which we have some unresolved reports has been
             # deleted.
@@ -462,8 +481,8 @@ def handle_problem_message(scan_tag, result):
                 resolution_status=ResolutionChoices.REMOVED.value,
                 resolution_time=time_now(),
                 raw_problem=None)
-        case (DocumentReport() as prev,
-              messages.ProblemMessage(missing=False)) if prev.resolution_status is not None:
+        case (DocumentReport() as prev, messages.ProblemMessage()) \
+                if prev.resolution_status is not None:
             # A known resource, which isn't missing, has a problem, but has already been resolved.
             # Nothing to do, problem is not relevant anymore.
             if prev.scan_time == scan_tag.time:
@@ -474,22 +493,21 @@ def handle_problem_message(scan_tag, result):
                 logger.debug(
                         "Resource already resolved."
                         " Problem message of no relevance. ")
-        case (DocumentReport() as prev,
-              messages.ProblemMessage(missing=True)) if prev.resolution_status:
+        case (DocumentReport() as prev, messages.ContentMissingMessage()) \
+                if prev.resolution_status:
             # A resource for which we have some reports has been deleted, but
             # it's also been resolved. Nothing to do
             pass
 
-        # (simple recap of the previous four cases for irrelevant=True)
-        case (None, messages.ProblemMessage(irrelevant=True)):
+        case (None, messages.ContentIrrelevantMessage()):
             pass
-        case (DocumentReport() as prev, messages.ProblemMessage(irrelevant=True)) \
+        case (DocumentReport() as prev, messages.ContentIrrelevantMessage()) \
                 if prev.number_of_matches == 0:
             logger.debug(
                     "deleting as irrelevant contentless report",
                     report=prev, handle=presentation, msgtype="problem")
             prev.delete()
-        case (DocumentReport() as prev, messages.ProblemMessage(irrelevant=True)) \
+        case (DocumentReport() as prev, messages.ContentIrrelevantMessage()) \
                 if not prev.resolution_status:
             logger.debug(
                     "resource no longer relevant, status is IRRELEVANT",
@@ -498,15 +516,15 @@ def handle_problem_message(scan_tag, result):
                     resolution_status=ResolutionChoices.IRRELEVANT.value,
                     resolution_time=time_now(),
                     raw_problem=None)
-        case (DocumentReport() as prev, messages.ProblemMessage(irrelevant=True)) \
+        case (DocumentReport() as prev, messages.ContentIrrelevantMessage()) \
                 if prev.resolution_status is not None:
             pass
 
         case (None, messages.ProblemMessage()):
             # A resource not previously known to us has a problem. Store it
             source = (
-                    problem.handle.source
-                    if problem.handle else problem.source)
+                    issue.handle.source
+                    if issue.handle else issue.source)
             while source.handle:
                 source = source.handle.source
 
@@ -538,7 +556,7 @@ def handle_problem_message(scan_tag, result):
             # for sure that it's been deleted. Put the new problem in the
             # existing report
             DocumentReport.objects.filter(pk=prev.pk).update(
-                    raw_problem=prepare_json_object(problem.to_json_object()))
+                    raw_problem=prepare_json_object(issue.to_json_object()))
             return prev
 
 

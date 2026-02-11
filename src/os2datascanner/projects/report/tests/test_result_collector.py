@@ -208,12 +208,9 @@ def deletion(scan_tag1, common_handle):
 
 @pytest.fixture
 def irrelevance(scan_tag1, common_handle):
-    return messages.ProblemMessage(
+    return messages.ContentIrrelevantMessage(
         scan_tag=scan_tag1,
-        source=None,
-        handle=common_handle,
-        message="Nå ja, Jens, han arbejder her ikke længere, hva'",
-        irrelevant=True)
+        handle=common_handle)
 
 
 @pytest.fixture
