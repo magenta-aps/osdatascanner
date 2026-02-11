@@ -120,7 +120,8 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
     final_matches = copy(message.progress.matches)
     for match in new_matches:
         sub_rule, matches = postprocess_match(message.scan_spec.rule, match)
-        final_matches.append(messages.MatchFragment(sub_rule, matches))
+        final_matches.append(
+                messages.MatchFragment(rule=sub_rule, matches=matches))
 
     if isinstance(conclusion, bool):
         # We've come to a conclusion!
@@ -134,25 +135,26 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
             censored_handle = message.handle
             rules = message.scan_spec.rule.flatten()
             censored_handle._mail_subject = censor_context(censored_handle._mail_subject, rules)
-            message._replace(handle=censored_handle)
+            messages.replace(message, handle=censored_handle)
 
         # Censor item name in handle for sharepoint lists
         if hasattr(message.handle, "_item_name"):
             censored_handle = message.handle
             rules = message.scan_spec.rule.flatten()
             censored_handle._item_name = censor_context(censored_handle._item_name, rules)
-            message._replace(handle=censored_handle)
+            messages.replace(message, handle=censored_handle)
 
         yield messages.MatchesMessage(
-                message.scan_spec, message.handle,
+                scan_spec=message.scan_spec,
+                handle=message.handle,
                 matched=conclusion,
                 matches=final_matches)
 
         # Only trigger metadata scanning if the match succeeded
         if conclusion:
             yield messages.HandleMessage(
-                    message.scan_spec.scan_tag,
-                    message.handle)
+                    scan_tag=message.scan_spec.scan_tag,
+                    handle=message.handle)
     else:
         new_rep = conclusion.split()[0].operates_on
         # We need a new representation to continue
@@ -161,8 +163,9 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
                 f" new representation: [{new_rep}].")
 
         yield messages.ConversionMessage(
-                message.scan_spec, message.handle,
-                messages.deep_replace(
+                scan_spec=message.scan_spec,
+                handle=message.handle,
+                progress=messages.deep_replace(
                         message.progress,
                         rule=conclusion,
                         matches=final_matches))

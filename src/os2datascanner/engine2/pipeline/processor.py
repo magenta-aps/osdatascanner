@@ -158,10 +158,10 @@ def emit_representation(
 
     logger.info(f"Required representation for {conversion.handle} is {required}")
     yield messages.RepresentationMessage(
-            conversion.scan_spec,
-            conversion.handle,
-            conversion.progress,
-            encode_dict(dv))
+            scan_spec=conversion.scan_spec,
+            handle=conversion.handle,
+            progress=conversion.progress,
+            representations=encode_dict(dv))
 
 
 def handle_conversion_key_error(
@@ -169,18 +169,18 @@ def handle_conversion_key_error(
     try:
         derived_source = Source.from_handle(conversion.handle, source_manager)
         if derived_source:
-            yield conversion.scan_spec._replace(
-                    source=derived_source,
-                    progress=conversion.progress)
+            yield messages.replace(conversion.scan_spec,
+                                   source=derived_source,
+                                   progress=conversion.progress)
         else:
             # If we can't recurse any deeper, then produce an empty conversion
             # so that the matcher stage has something to work with
             # (XXX: is this always the right approach?)
             yield messages.RepresentationMessage(
-                    conversion.scan_spec,
-                    conversion.handle,
-                    conversion.progress,
-                    {conversion.progress.rule.split()[0].operates_on.value: None})
+                    scan_spec=conversion.scan_spec,
+                    handle=conversion.handle,
+                    progress=conversion.progress,
+                    representations={conversion.progress.rule.split()[0].operates_on.value: None})
     except Exception as e:
         yield from handle_conversion_exception(conversion, e)
 

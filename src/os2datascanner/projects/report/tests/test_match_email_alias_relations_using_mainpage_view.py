@@ -123,7 +123,7 @@
 #     progress=None)
 
 # egon_positive_match = messages.MatchesMessage(
-#     scan_spec=egon_scan_spec._replace(scan_tag=scan_tag0),
+#     scan_spec=messages.replace(egon_scan_spec, scan_tag=scan_tag0),
 #     handle=egon_email_handle,
 #     matched=True,
 #     matches=[messages.MatchFragment(
@@ -132,7 +132,7 @@
 # )
 
 # egon_positive_match_1 = messages.MatchesMessage(
-#     scan_spec=egon_scan_spec._replace(scan_tag=scan_tag1),
+#     scan_spec=messages.replace(egon_scan_spec, scan_tag=scan_tag1),
 #     handle=egon_email_handle_1,
 #     matched=True,
 #     matches=[messages.MatchFragment(
@@ -142,7 +142,7 @@
 
 
 # egon_positive_match_2 = messages.MatchesMessage(
-#     scan_spec=egon_scan_spec._replace(scan_tag=scan_tag2),
+#     scan_spec=messages.replace(egon_scan_spec, scan_tag=scan_tag2),
 #     handle=egon_email_handle_2,
 #     matched=True,
 #     matches=[messages.MatchFragment(
@@ -195,7 +195,7 @@
 #     progress=None)
 
 # kjeld_positive_match = messages.MatchesMessage(
-#     scan_spec=kjeld_scan_spec._replace(scan_tag=scan_tag0),
+#     scan_spec=messages.replace(kjeld_scan_spec, scan_tag=scan_tag0),
 #     handle=kjeld_email_handle,
 #     matched=True,
 #     matches=[messages.MatchFragment(

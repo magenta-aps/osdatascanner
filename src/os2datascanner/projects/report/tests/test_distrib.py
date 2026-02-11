@@ -109,7 +109,7 @@ def lucky_match_message(lucky_scan_spec, lucky_file):
         matched=True,
         matches=[
                 messages.MatchFragment(
-                        AlwaysMatchesRule(),
+                        rule=AlwaysMatchesRule(),
                         matches=[{"match": True}])
         ])
 

@@ -103,7 +103,7 @@ def handle_with_a_very_long_name():
 def match_with_a_very_long_name(common_scan_spec, scan_tag0,
                                 handle_with_a_very_long_name, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
         handle=handle_with_a_very_long_name,
         matched=True,
         matches=[
@@ -127,7 +127,7 @@ def common_scan_spec(common_handle, common_rule):
 @pytest.fixture
 def positive_match(common_scan_spec, scan_tag0, common_handle, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
         handle=common_handle,
         matched=True,
         matches=[

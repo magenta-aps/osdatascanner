@@ -190,9 +190,9 @@ class Command(BaseCommand):
 
             for _h in range(handles):
                 handle = handle_generator_function()
-                scan_spec = scan_spec._replace(
-                    source=handle._source,
-                )
+                scan_spec = messages.replace(scan_spec,
+                                             source=handle._source,
+                                             )
                 match_here, match_stats = make_fake_match(scan_spec, handle)
                 stats["matches"] += match_stats["matches"]
                 # ok, this is ugly. Sorry Emil...
@@ -286,7 +286,7 @@ def make_fake_match(scan_spec, handle):
                 for match in range(1, num_matches + 1)
             ],
         )
-        match_here = match_here._replace(matched=True, matches=[fragment])
+        match_here = messages.replace(match_here, matched=True, matches=[fragment])
     return match_here, {"matches": num_matches}
 
 

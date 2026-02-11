@@ -3,16 +3,17 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import NamedTuple
 import datetime
+from dataclasses import dataclass
 
 from os2datascanner.engine2.pipeline import messages
 
 
-class SampleTuple(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class SampleTuple:
     field1: str
     field2: int
-    field3: bool
+    field3: bool | str | None
     field4: object = None
 
 
