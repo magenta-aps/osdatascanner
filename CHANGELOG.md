@@ -22,6 +22,9 @@
     pr. document for optimization purposes.
   - Significant speed improvement on text extraction
 
+- Added a customer submitted file, that produced several false positives for the CPR-rule,
+  as a test case.
+
 ### Bugfixes
 
 - Fixed an issue where line charts could render with visual loops when scan snapshot data was 
