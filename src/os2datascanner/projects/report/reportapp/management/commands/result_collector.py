@@ -264,8 +264,9 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
     1. If there are neither old or new matches, we simply ignore the message.
     2. If the message contains matches,
     we create or update a document report with all the received information.
-    3. If we already have an unhandled document report for the scanned object,
-    but the new message doesn't contain any matches, we update the scan time and withheld status.
+    3. If we already have a document report representing a problem, we delete it.
+    4. If we already have a matched unhandled document report for the scanned object,
+    we update the scan time and withheld status.
     Then we mark it as handled, if the object has been changed since last scan.
     """
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
@@ -356,8 +357,19 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
             )
             return dr
 
-        case (DocumentReport() as prev, False) if prev.resolution_status is None:
-            # We have an old unhandled report, but haven't received any matches.
+        case (DocumentReport() as prev, False) if prev.raw_matches is None:
+            # We have an old report without any matches. It must be a problem report,
+            # but since we didn't encounter any problems this time, it has been fixed.
+            logger.debug("Problem has been fixed. Deleting report", report=prev)
+            prev.delete()
+            return None
+
+        case (DocumentReport() as prev, False) if prev.resolution_status is not None:
+            # We have an old handled report, and didn't receive new matches. Leave it be
+            return None
+
+        case (DocumentReport() as prev, False):
+            # We have an old unhandled report with matches, but haven't received any matches.
             if len(message.matches) == 1 and isinstance(message.matches[0].rule, LastModifiedRule):
                 # The file hasn't been changed, so the matches are the same as they were last time.
                 # Update scan_time, only_notify_superadmin, and raw_problem, leaving the rest as is.
@@ -377,10 +389,6 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                     resolution_status=ResolutionChoices.EDITED.value,
                     resolution_time=time_now(),
                 )
-            return None
-
-        case (DocumentReport() as prev, False) if prev.resolution_status is not None:
-            # We have an old handled report, and didn't receive new matches. Leave it be
             return None
 
 
