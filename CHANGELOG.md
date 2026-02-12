@@ -42,6 +42,8 @@
 - Corrected an issue where DocumentReport.number_of_matches would not be set if result collector
   received a MetadataMessage before MatchesMessage.
 
+- A bug, causing the result collector to make document reports without any contest, has been fixed.
+
 ## Version 3.31.0, 27th January 2026
 
 "Mystery Zone"
