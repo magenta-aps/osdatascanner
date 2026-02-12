@@ -1,6 +1,10 @@
 import pytest
+import os.path
 
 from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.model.core import Source, SourceManager
+from os2datascanner.engine2.model.file import FilesystemHandle
+from .test_compound_sources import try_apply
 
 
 class TestCPRRule:
@@ -118,3 +122,19 @@ class TestCPRRule:
                 CPRRule().match(text)) == []
         assert self.simplify_matches(
                 CPRRule(whitelist=whitelist).match(text)) == potential
+
+    def test_p_numre_pdf(self):
+        """The file `p-numre.pdf` contains a lot of "p-numre", about 20% of which are valid
+        cpr-numbers. This tests checks that bin_check filters away these false positives."""
+        handle = FilesystemHandle.make_handle(
+            os.path.join(
+                os.path.dirname(__file__),
+                "data/pdf/p-numre.pdf"
+            )
+        )
+
+        with SourceManager() as sm:
+            source = Source.from_handle(handle, sm)
+            rule = CPRRule(modulus_11=True, examine_context=True)
+            results = list(try_apply(sm, source, rule))
+            assert not results
