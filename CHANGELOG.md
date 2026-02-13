@@ -10,6 +10,8 @@
 
 - Case numbers in SBSYS results can now be copied by clicking them.
 
+- Added an option to exclude guest users when using MSGraph import job.
+
 ### General improvements
 
 - The report module now filters out results, from sources newer than the configured retention period,

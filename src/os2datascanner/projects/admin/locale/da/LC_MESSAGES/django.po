@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-03 13:00+0100\n"
+"POT-Creation-Date: 2026-02-11 13:26+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2462,9 +2462,9 @@ msgid ""
 "run multiple parallel scanner processes, so these times cannot be directly "
 "compared to the total scan time."
 msgstr ""
-"CPU-tid brugt på at behandle specifikke filtyper. "
-"Bemærk, at OSdatascanner kan køre flere parallelle scannerprocesser, hvilket betyder, at "
-"disse tider ikke kan sammenlignes direkte med den samlede scanningstid."
+"CPU-tid brugt på at behandle specifikke filtyper. Bemærk, at OSdatascanner "
+"kan køre flere parallelle scannerprocesser, hvilket betyder, at disse tider "
+"ikke kan sammenlignes direkte med den samlede scanningstid."
 
 #: adminapp/templates/components/scanstatus/card_summary.html
 msgid "scan coverage"
@@ -3799,6 +3799,15 @@ msgstr "LDAP-konfiguration"
 #: import_services/models/ldap_configuration.py
 msgid "LDAP configurations"
 msgstr "LDAP-konfigurationer"
+
+#: import_services/models/msgraph_configuration.py
+msgid "exclude guest users"
+msgstr "ekskludér gæstebrugere"
+
+#: import_services/models/msgraph_configuration.py
+#: import_services/models/msgraph_import_job.py
+msgid "Should guest users (#EXT#) be excluded from the import?"
+msgstr "Skal gæstebrugere (#EXT#) ekskluderes fra importen?"
 
 #: import_services/models/msgraph_configuration.py
 msgid "MSGraph configuration"
