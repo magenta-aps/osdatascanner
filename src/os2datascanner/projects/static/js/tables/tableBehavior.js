@@ -342,3 +342,26 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add resize listener to adjust visibility dynamically
   window.addEventListener("resize", toggleShowMoreButtons);
 });
+
+// Copy element contents clipboard
+function copyToClipboard(el) {
+  if (el) {
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).then(
+      function () {
+        showSnackBar("Copied to clipboard", "success");
+      },
+      function (err) {
+        console.error("Could not copy text: ", err);
+        showSnackBar("Could not copy text", "error");
+      }
+    );
+  }
+}
+
+document.addEventListener("click", function (e) {
+  const element = e.target.closest(".click-to-copy");
+  if (element) {
+    copyToClipboard(element);
+  }
+});

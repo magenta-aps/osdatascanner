@@ -138,6 +138,18 @@
       border: var(--btn-border-default) transparent;
       background-color: transparent;
     }
+
+    &.click-to-copy {
+      padding: 0;
+
+      &:hover:not([disabled]) {
+        color: var(--color-primary-light);
+      }
+
+      &.copied:not([disabled]) {
+        color: var(--color-primary);
+      }
+    }
   }
 
   &--caret-button {

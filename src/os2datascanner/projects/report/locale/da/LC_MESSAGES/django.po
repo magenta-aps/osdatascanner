@@ -902,6 +902,10 @@ msgid "no deviations found"
 msgstr "ingen afvigelser fundet"
 
 #: reportapp/templates/components/report_table/report_table--row_sbsys.html
+msgid "Click to copy to clipboard"
+msgstr "Klik for at kopiére til udklipsholderen"
+
+#: reportapp/templates/components/report_table/report_table--row_sbsys.html
 msgid "Revert handle status and return this result to the result overview"
 msgstr ""
 "Fortryd håndteringsstatus og returnér dette resultat til resultatoverblikket"
