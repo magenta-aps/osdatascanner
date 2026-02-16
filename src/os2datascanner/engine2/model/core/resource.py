@@ -83,6 +83,11 @@ class Resource(ABC):
         each Source will only be opened once by a given StateManager.)"""
         return self._sm.open(self.handle.source)
 
+    def get_size(self):
+        """Returns the byte size of the resource. This method is a fallback, and should be
+        implemented on each child class, if possible."""
+        return 0
+
 
 class TimestampedResource(Resource):
     def __init__(self, handle, sm):
