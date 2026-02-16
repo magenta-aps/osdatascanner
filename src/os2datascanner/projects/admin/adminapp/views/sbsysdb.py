@@ -10,7 +10,7 @@ from .scanner_views import (
 
 
 class SBSYSDBScannerList(ScannerList):
-    """Displays list of web scanners."""
+    """Displays list of SBSYS scanners."""
 
     model = SBSYSDBScanner
     type = 'sbsys-db'

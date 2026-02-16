@@ -1,4 +1,10 @@
-{# djlint:off #}
-{% include "django/forms/widgets/input_option.html" %}
-<!-- custom widget -->
-{# djlint:on #}
+{# radio_option.html #}
+
+{# Custom widget for Django Forms' radio fields #}
+
+<div class="custom-field__wrapper custom-field__wrapper--radio">
+  {% include "django/forms/widgets/input.html" %}
+
+  <label class="custom-field__label custom-field__label--radio"
+         {% if widget.attrs.id %}for="{{ widget.attrs.id }}"{% endif %}>{{ widget.label }}</label>
+</div>

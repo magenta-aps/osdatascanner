@@ -34,8 +34,8 @@ class Groups:
     )
 
     SCOPE_SETTINGS = (
-        _("Scan scope settings"),
-        ["org_units", "scan_entire_org"],
+        _("Scan scope"),
+        ["scan_scope_mode"],
     )
 
 
@@ -54,8 +54,93 @@ class RemediatorSelectMultipleWidget(forms.SelectMultiple):
         return context
 
 
-class ScannerForm(GroupingModelForm):
+class ScanScopeMixin(forms.Form):
+    """
+    Opt-in mixin for scanners that support OU scoping.
 
+    Features:
+      - Radio-based UI for scope selection
+      - Nested rendering of org_units
+      - Mapping scan_scope_mode -> scan_entire_org
+    """
+
+    class ScanScopeRadioWidget(forms.RadioSelect):
+        template_name = "components/admin_widgets/scan_scope_radio.html"
+
+        def __init__(self, *args, **kwargs):
+            # BoundField for org_units is injected by the mixin
+            # so the widget template can render it inline.
+            self.org_units_bound_field = None
+            super().__init__(*args, **kwargs)
+
+        def get_context(self, name, value, attrs):
+            ctx = super().get_context(name, value, attrs)
+            ctx["org_units"] = self.org_units_bound_field
+            return ctx
+
+    scan_scope_mode = forms.ChoiceField(
+        label="",  # Group legend is used instead of field label.
+        choices=(
+            ("all", _("Scan all accounts in organization")),
+            ("select", _("Select organizational units to scan")),
+        ),
+        widget=ScanScopeRadioWidget,
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._setup_scan_scope()
+
+    def _setup_scan_scope(self):
+        # Bound POST data takes precedence over instance/initial state.
+        if self.is_bound:
+            mode = self.data.get("scan_scope_mode")
+        else:
+            # Derive initial mode from legacy scan_entire_org.
+            scan_entire = self.initial.get("scan_entire_org")
+            if scan_entire is None:
+                scan_entire = getattr(self.instance, "scan_entire_org", None)
+            mode = "all" if scan_entire else "select"
+
+        self.fields["scan_scope_mode"].initial = mode
+
+        # Hide legacy checkbox — value is controlled via radio UI.
+        if "scan_entire_org" in self.fields:
+            self.fields["scan_entire_org"].widget = forms.HiddenInput()
+
+        # Inject BoundField so widget template can render org_units inline.
+        if "org_units" in self.fields:
+            self.fields["scan_scope_mode"].widget.org_units_bound_field = self["org_units"]
+
+    field_order = ["scan_scope_mode", "scan_entire_org"]
+
+    def clean_scan_entire_org(self):
+        mode = self.cleaned_data.get("scan_scope_mode")
+
+        if mode:
+            return mode == "all"
+        return self.cleaned_data.get("scan_entire_org")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        scan_entire_org = cleaned_data.get("scan_entire_org")
+        org_units = cleaned_data.get("org_units")
+
+        if "org_units" in self.fields:
+            if not scan_entire_org and not (org_units and org_units.exists()):
+                self.add_error(
+                    "org_units",
+                    _(
+                        "Select one or more organizational units, "
+                        "or choose to scan the entire organization."
+                    )
+                )
+
+        return cleaned_data
+
+
+class ScannerForm(GroupingModelForm):
     remediators = forms.ModelMultipleChoiceField(
                     label=_("Remediators"),
                     queryset=Account.objects.all(),  # Take org into consideration
@@ -88,8 +173,7 @@ class ScannerForm(GroupingModelForm):
                     queryset=Rule.objects.all(),
                     widget=forms.Select(attrs={
                         "hx-swap-oob": "true"
-                    })
-                    )
+                    }))
 
     exclusion_rule = forms.ModelChoiceField(
                     label=_("Exclusion rule"),
@@ -115,6 +199,14 @@ class ScannerForm(GroupingModelForm):
             user.make_org_Q("uuid")
         ).order_by("name")
         self.fields["organization"].initial = self.org.uuid
+
+        # Restrict org-specific fields to the selected org (if present)
+        for name in ("grant", "org_units"):
+            if name not in self.fields:
+                continue
+            field = self.fields[name]
+            field.queryset = field.queryset.filter(organization=self.org)
+            field.widget.attrs["hx-swap-oob"] = "true"
 
         # Only allow the user to choose between remediators related to the organization.
         # Exclude accounts which are already designated universal remediators.

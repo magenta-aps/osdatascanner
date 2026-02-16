@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-11 13:26+0100\n"
+"POT-Creation-Date: 2026-02-16 13:03+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -122,8 +122,23 @@ msgid "Scheduled execution settings"
 msgstr "Indstillinger for planlagte kørsler"
 
 #: adminapp/forms/shared.py
-msgid "Scan scope settings"
-msgstr "Indstillinger for scanomfang"
+msgid "Scan scope"
+msgstr "Scanningsområde"
+
+#: adminapp/forms/shared.py
+msgid "Scan all accounts in organization"
+msgstr "Scan alle konti i organisationen"
+
+#: adminapp/forms/shared.py
+msgid "Select organizational units to scan"
+msgstr "Vælg organisatoriske enheder, der skal scannes"
+
+#: adminapp/forms/shared.py
+msgid ""
+"Select one or more organizational units, or choose to scan the entire "
+"organization."
+msgstr ""
+"Vælg én eller flere organisatoriske enheder, eller vælg at scanne hele organisationen."
 
 #: adminapp/forms/shared.py
 #: adminapp/templates/components/scanner/scanner_form.html
@@ -607,12 +622,12 @@ msgid "cases"
 msgstr "sager"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-msgid "SBSYS database scanner"
-msgstr "SBSYS-databasescanner"
+msgid "SBSYS scanner"
+msgstr "SBSYS-scanner"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-msgid "SBSYS database scanners"
-msgstr "SBSYS-databasescannere"
+msgid "SBSYS scanners"
+msgstr "SBSYS-scannere"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "contacts"
@@ -4893,31 +4908,3 @@ msgstr "Udløbsdato"
 #: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
-
-#~ msgid "top 5 file types by total scanning time"
-#~ msgstr "top 5 filtyper efter samlet scanningstid"
-
-#~ msgid "scan summary"
-#~ msgstr "oversigt"
-
-#~ msgid "key outcomes and coverage of the scan"
-#~ msgstr "vigtigste resultater og omfang af scanningen"
-
-#, fuzzy, python-format
-#~| msgid "%(num)s errors encountered during this scan"
-#~ msgid ""
-#~ "\n"
-#~ "              %(num)s error encountered during this scan\n"
-#~ "            "
-#~ msgid_plural ""
-#~ "\n"
-#~ "              %(num)s errors encountered during this scan\n"
-#~ "            "
-#~ msgstr[0] "%(num)s fejl registreret under scanningen"
-#~ msgstr[1] "%(num)s fejl registreret under scanningen"
-
-#~ msgid ""
-#~ "overview of the proportion each file type represents of the total number "
-#~ "of scanned files"
-#~ msgstr ""
-#~ "oversigt over fordelingen af filtyper i det samlede antal scannede filer"

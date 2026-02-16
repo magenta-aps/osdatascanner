@@ -12,6 +12,9 @@
 
 - Added an option to exclude guest users when using MSGraph import job.
 
+- Connected sbsys-db scanners with the Admin module, so that it's now possible for users 
+  to view/create/edit that scannerjob type via the UI.
+
 ### General improvements
 
 - The report module now filters out results, from sources newer than the configured retention period,
