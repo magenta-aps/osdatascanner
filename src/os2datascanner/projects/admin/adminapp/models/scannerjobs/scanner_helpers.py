@@ -459,6 +459,7 @@ mime_to_file_map = {
         "PowerPoint macro-enabled slide show (.ppsm)"),
     "application/vnd.ms-powerpoint.template.macroEnabled.12": _(
         "PowerPoint macro-enabled template (.potm)"),
+    "application/vnd.magenta.osds.sbsys-case": _("SBSYS case"),
     "application/vnd.ms-word.document.macroEnabled.12": _("Word macro-enabled document (.docm)"),
     "application/vnd.oasis.opendocument.base": _("OpenDocument database (.odb)"),
     "application/vnd.oasis.opendocument.chart": _("OpenDocument chart (.odc)"),
