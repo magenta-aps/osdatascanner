@@ -122,6 +122,23 @@ class ScanScopeMixin(forms.Form):
             return mode == "all"
         return self.cleaned_data.get("scan_entire_org")
 
+    def clean(self):
+        cleaned_data = super().clean()
+        scan_entire_org = cleaned_data.get("scan_entire_org")
+        org_units = cleaned_data.get("org_units")
+
+        if "org_units" in self.fields:
+            if not scan_entire_org and not (org_units and org_units.exists()):
+                self.add_error(
+                    "org_units",
+                    _(
+                        "Select one or more organizational units, "
+                        "or choose to scan the entire organization."
+                    )
+                )
+
+        return cleaned_data
+
 
 class ScannerForm(GroupingModelForm):
     remediators = forms.ModelMultipleChoiceField(

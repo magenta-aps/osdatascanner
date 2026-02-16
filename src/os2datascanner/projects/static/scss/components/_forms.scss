@@ -1305,7 +1305,25 @@ input[type="file"]::file-selector-button:hover {
       }
 
       &__nested {
-        margin-left: 19px; // Aligns the select field with the radio label.
+        &:not(:has(.errorlist)) {
+          margin-left: 19px; // Align the select field with the radio label.
+        }
+
+        &:has(.errorlist) {
+          border-left: 5px solid var(--color-error);
+          padding-left: 1rem;
+        }
+
+        .errorlist {
+          margin-top: 0.5rem;
+          color: var(--color-error);
+          font-size: 0.75rem;
+          list-style: none;
+
+          li {
+            margin: 0;
+          }
+        }
       }
     }
 
