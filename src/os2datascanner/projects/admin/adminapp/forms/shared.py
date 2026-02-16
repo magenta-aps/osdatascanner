@@ -183,6 +183,14 @@ class ScannerForm(GroupingModelForm):
         ).order_by("name")
         self.fields["organization"].initial = self.org.uuid
 
+        # Restrict org-specific fields to the selected org (if present)
+        for name in ("grant", "org_units"):
+            if name not in self.fields:
+                continue
+            field = self.fields[name]
+            field.queryset = field.queryset.filter(organization=self.org)
+            field.widget.attrs["hx-swap-oob"] = "true"
+
         # Only allow the user to choose between remediators related to the organization.
         # Exclude accounts which are already designated universal remediators.
         self.fields["remediators"].queryset = self.fields["remediators"].queryset.filter(

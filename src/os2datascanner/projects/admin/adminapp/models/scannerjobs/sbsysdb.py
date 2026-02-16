@@ -21,7 +21,7 @@ class SBSYSDBScanner(Scanner):
 
     @classmethod
     def get_type(cls):
-        return "sbsys-db"
+        return "sbsys"
 
     @staticmethod
     def enabled():
