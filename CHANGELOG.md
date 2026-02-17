@@ -51,6 +51,8 @@
 
 - A bug, causing the result collector to make document reports without any contest, has been fixed.
 
+- Missing 'get_size' methods on Resource classes will no longer cause mime types to be ignored.
+
 ## Version 3.31.0, 27th January 2026
 
 "Mystery Zone"
