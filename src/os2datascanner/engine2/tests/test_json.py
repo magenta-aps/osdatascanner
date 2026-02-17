@@ -4,6 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+from datetime import datetime, timezone
 
 from os2datascanner.engine2.model.core import (
         Source, Handle, SourceManager, UnknownSchemeError, DeserialisationError)
@@ -32,6 +33,11 @@ from os2datascanner.engine2.model.derived.pdf import (
         PDFSource, PDFPageHandle, PDFPageSource, PDFObjectHandle)
 from os2datascanner.engine2.model.derived.tar import TarSource, TarHandle
 from os2datascanner.engine2.model.derived.zip import ZipSource, ZipHandle
+from os2datascanner.engine2.rules.meta import HasConversionRule
+from os2datascanner.engine2.rules.dimensions import DimensionsRule
+from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.conversions.types import OutputType
 
 
 example_handles = [
@@ -227,3 +233,38 @@ class TestJSON:
                                           domain="my_domain",
                                           user="dummy",
                                           password="<PASSWORD>"), "path/to/file.txt"))
+
+
+example_rules = [
+    HasConversionRule(OutputType.Text),
+    HasConversionRule(OutputType.ImageDimensions),
+    DimensionsRule(),
+    DimensionsRule(width_range=range(0, 1024), height_range=range(0, 1024)),
+    DimensionsRule(min_dim=1024),
+    LastModifiedRule(datetime(2022, 1, 1, tzinfo=timezone.utc)),
+]
+
+example_rules_synthetic_false = [
+    HasConversionRule(OutputType.Text, synthetic=False),
+    HasConversionRule(OutputType.ImageDimensions, synthetic=False),
+    DimensionsRule(synthetic=False),
+    DimensionsRule(width_range=range(0, 1024), height_range=range(0, 1024), synthetic=False),
+    DimensionsRule(min_dim=1024, synthetic=False),
+    LastModifiedRule(datetime(2022, 1, 1, tzinfo=timezone.utc), synthetic=False),
+]
+
+
+class TestRuleJSON:
+    @pytest.mark.parametrize("rule", example_rules)
+    def test_json_synthetic_default_round_trip(self, rule):
+        json = rule.to_json_object()
+        assert rule.synthetic
+        assert json.get("synthetic")
+        assert rule == Rule.from_json_object(json)
+
+    @pytest.mark.parametrize("rule", example_rules_synthetic_false)
+    def test_json_synthetic_false_round_trip(self, rule):
+        json = rule.to_json_object()
+        assert not rule.synthetic
+        assert not json.get("synthetic")
+        assert rule == Rule.from_json_object(json)
