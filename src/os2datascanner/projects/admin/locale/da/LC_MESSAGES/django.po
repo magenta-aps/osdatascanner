@@ -898,6 +898,10 @@ msgid "PowerPoint macro-enabled template (.potm)"
 msgstr "makroaktiveret PowerPoint-skabelon (.potm)"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "SBSYS case"
+msgstr "SBSYS-sag"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Word macro-enabled document (.docm)"
 msgstr "makroaktiveret Word-dokument (.docm)"
 

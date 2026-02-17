@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from sys import stderr
 import magic
 import inspect
+import warnings
 from traceback import print_exc
 from contextlib import contextmanager
 
@@ -82,6 +83,13 @@ class Resource(ABC):
         Resource's Handle is opened in the associated StateManager. (Note that
         each Source will only be opened once by a given StateManager.)"""
         return self._sm.open(self.handle.source)
+
+    def get_size(self):
+        """Returns the byte size of the resource. This method is a fallback, and should be
+        implemented on each child class, if possible."""
+        warnings.warn(f"No 'get_size' method implemented for class {self.__class__.__name__}. "
+                      "Falling back to default.")
+        return 0
 
 
 class TimestampedResource(Resource):
