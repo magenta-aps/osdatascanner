@@ -1,3 +1,20 @@
+The OSdatascanner system is copyright © 2014-2026 Magenta ApS.
+
+The OSdatascanner source code is made available to you under the terms of the
+Mozilla Public License, version 2.0 (the License). Your attention is drawn to
+sections 6 and 7 of the License: the source code is made available to you
+WITHOUT WARRANTY and WITHOUT LIABILITY.
+
+We treat the Docker images produced by the OSdatascanner build process as an
+Executable Form for the purposes of the License. As these incorporate software
+libraries licensed under the terms of the terms of version 3 of the GNU Affero
+General Public License, these images are accordingly made available under the
+GNU AGPL. See <https://www.gnu.org/licenses/agpl-3.0.html> for these terms. (We
+do not make any changes to this software; we simply include it in the
+Executable Form.)
+
+--
+
 Mozilla Public License Version 2.0
 ==================================
 
@@ -35,7 +52,7 @@ Mozilla Public License Version 2.0
     means any form of the work other than Source Code Form.
 
 1.7. "Larger Work"
-    means a work that combines Covered Software with other material, in 
+    means a work that combines Covered Software with other material, in
     a separate file or files, that is not Covered Software.
 
 1.8. "License"

@@ -1,16 +1,7 @@
-# The contents of this file are subject to the Mozilla Public License
-# Version 2.0 (the "License"); you may not use this file except in
-# compliance with the License. You may obtain a copy of the License at
-#    http://www.mozilla.org/MPL/
-#
-# Software distributed under the License is distributed on an "AS IS"basis,
-# WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-# for the specific language governing rights and limitations under the
-# License.
-#
-# OS2datascanner is developed by Magenta in collaboration with the OS2 public
-# sector open source network <https://os2.eu/>.
-#
+# Part of the OSdatascanner system, copyright © 2014-2026 Magenta ApS.
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, you can
+# obtain one at http://mozilla.org/MPL/2.0/.
 
 from rest_framework import serializers
 from rest_framework.fields import UUIDField
