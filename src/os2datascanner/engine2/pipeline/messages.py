@@ -662,6 +662,9 @@ class StatusMessage(NamedTuple):
     (Historically this field contained the elapsed CPU time of the Python
     process, but this didn't make much sense as a user-visible metric.)"""
 
+    object_hash: Optional[str] = None
+    """The hash value of the object that has just been scanned."""
+
     def to_json_object(self):
         return {
             "scan_tag": self.scan_tag.to_json_object(),
@@ -675,6 +678,7 @@ class StatusMessage(NamedTuple):
 
             "object_size": self.object_size,
             "object_type": self.object_type,
+            "object_hash": self.object_hash,
 
             "process_time_worker": self.process_time_worker,
         }
@@ -692,7 +696,8 @@ class StatusMessage(NamedTuple):
                 skipped_by_last_modified=obj.get("skipped_by_last_modified"),
                 object_size=obj.get("object_size"),
                 object_type=obj.get("object_type"),
-                process_time_worker=obj.get("process_time_worker"))
+                process_time_worker=obj.get("process_time_worker"),
+                object_hash=obj.get("object_hash"))
 
 
 def check_metadata_dict(cls_metadata, obj_metadata):

@@ -5,6 +5,7 @@
 
 from collections.abc import Generator
 import structlog
+import hashlib
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
 
@@ -111,6 +112,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
     message = messages.ConversionMessage.from_json_object(body)
 
+    object_hash = None
+
     try:
         yield from dispatch(
                 process(source_manager, message),
@@ -129,6 +132,13 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                     resource.get_size)
             computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
                     resource.compute_type)
+
+            hasher = hashlib.sha256()
+            with resource.make_stream() as stream:
+                while chunk := stream.read(8192):
+                    hasher.update(chunk)
+            object_hash = hasher.hexdigest()
+
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in
             # principle) be lightweight, so there may be something wrong with
@@ -147,7 +157,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                 # anything, we just need it to be present(?)
                 object_type=computed_type,
                 process_time_worker=process_time_total,
-                matches_found=total_matches).to_json_object())
+                matches_found=total_matches,
+                object_hash=object_hash).to_json_object())
 
         # Clean up after temporary files, but leave connections open
         source_manager.clear_dependents()

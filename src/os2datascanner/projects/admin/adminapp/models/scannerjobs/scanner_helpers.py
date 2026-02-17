@@ -562,6 +562,68 @@ class MIMETypeProcessStat(models.Model):
         ]
 
 
+class DuplicationStat(models.Model):
+    """Model used to record how often a scan hits duplicated files."""
+
+    scan_status = models.ForeignKey(
+        ScanStatus,
+        on_delete=models.CASCADE,
+        related_name='duplication_stats'
+    )
+
+    object_hash = models.CharField(
+        max_length=256,
+        verbose_name=_("File hash"),
+    )
+
+    file_size = models.PositiveBigIntegerField(
+        default=0,
+        verbose_name=_("File size in bytes")
+    )
+
+    occurrences = models.IntegerField(
+        default=0,
+        verbose_name=_("Number of occurrences")
+    )
+
+    mime_type = models.CharField(
+        max_length=256,
+        verbose_name=_("MIME type"),
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['scan_status', 'object_hash'],
+                name='unique_object_hash'
+            )
+        ]
+
+class HashCache(models.Model):
+    """A cache of file hashes for a given scan. Used to detect duplicates."""
+
+    scan_status = models.ForeignKey(
+        'ScanStatus',
+        on_delete=models.CASCADE,
+        related_name='hash_cache'
+    )
+
+    object_hash = models.CharField(
+        max_length=256,
+        verbose_name=_("File hash"),
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['scan_status', 'object_hash'],
+                name='unique_object_hash_per_scan'
+            )
+        ]
+        indexes = [
+            models.Index(fields=['scan_status', 'object_hash']),
+        ]
+
 def cancel_scan_tag_messages(tag: dict):
     """Requests that all running pipeline
     components blacklist and ignore messages from the scan tag."""

@@ -7,7 +7,7 @@ import math
 import structlog
 
 from django.conf import settings
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils import timezone
 from django.db.models import F
 from django.db.utils import DataError
@@ -22,7 +22,7 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
-from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat
+from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat, DuplicationStat, HashCache
 from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
 
@@ -106,6 +106,29 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                     total_time=timedelta(seconds=message.process_time_worker)
                     )
 
+        if message.object_hash:
+            # Store hashes new to this scan.
+            _, hash_created = HashCache.objects.get_or_create(
+                scan_status=scan_status,
+                object_hash=message.object_hash
+            )
+
+            # If the hash was not created, it's a duplicate.
+            if not hash_created:
+                duplication_stat, dup_created = DuplicationStat.objects.get_or_create(
+                    scan_status=scan_status,
+                    object_hash=message.object_hash,
+                    defaults={
+                        'file_size': message.object_size,
+                        'mime_type': message.object_type,
+                        'occurrences': 2  # Start at 2, as this is the second time we've seen this hash.
+                    }
+                )
+                if not dup_created:
+                    DuplicationStat.objects.select_for_update().filter(
+                        pk=duplication_stat.pk
+                    ).update(occurrences=F('occurrences') + 1)
+
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()
         n_total = scan_status.total_objects
@@ -135,6 +158,8 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                 FinishedScannerNotificationEmail(scanner, scan_status).notify()
                 scan_status.email_sent = True
                 scan_status.save()
+                # Clean up the hash cache for this scan
+                HashCache.objects.filter(scan_status=scan_status).delete()
             else:
                 logger.warning(
                     "BUG: received status message for a ScanStatus marked as complete!",
