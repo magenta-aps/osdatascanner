@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from sys import stderr
 import magic
 import inspect
+import warnings
 from traceback import print_exc
 from contextlib import contextmanager
 
@@ -86,6 +87,8 @@ class Resource(ABC):
     def get_size(self):
         """Returns the byte size of the resource. This method is a fallback, and should be
         implemented on each child class, if possible."""
+        warnings.warn(f"No 'get_size' method implemented for class {self.__class__.__name__}. "
+                      "Falling back to default.")
         return 0
 
 
