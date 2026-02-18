@@ -23,7 +23,7 @@ class MSGraphTeamsFilesSource(MSGraphSource):
                 owner_name = obj["owner"]["group"]["displayName"]
         return MSGraphDriveHandle(self, obj["id"], obj["name"], owner_name)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         teams = sm.open(self).get("/teams").json()
         for team in teams["value"]:
             channels = sm.open(self).get(f"teams/{team['id']}/channels").json()

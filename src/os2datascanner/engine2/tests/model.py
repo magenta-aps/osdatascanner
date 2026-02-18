@@ -23,7 +23,7 @@ class DummySource(Source):
     def censor(self):
         return DummySource(self._count, secret=None)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         for k in range(0, self._count):
             yield DummyHandle(self, str(k))
 
@@ -82,7 +82,7 @@ class DummySubsource(DerivedSource):
     def _generate_state(self, sm):
         yield self.handle.follow(sm)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         for k in range(0, self.handle.source._count):
             yield DummySubhandle(self, str(k))
 

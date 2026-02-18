@@ -298,7 +298,7 @@ class SMBCSource(Source):
             # owner
             return None
 
-    def handles(self, sm, *, rule=None):  # noqa: C901,CCR001
+    def handles(self, sm, *, rule=None, **kwargs):  # noqa: C901,CCR001
         base_url, context = sm.open(self)
 
         cutoff = find_cutoff(rule)

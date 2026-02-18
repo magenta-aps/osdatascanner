@@ -30,7 +30,7 @@ class MSGraphListsSource(MSGraphSource):
         self.sites = sites
         self.scan_descriptions = scan_descriptions
 
-    def handles(self, sm, *, rule: Rule | None = None):  # noqa
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):  # noqa
         cutoff = None
 
         for essential_rule in compute_mss(rule):
@@ -184,7 +184,7 @@ class MSGraphListSource(DerivedSource):
             query += "$expand=fields"
         return query
 
-    def handles(self, sm, *, rule: Rule | None = None):
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):
         gc: MSGraphSource.GraphCaller = sm.open(self)
 
         query = f"sites/{self.handle._site_id}/lists/{self.handle.relative_path}/items?"

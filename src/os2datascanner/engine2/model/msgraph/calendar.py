@@ -24,7 +24,7 @@ class MSGraphCalendarSource(MSGraphSource):
         super().__init__(client_id, tenant_id, client_secret)
         self._userlist = userlist
 
-    def handles(self, sm):  # noqa
+    def handles(self, sm, **kwargs):  # noqa
         if self._userlist is None:
             for user in self._list_users(sm):
                 pn = user["userPrincipalName"]
@@ -102,7 +102,7 @@ class MSGraphCalendarAccountSource(DerivedSource):
     def _generate_state(self, sm):
         yield sm.open(self.handle.source)
 
-    def handles(self, sm):
+    def handles(self, sm, **kwargs):
         pn = self.handle.relative_path
         result = sm.open(self).get(
             "users/{}/events?$select=id,subject,webLink,start&$top={}".format(

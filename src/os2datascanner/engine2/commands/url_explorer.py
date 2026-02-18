@@ -33,15 +33,18 @@ def format_d(depth, fmt, *args, **kwargs):
 
 
 def print_source(  # noqa
-        manager, *source_path,
+        manager, *source_path, rule=None,
         guess=False, summarise=False, metadata=False, max_depth=None,
-        hints=False, censor=True):  # noqa
+        hints=False, censor=True,):  # noqa
     base_source = source_path[0]
 
     source = source_path[-1]
     depth = len(source_path)
     try:
-        for handle in source.handles(manager):
+        if rule:
+            printfunc(format_d(depth, "note:source-rule {0}", str(rule)))
+        iterator = source.handles(manager, rule=rule)
+        for handle in iterator:
             disp_handle = handle.censor() if censor else handle
             printfunc(format_d(depth, "{0}", disp_handle))
             if hints:

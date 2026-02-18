@@ -188,7 +188,7 @@ We never call this state function explicitly, though. Instead, `ToySource`
 objects call the `SourceManager.open` method on themselves:
 
 ```python
-def handles(self, source_manager):
+def handles(self, source_manager, **kwargs):
     files = source_manager.open(self)
     for path, descriptor in files.items():
         yield ToyHandle(self, path)

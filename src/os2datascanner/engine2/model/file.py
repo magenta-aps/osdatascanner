@@ -45,7 +45,7 @@ class FilesystemSource(Source):
 
             yield FilesystemHandle(self, str(f.relative_to(base_path)))
 
-    def handles(self, sm, *, rule: Rule | None = None):
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):
         cutoff = None
         for essential_rule in compute_mss(rule):
             # (we can't do isinstance() here without making a circular

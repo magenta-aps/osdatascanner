@@ -57,7 +57,7 @@ for a generic API.
 class APISource(Source):
     # ...
 
-    def handles(self, sm: SourceManager):
+    def handles(self, sm: SourceManager, **kwargs):
         api_client = sm.open(self)
 
         for page in api_client.get_pages(per_page=50):
@@ -75,7 +75,7 @@ Let's implement some trivial pre-execution logic to fix that:
 class APISource(Source):
     # ...
 
-    def handles(self, sm: SourceManager, *, rule=None):
+    def handles(self, sm: SourceManager, *, rule=None, **kwargs):
         api_client = sm.open(self)
 
         cutoff: datetime.datetime | None = None
@@ -92,10 +92,10 @@ class APISource(Source):
                 if not cutoff or object.last_changed > cutoff:
                     yield APIHandle(self, object.path)
 ```
-The scanner engine will automatically detect that `APISource.handles` supports
-the `rule` parameter, and will use it to pass the rule being executed into the
-exploration strategy. And that's it! A few lines of code later and our `Source`
-is dramatically more efficient to scan.
+The scanner engine always passes the rule being executed into the exploration
+strategy as the keyword argument `rule`, so we just need to get it and look at
+it. And that's it! A few lines of code later and our `Source` is dramatically
+more efficient to scan.
 
 ### Help with analysis
 
@@ -141,7 +141,7 @@ those queries:
 class DBSource(Source):
     # ...
 
-    def handles(self, sm: SourceManager, *, rule=None):
+    def handles(self, sm: SourceManager, *, rule=None, **kwargs):
         db_ctx = sm.open(self)
 
         query_obj = db_ctx.table["SomeTable"].objects.all()

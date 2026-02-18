@@ -31,7 +31,7 @@ class TestGoogleSource:
     def concrete_google_source_class(self):
 
         class ConcreteGoogleSource(GoogleSource):
-            def handles(self, handle):
+            def handles(self, handle, **kwargs):
                 return True
 
             @property

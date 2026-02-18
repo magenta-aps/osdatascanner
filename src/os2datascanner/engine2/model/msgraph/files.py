@@ -40,7 +40,7 @@ class MSGraphFilesSource(MSGraphSource):
                 owner_name = obj["owner"]["group"]["displayName"]
         return MSGraphDriveHandle(self, obj["id"], obj["name"], owner_name)
 
-    def handles(self, sm):  # noqa
+    def handles(self, sm, **kwargs):  # noqa
         if self._site_drives:
             with warn_on_httperror("SharePoint drive check"):
                 # Get all sites possible, but exclude personal ones, as they usually
@@ -194,7 +194,7 @@ class MSGraphDriveSource(DerivedSource):
                 tzinfo=timezone.utc) >= ts
         ]
 
-    def handles(self, sm, *, rule: Rule | None = None):  # noqa CCR001 Cognitive complexity
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs):  # noqa CCR001 Cognitive complexity
         gc: MSGraphSource.GraphCaller = sm.open(self)
 
         cutoff = None

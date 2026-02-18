@@ -8,8 +8,7 @@ import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
 from os2datascanner.engine2.utilities.i18n import gettext as _
-from ..model.core import (
-        Source, takes_named_arg, UnknownSchemeError, DeserialisationError)
+from ..model.core import (Source, UnknownSchemeError, DeserialisationError)
 from ..model.core.errors import (ModelException,
                                  UncontactableError,
                                  UnauthorisedError,
@@ -71,17 +70,9 @@ def message_received(  # noqa: CCR001
     # somewhere else.
     sm.configuration = message.configuration
 
-    handles_method = message.source.handles
-
-    # Inspect the handles() method to see if it can take any extra hints
-    extra_kwargs = {}
-    if takes_named_arg(handles_method, "rule"):
-        extra_kwargs["rule"] = progress.rule
-
-    handle_iterator = message.source.handles(sm, **extra_kwargs)
-
     log = logger.bind(scan_tag=message.scan_tag)
 
+    handle_iterator = message.source.handles(sm, rule=progress.rule)
     try:
         for handle in handle_iterator:
             if isinstance(handle, tuple) and handle[1]:
