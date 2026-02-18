@@ -4,12 +4,22 @@
 
 "Still Quite Cold"
 
+### New in this release
+
+- SBSYS results can now be marked as false positives.
+
 ### General improvements
 
 - The `explore_scannerjob` management command is now SmartDelta-aware and so
   will not overreport the number of objects in a `Source`.
 
-## Release 3.31.1, 17th February 2026
+- Determine archive mode in the view instead of templates.
+
+### Bugfixes
+
+- 
+
+## Version 3.31.1, 17th February 2026
 
 "Fastelavns-rice"
 
