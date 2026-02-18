@@ -4,9 +4,10 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleRule
 
 
+@Rule.register_class
 class DimensionsRule(SimpleRule):
     operates_on = OutputType.ImageDimensions
     type_label = "dimensions"
@@ -14,8 +15,10 @@ class DimensionsRule(SimpleRule):
     def __init__(self,
                  width_range=range(16, 16385),
                  height_range=range(16, 16385),
-                 min_dim=128, **super_kwargs):
-        super().__init__(**super_kwargs)
+                 min_dim=128,
+                 synthetic=True,
+                 **super_kwargs):
+        super().__init__(synthetic=synthetic, **super_kwargs)
         self._width_range = width_range
         self._height_range = height_range
         self._min_dim = min_dim
@@ -51,12 +54,10 @@ class DimensionsRule(SimpleRule):
             minimum=self._min_dim,
         )
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj):
-        return DimensionsRule(
-                width_range=range(obj["width"][0], obj["width"][1]),
-                height_range=range(obj["height"][0], obj["height"][1]),
-                min_dim=obj["minimum"],
-                sensitivity=Sensitivity.make_from_dict(obj),
-                name=obj["name"] if "name" in obj else None)
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "width_range": range(obj["width"][0], obj["width"][1]),
+            "height_range": range(obj["height"][0], obj["height"][1]),
+            "min_dim": obj["minimum"],
+        }

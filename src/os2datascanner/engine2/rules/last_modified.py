@@ -4,15 +4,16 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleRule
 
 
+@Rule.register_class
 class LastModifiedRule(SimpleRule):
     operates_on = OutputType.LastModified
     type_label = "last-modified"
 
-    def __init__(self, after, **super_kwargs):
-        super().__init__(**super_kwargs)
+    def __init__(self, after, synthetic=True, **super_kwargs):
+        super().__init__(synthetic=synthetic, **super_kwargs)
         # Try encoding the given datetime.datetime as a JSON object; this will
         # raise a TypeError if something is wrong with it
         OutputType.LastModified.encode_json_object(after)
@@ -42,10 +43,8 @@ class LastModifiedRule(SimpleRule):
             after=OutputType.LastModified.encode_json_object(self.after),
         )
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj):
-        return LastModifiedRule(
-                after=OutputType.LastModified.decode_json_object(obj["after"]),
-                sensitivity=Sensitivity.make_from_dict(obj),
-                name=obj["name"] if "name" in obj else None)
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "after": OutputType.LastModified.decode_json_object(obj["after"]),
+        }

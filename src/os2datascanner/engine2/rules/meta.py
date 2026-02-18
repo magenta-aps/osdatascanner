@@ -4,14 +4,15 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from ..conversions.types import OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleRule
 
 
+@Rule.register_class
 class HasConversionRule(SimpleRule):
     type_label = "conversion"
 
-    def __init__(self, target, **super_kwargs):
-        super().__init__(**super_kwargs)
+    def __init__(self, target, synthetic=True, **super_kwargs):
+        super().__init__(synthetic=synthetic, **super_kwargs)
         self._target = target
 
     @property
@@ -37,10 +38,8 @@ class HasConversionRule(SimpleRule):
     def to_json_object(self):
         return dict(**super().to_json_object(), target=self._target.value)
 
-    @staticmethod
-    @Rule.json_handler(type_label)
-    def from_json_object(obj):
-        return HasConversionRule(
-                target=OutputType(obj["target"]),
-                sensitivity=Sensitivity.make_from_dict(obj),
-                name=obj["name"] if "name" in obj else None)
+    @classmethod
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "target": OutputType(obj["target"]),
+        }
