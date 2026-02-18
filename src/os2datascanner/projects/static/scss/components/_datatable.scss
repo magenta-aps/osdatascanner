@@ -2035,9 +2035,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
       // Computed width:
       width: calc(
-        var(--base_width) 
-        + var(--expand_width) 
-        + var(--false-positive_width)
+        var(--base_width) + var(--expand_width) + var(--false-positive_width)
       );
 
       .button-group {
