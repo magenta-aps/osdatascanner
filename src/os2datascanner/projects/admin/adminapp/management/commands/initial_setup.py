@@ -4,7 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.db import IntegrityError, transaction
@@ -12,6 +12,7 @@ from django.db import IntegrityError, transaction
 from ....core.models.client import Client
 from ....organizations.models.organization import Organization, OrganizationSerializer
 from ....organizations.models.account import Account, AccountSerializer
+from ....organizations.models import SyncedPermission
 from ....organizations.broadcast_bulk_events import BulkCreateEvent
 from ....organizations.publish import publish_events
 from ....adminapp.models.rules import Rule
@@ -123,8 +124,18 @@ class Command(BaseCommand):
 
         self.stdout.write("Creating & synchronizing corresponding Account")
         account = Account.objects.create(username=username, organization=org)
-        account.is_superuser = True
-        account.save()
+
+        # Add all synced permissions to user
+        account.permissions.add(*Permission.objects.filter(
+                content_type__app_label=SyncedPermission._meta.app_label,
+                content_type__model=SyncedPermission._meta.model_name
+            ).exclude(codename__in=[
+                "add_syncedpermission",
+                "delete_syncedpermission",
+                "change_syncedpermission",
+                "view_syncedpermission"
+            ]))
+
         self.stdout.write(self.style.SUCCESS("Account created successfully!"))
 
         self.stdout.write("Synchronizing Organization and Account to Report module ...")
