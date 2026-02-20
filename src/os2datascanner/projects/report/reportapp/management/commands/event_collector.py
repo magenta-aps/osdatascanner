@@ -17,8 +17,8 @@ from os2datascanner.projects.report.organizations.models import (Account, Alias,
                                                                  OrganizationalUnit, Position)
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
-from prometheus_client import Summary, start_http_server
-from ...utils import create_alias_and_match_relations
+from prometheus_client import Summary, start_http_server, CollectorRegistry
+from ...utils import create_alias_and_match_relations, DjangoDBMetricCollector
 
 logger = structlog.get_logger("event_collector")
 SUMMARY = Summary("os2datascanner_event_collector_report",
@@ -226,7 +226,11 @@ def handle_clean_problem_message(body):
 class EventCollectorRunner(PikaPipelineThread):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        start_http_server(9091)
+        self._registry = CollectorRegistry()
+        self.django_db_collector = DjangoDBMetricCollector()
+        self._registry.register(self.django_db_collector)
+        self._registry.register(SUMMARY)
+        start_http_server(9091, registry=self._registry)
 
     def handle_message(self, routing_key, body):
         with SUMMARY.time():
