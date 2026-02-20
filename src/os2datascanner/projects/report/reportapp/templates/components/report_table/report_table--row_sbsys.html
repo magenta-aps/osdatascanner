@@ -95,7 +95,7 @@
         {{ document_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}
       </td>
 
-      {% if "/archive/" in request.path %}
+      {% if is_archive %}
         <td class="column--resolution-status">
           <div class="status">
             <div class="status__wrapper"
@@ -108,7 +108,7 @@
  
       <td class="column--actions">
         <div class="button-group text-align-right">
-          {% if "/archive/" in request.path %}
+          {% if is_archive %}
             <button class="revert-handle button button--icon-text-button"
                     type="button"
                     title="{% trans "Revert handle status and return this result to the result overview" %}"
@@ -118,6 +118,7 @@
                     hx-indicator="closest tr"
                     hx-target="closest tr"
                     hx-push-url="false"
+                    {% if not allow_handle %}disabled{% endif %}
                     name="revert-match">
               <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i>
 
@@ -126,7 +127,7 @@
 
           {% else %}
             {% comment %}
-              SBSYS results can "handled" or "not handled", so there's no need for a dropdown in this case.
+              SBSYS results can so far only be "handled" or "not handled", so there's no need for a dropdown in this case.
             {% endcomment %}
             <button class="matches-handle button button--icon-text-button"
                     type="button"
@@ -138,11 +139,27 @@
                     hx-trigger="click"
                     hx-push-url="false"
                     hx-vals='{"action":"0"}'
-                    {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
+                    {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% blocktrans %}You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file.{% endblocktrans %}" {% endif %}
+                    {% if not allow_handle %}disabled{% endif %}
                     name="handle-match">
               <i class="material-icons text-secondary" aria-hidden="true">archive</i>
-
               <span>{% trans "Handle" %}</span>
+            </button>
+            
+            <button class="matches-handle button button--icon-button"
+                    type="button"
+                    title="{% blocktrans %}Handle this result by marking it as a false positive.{% endblocktrans %}"
+                    hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
+                    hx-swap="outerHTML swap:300ms"
+                    hx-target="closest tr"
+                    hx-indicator="closest tr"
+                    hx-trigger="click"
+                    hx-push-url="false"
+                    hx-vals='{"action":"4"}'
+                    {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% blocktrans %}You are about to handle this result by marking it as a false positive. This action does not change the file, that the result is about.{% endblocktrans %}" {% endif %}
+                    {% if not allow_handle %}disabled{% endif %}
+                    name="handle-match-false-positive">
+              <i class="material-symbols" aria-hidden="true">flag</i>
             </button>
           {% endif %}
         </div>

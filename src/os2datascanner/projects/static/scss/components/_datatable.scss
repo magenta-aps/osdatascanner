@@ -2019,24 +2019,32 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--actions {
-      &.expand-row {
-        /* Wider width if there's a caret to expand more content for the row. */
-        width: 12.25rem; // 196px
+      // Default widths:
+      --base_width: 10rem; // 160px
+      --expand_width: 0rem;
+      --false-positive_width: 0rem;
 
-        &.false-positive {
-          width: 14.125rem; // 226px
-        }
+      // Modified widths:
+      &.expand-row {
+        --expand_width: 2.25rem; // 36px
       }
 
-      width: 10rem; // 160px
+      &.false-positive {
+        --false-positive_width: 2.5rem; // 40px
+      }
+
+      // Computed width:
+      width: calc(
+        var(--base_width) + var(--expand_width) + var(--false-positive_width)
+      );
 
       .button-group {
         flex-wrap: nowrap;
+      }
 
-        #expand_more {
-          // The caret icon
-          color: var(--color-primary-dark);
-        }
+      #expand_more {
+        // The caret icon
+        color: var(--color-primary-dark);
       }
     }
   }
