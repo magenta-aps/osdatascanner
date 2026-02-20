@@ -103,6 +103,12 @@ def match(
 def tag(sm, msg):
     yield from tagger_handler(msg, sm)
 
+def hash_resource(resource):
+    hasher = hashlib.sha256()
+    with resource.make_stream() as stream:
+        while chunk := stream.read(8192):
+            hasher.update(chunk)
+    return hasher.hexdigest()
 
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 too high cognitive complexity
     global total_matches
@@ -132,12 +138,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                     resource.get_size)
             computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
                     resource.compute_type)
-
-            hasher = hashlib.sha256()
-            with resource.make_stream() as stream:
-                while chunk := stream.read(8192):
-                    hasher.update(chunk)
-            object_hash = hasher.hexdigest()
+            object_hash = TimeoutRetrier(max_tries=3, seconds=60).run(
+                    lambda: hash_resource(resource))
 
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in

@@ -107,27 +107,30 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                     )
 
         if message.object_hash:
-            # Store hashes new to this scan.
-            _, hash_created = HashCache.objects.get_or_create(
-                scan_status=scan_status,
-                object_hash=message.object_hash
-            )
-
-            # If the hash was not created, it's a duplicate.
-            if not hash_created:
-                duplication_stat, dup_created = DuplicationStat.objects.get_or_create(
-                    scan_status=scan_status,
-                    object_hash=message.object_hash,
-                    defaults={
-                        'file_size': message.object_size,
-                        'mime_type': message.object_type,
-                        'occurrences': 2  # Start at 2, as this is the second time we've seen this hash.
-                    }
-                )
-                if not dup_created:
-                    DuplicationStat.objects.select_for_update().filter(
-                        pk=duplication_stat.pk
-                    ).update(occurrences=F('occurrences') + 1)
+            try:
+                with transaction.atomic():
+                    # Try to store the hash in the cache.
+                    HashCache.objects.create(
+                        scan_status=scan_status,
+                        object_hash=message.object_hash
+                    )
+            except IntegrityError:
+                # If the hash was not created, it's a duplicate.
+                with transaction.atomic():
+                    try:
+                        DuplicationStat.objects.create(
+                            scan_status=scan_status,
+                            object_hash=message.object_hash,
+                            file_size=message.object_size,
+                            mime_type=message.object_type,
+                            occurrences=2
+                        )
+                    except IntegrityError:
+                        # The duplication was already recorded. Increment the occurrence count.
+                        DuplicationStat.objects.select_for_update().filter(
+                            scan_status=scan_status,
+                            object_hash=message.object_hash
+                        ).update(occurrences=F('occurrences') + 1)
 
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()

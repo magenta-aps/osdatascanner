@@ -582,7 +582,7 @@ class DuplicationStat(models.Model):
     )
 
     occurrences = models.IntegerField(
-        default=0,
+        default=2,  # A DuplicationStat only exists when a hash has been seen at least twice
         verbose_name=_("Number of occurrences")
     )
 
