@@ -24,7 +24,7 @@
     <ol>
       {% for time_dict in time_data|slice:"5" %}
         <li>
-          <p>{{ time_dict.label }}: {{ time_dict.count|format_timespan }}</p>
+          <p>{{ time_dict.label|capfirst }}: {{ time_dict.count|format_timespan:"compact" }}</p>
         </li>
       {% endfor %}
     </ol>

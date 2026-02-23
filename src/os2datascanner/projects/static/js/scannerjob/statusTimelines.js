@@ -114,12 +114,13 @@ function drawTimelines(snapshotData, pk) {
         datasets: [{
           data: snapshotData,
           fill: 0,
-          tension: 0, // This makes the lines straight, with no curve
+          stepped: true, // Make the lines straight.
           pointRadius: 0,
           pointHitRadius: 20,
           borderWidth: 4,
           borderColor: cssVar("--chart-color-osds-blue"),
-          pointHoverRadius: 10,
+          hoverRadius: 0, // Hide hover effect.
+          hoverBorderWidth: 0, // Hide hover effect.
         }],
       },
       options: {
@@ -127,6 +128,7 @@ function drawTimelines(snapshotData, pk) {
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
+          tooltip: { enabled: false},
         },
         scales: {
           x: {

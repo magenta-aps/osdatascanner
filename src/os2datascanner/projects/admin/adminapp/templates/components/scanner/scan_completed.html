@@ -157,7 +157,7 @@
                         <span class="width">
                           {% with status.scan_time.total_seconds as scan_time_item %}
                             {% if scan_time_item %}
-                              {% trans "cancelled after"|capfirst %} {{ scan_time_item|unlocalize|format_timespan }}
+                              {% trans "cancelled after"|capfirst %} {{ scan_time_item|unlocalize|format_timespan:"sentence" }}
                             {% else %}
                               {% trans "cancelled"|capfirst %}
                             {% endif %}
@@ -170,7 +170,7 @@
                         <span class="width">
                           {% with status.scan_time.total_seconds as scan_time_item %}
                             {% if scan_time_item %}
-                              {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan }}
+                              {% trans "Finished in" %} {{ scan_time_item|unlocalize|format_timespan:"sentence" }}
                             {% else %}
                               {% trans "Finished" %}
                             {% endif %}
