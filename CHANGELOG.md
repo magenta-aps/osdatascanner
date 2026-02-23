@@ -25,6 +25,10 @@
 - The `initial_setup` management command no longer creates a superuser, but rather creates a user
   and adds it to the "superadmins" group.
 
+- Sub-second timespans on ScanStatus page are now displayed as “under 1 second” instead of milliseconds.
+
+- `format_timespan` values now use compact or sentence formatting depending on context.
+
 ### Bugfixes
 
 - Fixed the rule loader modal on the miniscanner page not showing all rules.
@@ -34,6 +38,10 @@
 - The explorer now executes exclusion rules on explored handles.
 
 - SBSYS deviation labels can now handle long text strings better.
+
+- Fixed spelling error on `ScanStatus` page.
+
+- Removed unnecessary `:hover` effect on `ScanStatus` linechart.
 
 ## Version 3.31.1, 17th February 2026
 
