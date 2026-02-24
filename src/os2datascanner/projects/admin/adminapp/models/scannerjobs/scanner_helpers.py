@@ -599,6 +599,7 @@ class DuplicationStat(models.Model):
             )
         ]
 
+
 class HashCache(models.Model):
     """A cache of file hashes for a given scan. Used to detect duplicates."""
 
@@ -623,6 +624,7 @@ class HashCache(models.Model):
         indexes = [
             models.Index(fields=['scan_status', 'object_hash']),
         ]
+
 
 def cancel_scan_tag_messages(tag: dict):
     """Requests that all running pipeline

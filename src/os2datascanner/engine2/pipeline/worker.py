@@ -103,12 +103,14 @@ def match(
 def tag(sm, msg):
     yield from tagger_handler(msg, sm)
 
+
 def hash_resource(resource):
-    hasher = hashlib.sha256()
+    hasher = hashlib.blake2b()
     with resource.make_stream() as stream:
         while chunk := stream.read(8192):
             hasher.update(chunk)
     return hasher.hexdigest()
+
 
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 too high cognitive complexity
     global total_matches

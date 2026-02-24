@@ -31,7 +31,7 @@ SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
                   "Messages through ScanStatus collector")
 
 
-def status_message_received_raw(body):  # noqa: CCR001 complexity
+def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     """A status message for a scannerjob is created in Scanner.run().
     Therefore, this method can focus merely on updating the ScanStatus object."""
     message = messages.StatusMessage.from_json_object(body)
