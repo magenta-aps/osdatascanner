@@ -12,6 +12,10 @@
     width: 50rem;
   }
 
+  &.scrollable {
+    overflow-y: scroll;
+  }
+
   &__backdrop {
     align-items: center;
     background-color: #22222299;

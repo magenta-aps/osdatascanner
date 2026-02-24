@@ -128,7 +128,7 @@
 {% endblock %}
  
 {% block modal %}
-  <div class="modal__content"
+  <div class="modal__content scrollable"
        id="show-rules-modal"
        tabindex="-1"
        role="dialog"
@@ -136,7 +136,7 @@
        aria-hidden="true"
        data-modal="modal:close">
     <h1>{% trans "Upload a rule from the list" %}</h1>
-    <div class="datatable-wrapper scrollable">
+    <div class="datatable-wrapper">
       <table class="datatable">
         {% for rule in customrule_list %}
           <tr id="ruleRow"
